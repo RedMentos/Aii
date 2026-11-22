@@ -418,9 +418,13 @@ class Operator:
             revisions={(p['model_revisions']['B1_DETAIL'],p['model_revisions']['B2_GIST']) for p in pairs}
             current={'B1_DETAIL':r.models.revision('B1_DETAIL'),'B2_GIST':r.models.revision('B2_GIST')}
             current_match=bool(pairs) and all(p['model_revisions']==current for p in pairs)
+            fine_counts=[p['fine_readout']['plan']['native_tokens'] for p in pairs]
+            gist_counts=[p['gist_readout']['shape'][0] for p in pairs]
             return dumps({'paired_native_samples':len(ids),'required_for_l1_training':MIN_PAIRED,
                           'remaining':max(0,MIN_PAIRED-len(ids)),
                           'pinned_revision_pairs':[list(x) for x in sorted(revisions)],
+                          'b1_detail_fine_slots':{'min':min(fine_counts) if fine_counts else 0,'max':max(fine_counts) if fine_counts else 0,'budget':64},
+                          'b2_gist_adaptive_slots':{'min':min(gist_counts) if gist_counts else 0,'max':max(gist_counts) if gist_counts else 0},
                           'current_model_revisions':current,'all_pairs_match_current_models':current_match,
                           'single_revision_set':len(revisions)==1,
                           'pair_collection_threshold_met':len(ids)>=MIN_PAIRED and len(revisions)==1 and current_match,
