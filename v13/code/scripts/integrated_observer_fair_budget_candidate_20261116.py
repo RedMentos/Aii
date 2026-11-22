@@ -58,8 +58,11 @@ def apply_sources(code_dir, sources):
         b'            now=clock()\n'
         b'            if now>=end or (not budgeted and now+1>=end):break\n'
         b'            try:\n'
-        b'                role_end=min(end,now+max(0.,end-now)/(len(roles)-index))\n'
-        b'                offers.append(ask(role,True,role_end) if budgeted else ask(role,True))\n', 'sequential slice')
+        b'                if budgeted:\n'
+        b'                    role_end=min(end,now+max(0.,end-now)/(len(roles)-index))\n'
+        b'                    offers.append(ask(role,True,role_end))\n'
+        b'                else:\n'
+        b'                    offers.append(ask(role,True))\n', 'sequential slice')
     budget = result.get('v13/native_turn_budget.py', originals['v13/native_turn_budget.py'])
     budget = replace(budget,
         b'NATIVE_FIRST_RESERVE_FRACTION = .87\nDEFAULT_PREANSWER_FRACTION = .45\n',
