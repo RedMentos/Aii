@@ -1402,3 +1402,10 @@ The 8db1952 exact-head workflows are `45066934953` (staged/integrated), `4506693
 **Dependencies:** QA #2359 source-lifecycle memory.py pin still needs the verified SHA-256 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701. Boss #2370 exact head 8581023c4d46785057efc605575fcabd77e9e8a9 has 27 queued / 3 expected skipped checks, not green. Keep #2372 stacked on #2351 until both chains are accepted.
 
 **Next executable step:** poll exact-head CI; inspect failed job logs if any. Once green, run matched replay-on/off and persistent-vs-reset experiments over at least two dynamics shifts plus return-to-first-cohort. Report invariant retention and revision latency separately. Keep Dream samples distinct from observed ActionOutcomes and production promotion OFF.
+
+
+### Run 19 continuation addendum (2026-11-22T21:06:00Z)
+
+A further bounded-runtime gap was found: SleepRuntime.job only requeued when the base WorldJEPA page reported has_more. The temporal learner has an independent cursor and can still have more T8 rows after the base learner is caught up, especially because it also tracks known omissions. That left temporal paging dependent on a future user turn. PR #2372 commits ebd58266d6d864a372759f66311bc045d67ed28b and dbb7b143a336ef946985cf3cad9185af3782d734 now record temporal_status in scheduler completion metadata and requeue when either consumer reports has_more. A synthetic regression explicitly sets base has_more=false and temporal has_more=true, then verifies one bounded continuation is pending.
+
+Exact current head is dbb7b143a336ef946985cf3cad9185af3782d734. No workflow run or commit status is visible for this exact head yet. Parent 8ba258ff workflows 45069630757 / 45069630624 / 45069630784 remain QUEUED and do not validate the newer sleep.py change. LOCAL_LINUX remains BLOCKED / NOT_RUN; Redmi remains REDMI_UNVERIFIED. Next: obtain exact-head staged/integrated, temporal 3.13/3.14 and optimizer-resume 3.13/3.14 evidence; do not rebase until QA #2359 and Boss #2370 dependencies are green.
