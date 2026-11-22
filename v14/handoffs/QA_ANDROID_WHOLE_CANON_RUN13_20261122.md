@@ -56,3 +56,10 @@ Details: https://github.com/RedMentos/Aii/pull/2343#issuecomment-7081633818
 2. Boss clears #2343 source-pin failures and P1 source-forget/promotion race before any learning or unlearning acceptance.
 3. Continue whole-Canon acceptance: correct native chat, B1/B2 OfferPacket delivery/consumption, B3 latent utility, persistent weight/retention/rollback, voice, Android UI/background control, restart/update recovery and semantic coverage.
 4. User action: none. Existing updater is already at c4eb82; candidate branches are not releasable.
+
+
+## B3 follow-up — current security and numeric evidence (2026-11-22)
+
+PR #2346 exact head 81d225af972e8b3d6b645aba09cd01ccac5fa020 has fixed the earlier output-path symlink escape with descriptor-anchored O_NOFOLLOW traversal and private 0700 run directories. Top-level and nested symlink negatives assert no outside writes. Focused B3 workflow 45040617156 passed 52 tests, touched-module py_compile and CLI import/help smoke.
+
+The L1 shadow trainer now records actual per-epoch gradients, initial/final bridge parameter SHA-256, nonzero per-tensor deltas, exact save/reload and no-message identity. This is a synthetic B3 adapter update only. Old-task role retention remains NOT_MEASURED; real paired native B1/B2 taps, L0 source-bound baselines, held-out utility, Redmi training and production receiver injection remain OPEN. Shared integration checks are still pending, so #2346 remains DRAFT / NOT_RELEASED.

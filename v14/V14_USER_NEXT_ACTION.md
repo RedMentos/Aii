@@ -1,3 +1,12 @@
+# QA & Android — B3 shadow-security follow-up (2026-11-22)
+
+- PR [#2346](https://github.com/RedMentos/Aii/pull/2346) is now at exact head 81d225af972e8b3d6b645aba09cd01ccac5fa020. The earlier symlinked output-path issue has been addressed with descriptor-anchored O_NOFOLLOW traversal, private 0700 run directories and top-level/nested symlink negative tests.
+- Focused B3 workflow [45040617156](https://github.com/RedMentos/Aii/actions/runs/45040617156) PASS: 52 tests, touched-module py_compile and L1 CLI import/help smoke.
+- New synthetic L1 shadow tests measure per-epoch gradient norms, nonzero adapter parameter deltas, initial/final SHA-256, exact save/reload and no-message identity. Old-task role retention remains NOT_MEASURED; no real paired native taps, L0 acceptance, production injection or Redmi B3 training is proven.
+- The focused B3 workflow is green, but the shared exact-head integration matrix remains queued/in progress; #2346 stays DRAFT / NOT_RELEASED. No user action or device action is needed.
+
+---
+
 
 # QA & Android — current whole-Canon checkpoint (2026-11-22, supersedes older entries below)
 

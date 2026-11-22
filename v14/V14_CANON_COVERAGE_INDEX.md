@@ -2207,3 +2207,12 @@ This overlay updates proof status only. It does not edit the V14 master, histori
 **P1 integrity finding:** source-forget and non-JEPA generation promotion are not yet serialized as one atomic lifecycle. The exact #2343 code permits a prevalidated pending update to race with source tombstoning/artifact removal; see #2343 QA comment 7081633818. This is a code-inspected race, not a locally executed reproduction. Do not mark unlearning, source revocation or weight-promotion safety accepted until both barrier interleavings and the lock order are tested.
 
 **Whole-Canon boundary:** the 1,255 historical headings remain preserved; semantic clause→code→consumer→test→platform→rollback mapping is still incomplete. CI success, a private install receipt, prompt-level numeric SHADOW and a diagnostic native embedding probe are not whole-system acceptance.
+
+
+## B3 shadow-security and numeric-update follow-up — 2026-11-22
+
+| Requirement | Current exact evidence | Boundary | Classification |
+|---|---|---|---|
+| B3 paired B1/B2 capture + L1 shadow trainer | PR #2346 head 81d225af; focused workflow 45040617156 PASS, 52 tests, py_compile and CLI smoke. Descriptor-anchored O_NOFOLLOW directory traversal, private 0700 run directory and top-level/nested symlink negatives. | Synthetic paired-tap fixtures only; no real native paired activations, no Redmi capture. | CODE_PRESENT / FOCUSED_CI_PASS / NOT_ANDROID_VERIFIED |
+| B3 numeric adapter update | Per-epoch gradient norm, before/after SHA-256, nonzero per-tensor delta, exact save/reload, no-message identity; master B1/B2/C3/JEPA weights untouched. | Old-task role retention NOT_MEASURED; L0 baseline/utility gate and held-out native task evidence missing; no receiver injection. | SYNTHETIC_WEIGHT_UPDATE / SHADOW_ONLY / NO_PRODUCTION_AUTHORITY |
+| B3 integration | Shared staged/integrated, migration, JEPA, Lab-Age, native receiver and deployment checks remain queued/in progress on the current PR head. | Focused B3 PASS is not whole-PR merge readiness. | DRAFT / NOT_RELEASED |
