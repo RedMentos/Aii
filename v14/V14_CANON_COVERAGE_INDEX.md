@@ -2363,3 +2363,8 @@ Exact dbb7b143 head workflows: 45070190046 (staged/integrated), 45070190084 (tem
 ### Latest private Redmi evidence (2026-11-22T20:55:46Z)
 
 Private V13OBS #115 is an aggregate of five LOCAL_METADATA_ONLY turns. B1: 4/4 native attempts failed, zero valid offers and zero final-C3 delivery turns. B2: 2/2 failed, zero valid offers and zero final-C3 delivery turns. Latest stored turn: 57.739 s total / 41.627 s TTFT / 38.945 s prefill / 751 prompt tokens / 2 generated tokens. Correctness and semantic prompt use remain UNKNOWN/UNPROVEN. Pipeline metadata: aed1d2b installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE, last_error NONE. No evidence that #2372 is installed; JEPA feature remains REDMI_UNVERIFIED.
+
+
+### Run 19 restart-persistence addendum (2026-11-22T21:13:00Z)
+
+The latest JEPA code head is 3f015a7442c6950d5ce0dce3a9bbbcc4517e863d. A new regression tests 32 single-session pending ActionOutcomes across Store close/reopen and a second independent session, checking cursor advancement and preservation of 64 unique IDs. Exact workflows 45070697371 optimizer-resume 3.13/3.14; 45070697433 temporal WorldJEPA 3.13/3.14; 45070697455 owner-read/staged startup — all QUEUED. No exact staged/integrated run visible for this latest test-only commit. No exact staged/integrated run is visible for this latest test-only commit. Status remains TEST_ADDED / CI_PENDING / NOT_ACCEPTED.
