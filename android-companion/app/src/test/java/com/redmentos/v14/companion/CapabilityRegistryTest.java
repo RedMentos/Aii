@@ -1,6 +1,12 @@
 package com.redmentos.v14.companion;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Test;
+import org.robolectric.RuntimeEnvironment;
 
 import java.util.List;
 
@@ -69,6 +75,21 @@ public final class CapabilityRegistryTest {
         assertFalse(audio.learningAuthority);
         assertFalse(CompanionProvider.isImplementedCapability("audio_capture"));
         assertTrue(CompanionProvider.isImplementedCapability("launch_app"));
+    }
+
+    @Test public void capabilitySnapshotIgnoresStalePersistedOnAfterProcessStart() throws Exception {
+        Context context = RuntimeEnvironment.getApplication();
+        SharedPreferences prefs = context.getSharedPreferences(
+                CompanionProvider.PREFS, Context.MODE_PRIVATE);
+        assertTrue(prefs.edit().putBoolean("enabled", true).commit());
+
+        assertTrue(CompanionProvider.resetProcessStateForProviderStartup(context));
+        assertFalse(CompanionProvider.isEnabled(context));
+
+        JSONObject snapshot = CapabilityRegistry.snapshot(context);
+        assertFalse(snapshot.getBoolean("enabled"));
+        JSONArray capabilities = snapshot.getJSONArray("capabilities");
+        assertEquals("OFF_STOP_SWITCH", capabilities.getJSONObject(0).getString("status"));
     }
 
     @Test public void providerBindsExactCallingPackageToThePairedUidAndCertificate() {

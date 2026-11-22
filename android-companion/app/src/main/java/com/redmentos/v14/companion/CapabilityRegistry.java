@@ -89,7 +89,7 @@ final class CapabilityRegistry {
     static JSONObject snapshot(Context context) throws Exception {
         android.content.SharedPreferences prefs =
                 context.getSharedPreferences(CompanionProvider.PREFS, Context.MODE_PRIVATE);
-        boolean enabled = prefs.getBoolean("enabled", false);
+        boolean enabled = CompanionProvider.isEnabled(context);
         boolean paired = "com.termux".equals(prefs.getString("paired_package", ""))
                 && !prefs.getString("paired_cert_sha256", "").isEmpty();
 

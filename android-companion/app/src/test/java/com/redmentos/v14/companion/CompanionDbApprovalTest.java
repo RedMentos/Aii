@@ -220,10 +220,10 @@ public final class CompanionDbApprovalTest {
 
         // ContentProvider.onCreate invokes this on every new app process. The
         // prior process's persisted ON value is not an active session grant.
-        CompanionProvider.resetProcessStateForProviderStartup();
+        assertTrue(CompanionProvider.resetProcessStateForProviderStartup(context));
         assertFalse(CompanionProvider.isEnabled(context));
-        assertTrue(context.getSharedPreferences(CompanionProvider.PREFS, Context.MODE_PRIVATE)
-                .getBoolean("enabled", false));
+        assertFalse(context.getSharedPreferences(CompanionProvider.PREFS, Context.MODE_PRIVATE)
+                .getBoolean("enabled", true));
 
         AtomicBoolean dispatched = new AtomicBoolean(false);
         String result = CompanionProvider.claimAndDispatch(

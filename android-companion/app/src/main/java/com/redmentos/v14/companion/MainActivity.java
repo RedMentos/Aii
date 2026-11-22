@@ -60,7 +60,8 @@ public final class MainActivity extends Activity {
             JSONObject key = signer.publicKeyInfo();
             JSONObject capabilities = CapabilityRegistry.snapshot(this);
             status.setText("V14 Android Companion 0.1.0\n"
-                    + "State: " + (enabled ? "ENABLED — per-action consent still required" : "STOPPED (default)") + "\n"
+                    + "State: " + (enabled ? "ENABLED FOR THIS PROCESS — per-action consent still required"
+                            : "STOPPED (restart requires explicit re-enable)") + "\n"
                     + "Paired caller: " + paired + "\n"
                     + "Termux signing certificate SHA-256: " + fingerprint + "\n"
                     + "Companion key ID: " + key.getString("key_id") + "\n"

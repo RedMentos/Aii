@@ -37,7 +37,7 @@ public final class CompanionProvider extends ContentProvider {
     @Override public boolean onCreate() {
         Context context = getContext();
         if (context == null) return false;
-        resetProcessStateForProviderStartup();
+        resetProcessStateForProviderStartup(context);
         db = new CompanionDb(context);
         signer = new ReceiptSigner();
         ensureChannel(context);
@@ -76,9 +76,16 @@ public final class CompanionProvider extends ContentProvider {
         boolean commit(Context context, boolean enabled);
     }
 
-    static void resetProcessStateForProviderStartup() {
+    static boolean resetProcessStateForProviderStartup(Context context) {
         synchronized (ACTION_GATE_LOCK) {
+            // The in-process grant is always revoked first. Persist OFF as a
+            // best effort; if storage fails, every runtime gate still sees OFF.
             processEnabled = false;
+            try {
+                return context != null && commitEnabled(context, false);
+            } catch (RuntimeException ignored) {
+                return false;
+            }
         }
     }
 
