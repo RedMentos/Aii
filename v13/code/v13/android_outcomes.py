@@ -74,13 +74,15 @@ def accept_companion_receipt(
     *,
     on_outcome: Callable[[ActionOutcome], None] | None = None,
     clock: Callable[[], float] = time.time,
+    finalize_broker: bool = True,
 ) -> ActionOutcome:
     """Consume a dispatched request using an authenticated companion receipt.
 
-    The broker approval is consumed before verification; any malformed, stale,
-    replayed or unauthenticated receipt therefore fails closed and requires a
-    new local approval. A valid receipt is still only a companion attestation,
-    not independent device observation or T8 learning authority.
+    The broker dispatch is consumed before verification; malformed, stale,
+    replayed or unauthenticated receipts fail closed. The combined persistence
+    path may defer successful broker finalization until the source-bound
+    ActionOutcome and nonce are durably committed. A valid receipt remains only
+    a companion attestation, not independent device observation or T8 authority.
     """
     if not isinstance(action_id, str) or not action_id:
         raise ControlDenied("invalid action identifier")
@@ -93,20 +95,23 @@ def accept_companion_receipt(
     try:
         attestation = verifier.verify(envelope, receipt, consume_nonce=False)
         if (type(attestation) is not dict
-                or attestation.get("status") != "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+                or attestation.get("status") not in {
+                    "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
+                    "COMPANION_USER_DENIED",
+                    "COMPANION_DISPATCH_FAILED",
+                }
                 or attestation.get("t8_authoritative") is not False):
             raise InvalidOutcome("companion verifier returned an unsupported authority level")
         with broker.lock:
             if broker.stopped:
                 raise ControlDenied("broker stopped during companion verification")
-            broker.record_companion_receipt(action_id, proposal.digest, verified=True)
     except Exception:
         broker.record_companion_receipt(action_id, proposal.digest, verified=False)
         raise
     outcome = ActionOutcome(
         action_id=proposal.action_id,
         capability=proposal.capability,
-        status="COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
+        status=attestation["status"],
         observed=False,
         evidence_level="COMPANION_RECEIPT_ONLY",
         timestamp=float(clock()),
@@ -115,9 +120,14 @@ def accept_companion_receipt(
             "receipt_schema": attestation["schema"],
             "auth_scheme": attestation["auth_scheme"],
             "receipt_nonce": attestation["nonce"],
-            "companion_local_consent_claim": True,
-            "local_approval_evidence": "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION",
-            "android_os_permission_status": "REQUIRED_NOT_VERIFIED",
+            "companion_local_consent_claim": attestation.get("companion_local_consent_claim", True),
+            "receipt_status": attestation.get("receipt_status", "EXECUTED"),
+            "local_approval_evidence": attestation.get(
+                "local_approval_evidence", "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION"
+            ),
+            "android_os_permission_status": attestation.get(
+                "android_os_permission_status", "REQUIRED_NOT_VERIFIED"
+            ),
             "key_storage_status": attestation["key_storage_status"],
             "t8_authoritative": False,
             "world_learning_eligible": False,
@@ -125,6 +135,8 @@ def accept_companion_receipt(
             "source_ref": dict(proposal.source_ref) if proposal.source_ref is not None else None,
         },
     )
+    if finalize_broker:
+        broker.record_companion_receipt(action_id, proposal.digest, verified=True)
     if on_outcome is not None:
         on_outcome(outcome)
     return outcome
@@ -139,7 +151,11 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
     audit record is never a WorldAction or a T8 learning transition.
     """
     if (not isinstance(outcome, ActionOutcome)
-            or outcome.status != "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+            or outcome.status not in {
+                "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
+                "COMPANION_USER_DENIED",
+                "COMPANION_DISPATCH_FAILED",
+            }
             or outcome.observed is not False
             or outcome.evidence_level != "COMPANION_RECEIPT_ONLY"
             or not isinstance(outcome.details, Mapping)
@@ -152,16 +168,55 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
     digest = outcome.details.get("digest")
     if type(event_id) is not str or type(source_ref) is not dict:
         raise InvalidOutcome("source-bound event required before persistence")
-    if (type(nonce) is not str or len(nonce) != 32
-            or any(ch not in "0123456789abcdef" for ch in nonce)
-            or type(digest) is not str or len(digest) != 64
-            or any(ch not in "0123456789abcdef" for ch in digest)
-            or outcome.details.get("receipt_schema") != "v14.android-companion-receipt/1"
-            or outcome.details.get("auth_scheme") != "HMAC_SHA256_PER_INSTALL"
-            or outcome.details.get("companion_local_consent_claim") is not True
-            or outcome.details.get("local_approval_evidence") != "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION"
+    auth_scheme = outcome.details.get("auth_scheme")
+    consent_claim = outcome.details.get("companion_local_consent_claim")
+    receipt_status = outcome.details.get("receipt_status")
+    common_invalid = (
+        type(nonce) is not str or len(nonce) != 32
+        or any(ch not in "0123456789abcdef" for ch in nonce)
+        or type(digest) is not str or len(digest) != 64
+        or any(ch not in "0123456789abcdef" for ch in digest)
+        or outcome.details.get("receipt_schema") != "v14.android-companion-receipt/1"
+        or type(consent_claim) is not bool
+    )
+    legacy_hmac_invalid = (
+        auth_scheme == "HMAC_SHA256_PER_INSTALL"
+        and (
+            outcome.details.get("local_approval_evidence") != "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION"
             or outcome.details.get("android_os_permission_status") != "REQUIRED_NOT_VERIFIED"
-            or outcome.details.get("key_storage_status") != "UNVERIFIED"):
+            or outcome.details.get("key_storage_status") != "UNVERIFIED"
+        )
+    )
+    android_keystore_invalid = (
+        auth_scheme == "ECDSA_P256_SHA256_ANDROID_KEYSTORE"
+        and (
+            outcome.details.get("android_os_permission_status") != "NOT_REQUIRED_FOR_LAUNCH_APP"
+            or outcome.details.get("key_storage_status") not in {
+                "ANDROID_KEYSTORE_SOFTWARE_BACKED", "ANDROID_KEYSTORE_HARDWARE_BACKED"
+            }
+            or (
+                outcome.status == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+                and (consent_claim is not True
+                     or receipt_status != "DISPATCHED_UNVERIFIED"
+                     or outcome.details.get("local_approval_evidence") != "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION")
+            )
+            or (
+                outcome.status == "COMPANION_USER_DENIED"
+                and (consent_claim is not False
+                     or receipt_status != "USER_DENIED"
+                     or outcome.details.get("local_approval_evidence") != "ANDROID_COMPANION_USER_DENIAL")
+            )
+            or (
+                outcome.status == "COMPANION_DISPATCH_FAILED"
+                and (consent_claim is not True
+                     or receipt_status != "FAILED_TO_DISPATCH"
+                     or outcome.details.get("local_approval_evidence") != "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION")
+            )
+        )
+    )
+    if common_invalid or legacy_hmac_invalid or android_keystore_invalid or auth_scheme not in {
+        "HMAC_SHA256_PER_INSTALL", "ECDSA_P256_SHA256_ANDROID_KEYSTORE"
+    }:
         raise InvalidOutcome("companion receipt metadata is incomplete")
     row = store.one("SELECT packet FROM events WHERE id=?", (event_id,))
     if not row:
@@ -180,10 +235,11 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
         "auth_scheme": outcome.details["auth_scheme"],
         "digest": digest,
         "receipt_nonce": nonce,
-        "companion_local_consent_claim": True,
-        "local_approval_evidence": "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION",
-        "android_os_permission_status": "REQUIRED_NOT_VERIFIED",
-        "key_storage_status": "UNVERIFIED",
+        "companion_local_consent_claim": consent_claim,
+        "receipt_status": receipt_status,
+        "local_approval_evidence": outcome.details["local_approval_evidence"],
+        "android_os_permission_status": outcome.details["android_os_permission_status"],
+        "key_storage_status": outcome.details["key_storage_status"],
         "t8_authoritative": False,
         "world_learning_eligible": False,
         "trusted_transition_eligible": False,
@@ -236,9 +292,20 @@ def accept_and_persist_companion_receipt(
 ):
     """One C5 receipt-consumer call: authenticate, persist, then notify downstream."""
     outcome = accept_companion_receipt(
-        broker, verifier, action_id, receipt, on_outcome=None, clock=clock
+        broker, verifier, action_id, receipt, on_outcome=None, clock=clock,
+        finalize_broker=False,
     )
-    packet_value = persist_companion_outcome(store, outcome)
+    try:
+        packet_value = persist_companion_outcome(store, outcome)
+    except InvalidOutcome:
+        # A permanent provenance/replay rejection is terminal; transient Store
+        # failures leave RECEIPT_CONSUMED so the exact signed receipt can retry.
+        broker.record_companion_receipt(action_id, outcome.details["digest"], verified=False)
+        raise
+    # Store transaction commits the nonce and ActionOutcome together. Only
+    # then may the broker make this receipt terminal; a failed write stays
+    # RECEIPT_CONSUMED and can be retried idempotently.
+    broker.record_companion_receipt(action_id, outcome.details["digest"], verified=True)
     if on_outcome is not None:
         on_outcome(outcome)
     return outcome, packet_value

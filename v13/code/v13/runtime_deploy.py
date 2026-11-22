@@ -46,13 +46,13 @@ HEX40 = re.compile(r"[a-f0-9]{40}\Z")
 MARKER_NAME = "runtime-active.json"
 BUILD_PROFILE = "integrated-runtime-source-pinned-v2"
 STAGER = "scripts/stage_integrated_candidate.py"
-STAGER_SHA256 = "c8908cbaa8e1b7733308b17d0b06b0510fd9ad3f778feab0ef1b8dad72906e6d"
+STAGER_SHA256 = "2bc7af4ef8e33e7685141fe17a324078ae5c2addec2ebd4a7e5875000f486670"
 STAGE_MANIFEST = "INTEGRATION_STAGE.json"
 UI_SOURCE = "v13/ui.py"
 UI_SOURCE_SHA256 = "ad1c495b1a09989ca307ae7b34f045abe60b390996787ee604e20273c975d4e8"
 UI_DERIVED_SHA256 = "0c2e5fb15a78b37017f2b2c296afd0275705e70276a47dc9b47429d38aeac5a1"
 UI_BUILDER = "scripts/termux_chat_recovery_candidate_20261112.py"
-UI_BUILDER_SHA256 = "e0885ebc04ae16826f2a8d5cc3210ddc2f76d1ef40d22824190deaafaa13ffa8"
+UI_BUILDER_SHA256 = "6ae1f52595660b12bbb7f6684cc5c0b090614df5fe538f075a3256bd6995645f"
 
 
 class RuntimeDeployError(RuntimeError):
@@ -269,7 +269,10 @@ def prepare_source(source=None):
              "v13/code/candidates/", "v13/code/tests/",
              "v13/code/docs/canon/", "v13/code/setup.sh", "v13/code/STARTEN.sh",
              timeout=180)
-        _, _, commit = _source(checkout)
+        # This helper runs before an old phone checkout is fast-forwarded.
+        # Validate only its trusted Git identity here; current builder pins are
+        # intentionally checked later by deploy() after the update is applied.
+        _, commit = _checkout(checkout)
         if created:
             # rename() refuses a competing populated checkout; only our own
             # temporary download is removed on failure.
