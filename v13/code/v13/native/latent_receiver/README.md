@@ -29,7 +29,8 @@ matrix.
 Limits: at most 32 unique token IDs, at most 262,144 output elements, embedding
 dimension at most 8,192, checked tensor bounds and finite output. The Python
 wrapper additionally verifies the installed model SHA-256 before and after
-the read and binds the result to model and tokenizer revisions.
+the read. Model and tokenizer revision labels are caller-supplied metadata;
+the consuming Runtime must source them from its installed manifest.
 
 This is an internal-ABI, read-only diagnostic, not a stable public llama.cpp
 API, trained latent coupling, semantic-use proof, production B3 route, or
