@@ -158,6 +158,46 @@ d._activation_transaction(
             d._recover_activation(self.home, self.private)
         self.assertEqual(self.launcher.read_bytes(), b"external replacement")
 
+    def test_journal_symlink_fails_closed_without_touching_launcher(self):
+        proc, _, _ = self.crash_transaction("launcher")
+        self.assertEqual(proc.returncode, 71)
+        current_launcher = self.launcher.read_bytes()
+        journal = self.private / d.ACTIVATION_JOURNAL_NAME
+        outside = self.root / "outside-journal"
+        outside.write_text("not an activation journal", encoding="utf-8")
+        journal.unlink()
+        journal.symlink_to(outside)
+        with self.assertRaisesRegex(d.RuntimeDeployError, "journal is a symbolic link"):
+            d._recover_activation(self.home, self.private)
+        self.assertEqual(self.launcher.read_bytes(), current_launcher)
+        self.assertTrue(journal.is_symlink())
+
+    def test_backup_symlink_fails_closed_without_touching_launcher(self):
+        proc, _, _ = self.crash_transaction("launcher")
+        self.assertEqual(proc.returncode, 71)
+        current_launcher = self.launcher.read_bytes()
+        backup = self.private / "launcher-backup-0123456789abcdef.sh"
+        outside = self.root / "outside-backup"
+        outside.write_bytes(self.old_launcher)
+        backup.unlink()
+        backup.symlink_to(outside)
+        with self.assertRaisesRegex(d.RuntimeDeployError, "backup missing or unsafe"):
+            d._recover_activation(self.home, self.private)
+        self.assertEqual(self.launcher.read_bytes(), current_launcher)
+        self.assertTrue(backup.is_symlink())
+
+    def test_unknown_marker_fails_closed_without_overwriting_current_pair(self):
+        proc, _, _ = self.crash_transaction("marker", old_marker=True)
+        self.assertEqual(proc.returncode, 72)
+        current_launcher = self.launcher.read_bytes()
+        marker = self.private / d.MARKER_NAME
+        marker.write_bytes(b"unknown external marker")
+        with self.assertRaisesRegex(d.RuntimeDeployError, "Runtime marker"):
+            d._recover_activation(self.home, self.private)
+        self.assertEqual(self.launcher.read_bytes(), current_launcher)
+        self.assertEqual(marker.read_bytes(), b"unknown external marker")
+        self.assertTrue((self.private / d.ACTIVATION_JOURNAL_NAME).exists())
+
     def test_atomic_file_fsyncs_parent_directory_after_replace(self):
         dest = self.private / "fsync-check"
         with mock.patch.object(d, "_fsync_directory") as fsync_dir:
