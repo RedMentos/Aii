@@ -165,6 +165,46 @@ d._activation_transaction(
         fsync_dir.assert_called_once_with(self.private)
         self.assertEqual(dest.read_bytes(), b"durable")
 
+
+    def test_pending_journal_forces_deploy_even_when_pair_looks_current(self):
+        source = self.root / "source"
+        installed = self.root / "installed"
+        source.mkdir()
+        installed.mkdir()
+        canon = installed / d.CANON
+        canon.parent.mkdir(parents=True, exist_ok=True)
+        canon.write_bytes(b"canon")
+        ui = installed / d.UI_SOURCE
+        ui.parent.mkdir(parents=True, exist_ok=True)
+        ui.write_bytes(b"same pinned ui")
+        source_ui = source / d.UI_SOURCE
+        source_ui.parent.mkdir(parents=True, exist_ok=True)
+        source_ui.write_bytes(b"same pinned ui")
+        ui_sha = hashlib.sha256(ui.read_bytes()).hexdigest()
+        manifest = {"files_sha256": {d.UI_SOURCE: ui_sha}, "replaced_files": []}
+        manifest_path = installed / d.STAGE_MANIFEST
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+        manifest_sha = "e" * 64
+        commit = "a" * 40
+        record = {
+            "code": str(installed), "commit": commit,
+            "build_profile": d.BUILD_PROFILE,
+            "source_ui_sha256": ui_sha, "derived_ui_sha256": ui_sha,
+            "ui_builder_sha256": ui_sha, "stage_manifest_sha256": manifest_sha,
+            "launcher_sha256": hashlib.sha256(self.launcher.read_bytes()).hexdigest(),
+        }
+        with mock.patch.object(d, "_source", return_value=(source, source, commit)), \
+             mock.patch.object(d, "_marker", return_value=record), \
+             mock.patch.object(d, "_launcher", return_value=self.launcher), \
+             mock.patch.object(d, "_verify_stage", return_value=manifest_sha), \
+             mock.patch.object(d, "UI_SOURCE_SHA256", ui_sha), \
+             mock.patch.object(d, "UI_DERIVED_SHA256", ui_sha), \
+             mock.patch.object(d, "UI_BUILDER_SHA256", ui_sha):
+            self.assertFalse(d.needs_deploy(source, home=self.home, private=self.private))
+            (self.private / d.ACTIVATION_JOURNAL_NAME).write_text("pending", encoding="utf-8")
+            self.assertTrue(d.needs_deploy(source, home=self.home, private=self.private))
+
     def test_preexisting_journal_blocks_new_transaction(self):
         old_marker, new_marker, backup, backup_marker = self.prepare()
         journal = self.private / d.ACTIVATION_JOURNAL_NAME
