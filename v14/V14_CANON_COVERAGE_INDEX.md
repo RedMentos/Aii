@@ -2244,3 +2244,33 @@ Focused B3 paired-capture run 45040617156 remains PASS (52 tests, compile, CLI s
 - Runtime deployment 45040617193: plain UI recovery builder changed under Python 3.11 and 3.14.
 
 JEPA transactional update, combined online JEPA, JEPA receipt integrity, role-specific tap provenance, privacy scan and offline bridge checks passed; same-turn B1/B2/C4/C3 was still in progress and audio/arithmetic/native latent receiver queued. These are shared integrated builder/recovery composition failures, not the focused B3 capture/trainer test. Keep #2346 DRAFT / NOT_RELEASED.
+
+
+---
+
+## Whole-Canon current evidence overlay — 2026-11-22 Boss run
+
+**Release/device baseline:** `aed1d2b826290c95c70356b5d8b864b5ef382be4` is the current release-development SHA; 43/43 exact check-runs SUCCESS. Private #606 confirms it is installed and UP_TO_DATE. Private #607 records a slow 2-token turn (57.739 s total / 41.627 s TTFT / 38.945 s prefill), B1/B2 TIME_BUDGET, C3 3.1 s, and no mapped native processes in one instantaneous sample. Correctness and sustained residency are UNKNOWN. Official Age 0; lab request 10/effective 5; physical feature execution false; learning commit authority requires separate SHADOW.
+
+| Canon family | Current code / consumer evidence | Acceptance still missing | Current classification |
+|---|---|---|---|
+| A0–A5 perception, segmentation, salience, source/clock/event | Caller-supplied PCM/raw-ear feature path and A5 UI metadata lease have synthetic/staged consumers | Android microphone, screen capture, live event clock/source, calibrated sensor path and native measurements | CODE_PRESENT / WIRED_SYNTHETIC / ANDROID_UNVERIFIED |
+| B1_DETAIL + B2_GIST | Distinct role models and source-bound offer/C4 receipt path; fair-budget same-turn candidate is in draft #2370 | Final-head full CI, native B1/B2 offers, useful peer re-entry, matched Redmi quality/latency; do not conflate prompt offers with trained latent exchange | CANDIDATE / CI_PENDING / REDMI_UNVERIFIED |
+| B3 Enlightened Space | Symbolic space and diagnostic receiver code; candidate native receiver composition is staged | Paired native taps, trained receiver, source-disjoint holdout, zero/shuffle/parity/OOD controls and explicit probe approval | OFF / SYMBOLIC / DIAGNOSTIC_ONLY |
+| B4/B5 workspace, coalition and other body roles | Source-span/C4 receipt and selected body-view contracts exist | Independent active consumers, learned coupling, native cross-role utility and complete role retention | PARTIAL / SYNTHETIC |
+| C1/JEF/C2/C3 and output | Control/language/runtime paths and exact-arithmetic reflex; C4/C3 receipt candidate | Correct nontrivial answer, adequate output length, source-bound offers and acceptable TTFT on Redmi | CODE_PRESENT / QUALITY_NOT_ACCEPTED |
+| Attention, curiosity, goals and agency | Salience/goal/wake contracts and bounded scheduler tests exist | Real-world curiosity/goal outcome loop and permissioned Android actions | PARTIAL / SYNTHETIC |
+| World/Self/episodic/semantic/procedural memory | Store and source-bound context paths exist; #2351 temporal JEPA remains a separate candidate | End-to-end read/write/forget/revoke, restart, source-disjoint retention and native consumer | PARTIAL / SHADOW |
+| JEPA/EMA/local plasticity/replay | Numeric WorldJEPA and temporal T8 candidate code; source/optimizer gates remain under review | Verified gradient and parameter/checkpoint deltas, old-task retention, optimizer resume, rollback/restart, actual B1/B2/C3 consumer | SHADOW / NO_ACCEPTED_WEIGHT_UPDATE |
+| Sleep/Dream/Replay | Bounded post-commit worker contracts exist | Real replay-driven retained improvement and Android lifecycle proof | SHADOW / NOT_ACCEPTED |
+| Context OS + Memorilla | Context OS partial; Memorilla remains additive draft | Production overflow consumer, source pointers, role-specific readers/writers, forget/revoke and restart proof | PARTIAL / DRAFT |
+| Voice/audio and multimodal learning | Caller PCM feature and explicit TTS fallback; no live capture provider | Android AudioRecord, full-duplex/barge-in, trainable speech decoder/vocoder, raw acoustic learning and persistent multimodal weight proof | PARTIAL / NO_CAPTURE_PROVIDER |
+| Android background/UI control | Companion/permission contracts and A5 metadata lease prototypes | Authenticated provider, APK/device tests, Accessibility/MediaProjection, approved actions, stop/audit/rollback | OFF / NOT_ANDROID_VERIFIED |
+| Age 0–5 and X10 lab rights | Age rights are separated from ResourceGuard; phone reports official 0, requested 10/effective 5 | Physical feature execution and earned-right/permission proof on device | CODE / SYNTHETIC_TESTED / ANDROID_UNVERIFIED |
+| OS sandbox, behavior judge, memory/egress | Dry-run/action proposals and adaptive-judge research exist | Independent Android OS boundary, complete write/egress registry, separate trainable judge validation | PARTIAL / NOT_ACCEPTED |
+| Self-optimization and cross-organ edits | Numeric learner shadow and explicit future gates | Cross-organ gradients, retained master/adapter updates, export/deploy and safe structural self-edit | NOT_ACCEPTED |
+| Two distinct sparse MoE bodies | Role-specific model separation only | Sparse expert routing and distinct learned expert utilization | NOT_PROVEN |
+| Updater, remote maintenance, install/rollback | Existing updater is enabled; base SHA is installed; candidate code remains isolated in PR #2370 | Candidate release, process-death/reboot/rollback acceptance, staged patch/apply/restore and device verification | BASE_INSTALLED / CANDIDATE_NOT_RELEASED |
+| Whole-Canon traceability | 1,255-heading inventory retained; this overlay records current cross-family evidence | Clause→implementation→consumer→test→platform→rollback mapping across all historical V13 obligations | PARTIAL / OPEN |
+
+**Candidate integration note:** #2370 current head `3ce39ac26925273c7e5b06a1286178f73aa7332f` repairs the Boss source-pin chain through Runtime guard → recovery-12 → recovery-21 → integrated stage → runtime deployer. Full current-head PR CI is not yet observed. Earlier intermediate failures are not evidence about the corrected final head. No new Android behavior is claimed.

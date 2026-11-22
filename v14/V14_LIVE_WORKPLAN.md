@@ -1235,3 +1235,20 @@ The 679f audio run showed that rebinding only Context-source recall was insuffic
 ### Next integration step
 
 Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, migration, owner-read and deployer workflows. Fix only measured current-head failures. Keep the PR DRAFT and NOT_RELEASED. The #2280 C4 receipt, #2281 Age-rights, #2282 shared-blob race, #2283 rollback, #2285 audio QA and #2275 RAW EAR changes must be rebased and tested on this same base; old-base green results are not accepted. Private PIPELINE_STATUS #453 is still unanswered, so REDMI_UNVERIFIED. User action: none.
+
+
+---
+
+## Boss & Integration checkpoint — 2026-11-22
+
+**Base / device:** release-development `gpt6/v13-private-remote-bridge-20261111` at `aed1d2b826290c95c70356b5d8b864b5ef382be4`, 43/43 exact check-runs SUCCESS. Private #606 authenticates the same SHA installed with auto-update enabled and runtime/dashboard UP_TO_DATE. Private #607 repeats a stored 57.739 s FINAL turn (41.627 s TTFT, 38.945 s prefill, 751 prompt tokens, 2 generated tokens); correctness UNKNOWN. B1/B2 TIME_BUDGET 53.2/54.2 s. No new turn, LOG_PAGE, UPDATE_REQUEST or device mutation.
+
+**Code-bearing candidate:** Draft #2370 at `3ce39ac26925273c7e5b06a1286178f73aa7332f`, based on the current release-development SHA. It carries the fair-observer/same-turn B1/B2→C4→C3 candidate and associated body-view/receiver, arithmetic and C4/C3 receipt paths. The PR is NOT_RELEASED.
+
+**Source lifecycle repair:** The RECORD_ONLY guard previously hashed composed Runtime bytes against an immutable source pin. The pinned recovery chain transforms Runtime before the guard executes. The guard now verifies the exact on-disk Runtime source (SHA-256 `08c1ef961b0c7316da8c1c8265feb71a7a4acf009018788e7accb81eecb2337d`) and applies the fail-closed anchors to the authenticated composed bytes. Downstream hashes were rebound bottom-up through recovery-12, recovery-21, integrated stage and runtime deployer. Stage tests now check both the RECORD_ONLY binding and fair-budget consumer, plus a negative altered-source case.
+
+**Verification:** The release base has 43/43 SUCCESS. Candidate intermediate head `11d2883` failed Lab-Age because its Runtime digest was computed with a non-UTF-8 byte conversion; the final candidate head `3ce39ac26925273c7e5b06a1286178f73aa7332f` corrects the digest and downstream chain. Full PR workflow matrix on the final head is not yet observed; current-head CI remains PENDING. No local full suite: the execution container has no Aii checkout and network access is unavailable. No Android candidate validation.
+
+**Functional acceptance remains open:** The 45/55 static split yields 16.5 s C3 reserve at a 30 s deadline and 49.5 s at 90 s; the last Redmi prefill was 38.945 s. The 30 s profile is therefore inadequate against that observation; the 90 s profile is not yet reliable. Preserve both bodies and the full Canon; do not solve this by dropping B1/B2 or extending deadlines blindly.
+
+**Next:** Trigger the full exact-head matrix for #2370, repair any remaining nested pins bottom-up, then run same-prompt matched-config Redmi A/B only with explicit user authorization. No user action is needed now.
