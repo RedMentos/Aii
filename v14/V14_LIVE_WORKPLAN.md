@@ -1276,3 +1276,20 @@ A new upstream llama.cpp issue #27148 reports stale prompt/KV content crossing u
 
 - This documentation/research handoff PR #2365 remains DRAFT with exact-head CI pending; use the PR's current head and checks as the live authority. It has not been merged.
 - The release branch remains `aed1d2b826290c95c70356b5d8b864b5ef382be4` with push workflows still pending; the device remains installed at `c4eb82`. No UPDATE_REQUEST was sent.
+
+
+## Whole-system PR and owner review checkpoint — 2026-11-22T18:02:28.124Z
+
+### JEPA / Memory
+- #2331 is CLOSED on the stale `b3b92` base. Current #2351 head `3f4277e`: 9 failed / 4 passed / 1 skipped. Focused failures are `NONCONTIGUOUS_HISTORY` versus expected `SHADOW_READOUT_ONLY`, and a matched cohort-C update rejected by `RETENTION_GATE_REJECTED` (128 verified receipts, 144 train windows). Do not weaken the retention gate.
+- QA #2359 head `7aa82b1`: 9 failed / 4 passed. The memory-source cleanup anchor is ambiguous; the staged chain also rejects the current `memory.py` and Body/World builder source hashes. Boss review comment 7083287475 requires bottom-up rebinding against the final combined tree.
+- Boss #2355 head `f9c9c18`: 6 failed / 1 passed; stacked on #2351, not independently mergeable. Boss comment 7083287824 records the dependency.
+
+### Perception / other functional candidates
+- #2363 RAW EYE→A5/A4 bridge: 11 checks SUCCESS, 1 SKIPPED on its exact head, but it has no normal Runtime call site and is based on old `c4eb82`; it is WIRED_SYNTHETIC, not a live user-facing image path. Boss comment 7083288220 requests the consumer and rebase.
+- #2362 date-shaped arithmetic guard: 4 failed / 1 passed / 2 skipped; do not merge.
+- #2343 fair-budget/postcommit observer candidate: source-anchor fix committed at `8e5cabb`; exact push workflow remains queued.
+- #2346 paired B3 tap candidate: 2 exact paired-capture assertion failures; other matrix jobs pending.
+- #2364 native receiver probe: 12 checks queued; no native receiver utility proof.
+
+No experimental JEPA, B3, vision or arithmetic candidate was merged in this checkpoint. The release branch is `aed1d2` with push CI pending; the phone remains installed at `c4eb82`. See the board for exact heads and counts.
