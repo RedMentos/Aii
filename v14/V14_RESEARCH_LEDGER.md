@@ -942,7 +942,11 @@ This correction supersedes older branch-level status claims without deleting the
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
 
-## R-080 — RAW EAR speaker-calibration path and mobile candidate review (2026-11-22)
+
+
+> Team sequence coordination: R-080 is reserved for the JEPA receiver entry, R-081 for Hypnos, R-082 for receiver-aware latent communication, and R-083 for JEPA-TTT. This Perception branch's audio-specific additions therefore begin at R-084; do not reuse those shared IDs.
+
+## R-084 — RAW EAR speaker-calibration path and mobile candidate review (2026-11-22)
 
 **Gap / hypothesis.** The existing audio_speaker_evidence.py deliberately treats caller-provided cosine thresholds as CALLER_ASSERTED_UNVERIFIED; audio_voice_cues.py therefore keeps speaker-change decisions at DEFER. The missing piece is not another heuristic threshold. It is a model-bound, source/session/speaker-disjoint calibration process with a held-out gate and an explicit local enable step. Any accepted output remains a non-identifying A4 change/overlap hint, never a speaker identity.
 
@@ -965,7 +969,7 @@ This correction supersedes older branch-level status claims without deleting the
 **Next executable step.** Run the exact branch CI and the existing RAW EAR / A4 / C3 consumer tests; repair any regression. Then, only with a separately licensed or locally owner-consented dataset and a pinned embedding model, run source/session/speaker-disjoint held-out calibration and compare CAM++ against the existing baseline. Do not enable the local manifest or download/swap weights until the data authorization, model-weight license and Redmi measurements are verified.
 
 
-## R-081 — S2SND-v2: overlap-aware and late-speaker diarization (2026-11-22)
+## R-085 — S2SND-v2: overlap-aware and late-speaker diarization (2026-11-22)
 
 **Primary source:** Jincheng Wang et al., *S2SND-v2: Unified Online and Offline Speaker Diarization with Speaker-Adapted w2v-BERT 2.0*, arXiv:2610.34707, submitted 2026-10-26; 5-page arXiv preprint submitted to ICASSP 2027. Full paper text reviewed, not just the abstract. [arXiv](https://arxiv.org/abs/2610.34707).
 
@@ -973,7 +977,7 @@ This correction supersedes older branch-level status claims without deleting the
 
 **Limits / reuse decision.** This is a preprint, not a peer-reviewed result established here. The paper does not provide an official code/checkpoint link or a weight license in the inspected source. Its 91M-parameter encoder and 75.63 GFLOPs per 8-second window are not a credible Redmi adoption claim; no Android ABI, RSS/PSS, RTF or TTFT measurement exists. Do not download or swap. The transferable hypotheses are narrower: overlap-contaminated frames should not update a speaker representation, and new-speaker tests should include late arrivals. Both require an actual overlap/embedding producer before runtime wiring; a caller boolean is not a measured overlap detector. Keep the current A4 output non-identifying and without learning/action authority.
 
-## R-082 — Streaming diarizer adaptation can hide identity forgetting (2026-11-22)
+## R-086 — Streaming diarizer adaptation can hide identity forgetting (2026-11-22)
 
 **Primary source:** Mo Yu, Yang Liu and Jing Qian, *When Forgetting Looks Like Improvement: Metric Masking in Streaming Diarizer Adaptation and the Price of Rehearsal*, arXiv:2610.08828, submitted 2026-09-26. Full paper text reviewed; peer-review status was not established from the inspected source. [arXiv](https://arxiv.org/abs/2610.08828).
 
