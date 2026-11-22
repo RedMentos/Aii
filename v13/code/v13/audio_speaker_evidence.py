@@ -6,6 +6,7 @@ contain only similarity evidence and model/source provenance, never vectors.
 """
 from __future__ import annotations
 
+from array import array
 from collections import OrderedDict, deque
 import math
 import re
@@ -36,7 +37,7 @@ def _unit_vector(vector, dimension):
     norm = math.sqrt(sum(value * value for value in values))
     if not math.isfinite(norm) or norm <= 1.0e-12:
         raise SpeakerEvidenceError("speaker embedding is zero or invalid")
-    return tuple(value / norm for value in values)
+    return array("f", (value / norm for value in values))
 
 
 def _validate_batch(value, source_id, generation_id, start_ms, end_ms):
