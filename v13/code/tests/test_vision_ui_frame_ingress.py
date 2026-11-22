@@ -102,7 +102,7 @@ def image_buffer():
     return bytearray(output.getvalue())
 
 
-def provider_verifier(obs, frame, *, result=True, failure=None):
+def provider_verifier(lease, obs, frame, *, result=True, failure=None):
     expected_sha = hashlib.sha256(frame).hexdigest()
     expected_size = len(frame)
 
@@ -116,12 +116,12 @@ def provider_verifier(obs, frame, *, result=True, failure=None):
             and frame_size == expected_size
         )
 
-    return _issue_provider_frame_verifier(obs, verify)
+    return _issue_provider_frame_verifier(lease, obs, verify)
 
 
 def consume_with_provider_verifier(runtime, obs, frame, *, consent_lease, frame_verifier=None, **kwargs):
     if frame_verifier is None:
-        frame_verifier = provider_verifier(obs, frame)
+        frame_verifier = provider_verifier(consent_lease, obs, frame)
     return consume_projected_frame(
         runtime, obs, frame, consent_lease=consent_lease,
         frame_verifier=frame_verifier, **kwargs,
@@ -346,7 +346,7 @@ def test_provider_frame_receipt_must_match_exact_frame_digest(monkeypatch):
         with pytest.raises(PermissionError, match="digest"):
             consume_with_provider_verifier(
                 runtime, obs, frame, consent_lease=lease,
-                frame_verifier=provider_verifier(obs, frame, result=False),
+                frame_verifier=provider_verifier(lease, obs, frame, result=False),
                 current_source="Describe this.",
             )
         assert not any(frame)
@@ -388,7 +388,7 @@ def test_provider_verifier_exception_fails_closed_without_context_cache(monkeypa
         with pytest.raises(PermissionError, match="digest"):
             consume_with_provider_verifier(
                 runtime, obs, frame, consent_lease=lease,
-                frame_verifier=_issue_provider_frame_verifier(obs, verifier_failure),
+                frame_verifier=_issue_provider_frame_verifier(lease, obs, verifier_failure),
                 current_source="Describe this.",
             )
         assert obs["source_id"] not in getattr(runtime, "_a5_ui_context_cache", {})
@@ -471,7 +471,7 @@ def test_untrusted_always_true_callback_cannot_cross_provider_capability_boundar
     obs = observation()
     frame = image_buffer()
     with pytest.raises(PermissionError, match="issued only"):
-        ProviderFrameVerifier(obs, lambda *_args: True)
+        ProviderFrameVerifier(None, obs, lambda *_args: True)
 
     with lease_for(runtime, obs) as lease:
         with pytest.raises(PermissionError, match="provider-owned"):
@@ -483,21 +483,23 @@ def test_untrusted_always_true_callback_cannot_cross_provider_capability_boundar
         assert not any(frame)
 
 
-def test_provider_verifier_is_bound_to_session_and_one_shot():
+def test_provider_verifier_is_bound_to_session_and_one_shot(monkeypatch):
+    runtime = make_runtime(monkeypatch)
     obs = observation()
     frame = image_buffer()
-    verifier = provider_verifier(obs, frame)
     frame_sha = hashlib.sha256(frame).hexdigest()
-    assert verifier.verify(obs, frame_sha, len(frame)) is True
-    assert verifier.verify(obs, frame_sha, len(frame)) is False
+    with lease_for(runtime, obs) as lease:
+        verifier = provider_verifier(lease, obs, frame)
+        assert verifier.verify(runtime, lease, obs, frame_sha, len(frame)) is True
+        assert verifier.verify(runtime, lease, obs, frame_sha, len(frame)) is False
 
-    calls = []
-    verifier = _issue_provider_frame_verifier(
-        obs, lambda *_args: calls.append(True) or True,
-    )
-    wrong = dict(obs, capture_session_id="other-session")
-    assert verifier.verify(wrong, frame_sha, len(frame)) is False
-    assert calls == []
+        calls = []
+        verifier = _issue_provider_frame_verifier(
+            lease, obs, lambda *_args: calls.append(True) or True,
+        )
+        wrong = dict(obs, capture_session_id="other-session")
+        assert verifier.verify(runtime, lease, wrong, frame_sha, len(frame)) is False
+        assert calls == []
 
 
 def test_fifo_tile_projector_is_rejected_without_blocking(monkeypatch, tmp_path):
