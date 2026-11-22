@@ -179,7 +179,7 @@ def capture_pair(cognition, event, deadline):
         token_counts={role: len(features[role]) for role in ROLES},
         dimensions={role: len(features[role][0]) for role in ROLES},
         token_alignment="NOT_ASSUMED_DIFFERENT_NATIVE_TOKENIZERS",
-        receiver_pooling="B2_ADAPTIVE_GIST_SLOTS;B1_NATIVE_FINE_TOKEN_SLOTS",
+        receiver_pooling="B2_ADAPTIVE_GIST_SLOTS;B1_SOURCE_ALIGNED_FINE_NATIVE_SLOTS",
         injection_authority=0, learning_authority=0,
     )
     cognition.s.add_packet("B3PairedTapPacket", record)
