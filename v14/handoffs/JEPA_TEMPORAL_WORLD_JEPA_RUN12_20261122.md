@@ -102,3 +102,17 @@ The current shared `V14_WORK_BOARD.json` already reserves R-084 for Do-JEPA pair
 - R-084/085/086 remain reserved by the shared board for Do-JEPA, differential retention and fork-ledger utility. LATER remains a provisional R-087 candidate, not a new R-084 entry.
 
 **Next:** obtain exact focused CI; have Boss wire this matrix into the real bodyview path on a reconciled integration base; add A→B→C→A matched-step replay/retention and source/action negative controls. Until that integration and Redmi receipt exist, temporal body consumption is SHADOW/API_ONLY.
+
+
+## Run 13 matched replay/retention checkpoint — 2026-11-22 16:18 UTC
+
+**Code commit:** `dcd1ee9aae6c49cdf0d87615d1710b9bc9c1ed1b`.
+
+- Rejected temporal update results now retain explicit attempt metrics instead of losing the compute evidence: train/holdout window counts, optimizer steps, steps this update, replay mode, fresh vs retried receipts, source/session split counts, holdout and shuffled-target/action/no-history losses, parameter/EMA deltas, retention before/after, utility/retention decisions and collapse metrics.
+- Added an A→B→C→A′ multi-shift experiment. It trains A, trains B with uniform replay, rolls back to the exact A checkpoint, attempts B with replay disabled using the same optimizer-step budget and same pending receipts, rolls back if accepted, reapplies B with replay, then trains C and a disjoint-source A′ reacquisition. The test checks equal optimizer steps for the B replay/no-replay arms, fewer train windows without replay, explicit rejection/acceptance telemetry, retained A/B/C holdouts, source-disjoint splits, parameter and EMA deltas, and final A′ utility. The test fixture can offset cohort indices while keeping A′ distributional behavior matched to A.
+- Exact CI for this new code head: temporal workflow 45043086722 and Python 3.13/3.14 training-resume/source-forget workflow 45043086693 are queued. Staged/integrated and Core same-turn workflows 45043086711/45043086690 are also queued. No PASS or FAIL result is available yet. Full local Aii suite remains blocked by DNS; no local full-suite or Redmi test.
+- The temporal batch receiver from `da2af251` remains a bodyview-compatible API only. It is not yet called from `bodyview.py`; the current one-step receiver remains unchanged. The next integration is still Boss-owned because #2343 owns `bodyview.py`, `world_jepa_receiver_matrix.py` and the source-pin chain.
+- Generic Store promotion-vs-forget remains open on Boss head `9a1424bbf11f3306ce1a50f1e88cbb5c3765bca2`. The JEPA branch only fixes source republish vs blob unlink; it does not make `Store.switch_generation` atomic.
+- LATER paper result details for provisional R-087: the paper reports +9.5 percentage points terminal success on distracted two-stage PushT and +11.5 points first-hit success on Directional TwoRoom; an action-dependent history swap reduced calibrated choice accuracy from 65/102 to 39/102. The persistent banks total 384 FP32 scalars (1.5 KiB); its five-call H100 CEM median was 9.98 s / 150 MiB. These are the authors' visual simulator/H100 measurements, not V14/Android expectations. No official code/license was found on the arXiv page. Source: https://arxiv.org/abs/2611.25671.
+
+**Next:** poll exact CI, fix failures, then integrate the temporal matrix into the real bodyview consumer after the Boss base is stable. The A→B→C→A′ test is now present but not yet executed; do not call the retention claim accepted until CI passes.

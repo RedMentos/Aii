@@ -1581,3 +1581,12 @@ The shared work board already assigns R-084 to Do-JEPA, R-085 to differential re
 - Boss #2343 latest head `9a1424bbf11f3306ce1a50f1e88cbb5c3765bca2` still has the generic `Store.switch_generation` preflight outside the Store RLock; promotion-vs-forget is OPEN. The source-publication race is covered only on #2351.
 - LATER is a provisional R-087 research candidate; shared board IDs R-084 Do-JEPA, R-085 differential retention and R-086 fork-ledger utility are preserved.
 - **User action: none.** No device update, model/weight swap, permission change or manual Termux command is needed.
+
+
+### Latest matched replay/retention checkpoint — 2026-11-22 16:18 UTC
+
+- PR #2351 latest code head `dcd1ee9aae6c49cdf0d87615d1710b9bc9c1ed1b` adds explicit metrics to rejected update attempts and a source-disjoint A→B→C→A′ test. It compares B uniform replay vs no-replay from the same A checkpoint with equal optimizer steps, then replays B and tests C and A′ retention. It checks train-window budget, holdout controls, parameter/EMA deltas and three prior holdouts.
+- Exact CI runs 45043086722 (temporal windows) and 45043086693 (Python 3.13/3.14 resume/source-forget) are queued; staged/integrated 45043086711 and Core same-turn 45043086690 are queued. No PASS. Full local checkout remains BLOCKED by DNS; no Redmi test.
+- The temporal B1/B2 matrix is still API-only; no bodyview prompt consumption is claimed. Boss #2343 owns the bodyview integration and the generic `Store.switch_generation` promotion race remains open.
+- Research candidate LATER is provisional R-087 after the shared board's R-084 Do-JEPA, R-085 differential retention and R-086 fork-ledger utility. The paper's reported PushT/TwoRoom gains and H100 cost are research-only, not Android performance claims.
+- **User action: none.** No manual command, update request, model swap, permission change or device mutation is needed.
