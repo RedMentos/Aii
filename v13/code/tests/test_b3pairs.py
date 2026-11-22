@@ -48,7 +48,7 @@ class PairedNativeTapTests(unittest.TestCase):
              patch.object(self.r.cognition, "read_tap", side_effect=lambda p: rows[p["packet_id"]]):
             pair = self.r.cognition.tap_pair(self.event, time.monotonic() + 10)
         p = pair["packet"]
-        self.assertEqual(p["schema"], SCHEMA)
+        self.assertEqual(p["packet_schema"], SCHEMA)
         self.assertEqual(p["event_id"], self.event["event_id"])
         self.assertEqual(p["source_ref"], self.event["source_ref"])
         self.assertEqual(p["dimensions"], {"B1_DETAIL": 3, "B2_GIST": 2})
@@ -80,7 +80,7 @@ class PairedNativeTapTests(unittest.TestCase):
             other = self.r.store.source("different source", "USER_INPUT")
             return self._tap(role, other)[0]
         with patch.object(self.r.cognition, "tap", side_effect=tap), \
-             patch.object(self.r.cognition, "read_tap", return_value={"token_ids": [11, 22], "vectors": [[1.0], [2.0]]}):
+             patch.object(self.r.cognition, "read_tap", side_effect=lambda tap: rows[tap["packet_id"]]):
             with self.assertRaisesRegex(ValueError, "source span mismatch"):
                 capture_pair(self.r.cognition, self.event, time.monotonic() + 10)
         self.assertEqual(self.r.store.rows("SELECT * FROM packets WHERE kind='B3PairedTapPacket'"), [])
