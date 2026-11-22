@@ -118,3 +118,10 @@ LOCAL_LINUX CPython 3.13.5 isolated hash-binding helper: 5/5 PASS (matching dige
 - PIPELINE_STATUS: auto-update enabled; installed commit remains `aed1d2b826290c95c70356b5d8b864b5ef382be4`; runtime/dashboard `UP_TO_DATE`; last error `NONE`.
 - DIAGNOSTICS: service/runtime/dashboard `RUNNING`, but the instant native-process sample still shows 0 mapped processes and unknown child-group readability. The stored turn remains unchanged: 57.74 s total, 41.63 s TTFT, 38.95 s prefill, 751 admitted tokens, 2 generated tokens; B1/B2 `TIME_BUDGET` at 53.2/54.2 s, C2 OK, C3 3.1 s, native probe `SMOKE_PARTIAL`.
 - HEALTH vs DIAGNOSTICS still disagree on Runtime availability. Official Age 0; lab selector stage 10 / effective implemented stage 5; physical feature execution false; learning commit authority requires separate SHADOW. `console_errors` remains `USER_NOT_OPTED_IN`, so no LOG_PAGE. No new turn, CHAT_SEND, UPDATE_REQUEST, shell, model/weight change or device mutation occurred.
+
+
+## Cross-lane Core CI blockers observed — 2026-11-22
+
+- Core candidate PR #2370 run `45077837234` fails on both Python 3.13 and 3.14: `test_arithmetic_world_source_transition_survives_restart` reads `calculate 8/4` after restart instead of the exact original `What is 8/4?`. This breaks exact source restoration.
+- Core candidate run `45077837776`: integrated-regression subjob PASS, staged-runtime FAIL. `test_same_turn_body_delivery_qa.py` reports missing `v13.native_turn_budget.time` and C3 reserve 16.5 s instead of expected 26.0 s.
+- Same-turn consumer run `45077837118` reproduces the same two scheduler failures on Python 3.13 and 3.14. These are Core-owned blockers independent of Teacher Ear; they were reported on #2370 and #1984. No release or device acceptance can be inferred from the passing integrated-regression subjob.
