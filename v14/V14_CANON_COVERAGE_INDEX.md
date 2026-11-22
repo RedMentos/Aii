@@ -2271,3 +2271,11 @@ No private transcript or sensitive user content was copied into public artifacts
 | Device chat and whole Canon | Private #603 repeats 57.739 s / 41.627 s TTFT / 38.945 s prefill / 2 generated tokens; B1/B2 TIME_BUDGET 53.2/54.2 s; correctness UNKNOWN | Correct native output, offers delivered and consumed by C4/C3, 20-turn latency/RSS and all clause-to-consumer mappings | REDMI_OBSERVATION / WHOLE_CANON_OPEN |
 
 No local full repository, Android SDK/emulator, or real-device test was available in this run. Synthetic helper checks, CI, Android emulator and Redmi evidence remain distinct.
+
+## QA Android emulator follow-up — 2026-11-22 Run 8
+
+| Requirement | Evidence | Boundary | Classification |
+|---|---|---|---|
+| Android companion lifecycle harness | PR #2356 head 3829465: UIAutomator poll backoff 2.5–5 s, 4 cores / 4 GB, `-accel auto`, TCG fallback and acceleration diagnostic; copied helper tests 6/6 PASS | Exact-head Android/Gradle/emulator/staged checks queued; predecessor emulator reached MainActivity then System UI ANR before app assertions | CODE_PRESENT / LOCAL_HELPER_PASS / CI_PENDING / NOT_ANDROID_VERIFIED |
+
+Android command-line documentation identifies `-accel off` as slow software emulation and `-accel auto` as automatic acceleration when available. This justifies the CI harness configuration only; it does not prove KVM availability or physical Redmi behavior.
