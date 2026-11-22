@@ -1,3 +1,17 @@
+# Boss update — Linux and Android native build pass; Python matrix red (2026-11-22 07:09Z)
+
+**No user action is needed.** Do not install the artifact, run Termux, request an update, or change models/weights/permissions.
+
+- #2314 run 44994147854: pinned Linux llama.cpp build/selftest **PASS**; Android arm64-v8a NDK cross-compile **PASS**, with review-only artifact `v14-native-latent-receiver-android-arm64` uploaded (11.64 MB, expires 2026-12-06). It has not been installed or run on a phone.
+- Python 3.13 and 3.14 compile **PASS**, but both fail the staged Runtime test: `test_callosum.py::UtilityTests.test_message_fields_outcome_rating_and_doctor` returns `scored=0` instead of 1 (22 passed / 1 failed in each nested suite). The native workflow is still **RED: 2/4 jobs pass, 2/4 fail**. Boss comments #7075731192 and #7075756920 give the exact failure and require a targeted fix without weakening the test.
+- Other #2314 gates (runtime deploy, old-phone migration, Lab-Age, owner-read, same-turn and staged/integrated) remain PASS. No GGUF receiver inference, semantic alignment, binary installation or Redmi proof.
+- Phone #480 remains auto-update enabled but runtime/dashboard CI_WAIT on installed SHA `89333289b8cd50da92cbf7074c9ef689a2972dbf`. Read request #483 expired unanswered and was closed. No UPDATE_REQUEST/device mutation.
+- #2313 remains NOT_READY; #2317 holdout test passes but staged integration is queued; #2311 JEPA matrix queued; #2312 audio and #2286 companion remain stacked. #2286 still has the reviewed asynchronous stop-persistence risk.
+
+**Next:** fix the staged Callosum pending-message/offer lookup, pass targeted tests on both Python versions, and rerun all four native jobs. Do not retarget or merge #2314 while either Python matrix is red.
+
+---
+
 # Boss update — #2314 native build partially passed, staged tests red (2026-11-22 07:06Z)
 
 **No user action is needed.** Do not install the binary, run Termux, request an update, or change models/weights/permissions.
