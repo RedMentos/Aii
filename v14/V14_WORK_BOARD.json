@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T12:02:49.539Z",
-  "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; all 30 observed exact-SHA Actions workflow runs completed SUCCESS. Fresh owner-authenticated private PIPELINE_STATUS #550 confirms the same SHA installed and UP_TO_DATE. Functional/whole-Canon acceptance remains open; V14 master and historical V13 appendix preserved.",
+  "updated_at": "2026-11-22T17:51:17.837Z",
+  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; exact SHA CI 53/53 SUCCESS; authenticated private receipt confirms same SHA installed. Functional acceptance remains open.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -14,11 +14,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "CI + authenticated ANDROID_DEVICE metadata; no correct-answer/native-organ acceptance",
-      "next_step": "Boss: finish the exact stage/deployer/recovery chain, correct the archive-stream old preimage, rebind record-only guard, and make the fair-observer composer idempotent against the already-present role_end signature. Wait for all exact 023e56d Python 3.13/3.14, staged/integrated, A5, Lab-Age, native receiver, owner-read and migration jobs. QA is not editing the shared chain.",
+      "proof_environment": "CI + authenticated Android install/diagnostic metadata; no correct-answer or useful native B1/B2 acceptance",
+      "next_step": "Boss/Core: P0 remains open. Last stored turn 57.739 s / TTFT 41.627 s / prefill 38.945 s / 751 prompt / 2 generated; B1/B2 TIME_BUDGET. Require same-turn offers→C4→C3 and 20-turn correctness/latency acceptance.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T11:37:04.338Z",
-      "proof": "PIPELINE_STATUS #550 confirms c4eb82deec915f65894c20d6ebbaf0ebf58fa335 installed. DIAGNOSTICS #551 repeats FINAL 56.432 s / TTFT 40.818 s / prefill 39.088 s / 701 prompt tokens / 2 generated tokens; correctness UNKNOWN. B1/B2 probes TIME_BUDGET 53.2/54.2 s. Health #549 reports 1,293 MiB MemAvailable and 1,537 MiB disk free; learning status #552 UNAVAILABLE. No 20-turn acceptance. Boss candidate PR #2343 exact head `71fd9e1058abd1ea15668dd76a0de9f1f8b7709e` is 11 ahead / 0 behind c4eb82 but not releasable: owner-read Python3.14 staged startup `Integrated stage builder changed`; Lab-Age `integrated builder hash mismatch`; A5 3.13/3.14 `integrated builder hash mismatch` plus `unsupported archive source: store.py`, observer anchor `ask`, and runtime/postcommit hash mismatches; native receiver 3.13/3.14 integrated builder mismatch; staged runtime 33 failed / 220 passed / 10 skipped / 2 errors / 37 subtests; migration remains PARTIAL. Exact logs reviewed and QA finding posted on #2343. Runtime deploy integrity, role-specific tap provenance and JEPA/online-world workflows pass, but this does not compensate for the red staged matrix. Byte-level diagnosis on exact #2343 head: runtime_deploy expects stage SHA256 614cfc... but actual stage_integrated_candidate is 4c7f2c...; stage builder expects recovery builder SHA256 47fa3d... but actual is 1333db...; archive_stream_range still pins store.py 40a387... while actual store.py is c413e..., and source-lifecycle rebinder searches for c413e instead of the old 40a387 preimage; record-only guard expects runtime.py a533... while actual is 08c1ef...; fair-budget overlay pin matches runtime but its old ask() anchor is already replaced by role_end. Exact values posted on #2343 comment 7078775784. C4 receipt, base recovery, audio and native receiver pins do match; avoid churning them. New Boss branch head `70c6a5bf15ab16dcd0caf7088c56584c4c8470cf` is 27 ahead / 0 behind c4eb82; exact-head CI is queued at last poll. Fresh byte readback still finds mismatches: runtime_deploy expects stage `3b4d8899…`, actual stage builder `53d8f5cb…`; stage expects recovery21 `4e20a52a…`, actual recovery builder `7efdcb5a…`; lifecycle store pin `3f5a5dd3…` vs actual store `c413e135…`, archive stream still `40a387e2…`; record-only Runtime pin `a5336607…` vs actual `08c1ef96…`; observer Runtime pin `9bb9ddc0…` vs actual `08c1ef96…` and old `ask()` anchor remains absent. The recovery12 blob pin `74901948…` now matches; C4/audio/native receiver pins also match. Prior head 71fd9e had staged/owner-read/A5/Lab-Age/migration failures; do not project those conclusions onto new head until its CI completes. Update for current Boss head 70c6a5: two-checkout migration run 45019915717 completed FAIL in both previous/current phone-release cases. Both source/runtime checkouts fast-forwarded to 70c6a5, but the one-shot helper returned last_result=PARTIAL, runtime=ERROR, last_error=UPDATE; exact assertion at test_two_checkout_migration_20261116.py:236 expected UPDATED after recoverable PARTIAL. Other exact-head workflows remained queued at last poll. Latest Boss branch head `023e56d166ab128f1038033067db681903757bcb` is 29 ahead / 0 behind c4eb82. Corrected recovery12 blob pin now matches (`bca4152c…`); source-lifecycle Store and fair-observer Runtime pins now match actual store/runtime bytes. Remaining exact readback mismatches: runtime_deploy STAGER `3b4d…` vs actual stage `53d8…`; stage BUILDER `4e20…` vs actual recovery21 `7efd…`; archive stream STORE pin `40a3…` vs actual store `c413…` while lifecycle rebinder searches `c413…` instead of the archive source's old preimage; record-only guard runtime `a533…` vs actual `08c1…`; fair-observer old ask anchor still absent because runtime already has role_end. All 13 substantive exact-head workflows queued at last poll. Previous 70c6a5 migration run failed PARTIAL/runtime ERROR; that is historical, not current-head CI.",
+      "last_checkpoint": "2026-11-22T17:51:17.837Z",
+      "proof": "PIPELINE_STATUS #550 confirms c4eb82deec915f65894c20d6ebbaf0ebf58fa335 installed. DIAGNOSTICS #551 repeats FINAL 56.432 s / TTFT 40.818 s / prefill 39.088 s / 701 prompt tokens / 2 generated tokens; correctness UNKNOWN. B1/B2 probes TIME_BUDGET 53.2/54.2 s. Health #549 reports 1,293 MiB MemAvailable and 1,537 MiB disk free; learning status #552 UNAVAILABLE. No 20-turn acceptance. Boss candidate PR #2343 exact head `71fd9e1058abd1ea15668dd76a0de9f1f8b7709e` is 11 ahead / 0 behind c4eb82 but not releasable: owner-read Python3.14 staged startup `Integrated stage builder changed`; Lab-Age `integrated builder hash mismatch`; A5 3.13/3.14 `integrated builder hash mismatch` plus `unsupported archive source: store.py`, observer anchor `ask`, and runtime/postcommit hash mismatches; native receiver 3.13/3.14 integrated builder mismatch; staged runtime 33 failed / 220 passed / 10 skipped / 2 errors / 37 subtests; migration remains PARTIAL. Exact logs reviewed and QA finding posted on #2343. Runtime deploy integrity, role-specific tap provenance and JEPA/online-world workflows pass, but this does not compensate for the red staged matrix. Byte-level diagnosis on exact #2343 head: runtime_deploy expects stage SHA256 614cfc... but actual stage_integrated_candidate is 4c7f2c...; stage builder expects recovery builder SHA256 47fa3d... but actual is 1333db...; archive_stream_range still pins store.py 40a387... while actual store.py is c413e..., and source-lifecycle rebinder searches for c413e instead of the old 40a387 preimage; record-only guard expects runtime.py a533... while actual is 08c1ef...; fair-budget overlay pin matches runtime but its old ask() anchor is already replaced by role_end. Exact values posted on #2343 comment 7078775784. C4 receipt, base recovery, audio and native receiver pins do match; avoid churning them. New Boss branch head `70c6a5bf15ab16dcd0caf7088c56584c4c8470cf` is 27 ahead / 0 behind c4eb82; exact-head CI is queued at last poll. Fresh byte readback still finds mismatches: runtime_deploy expects stage `3b4d8899…`, actual stage builder `53d8f5cb…`; stage expects recovery21 `4e20a52a…`, actual recovery builder `7efdcb5a…`; lifecycle store pin `3f5a5dd3…` vs actual store `c413e135…`, archive stream still `40a387e2…`; record-only Runtime pin `a5336607…` vs actual `08c1ef96…`; observer Runtime pin `9bb9ddc0…` vs actual `08c1ef96…` and old `ask()` anchor remains absent. The recovery12 blob pin `74901948…` now matches; C4/audio/native receiver pins also match. Prior head 71fd9e had staged/owner-read/A5/Lab-Age/migration failures; do not project those conclusions onto new head until its CI completes. Update for current Boss head 70c6a5: two-checkout migration run 45019915717 completed FAIL in both previous/current phone-release cases. Both source/runtime checkouts fast-forwarded to 70c6a5, but the one-shot helper returned last_result=PARTIAL, runtime=ERROR, last_error=UPDATE; exact assertion at test_two_checkout_migration_20261116.py:236 expected UPDATED after recoverable PARTIAL. Other exact-head workflows remained queued at last poll. Latest Boss branch head `023e56d166ab128f1038033067db681903757bcb` is 29 ahead / 0 behind c4eb82. Corrected recovery12 blob pin now matches (`bca4152c…`); source-lifecycle Store and fair-observer Runtime pins now match actual store/runtime bytes. Remaining exact readback mismatches: runtime_deploy STAGER `3b4d…` vs actual stage `53d8…`; stage BUILDER `4e20…` vs actual recovery21 `7efd…`; archive stream STORE pin `40a3…` vs actual store `c413…` while lifecycle rebinder searches `c413…` instead of the archive source's old preimage; record-only guard runtime `a533…` vs actual `08c1…`; fair-observer old ask anchor still absent because runtime already has role_end. All 13 substantive exact-head workflows queued at last poll. Previous 70c6a5 migration run failed PARTIAL/runtime ERROR; that is historical, not current-head CI.; 2026-11-22T17:51:17.837Z: c4eb82 installed, 53/53 exact SHA checks SUCCESS; last stored turn 57.739s/41.627s/38.945s, 751 prompt, 2 generated; B1/B2 TIME_BUDGET; correctness UNKNOWN.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -45,10 +45,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "ANDROID_DEVICE exact code-install receipt + CI; restart/rollback still NOT_DEVICE_VERIFIED",
-      "next_step": "c4eb82 is now confirmed installed through the existing updater; do not send another UPDATE_REQUEST or manual Termux command. Next, after a stable integrated candidate, obtain explicit authorization for a bounded managed-session restart/process-death/rollback acceptance without touching models, SQLite or chats.",
+      "proof_environment": "ANDROID_DEVICE installed c4eb82; exact SHA CI 53/53; crash/reboot rollback and product acceptance remain open",
+      "next_step": "No user update action: c4eb82 is installed and updater/runtime/dashboard are UP_TO_DATE. Any next release still requires exact post-merge CI and separate install receipt; preserve models, weights and SQLite.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T11:28:06.923Z",
+      "last_checkpoint": "2026-11-22T17:51:17.837Z",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -66,7 +66,7 @@
           "redmi": "NO_LIVE_RECEIPT; issues #351–354 unanswered; installed SHA unknown"
         }
       },
-      "proof": "Fresh PIPELINE_STATUS #550 confirms exact installed SHA c4eb82deec915f65894c20d6ebbaf0ebf58fa335, auto-update enabled, runtime/dashboard UP_TO_DATE, last_error NONE. HEALTH #549 reports 1,293 MiB MemAvailable and 1,537 MiB free disk. DIAGNOSTICS #551 reports service/runtime/dashboard RUNNING but last session exit UNVERIFIED. No process-death, reboot, dashboard rollback or runtime-only rollback receipt exists."
+      "proof": "Fresh PIPELINE_STATUS #550 confirms exact installed SHA c4eb82deec915f65894c20d6ebbaf0ebf58fa335, auto-update enabled, runtime/dashboard UP_TO_DATE, last_error NONE. HEALTH #549 reports 1,293 MiB MemAvailable and 1,537 MiB free disk. DIAGNOSTICS #551 reports service/runtime/dashboard RUNNING but last session exit UNVERIFIED. No process-death, reboot, dashboard rollback or runtime-only rollback receipt exists.; 2026-11-22T17:51:17.837Z: authenticated receipt confirms c4eb82 installed, auto-update enabled, runtime/dashboard UP_TO_DATE, last_error NONE."
     },
     {
       "id": "V14-003",
@@ -78,10 +78,10 @@
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
       "proof_environment": "CI synthetic + Android ARM64 cross-compile only; no Redmi native receiver proof",
-      "next_step": "Core: add a dedicated local :callosum native-probe handler bound to trusted last-source tap and exact installed model manifests, with bounded deadline/cancellation and a separate local one-shot approval. Add real operator-dispatch end-to-end and no-local-approval negative tests. Only after exact CI and installed release may a separate user decision authorize one probe; production B3 remains OFF until held-out utility/parity/zero/shuffle/OOD controls pass.",
+      "next_step": "Research/Perception: correct #2346 paired-capture assertion mismatch and rerun exact paired, staged/integrated, Lab-Age and migration matrix; production B3 remains OFF/SYMBOLIC pending real paired taps, source-disjoint labels and receiver utility.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T11:28:06.923Z",
-      "proof": "Core #2323 remains diagnostic-only and production B3 OFF/SYMBOLIC. PR #2332's remote owner-read allowlist checks are not a runnable native probe: independent exact-source readback at candidate 198a490e confirms operator.py dispatches to callosum.operator_command, which still rejects native-probe; no local source-bound tap/model consumer or distinct local one-shot approval exists. Boss and QA recorded the blocker on #2332. No CHAT_OPERATOR or probe was sent.",
+      "last_checkpoint": "2026-11-22T17:51:17.837Z",
+      "proof": "Core #2323 remains diagnostic-only and production B3 OFF/SYMBOLIC. PR #2332's remote owner-read allowlist checks are not a runnable native probe: independent exact-source readback at candidate 198a490e confirms operator.py dispatches to callosum.operator_command, which still rejects native-probe; no local source-bound tap/model consumer or distinct local one-shot approval exists. Boss and QA recorded the blocker on #2332. No CHAT_OPERATOR or probe was sent.; 2026-11-22T17:51:17.837Z: #2346 head d2c459 has paired-capture 1/54 failure (claim wording assertion); no trained latent or Redmi proof.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -784,33 +784,50 @@
     }
   ],
   "latest_checkpoint": {
-    "timestamp": "2026-11-22T10:00:40.871Z",
-    "boss_branch": "boss/v14-run12-whole-system-handoff-20261122",
-    "boss_head": "b3b92f41772573732b2cba71f7ad6bf34dc8e521",
-    "release_development_branch": "gpt6/v13-private-remote-bridge-20261111",
-    "release_development_head": "b3b92f41772573732b2cba71f7ad6bf34dc8e521",
-    "release_status": "MERGED_INTEGRATION_EXACT_PUSH_CI_GREEN_DEVICE_PENDING",
-    "last_accepted_code_release": "283ac1c9b38d38c68030391710df852a3c38fdfc",
-    "redmi_status": "INSTALLED_283AC1_ONLY; B3B92_CI_WAIT; NATIVE_QUALITY_UNVERIFIED",
-    "private_owner_read_issue": 520,
-    "private_owner_read_authenticated_reply": true,
-    "private_receipt_installed_sha": "283ac1c9b38d38c68030391710df852a3c38fdfc",
-    "private_receipt_auto_update": true,
-    "private_receipt_predates_merge": true,
-    "local_full_checkout": "BLOCKED_NO_LOCAL_AII_CHECKOUT_OR_NETWORK",
-    "user_action_required": false,
-    "post_merge_push_ci": "b3b92: 40/40 check-runs SUCCESS; 29/29 workflow runs SUCCESS",
-    "candidate_ci": {
-      "success": 40,
-      "failure": 0,
-      "pending": 0,
-      "workflow_runs_success": 29
+    "timestamp": "2026-11-22T17:51:17.837Z",
+    "release_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
+    "exact_sha_ci": "53/53 SUCCESS",
+    "device": "AUTHENTICATED_INSTALLED; auto-update enabled; runtime/dashboard UP_TO_DATE; last_error NONE",
+    "last_turn": {
+      "status": "FINAL",
+      "duration_s": 57.73882742600108,
+      "ttft_s": 41.626904203003505,
+      "prefill_s": 38.945270141004585,
+      "prompt_tokens": 751,
+      "generated_tokens": 2,
+      "correctness": "UNKNOWN"
     },
-    "canonical_inventory_headings": 1255,
-    "private_receipt_pipeline": "CI_WAIT_283AC1; UPDATE_REQUEST_519_QUEUED",
-    "next_action": "Wait for the already queued #519 update and authenticated PIPELINE_STATUS; repair all six #2331 source pins bottom-up and rerun the exact matrix; then rebase paired native taps and signed audio consumer onto b3b92.",
-    "documentation_pr": 2333,
-    "documentation_branch": "boss/v14-run12-whole-system-handoff-20261122"
+    "body_probes": {
+      "B1_DETAIL": "TIME_BUDGET 53.2s",
+      "B2_GIST": "TIME_BUDGET 54.2s",
+      "native_probe": "SMOKE_PARTIAL",
+      "C3_probe": "3.1s"
+    },
+    "native_process_sample": "4 entries; 0.3 MiB PSS / 2.6 MiB RSS instantaneous only",
+    "age": {
+      "official": 0,
+      "requested_lab": 10,
+      "effective_implemented": 5,
+      "physical_feature_execution": false,
+      "learning_commit_authority": "REQUIRES_SEPARATE_SHADOW"
+    },
+    "prs": {
+      "2343": {
+        "head": "62fb2194313cc9d308d4b6a801a9a9cc71362dd2",
+        "status": "DRAFT; 28 exact-head checks queued at last poll"
+      },
+      "2346": {
+        "head": "d2c459288c99a5b4e4fa43fce32bd028c142e0c3",
+        "status": "DRAFT; paired-capture 1 failure / 53 pass; other matrix queued"
+      },
+      "2364": {
+        "head": "73b30a0a04eef676afc0f5b843aaeb98fe0470ea",
+        "status": "DRAFT; 12 checks queued at last poll"
+      }
+    },
+    "local_full_suite": "BLOCKED_NO_CHECKOUT_AND_GITHUB_DNS",
+    "redmi_functional_acceptance": "OPEN_P0_1904",
+    "user_action_required": false
   },
   "capability_matrix": [
     {
