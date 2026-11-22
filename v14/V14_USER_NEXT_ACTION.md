@@ -1,3 +1,15 @@
+# Boss safety review — Android companion stop durability (2026-11-22 06:58Z)
+
+**No user action is needed.** Do not install an APK or enable Android control from this review.
+
+- QA companion PR #2286 current head: `0639c4e4a5b1613445ba62ed4d39188fb6f60b56`; all exact-head workflows are queued. Earlier CI does not transfer to this head.
+- Boss review comment #7075643215 identified that the shared stop/dispatch lock is only process-local and the Stop flag is still written with asynchronous `SharedPreferences.apply()`. Require durable checked persistence and a process-recreation test before considering the stop switch complete. This is an inspected code-level risk, not a measured Android failure.
+- #2286 remains a stacked draft on #2273/#2271; reconcile the complete parent stack onto current release. The companion still implements only `launch_app`; UI observation/actions and microphone capture are not implemented. No APK install or Redmi validation.
+
+**Next:** finish #2314's native receiver workflow, then continue the B3/JEPA stacks. QA/Core must fix the companion stop durability issue before its permission contract can be accepted. No user action is required.
+
+---
+
 # Boss integration checkpoint — 2026-11-22 06:54Z
 
 **No user action is needed.** Do not run a Termux command, request an update, change models/weights/permissions, or enable microphone capture on the basis of this checkpoint.
