@@ -255,39 +255,72 @@ class AndroidCompanionController:
         return dumps(self.transport.pending())
 
     def history(self, limit=20):
-        """Read-only current-session C5 intent/outcome journal; never exposes package text."""
+        """Read-only current-session C5 journal with exact event/source joins."""
         if type(limit) is not int or isinstance(limit, bool) or not 1 <= limit <= 50:
             raise ValueError("history limit must be an integer from 1 to 50")
         session = self.runtime.session
         if not session:
             return dumps({"status": "OK", "session_scoped": True, "count": 0, "actions": []})
         intent_rows = self.runtime.store.rows(
-            "SELECT p.payload,p.created FROM packets p JOIN events e ON e.id=p.event_id "
+            "SELECT p.payload,p.created,p.event_id AS packet_event_id,"
+            "e.brain_generation_id AS event_generation_id,e.packet AS event_packet "
+            "FROM packets p JOIN events e ON e.id=p.event_id "
             "WHERE p.kind='ActionIntent' AND e.session_id=? ORDER BY p.rowid DESC LIMIT ?",
             (session, limit),
         )
         outcome_rows = self.runtime.store.rows(
-            "SELECT p.payload,p.created FROM packets p JOIN events e ON e.id=p.event_id "
+            "SELECT p.payload,p.created,p.event_id AS packet_event_id,"
+            "e.brain_generation_id AS event_generation_id,e.packet AS event_packet "
+            "FROM packets p JOIN events e ON e.id=p.event_id "
             "WHERE p.kind='ActionOutcome' AND e.session_id=? ORDER BY p.rowid DESC LIMIT ?",
             (session, limit * 4),
         )
         actions = {}
+        bindings = {}
         for row in intent_rows:
-            value = json.loads(row["payload"])
+            try:
+                value = json.loads(row["payload"])
+                event = json.loads(row["event_packet"])
+            except (TypeError, ValueError):
+                continue
             if value.get("producer_component") != "C5_ANDROID_COMPANION":
                 continue
             action_id = value.get("action_id")
-            if type(action_id) is not str:
+            if (type(action_id) is not str or len(action_id) != 32
+                    or any(ch not in "0123456789abcdef" for ch in action_id)):
+                continue
+            event_id = row["packet_event_id"]
+            generation_id = row["event_generation_id"]
+            source_ref = event.get("source_ref")
+            provenance = value.get("provenance")
+            if (type(event_id) is not str or type(generation_id) is not str
+                    or value.get("event_id") != event_id
+                    or value.get("brain_generation_id") != generation_id
+                    or event.get("event_id") != event_id
+                    or event.get("brain_generation_id") != generation_id
+                    or not isinstance(source_ref, dict)
+                    or not isinstance(source_ref.get("source_id"), str)
+                    or provenance != [source_ref]
+                    or value.get("action_type") != "launch_app"
+                    or value.get("permission") != "OPERATOR_TTY_AND_ANDROID_COMPANION_UI"
+                    or action_id in actions):
                 continue
             try:
                 action_state = self.broker.action_state(action_id)
             except Exception:
                 action_state = None
+            bindings[action_id] = {
+                "event_id": event_id,
+                "brain_generation_id": generation_id,
+                "source_ref": source_ref,
+                "provenance": provenance,
+                "action_type": value["action_type"],
+            }
             actions[action_id] = {
                 "action_id": action_id,
-                "event_id": value.get("event_id"),
-                "action_type": value.get("action_type"),
-                "permission": value.get("permission"),
+                "event_id": event_id,
+                "action_type": value["action_type"],
+                "permission": value["permission"],
                 "action_state": action_state or "UNKNOWN",
                 "outcome_status": None,
                 "observed": False,
@@ -296,33 +329,54 @@ class AndroidCompanionController:
                 "world_learning_eligible": False,
                 "created": row["created"],
             }
+        allowed_statuses = {
+            "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
+            "COMPANION_USER_DENIED",
+            "COMPANION_DISPATCH_FAILED",
+            "COMPANION_OUTCOME_UNKNOWN",
+        }
         for row in outcome_rows:
-            value = json.loads(row["payload"])
+            try:
+                value = json.loads(row["payload"])
+                event = json.loads(row["event_packet"])
+            except (TypeError, ValueError):
+                continue
             actual = value.get("actual")
             if (value.get("producer_component") != "C5_ANDROID_COMPANION"
                     or not isinstance(actual, dict)
-                    or actual.get("outcome_kind") != "ANDROID_COMPANION_RECEIPT"):
+                    or actual.get("outcome_kind") != "ANDROID_COMPANION_RECEIPT"
+                    or actual.get("observed") is not False
+                    or actual.get("evidence_level") != "COMPANION_RECEIPT_ONLY"
+                    or actual.get("t8_authoritative") is not False
+                    or actual.get("world_learning_eligible") is not False
+                    or actual.get("trusted_transition_eligible") is not False
+                    or value.get("status") not in allowed_statuses
+                    or type(value.get("action_id")) is not str):
                 continue
-            action_id = value.get("action_id")
-            if type(action_id) is not str:
-                continue
+            action_id = value["action_id"]
             entry = actions.get(action_id)
-            if entry is None:
-                entry = {
-                    "action_id": action_id,
-                    "event_id": value.get("event_id"),
-                    "action_type": actual.get("capability"),
-                    "permission": "UNKNOWN",
-                    "action_state": "RECEIPT_RECORDED",
-                    "created": row["created"],
-                }
-                actions[action_id] = entry
+            binding = bindings.get(action_id)
+            if entry is None or binding is None:
+                continue
+            event_id = row["packet_event_id"]
+            generation_id = row["event_generation_id"]
+            if (value.get("event_id") != event_id
+                    or value.get("brain_generation_id") != generation_id
+                    or event.get("event_id") != event_id
+                    or event.get("brain_generation_id") != generation_id
+                    or event_id != binding["event_id"]
+                    or generation_id != binding["brain_generation_id"]
+                    or event.get("source_ref") != binding["source_ref"]
+                    or value.get("provenance") != binding["provenance"]
+                    or value.get("provenance") != [event.get("source_ref")]
+                    or actual.get("capability") != binding["action_type"]):
+                continue
             entry.update(
-                outcome_status=value.get("status"),
-                observed=actual.get("observed") is True,
-                evidence_level=actual.get("evidence_level", "UNKNOWN"),
-                t8_authoritative=actual.get("t8_authoritative") is True,
-                world_learning_eligible=actual.get("world_learning_eligible") is True,
+                outcome_status=value["status"],
+                observed=False,
+                evidence_level="COMPANION_RECEIPT_ONLY",
+                t8_authoritative=False,
+                world_learning_eligible=False,
             )
         ordered = sorted(actions.values(), key=lambda item: item.get("created", 0), reverse=True)[:limit]
         return dumps({

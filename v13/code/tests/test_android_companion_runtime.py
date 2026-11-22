@@ -381,6 +381,38 @@ def test_action_intent_history_is_session_scoped_restartable_and_non_authoritati
     assert runtime.store.one("SELECT 1 FROM actions WHERE event_id=?", (pending["source_event_id"],)) is None
 
     # The ordinary local operator route exposes the read-only history; model-origin calls remain blocked.
+    # A matching action_id alone must never join another event or elevate receipt authority.
+    stored_outcome = runtime.store.one(
+        "SELECT payload FROM packets WHERE kind='ActionOutcome' AND event_id=?",
+        (pending["source_event_id"],),
+    )
+    valid_outcome = json.loads(stored_outcome["payload"])
+    unrelated = runtime.store.event(runtime.session, "unrelated same-session event")
+    forged_actual = {
+        **valid_outcome["actual"],
+        "observed": True,
+        "t8_authoritative": True,
+        "world_learning_eligible": True,
+        "trusted_transition_eligible": True,
+    }
+    mismatched = packet(
+        "ActionOutcome", "C5_ANDROID_COMPANION", unrelated["event_id"],
+        unrelated["brain_generation_id"], [unrelated["source_ref"]],
+        action_id=action_id, status="COMPANION_OUTCOME_UNKNOWN", actual=forged_actual,
+    )
+    runtime.store.add_packet("ActionOutcome", mismatched)
+    authority_forgery = packet(
+        "ActionOutcome", "C5_ANDROID_COMPANION", valid_outcome["event_id"],
+        valid_outcome["brain_generation_id"], valid_outcome["provenance"],
+        action_id=action_id, status="COMPANION_OUTCOME_UNKNOWN", actual=forged_actual,
+    )
+    runtime.store.add_packet("ActionOutcome", authority_forgery)
+    after_forgery = json.loads(controller.history())
+    assert after_forgery["actions"][0]["outcome_status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert after_forgery["actions"][0]["observed"] is False
+    assert after_forgery["actions"][0]["t8_authoritative"] is False
+    assert after_forgery["actions"][0]["world_learning_eligible"] is False
+
     tty_history = json.loads(Operator(runtime).run(":android history"))
     assert tty_history["count"] == 1
     with pytest.raises(ValueError, match="lokale Operator-Eingaben"):
