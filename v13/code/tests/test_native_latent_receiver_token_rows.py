@@ -85,7 +85,7 @@ def _extract(home, model, binary, token_ids=(2, 7)):
     )
 
 
-def test_extract_token_rows_is_model_and_tokenizer_bound_and_returns_only_requested_rows(tmp_path):
+def test_extract_token_rows_verifies_model_bytes_and_preserves_revision_metadata(tmp_path):
     home, model, binary = _fixture(tmp_path)
     result = _extract(home, model, binary)
     assert result["schema"] == TOKEN_ROW_SCHEMA
@@ -93,6 +93,7 @@ def test_extract_token_rows_is_model_and_tokenizer_bound_and_returns_only_reques
     assert result["source"] == "RECEIVER_INPUT_TOKEN_EMBEDDING_TABLE"
     assert result["model_revision"] == "receiver-revision-1"
     assert result["tokenizer_revision"] == "receiver-tokenizer-1"
+    assert result["revision_binding_source"] == "caller_supplied_unverified"
     assert result["model_sha256"] == hashlib.sha256(model.read_bytes()).hexdigest()
     assert result["requested_token_ids"] == [2, 7]
     assert [row["token_id"] for row in result["rows"]] == [2, 7]
