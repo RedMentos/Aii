@@ -256,6 +256,45 @@ def test_revoke_clears_pending_local_approval_without_probe(tmp_path):
         runtime.close()
 
 
+
+def test_native_receiver_boundary_marks_approval_used_and_blocks_direct_replay(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    try:
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        approval.consume(runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"])
+        result = approval.require_consumed(runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"])
+        assert set(result) == {"B2_GIST", "C3_LANGUAGE"}
+        state, _ = runtime.store.state(approval.KEY, None)
+        assert state["status"] == "USED"
+        with pytest.raises(PermissionError, match="consumed local TTY approval"):
+            approval.require_consumed(runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"])
+    finally:
+        runtime.close()
+
+
+def test_native_receiver_boundary_rejects_expired_consumed_approval(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    try:
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE", now=1000)
+        approval.consume(runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], now=1000)
+        with pytest.raises(PermissionError, match="expired"):
+            approval.require_consumed(
+                runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"],
+                now=1000 + approval.TTL_SECONDS + 1,
+            )
+    finally:
+        runtime.close()
+
+
+def test_operator_help_advertises_one_shot_native_probe_flow(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    try:
+        help_text = Operator(runtime).run(":help")
+        for command in ("arm-probe", "native-probe", "revoke-probe"):
+            assert command in help_text
+    finally:
+        runtime.close()
+
 def test_native_probe_deadline_is_hard_capped_at_120_seconds(tmp_path, monkeypatch):
     runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
     runtime.cfg["observer_seconds"] = 99999

@@ -250,27 +250,33 @@ def revoke(runtime, *, now=None):
     runtime.require_idle()
     clock = _clock(now)
     record, version = runtime.store.state(KEY, None)
-    if not isinstance(record, dict) or record.get("status") != "PENDING":
+    if (not isinstance(record, dict)
+            or record.get("status") not in {"PENDING", "CONSUMED"}):
         return {"status": "NO_PENDING_APPROVAL"}
     revoked = dict(record)
     revoked.update({"status": "REVOKED", "revoked_at": clock})
     runtime.store.set_state(KEY, revoked, expected=version)
     return {"status": "REVOKED", "approval_id": str(record.get("nonce", ""))[:12]}
 
-def require_consumed(runtime, sender_role, receiver_role, event, source_ref):
-    """Require the one-shot local TTY approval at the actual native receiver boundary.
+def require_consumed(runtime, sender_role, receiver_role, event, source_ref, *, now=None):
+    """Atomically spend a consumed local approval at the native receiver boundary.
 
-    Consumption may run in the consented private CHAT_OPERATOR service, which has
-    no interactive TTY. Authority comes from the previously persisted local arm,
-    not from the caller's origin string or remote --confirm flag.
+    The TTY arm is performed locally. A consented typed caller may consume the
+    pending record, but this boundary transitions CONSUMED -> USED before native
+    work so direct/replayed Python calls cannot reuse the one-shot capability.
     """
     _roles(sender_role, receiver_role)
-    record, _ = runtime.store.state(KEY, None)
+    record, version = runtime.store.state(KEY, None)
     if (not isinstance(record, dict) or record.get("schema") != SCHEMA
             or record.get("status") != "CONSUMED"):
         raise PermissionError("native receiver requires a consumed local TTY approval")
     if record.get("runtime_nonce") != _runtime_nonce(runtime):
         raise PermissionError("native probe approval expired across Runtime restart")
+    consumed_at = record.get("consumed_at")
+    clock = _clock(now)
+    if (isinstance(consumed_at, bool) or not isinstance(consumed_at, (int, float))
+            or not math.isfinite(consumed_at) or clock >= float(consumed_at) + TTL_SECONDS):
+        raise PermissionError("native probe local approval expired before native receiver use")
     current_event, current_ref = _current_event(runtime)
     if (not isinstance(event, dict)
             or event.get("event_id") != current_event.get("event_id")
@@ -307,4 +313,12 @@ def require_consumed(runtime, sender_role, receiver_role, event, source_ref):
                 or manifest_digest != digest):
             raise PermissionError("native probe model binding changed after local approval")
         result[role] = dict(binding)
+    runtime.require_idle()
+    verified_event, verified_ref = _current_event(runtime)
+    if (verified_event.get("event_id") != current_event.get("event_id")
+            or verified_ref != current_ref):
+        raise PermissionError("native probe source/session/event changed during receiver approval")
+    used = dict(record)
+    used.update({"status": "USED", "used_at": clock})
+    runtime.store.set_state(KEY, used, expected=version)
     return result
