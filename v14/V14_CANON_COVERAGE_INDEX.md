@@ -1896,3 +1896,58 @@ Primary papers: https://arxiv.org/abs/2608.20617, https://arxiv.org/abs/2609.322
 ### Final exact-head and research poll — 2026-11-21T22:29:39.614Z
 
 Boss pre-final-handoff head `ce7ca26a08e9bf0d8dea79835035a4281b53bba1`: 16 checks, 15 queued and 1 expected additive-validator skip. The branch has 62 changed paths, including the reviewed research ledger R-047–R-051 and Perception handoff. Research PR #2260 was closed draft, not merged; its reviewed research content is integrated on this branch. No new-head PASS or Android proof is claimed.
+
+
+## Boss whole-system evidence refresh — 2026-11-22 00:52 UTC
+
+This refresh supersedes only older status claims; it does not remove historical Canon headings or narrow the accepted architecture.
+
+### Candidate and root cause
+
+- Current Boss integration candidate: [PR #2288](https://github.com/RedMentos/Aii/pull/2288), head `679f3667c5c98b867f85ae960824489da0d8fd3a`, base `bdcad466ffea75a2b41f7d23be168f53c7197d20`, DRAFT / NOT_RELEASED. The branch is 168 commits ahead / 0 behind and changes 64 files.
+- The previous #2287 exact-head failure was a real consumer-chain defect: after the base composer generated Context-source recall pins, later staged overlays changed `v13/store.py`, leaving the recall Store pin stale. The current recovery composer captures exact base Store/archive-stream hashes, rejects unknown pre-overlay pins, rebinds only those two known pins after all overlays, and verifies the final hashes. The recovery-wrapper Git blob SHA-1, integrated stage SHA-256 and runtime deployer `STAGER_SHA256` were refreshed and read back exactly.
+- The first #2288 attempt `021b1d3c` still checked the old pin against the final Store before reaching the rebind and therefore failed. The current `679f3667` changes that validation to compare against the captured base-composer pin; this latest head still needs full exact CI completion.
+
+### Exact current-head evidence
+
+At the latest poll for #2288 head `679f3667`: 8 workflows PASS, 3 IN_PROGRESS, 1 expected SKIPPED (the strict additive-only validator is not applicable to the broad integration), 1 release-queue workflow CANCELLED. PASS includes runtime-deploy integrity, combined JEPA integration, Lab-Age/WebView truth, controller record-only guard, A5 UI lease, privacy scan and bridge/push tests. Old-phone-to-new-runtime migration's job passed while its workflow was still finishing. Private owner-read, staged/integrated regression and Python 3.13/3.14 audio/arithmetic were still in progress. This is CI/synthetic evidence only; no local Aii checkout exists, and no Android/Redmi result is inferred.
+
+### Current whole-system proof matrix
+
+| Canon family | Code / consumer state | Current test evidence | Native Android | Acceptance |
+| --- | --- | --- | --- | --- |
+| A0–A5 perception/attention | Caller PCM16 and synthetic UI lease; source recall and staged Store paths partially composed | Current A5 UI lease PASS; staged/integrated pending | No microphone or official UI provider | Partial / not accepted |
+| B1_DETAIL / B2_GIST | Distinct role path and staged fair per-role budget; source-bound offers reach synthetic C4 path | Core fair-budget workflow exists; current staged/integrated pending; #2280 receipt needs rebase | No useful native offers/re-entry receipt | Not accepted |
+| B3 / Enlightened Space | Production path remains symbolic; #2266 is diagnostic input-embedding probe only | Isolated/native API research, no trained receiver utility | No model/receiver execution on Redmi | OFF / not accepted |
+| B4 / C4 workspace | Source-span/coalition selection partially wired | Synthetic C4→C3 prompt tests; #2280 receipt is on stale base | Unverified | Not accepted |
+| C/JEF/C2/C3 | Runtime and exact-arithmetic candidate, staged output path | Runtime-deploy PASS; audio/arithmetic and integrated tests pending | Last phone 2+2 result remains wrong; no new receipt | Not accepted |
+| World/Self/Memory | Persistent Store and shadow consumers; source-recall pins now rebound after overlays in #2288 | JEPA integration workflow PASS; old-session retention remains a separate gate | Unverified | Partial / no weight acceptance |
+| JEPA / numeric weights | Shadow/experimental only; no accepted current-head A→B→A checkpoint | Combined JEPA integration PASS does not accept #2247 per-session retention | No native B1/B2/C3 parameter diff | Gates OFF |
+| Sleep/Dream/Replay | Shadow code only | Synthetic controls only | Unverified | Promotion OFF |
+| VOICE_AUDIO | Caller-supplied PCM16 lease and explicit Termux TTS fallback | Audio/arithmetic current-head jobs pending | No AudioRecord/microphone, ASR, decoder/vocoder, full duplex | Partial only |
+| ANDROID_BACKGROUND_CONTROL | launch_app companion prototype, default-OFF | SDK and duplicate-approval issues remain open | No authenticated OS executor | OFF |
+| ANDROID_UI_CONTROL | Synthetic A5 metadata lease | A5 UI lease CI PASS | No AccessibilityService/MediaProjection executor | OFF |
+| MULTIMODAL_LEARNING | Audio/UI metadata and shadow pathways | Synthetic only | Unverified | Not accepted |
+| SELF_OPTIMIZATION / cross-organ weights | WorldJEPA and receiver experiments remain gated | No accepted optimizer/parameter/retention proof | Unverified | OFF |
+| Age / X10 rights | #2281 candidate separates rights from resource budgets | 5/5 on old #2258 base only; rebase required | Unverified | Official Age 0; not accepted |
+| Context OS / Memorilla | Context OS partial; Memorilla additive draft | Partial context tests | Unverified | No production overflow consumer |
+| Distinct sparse MoE bodies | Not implemented as two proven sparse MoE consumers | No acceptance test | Unverified | Not accepted |
+| OS sandbox / adaptive behavior judge | Prototypes only; judge not an OS permission authority | Partial synthetic | Unverified | Not integrated |
+| Remote maintenance / update / rollback | Bridge, staged updater and rollback candidates | Migration job and deploy integrity PASS on current candidate; rollback #2283 old-base only | No authenticated owner receipt | No new deployment |
+
+### Rebase queue and hard blockers
+
+- #2280: preserve `c4_offer_context_ready`, source-bound OfferPacket consumption and tampered-packet negative control; rebase off closed #2278/#2279 onto #2288.
+- #2281 / #2283: old-base 5/5 green results are not current-base acceptance; rebase Age/X10 rights and runtime-only rollback, then rerun.
+- #2282: shared-blob read/revocation race fix is not in #2288; old branch failed downstream source pins. Rebase and prove producer/revoker serialization with a threaded control.
+- #2285: audio lease/date ambiguity QA passed on old base only; rebase and rerun.
+- #2275: speaker evidence still has a 920 ms vs 800 ms expectation failure and stale `audio_voice_cues` pin; rebase and rerun both Python versions and staged/integrated.
+- #2247: no stable per-session retention acceptance; no numeric production weight updates.
+- #2266: no real GGUF receiver, trained projector or semantic latent coupling.
+- #2271/#2273: Android companion remains default-OFF; no background/UI executor or device permission proof.
+
+### Device and user-data boundary
+
+Private read-only PIPELINE_STATUS request RedMentos/Aiiii **#453** had no authenticated reply at 00:49:49 UTC. Installed SHA and updater consent remain UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, shell, model/weight/Age/permission change or device mutation occurred. Local full Aii tests are BLOCKED because the execution container has no repository checkout. Therefore `REDMI_UNVERIFIED`, `NOT_RELEASED`.
+
+The 1,255-heading historical Canon inventory remains preserved. Semantic clause→implementation→consumer→test→environment→rollback mapping is still incomplete. No synthetic harness, isolated Linux result or GitHub CI run is relabelled as native Redmi learning, Android control, or AGI acceptance.
