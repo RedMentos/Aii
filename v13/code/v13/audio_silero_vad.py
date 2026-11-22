@@ -13,6 +13,8 @@ import re
 import threading
 from pathlib import Path
 
+from .audio_pcm_memory import pcm16_byte_view
+
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _MAX_MODEL_BYTES = 10 * 1024 * 1024
 _MAX_WINDOW_BYTES = 16000 * 2
@@ -142,6 +144,12 @@ class SileroVADStream:
 
     def _reset_locked(self, *, clear_stream: bool):
         np = self._np
+        # Revoke retained PCM context before dropping references to old arrays.
+        for buffer in (getattr(self, "_state", None),
+                       getattr(self, "_context", None),
+                       getattr(self, "_pending", None)):
+            if hasattr(buffer, "fill"):
+                buffer.fill(0)
         self._state = np.zeros(self.STATE_SHAPE, dtype=np.float32)
         self._context = np.zeros((1, self.CONTEXT_SAMPLES), dtype=np.float32)
         self._pending = np.zeros((0,), dtype=np.float32)
@@ -164,29 +172,42 @@ class SileroVADStream:
         np = self._np
         model_input = np.concatenate((self._context[0], frame)).astype(np.float32, copy=False)
         model_input = model_input.reshape(1, self.CONTEXT_SAMPLES + self.FRAME_SAMPLES)
-        outputs = self._session.run(None, {
-            "input": model_input,
-            "state": self._state.copy(),
-            "sr": np.asarray(16000, dtype=np.int64),
-        })
-        if not isinstance(outputs, (tuple, list)) or len(outputs) != 2:
-            raise RuntimeError("Silero ONNX session returned an invalid output tuple")
-        scores = np.asarray(outputs[0], dtype=np.float32).reshape(-1)
-        state = np.asarray(outputs[1], dtype=np.float32)
-        if scores.size != 1 or not np.isfinite(scores[0]) or not 0 <= float(scores[0]) <= 1:
-            raise RuntimeError("Silero ONNX session returned an invalid VAD score")
-        if state.shape != self.STATE_SHAPE or not np.isfinite(state).all():
-            raise RuntimeError("Silero ONNX session returned invalid recurrent state")
-        self._state = state.copy()
-        self._context = model_input[:, -self.CONTEXT_SAMPLES:].copy()
-        return float(scores[0])
+        state_input = self._state.copy()
+        scores = state = None
+        try:
+            outputs = self._session.run(None, {
+                "input": model_input,
+                "state": state_input,
+                "sr": np.asarray(16000, dtype=np.int64),
+            })
+            if not isinstance(outputs, (tuple, list)) or len(outputs) != 2:
+                raise RuntimeError("Silero ONNX session returned an invalid output tuple")
+            scores = np.asarray(outputs[0], dtype=np.float32).reshape(-1)
+            state = np.asarray(outputs[1], dtype=np.float32)
+            if scores.size != 1 or not np.isfinite(scores[0]) or not 0 <= float(scores[0]) <= 1:
+                raise RuntimeError("Silero ONNX session returned an invalid VAD score")
+            if state.shape != self.STATE_SHAPE or not np.isfinite(state).all():
+                raise RuntimeError("Silero ONNX session returned invalid recurrent state")
+            next_state = state.copy()
+            self._state.fill(0)
+            self._state = next_state
+            self._context[...] = model_input[:, -self.CONTEXT_SAMPLES:]
+            return float(scores[0])
+        finally:
+            model_input.fill(0)
+            state_input.fill(0)
+            if scores is not None:
+                scores.fill(0)
+            if state is not None:
+                state.fill(0)
 
-    def push_pcm16(self, pcm: bytes, *, sample_rate: int, stream_id: str,
+    def push_pcm16(self, pcm, *, sample_rate: int, stream_id: str,
                    start_ms: int) -> dict:
-        """Push <=1s of contiguous mono PCM16; retain only an incomplete frame in RAM."""
-        if type(pcm) is not bytes or not pcm or len(pcm) % 2:
+        """Push <=1s of contiguous mono PCM16; clear temporary audio arrays."""
+        view = pcm16_byte_view(pcm)
+        if not view.nbytes:
             raise ValueError("Silero VAD input must be nonempty complete PCM16 bytes")
-        if len(pcm) > _MAX_WINDOW_BYTES:
+        if view.nbytes > _MAX_WINDOW_BYTES:
             raise ValueError("Silero VAD input is limited to one second")
         if type(sample_rate) is not int or sample_rate != 16000:
             raise ValueError("this Silero ONNX adapter requires 16000 Hz mono PCM16")
@@ -196,81 +217,89 @@ class SileroVADStream:
             raise ValueError("start_ms must be a nonnegative integer")
 
         np = self._np
-        samples = np.frombuffer(pcm, dtype="<i2").astype(np.float32) * (1.0 / 32768.0)
-        with self._lock:
-            reset_reason = None
-            if self._stream_id is None:
-                self._stream_id = stream_id
-                self._next_start_ms = float(start_ms)
-                self._pending_start_ms = float(start_ms)
-                reset_reason = "NEW_STREAM"
-            elif stream_id != self._stream_id:
-                self._reset_locked(clear_stream=True)
-                self._stream_id = stream_id
-                self._next_start_ms = float(start_ms)
-                self._pending_start_ms = float(start_ms)
-                reset_reason = "STREAM_CHANGED"
-            elif self._next_start_ms is None or abs(float(start_ms) - self._next_start_ms) > 1.0:
-                self._reset_locked(clear_stream=False)
-                self._stream_id = stream_id
-                self._next_start_ms = float(start_ms)
-                self._pending_start_ms = float(start_ms)
-                reset_reason = "TIME_DISCONTINUITY"
+        samples = np.frombuffer(view, dtype="<i2").astype(np.float32) * (1.0 / 32768.0)
+        combined = None
+        try:
+            with self._lock:
+                reset_reason = None
+                if self._stream_id is None:
+                    self._stream_id = stream_id
+                    self._next_start_ms = float(start_ms)
+                    self._pending_start_ms = float(start_ms)
+                    reset_reason = "NEW_STREAM"
+                elif stream_id != self._stream_id:
+                    self._reset_locked(clear_stream=True)
+                    self._stream_id = stream_id
+                    self._next_start_ms = float(start_ms)
+                    self._pending_start_ms = float(start_ms)
+                    reset_reason = "STREAM_CHANGED"
+                elif self._next_start_ms is None or abs(float(start_ms) - self._next_start_ms) > 1.0:
+                    self._reset_locked(clear_stream=False)
+                    self._stream_id = stream_id
+                    self._next_start_ms = float(start_ms)
+                    self._pending_start_ms = float(start_ms)
+                    reset_reason = "TIME_DISCONTINUITY"
 
-            pending_start = self._pending_start_ms
-            if pending_start is None:
-                pending_start = float(start_ms)
-            combined = np.concatenate((self._pending, samples))
-            frame_count = int(combined.shape[0] // self.FRAME_SAMPLES)
-            scores = []
-            first_frame_start = None
-            try:
-                for index in range(frame_count):
-                    frame = combined[
-                        index * self.FRAME_SAMPLES:(index + 1) * self.FRAME_SAMPLES
-                    ]
-                    score = self._run_frame(frame)
-                    scores.append(score)
-                    if first_frame_start is None:
-                        first_frame_start = pending_start + index * self.FRAME_MS
-                remainder_start = frame_count * self.FRAME_SAMPLES
-                self._pending = combined[remainder_start:].copy()
-                self._pending_start_ms = (
-                    pending_start + frame_count * self.FRAME_MS
-                    if self._pending.shape[0] else None
-                )
-                self._next_start_ms = (
-                    float(start_ms) + samples.shape[0] * 1000.0 / 16000.0
-                )
-            except Exception:
-                self._reset_locked(clear_stream=True)
-                raise
+                pending_start = self._pending_start_ms
+                if pending_start is None:
+                    pending_start = float(start_ms)
+                combined = np.concatenate((self._pending, samples))
+                frame_count = int(combined.shape[0] // self.FRAME_SAMPLES)
+                scores = []
+                first_frame_start = None
+                try:
+                    for index in range(frame_count):
+                        frame = combined[
+                            index * self.FRAME_SAMPLES:(index + 1) * self.FRAME_SAMPLES
+                        ]
+                        score = self._run_frame(frame)
+                        scores.append(score)
+                        if first_frame_start is None:
+                            first_frame_start = pending_start + index * self.FRAME_MS
+                    remainder_start = frame_count * self.FRAME_SAMPLES
+                    next_pending = combined[remainder_start:].copy()
+                    self._pending.fill(0)
+                    self._pending = next_pending
+                    self._pending_start_ms = (
+                        pending_start + frame_count * self.FRAME_MS
+                        if self._pending.shape[0] else None
+                    )
+                    self._next_start_ms = (
+                        float(start_ms) + samples.shape[0] * 1000.0 / 16000.0
+                    )
+                except Exception:
+                    self._reset_locked(clear_stream=True)
+                    raise
 
-            count = len(scores)
-            speech_count = sum(score >= self.threshold for score in scores)
-            speech_fraction = speech_count / count if count else 0.0
-            mean_score = sum(scores) / count if count else 0.0
-            max_score = max(scores) if scores else 0.0
-            last_frame_end = (
-                int(round(first_frame_start + count * self.FRAME_MS))
-                if count and first_frame_start is not None else None
-            )
-            evidence = {
-                "method": "SILERO_VAD_ONNX",
-                "model_revision": self.model_revision,
-                "model_sha256": self.model_sha256,
-                "sample_rate": 16000,
-                "frame_ms": self.FRAME_MS,
-                "frame_count": count,
-                "speech_fraction": round(speech_fraction, 6),
-                "mean_score": round(mean_score, 6),
-                "max_score": round(max_score, 6),
-                "threshold": round(self.threshold, 6),
-                "speech_detected": bool(speech_count > 0),
-                "covered_ms": count * self.FRAME_MS,
-                "pending_samples": int(self._pending.shape[0]),
-                "state_reset_reason": reset_reason,
-                "first_frame_start_ms": int(round(first_frame_start)) if count else None,
-                "last_frame_end_ms": last_frame_end,
-            }
-            return validate_vad_evidence(evidence)
+                count = len(scores)
+                speech_count = sum(score >= self.threshold for score in scores)
+                speech_fraction = speech_count / count if count else 0.0
+                mean_score = sum(scores) / count if count else 0.0
+                max_score = max(scores) if scores else 0.0
+                last_frame_end = (
+                    int(round(first_frame_start + count * self.FRAME_MS))
+                    if count and first_frame_start is not None else None
+                )
+                evidence = {
+                    "method": "SILERO_VAD_ONNX",
+                    "model_revision": self.model_revision,
+                    "model_sha256": self.model_sha256,
+                    "sample_rate": 16000,
+                    "frame_ms": self.FRAME_MS,
+                    "frame_count": count,
+                    "speech_fraction": round(speech_fraction, 6),
+                    "mean_score": round(mean_score, 6),
+                    "max_score": round(max_score, 6),
+                    "threshold": round(self.threshold, 6),
+                    "speech_detected": bool(speech_count > 0),
+                    "covered_ms": count * self.FRAME_MS,
+                    "pending_samples": int(self._pending.shape[0]),
+                    "state_reset_reason": reset_reason,
+                    "first_frame_start_ms": int(round(first_frame_start)) if count else None,
+                    "last_frame_end_ms": last_frame_end,
+                }
+                return validate_vad_evidence(evidence)
+        finally:
+            samples.fill(0)
+            if combined is not None:
+                combined.fill(0)
