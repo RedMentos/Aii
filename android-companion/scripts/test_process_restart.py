@@ -43,15 +43,33 @@ def screen_size() -> tuple[int, int]:
     return int(match.group(1)), int(match.group(2))
 
 
-def hierarchy() -> ET.Element:
+def hierarchy_xml() -> str:
     adb("shell", "uiautomator", "dump", "/sdcard/v14-window.xml", timeout=20)
-    raw = adb("exec-out", "cat", "/sdcard/v14-window.xml", timeout=10)
-    return ET.fromstring(raw)
+    return adb("exec-out", "cat", "/sdcard/v14-window.xml", timeout=10)
+
+
+def hierarchy() -> ET.Element:
+    return ET.fromstring(hierarchy_xml())
 
 
 def visible_text() -> str:
     root = hierarchy()
-    return "\n".join(node.attrib.get("text", "") for node in root.iter("node"))
+    return "\n".join(
+        value for node in root.iter("node")
+        for value in (node.attrib.get("text", ""), node.attrib.get("content-desc", ""))
+        if value
+    )
+
+
+def foreground_diagnostic() -> str:
+    activity = adb("shell", "dumpsys", "activity", "activities", check=False)
+    window = adb("shell", "dumpsys", "window", "windows", check=False)
+    activity_lines = [line.strip() for line in activity.splitlines()
+                      if "mResumedActivity" in line or "topResumedActivity" in line]
+    window_lines = [line.strip() for line in window.splitlines()
+                    if "mCurrentFocus" in line or "mFocusedApp" in line]
+    return "pidof=" + process_id() + "; activity=" + repr(activity_lines[:3]) \
+        + "; window=" + repr(window_lines[:3])
 
 
 def swipe_to_bottom() -> None:
@@ -80,9 +98,21 @@ def wait_for_text(needle: str, timeout: float = 20.0) -> str:
             continue
         if needle in last:
             return last
+        try:
+            adb("shell", "input", "swipe", str(screen_size()[0] // 2),
+                str(int(screen_size()[1] * .86)),
+                str(screen_size()[0] // 2), str(int(screen_size()[1] * .24)), "350")
+        except RuntimeError:
+            pass
         time.sleep(.35)
+    try:
+        xml = hierarchy_xml()[:3000]
+    except Exception as exc:
+        xml = "hierarchy unavailable: " + type(exc).__name__
     raise AssertionError("UI did not show expected state: " + needle
-                         + "; visible labels=" + last[:1200])
+                         + "; visible labels=" + last[:1200]
+                         + "; " + foreground_diagnostic()
+                         + "; hierarchy=" + xml)
 
 
 def tap_button(label: str) -> None:
@@ -95,7 +125,8 @@ def tap_button(label: str) -> None:
             time.sleep(.25)
             continue
         for node in root.iter("node"):
-            if node.attrib.get("text", "").casefold() != label.casefold():
+            node_label = (node.attrib.get("text", "") or node.attrib.get("content-desc", ""))
+            if node_label.casefold() != label.casefold():
                 continue
             bounds = node.attrib.get("bounds", "")
             match = re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", bounds)
@@ -142,7 +173,10 @@ def wait_for_process(absent: bool, timeout: float = 12.0) -> str:
 
 def main() -> None:
     adb("shell", "am", "force-stop", PACKAGE, check=False)
-    adb("shell", "am", "start", "-n", COMPONENT)
+    adb("shell", "wm", "dismiss-keyguard", check=False)
+    adb("shell", "input", "keyevent", "82", check=False)
+    adb("shell", "am", "start", "-W", "-n", COMPONENT)
+    wait_for_process(absent=False)
     wait_for_text(STOPPED_TEXT)
 
     assert persisted_enabled() == "false"
