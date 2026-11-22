@@ -5,6 +5,7 @@ from pathlib import Path
 import sqlite3
 import subprocess
 import tempfile
+import threading
 import time
 import unittest
 from unittest import mock
@@ -283,10 +284,6 @@ class LastTurnTests(unittest.TestCase):
         self.assertNotIn("PRIVATE", json.dumps(result))
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class RunnerCacheDiagnosticsTests(unittest.TestCase):
     def setUp(self):
         temporary = tempfile.TemporaryDirectory()
@@ -296,12 +293,12 @@ class RunnerCacheDiagnosticsTests(unittest.TestCase):
 
     def executable(self, body):
         path = self.root / "llama-server"
-        path.write_text("#!/bin/sh\\n" + body, encoding="utf-8")
+        path.write_text("#!/bin/sh\n" + body, encoding="utf-8")
         path.chmod(0o700)
         return path
 
     def test_server_version_probe_records_revision_but_not_raw_build_output(self):
-        binary = self.executable("printf 'version: 1 (b29c606e)\\n'; printf '/private/build/path\\n'\\n")
+        binary = self.executable("echo 'version: 1 (b29c606e)'; echo '/private/build/path'\n")
         result = runners.LlamaRunner._probe_server_version(binary)
         self.assertEqual(result, {
             "status": "VERIFIED_REVISION_PREFIX",
@@ -311,7 +308,7 @@ class RunnerCacheDiagnosticsTests(unittest.TestCase):
         self.assertNotIn("/private", json.dumps(result))
 
     def test_server_version_probe_caches_by_binary_identity(self):
-        binary = self.executable("printf 'version: 2 (abcdef123456)\\n'\\n")
+        binary = self.executable("echo 'version: 2 (abcdef123456)'\n")
         with mock.patch("v13.runners.subprocess.run", wraps=subprocess.run) as run:
             first = runners.LlamaRunner._probe_server_version(binary)
             second = runners.LlamaRunner._probe_server_version(binary)
@@ -319,7 +316,7 @@ class RunnerCacheDiagnosticsTests(unittest.TestCase):
         self.assertEqual(run.call_count, 1)
 
     def test_server_version_probe_fails_closed_for_timeout_and_unparseable_output(self):
-        binary = self.executable("printf '/private/device/path only\\n'\\n")
+        binary = self.executable("echo '/private/device/path only'\n")
         with mock.patch("v13.runners.subprocess.run", side_effect=subprocess.TimeoutExpired([str(binary), "--version"], 1.5)):
             timed_out = runners.LlamaRunner._probe_server_version(binary)
         self.assertEqual(timed_out, {"status": "TIMEOUT"})
@@ -400,3 +397,7 @@ class RunnerCacheDiagnosticsTests(unittest.TestCase):
         self.assertNotIn("server_revision_prefix", result["runner"])
         self.assertNotIn("prompt_cache_policy", result["runner"])
         self.assertNotIn("/private", json.dumps(result))
+
+
+if __name__ == "__main__":
+    unittest.main()
