@@ -1362,3 +1362,26 @@ The 8db1952 exact-head workflows are `45066934953` (staged/integrated), `4506693
 5. Keep all receiver and learning paths SHADOW-only until real utility, restart, rollback and Android evidence exist.
 
 **User action:** none. The installed release is already up to date; no manual Termux command or model/device action is needed.
+
+
+## JEPA & Memory — Run 18: measured receiver gates on the trained checkpoint (2026-11-22T20:47:42.704Z)
+
+**Code branch:** PR #2372, exact current head `01549f1ff36937758be60b0876066264ebc7eb36`, DRAFT / NOT_RELEASED.
+
+- The prior Run17 code remains: source-bound fail-closed body-state omission audit; diagnostic stays outside the prompt. Prompt wiring uses an explicit test-only accepted utility-gate fixture, while a negative control forces B1 utility rejection and checks that no prediction is injected.
+- New commit `01549f1ff36937758be60b0876066264ebc7eb36` extends the actual temporal training test to evaluate both B1_DETAIL and B2_GIST with `receiver_utility_gate` over the persisted disjoint-holdout metrics. It asserts that each role's readout status agrees with its actual measured gate and that the gate object returned by the readout matches the persisted metric calculation. The action with maximum train-split support is used so a support-threshold failure cannot be confused with utility rejection.
+- This separates three claims: (1) numeric predictor/EMA training and holdout controls; (2) actual learned B1/B2 receiver-gate outcomes, whether accepted or rejected; (3) actual Cognition.offer prompt wiring under a test-only accepted gate. Only (3) is synthetic gate-fixture evidence. No body model weights change.
+
+**CI:** exact 6da129ef workflows `45068109547` optimizer-resume 3.13/3.14, `45068109554` staged/integrated and `45068109526` temporal T8 remain QUEUED. No exact-head workflow run is visible yet for 01549f1; no current-head PASS. Do not claim that the new receiver assertions have executed.
+
+**Local:** CPython 3.13.5 / NumPy 2.3.5 / pytest 9.0.2 are available, but no repository checkout is mounted and GitHub DNS fails. Full local compile/pytest BLOCKED / NOT_RUN.
+
+**Open integration blockers:** QA #2359 memory.py lifecycle pin still needs rebind to SHA-256 `33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701`; the inherited JEPA and QA pins remain stale. Boss #2370 audio pin is corrected at branch head 7fc6d7e, but its 18-workflow matrix remains queued. No rebase until both dependencies are green.
+
+**SleepRuntime:** the predecessor staged test showed temporal component `ValueError`; the trace now records its message, but the exact current staged workflow has not run. Root cause remains OPEN.
+
+**Device:** private V13OBS #115 (20:24:26Z) reports installed base aed1d2b, auto-update enabled, Runtime/Dashboard UP_TO_DATE; B1 4/4 and B2 2/2 native attempts failed, zero valid offers, C3 prefill ~38.945 s / 2 tokens. This is metadata-only; no new chat. #2372 not installed / REDMI_UNVERIFIED. No device/model/weight/permission action occurred.
+
+**Next:** poll 6da129ef CI and obtain exact 01549f1 CI. If receiver tests pass, record the actual accepted/rejected gate values; if they fail, use the omission audit and measured gate data. Fix SleepRuntime ValueError. Wait for QA/Boss dependency chains. Then test multi-shift retention and replay with matched budgets, parameter/EMA diffs and return-to-first-cohort holdout.
+
+**User action:** none. Existing installed release is up to date.
