@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T20:35:00Z",
+  "updated_at": "2026-11-22T20:40:00Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 remains at aed1d2b826290c95c70356b5d8b864b5ef382be4; private PIPELINE_STATUS #602 reports that SHA installed/up-to-date, while the effective last code-bearing runtime payload remains c4eb82deec915f65894c20d6ebbaf0ebf58fa335. Functional and whole-Canon acceptance remain open.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -250,9 +250,9 @@
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
       "proof_environment": "CI + Android source review; no APK or Redmi OS execution",
-      "next_step": "QA #2356 exact head 3829465: Android outcome contract PASS (45065638347), Core adapter PASS (45065638341), staged/integrated IN_PROGRESS (45065638335), Android Gradle/emulator QUEUED (45065638333). Previous emulator run reached MainActivity but System UI ANR prevented assertions. Wait for exact current-head emulator result; no Redmi acceptance.",
+      "next_step": "Perception PR #2375 is an adapter only, no MediaProjection provider. QA found its frame_binding_check is any caller-supplied callable (always-true bypass) and its projector loader opens a final path without O_NONBLOCK (FIFO can hang before fstat). Require provider-owned signed-receipt verification and add FIFO fail-closed test before Runtime wiring. Android/Redmi capture remains OFF/UNVERIFIED.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T20:30:00Z",
+      "last_checkpoint": "2026-11-22T20:40:00Z",
       "proof": "QA companion PR #2356 current head 985c55efbcfaac33a41fc7b094ac76044b5c1377. It includes receipt-only recovery for claimed EXECUTING→signed OUTCOME_UNKNOWN and DENYING→signed USER_DENIED, retry after injected signing failure, notification retention/reconciliation, database reopen and no-redispatch tests. Five pure UI-overlay helper tests pass locally and in the prior Android Gradle job. Previous emulator attempt failed at adb am start -W timeout; current head removes -W and extends bounded process wait. Exact Android workflow 45063592256 and staged/integrated workflow 45063592215 were in progress at last read. No emulator PASS, APK install or Redmi companion action."
     },
     {
@@ -1019,7 +1019,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T20:35:00Z",
+    "timestamp": "2026-11-22T20:40:00Z",
     "release_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "last_code_bearing_release_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "device_receipt": "PRIVATE_PIPELINE_STATUS_602_AUTHENTICATED_INSTALLED_AED1D2; EFFECTIVE_RUNTIME_CODE_PAYLOAD_C4EB82; AUTO_UPDATE_ENABLED; UP_TO_DATE; LAST_ERROR_NONE",
@@ -1042,13 +1042,15 @@
       "P1_QA_PR2359_SOURCE_LIFECYCLE_AND_POSITIVE_ROLLBACK",
       "P1_SLEEP_RUNTIME_POSTCOMMIT_ROOT_CAUSE",
       "P0_SHARED_AUDIO_COMPOSER_RUNTIME_GIT_BLOB_PIN_AND_DEPENDENT_CHAIN",
-      "P1_NATIVE_PROBE_APPROVAL_MUST_HASH_ACTUAL_MODEL_BYTES"
+      "P1_NATIVE_PROBE_APPROVAL_MUST_HASH_ACTUAL_MODEL_BYTES",
+      "P1_MEDIA_PROJECTION_PROVIDER_VERIFICATION_AND_FIFO_NONBLOCK"
     ],
     "user_action_required": "NONE; no manual Termux command, duplicate update request, model/weight swap or permission change",
-    "native_probe_integrity_pr2377": "DRAFT_335D501; LOCAL_HELPER_ORIGINAL_PASS_SAME_SIZE_TAMPER_REJECT_SYMLINK_REJECT; FOUR_RUNTIME_NEGATIVE_TESTS_ADDED; EXACT_CI_45066641859_45066641897_QUEUED; NOT_RELEASED_REDMI_UNVERIFIED"
+    "native_probe_integrity_pr2377": "DRAFT_335D501; LOCAL_HELPER_ORIGINAL_PASS_SAME_SIZE_TAMPER_REJECT_SYMLINK_REJECT; FOUR_RUNTIME_NEGATIVE_TESTS_ADDED; EXACT_CI_45066641859_45066641897_QUEUED; NOT_RELEASED_REDMI_UNVERIFIED",
+    "perception_media_projection_pr2375": "DRAFT_ED22AB8; QA_COMMENT_7085369559; PROVIDER_VERIFIER_NOT_ENFORCED; FIFO_OPEN_CAN_BLOCK; NO_PROVIDER_OR_DEVICE_CAPTURE"
   },
   "qa_latest_checkpoint": {
-    "timestamp": "2026-11-22T20:35:00Z",
+    "timestamp": "2026-11-22T20:40:00Z",
     "owner": "QA & Android",
     "base_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "branch": "qa/v14-companion-final-qa-20261122",
@@ -1064,9 +1066,10 @@
       "boss_pr2370": "NEW_HEAD_7FC6D7E; AUDIO_OVERLAY_RUNTIME_GIT_BLOB_REBOUND_TO_6E61AF07326C5BB11406EE72361A710D5FACC9A5_MATCHES_CURRENT_RUNTIME; PRIOR_4D771ED_AUDIO_PIN_FAILURE_RESOLVED_ON_NEW_HEAD; FULL_EXACT_MATRIX_45066702736_02742_02753_02755_02763_02774_02788_02815_02819_02820_02824_02833_02834_02854_02872_02890_QUEUED; NO_PASS_CLAIM",
       "core_pr2367": "HEAD_06113C60; RUN16_HANDOFF_REPORTS_NATIVE_RECEIVER_PY313_PY314_LINUX_API_AND_ANDROID_ARM64_CROSS_COMPILE_PASS; SAME_TURN_B1_B2_C4_C3_AND_LOCAL_APPROVAL_STAGE_CI_GREEN; DRAFT_NOT_RELEASED; NO_REDM I_NATIVE_OR_PRODUCTION_B3_PROOF",
       "local": "NO_FULL_AII_CHECKOUT_GRADLE_OR_ANDROID_SDK; FULL_LOCAL_SUITE_BLOCKED; LOCAL_COPIED_UI_HELPER_TESTS_6_OF_6_PASS; NO_LOCAL_ANDROID_EMULATOR",
-      "native_probe_integrity_pr2377": "DRAFT_PR_2377_HEAD_335D501; FIX_STREAMS_ACTUAL_MODEL_SHA256_ON_ARM_AND_CONSUME; O_NOFOLLOW_REGULAR_FILE_SIZE_AND_STABLE_INODE_METADATA; FOUR_SAME_SIZE_SENDER_RECEIVER_TAMPER_NEGATIVES; TTL_STARTS_AFTER_ARM_HASH_AND_RECHECKS_AFTER_CONSUME_HASH; LOCAL_PYTHON_HELPER_ORIGINAL_PASS_TAMPER_REJECT_SYMLINK_REJECT; EXACT_NATIVE_RECEIVER_AND_STAGED_WORKFLOWS_45066641859_45066641897_QUEUED; NOT_RELEASED"
+      "native_probe_integrity_pr2377": "DRAFT_PR_2377_HEAD_335D501; FIX_STREAMS_ACTUAL_MODEL_SHA256_ON_ARM_AND_CONSUME; O_NOFOLLOW_REGULAR_FILE_SIZE_AND_STABLE_INODE_METADATA; FOUR_SAME_SIZE_SENDER_RECEIVER_TAMPER_NEGATIVES; TTL_STARTS_AFTER_ARM_HASH_AND_RECHECKS_AFTER_CONSUME_HASH; LOCAL_PYTHON_HELPER_ORIGINAL_PASS_TAMPER_REJECT_SYMLINK_REJECT; EXACT_NATIVE_RECEIVER_AND_STAGED_WORKFLOWS_45066641859_45066641897_QUEUED; NOT_RELEASED",
+      "perception_media_projection_pr2375": "DRAFT_PR_2375_HEAD_ED22AB8; QA_REVIEW_COMMENT_7085369559; FRAME_BINDING_CHECK_IS_CALLER_SUPPLIED_CALLABLE_NOT_ENFORCED_PROVIDER_OWNED; PROJECTOR_FINAL_COMPONENT_OPEN_MISSING_O_NONBLOCK_CAN_BLOCK_ON_FIFO_BEFORE_FSTAT; NO_PROVIDER_OR_DEVICE_CAPTURE"
     },
-    "next_action": "Poll new Boss #2370 head 7fc6d7 exact matrix after the audio overlay pin rebind; treat prior 4d771 failure as historical. Keep QA #2359 blocked until it is rebased onto the corrected Boss + JEPA composition. Poll #2356 emulator process-restart job. No user action."
+    "next_action": "Core/Perception must bind the RAW EYE adapter to a provider-owned signed-frame verifier before any Runtime integration; add a FIFO O_NONBLOCK regression to the local projector loader. Continue #2356 emulator and #2377 exact CI polling. No user action."
   },
   "previous_boss_checkpoint": {
     "timestamp": "2026-11-22T10:00:40.871Z",
