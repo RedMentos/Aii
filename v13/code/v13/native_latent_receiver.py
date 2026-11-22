@@ -314,7 +314,10 @@ def extract_token_rows(*, home, model_path, expected_model_sha256, model_revisio
         raise NativeReceiverError("native receiver did not return input token embedding rows")
     if raw.get("full_table_copied") is not False or raw.get("read_only") is not True:
         raise NativeReceiverError("native receiver did not attest to bounded read-only extraction")
-    if raw.get("max_rows") != MAX_TOKEN_ROWS or raw.get("requested_token_ids") != ids:
+    returned_ids = raw.get("requested_token_ids")
+    if (type(raw.get("max_rows")) is not int or raw.get("max_rows") != MAX_TOKEN_ROWS or
+            not isinstance(returned_ids, list) or len(returned_ids) != len(ids) or
+            any(type(value) is not int for value in returned_ids) or returned_ids != ids):
         raise NativeReceiverError("native receiver token row request differs from caller")
 
     vocab = raw.get("model_vocab")
@@ -336,7 +339,8 @@ def extract_token_rows(*, home, model_path, expected_model_sha256, model_revisio
         raise NativeReceiverError("native receiver token row count differs from request")
     checked_rows = []
     for expected_id, row in zip(ids, rows):
-        if not isinstance(row, dict) or row.get("token_id") != expected_id:
+        if (not isinstance(row, dict) or type(row.get("token_id")) is not int or
+                row.get("token_id") != expected_id):
             raise NativeReceiverError("native receiver token row identity differs from request")
         values = row.get("values")
         if (not isinstance(values, list) or len(values) != dim or
@@ -368,7 +372,8 @@ def extract_token_rows(*, home, model_path, expected_model_sha256, model_revisio
         "training_authority": 0,
         "production_route": False,
         "semantic_use_proven": False,
-        "local_tty_confirmation": True,
+        "local_tty_gate_passed": True,
+        "caller_confirmation_flag": True,
     }
 
 
