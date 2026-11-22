@@ -28,7 +28,7 @@ class FakeStore:
             self.states["v14.world_jepa.permissions"] = permissions
 
     def rows(self, query, params=()):
-        if "B3PairedTapPacket" in query:
+        if "FROM packets WHERE kind=?" in query:
             return list(self.pair_rows)
         return []
 
