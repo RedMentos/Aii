@@ -271,7 +271,21 @@ def _do_update(name, root, state, *, runtime_busy, tested_commits, manual):
     # the worker to act. This rollback/finalize must precede CI gating so a red
     # candidate cannot strand a mixed launcher/marker pair.
     if name == "runtime" and must_deploy and not runtime_busy and (manual or enabled()):
-        state["runtime_activation_recovery"] = runtime_deploy.recover_pending_activation()
+        state["runtime_activation_recovery"] = "STARTED"
+        try:
+            state["runtime_activation_recovery"] = runtime_deploy.recover_pending_activation()
+        except Exception as exc:
+            # A damaged/unknown activation pair is not a safe state to restart.
+            # Disable future automatic mutations and let the operator inspect it.
+            state["runtime_activation_recovery"] = "ERROR"
+            state["runtime_activation_recovery_error"] = type(exc).__name__
+            try:
+                set_enabled(False)
+                state["runtime_activation_auto_update"] = "DISABLED"
+            except Exception as disable_exc:
+                state["runtime_activation_auto_update"] = "DISABLE_FAILED"
+                state["runtime_activation_auto_update_error"] = type(disable_exc).__name__
+            raise
         must_deploy = runtime_deploy.needs_deploy(root)
         if probe["status"] == "UP_TO_DATE" and not must_deploy:
             state[name] = "UP_TO_DATE"
@@ -476,7 +490,7 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
         finally:
             # Restart the UI-managed V13 chat whether an update succeeded or
             # failed. This cannot restart arbitrary Termux programs.
-            if was_running:
+            if was_running and state.get("runtime_activation_recovery") != "ERROR":
                 try:
                     lifecycle.request_resume(reason="UPDATED" if any(state[n] == "UPDATED" for n in selected)
                                              else "RESTORE")
@@ -484,6 +498,10 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
                     state["last_error"] = "STATE"
                     state["last_error_detail"] = type(exc).__name__
                     state["last_result"] = "ERROR"
+            elif was_running:
+                # Do not boot an unknown launcher/marker pair after failed
+                # crash recovery. The chat stays stopped for manual inspection.
+                state["resume_suppressed"] = "ACTIVATION_RECOVERY_FAILED"
             _atomic(STATE, state)
         return snapshot()
     finally:
