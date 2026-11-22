@@ -37,3 +37,8 @@ The original failing CI result is a confirmed regression. This candidate rebind 
 ## CI trigger correction
 
 The A5 workflow's path filter also omitted both source-lifecycle composition scripts, so a future builder-only change could bypass the very regression that consumes it. The workflow now watches the outer source-lifecycle builder, nested archive-guard builder, lifecycle candidate modules and the relevant archive/Memory/Vision sources on pull requests and QA branch pushes. This PR changes the workflow file itself, so the existing base-branch path filter will select the exact A5 run for this stacked candidate.
+
+
+## Lock-preserving indentation check
+
+The rebased Memory cleanup anchor is nested 16 spaces inside the existing JEPA-file-lock -> Store-RLock section. The generated cleanup_unreferenced call is kept at the same 16-space indentation, so the source/blob cleanup remains inside the Store critical section; it is not dedented to the outer method body.
