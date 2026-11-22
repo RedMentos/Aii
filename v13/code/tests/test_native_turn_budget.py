@@ -40,6 +40,18 @@ class NativeTurnBudgetTests(unittest.TestCase):
         self.assertFalse(d["age_changed"])
         self.assertFalse(d["memory_or_native_weights_changed"])
 
+    def test_user_forced_deep_keeps_bounded_preanswer_window_after_c3_failures(self):
+        d=budget.plan(100,130,101,recent=[turn(),turn()],
+                      user_forced_deep=True)
+        self.assertFalse(d["recovery"])
+        self.assertTrue(d["recovery_overridden"])
+        self.assertEqual(d["reason"],"USER_FORCED_DEEP_BOUNDED_PREANSWER")
+        self.assertLessEqual(d["preanswer_end_monotonic"],109)
+        self.assertGreaterEqual(d["c3_reserved_seconds"],21)
+        self.assertFalse(d["postcommit_body_eligible"])
+        self.assertFalse(d["age_changed"])
+        self.assertFalse(d["memory_or_native_weights_changed"])
+
     def test_one_failure_keeps_full_synchronous_cognitive_window(self):
         d=budget.plan(100,130,103.5,recent=[turn()])
         self.assertFalse(d["recovery"])
