@@ -49,7 +49,7 @@ READ_SOURCE_OLD = b'''    def read_source(self,ref):
         b=self.blob_bytes(r["hash"])
         if digest(b)!=r["hash"]:raise ValueError("Source-Hash falsch")
         txt=b.decode()
-        if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef außerhalb Text")
+        if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef au\\xc3\\x9ferhalb Text")
         return txt[ref["char_start"]:ref["char_end"]]
 '''
 READ_SOURCE_NEW = b'''    def read_source(self,ref):
@@ -76,7 +76,7 @@ READ_SOURCE_NEW = b'''    def read_source(self,ref):
                         raise FileNotFoundError(str(directory/r["hash"]))
                 import stat
                 if not stat.S_ISREG(os.fstat(fd).st_mode):
-                    raise ValueError("Source-Blob ist keine reguläre Datei")
+                    raise ValueError("Source blob is not a regular file")
                 source_file=os.fdopen(fd,"rb")
                 fd=None
             finally:
@@ -88,13 +88,13 @@ READ_SOURCE_NEW = b'''    def read_source(self,ref):
             import zlib
             d=zlib.decompressobj()
             try:b=d.decompress(raw,64*1024*1024)
-            except zlib.error as exc:raise ValueError("Archiv-Blob beschädigt") from exc
-            if d.unconsumed_tail or not d.eof:raise ValueError("Archiv-Blob beschädigt oder zu groß")
+            except zlib.error as exc:raise ValueError("Archive blob corrupt") from exc
+            if d.unconsumed_tail or not d.eof:raise ValueError("Archive blob corrupt or too large")
         else:
             b=raw
         if digest(b)!=r["hash"]:raise ValueError("Source-Hash falsch")
         txt=b.decode()
-        if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef außerhalb Text")
+        if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef au\\xc3\\x9ferhalb Text")
         return txt[ref["char_start"]:ref["char_end"]]
 '''
 MEMORY_OLD = b'''        src=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
