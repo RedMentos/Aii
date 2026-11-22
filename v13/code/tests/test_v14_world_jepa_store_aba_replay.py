@@ -1165,8 +1165,16 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
             unprojected_reports = [
                 item for item in mode_reports if item["replay_projection"] is False
             ]
-            assert len(projected_reports) == sum(1 for arm in expected_arms if arm[2] is True)
-            assert len(unprojected_reports) == sum(1 for arm in expected_arms if arm[2] is False)
+            assert len(projected_reports) == sum(1 for arm in expected_arms if arm[3] is True)
+            assert len(unprojected_reports) == sum(1 for arm in expected_arms if arm[3] is False)
+            expected_arm_keys = {
+                (arm[0], arm[2], arm[3]) for arm in expected_arms
+            }
+            actual_arm_keys = {
+                (item["replay_mode"], item["stable_drift_control"], item["replay_projection"])
+                for item in mode_reports
+            }
+            assert actual_arm_keys == expected_arm_keys
             loss_reports = [
                 item for item in mode_reports if item["replay_mode"] == "on_demand_loss"
             ]
@@ -1212,6 +1220,7 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                 })
             print("WORLDJEPA_LOSS_DEMAND_SEED_DIAGNOSTIC", seed, encoder_mode, diagnostic)
 
+            accepted_a2 = []
             accepted_loss_a2 = []
             for report in mode_reports:
                 a2 = report["A2"]
@@ -1246,6 +1255,9 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                     assert a2["utility_gate_accepted"] is False
                     assert a2["checkpoint_sha_before"] == a2["checkpoint_sha_after"]
                     assert a2["holdout_used_for_backtracking"] is False
+            assert accepted_a2, (
+                f"no accepted A2 update across replay arms for {encoder_mode} seed {seed}"
+            )
             assert accepted_loss_a2, (
                 f"on-demand loss produced no accepted {encoder_mode} A2 update "
                 f"for seed {seed}; projected candidate may be rejected only if "
