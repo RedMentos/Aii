@@ -671,3 +671,48 @@ def test_alias_rejection_reaches_the_real_a5_a4_c3_consumer(tmp_path):
         assert "activity=UNVOICED_NOISE" in result["c3_admission"].selected[0].summary
     finally:
         runtime.store.close()
+
+
+def test_provisional_audio_is_persisted_but_not_admitted_until_final(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    try:
+        provisional = consume_pcm16_voice_window(
+            runtime, tone(sample_rate=16000, frequency=140, phase=0.0),
+            sample_rate=16000, start_ms=100,
+            event_id=event["event_id"],
+            generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok,
+            consent_guard=consent_guard(consent_ok),
+            finality="PROVISIONAL",
+        )
+        provisional_segment = provisional["packet"]["segments"][0]
+        assert provisional_segment["finality"] == "PROVISIONAL"
+        assert provisional_segment["learning_authority"] is False
+        assert provisional_segment["action_authority"] is False
+        assert provisional["c3_admission"].selected == ()
+        assert SOURCE in provisional["c3_admission"].omitted
+        stored = runtime.store.one(
+            "SELECT payload FROM packets WHERE id=? AND kind='PerceptPacket'",
+            (provisional["packet"]["packet_id"],),
+        )
+        assert stored is not None
+        assert json.loads(stored["payload"])["segments"][0]["finality"] == "PROVISIONAL"
+
+        final = consume_pcm16_voice_window(
+            runtime, tone(sample_rate=16000, frequency=140, phase=0.4),
+            sample_rate=16000, start_ms=1100,
+            event_id=event["event_id"],
+            generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok,
+            consent_guard=consent_guard(consent_ok),
+            finality="FINAL",
+        )
+        assert final["packet"]["segments"][0]["finality"] == "FINAL"
+        assert len(final["c3_admission"].selected) == 1
+        assert final["c3_admission"].selected[0].source_id == SOURCE
+        assert final["learning_authority"] is False
+        assert final["action_authority"] is False
+    finally:
+        runtime.store.close()
