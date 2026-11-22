@@ -31,6 +31,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Compile experiment and tests
         run: python -m py_compile v14/experiments/a4_novelty_gate_ablation.py v14/experiments/test_a4_novelty_gate_ablation.py
+      - name: Install test runner
+        run: python -m pip install --disable-pip-version-check pytest==9.2.0
       - name: Run deterministic source-disjoint regression tests
         run: python -m pytest -q v14/experiments/test_a4_novelty_gate_ablation.py
       - name: Run fixed-seed holdout ablation
