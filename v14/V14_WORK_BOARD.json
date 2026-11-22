@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T10:00:40.871Z",
-  "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at b3b92f41772573732b2cba71f7ad6bf34dc8e521; exact post-merge push CI green; phone install remains separately gated. V14 master and historical V13 appendix preserved.",
+  "updated_at": "2026-11-22T19:35:00+01:00",
+  "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; exact commit CI 21/21 workflows SUCCESS and private PIPELINE_STATUS #582 reports installed/up-to-date. Newer HEALTH #581 reports runtime UNAVAILABLE; read-only :status #583 remains open. Candidate PRs remain separately gated; CI and pipeline receipts are not live model/Android acceptance.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -45,28 +45,25 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "ANDROID_DEVICE code installation for 283ac1 only; 9097 NOT_INSTALLED",
-      "next_step": "QA: do not send another UPDATE_REQUEST. #519 is already QUEUED; authenticated #520 still says installed 283ac1c9, runtime CI_WAIT, dashboard BLOCKED_RUNNING, last_error NONE. Wait for a separate receipt that confirms exact b3b92 installation, then verify restart/rollback without touching models or user data.",
+      "proof_environment": "Exact release-head GitHub CI + private owner-read pipeline receipt; no fresh model-quality, 20-turn, process-death or rollback device acceptance",
+      "next_step": "QA: release-development head aed1d2 is a documentation/handoff merge; last accepted code release and PIPELINE_STATUS-installed SHA are c4eb82. Branch CI is 28/29 workflows (1 skipped) on aed1d2; c4eb82 is reported 53/53 check-runs success. HEALTH #581 says runtime UNAVAILABLE; PIPELINE_STATUS #582 says UP_TO_DATE; existing read-only :status #583 is open. Do not duplicate requests or CHAT_SEND. QA #2359 current branch head ec5b1ca6, code/test head 0c4211a, static pins 20/20, regression added but not run; preceding A5 45055010763 failed before final nested pin correction. Boss must dispatch exact-head CI. No Redmi install/acceptance.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-22T19:35:00+01:00",
       "latest_qa_candidate": {
-        "pr": 2138,
-        "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
-        "merge_commit_sha": "5b9171a457f32cafa6cc05fb88e80ef8b4dad08e",
-        "status": "MERGED_CI_GREEN_DEVICE_UNVERIFIED",
+        "pr": 2359,
+        "head_sha": "ec5b1ca6a33a667a2af41f9ba1721f51623e3c1b",
+        "code_test_head": "0c4211a657c922baa7ebc84291728337156636e3",
+        "code_bearing_parent": "1d17dc0bb04cae3cd749bd4801254733a232bfb4",
+        "status": "PENDING_EXACT_CI_NOT_TRIGGERED_NOT_RELEASED",
         "proof": {
-          "owner_read_push": "PASS run 44845659008",
-          "private_bridge_push": "PASS run 44845658907",
-          "staged_context_push": "PASS run 44845658992",
-          "staged_runtime": "PASS (240 passed, 10 skipped, 47 subtests)",
-          "integrated_regression": "PASS (415 passed, 3 skipped, 58 subtests)",
-          "release_event_push": "PASS run 44845658989",
-          "lab_age_push": "PASS run 44845658946",
-          "local_linux": "NOT_RUN; no full checkout",
-          "redmi": "NO_LIVE_RECEIPT; issues #351–354 unanswered; installed SHA unknown"
+          "static_source_pins": "20/20 direct SHA/Git-blob edges read back",
+          "regression": "added but NOT_RUN",
+          "github_ci": "NOT_TRIGGERED_OR_RETURNED; preceding A5 45055010763 failed before final nested archive pin correction",
+          "local_linux": "BLOCKED_NO_CHECKOUT",
+          "redmi": "NOT_INSTALLED_REDMI_UNVERIFIED"
         }
       },
-      "proof": "Release merge 283ac1c9 has 46/46 push checks SUCCESS and is installed per private #517. Newer merge 9097d634 has candidate 27 SUCCESS / 1 expected SKIPPED; exact push CI pending. Existing updater remains enabled; no model/weight/permission change."
+      "proof": "Release c4eb82 is reported installed/up-to-date by #582 and has 53/53 check-runs success per latest report. Newer HEALTH #581 says runtime UNAVAILABLE; :status #583 is pending. Last stored diagnostic remains 57.74 s total, 41.63 s TTFT, 38.95 s C3 prefill, 751 prompt tokens, 2 generated tokens; B1/B2 TIME_BUDGET. No new post-update turn, correct 2+2, 20-turn acceptance or rollback proof."
     },
     {
       "id": "V14-003",
@@ -372,10 +369,10 @@
       "owner": "Core & Harness + QA & Android",
       "priority": "P0",
       "status": "BLOCKED_REVIEW",
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
-      "proof_environment": "CI/stacked branches only; no Android OS proof",
-      "proof": "Android companion #2271/#2273 stack remains separate; #2312 audio consumer is stacked on QA's companion branch. No installed APK, OS app/UI executor, AudioRecord provider or background action has been verified.",
-      "next_step": "Core/QA: reconcile the default-OFF companion stack and add the visible Termux operator/CLI bridge before claiming Android app launch. Keep user approval, stop, audit, cancellation and rollback; no device action has been performed."
+      "last_checkpoint": "2026-11-22T19:35:00+01:00",
+      "proof_environment": "GitHub CI on prior companion head plus isolated Gradle/Robolectric; API-35 TCG emulator booted after 591943 ms but failed before lifecycle script; no API-33 rerun, APK install or physical Android OS proof.",
+      "proof": "PR #2356 current head b8a5a5c9ac30bb7de1dea79b71810e83742fdeb4, OPEN/not merged. Prior head cc3c34d had Gradle/Robolectric and V13 outcome contract SUCCESS, but android-emulator-runner failed after API-35 TCG boot at the pre-script settings put Broken pipe; test_process_restart.py did not execute. Workflow now targets API 33, skips animation settings, permits 900 s boot/60 s shutdown, but exact-head CI is NOT_TRIGGERED/NOT_RUN. No APK install, pairing, OS permission or Redmi proof.",
+      "next_step": "Boss/Core/QA: dispatch exact-head Android companion workflow on b8a5a5c and inspect API-33 emulator startup plus test_process_restart.py execution. Reconcile with #2342/#2344/#2348 before merging; do not merge stacks independently. Keep launch_app-only, visible approval, stop/audit and default STOPPED. No screen observation, Accessibility, tap/type, background executor, microphone or learning authority until separately implemented/reviewed/authorized on device."
     },
     {
       "id": "V14-018",
@@ -408,32 +405,30 @@
       "status": "MERGED_INTEGRATION",
       "scope": "Runtime deploy activation journal, recovery, runtime-only rollback and managed V13 chat lifecycle",
       "acceptance": "Owner-only durable journal, hash-checked backups, fsync, crash recovery, explicit rollback, managed-chat stop/resume, process-death/reboot tests and authenticated Redmi receipt",
-      "proof_environment": "Phone code-install proof only; rollback not device-validated",
-      "next_step": "QA: #2325's fair-scheduler/sender-path code is installed at 283ac1c9; b3b92 has 40/40 exact push checks green but is not yet confirmed installed. After #519 resolves, verify runtime/dashboard SHA and only then test process death, restart and runtime-only rollback. Models, SQLite and chats remain outside rollback.",
+      "proof_environment": "Release-head CI + private pipeline installation receipt; no Redmi process-death/reboot/rollback acceptance",
+      "next_step": "QA: wait for existing read-only :status #583. When runtime is available and consented, verify process death/restart and runtime-only rollback against the installed SHA; prove models, SQLite and chats remain outside rollback. Do not stop or mutate the service while HEALTH says UNAVAILABLE.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
-      "proof": "Runtime activation journal/recovery remains merged; code release 283ac1 is installed. Dashboard rollback and Android process-death/reboot recovery have not been proven on Redmi. Newer 9097 update is waiting on exact push CI."
+      "last_checkpoint": "2026-11-22T19:35:00+01:00",
+      "proof": "Runtime activation journal/recovery and runtime-only rollback code are integrated in the release line. c4eb82 has 53/53 check-runs SUCCESS per latest report and PIPELINE_STATUS #582 reports installed/up-to-date. HEALTH #581 reports runtime UNAVAILABLE; :status #583 remains open. Physical process-death, restart, dashboard recovery and rollback remain unverified."
     }
   ],
-  "current_redmi_status": "AUTHENTICATED PRIVATE #520: installed SHA remains 283ac1c9; auto-update enabled; runtime=CI_WAIT; dashboard=BLOCKED_RUNNING; last_result=CI_WAIT; last_error=NONE. UPDATE_REQUEST #519 remains QUEUED. b3b92 is not yet confirmed installed. #518 is a prior recorded-turn diagnostic, not a fresh post-update turn.",
-  "last_code_release_head": "283ac1c9b38d38c68030391710df852a3c38fdfc",
-  "latest_integrated_head": "b3b92f41772573732b2cba71f7ad6bf34dc8e521",
+  "current_redmi_status": "PIPELINE_C4EB82_UP_TO_DATE; HEALTH_RUNTIME_UNAVAILABLE; READ_ONLY_STATUS_583_OPEN; FUNCTIONAL_ACCEPTANCE_UNVERIFIED",
+  "last_code_release_head": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
+  "latest_integrated_head": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
   "latest_integrated_head_verified_at": "2026-11-22T09:58:33.516Z",
-  "release_gate_status": "CURRENT MERGED HEAD b3b92f41772573732b2cba71f7ad6bf34dc8e521: exact post-merge PUSH-CI 40/40 check-runs SUCCESS and 29/29 workflow runs SUCCESS. This is GitHub CI, not Android installation. Latest authenticated private PIPELINE_STATUS #520 still reports installed 283ac1c9 and CI_WAIT/BLOCKED_RUNNING; UPDATE_REQUEST #519 is already queued.",
+  "release_gate_status": "Last accepted code release c4eb82deec915f65894c20d6ebbaf0ebf58fa335: 53/53 check-runs SUCCESS per latest owner-authenticated report. Current release-development branch head aed1d2b826290c95c70356b5d8b864b5ef382be4 is a documentation/handoff merge (#2340), with 28/29 associated workflows SUCCESS, 0 failed, 0 pending, 1 skipped; it is not a new code release. Private PIPELINE_STATUS #582 reports c4eb82 installed/up-to-date; newer HEALTH #581 reports runtime UNAVAILABLE; :status #583 remains pending.",
   "phone_receipt": {
-    "state": "AUTHENTICATED_INSTALLED_283AC1_ONLY",
-    "issue": 520,
-    "previous_install_receipt_issue": 517,
-    "update_request_issue": 519,
-    "diagnostics_issue": 518,
-    "installed_sha": "283ac1c9b38d38c68030391710df852a3c38fdfc",
+    "state": "AUTHENTICATED_PIPELINE_C4EB82_HEALTH_RUNTIME_UNAVAILABLE_STATUS_PENDING",
+    "issue": 582,
+    "pending_status_issue": 583,
+    "installed_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "auto_update": "ENABLED",
-    "runtime": "CI_WAIT",
-    "dashboard": "BLOCKED_RUNNING",
-    "last_result": "CI_WAIT",
+    "runtime": "UP_TO_DATE_BY_PIPELINE_582; UNAVAILABLE_BY_HEALTH_581",
+    "dashboard": "UP_TO_DATE_BY_PIPELINE_582",
+    "last_result": "UP_TO_DATE",
     "last_error": "NONE",
-    "redmi_status": "283AC1_INSTALLED; B3B92_NOT_YET_INSTALLED_OR_VERIFIED",
-    "note": "#519 UPDATE_REQUEST remains queued. #520 is an authenticated read-only PIPELINE_STATUS response; do not send a duplicate update request. #518 repeats the previous recorded turn/probe, not a new post-update benchmark."
+    "redmi_status": "C4EB82_INSTALLED_REPORTED; RUNTIME_UNAVAILABLE; NATIVE_QUALITY_UNVERIFIED",
+    "note": "#581 HEALTH and #582 PIPELINE_STATUS are conflicting observations; #583 is the already-open read-only :status request. Do not duplicate it or send CHAT_SEND/UPDATE_REQUEST until a fresh authenticated receipt resolves runtime availability."
   },
   "capability_snapshot": [
     {
@@ -737,33 +732,71 @@
     }
   ],
   "latest_checkpoint": {
-    "timestamp": "2026-11-22T10:00:40.871Z",
-    "boss_branch": "boss/v14-run12-whole-system-handoff-20261122",
-    "boss_head": "b3b92f41772573732b2cba71f7ad6bf34dc8e521",
+    "timestamp": "2026-11-22T19:35:00+01:00",
     "release_development_branch": "gpt6/v13-private-remote-bridge-20261111",
-    "release_development_head": "b3b92f41772573732b2cba71f7ad6bf34dc8e521",
-    "release_status": "MERGED_INTEGRATION_EXACT_PUSH_CI_GREEN_DEVICE_PENDING",
-    "last_accepted_code_release": "283ac1c9b38d38c68030391710df852a3c38fdfc",
-    "redmi_status": "INSTALLED_283AC1_ONLY; B3B92_CI_WAIT; NATIVE_QUALITY_UNVERIFIED",
-    "private_owner_read_issue": 520,
+    "release_development_head": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
+    "release_status": "DOC_ONLY_HEAD; LAST_ACCEPTED_CODE_RELEASE_C4EB82; DEVICE_RUNTIME_UNAVAILABLE",
+    "last_accepted_code_release": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
+    "redmi_status": "PIPELINE_UP_TO_DATE_C4EB82; HEALTH_RUNTIME_UNAVAILABLE; STATUS_583_OPEN; NATIVE_QUALITY_UNVERIFIED",
+    "private_owner_read_issue": 582,
+    "pending_owner_read_issue": 583,
     "private_owner_read_authenticated_reply": true,
-    "private_receipt_installed_sha": "283ac1c9b38d38c68030391710df852a3c38fdfc",
+    "private_receipt_installed_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "private_receipt_auto_update": true,
     "private_receipt_predates_merge": true,
     "local_full_checkout": "BLOCKED_NO_LOCAL_AII_CHECKOUT_OR_NETWORK",
     "user_action_required": false,
-    "post_merge_push_ci": "b3b92: 40/40 check-runs SUCCESS; 29/29 workflow runs SUCCESS",
+    "post_merge_push_ci": "c4eb82: 53/53 check-runs SUCCESS (reported); aed1d2 doc-only head: 28/29 workflow runs SUCCESS, 0 failed, 0 pending, 1 skipped",
     "candidate_ci": {
-      "success": 40,
+      "success": 28,
       "failure": 0,
       "pending": 0,
-      "workflow_runs_success": 29
+      "skipped": 1,
+      "workflow_runs": 29,
+      "scope": "aed1d2 documentation/handoff merge, not new code"
     },
-    "canonical_inventory_headings": 1255,
-    "private_receipt_pipeline": "CI_WAIT_283AC1; UPDATE_REQUEST_519_QUEUED",
-    "next_action": "Wait for the already queued #519 update and authenticated PIPELINE_STATUS; repair all six #2331 source pins bottom-up and rerun the exact matrix; then rebase paired native taps and signed audio consumer onto b3b92.",
-    "documentation_pr": 2333,
-    "documentation_branch": "boss/v14-run12-whole-system-handoff-20261122"
+    "qa_source_lifecycle": {
+      "pr": 2359,
+      "head_sha": "ec5b1ca6a33a667a2af41f9ba1721f51623e3c1b",
+      "code_test_head": "0c4211a657c922baa7ebc84291728337156636e3",
+      "code_bearing_parent": "1d17dc0bb04cae3cd749bd4801254733a232bfb4",
+      "status": "DRAFT_NOT_RELEASED",
+      "static_sha_git_blob_edges": "20/20 readback",
+      "regression": "test_v14_store_source_blob_serialization.py added; NOT_RUN",
+      "previous_exact_a5_run": "45055010763 FAILED before final nested archive pin correction",
+      "current_exact_ci": "NOT_TRIGGERED_OR_RETURNED; workflow_dispatch required",
+      "local_linux": "BLOCKED_NO_CHECKOUT",
+      "redmi": "NOT_INSTALLED_REDMI_UNVERIFIED"
+    },
+    "qa_android_companion": {
+      "pr": 2356,
+      "head_sha": "b8a5a5c9ac30bb7de1dea79b71810e83742fdeb4",
+      "status": "OPEN_NOT_MERGED",
+      "previous_code_head": "cc3c34d11745079d874c1092708014fbdde223e7",
+      "previous_runs": {
+        "staged": "45054296086 SUCCESS",
+        "core_adapter": "45054296117 SUCCESS",
+        "v13_outcome": "45054296184 SUCCESS",
+        "android_companion": "45054296080 FAILURE"
+      },
+      "emulator": "API35 TCG booted after 591943ms; runner settings command failed Broken pipe before install/test script; process restart NOT_RUN",
+      "current_configuration": "API33 Google APIs, TCG enabled, animation settings disabled, 900s boot timeout, 60s shutdown wait",
+      "current_exact_ci": "NOT_TRIGGERED_OR_RETURNED; workflow_dispatch required",
+      "redmi": "NO_APK_INSTALL_NO_DEVICE_PROOF"
+    },
+    "pr2351_review": "HEAD 3f4277: Boss review reports NONCONTIGUOUS_HISTORY where SHADOW_READOUT_ONLY expected and RETENTION_GATE_REJECTED on matched A→B→C→A replay (128 receipts/144 windows); do not weaken gate. Staged/integrated also rejects source-lifecycle builder until exact rebind.",
+    "active_blockers": [
+      "P0_NATIVE_B1_B2_OFFER_QUALITY_C3_TTFT_AND_CORRECT_ANSWER",
+      "P0_REDM I_RUNTIME_UNAVAILABLE_HEALTH_VS_PIPELINE_CONFLICT_STATUS_583_PENDING",
+      "P0_JEPA_RUN13_NONCONTIGUOUS_HISTORY_AND_RETENTION_GATE_REJECTION_PR2351",
+      "P0_STORE_SOURCE_FORGET_EXACT_HEAD_CI_NOT_TRIGGERED_PR2359",
+      "P0_ANDROID_COMPANION_API33_EMULATOR_LIFECYCLE_NOT_RUN_PR2356",
+      "P0_TRUE_TRAINED_CROSS_MODEL_LATENT_COUPLING",
+      "P0_ANDROID_AUDIO_AND_UI_BACKGROUND_PROVIDERS",
+      "P1_MEMORILLA_PRODUCTION_OVERFLOW_CONSUMER",
+      "WHOLE_CANON_SEMANTIC_CLAUSE_TO_CONSUMER_COVERAGE"
+    ],
+    "next_action": "Boss/Integrator dispatches exact-head CI for #2359 and #2356, reviews #2351 temporal failures without weakening retention, then chooses #2355/#2359 consolidation only after green results. QA keeps #583 read-only pending; no user action or device mutation."
   },
   "capability_matrix": [
     {
@@ -963,24 +996,43 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T10:00:40.871Z",
-    "release_sha": "b3b92f41772573732b2cba71f7ad6bf34dc8e521",
-    "code_candidate_sha": "b3b92f41772573732b2cba71f7ad6bf34dc8e521",
-    "candidate_ci": "EXACT_PUSH_CI_40_OF_40_CHECK_RUNS_SUCCESS; 29_OF_29_WORKFLOW_RUNS_SUCCESS",
-    "post_merge_push_ci": "GREEN_40_CHECK_RUNS_29_WORKFLOW_RUNS_0_FAILURE_0_PENDING",
-    "device_receipt": "PRIVATE_520_AUTHENTICATED_INSTALLED_283AC1; RUNTIME_CI_WAIT; DASHBOARD_BLOCKED_RUNNING; UPDATE_REQUEST_519_QUEUED",
-    "device_acceptance": "B3B92_CI_GREEN_NOT_PHONE_VERIFIED; 283AC1_INSTALLED_ONLY; NATIVE_QUALITY_UNVERIFIED",
+    "timestamp": "2026-11-22T19:35:00+01:00",
+    "release_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
+    "code_candidate_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
+    "candidate_ci": "AED1D2_DOC_ONLY_HEAD_28_OF_29_WORKFLOW_SUCCESS_1_SKIPPED; NOT_A_NEW_CODE_RELEASE",
+    "post_merge_push_ci": "C4EB82_53_OF_53_CHECK_RUNS_SUCCESS_REPORTED; AED1D2_DOC_ONLY_28_OF_29_WORKFLOW_RUNS_SUCCESS",
+    "device_receipt": "PRIVATE_582_PIPELINE_UP_TO_DATE_C4EB82; PRIVATE_581_HEALTH_RUNTIME_UNAVAILABLE; PRIVATE_583_READ_ONLY_STATUS_OPEN",
+    "device_acceptance": "C4EB82_INSTALLED_REPORTED_ONLY; RUNTIME_AVAILABILITY_CONFLICT; NATIVE_QUALITY_AND_20_TURN_ACCEPTANCE_UNVERIFIED",
     "active_blockers": [
       "P0_NATIVE_B1_B2_OFFER_QUALITY_C3_TTFT_AND_CORRECT_ANSWER",
-      "P0_JEPA_SOURCE_FORGET_AND_TRAINING_PIN_CHAIN_PR2331",
-      "P0_PAIRED_NATIVE_TAPS_AND_B3_L1_HOLDOUT_PR2313_PR2317",
-      "P0_ANDROID_AUDIORECORD_AND_UI_BACKGROUND_PROVIDERS",
+      "P0_REDM I_RUNTIME_UNAVAILABLE_HEALTH_VS_PIPELINE_CONFLICT_STATUS_583_PENDING",
+      "P0_JEPA_RUN13_NONCONTIGUOUS_HISTORY_AND_RETENTION_GATE_REJECTION_PR2351",
+      "P0_STORE_SOURCE_FORGET_EXACT_HEAD_CI_NOT_TRIGGERED_PR2359",
+      "P0_ANDROID_COMPANION_API33_EMULATOR_LIFECYCLE_NOT_RUN_PR2356",
       "P0_TRUE_TRAINED_CROSS_MODEL_LATENT_COUPLING",
-      "P1_AGE_RIGHTS_RESOURCE_DECOUPLING_AND_GOALWAKE_NATIVE_PROOF",
+      "P0_ANDROID_AUDIO_AND_UI_BACKGROUND_PROVIDERS",
       "P1_MEMORILLA_PRODUCTION_OVERFLOW_CONSUMER",
-      "WHOLE_CANON_SEMANTIC_CLAUSE_TO_CONSUMER_COVERAGE",
-      "P0_JEPA_SIX_SOURCE_PIN_MISMATCHES_PR2331"
+      "WHOLE_CANON_SEMANTIC_CLAUSE_TO_CONSUMER_COVERAGE"
     ],
-    "pr2331_ci": "HEAD_535EBA: 9_FAILURE_4_IN_PROGRESS_2_QUEUED_4_SUCCESS_1_SKIPPED; six nested source-pin mismatches; NOT_RELEASED"
+    "qa_source_lifecycle": {
+      "pr": 2359,
+      "head": "ec5b1ca6a33a667a2af41f9ba1721f51623e3c1b",
+      "code_test_head": "0c4211a657c922baa7ebc84291728337156636e3",
+      "static_edges": "20/20",
+      "regression_test": "ADDED_NOT_RUN",
+      "previous_a5": "45055010763 FAILED BEFORE FINAL NESTED PIN FIX",
+      "exact_head_ci": "NOT_TRIGGERED"
+    },
+    "qa_android_companion": {
+      "pr": 2356,
+      "head": "b8a5a5c9ac30bb7de1dea79b71810e83742fdeb4",
+      "prior_emulator_run": "45054296080 FAILED BEFORE PROCESS RESTART SCRIPT",
+      "new_api33_config": "COMMITTED_NOT_RUN",
+      "exact_head_ci": "NOT_TRIGGERED"
+    },
+    "pr2351": "3f4277 REVIEW: NONCONTIGUOUS_HISTORY_AND_RETENTION_GATE_REJECTED; KEEP_DRAFT_NO_GATE_WEAKENING",
+    "local_full_checkout": "BLOCKED_NO_LOCAL_AII_CHECKOUT_OR_NETWORK",
+    "user_action_required": false,
+    "next_action": "BOSS_DISPATCH_EXACT_HEAD_CI_2359_AND_2356; QA_WAIT_FOR_583; NO_DEVICE_MUTATION"
   }
 }

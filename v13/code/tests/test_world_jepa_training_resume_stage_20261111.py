@@ -1,4 +1,5 @@
 """Exercise optimizer-bound World-JEPA through the single current stager."""
+import hashlib
 import importlib.util
 import os
 from pathlib import Path
@@ -33,3 +34,13 @@ def test_world_jepa_training_state_in_real_staged_runtime(tmp_path):
         env=dict(os.environ, PYTHONPATH=str(dest), PYTHONDONTWRITEBYTECODE='1'))
     assert staged_consumer.returncode == 0, staged_consumer.stdout + staged_consumer.stderr
     print(staged_consumer.stdout)
+
+
+def test_context_recall_binds_generated_store_and_archive_stream():
+    spec = importlib.util.spec_from_file_location(
+        'context_recall_stage', CODE / 'scripts/integrated_context_recall_candidate_20261111.py')
+    builder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(builder)
+    sources = builder.build_sources(CODE)
+    assert hashlib.sha256(sources['v13/store.py']).hexdigest() == builder.STORE_SHA
+    assert hashlib.sha256(sources['v13/archive_stream_range_candidate.py']).hexdigest() == builder.STREAM_SHA

@@ -1,3 +1,34 @@
+# QA & Android — current verified handoff (2026-11-22 19:35 CET)
+
+**Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein UPDATE_REQUEST, kein CHAT_SEND, kein Modell-/Gewichtswechsel und keine neue Berechtigung.
+
+- Release-development branch `gpt6/v13-private-remote-bridge-20261111` resolves to `aed1d2b826290c95c70356b5d8b864b5ef382be4`. Its associated Actions matrix is 28 SUCCESS / 0 FAILURE / 0 PENDING / 1 SKIPPED. This is a documentation/handoff merge (#2340), not a new code release. Last accepted code release remains `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`.
+- Private owner-read #582 reports `c4eb82deec915f65894c20d6ebbaf0ebf58fa335` installed, auto-update enabled and pipeline/dashboard `UP_TO_DATE`; newer HEALTH #581 reports `runtime=UNAVAILABLE`. Existing read-only `:status` request #583 remains OPEN. No duplicate request, CHAT_SEND or UPDATE_REQUEST was issued.
+- #1904 remains OPEN. The latest stored diagnostics at 17:45 UTC remain 57.739 s total, 41.627 s TTFT, 38.945 s C3 prefill, 751 admitted prompt tokens and 2 generated tokens; B1/B2 remain TIME_BUDGET at 53.2/54.2 s. This is not a new turn or correctness measurement.
+- QA Store/source-forget PR [#2359](https://github.com/RedMentos/Aii/pull/2359) is DRAFT, current branch head `ec5b1ca6a33a667a2af41f9ba1721f51623e3c1b`; code/test-bearing head `0c4211a657c922baa7ebc84291728337156636e3`; code-bearing parent `1d17dc0bb04cae3cd749bd4801254733a232bfb4`. It is stacked on #2351/#2355. The fixes cover the Memory 16-space cleanup anchor, C3→Body/World pin, observer Store pin and nested archive guard/stream Store pin. The follow-up adds a regression asserting both generated archive consumers bind the generated Store SHA. Static readback is 20/20 direct SHA/Git-blob edges. The preceding A5 run `45055010763` failed before the last nested-pin correction; exact-head CI on `ec5b1ca6a33a667a2af41f9ba1721f51623e3c1b` is not yet triggered/read back. No merge/release recommendation until A5 3.13/3.14, JEPA source-forget, staged/integrated, Lab-Age, migration, owner-read and deploy checks pass.
+- Android companion PR [#2356](https://github.com/RedMentos/Aii/pull/2356) is OPEN/not merged at `b8a5a5c9ac30bb7de1dea79b71810e83742fdeb4`. Prior code head `cc3c34d` passed Gradle/Robolectric and the V13 outcome contract, but the API-35 TCG emulator booted only after 591,943 ms and failed at a pre-script settings command with Broken pipe; `test_process_restart.py` did not run. The new workflow uses Android 13/API 33, skips animation settings, allows 900 s boot and 60 s shutdown; no exact-head run is yet available. No APK install or Redmi/OS action.
+- Full local Aii checkout remains BLOCKED: `git ls-remote` cannot resolve `github.com`. LOCAL_LINUX full suite is BLOCKED/NOT_RUN. No native Android/Redmi, correct 2+2, B1/B2 offer delivery, trained B3 latent coupling, or persistent body-weight update is accepted.
+
+**Next internal step:** Boss/Integrator dispatches exact-head CI for #2359 and #2356; then reviews the #2355/#2359 consolidation route only after green results. Keep #583 read-only pending. **Keine Aktion nötig.**
+
+---
+
+# QA & Android current user handoff — 2026-11-22
+
+**Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein neuer UPDATE_REQUEST, kein CHAT_SEND, kein Modell-/Gewichtswechsel und keine Rechte-/Mikrofonfreigabe.
+
+- Release-Entwicklungs-HEAD `gpt6/v13-private-remote-bridge-20261111` = `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`. Exakte Commit-CI: **21/21 Workflows SUCCESS**. Das beweist nur den Code-/CI-Stand.
+- Privater, owner-authentifizierter PIPELINE_STATUS #582 meldet genau `c4eb82` installiert, Runtime/Dashboard `UP_TO_DATE`, Auto-Update EIN, last_error NONE.
+- Der neuere HEALTH-Receipt #581 meldet dagegen `runtime=UNAVAILABLE` (memavailable 1414 MiB, freier Speicher 1568 MiB). Der bereits vorhandene read-only `:status`-Request #583 ist noch offen. Kein zweiter Request und kein Chat-Test wurde ausgelöst.
+- Der jüngste technische Snapshot (V13OBS #115) zeigt weiterhin **57,74 s Gesamtzeit / 41,63 s TTFT / 38,95 s C3-Prefill / 751 Prompt-Tokens / 2 generierte Tokens**; B1_DETAIL und B2_GIST bleiben TIME_BUDGET. Das ist keine neue Messung nach einem Kandidaten-Update und kein 20-Turn-Akzeptanztest.
+- QA PR [#2359](https://github.com/RedMentos/Aii/pull/2359): Code-Head `ad1832f9938154f5a9ad2767b33f0b43b4bb2474`, danach nur Handoff-Commit `01b086a98024b5707824c53441f4b2814686009a`. Die vollständige Store/Memory/source-lifecycle → online-world/C3 → JEPA → Termux recovery → stage → deployer Pin-Kette hat **14/14 statische Readback-Kanten PASS**. Exakte CI auf Code-Head ist QUEUED/PENDING; der kombinierte Stack trägt #2355-Code und hängt von #2351 ab. Nicht mergen, bevor Boss die #2355/#2359-Integrationsroute festgelegt hat.
+- Android companion PR [#2356](https://github.com/RedMentos/Aii/pull/2356), Head `6643acba196e2b7191c7e637edfcf62f61139b18`: **8/8 CI-Workflows SUCCESS**; isolierter JDK-21-Helper-Compile, 7 Assertions und Zwei-Thread-Lock-Harness PASS. Noch offen/unmerged, kein APK installiert, keine Redmi- oder Android-OS-Aktion. Companion bleibt default STOPPED und launch_app-only mit sichtbarer Einzelbestätigung.
+- Vollständiger lokaler Aii-Checkout fehlt in dieser Umgebung; lokale Gesamt-Tests sind BLOCKED/NOT_RUN. Keine native Android-/Redmi-Verifikation, kein korrektes 2+2, keine erfolgreiche B1/B2-Angebotszustellung, keine trainierte native Latent-Kopplung und keine akzeptierte Master-Weight-Änderung behauptet.
+
+**Nächster interner Schritt:** vorhandenes #583 abwarten; parallel die exakten #2359-CI-Ergebnisse und Boss-Integrationsentscheidung abwarten. Erst bei Runtime-Verfügbarkeit eine frische Diagnose und den autorisierten 20-Turn-Test ausführen. **Keine Aktion nötig.**
+
+---
+
 # JEPA-Statuskorrektur — 2026-11-22T10:00:40.871Z
 
 PR #2331 steht inzwischen auf `535eba6f668b3990416c361368f36e3e8f1e599e`, hat aber **9 fehlgeschlagene Checks** (4 laufen, 2 queued, 4 erfolgreich, 1 übersprungen). Die Fehler liegen weiter in der verschachtelten Source-Pin-Kette: sechs direkte Consumer-Pins stimmen nicht mit den aktuellen Datei-Bytes überein. Die vollständigen Hashes stehen im Boss-Review-Kommentar [7077507340](https://github.com/RedMentos/Aii/pull/2331#issuecomment-7077507340). Das ist noch kein JEPA-Lern-/Unlearning-Erfolg; PR bleibt DRAFT, Promotion OFF.
