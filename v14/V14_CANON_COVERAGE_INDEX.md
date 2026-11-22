@@ -2139,3 +2139,19 @@ Negative boundary: no real native B1/B2 useful offers, correct 2+2, 20-turn Redm
 ## Boss exact-head follow-up — 2026-11-22T10:00:40.871Z
 
 PR #2331 current head 535eba6f668b3990416c361368f36e3e8f1e599e is DRAFT/NOT_RELEASED. Its exact matrix is 9 failures, 4 in progress, 2 queued, 4 success, 1 skipped. Six source-composition pins are inconsistent: memory-world→feedback, feedback→context-recall, lifecycle composer→memory-world, memory.py→lifecycle composer, recovery21→stage, stage→runtime deployer. See Boss review comment 7077507340 for full byte-derived hashes. No source-forget or numeric learning acceptance is established. The current b3b92 release branch has 40/40 push check-runs and 29/29 workflow runs SUCCESS; private #520 still reports the phone on 283ac1c9 / CI_WAIT and #519 queued. This overlay changes no Canon requirement and no master bytes.
+
+
+## Boss evidence overlay — 2026-11-22T17:49:39.410Z (status-only; historical 1,255-heading inventory unchanged)
+
+- Release branch exact HEAD: `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; exact SHA CI 53/53 SUCCESS; owner-authenticated private receipt confirms that exact SHA is installed and updater/runtime/dashboard are current.
+- Real phone functionality remains **not accepted**: last stored turn 57.739 s / 41.627 s TTFT / 38.945 s prefill / 751 prompt tokens / 2 generated tokens; correctness UNKNOWN. B1/B2 probes TIME_BUDGET; native probe SMOKE_PARTIAL. No 20-turn acceptance or same-turn native offer-consumption proof.
+- **A0–A5:** source-bound RAW EAR/vision adapter work exists in current candidates; actual microphone/AudioRecord, camera/MediaProjection and Android sensor providers remain unverified/open.
+- **B1/B2/B4/C4/C3:** distinct role contracts and synthetic same-turn consumer paths exist; real native useful offers, mutual re-entry, C4 consumption and correct C3 answer remain unaccepted. #2343 is DRAFT with 28 checks queued at last poll.
+- **B3 / Enlightened Space:** #2346 paired native taps + L1 shadow trainer is code-present but exact paired-capture has one failed assertion; other shared gates were queued. Production remains OFF/SYMBOLIC; no trained receiver or latent utility proof.
+- **World/Self/Memory/JEPA/Sleep:** temporal T8/WorldJEPA candidates remain SHADOW/DRAFT; source-forget, promotion/rollback, retention, consumer and restart gates remain open. No accepted permanent target-weight update.
+- **Voice/audio:** caller-supplied PCM/acoustic feature work does not equal Android AudioRecord, full ASR/decoder/vocoder or full-duplex voice; these remain open.
+- **Android agency:** companion launch_app contract remains separate, default stopped and not installed/paired/phone-verified; UI observation, background API execution and tap/type remain OFF/unverified.
+- **Context OS/Memorilla, self-optimization/cross-organ gradients, independent OS sandbox/adaptive judge, sparse MoE, updater crash/reboot rollback:** remain partial or open; no new acceptance this run.
+- Local full Aii test suite BLOCKED (no checkout and GitHub DNS unavailable in the local execution container). CI is not local or Android proof. No model, weight, permission, setting or user data changed.
+
+This overlay changes only current evidence status. It does not promote any Canon clause, remove historical FAILs, or alter the V14 master/historical Canon bytes.
