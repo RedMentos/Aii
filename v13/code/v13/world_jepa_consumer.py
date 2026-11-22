@@ -450,7 +450,7 @@ def _gradient_vector(model, rows, *, train_encoder, salt):
 
 
 def _session_gradient_conflict_scores(model, new_rows, old_rows, *, train_encoder, salt):
-    """Bounded training-fold-only proxy for which prior sessions conflict with new learning."""
+    """Bounded prior-guard-fold estimate of signed interference by old session."""
     grouped = {}
     for row in old_rows:
         session_id = row.get("session_id")
@@ -1521,9 +1521,12 @@ class WorldJEPAStoreConsumer:
             }
             cohort_scores = None
             if replay_mode == "on_demand_conflict":
-                if active is not None and len(new_fit_rows) >= 2 and len(old_fit_rows) >= 2:
+                # Use source/content-disjoint prior guard anchors to estimate
+                # signed interference. Replay examples still come only from
+                # old_fit_rows; the final holdout remains promotion-only.
+                if active is not None and len(new_fit_rows) >= 2 and len(old_guard_rows) >= 2:
                     conflict_probe = _session_gradient_conflict_scores(
-                        model, new_fit_rows, old_fit_rows,
+                        model, new_fit_rows, old_guard_rows,
                         train_encoder=(encoder_mode == "full"), salt=replay_salt,
                     )
                 cohort_scores = conflict_probe["scores"]
@@ -1663,6 +1666,19 @@ class WorldJEPAStoreConsumer:
                 "current_guard_cohort_before": new_guard_cohort_before,
                 "loss_demand_probe_fold": (
                     "prior_training_guard" if replay_mode == "on_demand_loss" and active is not None
+                    else None
+                ),
+                "replay_conflict_probe_fold": (
+                    "prior_guard" if replay_mode == "on_demand_conflict" and active is not None
+                    else None
+                ),
+                "prior_guard_action_ids_sha256": (
+                    None if old_guard_manifest is None
+                    else old_guard_manifest["guard_action_ids_sha256"]
+                ),
+                "replay_conflict_probe_action_ids_sha256": (
+                    old_guard_manifest["guard_action_ids_sha256"]
+                    if replay_mode == "on_demand_conflict" and old_guard_manifest is not None
                     else None
                 ),
                 "replay_rows": len(replay_rows),
