@@ -183,7 +183,7 @@ def apply_sources(code_dir, sources):
     # output. Their verification still rejects other input changes.
     semantic_name = 'v13/world_semantic_evidence_candidate.py'
     local_name = 'v13/local_error_route_shadow_candidate.py'
-    semantic_pin = '22594294c9b6bb8447b25ceaa0d9c7da129e29b9280880927141c0c8b549dd06'
+    semantic_pin = '609c9d187e11551663aea238bf07af962f8458582139bd9707c89b6f347dd8f3'
     local_pin = '1a9d525cd8a3b5c7d595dd58c761334199c71fc5744c6c8aab5fd55d3832649d'
     action_pin = '86f79e8f3c26928f0a16399070f1b8d729760697a3b9e02ea9f6315ab6fcf87a'
     for name, expected in ((semantic_name, semantic_pin), (local_name, local_pin)):
