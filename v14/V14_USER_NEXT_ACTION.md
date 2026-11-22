@@ -1,3 +1,18 @@
+# JEPA & Memory — Run 18: tatsächliche B1/B2-Gates messen (2026-11-22T20:47:52.487Z)
+
+**Keine Nutzeraktion erforderlich.** Der installierte Release-Stand ist bereits aktuell; kein manueller Termux-Befehl, kein Update-Request und kein Modell-/Gewichts-/Rechtewechsel.
+
+- **Code:** [PR #2372](https://github.com/RedMentos/Aii/pull/2372), exakter Head `01549f1ff36937758be60b0876066264ebc7eb36`, DRAFT / NOT_RELEASED. Der neue Test misst jetzt die tatsächlichen B1_DETAIL- und B2_GIST-Receiver-Gates aus den gespeicherten disjunkten Holdout-Metriken und prüft, dass der Readout-Status exakt dem gemessenen Gate folgt.
+- **Wichtige Trennung:** Der echte Prompt-Consumer-Test verwendet weiterhin einen ausdrücklich test-only akzeptierten Gate, um die Cognition.offer-Verkabelung zu isolieren; das ist kein Utility-Beleg. Ein separater negativer Test erzwingt Gate-Ablehnung und prüft den source-bound Omission-Audit ohne Prompt-Leak. Die trainierten Predictor-/Receiver-Gewichte bleiben unverändert.
+- **CI:** Die 6da129ef-Workflows 45068109547 (Optimizer-Resume 3.13/3.14), 45068109554 (Staged/Integrated) und 45068109526 (Temporal T8) sind weiterhin QUEUED. Für den neueren Head 01549f1 ist noch kein exakter CI-Lauf sichtbar. Kein PASS behaupten.
+- **Lokal:** Python 3.13.5, NumPy 2.3.5 und pytest 9.0.2 vorhanden; kein Aii-Checkout und GitHub-DNS-Fehler. Vollständige lokale Tests BLOCKED / NOT_RUN.
+- **Blocker:** QA #2359 muss die Lifecycle-Pins auf JEPA-`memory.py` SHA-256 `33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701` neu binden. Boss' Audio-Pin ist auf 7fc6d7e korrigiert, aber die vollständige Matrix bleibt QUEUED. Der SleepRuntime-temporale `ValueError` ist noch nicht an der Ursache behoben. Kein Rebase, bis QA und Boss grün sind.
+- **Gerät:** Privates V13OBS #115 (20:24:26Z) meldet Basis `aed1d2b` installiert, Auto-Update EIN / Runtime UP_TO_DATE, aber B1 4/4 und B2 2/2 native Versuche fehlgeschlagen, null gültige Offers, C3-Prefill ~38,945 s / 2 Tokens. Das ist Metadatenstatus, kein neuer Chat-Test; #2372 ist nicht installiert und REDMI_UNVERIFIED.
+
+**Nächster interner Schritt:** Exakte 6da129ef- und 01549f1-CI abwarten, echte B1/B2-Gate-Ergebnisse auswerten, SleepRuntime-`ValueError` beheben und danach QA/Boss-Abhängigkeiten integrieren. Erst dann Mehrfach-Shift-Retention, Replay-on/off und Return-to-first-cohort messen. Bis dahin SHADOW-only.
+
+---
+
 # JEPA & Memory — Run 17: Receiver-Audit und Testtrennung (2026-11-22T20:45:15.705Z)
 
 **Keine Nutzeraktion erforderlich.** Der installierte Release-Stand ist bereits aktuell. Kein neuer Termux-Befehl, kein Update-Request und kein Modell-/Gewichts-/Rechtewechsel.
