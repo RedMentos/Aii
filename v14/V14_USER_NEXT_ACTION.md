@@ -1580,3 +1580,10 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - The local full-repository suite remains blocked because no checkout is mounted and GitHub DNS resolution failed. CI is not local Linux or Redmi proof. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell action, model/weight change, permission change, APK install or user-data mutation occurred.
 
 **Next internal step:** reproduce the exact replacement-4 preimage on the candidate's staged Runtime, repair that anchor and the full nested pin chain in dependency order, then rerun the exact Python 3.13/3.14 integration matrix. Only after green exact-head CI should QA request an explicitly consented same-prompt Redmi A/B measuring both source-bound offers, C4 consumption, C3 correctness, TTFT, prefill, total latency and memory. Keep B3 production OFF and all learning promotion gates unchanged.
+
+
+## Device-health correction — 2026-11-22T17:26:00Z
+
+The earlier #592 DIAGNOSTICS snapshot at 17:11Z reported the AI service RUNNING. A later private HEALTH receipt #593 at 17:15Z reports runtime UNAVAILABLE. Therefore do **not** describe the service as continuously running: latest health is UNAVAILABLE / discrepant, even though #591 still reports the installed c4eb82 release and updater/runtime/dashboard metadata as UP_TO_DATE. The process PSS/RSS counters belong only to the earlier snapshot. QA must reconcile this discrepancy; do not send another UPDATE_REQUEST or ask the user to run Termux.
+
+The current Boss PR #2343 head is now `ba9ee5df8bf5b1bf4b4a06fa21c3586637db41b5`; exact CI at last poll is 1 success / 26 queued / 1 skipped / 0 failures. The pre-postcommit diagnostic workflow is queued, not passed. Prior head `853433f3` failed stage composition at postcommit replacement 4. No deployment has occurred.
