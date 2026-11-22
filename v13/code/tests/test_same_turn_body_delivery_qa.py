@@ -1,7 +1,8 @@
-"""QA: same-turn body admission, fair 90 s slices and one-role deferral.
+"""QA: same-turn body admission, 30 s C3-recovery reserve, fair 90 s slices.
 
-These tests run against the final source-pinned staged Runtime. They use synthetic
-clock/Store/model boundaries and do not claim native model or Redmi performance.
+Short recovery keeps the established 26 s C3 reserve and gives B1/B2 sequential
+2 s slices; deep turns split the 45% pre-answer window fairly. Synthetic clock,
+Store and model boundaries are not native model or Redmi performance evidence.
 """
 import json
 import threading
