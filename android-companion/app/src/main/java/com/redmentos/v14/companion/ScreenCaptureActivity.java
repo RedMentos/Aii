@@ -16,8 +16,9 @@ public final class ScreenCaptureActivity extends Activity {
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (!CompanionProvider.isEnabled(this)
-                || !CapabilityRegistry.isCurrentTermuxTrusted(this)) {
-            Toast.makeText(this, "Pair and enable the companion before screen capture", Toast.LENGTH_LONG).show();
+                || !CapabilityRegistry.isCurrentTermuxTrusted(this)
+                || ProjectionFrameStore.hasFrame(android.os.SystemClock.elapsedRealtime())) {
+            Toast.makeText(this, "Pair and enable the companion; discard any pending frame before another capture", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
