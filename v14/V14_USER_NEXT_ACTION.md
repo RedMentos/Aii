@@ -1,3 +1,14 @@
+## QA Android-control review — MediaProjection RAW EYE adapter (2026-11-22T20:40:00Z)
+
+Reviewed Perception PR #2375 (`ed22ab8`, DRAFT). The adapter is not a provider or a live Runtime path. Two gates remain before integration:
+
+1. `consume_projected_frame()` trusts any caller-supplied `frame_binding_check` callable returning `True`; it does not enforce provider ownership or verify the companion-signed frame receipt itself. Until Core supplies a provider-owned signed-receipt verifier capability (or verifies the signature in the adapter), the adapter must remain unreachable from production Runtime. QA comment #2375/7085369559.
+2. `_load_local_tile_projector()` opens the final metadata-selected file with `O_RDONLY | O_NOFOLLOW` before `fstat` checks regular-file type. A FIFO in `data/vision` can block in `os.open()` before the check. Add `O_NONBLOCK` to the final open and a `mkfifo` negative test; preserve the existing directory-FD/no-follow chain.
+
+No MediaProjection provider, screen capture, Android permission, or Redmi action was performed. These are DRAFT code-review blockers, not a live-device exploit claim.
+
+---
+
 ## QA & Android — Boss audio pin rebind follow-up (2026-11-22T20:35:00Z)
 
 Boss #2370 moved to exact head `7fc6d7e4c94d3ea37a59ced28e52c4c2b2ee46db`. The integrated audio overlay now pins `v13/runtime.py` to Git blob `6e61af07326c5bb11406ee72361a710d5facc9a5`, matching the actual current file. This resolves the specific `30360f40…` vs `6e61af…` mismatch reported on prior head `4d771ed` (QA comment #2370/7085162144).
