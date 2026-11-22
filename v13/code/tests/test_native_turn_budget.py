@@ -118,7 +118,7 @@ class NativeTurnBudgetTests(unittest.TestCase):
         cognition=Cognition(runtime)
         end=time.monotonic()+30
         with self.assertRaisesRegex(AssertionError,"source read reached"):
-            cognition.offer("B1_DETAIL",{"event_id":"e1"},1,end-18,
+            cognition.offer("B1_DETAIL",{"event_id":"e1","source_ref":{}},1,end-18,
                             valid_until=end)
         self.assertEqual(store.source_reads,1)
         self.assertEqual(store.logs[0][0],"native_body_budgeted_for_c3")
@@ -133,6 +133,34 @@ class NativeTurnBudgetTests(unittest.TestCase):
             cognition.offer("B1_DETAIL",{"event_id":"e1","source_ref":{}},
                             1,time.monotonic()+20)
         self.assertEqual(store.source_reads,2)
+
+    def test_real_cognition_defers_only_when_fair_slice_is_subminimum(self):
+        class LocalStore(DummyStore):
+            def __init__(self, rows):
+                super().__init__(rows)
+                self.logs=[]
+                self.source_reads=0
+            def log(self,kind,event,metrics):
+                self.logs.append((kind,event,metrics))
+            def read_source(self,ref):
+                self.source_reads+=1
+                raise AssertionError("source must not be read for a subminimum slice")
+        class FakeRuntime:
+            def __init__(self, cfg, store):
+                self.cfg=cfg
+                self.store=store
+                self.cancel_event=threading.Event()
+                self.session="s1"
+        store=LocalStore([turn(),turn()])
+        runtime=FakeRuntime({"deadline_seconds":30,"observer_mode":"background"},store)
+        cognition=Cognition(runtime)
+        end=time.monotonic()+30
+        with self.assertRaises(Limits):
+            cognition.offer("B1_DETAIL",{"event_id":"e1","source_ref":{}},
+                            1,end-29.5,valid_until=end)
+        self.assertEqual(store.source_reads,0)
+        self.assertEqual(store.logs[0][0],"native_body_deferred_for_c3")
+        self.assertEqual(store.logs[0][2]["status"],"POSTCOMMIT_ELIGIBLE")
 
     def test_cognition_does_not_defer_with_owner_background_disabled(self):
         class LocalStore(DummyStore):
