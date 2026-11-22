@@ -52,9 +52,13 @@ public final class CompanionProviderFramePipeTest {
         ParcelFileDescriptor readEnd = CompanionProvider.openFramePipe(context, token, 101L);
         assertTrue(readEnd.getFileDescriptor().valid());
         assertEquals(1, ProjectionFrameStore.activeReadCountForTest());
+        FrameReadLease lease = ProjectionFrameStore.firstActiveReadForTest();
+        assertNotNull(lease);
 
         assertTrue(CompanionProvider.setEnabled(context, false));
 
+        assertTrue("stop must terminate a blocked pipe writer",
+                lease.awaitWriterExitForTest(2_000L));
         assertFalse(readEnd.getFileDescriptor().valid());
         assertTrue(Arrays.equals(new byte[frame.length], frame));
         assertEquals(0, ProjectionFrameStore.activeReadCountForTest());

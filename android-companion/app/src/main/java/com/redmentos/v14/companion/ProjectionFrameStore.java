@@ -123,6 +123,12 @@ final class ProjectionFrameStore {
         }
     }
 
+    static FrameReadLease firstActiveReadForTest() {
+        synchronized (LOCK) {
+            return ACTIVE_READS.isEmpty() ? null : ACTIVE_READS.iterator().next();
+        }
+    }
+
     private static JSONObject response(String status) throws Exception {
         JSONObject out = new JSONObject();
         out.put("status", status);
