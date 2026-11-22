@@ -86,7 +86,6 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
     Htr, Mtr, Xtr, ytr = H[train_indices], mask[train_indices], Xr[train_indices], y[train_indices]
     Hte, Mte, Xte, yte = H[test_indices], mask[test_indices], Xr[test_indices], y[test_indices]
     output_dir = cognition.r.home / "b3" / "shadow" / direction / task_id
-    output_dir.mkdir(parents=True, exist_ok=True)
     l0_acc = l0_bytes = role_drop = None
     l0_evidence_sha256 = None
     if l0_evidence is not None:
@@ -125,6 +124,7 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
             raise ValueError("L0 evidence requires a finite role_drop fraction")
         l0_evidence_sha256 = hashlib.sha256(dumps(l0_evidence).encode("utf-8")).hexdigest()
 
+    output_dir.mkdir(parents=True, exist_ok=True)
     seed_reports = []
     trained_bridges = []
 
