@@ -79,3 +79,7 @@ The frame adapter now optionally consumes the already-trained local V13 tile stu
 
 **Next executable action:** wait for the exact b6aaa826 CI matrix; repair any focused or integrated failure. Then coordinate with Core/QA to wire the provider and normal Runtime consumer without changing their owned files. Run a source-disjoint real UI holdout and no-student baseline only after the provider is available and the user has explicitly granted the corresponding screen-capture session. Redmi remains REDMI_UNVERIFIED.
 
+## Cross-lane mobile MoE research — R-087
+
+The full 28-page MobileMoE paper (arXiv:2605.27358v1, 2026-05-26) and official S-QAT model card/license were reviewed. MobileMoE-S/M/L report 0.68/1.48/2.75 GB INT4 weight memory and 1.49/2.77/4.71 GB peak RSS at 8k on Galaxy S25; 1k S25 TTFT is 2.01/4.32/8.99 s. Their real-prompt RSS is 1.2–2.1× dummy-prompt RSS because expert activation depends on input. The fast path uses a custom fused ExecuTorch MoE operator, while the HF model card requires trust_remote_code=True and warns that the generic Transformers INT4 path materializes BF16 weights on first forward. The model is FAIR Noncommercial Research License v1, requires contact-data sharing to access, and does not establish Redmi/Snapdragon 732G viability. No weights were downloaded. R-087 is RESEARCH_ONLY / NO_MODEL_SWAP; the useful design ideas are moderate sparsity, fine-grained experts, shared expert and real-prompt routing/RSS profiling for distinct B1/B2 bodies.
+
