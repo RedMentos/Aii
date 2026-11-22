@@ -515,9 +515,8 @@ def train_l1_shadow_directions_from_t8(
         }
     if cancel_check is not None and cancel_check():
         return {"status": "CANCELLED", "directions": {}}
-    if cognition is None or not callable(getattr(getattr(cognition, "r", None), "models", None).revision
-                                         if getattr(getattr(cognition, "r", None), "models", None)
-                                         else None):
+    models = getattr(getattr(cognition, "r", None), "models", None)
+    if cognition is None or not callable(getattr(models, "revision", None)):
         return {"status": "COGNITION_UNAVAILABLE", "directions": {}}
 
     cohort = collect_t8_outcome_labels(store, limit=limit)
