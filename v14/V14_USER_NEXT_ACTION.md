@@ -1,3 +1,12 @@
+## QA & Android — shared composer blocker discovered (2026-11-22T20:23:00Z)
+
+- Boss #2370 exact head `4d771ed8e2d2d839e4acbf4f517a775cfe1c1e05` now passes the RECORD_ONLY controller guard (`45064399584`), but the integrated audio composer fails its source check: `integrated_audio_context_candidate_20261121.py` expects Git blob `30360f40eb784be5ea975ee85e94a57f0b154164` for `v13/runtime.py`; exact current file blob is `6e61af07326c5bb11406ee72361a710d5facc9a5`.
+- This one mismatch propagates into Lab-Age, Python 3.14 staged owner-read, JEPA optimizer-resume Python 3.13/3.14, staged/integrated and audio/arithmetic workflows. Two-checkout migration then reports PARTIAL because activation is refused. It is one shared source-pin blocker, not six independent runtime defects.
+- The audio overlay uses Git blob SHA-1 for this source check; the outer recovery/stage/deployer chain uses separate SHA-256 pins. Do not weaken either check. Boss/Perception must rebind the audio input and all dependent composer/recovery/stage/deployer hashes.
+- QA recorded the exact evidence in Boss PR #2370 comment 7085162144. QA did not edit the Boss-owned guard or shared composer chain. #2356 remains at 3829465 with exact emulator/Gradle/staged checks pending. No user action.
+
+---
+
 ## QA & Android — Run 8 emulator acceleration follow-up (2026-11-22T20:18:30Z)
 
 - PR #2356 exact head is now `3829465e5180ce237ef98b36181bda6caea601a5`. The previous API-33 TCG run reached the app's top-resumed MainActivity but Android System UI entered an ANR before the app stop/restart assertions; no product lifecycle result was obtained.
