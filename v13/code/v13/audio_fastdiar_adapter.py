@@ -20,11 +20,12 @@ from .audio_speaker_evidence import SCHEMA
 
 
 MODEL_ID = "microsoft/fastdiar"
+MODEL_REVISION = "e7f9bbccf98865216f48a04868d74f1d53c8734e"
 EMBEDDING_DIM = 192
 FRAME_STEP_MS = 80
 LOOKBACK_FRAMES = 10
 MAX_FRAMES = 32
-_SHA256 = re.compile(r"[0-9a-f]{64}\\Z")
+_SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 
 
 def _matrix_rows(embeddings):
@@ -69,10 +70,11 @@ def build_fastdiar_diagnostic_batch(
     The caller must keep the FASTDIAR encoder's causal state warm across chunks
     and provide the SHA256 of the actual local checkpoint bytes.
     """
-    for name, value in (("source_id", source_id), ("generation_id", generation_id),
-                        ("model_revision", model_revision)):
+    for name, value in (("source_id", source_id), ("generation_id", generation_id)):
         if type(value) is not str or not value.strip() or len(value) > 128:
             raise ValueError(f"{name} must be a non-empty string of at most 128 characters")
+    if model_revision != MODEL_REVISION:
+        raise ValueError("model_revision must match the pinned FASTDIAR v0.1.0 commit")
     if type(model_sha256) is not str or not _SHA256.fullmatch(model_sha256):
         raise ValueError("model_sha256 must be a lowercase 64-character SHA256")
     for name, value in (("window_start_ms", window_start_ms),
@@ -96,7 +98,7 @@ def build_fastdiar_diagnostic_batch(
         "source_id": source_id,
         "generation_id": generation_id,
         "model_id": MODEL_ID,
-        "model_revision": model_revision,
+        "model_revision": MODEL_REVISION,
         "model_sha256": model_sha256,
         "embedding_dim": EMBEDDING_DIM,
         "frame_step_ms": FRAME_STEP_MS,
@@ -109,6 +111,7 @@ def build_fastdiar_diagnostic_batch(
 
 __all__ = [
     "MODEL_ID",
+    "MODEL_REVISION",
     "EMBEDDING_DIM",
     "FRAME_STEP_MS",
     "LOOKBACK_FRAMES",
