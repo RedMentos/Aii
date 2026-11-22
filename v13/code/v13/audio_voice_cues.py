@@ -734,14 +734,9 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             summary += f" voiced_energy_range_db={cues['voiced_energy_range_db']:.1f}"
         summary += f" prosody_change={cues['prosody_change_score']:.2f}"
         if speaker_evidence is not None and speaker_evidence.get("status") == "MEASURED":
-            latest_candidate = speaker_evidence.get("speaker_change_candidate")
             if speaker_change_candidate is not None:
                 summary += f" speaker_change_candidate={int(speaker_change_candidate)}"
                 summary += f" speaker_change_score={speaker_change_score:.2f}"
-                if latest_candidate is not None and latest_candidate != speaker_change_candidate:
-                    summary += f" speaker_change_latest_candidate={int(latest_candidate)}"
-                if speaker_evidence.get("candidate_count", 0) > 1:
-                    summary += f" speaker_change_candidate_frames={speaker_evidence['candidate_count']}"
                 if speaker_change_candidate:
                     summary += " speaker_change_kind=CHANGE_OR_OVERLAP"
             else:
