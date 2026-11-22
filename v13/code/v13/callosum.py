@@ -23,7 +23,10 @@ Degradation (B3-H10)     a receiver model revision change resets that direction 
 import json
 import math
 import re
+import time
+from pathlib import Path
 from . import b3degrade
+from .models import model_key
 from .common import dumps
 from .neuromod import step
 
@@ -197,8 +200,201 @@ def controller(runtime):
 
 def on_rating(store,event_id,score):return Callosum(store).on_rating(event_id,(score-1)/9)
 
+_NATIVE_PROBE_ROUTE_KEY = "v14.native_probe_route_binding"
+_NATIVE_PROBE_ROUTE_SCHEMA = "v14.native-probe-route-binding/1"
+
+
+def _native_probe_route_bindings(runtime, sender_role, receiver_role):
+    """Bind ModelManager's actual native route to each exact manifest file.
+
+    The approval module separately hashes the manifest bytes on arm and consume.
+    This helper adds the missing route-identity check without hashing multi-GB
+    GGUFs a second time.
+    """
+    routes = {}
+    for role in (sender_role, receiver_role):
+        key = model_key(role, runtime.models.b2_control)
+        installed = runtime.models.installed.get(key)
+        if not isinstance(installed, dict) or installed.get("download_complete") is not True:
+            raise PermissionError("native probe requires an installed model route for " + role)
+        main_file = installed.get("main_file")
+        files = installed.get("files")
+        entry = files.get(main_file) if isinstance(files, dict) and isinstance(main_file, str) else None
+        relative_value = entry.get("path") if isinstance(entry, dict) else None
+        if not isinstance(relative_value, str) or not relative_value:
+            raise PermissionError("native probe manifest route is incomplete for " + role)
+        relative = Path(relative_value)
+        if relative.is_absolute() or ".." in relative.parts:
+            raise PermissionError("native probe manifest route is unsafe for " + role)
+        manifest_path = Path(runtime.home) / relative
+        try:
+            if manifest_path.is_symlink():
+                raise PermissionError("native probe manifest route is linked for " + role)
+            manifest_resolved = manifest_path.resolve(strict=True)
+            models_root = (Path(runtime.home) / "models").resolve(strict=True)
+            routed_path = Path(runtime.models.path_for(role))
+            if routed_path.is_symlink():
+                raise PermissionError("native probe ModelManager route is linked for " + role)
+            routed_resolved = routed_path.resolve(strict=True)
+        except PermissionError:
+            raise
+        except Exception as exc:
+            raise PermissionError("native probe model route is unavailable for " + role) from exc
+        if not manifest_resolved.is_relative_to(models_root):
+            raise PermissionError("native probe manifest route escaped home/models for " + role)
+        if not manifest_resolved.is_file() or routed_resolved != manifest_resolved:
+            raise PermissionError("native probe ModelManager path differs from hashed manifest path for " + role)
+        routes[role] = {
+            "model_key": key,
+            "revision": runtime.models.revision(role),
+            "sha256": entry.get("sha256"),
+            "path": str(manifest_resolved),
+        }
+    return routes
+
+
+def _write_native_probe_route_binding(runtime, value):
+    current, version = runtime.store.state(_NATIVE_PROBE_ROUTE_KEY, None)
+    runtime.store.set_state(_NATIVE_PROBE_ROUTE_KEY, value, expected=version)
+
+
+def _clear_native_probe_route_binding(runtime):
+    current, version = runtime.store.state(_NATIVE_PROBE_ROUTE_KEY, None)
+    runtime.store.set_state(
+        _NATIVE_PROBE_ROUTE_KEY,
+        {"schema": _NATIVE_PROBE_ROUTE_SCHEMA, "status": "CLEARED"},
+        expected=version,
+    )
+
+
+def _native_probe_operator_command(runtime, args):
+    from . import native_probe_approval as approval
+
+    if args == ["revoke-probe"]:
+        result = approval.revoke(runtime)
+        _clear_native_probe_route_binding(runtime)
+        return dumps(result)
+
+    if (len(args) == 5 and args[0] == "arm-probe"
+            and args[3:] == ["--last-source", "--confirm"]):
+        runtime.require_idle()
+        sender_role, receiver_role = args[1], args[2]
+        routes_before = _native_probe_route_bindings(runtime, sender_role, receiver_role)
+        armed = approval.arm(runtime, sender_role, receiver_role)
+        try:
+            approval_record, _ = runtime.store.state(approval.KEY, None)
+            if (not isinstance(approval_record, dict)
+                    or approval_record.get("status") != "PENDING"
+                    or not isinstance(approval_record.get("nonce"), str)):
+                raise PermissionError("native probe approval was not durably armed")
+            routes_after = _native_probe_route_bindings(runtime, sender_role, receiver_role)
+            if routes_after != routes_before:
+                raise PermissionError("native probe model route changed while arming")
+            _write_native_probe_route_binding(runtime, {
+                "schema": _NATIVE_PROBE_ROUTE_SCHEMA,
+                "status": "PENDING",
+                "nonce": approval_record["nonce"],
+                "routes": routes_after,
+            })
+        except Exception:
+            try:
+                approval.revoke(runtime)
+            except Exception:
+                pass
+            try:
+                _clear_native_probe_route_binding(runtime)
+            except Exception:
+                pass
+            raise
+        return dumps(armed)
+
+    if (len(args) == 5 and args[0] == "native-probe"
+            and args[3:] == ["--last-source", "--confirm"]):
+        runtime.require_idle()
+        sender_role, receiver_role = args[1], args[2]
+        native_receive = getattr(getattr(runtime, "cognition", None), "native_receive", None)
+        if not callable(native_receive):
+            raise PermissionError(
+                "native receiver is not installed in this Runtime; local approval was not consumed"
+            )
+
+        approval_record, _ = runtime.store.state(approval.KEY, None)
+        route_record, _ = runtime.store.state(_NATIVE_PROBE_ROUTE_KEY, None)
+        if (not isinstance(approval_record, dict)
+                or approval_record.get("status") != "PENDING"
+                or not isinstance(route_record, dict)
+                or route_record.get("schema") != _NATIVE_PROBE_ROUTE_SCHEMA
+                or route_record.get("status") != "PENDING"
+                or route_record.get("nonce") != approval_record.get("nonce")):
+            raise PermissionError(
+                "native probe requires a fresh local route-bound approval; run :callosum arm-probe locally"
+            )
+        if (approval_record.get("sender_role") != sender_role
+                or approval_record.get("receiver_role") != receiver_role):
+            raise PermissionError("native probe role pair differs from local approval")
+
+        routes_before = _native_probe_route_bindings(runtime, sender_role, receiver_role)
+        if routes_before != route_record.get("routes"):
+            raise PermissionError("native probe model revision or ModelManager route changed after local approval")
+
+        event, source_ref = approval._current_event(runtime)
+        consumed = approval.consume(runtime, sender_role, receiver_role, event, source_ref)
+        if consumed.get("approval_id") != str(route_record["nonce"])[:12]:
+            _clear_native_probe_route_binding(runtime)
+            raise PermissionError("native probe approval identity changed during consume")
+
+        try:
+            routes_after = _native_probe_route_bindings(runtime, sender_role, receiver_role)
+            if routes_after != route_record.get("routes"):
+                raise PermissionError("native probe ModelManager route changed during approval consume")
+
+            deadline = time.monotonic() + min(120.0, float(approval.TTL_SECONDS))
+            result = native_receive(sender_role, receiver_role, event, source_ref, deadline)
+            if type(result) is not dict:
+                raise RuntimeError("native receiver returned an invalid diagnostic result")
+            if (result.get("production_route") not in (None, False)
+                    or result.get("training_authority", 0) not in (None, 0)
+                    or result.get("native_receiver_authority", 0) not in (None, 0)
+                    or result.get("semantic_use_proven", False) is True):
+                raise PermissionError("native probe exceeded its diagnostic-only authority")
+            output = dict(result)
+            output.setdefault("production_route", False)
+            output.setdefault("semantic_use_proven", False)
+            output.setdefault("training_authority", 0)
+            output.setdefault("native_receiver_authority", 0)
+            output.update(
+                local_approval_consumed=True,
+                approval_id=consumed["approval_id"],
+            )
+            return dumps(output)
+        finally:
+            try:
+                _clear_native_probe_route_binding(runtime)
+            except Exception as exc:
+                try:
+                    runtime.store.log("native_probe_route_cleanup_failed", event["event_id"],
+                                      {"error": type(exc).__name__})
+                except Exception:
+                    pass
+            try:
+                runtime.pool.unload()
+            except Exception as exc:
+                try:
+                    runtime.store.log("native_probe_unload_failed", event["event_id"],
+                                      {"error": type(exc).__name__})
+                except Exception:
+                    pass
+
+    raise ValueError(
+        ":callosum arm-probe SENDER RECEIVER --last-source --confirm | "
+        "native-probe SENDER RECEIVER --last-source --confirm | revoke-probe"
+    )
+
+
 def operator_command(r,args):
-    """:callosum [status|shadow|active|degrade|promote <direction>]"""
+    """:callosum [status|shadow|active|degrade|promote <direction>|arm-probe|native-probe|revoke-probe]"""
+    if args and args[0] in {"arm-probe", "native-probe", "revoke-probe"}:
+        return _native_probe_operator_command(r, args)
     c=controller(r)
     if not args or args==['status']:return dumps(c.report(r.cfg))
     if args==['shadow']:return dumps({'mode':c.set_mode('SHADOW')})
