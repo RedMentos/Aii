@@ -145,6 +145,8 @@ def _latest_native_evidence(r):
             "status": flow_status,
             "native_receipt_status": receipt.get("status"),
             "native_completion_http_200": receipt.get("native_completion_http_200") is True,
+            "native_prompt_prefill_verified": receipt.get("native_prompt_prefill_verified") is True,
+            "native_stream_completed": receipt.get("native_stream_completed") is True,
             "native_template_submitted": native_submitted,
             "template_submitted": submitted,
             "c4_receipt_status": c4_metrics.get("status") if c4_recorded else "NOT_RECORDED",
