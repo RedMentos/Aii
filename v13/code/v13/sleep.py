@@ -666,7 +666,7 @@ class SleepRuntime:
                 return result|{'status':'CANCELLED'}
             action=self.r.store.one(
                 "SELECT id,status,outcome FROM actions WHERE event_id=? AND outcome IS NOT NULL "
-                "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED') "
+                "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED','CANCELLED','ABORTED','INTERRUPTED') "
                 "ORDER BY created DESC,id DESC LIMIT 1",(event_id,))
             if not action:
                 return result
@@ -712,8 +712,8 @@ class SleepRuntime:
             temporal_status=temporal.get('status')
             temporal_telemetry_status=(
                 'PASS' if temporal_status=='UPDATED_EXPERIMENTAL_TEMPORAL_JEPA' else
-                'REJECTED' if temporal_status in {'UTILITY_GATE_REJECTED','RETENTION_GATE_REJECTED'} else
-                'UNAVAILABLE' if temporal_status in {'OFF','PENDING_OPTIMIZER_PERMISSION','WAITING_FOR_MORE_T8_DATA','NO_NEW_TRANSITIONS'} else
+                'REJECTED' if temporal_status in {'UTILITY_GATE_REJECTED','RETENTION_GATE_REJECTED','MODULATOR_VETO','MODULATOR_VERIFY_FIRST'} else
+                'UNAVAILABLE' if temporal_status in {'OFF','PENDING_OPTIMIZER_PERMISSION','WAITING_FOR_MORE_T8_DATA','NO_NEW_TRANSITIONS','MODULATOR_NO_CREDIT','NEUROMOD_UNAVAILABLE'} else
                 'CANCELLED' if temporal_status=='CANCELLED' else
                 'ERROR' if temporal_status=='ERROR' else 'PENDING')
             self.r.store.log('v14_world_jepa_temporal_postcommit',event_id,{
@@ -842,18 +842,31 @@ class SleepRuntime:
                 self.scheduler.complete(e['id'],'FAILED',{'error':type(exc).__name__})
                 raise
             learning=out.get('learning') if type(out) is dict else None
+            temporal=out.get('temporal') if type(out) is dict else None
             planner=out.get('planner') if type(out) is dict else None
             result={'status':out.get('status') if type(out) is dict else 'ERROR',
                     'learning_status':learning.get('status') if type(learning) is dict else None,
+                    'temporal_status':temporal.get('status') if type(temporal) is dict else None,
                     'planner_status':planner.get('status') if type(planner) is dict else None}
+            more_learning=(type(learning) is dict and learning.get('has_more') is True)
+            more_temporal=(type(temporal) is dict and temporal.get('has_more') is True)
+            result['learning_has_more']=more_learning
+            result['temporal_has_more']=more_temporal
+            result['continuation_reason']=(
+                'BASE_AND_TEMPORAL' if more_learning and more_temporal
+                else ('BASE_PAGE' if more_learning else ('TEMPORAL_PAGE' if more_temporal else None))
+            )
             completion=('CANCELLED' if result['status']=='CANCELLED'
                         else ('FAILED' if result['status']=='ERROR' else 'DONE'))
             self.scheduler.complete(e['id'],completion,result)
-            if (result['status']!='CANCELLED' and type(learning) is dict
-                    and learning.get('has_more') is True):
+            if result['status']!='CANCELLED' and (more_learning or more_temporal):
                 continuation=bool(self.schedule_world_jepa(event_id))
                 result['continuation_scheduled']=continuation
-                if type(out) is dict:out['continuation_scheduled']=continuation
+                if type(out) is dict:
+                    out['continuation_scheduled']=continuation
+                    out['learning_has_more']=more_learning
+                    out['temporal_has_more']=more_temporal
+                    out['continuation_reason']=result['continuation_reason']
             return out
         if e['action']=='lab_check':
             from .lab_native_cycle import run

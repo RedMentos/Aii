@@ -9,6 +9,7 @@ B5 body state: a compact world/self/skill state is stored as a source (SourceRef
   as a fact. `:bodyview state off` removes it from prompts.
 """
 import json
+import math
 from .attention import SOURCE_DELIVERY
 from .common import dumps
 
@@ -54,8 +55,205 @@ def detail_windows(store,event_id,text,ref,pad=PAD):
         out.append({'text':text[a:b],'source_ref':ref|{'char_start':base+a,'char_end':base+b}});used+=b-a
     return out
 
+def _valid_sha256(value):
+    return (
+        type(value) is str and len(value) == 64
+        and all(character in "0123456789abcdef" for character in value)
+    )
+
+
+def _temporal_world_jepa_body_readout(r, e, role):
+    """Read source-bound temporal T8 predictions for B1/B2 without blocking a turn."""
+    if role not in ("B1_DETAIL", "B2_GIST"):
+        return None, None
+    history_length = 2 if role == "B1_DETAIL" else 3
+
+    def omitted(reason, **details):
+        audit = {
+            "schema": "V14_TEMPORAL_WORLDJEPA_BODY_RECEIVER_AUDIT/1",
+            "status": "OMITTED",
+            "reason": reason,
+            "role": role,
+            "history_length": history_length,
+            "event_id": e.get("event_id") if isinstance(e, dict) else None,
+            "brain_generation_id": (
+                e.get("brain_generation_id") if isinstance(e, dict) else None
+            ),
+            "body_state_created": True,
+            "body_prompt_consumed": False,
+            "native_body_consumed": False,
+            "native_body_weights_changed": False,
+            "decision_authority": "NONE",
+        }
+        audit.update(details)
+        return None, audit
+
+    try:
+        from . import world_model
+        from .world_jepa_temporal import TemporalWorldJEPAStoreConsumer
+
+        session_id = getattr(r, "session", None)
+        if type(session_id) is not str or not session_id:
+            return omitted("NO_SESSION")
+        actions = tuple(world_model.ACTIONS)
+        learner = TemporalWorldJEPAStoreConsumer(r.store)
+        matrix = learner.receiver_matrix(
+            session_id, actions, history_length=history_length, nonblocking=True,
+        )
+        matrix_status = matrix.get("status")
+        if matrix_status != "SHADOW_READOUT_ONLY":
+            return omitted(
+                "MATRIX_UNAVAILABLE",
+                matrix_status=matrix_status if type(matrix_status) is str else "UNKNOWN",
+            )
+        checkpoint_sha = matrix.get("checkpoint_sha256")
+        source_sha = matrix.get("source_sha256")
+        history_ids = matrix.get("history_action_ids")
+        history_sources = matrix.get("history_source_sha256s")
+        if (not _valid_sha256(checkpoint_sha) or not _valid_sha256(source_sha)
+                or type(history_ids) is not list or len(history_ids) != history_length
+                or type(history_sources) is not list or len(history_sources) != history_length
+                or any(type(value) is not str or not value for value in history_ids)
+                or any(not _valid_sha256(value) for value in history_sources)):
+            return omitted("INVALID_PROVENANCE")
+
+        entries = matrix.get("matrix")
+        if not isinstance(entries, dict):
+            return omitted("INVALID_MATRIX")
+        rows, unsupported = [], []
+        for action in actions:
+            item = entries.get(action, {}).get(role)
+            if not isinstance(item, dict):
+                return omitted("MISSING_ACTION_ENTRY", action=action)
+            item_status = item.get("status")
+            if item_status == "ACTION_SUPPORT_INSUFFICIENT":
+                unsupported.append(action)
+                continue
+            if item_status != "SHADOW_READOUT_ONLY":
+                utility = item.get("receiver_utility")
+                return omitted(
+                    "RECEIVER_UTILITY_REJECTED" if item_status == "RECEIVER_UTILITY_REJECTED"
+                    else "RECEIVER_STATUS_UNAVAILABLE",
+                    action=action,
+                    action_status=item_status,
+                    utility_reason=(
+                        utility.get("reason") if isinstance(utility, dict) else None
+                    ),
+                )
+            if (item.get("checkpoint_sha256") != checkpoint_sha
+                    or item.get("source_sha256") != source_sha
+                    or item.get("history_action_ids") != history_ids
+                    or item.get("history_source_sha256s") != history_sources
+                    or item.get("history_length") != history_length
+                    or item.get("native_body_consumed") is not False
+                    or item.get("native_body_weights_changed") is not False
+                    or item.get("decision_authority") != "NONE"):
+                return omitted("READOUT_PROVENANCE_MISMATCH", action=action)
+            utility, support = item.get("receiver_utility"), item.get("support_samples")
+            if (not isinstance(utility, dict) or utility.get("accepted") is not True):
+                return omitted(
+                    "RECEIVER_UTILITY_REJECTED",
+                    action=action,
+                    utility_reason=utility.get("reason") if isinstance(utility, dict) else None,
+                )
+            if (type(support) is not int or support < 8
+                    or item.get("support_min_samples") != 8
+                    or item.get("support_scope") != "TRAIN_SPLIT_ONLY"):
+                return omitted("ACTION_SUPPORT_INSUFFICIENT", action=action)
+            prediction, uncertainty = item.get("prediction"), item.get("uncertainty")
+            if (not isinstance(prediction, dict) or isinstance(uncertainty, bool)
+                    or not isinstance(uncertainty, (int, float))
+                    or not math.isfinite(float(uncertainty)) or float(uncertainty) < 0):
+                return omitted("INVALID_PREDICTION", action=action)
+            if role == "B1_DETAIL":
+                duration = prediction.get("predicted_action_duration_s")
+                output_chars = prediction.get("predicted_output_characters")
+                if (isinstance(duration, bool) or not isinstance(duration, (int, float))
+                        or not math.isfinite(float(duration))
+                        or isinstance(output_chars, bool)
+                        or not isinstance(output_chars, (int, float))
+                        or not math.isfinite(float(output_chars))):
+                    return omitted("INVALID_PREDICTION", action=action)
+                row = [
+                    action,
+                    round(min(86400.0, max(0.0, float(duration))), 2),
+                    int(round(min(1000000.0, max(0.0, float(output_chars))))),
+                    round(float(uncertainty), 3),
+                    support,
+                ]
+            else:
+                success = prediction.get("predicted_success_probability")
+                if (isinstance(success, bool) or not isinstance(success, (int, float))
+                        or not math.isfinite(float(success))):
+                    return omitted("INVALID_PREDICTION", action=action)
+                row = [
+                    action, round(min(1.0, max(0.0, float(success))), 3),
+                    round(float(uncertainty), 3), support,
+                ]
+            rows.append(row)
+        if not rows:
+            return omitted("NO_SUPPORTED_ACTIONS", unsupported_actions=unsupported)
+
+        target = (
+            "B1_DURATION_OUTPUT_SIZE" if role == "B1_DETAIL"
+            else "B2_P_FINAL_NOT_ANSWER_CORRECTNESS"
+        )
+        prompt_target = (
+            "DURATION+OUTPUT_CHARS" if role == "B1_DETAIL"
+            else "P_FINAL_NOT_CORRECTNESS"
+        )
+        # Keep the foreground view within its 700-character budget. The full
+        # target semantics and complete source hashes remain in the stored audit;
+        # the prompt gets compact labels and 8-hex source fingerprints only.
+        context = {
+            "status": "SHADOW_READOUT_ONLY",
+            "history_length": history_length,
+            "target": prompt_target,
+            "checkpoint": checkpoint_sha[:12],
+            "history_sources": [value[:8] for value in history_sources],
+            "rows": rows,
+            "native_body_consumed": False,
+            "decision_authority": "NONE",
+            "note": "prediction; not fact/permission",
+        }
+        if unsupported:
+            context["unsupported_actions"] = unsupported
+        audit = {
+            "schema": "V14_TEMPORAL_WORLDJEPA_BODY_RECEIVER_AUDIT/1",
+            "status": "READOUT_CREATED",
+            "checkpoint_sha256": checkpoint_sha,
+            "training_source_sha256": source_sha,
+            "history_action_ids": history_ids,
+            "history_source_sha256s": history_sources,
+            "history_length": history_length,
+            "event_id": e.get("event_id"),
+            "brain_generation_id": e.get("brain_generation_id"),
+            "role": role,
+            "action_order": list(actions),
+            "supported_action_samples": {
+                action: item.get("support_samples")
+                for action in actions
+                for item in [entries.get(action, {}).get(role)]
+                if isinstance(item, dict) and item.get("status") == "SHADOW_READOUT_ONLY"
+            },
+            "unsupported_actions": unsupported,
+            "target_semantics": target,
+            "action_horizon": "NEXT_ACTION_AFTER_HISTORY",
+            "body_state_created": True,
+            "body_prompt_consumed": False,
+            "native_body_consumed": False,
+            "native_body_weights_changed": False,
+            "decision_authority": "NONE",
+        }
+        return context, audit
+    except BlockingIOError:
+        return omitted("LOCK_BUSY")
+    except (ValueError, TypeError, KeyError, OSError, OverflowError,
+            ArithmeticError, AttributeError) as exc:
+        return omitted("READOUT_ERROR", error_type=type(exc).__name__)
+
 def body_state(r,e,role,text):
-    """B5: compact world/self/skill state as a stored source (SourceRef), STATE_NOT_FACT."""
+    """B5: compact world/self/skill state plus source-bound temporal prediction (STATE_NOT_FACT)."""
     if modes(r.store)['state_source']!='on':return None
     world=r.store.state('WORLD_STATE:'+r.session,{})[0] or {}
     me=r.store.state('SELF_MODEL:'+r.session,{})[0] or {}
@@ -65,12 +263,33 @@ def body_state(r,e,role,text):
                    'recent':[{k:x.get(k) for k in ('channel','status','outcome') if k in x} for x in (world.get('recent') or [])[-3:] if isinstance(x,dict)]},
           'self':{'learning':(me.get('learning') or {}).get('mode'),'unfinished_actions':me.get('unfinished_actions'),
                   'external_tools':(me.get('permissions') or {}).get('external_tools'),'system_stage':(me.get('permissions') or {}).get('system_stage')}}
+    temporal_context, temporal_audit = _temporal_world_jepa_body_readout(r,e,role)
+    if temporal_context is not None:
+        view['world_jepa_temporal']=temporal_context
     try:
         from .agi import hub
         view['skills']=hub(r).skills.select(text)[:3]
     except Exception:view['skills']=[]
+    def prompt_chars():
+        # Count the exact final prompt envelope, not just the inner view.
+        return len(dumps(view|{'authority':'STATE_NOT_FACT','role':role}))
+    if prompt_chars()>STATE_CHARS:view['world']['recent']=[]
+    if prompt_chars()>STATE_CHARS and temporal_context is not None:
+        skills=view.get('skills')
+        if isinstance(skills,list) and len(skills)>1:view['skills']=skills[:1]
+        if prompt_chars()>STATE_CHARS and isinstance(view.get('skills'),list):view['skills']=[]
+        if prompt_chars()>STATE_CHARS:
+            view.pop('world_jepa_temporal',None)
+            temporal_audit=None
+    if prompt_chars()>STATE_CHARS and isinstance(view.get('skills'),list):
+        view['skills']=[]
     s=dumps(view)
-    if len(s)>STATE_CHARS:view['world']['recent']=[];s=dumps(view)
+    if temporal_audit is not None:
+        s=dumps({
+            'schema':'V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/2',
+            'view':view,
+            'temporal_world_jepa_audit':temporal_audit,
+        })
     ref=r.store.source(s,'BODY_STATE')
     return {'view':view|{'authority':'STATE_NOT_FACT','role':role},'source_ref':ref}
 

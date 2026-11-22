@@ -18,8 +18,9 @@ import uuid
 import numpy as np
 
 from v13 import world_jepa, world_jepa_shadow_checkpoint, world_model
+from .common import dumps, now
+from .contracts import packet
 from .world_jepa_consumer import (
-    WorldJEPAStoreConsumer,
     _fit_role_receivers,
     receiver_utility_gate,
     ROLE_TARGETS,
@@ -316,7 +317,10 @@ def _split_windows(windows):
             for window in windows if window["session_id"] in members
             for source_sha in window["source_sha256s"]
         })
-        component_keys.append((_json_hash({"sessions": sorted(members), "sources": sources}), members))
+        # Session IDs are random runtime identifiers. Partition order must depend
+        # only on stable source-content digests, otherwise identical fixtures can
+        # change train/holdout assignment across runs and Python environments.
+        component_keys.append((_json_hash({"sources": sources}), members))
     component_keys.sort(key=lambda item: item[0])
     fold_by_session = {}
     for index, (_, members) in enumerate(component_keys):
@@ -352,6 +356,131 @@ def _arrays(windows):
             or X2.shape != X.shape or not all(np.isfinite(v).all() for v in (X, A, X2))):
         raise ValueError("invalid temporal training arrays")
     return X, A, X2
+
+
+def _temporal_neuromodulation(store, train_windows, row_by_id, model):
+    """Bind verified T8 prediction error to the existing world_predictor eligibility path."""
+    from .neuromod import Neuromod, SLOW_DECAY
+
+    errors_by_action = {}
+    for window in train_windows:
+        action_ids = window.get("action_ids")
+        if type(action_ids) is not list or not action_ids:
+            raise ValueError("temporal credit window identity")
+        action_id = action_ids[-1]
+        row = row_by_id.get(action_id)
+        if row is None:
+            raise ValueError("temporal credit target missing")
+        mse = float(model.prediction_loss(*_arrays([window])))
+        if not math.isfinite(mse) or mse < 0.0:
+            raise ValueError("nonfinite temporal credit error")
+        errors_by_action.setdefault(action_id, []).append(math.sqrt(mse))
+
+    records = []
+    for action_id, values in sorted(errors_by_action.items()):
+        row = row_by_id[action_id]
+        records.append((row, float(sum(values) / len(values))))
+    if not records:
+        raise ValueError("empty temporal credit batch")
+
+    event_ids = sorted({row["event_id"] for row, _error in records})
+    placeholders = ",".join("?" for _ in event_ids)
+    traces_written = 0
+    modulators_written = 0
+    with store.tx() as connection:
+        existing = connection.execute(
+            "SELECT kind,event_id,payload FROM packets WHERE event_id IN ("
+            + placeholders + ") AND kind IN ('LearningTrace','ModulatorPacket')",
+            tuple(event_ids),
+        ).fetchall()
+        trace_ids = set()
+        modulator_ids = set()
+        for item in existing:
+            payload = json.loads(item["payload"])
+            if item["kind"] == "LearningTrace" and payload.get("path_id") == "world_predictor":
+                trace_ids.add(item["event_id"])
+            elif (item["kind"] == "ModulatorPacket"
+                  and payload.get("producer_component") == "N10_NEUROMOD"
+                  and payload.get("path_id") == "world_predictor"):
+                modulator_ids.add(item["event_id"])
+        for row, rmse in records:
+            event_id = row["event_id"]
+            generation_id = row["generation_id"]
+            if event_id not in trace_ids:
+                trace = packet(
+                    "LearningTrace", "N10_NEUROMOD", event_id, generation_id, [],
+                    path_id="world_predictor", activity=1.0,
+                    eligibility=SLOW_DECAY, authority="SYSTEM",
+                )
+                connection.execute(
+                    "INSERT INTO packets VALUES (?,?,?,?,?,?)",
+                    (trace["packet_id"], "LearningTrace", trace["event_id"],
+                     trace["brain_generation_id"], dumps(trace), now()),
+                )
+                traces_written += 1
+                trace_ids.add(event_id)
+            if event_id not in modulator_ids:
+                error_signal = min(1.0, max(0.0, rmse))
+                modulator = packet(
+                    "ModulatorPacket", "N10_NEUROMOD", event_id, generation_id, [],
+                    epistemic_evidence=0.0, human_correction=0.0,
+                    task_success=0.0, resource_cost=0.0, safety_veto=False,
+                    channels={"world_prediction_error": error_signal},
+                    source_class="real_deterministic_outcome",
+                    finality="FINAL", path_id="world_predictor",
+                )
+                connection.execute(
+                    "INSERT INTO packets VALUES (?,?,?,?,?,?)",
+                    (modulator["packet_id"], "ModulatorPacket", modulator["event_id"],
+                     modulator["brain_generation_id"], dumps(modulator), now()),
+                )
+                modulators_written += 1
+                modulator_ids.add(event_id)
+
+    mean_rmse = float(sum(error for _row, error in records) / len(records))
+    delta = min(1.0, mean_rmse)
+    controller = Neuromod(store)
+    mode = controller.local_mode()
+    if mode not in {"SHADOW", "ACTIVE"}:
+        raise ValueError("invalid temporal neuromodulation mode")
+    local = controller.local_update("world_predictor", delta=delta, observe=False)
+    gate = local["gate"]
+    eligibility = float(gate["eligibility"])
+    modulator = float(gate["modulator"]["combined"])
+    age_plasticity = float(gate["age_plasticity"])
+    meta_plasticity = float(
+        gate["meta"]["p_applied"] if gate["meta"]["mode"] == "ACTIVE" else 1.0
+    )
+    proposed_scale = float(local["scale"])
+    if gate["veto"]:
+        status = "MODULATOR_VETO"
+        learning_rate_scale = 0.0
+    elif gate["conflict"]["verify_first"]:
+        status = "MODULATOR_VERIFY_FIRST"
+        learning_rate_scale = 0.0
+    elif mode == "ACTIVE" and proposed_scale <= 0.0:
+        status = "MODULATOR_NO_CREDIT"
+        learning_rate_scale = 0.0
+    else:
+        status = "READY"
+        # SHADOW records the same credit calculation but preserves the existing
+        # baseline optimizer step. ACTIVE requires the explicit local toggle.
+        learning_rate_scale = proposed_scale if mode == "ACTIVE" else 1.0
+    return {
+        "status": status,
+        "mode": mode,
+        "applied": bool(mode == "ACTIVE" and status == "READY"),
+        "learning_rate_scale": learning_rate_scale,
+        "proposed_scale": proposed_scale,
+        "delta": delta,
+        "eligibility": eligibility,
+        "modulator": modulator,
+        "age_plasticity": age_plasticity,
+        "meta_plasticity": meta_plasticity,
+        "mean_prediction_rmse": mean_rmse,
+        "trace_packets_written": traces_written,
+        "modulator_packets_written": modulators_written,
+    }
 
 
 def _source_sha(rows):
@@ -572,23 +701,28 @@ class TemporalWorldJEPAStoreConsumer:
         os.chmod(self.home, 0o700)
         if not self.home.is_dir() or self.home.is_symlink():
             raise ValueError("unsafe temporal checkpoint directory")
-        # Share the same flock as WorldJEPA updates and source-forget; deletion
-        # cannot race a temporal parameter update or its provenance check.
-        self.lock = WorldJEPAStoreConsumer(
-            store, Path(store.home) / "world_jepa", learning_enabled=False
-        )
+        # Share the exact WorldJEPA/EMA/source-forget flock without constructing
+        # WorldJEPAStoreConsumer: its constructor performs blocking crash-recovery
+        # cleanup, which would stall this optional foreground read before the
+        # nonblocking receiver lock can run.
+        self.lock_home = Path(store.home) / "world_jepa"
+        if self.lock_home.exists() and self.lock_home.is_symlink():
+            raise ValueError("unsafe WorldJEPA lock directory")
+        self.lock_home.mkdir(parents=True, exist_ok=True, mode=0o700)
+        os.chmod(self.lock_home, 0o700)
+        if not self.lock_home.is_dir() or self.lock_home.is_symlink():
+            raise ValueError("unsafe WorldJEPA lock directory")
+        self.lock_path = self.lock_home / "consumer.lock"
 
     @contextmanager
     def _locked(self, exclusive=True, blocking=True):
-        if blocking:
-            with self.lock._locked(exclusive):
-                yield
-            return
-        if self.lock.lock_path.is_symlink():
+        if self.lock_path.is_symlink():
             raise ValueError("unsafe consumer lock")
-        with open(self.lock.lock_path, "a+b") as lock:
+        with open(self.lock_path, "a+b") as lock:
             operation = fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH
-            fcntl.flock(lock.fileno(), operation | fcntl.LOCK_NB)
+            if not blocking:
+                operation |= fcntl.LOCK_NB
+            fcntl.flock(lock.fileno(), operation)
             try:
                 yield
             finally:
@@ -721,7 +855,39 @@ class TemporalWorldJEPAStoreConsumer:
                     "pending_rows": len(pending), "checkpoint_committed": False,
                     "native_body_weights_changed": False,
                 }
-            train, holdout, split = _split_windows(windows)
+            try:
+                train, holdout, split = _split_windows(windows)
+            except ValueError as exc:
+                # One long session is not a valid disjoint holdout: every
+                # overlapping temporal window shares that session. Keep the
+                # verified rows pending and wait for another independent
+                # session instead of turning a normal cold-start condition
+                # into a SleepRuntime ERROR.
+                if str(exc) != "insufficient source-disjoint temporal partitions":
+                    raise
+                next_state = dict(state)
+                next_state["scan_cursor"] = cursor
+                next_state["pending_rows"] = sorted(
+                    pending.values(), key=lambda item: (item["created"], item["action_id"])
+                )
+                self.store.set_state(STATE_KEY, next_state, expected=version)
+                return {
+                    "status": "WAITING_FOR_MORE_T8_DATA",
+                    "reason": "NEED_MORE_SOURCE_DISJOINT_SESSIONS",
+                    "windows": len(windows),
+                    "train_windows": 0,
+                    "holdout_windows": 0,
+                    "verified_receipts": len(new_ids),
+                    "rejected_receipts": rejected,
+                    "censored_observed": censored,
+                    "unknown_skipped": unknown,
+                    "scanned_rows": scanned,
+                    "scan_cursor": cursor,
+                    "has_more": has_more,
+                    "pending_rows": len(pending),
+                    "checkpoint_committed": False,
+                    "native_body_weights_changed": False,
+                }
             if replay_mode == "none" and active is not None:
                 train = [
                     window for window in train
@@ -745,9 +911,9 @@ class TemporalWorldJEPAStoreConsumer:
             X_holdout, A_holdout, X2_holdout = holdout_arrays
             if active is None:
                 model = world_jepa.WorldJEPA(seed=self.seed, ensemble=self.ensemble)
-                # One bootstrap step creates a resumable optimizer state. The
-                # measured before/after delta below excludes that bootstrap.
-                model.fit(X_train, A_train, X2_train, steps=1, log_every=1,
+                # Zero-step bootstrap creates a resumable optimizer state without
+                # applying an unmodulated weight update before the credit gate.
+                model.fit(X_train, A_train, X2_train, steps=0, log_every=1,
                           cancel_check=cancel_check)
             else:
                 model = self._load_model(active)
@@ -766,12 +932,25 @@ class TemporalWorldJEPAStoreConsumer:
                 retention_before.append(
                     _anchored_prediction_loss(model, old_X, old_A, old_target)
                 )
-            train_steps = steps if active is not None else max(1, steps - 1)
+            train_steps = steps
+            modulation = _temporal_neuromodulation(self.store, train, by_id, model)
+            if modulation["status"] != "READY":
+                return {
+                    "status": modulation["status"],
+                    "verified_receipts": len(new_ids),
+                    "train_windows": len(train), "holdout_windows": len(holdout),
+                    "scan_cursor": cursor, "has_more": has_more,
+                    "neuromodulation": modulation,
+                    "checkpoint_committed": False,
+                    "native_body_weights_changed": False,
+                }
+            learning_rate_scale = modulation["learning_rate_scale"]
             try:
                 model.partial_fit(
                     X_train, A_train, X2_train, steps=train_steps,
                     allow_optimizer_bootstrap=True,
                     cancel_check=cancel_check,
+                    learning_rate_scale=learning_rate_scale,
                 )
             except InterruptedError:
                 return {"status": "CANCELLED", "checkpoint_committed": False,
@@ -779,7 +958,9 @@ class TemporalWorldJEPAStoreConsumer:
             if cancel_check is not None and cancel_check():
                 return {"status": "CANCELLED", "checkpoint_committed": False}
             after_snapshot = _snapshot(model)
-            parameter_delta = _delta(before_snapshot, after_snapshot, "enc") + _delta(before_snapshot, after_snapshot, "preds")
+            encoder_delta = _delta(before_snapshot, after_snapshot, "enc")
+            predictor_delta = _delta(before_snapshot, after_snapshot, "preds")
+            parameter_delta = encoder_delta + predictor_delta
             ema_delta = _delta(before_snapshot, after_snapshot, "tgt")
             holdout_after = _anchored_prediction_loss(
                 model, X_holdout, A_holdout, holdout_target_anchor
@@ -833,7 +1014,10 @@ class TemporalWorldJEPAStoreConsumer:
                     "shuffled_action_mse": shuffled_action,
                     "no_history_mse": no_history_loss,
                     "parameter_delta_norm": parameter_delta,
+                    "encoder_delta_norm": encoder_delta,
+                    "predictor_delta_norm": predictor_delta,
                     "ema_target_delta_norm": ema_delta,
+                    "parent_checkpoint_sha256": active["checkpoint_sha256"] if active else None,
                     "retention_mse_before": retention_before,
                     "retention_mse_after": retention_after,
                     "retention_pass": retention_pass,
@@ -844,6 +1028,7 @@ class TemporalWorldJEPAStoreConsumer:
                     ],
                     "utility_pass": utility_pass,
                     "collapse": collapse,
+                    "neuromodulation": modulation,
                 })
                 return {
                     "status": "RETENTION_GATE_REJECTED" if not retention_pass else "UTILITY_GATE_REJECTED",
@@ -890,7 +1075,10 @@ class TemporalWorldJEPAStoreConsumer:
                 "shuffled_action_mse": shuffled_action,
                 "no_history_mse": no_history_loss,
                 "parameter_delta_norm": parameter_delta,
+                "encoder_delta_norm": encoder_delta,
+                "predictor_delta_norm": predictor_delta,
                 "ema_target_delta_norm": ema_delta,
+                "parent_checkpoint_sha256": active["checkpoint_sha256"] if active else None,
                 "optimizer_steps": model._fit_steps,
                 "steps_this_update": train_steps,
                 "censored_observed": censored, "unknown_skipped": unknown,
@@ -910,6 +1098,7 @@ class TemporalWorldJEPAStoreConsumer:
                 ],
                 "replay_mode": replay_mode,
                 "collapse": collapse,
+                "neuromodulation": modulation,
                 "receiver_gates": receiver_gates,
                 "rejected_receipts": rejected,
                 "scanned_rows": scanned,
@@ -960,6 +1149,8 @@ class TemporalWorldJEPAStoreConsumer:
                 "scanned_rows": scanned, "scan_cursor": cursor, "has_more": has_more,
                 "windows": len(windows), "train_windows": len(train),
                 "holdout_windows": len(holdout), "metrics": metrics,
+                "neuromodulation": modulation,
+                "learning_rate_scale": learning_rate_scale,
                 "checkpoint_sha256": checkpoint["sha256"],
                 "source_sha256": source_sha,
                 "checkpoint_committed": True,

@@ -18,6 +18,37 @@ from v13.world_jepa_planner import consume_world_planner_shadow, read_world_plan
 from v13.world_jepa_runtime import PERMISSION_KEY
 
 
+def _trace_world_jepa_consumer_calls(trace):
+    from v13 import world_jepa_planner, world_jepa_runtime, world_jepa_temporal
+
+    patches = []
+    for module, name, label in (
+        (world_jepa_runtime, "consume_after_commit", "base"),
+        (world_jepa_temporal, "consume_temporal_after_commit", "temporal"),
+        (world_jepa_planner, "consume_world_planner_shadow", "planner"),
+    ):
+        original = getattr(module, name)
+
+        def wrapped(*args, _original=original, _label=label, **kwargs):
+            trace.append(_label + ":START")
+            try:
+                result = _original(*args, **kwargs)
+            except Exception as exc:
+                trace.append(_label + ":RAISED:" + type(exc).__name__ + ":" + str(exc)[:240])
+                raise
+            status = result.get("status") if isinstance(result, dict) else type(result).__name__
+            trace.append(_label + ":" + str(status))
+            return result
+
+        setattr(module, name, wrapped)
+        patches.append((module, name, original))
+
+    def restore():
+        for module, name, original in patches:
+            setattr(module, name, original)
+
+    return restore
+
 def _make_store(home):
     (home / "data" / "db").mkdir(parents=True)
     (home / "data" / "blobs").mkdir(parents=True)
@@ -62,6 +93,15 @@ def _add_transitions(store, session, start, count, status_overrides=None):
             },
         )
         event_ids.append(event_id)
+    return event_ids
+
+
+def _add_temporal_cohort(store, label, start, session_count):
+    """Build independent four-event sessions for strict temporal holdouts."""
+    event_ids = []
+    for offset in range(session_count):
+        session = store.new_session(f"{label}-{offset:03d}")
+        event_ids.extend(_add_transitions(store, session, start + offset * 4, 4))
     return event_ids
 
 
@@ -216,19 +256,68 @@ def test_sleep_jepa_job_requeues_one_bounded_continuation_when_more_t8_rows_exis
         store.close()
 
 
+def test_sleep_jepa_job_requeues_when_only_temporal_page_has_more_rows(tmp_path):
+    home = tmp_path / "brain-temporal-continuation"
+    store, session = _make_store(home)
+    try:
+        event_id = _add_transitions(store, session, 0, 1)[0]
+        store.set_state(PERMISSION_KEY, {
+            "learning_enabled": True, "optimizer_permission": True,
+            "steps": 40, "replay_mode": "uniform",
+        })
+        sleep = _sleep(store, home)
+        sleep._run_world_jepa = lambda event_id, limit=64: {
+            "status": "POSTCOMMIT_PROCESSED",
+            "event_id": event_id,
+            "learning": {"status": "NO_NEW_TRANSITIONS", "has_more": False},
+            "temporal": {
+                "status": "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA",
+                "has_more": True,
+            },
+            "planner": {"status": "NO_CHECKPOINT"},
+        }
+        posted = sleep.scheduler.post(
+            "IDLE", action="jepa_update", payload={"event_id": event_id},
+            dedup="v14-world-jepa",
+        )
+        dispatched = sleep.scheduler.next(idle=True, resource_state="NORMAL", quiet=False)
+        assert dispatched is not None and dispatched["id"] == posted
+        result = sleep.job(dispatched)
+        assert result["learning"]["has_more"] is False
+        assert result["temporal"]["has_more"] is True
+        assert result["temporal_status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA"
+        assert result["learning_has_more"] is False
+        assert result["temporal_has_more"] is True
+        assert result["continuation_reason"] == "TEMPORAL_PAGE"
+        assert result["continuation_scheduled"] is True
+        pending = [item for item in sleep.scheduler.pending() if item["action"] == "jepa_update"]
+        assert len(pending) == 1
+        assert pending[0]["payload"] == {"event_id": event_id}
+    finally:
+        store.close()
+
+
 def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with_restart_rollback(tmp_path):
     home = tmp_path / "brain-runtime-jepa"
     store, session = _make_store(home)
     try:
-        first_events = _add_transitions(store, session, 0, 256)
+        first_events = _add_temporal_cohort(store, "first", 0, 64)
         store.set_state(PERMISSION_KEY, {
             "learning_enabled": True, "optimizer_permission": True,
             "steps": 120, "replay_mode": "uniform",
         })
         sleep = _sleep(store, home)
+        trace = []
+        restore_trace = _trace_world_jepa_consumer_calls(trace)
         first = sleep._run_world_jepa(first_events[-1], limit=256)
-        assert first["status"] == "POSTCOMMIT_PROCESSED"
-        assert first["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        assert first["status"] == "POSTCOMMIT_PROCESSED", {
+            "error": first.get("error"), "trace": trace,
+            "learning": first.get("learning", {}).get("status"),
+            "temporal": first.get("temporal", {}).get("status"),
+            "planner": first.get("planner", {}).get("status"),
+        }
+        assert "learning" in first, first
+        assert first["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA", first
         first_metrics = first["learning"]["metrics"]
         assert first_metrics["optimizer_moments_persisted"] is EXPECT_OPTIMIZER_STATE_PERSISTED
         assert first_metrics["inverse_dynamics_optimizer_persisted"] is EXPECT_OPTIMIZER_STATE_PERSISTED
@@ -267,7 +356,7 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         assert first["planner"]["checkpoint_sha256"] == first_sha
         assert read_world_planner_shadow(store, first_events[-1])["status"] == first_planner_status
 
-        second_events = _add_transitions(store, session, 256, 32)
+        second_events = _add_temporal_cohort(store, "second", 256, 8)
         store.set_state(PERMISSION_KEY, {
             "learning_enabled": True, "optimizer_permission": True,
             "steps": 24, "replay_mode": "uniform",
@@ -313,6 +402,8 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         assert telemetry
         assert "synthetic-postcommit-source-" not in repr(telemetry)
     finally:
+        if 'restore_trace' in locals():
+            restore_trace()
         store.close()
 
 
@@ -351,7 +442,7 @@ def test_sleep_jepa_cancelled_by_user_preemption_requeues_without_checkpoint_com
     home = tmp_path / "brain-jepa-cancel"
     store, session = _make_store(home)
     try:
-        event_ids = _add_transitions(store, session, 0, 256)
+        event_ids = _add_temporal_cohort(store, "events", 0, 64)
         store.set_state(PERMISSION_KEY, {
             "learning_enabled": True, "optimizer_permission": True,
             "steps": 120, "replay_mode": "uniform",
@@ -386,14 +477,22 @@ def test_planner_only_checkpoint_readout_does_not_consume_future_learning_opt_in
     home = tmp_path / "brain-jepa-gate-resume"
     store, session = _make_store(home)
     try:
-        first_events = _add_transitions(store, session, 0, 256)
+        first_events = _add_temporal_cohort(store, "first", 0, 64)
         store.set_state(PERMISSION_KEY, {
             "learning_enabled": True, "optimizer_permission": True,
             "steps": 120, "replay_mode": "uniform",
         })
         sleep = _sleep(store, home)
+        trace = []
+        restore_trace = _trace_world_jepa_consumer_calls(trace)
         first = sleep._run_world_jepa(first_events[-1], limit=256)
-        assert first["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        assert "learning" in first, {
+            "error": first.get("error"), "trace": trace,
+            "learning": first.get("learning", {}).get("status"),
+            "temporal": first.get("temporal", {}).get("status"),
+            "planner": first.get("planner", {}).get("status"),
+        }
+        assert first["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA", first
         first_planner_status = _planner_expected_status(first["learning"]["metrics"])
         assert first["planner"]["status"] == first_planner_status
 
@@ -418,6 +517,8 @@ def test_planner_only_checkpoint_readout_does_not_consume_future_learning_opt_in
         event = next(item for item in sleep.scheduler.pending() if item["id"] == resumed)
         assert event["payload"] == {"event_id": later_event}
     finally:
+        if 'restore_trace' in locals():
+            restore_trace()
         store.close()
 
 
@@ -637,7 +738,7 @@ def test_receiver_readout_fails_closed_when_its_shuffled_latent_control_fails(tm
     home = tmp_path / "brain-receiver-utility-gate"
     store, session = _make_store(home)
     try:
-        event_ids = _add_transitions(store, session, 0, 256)
+        event_ids = _add_temporal_cohort(store, "events", 0, 64)
         store.set_state(PERMISSION_KEY, {
             "learning_enabled": True, "optimizer_permission": True,
             "steps": 120, "replay_mode": "uniform",
@@ -671,7 +772,7 @@ def test_planner_withholds_each_role_when_its_own_negative_control_fails(tmp_pat
     home = tmp_path / "brain-planner-receiver-utility"
     store, session = _make_store(home)
     try:
-        event_ids = _add_transitions(store, session, 0, 256)
+        event_ids = _add_temporal_cohort(store, "events", 0, 64)
         store.set_state(PERMISSION_KEY, {
             "learning_enabled": True, "optimizer_permission": True,
             "steps": 120, "replay_mode": "uniform",
