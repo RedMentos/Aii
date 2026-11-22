@@ -6,6 +6,9 @@ on:
       - 'v13/code/tests/test_runtime_deploy_integrity.py'
       - 'v13/code/tests/test_runtime_deploy.py'
       - 'v13/code/tests/test_runtime_activation_journal.py'
+      - 'v14/V14_USER_NEXT_ACTION.md'
+      - 'v14/V14_WORK_BOARD.json'
+      - 'v14/handoffs/QA_RUNTIME_ACTIVATION_JOURNAL_20261122.md'
       - '.github/workflows/v13-runtime-deploy-integrity.yml'
   push:
     branches:
