@@ -2,12 +2,12 @@
 
 **Base:** release-development `gpt6/v13-private-remote-bridge-20261111` at `c03ff0aa9e18b5ffebd1109f3c078105f53c6afe`
 **Branch:** `core/v14-native-receiver-release-rebase-20261122-run14`
-**Code checkpoint:** `08ae85925e07e4f8219efd51e55a4088e278b1ca`
+**Code checkpoint:** `fd6cc29fb1ee586d60ca5b407b6641f537651054`
 **State:** DRAFT / NOT_RELEASED / NOT_ANDROID_VERIFIED
 
 ## Actual change
 
-Replayed the native llama.cpp input-embedding receiver candidate from the older Boss-base PR #2314 onto the current release head. The six source files pinned by the candidate's SHA-256 BASE_PINS have identical Git blob SHAs at the old base `1105ab56` and current release `c03ff0a`; the branch is now 17 commits ahead and 0 behind the release head.
+Replayed the native llama.cpp input-embedding receiver candidate from the older Boss-base PR #2314 onto the current release head. The six source files pinned by the candidate's SHA-256 BASE_PINS have identical Git blob SHAs at the old base `1105ab56` and current release `c03ff0a`; the branch is now 19 commits ahead and 0 behind the release head.
 
 Fixed the staged Callosum operator regression: the overlay previously replaced `c=controller(r)` with the native-probe branch, so the ordinary `:callosum` status command raised `NameError: c is not defined`. The inserted prefix now preserves `c=controller(r)` before the new explicit probe branch. The native probe remains one-shot, diagnostic-only, and does not enable production B3, semantic alignment, weight learning, model swaps or routing authority.
 
@@ -27,7 +27,9 @@ The native receiver is pinned to `ggml-org/llama.cpp` revision `b29c606e28a01b1b
 
 - **LOCAL_LINUX / CPython 3.13.5:** targeted operator-overlay regression PASS. The test first reproduced the old `NameError` as a negative control, then compiled the fixed operator function and verified `:callosum status` returns `OK`.
 - **LOCAL_LINUX full Aii suite:** BLOCKED; no repository checkout is present and GitHub DNS resolution fails. The local test above is a focused source-level regression, not a full Runtime integration test.
-- **GitHub CI:** exact PR checks have not yet started on this new branch. Workflow now compiles the staged receiver/deploy chain, runs native-tap + staged-receiver + `test_callosum.py` on Python 3.13/3.14, builds the pinned Linux receiver, cross-compiles Android arm64-v8a, and runs the public-repository privacy scan. Do not claim these as PASS until exact-head results complete.
+- **LOCAL_LINUX / CPython 3.13.5:** a second focused check verified the recovery→stage→deployer SHA-256/Git-blob pin chain end-to-end; the SHA-256 implementation was checked against the standard `abc` vector. PASS.
+- **Staged synthetic Runtime regression added:** `test_native_latent_receiver_stage.py` now asserts that the fair observer overlay is present and runs `observer_fair_budget_disposable_cases_20261116.py` inside the exact staged Runtime. That suite exercises sequential role slices, B1 timeout with B2 still reaching C4/C3, and two recent C3 zero-token failures where both source-bound B1/B2 offers enter the same C3 input. These are synthetic Runtime/SQLite results, not native model or Redmi results.
+- **GitHub CI:** exact-head checks are now queued/in progress on `fd6cc29`; no PASS is claimed yet. Workflow compiles the staged receiver/deploy chain, runs native-tap + staged-receiver + Callosum + fair-budget regressions on Python 3.13/3.14, builds the pinned Linux receiver, cross-compiles Android arm64-v8a, and runs the public-repository privacy scan.
 - **Android / Redmi:** REDMI_UNVERIFIED. No handset connection, APK install, model load, native receiver invocation, update request, shell, model/weight change or permission change occurred.
 
 ## Remaining limits
