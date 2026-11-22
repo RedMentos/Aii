@@ -215,7 +215,7 @@
         "base": "gpt6/v13-private-remote-bridge-20261111",
         "base_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
         "code_sha": "1db8fd5fc2e18c115c632cf60577200d68db2c0b",
-        "handoff_head_sha": "843b3e95bb0ea6f920f505dd3429f97f0fd6b28d",
+        "handoff_head_sha": "116691f2480f158d3e7e85bbbdb446434f6725bb",
         "state": "OPEN_DRAFT_NOT_RELEASED",
         "scope": "Cognition.tap_pair + cancellable Runtime :tap pair for same-event/source B1_DETAIL/B2_GIST native prefill taps; typed/hash-bound B3PairedTapPacket; source-SHA grouped L1 shadow holdout; symlink-resistant private artifact persistence; no receiver injection or foundation weight authority",
         "b3_ci": "PASS_RUN_45031525111_52_TESTS_PY_COMPILE_CLI_SMOKE",
