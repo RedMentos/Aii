@@ -1,3 +1,15 @@
+# Perception update — 2026-11-22T16:52:10.339Z
+
+**Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein UPDATE_REQUEST, keine Mikrofonfreigabe, kein Modell-/Gewichtsdownload und kein Rechtewechsel.
+
+- Release-HEAD: `gpt6/v13-private-remote-bridge-20261111` = `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; die 21 vom GitHub-Connector gelisteten Actions-Workflows sind SUCCESS. Der private V13OBS-Status #115 wurde am 2026-11-22T16:39:55Z aktualisiert und bestätigt, dass genau dieser Commit installiert ist; Auto-Update EIN, Runtime/Dashboard UP_TO_DATE. Das ist kein Funktionsnachweis für Chat: C3 lieferte zuletzt nur 2 Tokens bei rund 38.9 s TTFT; B1/B2 hatten weiterhin keine gültigen Offers; native Latentkopplung ist nicht belegt.
+- Neuer Perception-PR [#2361](https://github.com/RedMentos/Aii/pull/2361), Branch `research-perception/v14-fastdiar-frame-adapter-20261122`, basiert direkt auf c4eb82. Code SHA `21962aba86dbf9a502ed4a6b567d761293ca2c17`; Test SHA `3d698fed4259df7795b64041787baa30c2bfbfa4`; aktueller PR-HEAD `169f69e8c85d2de04c367d36dff8eb5faeaf9bd7`. Der Adapter nimmt FASTDIARs float16 192-D-Frames entgegen und führt sie in den bestehenden A5→A4→C3-Consumer. LOCAL_LINUX CPython 3.13.5: py_compile PASS, isolierte Adaptertests 4/4 PASS. Exakte PR-CI und echte Consumer-Regression noch PENDING.
+- Der Adapter setzt weder Schwelle noch Kalibrierung; A4 bleibt DEFER, keine Sprecheridentität, kein Lernen/Handeln, keine Vektorpersistenz. FASTDIAR-Code ist MIT, aber für die Checkpoint-Gewichte wurde keine separate Lizenz gefunden; keine Gewichte geladen. Kein Termux-/Redmi-/Mikrofontest.
+- Bestehender [#2349](https://github.com/RedMentos/Aii/pull/2349) bleibt DRAFT/NOT_RELEASED: seine fokussierten Audio-Tests sind grün, die staged/integrated Kette scheitert weiter an einem Core-eigenen Composer-Source-Pin (`b18e450...` erwartet, `80bd30...` tatsächlich). Perception hat Core-Dateien nicht geändert.
+- Nächster interner Schritt: #2361 exakte Python-3.13/3.14-CI prüfen; anschließend unabhängiges Core/QA-Review. Vor jedem FASTDIAR-Download erst Checkpoint-Lizenz klären und separat explizite Zustimmung einholen. Keine Aktion am installierten Gerät.
+
+---
+
 # JEPA-Statuskorrektur — 2026-11-22T10:00:40.871Z
 
 PR #2331 steht inzwischen auf `535eba6f668b3990416c361368f36e3e8f1e599e`, hat aber **9 fehlgeschlagene Checks** (4 laufen, 2 queued, 4 erfolgreich, 1 übersprungen). Die Fehler liegen weiter in der verschachtelten Source-Pin-Kette: sechs direkte Consumer-Pins stimmen nicht mit den aktuellen Datei-Bytes überein. Die vollständigen Hashes stehen im Boss-Review-Kommentar [7077507340](https://github.com/RedMentos/Aii/pull/2331#issuecomment-7077507340). Das ist noch kein JEPA-Lern-/Unlearning-Erfolg; PR bleibt DRAFT, Promotion OFF.
