@@ -213,6 +213,12 @@ public final class CompanionProvider extends ContentProvider {
         }
     }
 
+    static final class DispatchNotAttemptedException extends RuntimeException {
+        DispatchNotAttemptedException() {
+            super("dispatch was not attempted");
+        }
+    }
+
     static String claimAndDispatch(Context context, CompanionDb db, String actionId,
                                    MillisClock clock, Runnable dispatch) {
         synchronized (ACTION_GATE_LOCK) {
@@ -226,8 +232,12 @@ public final class CompanionProvider extends ContentProvider {
             try {
                 dispatch.run();
                 return "DISPATCHED";
-            } catch (RuntimeException ignored) {
+            } catch (DispatchNotAttemptedException knownNoDispatch) {
                 return "FAILED_TO_DISPATCH";
+            } catch (RuntimeException uncertainDispatch) {
+                // startActivity may have crossed the framework boundary before
+                // surfacing an exception. Never report a definite failure here.
+                return "OUTCOME_UNKNOWN";
             }
         }
     }
