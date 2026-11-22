@@ -276,10 +276,16 @@ class RemoteChatTests(unittest.TestCase):
         self.assertEqual(
             client.comments_sent[0][1]["device_status"]["status"], "SENT"
         )
-        result = remote_chat.result(ident)
+        receive = self.make_issue("CHAT_RESULT", {"request_id": ident},
+                                  number=11, ident="d" * 32)
+        result_client = FakeGitHub([receive])
+        with mock.patch("v13.chat_service.call", side_effect=AssertionError("CHAT_RESULT must be read-only")):
+            self.assertEqual(owner.poll_once(result_client, self.cfg, now=self.now)["processed"], 1)
+        result = result_client.comments_sent[0][1]["device_status"]
         self.assertEqual(result["status"], "OPERATOR_RESULT_VISIBLE")
         self.assertEqual(result["operator"], "NATIVE_RECEIVER_PROBE")
-        self.assertTrue(result["complete"])
+        self.assertTrue(result["command_complete"])
+        self.assertFalse(result["complete"])
         self.assertEqual(result["correlation"], "ATOMIC_INPUT_WINDOW")
         probe = result["result"]
         self.assertEqual(probe["status"], "NATIVE_INPUT_EFFECT")
