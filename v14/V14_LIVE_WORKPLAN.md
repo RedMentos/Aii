@@ -1253,3 +1253,10 @@ Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, mi
 - Fully reviewed the 12-page arXiv preprint `2611.20819v1` (arXiv record 2026-11-16; PDF title page says 2026-09-26). Its full-buffer replay and novelty-gated assign/defer/create policy are relevant to A4 attention and audio episodic memory, but the useful output is end-of-meeting revisable diarization; causal-strict labels are poor due to cluster renumbering. The study is single-seed on three AMI meetings and five VoxConverse sessions; no code/checkpoint license or Redmi result is linked.
 - Candidate experiment only: use existing source-bound synthetic speaker evidence to compare fixed threshold, calibrated three-regime novelty gate and no-gate; ablate full-history vs sliding-window vs no replay; measure false-new, re-ID across silence, overlap deferral, source-disjoint AUROC, latency and session deletion. Keep it separate from JEPA weight learning and don't delay live C3 output.
 - No model/dependency/weight downloaded or changed. Do not select FASTDIAR weights until a separate checkpoint-weight license is clear.
+
+
+## Exact-head Perception follow-up — 2026-11-22T18:11Z
+
+- PR #2366 branch head `9a19b8c0af01912f40d92fecac4e6ab9a82bb128`; code/test commit `f8a9faf66b64352f8e1703e634b79f03ec3c0984`. The branch's later commits are V14 handoff/board/research updates only.
+- Exact GitHub run 45053429482 is pending and currently has no jobs; no CI pass is claimed. The previous #2363 is closed as superseded by #2366.
+- R-081's surprise-gated speaker-memory paper is recorded as a research-only ablation proposal; it does not replace JEPA/EMA, trainable weights, or the full voice Canon.
