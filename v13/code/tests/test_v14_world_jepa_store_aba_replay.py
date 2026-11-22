@@ -15,6 +15,7 @@ from pathlib import Path
 import shutil
 
 import numpy as np
+import pytest
 
 from v13 import (
     contracts,
@@ -27,6 +28,7 @@ from v13 import (
     world_model,
 )
 from v13.store import Store
+from v13.memory import Memory
 from v13.world_jepa_store_authority import verify_committed_transition_page
 from v13.world_jepa_planner import consume_world_planner_shadow
 
@@ -1301,3 +1303,124 @@ def test_per_session_retention_gate_fails_closed_when_cohort_budget_is_exceeded(
     gate = world_jepa_consumer._retention_cohort_gate({}, {}, overflow=True)
     assert gate["accepted"] is False
     assert gate["reason"] == "RETENTION_COHORT_LIMIT_EXCEEDED"
+
+def _memory_forget_source(store, source_id, event_id):
+    memory = object.__new__(Memory)
+    memory.s = store
+    return memory._forget_source(source_id, event_id)
+
+
+def test_memory_forget_fails_closed_for_source_used_by_active_world_jepa(tmp_path):
+    home = tmp_path / "world-jepa-forget-active"
+    (home / "data" / "db").mkdir(parents=True)
+    (home / "data" / "blobs").mkdir(parents=True)
+    store = Store(home)
+    try:
+        phase = _add_phase(
+            store, seed=13, phase="FORGET-ACTIVE", domain="A", count=256
+        )
+        _set_permissions(
+            store, steps=A1_STEPS, replay_mode="uniform",
+            learning_enabled=True, optimizer_permission=True,
+        )
+        result = world_jepa_runtime.consume_after_commit(
+            store, home=home, limit=256
+        )
+        assert result["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        active = _active_state(store)["active"]
+        source_id = active["experience_rows"][0]["source_id"]
+        before = store.one(
+            "SELECT deleted FROM sources WHERE id=?", (source_id,)
+        )
+        assert before is not None and before["deleted"] == 0
+
+        with pytest.raises(ValueError, match="WorldJEPA"):
+            _memory_forget_source(store, source_id, phase["last_event_id"])
+
+        after = store.one(
+            "SELECT deleted FROM sources WHERE id=?", (source_id,)
+        )
+        assert after is not None and after["deleted"] == 0
+        assert _active_state(store)["active"]["checkpoint_sha256"] == active["checkpoint_sha256"]
+    finally:
+        store.close()
+
+
+def test_memory_forget_detects_world_jepa_source_after_replay_row_eviction(tmp_path):
+    home = tmp_path / "world-jepa-forget-evicted"
+    (home / "data" / "db").mkdir(parents=True)
+    (home / "data" / "blobs").mkdir(parents=True)
+    store = Store(home)
+    try:
+        phase = _add_phase(
+            store, seed=13, phase="FORGET-EVICTED", domain="A", count=256
+        )
+        _set_permissions(
+            store, steps=A1_STEPS, replay_mode="uniform",
+            learning_enabled=True, optimizer_permission=True,
+        )
+        result = world_jepa_runtime.consume_after_commit(
+            store, home=home, limit=256
+        )
+        assert result["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+
+        state, version = store.state(STATE_KEY, None)
+        active = state["active"]
+        target = active["experience_rows"][0]
+        source_id = target["source_id"]
+        action_id = target["action_id"]
+        active["experience_rows"] = [
+            row for row in active["experience_rows"]
+            if row["action_id"] != action_id
+        ]
+        active["train_ids"] = [
+            item for item in active["train_ids"] if item != action_id
+        ]
+        active["holdout_ids"] = [
+            item for item in active["holdout_ids"] if item != action_id
+        ]
+        store.set_state(STATE_KEY, state, expected=version)
+
+        with pytest.raises(ValueError, match="evicted replay rows"):
+            _memory_forget_source(store, source_id, phase["last_event_id"])
+
+        after = store.one(
+            "SELECT deleted FROM sources WHERE id=?", (source_id,)
+        )
+        assert after is not None and after["deleted"] == 0
+    finally:
+        store.close()
+
+
+def test_memory_forget_discards_untrained_pending_world_jepa_source(tmp_path):
+    home = tmp_path / "world-jepa-forget-pending"
+    (home / "data" / "db").mkdir(parents=True)
+    (home / "data" / "blobs").mkdir(parents=True)
+    store = Store(home)
+    try:
+        phase = _add_phase(
+            store, seed=227, phase="FORGET-PENDING", domain="A", count=1
+        )
+        _set_permissions(
+            store, steps=8, replay_mode="uniform",
+            learning_enabled=True, optimizer_permission=True,
+        )
+        result = world_jepa_runtime.consume_after_commit(
+            store, home=home, limit=256
+        )
+        assert result["status"] == "INSUFFICIENT_SOURCE_DISJOINT_T8_COHORT"
+        state, _ = store.state(STATE_KEY, None)
+        assert len(state["pending_rows"]) == 1
+        source_id = state["pending_rows"][0]["source_id"]
+
+        _memory_forget_source(store, source_id, phase["last_event_id"])
+
+        state, _ = store.state(STATE_KEY, None)
+        assert state["pending_rows"] == []
+        source = store.one(
+            "SELECT deleted FROM sources WHERE id=?", (source_id,)
+        )
+        assert source is not None and source["deleted"] == 1
+    finally:
+        store.close()
+
