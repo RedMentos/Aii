@@ -31,3 +31,9 @@ jobs:
         run: python -m pip install --disable-pip-version-check numpy==2.3.5 pytest==9.2.0
       - name: Run staged optimizer-resume and postcommit regression on Python 3.14
         run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_world_jepa_training_resume_stage_20261111.py
+      - name: Run persistent T8, replay, rollback and B1/B2 receiver integration on Python 3.14
+        run: >-
+          PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s
+          v13/code/tests/test_v14_world_jepa_runtime_port.py
+          v13/code/tests/test_v14_world_jepa_postcommit_runtime.py
+          v13/code/tests/test_v14_world_jepa_store_aba_replay.py
