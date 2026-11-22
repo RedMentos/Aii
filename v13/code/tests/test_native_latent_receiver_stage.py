@@ -24,6 +24,11 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert "native-probe" in callosum
     assert "production_route=False" in cognition
     assert "semantic_use_proven=False" in cognition
+    assert "import time" in callosum
+    assert "if len(args)==5 and args[0]=='native-probe'" in callosum
+    assert callosum.index("if len(args)==5 and args[0]=='native-probe'") < callosum.index("if not args or args==['status']")
+    assert "return dumps({'direction':args[1],'level':b3degrade.promote(r,args[1],'EXPLICIT_HUMAN')})" in callosum
+    assert "native_receiver_probe" in callosum
     env = dict(os.environ)
     env["PYTHONPATH"] = str(destination)
     env["PYTHONDONTWRITEBYTECODE"] = "1"

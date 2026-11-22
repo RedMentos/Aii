@@ -91,33 +91,21 @@ NATIVE_PROBE_METHOD = r'''    def native_receiver_probe(self):
             return {'status':'INVALID_STORED_RECEIPT'}
 
 '''
-REPORT_OLD = """    def report(self,cfg):
-        st,_=self._load();p=st['proposals']
-        return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),
-                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (no native L1 receiver path yet)','claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'}
+REPORT_PROBE_OLD = """                'directions':self.doctor(cfg),
 """
-REPORT_NEW = """    def report(self,cfg):
-        st,_=self._load();p=st['proposals']
-        return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,
-                'directions':self.doctor(cfg),'native_receiver_probe':self.native_receiver_probe(),
-                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked for production; native probe is separate-context and non-authoritative',
-                'claim_limit':'Native input effect is not trained cross-model alignment, semantic utility or production latent exchange'}
+REPORT_PROBE_NEW = """                'directions':self.doctor(cfg),'native_receiver_probe':self.native_receiver_probe(),
 """
-OPERATOR_OLD = r'''def operator_command(r,args):
-    """:callosum [status|shadow|active|degrade|promote <direction>]"""
-    c=controller(r)
-    if not args or args==['status']:return dumps(c.report(r.cfg))
-    if args==['shadow']:return dumps({'mode':c.set_mode('SHADOW')})
-    if args==['active']:return dumps({'mode':c.set_mode('ACTIVE','EXPLICIT_HUMAN')})
-    if args==['degrade']:return dumps({d:{k:x[k] for k in ('degradation_level','status','calibration_valid','degradation')} for d,x in c.doctor(r.cfg).items()})
-    if len(args)==2 and args[0]=='promote' and args[1] in b3degrade.RECEIVER:  # typed by the human at the operator console
-        return dumps({'direction':b3degrade.promote(r,args[1],'EXPLICIT_HUMAN')})
-    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1]')
+REPORT_GATE_OLD = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (no native L1 receiver path yet)','claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'}
+"""
+REPORT_GATE_NEW = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked for production; native probe is separate-context and non-authoritative','claim_limit':'Native input effect is not trained cross-model alignment, semantic utility or production latent exchange'}
+"""
+OPERATOR_HELP_OLD = r'''    """:callosum [status|shadow|active|degrade|promote <direction>]"""
 '''
-OPERATOR_NEW = r'''def operator_command(r,args):
-    """:callosum [status|shadow|active|degrade|promote <direction>|native-probe <sender> <receiver> --last-source --confirm]"""
-    c=controller(r)
-    if len(args)==5 and args[0]=='native-probe' and args[3]=='--last-source' and args[4]=='--confirm':
+OPERATOR_HELP_NEW = r'''    """:callosum [status|shadow|active|degrade|promote <direction>|native-probe <sender> <receiver> --last-source --confirm]"""
+'''
+OPERATOR_OLD = r'''    if not args or args==['status']:return dumps(c.report(r.cfg))
+'''
+OPERATOR_NEW = r'''    if len(args)==5 and args[0]=='native-probe' and args[3]=='--last-source' and args[4]=='--confirm':
         sender,receiver=args[1],args[2]
         if sender not in {'B1_DETAIL','B2_GIST'} or receiver not in {'B1_DETAIL','B2_GIST','C3_LANGUAGE'} or sender==receiver:
             raise ValueError('Native probe requires distinct B1/B2 sender and B1/B2/C3 receiver')
@@ -141,13 +129,8 @@ OPERATOR_NEW = r'''def operator_command(r,args):
                       'semantic_use_proven':False,'training_authority':0,'native_receiver_authority':0,
                       'notice':'Synchronous, user-initiated probe; existing model only, no weight or routing change'})
     if not args or args==['status']:return dumps(c.report(r.cfg))
-    if args==['shadow']:return dumps({'mode':c.set_mode('SHADOW')})
-    if args==['active']:return dumps({'mode':c.set_mode('ACTIVE','EXPLICIT_HUMAN')})
-    if args==['degrade']:return dumps({d:{k:x[k] for k in ('degradation_level','status','calibration_valid','degradation')} for d,x in c.doctor(r.cfg).items()})
-    if len(args)==2 and args[0]=='promote' and args[1] in b3degrade.RECEIVER:
-        return dumps({'direction':args[1],'level':b3degrade.promote(r,args[1],'EXPLICIT_HUMAN')})
-    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|native-probe B1_DETAIL|B2_GIST B1_DETAIL|B2_GIST|C3_LANGUAGE --last-source --confirm]')
 '''
+
 def _sha256(raw):
     return hashlib.sha256(raw).hexdigest()
 def _replace(raw,old,new,label):
@@ -169,8 +152,11 @@ def apply_sources(code_dir,sources):
     callosum=result.get("v13/callosum.py",(code_dir/"v13/callosum.py").read_bytes())
     if not isinstance(callosum,bytes) or b"def native_receiver_probe(" in callosum:
         raise ValueError("native receiver Callosum already patched or unavailable")
+    callosum=_replace(callosum,b"import re\n",b"import re\nimport time\n","Callosum time import")
     callosum=_replace(callosum,b"    def report(self,cfg):\n",NATIVE_PROBE_METHOD.encode("utf-8")+b"    def report(self,cfg):\n","Callosum.native_receiver_probe")
-    callosum=_replace(callosum,REPORT_OLD.encode("utf-8"),REPORT_NEW.encode("utf-8"),"Callosum report")
+    callosum=_replace(callosum,REPORT_PROBE_OLD.encode("utf-8"),REPORT_PROBE_NEW.encode("utf-8"),"Callosum report probe")
+    callosum=_replace(callosum,REPORT_GATE_OLD.encode("utf-8"),REPORT_GATE_NEW.encode("utf-8"),"Callosum report gate")
+    callosum=_replace(callosum,OPERATOR_HELP_OLD.encode("utf-8"),OPERATOR_HELP_NEW.encode("utf-8"),"Callosum operator help")
     callosum=_replace(callosum,OPERATOR_OLD.encode("utf-8"),OPERATOR_NEW.encode("utf-8"),"Callosum operator")
     compile(callosum,"v13/callosum.py","exec")
     result["v13/cognition.py"]=cognition
