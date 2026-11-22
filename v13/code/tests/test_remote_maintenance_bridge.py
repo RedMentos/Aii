@@ -367,3 +367,43 @@ def test_private_relay_token_not_forwarded_to_public_source(monkeypatch):
     assert requests[1].get_header("Authorization") == "Bearer private-secret-token"
     with pytest.raises(m.Denied):
         gh.request("POST", "/repos/Other/repo/issues", {"title": "no"})
+
+def test_chat_operator_allows_only_exact_confirmed_native_receiver_probe(env):
+    env["cfg"]["permissions"]["agent-qa"].append("CHAT_OPERATOR")
+    valid = ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source --confirm"
+    signed = command(
+        env, "CHAT_OPERATOR", request_id="d" * 32, args={"command": valid}
+    )
+    verified = m.verify_command(
+        signed, env["cfg"]["keys"], env["cfg"]["permissions"],
+        env["cfg"]["authors"], author="TrustedUser", now=1002,
+    )
+    assert verified["args"]["command"] == valid
+
+    invalid = (
+        ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source",
+        ":callosum native-probe B1_DETAIL B1_DETAIL --last-source --confirm",
+        ":callosum native-probe C3_LANGUAGE B1_DETAIL --last-source --confirm",
+        ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source --confirm --force",
+        ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source --confirm && id",
+    )
+    for index, value in enumerate(invalid, start=1):
+        bad = command(
+            env, "CHAT_OPERATOR", request_id=f"{index:032x}",
+            args={"command": value},
+        )
+        with pytest.raises(m.Denied):
+            m.verify_command(
+                bad, env["cfg"]["keys"], env["cfg"]["permissions"],
+                env["cfg"]["authors"], author="TrustedUser", now=1002,
+            )
+
+    extra = command(
+        env, "CHAT_OPERATOR", request_id="e" * 32,
+        args={"command": valid, "shell": "id"},
+    )
+    with pytest.raises(m.Denied):
+        m.verify_command(
+            extra, env["cfg"]["keys"], env["cfg"]["permissions"],
+            env["cfg"]["authors"], author="TrustedUser", now=1002,
+        )
