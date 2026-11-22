@@ -1374,3 +1374,8 @@ The only newly fixed issue in this update is the arithmetic test's persisted-sou
 ## Final run 12 device/queue snapshot — 2026-11-22T22:33:13.116Z
 
 Private diagnostics report Lab-Age mode ACTIVE, requested stage 10, effective implemented stage 5, official stage 0, physical feature execution false, and learning commit authority REQUIRES_SEPARATE_SHADOW_MODE. This confirms the separate lab selector but not physical feature execution or learning authority. The last stored turn remains 57.74 s / 41.63 s TTFT / 38.95 s prefill / 2 tokens; B1/B2 remain TIME_BUDGET 53.2/54.2 s. Boss PR #2370 exact head bae7d031 has 0 SUCCESS / 16 QUEUED / 5 CANCELLED / 5 SKIPPED; previous head 03909f0 had two Python source-assertion failures, corrected in the new commit but not yet retested. Release aed1d2 remains installed; HEALTH runtime conflicts with DIAGNOSTICS; LEARNING_STATUS unavailable. No device mutation or user action.
+
+
+## Final queue refresh — 2026-11-22T22:34:58.624Z
+
+#2370 exact head bae7d031 now has 0 SUCCESS / 15 QUEUED / 1 IN_PROGRESS / 6 CANCELLED / 6 SKIPPED; the in-progress run is private owner-read bootstrap. No new-head functional pass. #2356 exact head 27aaa29 has Android outcome contract and Core Store/caller gate SUCCESS, while emulator process-restart and staged/integrated regression remain QUEUED. The latter are not process-death acceptance. All other current stack blockers remain as recorded above; no release or device mutation.
