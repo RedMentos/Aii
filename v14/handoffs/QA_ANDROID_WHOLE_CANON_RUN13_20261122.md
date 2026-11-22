@@ -63,3 +63,8 @@ Details: https://github.com/RedMentos/Aii/pull/2343#issuecomment-7081633818
 PR #2346 exact head 81d225af972e8b3d6b645aba09cd01ccac5fa020 has fixed the earlier output-path symlink escape with descriptor-anchored O_NOFOLLOW traversal and private 0700 run directories. Top-level and nested symlink negatives assert no outside writes. Focused B3 workflow 45040617156 passed 52 tests, touched-module py_compile and CLI import/help smoke.
 
 The L1 shadow trainer now records actual per-epoch gradients, initial/final bridge parameter SHA-256, nonzero per-tensor deltas, exact save/reload and no-message identity. This is a synthetic B3 adapter update only. Old-task role retention remains NOT_MEASURED; real paired native B1/B2 taps, L0 source-bound baselines, held-out utility, Redmi training and production receiver injection remain OPEN. Shared integration checks are still pending, so #2346 remains DRAFT / NOT_RELEASED.
+
+
+## B3 shared integration status update (2026-11-22)
+
+Exact #2346 shared matrix has two confirmed failures: Lab-Age E2E run 45040616984 reports integrated builder hash mismatch; old-phone migration run 45040617024 returns PARTIAL rather than UPDATED in both cases, with model/SQLite sentinel files preserved. The B3-focused run 45040617156 still passes 52 tests, compile and CLI smoke. This is the same Boss-owned shared source-chain/migration blocker observed on #2343. Other shared checks remain queued/in progress. Keep #2346 DRAFT / NOT_RELEASED; no B3 device or production acceptance.

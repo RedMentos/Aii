@@ -2216,3 +2216,8 @@ This overlay updates proof status only. It does not edit the V14 master, histori
 | B3 paired B1/B2 capture + L1 shadow trainer | PR #2346 head 81d225af; focused workflow 45040617156 PASS, 52 tests, py_compile and CLI smoke. Descriptor-anchored O_NOFOLLOW directory traversal, private 0700 run directory and top-level/nested symlink negatives. | Synthetic paired-tap fixtures only; no real native paired activations, no Redmi capture. | CODE_PRESENT / FOCUSED_CI_PASS / NOT_ANDROID_VERIFIED |
 | B3 numeric adapter update | Per-epoch gradient norm, before/after SHA-256, nonzero per-tensor delta, exact save/reload, no-message identity; master B1/B2/C3/JEPA weights untouched. | Old-task role retention NOT_MEASURED; L0 baseline/utility gate and held-out native task evidence missing; no receiver injection. | SYNTHETIC_WEIGHT_UPDATE / SHADOW_ONLY / NO_PRODUCTION_AUTHORITY |
 | B3 integration | Shared staged/integrated, migration, JEPA, Lab-Age, native receiver and deployment checks remain queued/in progress on the current PR head. | Focused B3 PASS is not whole-PR merge readiness. | DRAFT / NOT_RELEASED |
+
+
+## B3 shared integration failure overlay — 2026-11-22
+
+Focused B3 paired-capture workflow 45040617156 remains PASS (52 tests, compile and CLI smoke). The exact #2346 shared matrix is nevertheless NOT_GREEN: Lab-Age E2E run 45040616984 fails at integrated builder hash mismatch; old-phone migration run 45040617024 returns PARTIAL instead of UPDATED in both cases while preserving model/SQLite sentinels. This is the same shared composition/migration blocker as #2343, not a failure of the B3 focused test. Keep #2346 DRAFT / NOT_RELEASED until the Boss-owned source chain is repaired and exact full matrix passes.
