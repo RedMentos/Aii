@@ -28,7 +28,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
-          python-version: \${{ matrix.python-version }}
+          python-version: ${{ matrix.python-version }}
       - name: Install focused test dependencies
         run: python -m pip install pytest==9.2.0 numpy==2.3.5
       - name: Compile adapter and native receiver contract
