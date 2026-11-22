@@ -258,5 +258,54 @@ class OwnerReadTests(unittest.TestCase):
             o.create_read_request("PATCH_APPLY", now=self.now)
 
 
+    def test_native_receiver_probe_owner_read_requires_exact_confirmation(self):
+        self.cfg["permissions"]["agent-owner"].append("CHAT_OPERATOR")
+        valid = ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source --confirm"
+        request = o.create_read_request(
+            "CHAT_OPERATOR", now=self.now, operator_command=valid
+        )
+        issue = {
+            "number": 11,
+            "title": "V13READ:" + request["id"],
+            "body": json.dumps(request),
+            "user": {"login": "RedMentos"},
+            "created_at": datetime.fromtimestamp(
+                self.now, timezone.utc
+            ).isoformat(),
+        }
+        ident, operation, args = o.validate_owner_read(
+            issue, self.cfg, now=self.now
+        )
+        self.assertEqual(ident, request["id"])
+        self.assertEqual(operation, "CHAT_OPERATOR")
+        self.assertEqual(args, {"command": valid})
+
+        invalid = (
+            ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source",
+            ":callosum native-probe B1_DETAIL B1_DETAIL --last-source --confirm",
+            ":callosum native-probe C3_LANGUAGE B1_DETAIL --last-source --confirm",
+            ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source --confirm --force",
+        )
+        for value in invalid:
+            with self.subTest(command=value):
+                with self.assertRaises(b.Denied):
+                    o.create_read_request(
+                        "CHAT_OPERATOR", now=self.now, operator_command=value
+                    )
+
+        forged = {
+            **request,
+            "id": "e" * 32,
+            "args": {"command": invalid[0]},
+        }
+        forged_issue = {
+            **issue,
+            "title": "V13READ:" + forged["id"],
+            "body": json.dumps(forged),
+        }
+        with self.assertRaises(b.Denied):
+            o.validate_owner_read(forged_issue, self.cfg, now=self.now)
+
+
 if __name__ == "__main__":
     unittest.main()
