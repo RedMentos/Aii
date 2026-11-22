@@ -76,7 +76,7 @@ class L1ShadowTrainingTests(unittest.TestCase):
         )
         l0 = {
             "schema": "v13.b3-l0-baselines/2",
-            "split_policy": "SOURCE_SHA256_GROUPED_STRATIFIED_20PCT_V1",
+            "split_policy": "SOURCE_SHA256_GROUPED_STRATIFIED_20PCT_MIN2_V1",
             "train_indices": train_indices.tolist(),
             "test_indices": test_indices.tolist(),
             "train_source_hashes": train_hashes,
