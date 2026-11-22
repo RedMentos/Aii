@@ -946,7 +946,7 @@ def _stage_generation_update(store, event, label):
     import hashlib
     from v13.common import dumps, now, uid
 
-    home = Path(store.home)
+    home = store.home
     base = store.generation()
     relative = f"checkpoints/head-{label}.bin"
     artifact = home / relative
@@ -1133,7 +1133,7 @@ def test_memory_forget_tombstone_is_rechecked_after_artifact_preflight(tmp_path,
         def tombstone_after_preflight(artifacts):
             result = original_validate(artifacts)
             external = sqlite3.connect(
-                Path(store.home) / "data/db/brain.sqlite3",
+                store.home / "data/db/brain.sqlite3",
                 timeout=5,
                 isolation_level=None,
             )
@@ -1183,5 +1183,45 @@ def test_memory_forget_cannot_be_undone_by_rollback_to_parent_component(tmp_path
         assert store.one("SELECT status FROM updates WHERE id=?", (update_a,))["status"] == "QUARANTINED"
         assert store.one("SELECT deleted FROM sources WHERE id=?",
                          (source_a["source_ref"]["source_id"],))["deleted"] == 1
+    finally:
+        store.close()
+
+
+def test_memory_forget_rollback_can_remove_a_tombstoned_active_update(tmp_path):
+    import sqlite3
+    from v13.config import DEFAULTS
+
+    store, session = _make_store(tmp_path / "rollback-tombstoned-active")
+    try:
+        event = store.event(session, "synthetic active update whose source is externally tombstoned")
+        update_id, artifact, _ = _stage_generation_update(store, event, "rollback-tombstoned-active")
+        store.switch_generation(update_id, dict(DEFAULTS), {})
+        active_before = store.generation()["brain_generation_id"]
+
+        # Model a second process that tombstones the source but has not yet
+        # quarantined the update row. Rollback must remain available to remove
+        # this now-untrusted active component; it must not require the target
+        # update's own source to remain live.
+        external = sqlite3.connect(
+            store.home / "data/db/brain.sqlite3",
+            timeout=5,
+            isolation_level=None,
+        )
+        try:
+            external.execute("BEGIN IMMEDIATE")
+            external.execute(
+                "UPDATE sources SET deleted=1 WHERE id=?",
+                (event["source_ref"]["source_id"],),
+            )
+            external.execute("COMMIT")
+        finally:
+            external.close()
+
+        rolled_back = store.rollback(update_id)
+        assert rolled_back != active_before
+        assert "checkpoints/head-rollback-tombstoned-active.bin" not in store.generation()["hashes"]
+        assert store.one("SELECT status FROM updates WHERE id=?", (update_id,))["status"] == "ROLLED_BACK"
+        assert store.one("SELECT deleted FROM sources WHERE id=?",
+                         (event["source_ref"]["source_id"],))["deleted"] == 1
     finally:
         store.close()
