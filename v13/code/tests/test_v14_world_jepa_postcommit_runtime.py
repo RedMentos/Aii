@@ -18,9 +18,10 @@ from v13.world_jepa_planner import consume_world_planner_shadow, read_world_plan
 from v13.world_jepa_runtime import PERMISSION_KEY
 
 
-def _trace_world_jepa_consumer_calls(monkeypatch, trace):
+def _trace_world_jepa_consumer_calls(trace):
     from v13 import world_jepa_planner, world_jepa_runtime, world_jepa_temporal
 
+    patches = []
     for module, name, label in (
         (world_jepa_runtime, "consume_after_commit", "base"),
         (world_jepa_temporal, "consume_temporal_after_commit", "temporal"),
@@ -39,8 +40,14 @@ def _trace_world_jepa_consumer_calls(monkeypatch, trace):
             trace.append(_label + ":" + str(status))
             return result
 
-        monkeypatch.setattr(module, name, wrapped)
+        setattr(module, name, wrapped)
+        patches.append((module, name, original))
 
+    def restore():
+        for module, name, original in patches:
+            setattr(module, name, original)
+
+    return restore
 
 def _make_store(home):
     (home / "data" / "db").mkdir(parents=True)
@@ -240,7 +247,7 @@ def test_sleep_jepa_job_requeues_one_bounded_continuation_when_more_t8_rows_exis
         store.close()
 
 
-def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with_restart_rollback(tmp_path, monkeypatch):
+def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with_restart_rollback(tmp_path):
     home = tmp_path / "brain-runtime-jepa"
     store, session = _make_store(home)
     try:
@@ -251,7 +258,7 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         })
         sleep = _sleep(store, home)
         trace = []
-        _trace_world_jepa_consumer_calls(monkeypatch, trace)
+        restore_trace = _trace_world_jepa_consumer_calls(trace)
         first = sleep._run_world_jepa(first_events[-1], limit=256)
         assert first["status"] == "POSTCOMMIT_PROCESSED", {
             "error": first.get("error"), "trace": trace,
@@ -345,6 +352,8 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         assert telemetry
         assert "synthetic-postcommit-source-" not in repr(telemetry)
     finally:
+        if 'restore_trace' in locals():
+            restore_trace()
         store.close()
 
 
@@ -414,7 +423,7 @@ def test_sleep_jepa_cancelled_by_user_preemption_requeues_without_checkpoint_com
         store.close()
 
 
-def test_planner_only_checkpoint_readout_does_not_consume_future_learning_opt_in(tmp_path, monkeypatch):
+def test_planner_only_checkpoint_readout_does_not_consume_future_learning_opt_in(tmp_path):
     home = tmp_path / "brain-jepa-gate-resume"
     store, session = _make_store(home)
     try:
@@ -458,6 +467,8 @@ def test_planner_only_checkpoint_readout_does_not_consume_future_learning_opt_in
         event = next(item for item in sleep.scheduler.pending() if item["id"] == resumed)
         assert event["payload"] == {"event_id": later_event}
     finally:
+        if 'restore_trace' in locals():
+            restore_trace()
         store.close()
 
 
