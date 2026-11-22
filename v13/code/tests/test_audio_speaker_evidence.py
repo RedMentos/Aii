@@ -1,6 +1,7 @@
 """Synthetic and consumer tests for source-bound speaker-similarity diagnostics."""
 from array import array
 from contextlib import contextmanager
+import hashlib
 import json
 import math
 import random
@@ -32,6 +33,9 @@ def tone(sample_rate=16000, frequency=140, seconds=1.0, amplitude=6000, phase=0.
     samples = [int(amplitude * math.sin(2 * math.pi * frequency * i / sample_rate + phase))
                for i in range(count)]
     return struct.pack("<" + "h" * len(samples), *samples)
+
+
+CURRENT_CHUNK_SHA256 = hashlib.sha256(tone()).hexdigest()
 
 
 def make_runtime(tmp_path):
@@ -67,6 +71,7 @@ def speaker_batch(source_id, generation_id, start_ms, end_ms, vector_at,
         "model_id": "fixture/three-dim-encoder",
         "model_revision": revision,
         "model_sha256": MODEL_SHA,
+        "current_chunk_sha256": CURRENT_CHUNK_SHA256,
         "embedding_dim": 3,
         "frame_step_ms": 80,
         "lookback_frames": 10,
@@ -76,19 +81,32 @@ def speaker_batch(source_id, generation_id, start_ms, end_ms, vector_at,
     }
 
 
+def test_audio_window_hash_mismatch_is_rejected_before_history_changes():
+    registry = SpeakerChangeEvidenceRegistry()
+    batch = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
+    batch["current_chunk_sha256"] = "b" * 64
+    with pytest.raises(SpeakerEvidenceError, match="current PCM chunk hash"):
+        registry.update(
+            source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
+            activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+            embeddings=batch,
+        )
+    assert len(registry) == 0
+
+
 def test_same_speaker_embedding_remains_unclassified_without_calibration():
     registry = SpeakerChangeEvidenceRegistry()
     warmup = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
     first = registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
-        activity_hint="VOICED", embeddings=warmup,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=warmup,
     )
     assert first["status"] == "WARMUP"
 
     batch = speaker_batch(SOURCE, "gen-a", 1100, 2100, lambda _: (1.0, 0.0, 0.0))
     evidence = registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=2100,
-        activity_hint="VOICED", embeddings=batch,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=batch,
     )
     assert evidence["status"] == "MEASURED"
     reference_end = warmup["frames"][-1]["end_ms"]
@@ -119,7 +137,7 @@ def test_embedding_shift_remains_similarity_only_until_calibrated():
     first = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
     registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
-        activity_hint="VOICED", embeddings=first,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=first,
     )
     second = speaker_batch(
         SOURCE, "gen-a", 1100, 2100,
@@ -127,7 +145,7 @@ def test_embedding_shift_remains_similarity_only_until_calibrated():
     )
     evidence = registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=2100,
-        activity_hint="VOICED", embeddings=second,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=second,
     )
     assert evidence["status"] == "MEASURED"
     # The nearest retained frame can be up to 1.5 frame steps from the
@@ -149,7 +167,7 @@ def test_same_batch_tail_cannot_overwrite_cross_window_change_evidence():
         warmup = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
         registry.update(
             source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
-            activity_hint="VOICED", embeddings=warmup,
+            activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=warmup,
         )
         current = speaker_batch(
             SOURCE, "gen-a", 1100, end_ms,
@@ -157,7 +175,7 @@ def test_same_batch_tail_cannot_overwrite_cross_window_change_evidence():
         )
         return registry.update(
             source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=end_ms,
-            activity_hint="VOICED", embeddings=current,
+            activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=current,
         )
 
     # The longer batch adds many later frames from the new speaker. Those
@@ -180,12 +198,12 @@ def test_low_similarity_without_voiced_activity_is_not_speaker_change():
     first = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
     registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
-        activity_hint="VOICED", embeddings=first,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=first,
     )
     second = speaker_batch(SOURCE, "gen-a", 1100, 2100, lambda _: (0.0, 1.0, 0.0))
     evidence = registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=2100,
-        activity_hint="UNVOICED_NOISE", embeddings=second,
+        activity_hint="UNVOICED_NOISE", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=second,
     )
     assert evidence["confidence_gate_passed"] is None
     assert evidence["speaker_change_candidate"] is None
@@ -199,12 +217,12 @@ def test_missing_threshold_emits_score_without_a_decision():
     first = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0), threshold=None)
     registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
-        activity_hint="VOICED", embeddings=first,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=first,
     )
     second = speaker_batch(SOURCE, "gen-a", 1100, 2100, lambda _: (0.0, 1.0, 0.0), threshold=None)
     evidence = registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=2100,
-        activity_hint="VOICED", embeddings=second,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=second,
     )
     assert evidence["change_score"] == 0.5
     assert evidence["speaker_change_candidate"] is None
@@ -219,13 +237,13 @@ def test_model_revision_change_resets_history_before_comparison():
     first = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
     registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
-        activity_hint="VOICED", embeddings=first,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=first,
     )
     second = speaker_batch(SOURCE, "gen-a", 1100, 1340, lambda _: (0.0, 1.0, 0.0),
                           revision="fixture-embedding-v2")
     evidence = registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=1340,
-        activity_hint="VOICED", embeddings=second,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=second,
     )
     assert evidence["reset_reason"] == "MODEL_OR_CALIBRATION_CHANGED"
     assert evidence["status"] == "WARMUP"
@@ -246,7 +264,7 @@ def test_invalid_embedding_packets_are_rejected(mutate):
     with pytest.raises(SpeakerEvidenceError):
         registry.update(
             source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
-            activity_hint="VOICED", embeddings=batch,
+            activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=batch,
         )
 
 
@@ -546,7 +564,7 @@ def test_registry_stores_compact_float32_vectors_in_memory():
     batch = speaker_batch(SOURCE, "gen-compact", 100, 1100, lambda _: (1.0, 0.0, 0.0))
     registry.update(
         source_id=SOURCE, generation_id="gen-compact", start_ms=100, end_ms=1100,
-        activity_hint="VOICED", embeddings=batch,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=batch,
     )
     stored = registry._states[(SOURCE, "gen-compact")].frames[0][1]
     assert isinstance(stored, array)
