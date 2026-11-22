@@ -266,17 +266,28 @@ public final class CompanionProvider extends ContentProvider {
         }
     }
 
+    static List<CompanionDb.Action> pendingActions(Context context, CompanionDb db, long nowMillis) {
+        // Expiry is a state transition plus notification cleanup. Serialize
+        // both with submit's insert+publish so an almost-expired request
+        // cannot be expired before its notification is posted, leaving a
+        // stale approval visible after the row is already terminal.
+        synchronized (ACTION_GATE_LOCK) {
+            List<String> expired = new ArrayList<>();
+            List<CompanionDb.Action> pending = db.pending(nowMillis, expired);
+            for (String actionId : expired) cancelApprovalNotification(context, actionId);
+            return pending;
+        }
+    }
+
     private JSONObject pending(Context context) throws Exception {
         org.json.JSONArray values = new org.json.JSONArray();
-        List<String> expired = new ArrayList<>();
-        for (CompanionDb.Action action : db.pending(System.currentTimeMillis(), expired)) {
+        for (CompanionDb.Action action : pendingActions(context, db, System.currentTimeMillis())) {
             JSONObject item = new JSONObject();
             item.put("action_id", action.actionId);
             item.put("package", action.packageName);
             item.put("expires_at_ms", action.expiresAt);
             values.put(item);
         }
-        for (String actionId : expired) cancelApprovalNotification(context, actionId);
         JSONObject out = new JSONObject();
         out.put("status", "OK");
         out.put("pending", values);
