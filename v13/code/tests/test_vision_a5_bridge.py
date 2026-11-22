@@ -1,12 +1,13 @@
 """Synthetic source-bound RAW EYE → A5 → A4 → bounded C3 admission tests."""
 from io import BytesIO
 import threading
+from contextlib import contextmanager
 from types import SimpleNamespace
 
 import pytest
 from PIL import Image, ImageDraw
 
-from v13 import vision
+from v13 import vision, source_lifecycle_candidate as source_lifecycle
 from v13.attention import Attention
 from v13.store import Store
 from v13.vision_a5_bridge import consume_visual_source
@@ -149,7 +150,7 @@ def test_visual_ingress_requires_active_turn_and_preserves_prompt_when_budget_ze
 def test_visual_a5_consumption_is_serialized_with_source_forget(tmp_path, monkeypatch):
     """A source forget must linearize after an in-flight A5 consumer."""
     runtime, _ = make_runtime(tmp_path)
-    record = add_image(runtime)
+    record = source_lifecycle.vision_ingest(runtime.store, image_bytes(), label="source-lock fixture")
     prompt = "Describe this exact image without losing the current prompt."
     feature_entered = threading.Event()
     release_feature = threading.Event()
@@ -181,7 +182,7 @@ def test_visual_a5_consumption_is_serialized_with_source_forget(tmp_path, monkey
 
     def forget():
         forget_started.set()
-        vision.forget(runtime.store, record)
+        source_lifecycle.vision_forget(runtime.store, record)
         forget_done.set()
 
     reader = threading.Thread(target=consume, daemon=True)
@@ -208,39 +209,74 @@ def test_visual_a5_consumption_is_serialized_with_source_forget(tmp_path, monkey
 
 
 def test_image_reingest_cannot_publish_between_forget_refcount_and_unlink(tmp_path, monkeypatch):
-    """Re-ingest must wait until the old blob's final unlink is complete."""
+    """Re-ingest must wait until the lifecycle candidate finishes final unlink."""
     runtime, _ = make_runtime(tmp_path)
-    original = add_image(runtime)
+    original = source_lifecycle.vision_ingest(runtime.store, image_bytes(), label="original")
     refcount_checked = threading.Event()
     release_forget = threading.Event()
     ingest_started = threading.Event()
     ingest_done = threading.Event()
     new_records = []
     errors = []
-    original_one = runtime.store.one
+    original_tx = runtime.store.tx
+    original_cleanup = source_lifecycle.cleanup_unreferenced
 
-    def paused_one(sql, args=()):
-        row = original_one(sql, args)
-        normalized = " ".join(sql.split()).lower()
-        if (normalized.startswith("select id from sources where hash")
-                and not row and not refcount_checked.is_set()):
-            refcount_checked.set()
-            if not release_forget.wait(5):
-                raise TimeoutError("test did not release source-forget refcount")
-        return row
+    class CursorProxy:
+        def __init__(self, cursor, sql):
+            self._cursor = cursor
+            self._sql = " ".join(sql.split()).lower()
 
-    monkeypatch.setattr(runtime.store, "one", paused_one)
+        def fetchone(self):
+            row = self._cursor.fetchone()
+            if (self._sql.startswith("select 1 from sources where hash")
+                    and row is None and not refcount_checked.is_set()):
+                refcount_checked.set()
+                if not release_forget.wait(5):
+                    raise TimeoutError("test did not release lifecycle refcount check")
+            return row
+
+        def __getattr__(self, name):
+            return getattr(self._cursor, name)
+
+    class ConnectionProxy:
+        def __init__(self, connection):
+            self._connection = connection
+
+        def execute(self, sql, args=()):
+            cursor = self._connection.execute(sql, args)
+            if "select 1 from sources where hash" in " ".join(sql.split()).lower():
+                return CursorProxy(cursor, sql)
+            return cursor
+
+        def __getattr__(self, name):
+            return getattr(self._connection, name)
+
+    @contextmanager
+    def paused_tx():
+        with original_tx() as connection:
+            yield ConnectionProxy(connection)
+
+    def paused_cleanup(store, source_id):
+        # Pause after the live-refcount SELECT has returned no row, while the
+        # lifecycle candidate still owns Store.tx() / Store.mutex.
+        monkeypatch.setattr(store, "tx", paused_tx)
+        try:
+            return original_cleanup(store, source_id)
+        finally:
+            monkeypatch.setattr(store, "tx", original_tx)
+
+    monkeypatch.setattr(source_lifecycle, "cleanup_unreferenced", paused_cleanup)
 
     def forget():
         try:
-            vision.forget(runtime.store, original)
+            source_lifecycle.vision_forget(runtime.store, original)
         except BaseException as exc:
             errors.append(exc)
 
     def reingest():
         ingest_started.set()
         try:
-            new_records.append(vision.ingest(
+            new_records.append(source_lifecycle.vision_ingest(
                 runtime.store, image_bytes(), label="reingested after forget",
             ))
         except BaseException as exc:
@@ -252,10 +288,10 @@ def test_image_reingest_cannot_publish_between_forget_refcount_and_unlink(tmp_pa
     publisher = threading.Thread(target=reingest, daemon=True)
     try:
         revoker.start()
-        assert refcount_checked.wait(3), "forget did not reach the final live-refcount check"
+        assert refcount_checked.wait(3), "forget did not reach the final locked live-refcount check"
         publisher.start()
         assert ingest_started.wait(3), "reingest thread did not start"
-        assert not ingest_done.wait(0.1), "new IMAGE source published inside the forget/unlink window"
+        assert not ingest_done.wait(0.1), "new IMAGE source published inside the locked refcount/unlink window"
         release_forget.set()
         revoker.join(5)
         publisher.join(5)
@@ -271,6 +307,8 @@ def test_image_reingest_cannot_publish_between_forget_refcount_and_unlink(tmp_pa
         assert vision.read_image(runtime.store, new_ref).size == (64, 64)
     finally:
         release_forget.set()
+        monkeypatch.setattr(source_lifecycle, "cleanup_unreferenced", original_cleanup)
+        monkeypatch.setattr(runtime.store, "tx", original_tx)
         runtime.store.close()
 
 
