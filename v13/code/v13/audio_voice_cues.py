@@ -761,7 +761,6 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         candidate = audio_to_admission(audio_packet, consent_active=True)
         summary = candidate.summary + (
             f" activity={cues['activity_hint']} voiced={cues['voiced_fraction']:.2f}"
-            f" speaker_change_decision={speaker_change_decision}"
         )
         if cues["f0_median_hz"] is not None:
             summary += f" f0_med_hz={cues['f0_median_hz']:.0f}"
@@ -781,9 +780,11 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                 summary += f" speaker_change_score={speaker_evidence['change_score']:.2f}"
         if vad_evidence is not None:
             summary += f" vad_speech_fraction={vad_speech_fraction:.2f}"
+        decision_suffix = f" spk_dec={speaker_change_decision}"
+        summary = summary[:256-len(decision_suffix)] + decision_suffix
         candidate = Percept(
             candidate.source_id, candidate.modality, candidate.start_ms, candidate.end_ms,
-            summary[:256], candidate.consent, candidate.final, candidate.priority,
+            summary, candidate.consent, candidate.final, candidate.priority,
         )
         c3 = admit((candidate,), token_budget)
         result = {
