@@ -295,7 +295,13 @@ def accept_and_persist_companion_receipt(
         broker, verifier, action_id, receipt, on_outcome=None, clock=clock,
         finalize_broker=False,
     )
-    packet_value = persist_companion_outcome(store, outcome)
+    try:
+        packet_value = persist_companion_outcome(store, outcome)
+    except InvalidOutcome:
+        # A permanent provenance/replay rejection is terminal; transient Store
+        # failures leave RECEIPT_CONSUMED so the exact signed receipt can retry.
+        broker.record_companion_receipt(action_id, outcome.details["digest"], verified=False)
+        raise
     # Store transaction commits the nonce and ActionOutcome together. Only
     # then may the broker make this receipt terminal; a failed write stays
     # RECEIPT_CONSUMED and can be retried idempotently.
