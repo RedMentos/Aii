@@ -310,16 +310,12 @@ def _split_windows(windows, prior=None):
     window_by_id = {window["window_id"]: window for window in windows}
     prior_train_ids = set(prior["train_window_ids"]) if prior else set()
     prior_holdout_ids = set(prior["holdout_window_ids"]) if prior else set()
-    if prior is not None and (prior_train_ids | prior_holdout_ids) - set(window_by_id):
-        raise ValueError("temporal prior split window missing")
+    prior_train_sessions = set(prior["train_session_ids"]) if prior else set()
+    prior_holdout_sessions = set(prior["holdout_session_ids"]) if prior else set()
     prior_fold_by_session = {}
-    for window_id in prior_train_ids:
-        session = window_by_id[window_id]["session_id"]
-        if prior_fold_by_session.get(session) == "holdout":
-            raise ValueError("temporal prior session crossed train/holdout folds")
+    for session in prior_train_sessions:
         prior_fold_by_session[session] = "train"
-    for window_id in prior_holdout_ids:
-        session = window_by_id[window_id]["session_id"]
+    for session in prior_holdout_sessions:
         if prior_fold_by_session.get(session) == "train":
             raise ValueError("temporal prior session crossed train/holdout folds")
         prior_fold_by_session[session] = "holdout"
@@ -388,6 +384,8 @@ def _split_windows(windows, prior=None):
         "holdout_session_count": len(holdout_sessions),
         "train_source_count": len(train_sources),
         "holdout_source_count": len(holdout_sources),
+        "train_session_ids": sorted(train_sessions),
+        "holdout_session_ids": sorted(holdout_sessions),
         "split_strategy": "PERSISTED_COMPONENT_ASSIGNMENT",
         "prior_train_windows_preserved": len(prior_train_ids & {window["window_id"] for window in train}),
         "prior_holdout_windows_preserved": len(prior_holdout_ids & {window["window_id"] for window in holdout}),
@@ -509,6 +507,7 @@ def _record_valid(record):
     required = {
         "checkpoint", "checkpoint_sha256", "source_sha256", "experience_rows",
         "processed_ids", "fingerprints", "train_window_ids", "holdout_window_ids",
+        "train_session_ids", "holdout_session_ids",
         "receiver_heads", "receiver_metrics", "action_support", "retention_holdouts",
         "metrics", "scan_cursor", "fit_steps",
     }
@@ -537,8 +536,16 @@ def _record_valid(record):
         raise ValueError("temporal checkpoint cursor")
     if (type(record["train_window_ids"]) is not list
             or type(record["holdout_window_ids"]) is not list
-            or set(record["train_window_ids"]) & set(record["holdout_window_ids"])):
+            or set(record["train_window_ids"]) & set(record["holdout_window_ids"])
+            or type(record["train_session_ids"]) is not list
+            or type(record["holdout_session_ids"]) is not list
+            or set(record["train_session_ids"]) & set(record["holdout_session_ids"])
+            or any(type(value) is not str or not value
+                   for value in record["train_session_ids"] + record["holdout_session_ids"])):
         raise ValueError("temporal split ids")
+    row_sessions = {row["session_id"] for row in rows}
+    if not set(record["train_session_ids"] + record["holdout_session_ids"]) <= row_sessions:
+        raise ValueError("temporal split session provenance")
     if type(record["receiver_heads"]) is not dict or set(record["receiver_heads"]) != set(ROLE_TARGETS):
         raise ValueError("temporal receiver heads")
     for role, indices in ROLE_TARGETS.items():
@@ -978,6 +985,8 @@ class TemporalWorldJEPAStoreConsumer:
                 "fingerprints": {row["action_id"]: row["fingerprint"] for row in all_rows},
                 "train_window_ids": [window["window_id"] for window in train],
                 "holdout_window_ids": [window["window_id"] for window in holdout],
+                "train_session_ids": split["train_session_ids"],
+                "holdout_session_ids": split["holdout_session_ids"],
                 "receiver_heads": receiver_heads,
                 "receiver_metrics": receiver_metrics,
                 "action_support": action_support,
