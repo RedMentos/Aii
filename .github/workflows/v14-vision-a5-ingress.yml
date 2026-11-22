@@ -9,9 +9,6 @@ on:
       - "v13/code/v13/common.py"
       - "v13/code/v13/config.py"
       - "v13/code/v13/store.py"
-      - "v13/code/v13/common.py"
-      - "v13/code/v13/config.py"
-      - "v13/code/v13/store.py"
       - "v13/code/v13/vision_a5_bridge.py"
       - "v13/code/v13/attention.py"
       - "v13/code/v13/contracts.py"
@@ -23,6 +20,9 @@ on:
   pull_request:
     paths:
       - "v13/code/v13/vision.py"
+      - "v13/code/v13/common.py"
+      - "v13/code/v13/config.py"
+      - "v13/code/v13/store.py"
       - "v13/code/v13/vision_a5_bridge.py"
       - "v13/code/v13/attention.py"
       - "v13/code/v13/contracts.py"
