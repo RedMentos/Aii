@@ -1414,3 +1414,8 @@ Exact current head is dbb7b143a336ef946985cf3cad9185af3782d734. No workflow run 
 ### Run 19 exact-CI readback (2026-11-22T21:08:00Z)
 
 Exact head dbb7b143a336ef946985cf3cad9185af3782d734 now has four associated workflows: 45070190046 (staged/integrated), 45070190084 (temporal 3.13/3.14), 45070190269 (optimizer-resume 3.13/3.14), 45070190180 (owner-read / staged startup). Every job in all four runs is QUEUED; none is PASS or FAIL yet. The previous 8ba258ff runs are superseded for current-head acceptance. Poll these exact dbb7b143 runs before further integration or rebase.
+
+
+### Private device receipt refresh (2026-11-22T20:55:46Z)
+
+Read-only aggregate V13OBS issue #115 is now newer than the earlier #602/#603 snapshot. It reports five LOCAL_METADATA_ONLY turns: B1 4/4 native attempts failed, B2 2/2 failed, zero valid offers and zero delivery turns into final C3 for either body. Latest stored turn: 57.739 s total, 41.627 s TTFT, 38.945 s prefill, 751 prompt tokens and 2 generated tokens; correctness, prompt inclusion and semantic use remain UNKNOWN/UNPROVEN. Runtime/model service/dashboard are RUNNING; the instant native-process sample maps zero processes with child readability UNKNOWN, not a free-RAM measurement. Pipeline still reports installed aed1d2b, auto-update enabled and UP_TO_DATE, last_error NONE. Official Age 0; requested lab stage 10 / implemented stage 5; physical feature execution false. No device action or new chat was sent by this run. This does not change PR #2372's NOT_RELEASED / REDMI_UNVERIFIED status.
