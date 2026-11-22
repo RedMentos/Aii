@@ -113,11 +113,8 @@ public final class MainActivity extends Activity {
     }
 
     private void reviewPending() {
-        java.util.List<String> expired = new java.util.ArrayList<>();
-        java.util.List<CompanionDb.Action> pending = db.pending(System.currentTimeMillis(), expired);
-        for (String actionId : expired) {
-            CompanionProvider.cancelApprovalNotification(this, actionId);
-        }
+        java.util.List<CompanionDb.Action> pending = CompanionProvider.pendingActions(
+                this, db, System.currentTimeMillis());
         if (pending.isEmpty()) {
             Toast.makeText(this, "No pending actions", Toast.LENGTH_SHORT).show();
             return;
