@@ -1097,7 +1097,7 @@ def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path):
         assert detail["native_body_consumed"] is gist["native_body_consumed"] is False
         assert detail["decision_authority"] == gist["decision_authority"] == "NONE"
         assert "prediction only" in detail["note"] and "not fact/source/permission" in detail["note"]
-        assert "not answer correctness" in gist["target"]
+        assert "NOT_ANSWER_CORRECTNESS" in gist["target"]
         assert "prediction only" in gist["note"] and "not fact/source/permission" in gist["note"]
         assert detail["checkpoint"] == gist["checkpoint"] == trained["checkpoint_sha256"][:12]
         assert detail["target"] == "B1_DURATION_OUTPUT_SIZE"
