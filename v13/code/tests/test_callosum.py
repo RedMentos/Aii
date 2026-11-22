@@ -95,6 +95,10 @@ class UtilityTests(Base):
             exact_receiver,
             f"exact Callosum receiver lookup failed: pending={pending!r}; "
             f"pending_row={pending_row!r}; receiver_rows={receiver_rows!r}")
+        self.assertIs(self.c.s,self.r.store,"Callosum and Runtime must share the exact Store instance")
+        loaded_pending=self.c._load()[0].get('pending',{}).get(eid,[])
+        self.assertEqual(loaded_pending,pending,
+                         f"Callosum instance sees different persisted pending state: {loaded_pending!r} vs {pending!r}")
         res=self.c.outcome(eid,[recv['packet_id']],'FINAL');self.assertEqual(res['scored'],1);self.assertGreater(res['utilities'][0],1.)
         q=self.c._load()[0]['dirs']['B1_TO_B2']['u']['SOURCE_EXACT'];self.assertEqual(q['n'],1);self.assertIn('task_gain',q['parts'])
         self.assertEqual(C.on_rating(self.r.store,eid,10)['updated'],1)
