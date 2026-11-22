@@ -9,9 +9,10 @@ do not infer weight rights from the code license.
 The adapter wraps an already-produced (n_frames, 192) float16 matrix into the
 existing V14 RAW EAR speaker-evidence contract. It hashes the actual local
 checkpoint file beneath a caller-trusted model root using no-follow directory
-descriptors; the embedding producer itself is still caller-supplied and is not
-cryptographically attested. Frame timestamps remain caller-supplied. No
-confidence threshold or calibration is attached, so A4 must remain DEFER.
+descriptors and binds the batch to the SHA-256 of the exact current PCM chunk.
+The embedding producer and its prior recurrent state remain caller-supplied and
+are not cryptographically attested. Frame timestamps remain caller-supplied.
+No confidence threshold or calibration is attached, so A4 must remain DEFER.
 """
 from __future__ import annotations
 
@@ -138,6 +139,7 @@ def build_fastdiar_diagnostic_batch(
     *,
     source_id: str,
     generation_id: str,
+    current_chunk_sha256: str,
     model_revision: str,
     checkpoint_path,
     checkpoint_root,
@@ -147,16 +149,19 @@ def build_fastdiar_diagnostic_batch(
 ) -> dict:
     """Wrap a causal FASTDIAR matrix and hash the exact local checkpoint bytes.
 
-    first_frame_end_ms is the end timestamp of the first emitted 80-ms
-    embedding in this audio window. Later timestamps advance by exactly 80 ms.
-    The caller must keep the FASTDIAR encoder's causal state warm across chunks.
-    The checkpoint is never downloaded or modified by this adapter.
+    current_chunk_sha256 must hash the exact PCM16 chunk passed to the RAW EAR
+    consumer. It does not attest the caller-supplied encoder or its prior state.
+    first_frame_end_ms is the end timestamp of the first emitted 80-ms embedding;
+    later timestamps advance by exactly 80 ms. The checkpoint is never changed.
     """
     for name, value in (("source_id", source_id), ("generation_id", generation_id)):
         if type(value) is not str or not value.strip() or len(value) > 128:
             raise ValueError(f"{name} must be a non-empty string of at most 128 characters")
     if model_revision != MODEL_REVISION:
         raise ValueError("model_revision must match the pinned FASTDIAR v0.1.0 commit")
+    if (type(current_chunk_sha256) is not str or len(current_chunk_sha256) != 64
+            or any(char not in "0123456789abcdef" for char in current_chunk_sha256)):
+        raise ValueError("current_chunk_sha256 must be a lowercase SHA-256 digest")
     model_sha256 = _checkpoint_sha256(checkpoint_path, checkpoint_root)
     for name, value in (("window_start_ms", window_start_ms),
                         ("window_end_ms", window_end_ms),
@@ -181,6 +186,7 @@ def build_fastdiar_diagnostic_batch(
         "model_id": MODEL_ID,
         "model_revision": MODEL_REVISION,
         "model_sha256": model_sha256,
+        "current_chunk_sha256": current_chunk_sha256,
         "embedding_dim": EMBEDDING_DIM,
         "frame_step_ms": FRAME_STEP_MS,
         "lookback_frames": LOOKBACK_FRAMES,
