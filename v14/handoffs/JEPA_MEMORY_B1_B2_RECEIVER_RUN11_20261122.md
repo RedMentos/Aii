@@ -45,7 +45,7 @@ The fixture is synthetic SQLite/T8 data and a capture runner. It is a test of th
 - `d27eec8648fa66b10a2aed2a1166d0791a33f361` — nonblocking matrix selects recovery-free construction.
 - `89d0f7b478779cd8de6c9c525e28a32a4eeeea0f` — handoff records recovery-free read path.
 - `a77c76fb05a164a2ab095add79bc3958ebb09286` — research ledger clarifies foreground recovery semantics.
-- `2f4b9c4e5c1b0d8a6e6a2a4c5a8d7f0c9b1e2d3a` — prompt note explicitly says the prediction is not a fact.
+- `bc1cbc76ce496229b4882424e1c5102e669571bb` — prompt note explicitly says the prediction is not a fact.
 
 ## Test and deployment evidence
 
