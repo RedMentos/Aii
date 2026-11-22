@@ -58,14 +58,19 @@ jobs:
           gradle-version: "8.9"
       - uses: android-actions/setup-android@v4
         with:
-          packages: "platform-tools platforms;android-35 build-tools;35.0.0 emulator system-images;android-33;google_apis;x86_64"
+          packages: "platform-tools platforms;android-35 build-tools;35.0.0 emulator system-images;android-33;default;x86_64"
       - name: Assemble companion APK
         run: gradle --no-daemon -p android-companion :app:assembleDebug
+      - name: Start ADB server before emulator launch
+        run: |
+          adb start-server
+          adb devices -l
       - name: Exercise stop and process-death restart on Android emulator
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2, Apache-2.0
         with:
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -accel off -cores 2 -memory 2048 -partition-size 512
           api-level: 33
-          target: google_apis
+          target: default
           arch: x86_64
           profile: pixel_2
           disable-animations: false
