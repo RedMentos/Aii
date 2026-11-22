@@ -16,8 +16,8 @@ from v13.android_companion_ui_frames import (
 def _der_integer(value):
     raw = value.to_bytes(max(1, (value.bit_length() + 7) // 8), "big")
     if raw[0] & 0x80:
-        raw = b"\\x00" + raw
-    return b"\\x02" + bytes([len(raw)]) + raw
+        raw = b"\x00" + raw
+    return b"\x02" + bytes([len(raw)]) + raw
 
 
 def _sign(body, private=1, nonce_scalar=2):
@@ -27,9 +27,9 @@ def _sign(body, private=1, nonce_scalar=2):
     r = point[0] % _N
     s = (pow(nonce_scalar, -1, _N) * (z + r * private)) % _N
     payload = _der_integer(r) + _der_integer(s)
-    der = b"\\x30" + bytes([len(payload)]) + payload
+    der = b"\x30" + bytes([len(payload)]) + payload
     x, y = _G
-    sec1 = b"\\x04" + x.to_bytes(32, "big") + y.to_bytes(32, "big")
+    sec1 = b"\x04" + x.to_bytes(32, "big") + y.to_bytes(32, "big")
     key_id = hashlib.sha256(sec1).hexdigest()
     return sec1, key_id, {
         "body": body,
