@@ -6,7 +6,7 @@ Example labels file:
   "task_id": "verified-outcome",
   "label_source": "human_feedback",
   "direction": "B1_TO_B2",
-  "seeds": [11, 17],
+  "seeds": [11, 17, 23],
   "labels": [
     {"body_pair_id": "…", "label": 1, "provenance": "feedback-packet-id"}
   ]
@@ -94,7 +94,7 @@ def main(argv=None):
             runtime.cognition, pairs, labels, provenance,
             task_id=doc.get("task_id"), label_source=doc.get("label_source"),
             direction=doc.get("direction", "B1_TO_B2"),
-            seeds=tuple(doc.get("seeds", [11, 17])),
+            seeds=tuple(doc.get("seeds", [11, 17, 23])),
             epochs=args.epochs, head_steps=args.head_steps,
             l0_evidence=l0_evidence,
         )
