@@ -1,13 +1,16 @@
 """Permission-gated runtime facade for the persistent WorldJEPA Store consumer.
 
-This module is a deployable adapter API. It does not alter Runtime itself; Core
-must call consume_after_commit after a committed T8 action and explicitly route
-receiver_readouts to a real SHADOW consumer. Both local gates default closed.
+SleepRuntime calls consume_after_commit after a committed T8 ActionOutcome;
+the WorldPlanner consumes the persisted B1/B2/SELF receiver matrix in SHADOW.
+Both local learning gates and the replay-projection permission default closed.
 The booleans in Store state are not an OS/security boundary.
 """
 from pathlib import Path
+import math
 
-from .world_jepa_consumer import WorldJEPAStoreConsumer
+from .world_jepa_consumer import WorldJEPAStoreConsumer, record_world_outcome_packets
+from v13 import world_jepa_replay
+from v13 import world_jepa_drift
 
 PERMISSION_KEY = "v14.world_jepa.permissions"
 DEFAULT_PERMISSIONS = {
@@ -15,10 +18,33 @@ DEFAULT_PERMISSIONS = {
     "optimizer_permission": False,
     "steps": 40,
     "replay_mode": "uniform",
+    "encoder_mode": "full",
+    "replay_projection": False,
 }
 MAX_RUNTIME_PAGE = 256
 MAX_RUNTIME_STEPS = 2000
 RECEIVER_ROLES = ("B1_DETAIL", "B2_GIST", "SELF_MODEL")
+
+
+def _neuromod_scale_report(neuromod):
+    """Use the shared Neuromod controller without changing its pinned source.
+
+    SHADOW observes modulation but preserves the normal update scale. An
+    explicit source-bound safety veto is never shadowed and always blocks.
+    """
+    gate = neuromod.gate("world_predictor")
+    mode = neuromod.local_mode()
+    if mode not in {"SHADOW", "ACTIVE"}:
+        raise ValueError("unknown neuromod local mode")
+    factor = gate.get("factor")
+    if not isinstance(factor, (int, float)) or not math.isfinite(float(factor)):
+        raise ValueError("invalid neuromod gate factor")
+    if not 0.0 <= float(factor) <= 1.0:
+        raise ValueError("neuromod gate factor out of range")
+    scale = 0.0 if gate.get("veto") is True else (
+        float(factor) if mode == "ACTIVE" else 1.0
+    )
+    return {"mode": mode, "scale": scale, "gate": gate}
 
 
 def permission_state(store):
@@ -32,13 +58,19 @@ def permission_state(store):
     if type(steps) is not int or not 1 <= steps <= MAX_RUNTIME_STEPS:
         steps = DEFAULT_PERMISSIONS["steps"]
     replay_mode = value.get("replay_mode", "uniform")
-    if replay_mode not in ("uniform", "none"):
+    if replay_mode not in world_jepa_replay.REPLAY_MODES:
         replay_mode = "uniform"
+    encoder_mode = value.get("encoder_mode", "full")
+    if encoder_mode not in ("full", "predictor_only"):
+        encoder_mode = "full"
+    replay_projection = value.get("replay_projection") is True
     return {
         "learning_enabled": learning_enabled,
         "optimizer_permission": optimizer_permission,
         "steps": steps,
         "replay_mode": replay_mode,
+        "encoder_mode": encoder_mode,
+        "replay_projection": replay_projection,
     }
 
 
@@ -55,7 +87,7 @@ def _consumer(store, home, *, learning_enabled):
     return current
 
 
-def consume_after_commit(store, home=None, *, limit=64, cancel_check=None):
+def consume_after_commit(store, home=None, *, limit=64, cancel_check=None, drift_control=None, neuromod=None):
     """Run persistent JEPA only after a committed turn and only behind both gates."""
     if type(limit) is not int or not 16 <= limit <= MAX_RUNTIME_PAGE:
         raise ValueError("runtime page must be 16..256")
@@ -73,22 +105,49 @@ def consume_after_commit(store, home=None, *, limit=64, cancel_check=None):
         "native_body_consumed": False,
         "native_body_weights_changed": False,
     }
-    if not gates["learning_enabled"]:
-        result["status"] = "OFF"
-        return result
-    if not gates["optimizer_permission"]:
-        result["status"] = "PENDING_OPTIMIZER_PERMISSION"
-        return result
     try:
+        neuromod_record = record_world_outcome_packets(
+            store, limit=limit, cancel_check=cancel_check
+        )
+        if neuromod is None:
+            from .neuromod import Neuromod
+            neuromod = Neuromod(store)
+        neuromod_report = _neuromod_scale_report(neuromod)
+        neuromod_info = {
+            "record": neuromod_record,
+            "mode": neuromod_report["mode"],
+            "applied_scale": neuromod_report["scale"],
+            "gate": neuromod_report["gate"],
+        }
+        result["neuromod"] = neuromod_info
+        result["has_more"] = bool(neuromod_record.get("has_more"))
+        if not gates["learning_enabled"]:
+            result["status"] = "OFF"
+            return result
+        if not gates["optimizer_permission"]:
+            result["status"] = "PENDING_OPTIMIZER_PERMISSION"
+            return result
+        if neuromod_report["scale"] <= 0.0:
+            result["status"] = "NEUROMOD_VETOED"
+            return result
+        drift_config = world_jepa_drift.normalize_config(drift_control)
         learner = _consumer(store, home, learning_enabled=True)
         updated = learner.update(
             limit=limit,
             steps=gates["steps"],
             optimizer_permission=True,
             replay_mode=gates["replay_mode"],
+            encoder_mode=gates["encoder_mode"],
             cancel_check=cancel_check,
+            drift_control=drift_config,
+            replay_projection=gates["replay_projection"],
+            neuromod_scale=neuromod_report["scale"],
         )
         result.update(updated)
+        result["neuromod"] = neuromod_info
+        result["has_more"] = bool(
+            neuromod_record.get("has_more") or updated.get("has_more")
+        )
         result.update({
             "runtime_adapter_called": True,
             "learning_enabled": True,
@@ -103,7 +162,14 @@ def consume_after_commit(store, home=None, *, limit=64, cancel_check=None):
         return result
     except (ValueError, TypeError, KeyError, OSError, OverflowError,
             ArithmeticError, AttributeError) as exc:
-        result.update({"status": "ERROR", "error": type(exc).__name__})
+        # Keep diagnostics useful without returning paths or arbitrary payloads.
+        detail = None
+        if type(exc) in (ValueError, TypeError):
+            candidate = str(exc).splitlines()[0][:120]
+            if candidate and all(ch.isalnum() or ch in " _.,:;()=-" for ch in candidate):
+                detail = candidate
+        result.update({"status": "ERROR", "error": type(exc).__name__,
+                       "error_detail": detail})
         return result
 
 
