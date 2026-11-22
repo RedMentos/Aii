@@ -276,6 +276,8 @@ class RemoteChatTests(unittest.TestCase):
         self.assertEqual(
             client.comments_sent[0][1]["device_status"]["status"], "SENT"
         )
+        direct = remote_chat.result(ident)
+        self.assertEqual(direct["status"], "OPERATOR_RESULT_VISIBLE", msg=str(direct))
         receive = self.make_issue("CHAT_RESULT", {"request_id": ident},
                                   number=11, ident="d" * 32)
         result_client = FakeGitHub([receive])
@@ -285,7 +287,7 @@ class RemoteChatTests(unittest.TestCase):
         with mock.patch("v13.chat_service.call", side_effect=result_rpc):
             self.assertEqual(owner.poll_once(result_client, self.cfg, now=self.now)["processed"], 1)
         result = result_client.comments_sent[0][1]["device_status"]
-        self.assertEqual(result["status"], "OPERATOR_RESULT_VISIBLE")
+        self.assertEqual(result["status"], "OPERATOR_RESULT_VISIBLE", msg=str(result))
         self.assertEqual(result["operator"], "NATIVE_RECEIVER_PROBE")
         self.assertTrue(result["command_complete"])
         self.assertFalse(result["complete"])
