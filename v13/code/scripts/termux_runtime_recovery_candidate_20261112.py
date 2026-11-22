@@ -30,15 +30,6 @@ def build_sources(code_dir, *, include_postcommit=True):
     modules = [load(code_dir, name, pin) for name, pin in BUILDERS.items()]
     base, probe, chat, idle = modules
     result = base.build_sources(code_dir)
-    # The upstream recall module is initially pinned to the output of the
-    # base composer. Later, separately pinned overlays may legitimately add
-    # telemetry to Store or change the archive-stream consumer. Keep the
-    # provenance chain exact by recording the upstream pins before overlays.
-    recall_base_pins = {
-        'store.py': hashlib.sha256(result['v13/store.py']).hexdigest(),
-        'archive_stream_range_candidate.py': hashlib.sha256(
-            result['v13/archive_stream_range_candidate.py']).hexdigest(),
-    }
     for name, raw in probe.build_sources(code_dir).items():
         if name in result:
             raise ValueError('Upstream probe source changed; review composition')
@@ -54,6 +45,80 @@ def build_sources(code_dir, *, include_postcommit=True):
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
                               'b568613863fef6a687a3237d089b91d8b612ce4163ccb5795df9e21af51c1489')
     result = arithmetic_outcome.apply_sources(code_dir, result)
+
+    # Snapshot every generated consumer pin before the later Store telemetry
+    # overlays. These are the exact outputs of the checked base composer.
+    def _dict_pin(raw, name, label):
+        needle = b"'" + name.encode('ascii') + b"':"
+        if raw.count(needle) != 1:
+            raise ValueError('ambiguous downstream pin: ' + label)
+        start = raw.index(needle) + len(needle)
+        quote = raw.find(b"'", start)
+        value = raw[quote + 1:quote + 65] if quote >= 0 else b""
+        if (len(value) != 64 or raw[quote + 65:quote + 66] != b"'"
+                or any(ch not in b"0123456789abcdef" for ch in value)):
+            raise ValueError('malformed downstream pin: ' + label)
+        return value.decode('ascii')
+
+    def _constant_pin(raw, name, label):
+        needle = name.encode('ascii') + b" ="
+        if raw.count(needle) != 1:
+            raise ValueError('ambiguous downstream constant: ' + label)
+        start = raw.index(needle) + len(needle)
+        quote = raw.find(b"'", start)
+        value = raw[quote + 1:quote + 65] if quote >= 0 else b""
+        if (len(value) != 64 or raw[quote + 65:quote + 66] != b"'"
+                or any(ch not in b"0123456789abcdef" for ch in value)):
+            raise ValueError('malformed downstream constant: ' + label)
+        return value.decode('ascii')
+
+    def _set_pins(raw, name, label):
+        needle = b"'" + name.encode('ascii') + b"':"
+        if raw.count(needle) != 1:
+            raise ValueError('ambiguous downstream pin set: ' + label)
+        start = raw.index(needle) + len(needle)
+        left = raw.find(b"{", start)
+        right = raw.find(b"}", left + 1) if left >= 0 else -1
+        if left < 0 or right < 0:
+            raise ValueError('malformed downstream pin set: ' + label)
+        body = raw[left + 1:right]
+        values = []
+        cursor = 0
+        while True:
+            quote = body.find(b"'", cursor)
+            if quote < 0:
+                break
+            end = body.find(b"'", quote + 1)
+            if end < 0:
+                raise ValueError('malformed downstream pin set: ' + label)
+            value = body[quote + 1:end]
+            if len(value) == 64 and all(ch in b"0123456789abcdef" for ch in value):
+                values.append(value.decode('ascii'))
+            cursor = end + 1
+        if not values:
+            raise ValueError('empty downstream pin set: ' + label)
+        return tuple(values)
+
+    base_store_sha = hashlib.sha256(result['v13/store.py']).hexdigest()
+    base_stream_sha = hashlib.sha256(result['v13/archive_stream_range_candidate.py']).hexdigest()
+    base_semantic_sha = hashlib.sha256(result['v13/world_semantic_evidence_candidate.py']).hexdigest()
+    dependent_base_pins = {
+        'archive_reader_store_set': _set_pins(result['v13/archive_reader_guard_candidate.py'], 'store.py', 'archive reader Store'),
+        'world_jepa_store': _dict_pin(result['v13/world_jepa_runtime_guard_candidate.py'], 'store.py', 'World-JEPA Store'),
+        'world_semantic_store': _dict_pin(result['v13/world_semantic_evidence_candidate.py'], 'store.py', 'semantic Store'),
+        'archive_stream_store': _constant_pin(result['v13/archive_stream_range_candidate.py'], 'STORE_SHA256', 'archive stream Store'),
+        'context_recall_store': _dict_pin(result['v13/context_source_recall_candidate.py'], 'store.py', 'context recall Store'),
+        'context_recall_stream': _dict_pin(result['v13/context_source_recall_candidate.py'], 'archive_stream_range_candidate.py', 'context recall stream'),
+        'local_error_semantic': _dict_pin(result['v13/local_error_route_shadow_candidate.py'], 'world_semantic_evidence_candidate.py', 'local-error semantic'),
+    }
+    if (base_store_sha not in dependent_base_pins['archive_reader_store_set']
+            or dependent_base_pins['world_jepa_store'] != base_store_sha
+            or dependent_base_pins['world_semantic_store'] != base_store_sha
+            or dependent_base_pins['archive_stream_store'] != base_store_sha
+            or dependent_base_pins['context_recall_store'] != base_store_sha
+            or dependent_base_pins['context_recall_stream'] != base_stream_sha
+            or dependent_base_pins['local_error_semantic'] != base_semantic_sha):
+        raise ValueError('base-composer downstream source pins are inconsistent')
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
                      '15850e2498a8145bb451a7178b84f3023edcf3651970a60bd39bcc702d57fd4a')
     result = observers.apply_sources(code_dir, result)
@@ -177,24 +242,87 @@ def build_sources(code_dir, *, include_postcommit=True):
         raise ValueError('C4 FocalLoop source is not immutable bytes')
     result['v13/focal.py'] = focal_overlay_ns['apply_staged_focal'](code_dir, focal_source)
 
-    # Rebind only these two known downstream pins after all staged overlays.
-    # The current values must still match the exact base-composer outputs above;
-    # unknown edits fail closed rather than being silently blessed.
+    # Rebind every known Store-dependent generated consumer after all staged
+    # overlays. Each old pin must still equal the exact pre-overlay composer
+    # output captured above; no unknown source is silently blessed.
+    final_store_sha = hashlib.sha256(result['v13/store.py']).hexdigest()
+
+    def _rebind_dict(raw, name, expected, final, label):
+        current = _dict_pin(raw, name, label)
+        if current != expected:
+            raise ValueError('downstream pre-overlay pin changed: ' + label)
+        if current == final:
+            return raw
+        needle = b"'" + name.encode('ascii') + b"':"
+        start = raw.index(needle) + len(needle)
+        quote = raw.find(b"'", start)
+        return raw[:quote + 1] + final.encode('ascii') + raw[quote + 65:]
+
+    def _rebind_constant(raw, name, expected, final, label):
+        current = _constant_pin(raw, name, label)
+        if current != expected:
+            raise ValueError('downstream pre-overlay constant changed: ' + label)
+        if current == final:
+            return raw
+        needle = name.encode('ascii') + b" ="
+        start = raw.index(needle) + len(needle)
+        quote = raw.find(b"'", start)
+        return raw[:quote + 1] + final.encode('ascii') + raw[quote + 65:]
+
+    def _add_set_pin(raw, name, expected, final, label):
+        current = _set_pins(raw, name, label)
+        if current != expected:
+            raise ValueError('downstream pre-overlay pin set changed: ' + label)
+        if final in current:
+            return raw
+        needle = b"'" + name.encode('ascii') + b"':"
+        start = raw.index(needle) + len(needle)
+        left = raw.find(b"{", start)
+        right = raw.find(b"}", left + 1)
+        return raw[:right] + b", '" + final.encode('ascii') + b"'" + raw[right:]
+
+    result['v13/world_jepa_runtime_guard_candidate.py'] = _rebind_dict(
+        result['v13/world_jepa_runtime_guard_candidate.py'], 'store.py',
+        dependent_base_pins['world_jepa_store'], final_store_sha, 'World-JEPA Store')
+    result['v13/world_semantic_evidence_candidate.py'] = _rebind_dict(
+        result['v13/world_semantic_evidence_candidate.py'], 'store.py',
+        dependent_base_pins['world_semantic_store'], final_store_sha, 'semantic Store')
+    result['v13/archive_reader_guard_candidate.py'] = _add_set_pin(
+        result['v13/archive_reader_guard_candidate.py'], 'store.py',
+        dependent_base_pins['archive_reader_store_set'], final_store_sha, 'archive reader Store')
+    result['v13/archive_stream_range_candidate.py'] = _rebind_constant(
+        result['v13/archive_stream_range_candidate.py'], 'STORE_SHA256',
+        dependent_base_pins['archive_stream_store'], final_store_sha, 'archive stream Store')
+
+    final_stream_sha = hashlib.sha256(result['v13/archive_stream_range_candidate.py']).hexdigest()
     recall = result['v13/context_source_recall_candidate.py']
-    for name, base_pin in recall_base_pins.items():
-        current_pin = recall_pin(recall, name)
-        if current_pin != base_pin:
-            raise ValueError('Integrated source recall pre-overlay pin changed: ' + name)
-        final_pin = hashlib.sha256(result['v13/' + name]).hexdigest()
-        if final_pin != current_pin:
-            needle = b"    '" + name.encode('ascii') + b"': '" + current_pin.encode('ascii') + b"'"
-            if recall.count(needle) != 1:
-                raise ValueError('Integrated source recall downstream pin ambiguous: ' + name)
-            recall = recall.replace(current_pin.encode('ascii'), final_pin.encode('ascii'), 1)
+    recall = _rebind_dict(recall, 'store.py', dependent_base_pins['context_recall_store'],
+                          final_store_sha, 'context recall Store')
+    recall = _rebind_dict(recall, 'archive_stream_range_candidate.py',
+                          dependent_base_pins['context_recall_stream'],
+                          final_stream_sha, 'context recall stream')
     result['v13/context_source_recall_candidate.py'] = recall
-    for name in recall_base_pins:
-        if recall_pin(recall, name) != hashlib.sha256(result['v13/' + name]).hexdigest():
-            raise ValueError('Integrated source recall final binding mismatch: ' + name)
+
+    final_semantic_sha = hashlib.sha256(result['v13/world_semantic_evidence_candidate.py']).hexdigest()
+    result['v13/local_error_route_shadow_candidate.py'] = _rebind_dict(
+        result['v13/local_error_route_shadow_candidate.py'], 'world_semantic_evidence_candidate.py',
+        dependent_base_pins['local_error_semantic'], final_semantic_sha, 'local-error semantic')
+
+    # Final exact-source checks for every rebinding above.
+    if _dict_pin(result['v13/world_jepa_runtime_guard_candidate.py'], 'store.py', 'World-JEPA Store') != final_store_sha:
+        raise ValueError('World-JEPA final Store binding mismatch')
+    if _dict_pin(result['v13/world_semantic_evidence_candidate.py'], 'store.py', 'semantic Store') != final_store_sha:
+        raise ValueError('semantic final Store binding mismatch')
+    if final_store_sha not in _set_pins(result['v13/archive_reader_guard_candidate.py'], 'store.py', 'archive reader Store'):
+        raise ValueError('archive reader final Store binding mismatch')
+    if _constant_pin(result['v13/archive_stream_range_candidate.py'], 'STORE_SHA256', 'archive stream Store') != final_store_sha:
+        raise ValueError('archive stream final Store binding mismatch')
+    if _dict_pin(recall, 'store.py', 'context recall Store') != final_store_sha:
+        raise ValueError('context recall final Store binding mismatch')
+    if _dict_pin(recall, 'archive_stream_range_candidate.py', 'context recall stream') != final_stream_sha:
+        raise ValueError('context recall final stream binding mismatch')
+    if _dict_pin(result['v13/local_error_route_shadow_candidate.py'], 'world_semantic_evidence_candidate.py', 'local-error semantic') != final_semantic_sha:
+        raise ValueError('local-error final semantic binding mismatch')
 
     for name, raw in result.items():
         if name.endswith('.py'):
