@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T02:34:08.000Z",
+  "updated_at": "2026-11-22T02:35:17.000Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -29,10 +29,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "QA PR #2298 current head 54e1a7e43445baa23923d459f7a03cb6b1ea1627 is based on Boss head d06c63794adc0ef802af9c7d91dc683d8a1057bf. Adds crash-consistent launcher/marker activation journal (PREPARED/LAUNCHER_SWITCHED/COMMITTED), file+directory fsync, recovery, runtime-only rollback API and explicit pipeline rollback CLI. The CLI disables auto-update, locks the pipeline, stops only a managed V13 chat, resumes only after confirmed rollback, and leaves the chat stopped/auto-update OFF on failure. Current QA head has 17 journal tests (including symlink and unknown-marker negatives), 3 deploy-integrity, 31 runtime-deploy and 43 pipeline-agent tests? The 39 pipeline-agent tests are the last pre-rebase passing count; final exact-head CI is pending. Pre-rebase head e1864bfd986a6ff521f10d4e6e2e819322cce6d2 passed 87 tests per Python 3.11/3.14 (14+3+31+39). Local full Aii tests BLOCKED: GitHub DNS prevented checkout. Private relay issues #453 and #454 remain open with zero authenticated comments; installed SHA/updater consent UNKNOWN. No phone write/deploy/rollback or model/SQLite/chat/permission change. REDMI_UNVERIFIED.",
-      "next_step": "Run exact-head CI on #2298 commit 54e1a7e (including 17 journal tests and pipeline rollback tests) across Python 3.11/3.14, staged/integrated, owner-read and migration. If green, request Boss review/integration. Then recompose #2281 Age/X10 rights onto d06c with exact pin-chain recalculation; dashboard rollback button and private-relay rollback command remain unimplemented. Obtain real Redmi process-death/reboot/rollback receipts only through the existing consented path.",
+      "proof_environment": "QA PR #2298 is based on Boss d06c63794adc0ef802af9c7d91dc683d8a1057bf. Current code contains 17 activation-journal tests, 3 deploy-integrity, 31 runtime-deploy and 39 pipeline-agent tests (90 total per Python 3.11/3.14); exact-head CI is pending. The first rebase test run on 54e1 exposed two over-specific assertion regexes only: the symlink backup is rejected as 'Runtime transaction backup path invalid', and an unknown marker is rejected as 'Runtime activation found an unknown marker'. Both fail closed without overwriting launcher/marker; assertions now match the actual safe errors. Base d06c exact CI passed 17 required workflows; local full Aii checkout is BLOCKED by GitHub DNS. Private relay #453/#454 unanswered; installed SHA/updater consent UNKNOWN. No device mutation. REDMI_UNVERIFIED.",
+      "next_step": "Run exact-head CI on the corrected #2298 head (90 tests per Python 3.11/3.14 plus staged/integrated, owner-read, migration and same-turn consumer). If green, request Boss review/integration. Then recompose #2281 Age/X10 rights onto d06c with exact pin-chain recalculation; dashboard rollback button and private-relay rollback command remain unimplemented. Obtain real Redmi process-death/reboot/rollback receipts only through the existing consented path.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T02:34:08.000Z",
+      "last_checkpoint": "2026-11-22T02:35:17.000Z",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",

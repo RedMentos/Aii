@@ -181,7 +181,7 @@ d._activation_transaction(
         outside.write_bytes(self.old_launcher)
         backup.unlink()
         backup.symlink_to(outside)
-        with self.assertRaisesRegex(d.RuntimeDeployError, "backup missing or unsafe"):
+        with self.assertRaisesRegex(d.RuntimeDeployError, "Runtime transaction backup path invalid"):
             d._recover_activation(self.home, self.private)
         self.assertEqual(self.launcher.read_bytes(), current_launcher)
         self.assertTrue(backup.is_symlink())
@@ -192,7 +192,7 @@ d._activation_transaction(
         current_launcher = self.launcher.read_bytes()
         marker = self.private / d.MARKER_NAME
         marker.write_bytes(b"unknown external marker")
-        with self.assertRaisesRegex(d.RuntimeDeployError, "Runtime marker"):
+        with self.assertRaisesRegex(d.RuntimeDeployError, "unknown marker"):
             d._recover_activation(self.home, self.private)
         self.assertEqual(self.launcher.read_bytes(), current_launcher)
         self.assertEqual(marker.read_bytes(), b"unknown external marker")

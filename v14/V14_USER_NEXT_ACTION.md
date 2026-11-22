@@ -1,3 +1,20 @@
+# Current next action — 2026-11-22 03:35 CET (QA exact-head regression correction)
+
+**User action: none.** Do not run Termux or change installed models, weights, permissions, Age, updater settings, SQLite or chat data.
+
+The first rebased QA runtime-deploy run on commit `54e1a7e43445baa23923d459f7a03cb6b1ea1627` found two **test assertion** mismatches, not unsafe runtime behavior:
+- A symlinked backup is rejected with `Runtime transaction backup path invalid`; the test expected a later error string.
+- An unknown marker is rejected with `Runtime activation found an unknown marker; refusing recovery`; the test expected the earlier parse-error string.
+Both tests confirmed that the launcher/marker were not overwritten. The assertions now match the actual fail-closed errors. The current QA branch contains 17 activation-journal tests, 3 deploy-integrity, 31 runtime-deploy and 39 pipeline-agent tests (90 total per Python 3.11/3.14). Exact-head CI is rerunning.
+
+Boss base d06c63794adc0ef802af9c7d91dc683d8a1057bf remains exact-head green: 17 required workflows PASS, 2 additive-only SKIPPED, 1 duplicate release-event CANCELLED; staged runtime 252 passed, integrated regression 424 passed, audio/arithmetic 52 passed per interpreter, and same-causal B1/B2→C4→C3 consumer passed on Python 3.13/3.14. These C4/C3 receipt tests remain SYNTHETIC and explicitly do not prove semantic use or a real native GGUF answer.
+
+Private relay issues #453/#454 remain unanswered; installed SHA and updater consent UNKNOWN. No device action occurred: REDMI_UNVERIFIED. Full local Aii checkout remains blocked by GitHub DNS.
+
+Next: finish exact-head QA CI, then Boss review. Recompose #2281 Age/X10 rights onto d06c after #2298; preserve GoalWake and rebind the full pin chain. No user action is needed.
+
+---
+
 # Current next action — 2026-11-22 03:34 CET (QA + whole-system integration checkpoint)
 
 **User action: none.** Do not run Termux or change installed models, weights, permissions, Age, updater settings, SQLite or chat data.
