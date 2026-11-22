@@ -482,7 +482,7 @@ def _open_current_turn(provider, runtime):
     )
     adapter = A5UIRuntimeAdapter(runtime)
     if not callable(getattr(adapter, "lease", None)):
-        bundle["frame_buffer"][:] = b"\\x00" * len(bundle["frame_buffer"])
+        bundle["frame_buffer"][:] = b"\x00" * len(bundle["frame_buffer"])
         raise FrameReceiptDenied("the V14 A5 UI lease adapter is not installed in this checkout")
     try:
         with adapter.lease(
