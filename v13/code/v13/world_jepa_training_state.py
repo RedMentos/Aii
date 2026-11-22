@@ -15,6 +15,7 @@ import zipfile
 import numpy as np
 
 from . import world_jepa as wj
+from . import world_jepa_drift as drift
 
 SCHEMA = 'v13.world-jepa.training-state.v1'
 PREFIX = 'training__'
@@ -66,15 +67,31 @@ def _arrays(values, shapes, nonnegative=False):
 
 
 def _adam(value, shapes, upper, exact=None):
-    if (type(value) is not dict or set(value) != {'t', 'lr', 'm', 'v'}
+    legacy_keys = {'t', 'lr', 'm', 'v'}
+    current_keys = legacy_keys | {'steps'}
+    if (type(value) is not dict or set(value) not in (legacy_keys, current_keys)
             or type(value['t']) is not int or not 0 <= value['t'] <= upper
             or (exact is not None and value['t'] != exact)
             or type(value['lr']) is not float or value['lr'] != wj.LR):
         raise ValueError('invalid World-JEPA optimizer step/config')
-    result = {'t': value['t'], 'lr': value['lr'],
+    if 'steps' in value:
+        raw_steps = value['steps']
+        if (type(raw_steps) is not dict or set(raw_steps) != set(shapes)
+                or any(type(raw_steps[key]) is not int
+                       or not 0 <= raw_steps[key] <= value['t'] for key in shapes)):
+            raise ValueError('invalid World-JEPA per-parameter optimizer clocks')
+        parameter_steps = dict(raw_steps)
+    else:
+        # Read old checkpoints whose Adam clock advanced for every parameter.
+        parameter_steps = {key: value['t'] for key in shapes}
+    result = {'t': value['t'], 'lr': value['lr'], 'steps': parameter_steps,
               'm': _arrays(value['m'], shapes), 'v': _arrays(value['v'], shapes, True)}
     if result['t'] == 0 and any(np.any(a) for group in ('m', 'v') for a in result[group].values()):
         raise ValueError('zero-step World-JEPA optimizer has nonzero moments')
+    for key in shapes:
+        if result['steps'][key] == 0 and (
+                np.any(result['m'][key]) or np.any(result['v'][key])):
+            raise ValueError('zero-step World-JEPA parameter has nonzero moments')
     return result
 
 
@@ -84,7 +101,8 @@ def validate(state, d, actions, seed, ensemble, steps):
             or type(ensemble) is not int or not 1 <= ensemble <= 16
             or type(steps) is not int or not 0 <= steps <= MAX_STEPS):
         raise ValueError('invalid World-JEPA training dimensions')
-    if (type(state) is not dict or set(state) != {'schema', 'objective', 'origin', 'inverse', 'main', 'rng', 'bootstrap'}
+    base_keys = {'schema', 'objective', 'origin', 'inverse', 'main', 'rng', 'bootstrap'}
+    if (type(state) is not dict or set(state) not in (base_keys, base_keys | {'drift'})
             or state['schema'] != SCHEMA or state['objective'] != objective(seed, ensemble)
             or state['origin'] not in ('FRESH', 'BOOTSTRAPPED_FROM_INFERENCE_ONLY')
             or type(state['bootstrap']) is not list or len(state['bootstrap']) != ensemble - 1):
@@ -93,7 +111,8 @@ def validate(state, d, actions, seed, ensemble, steps):
     result = {'schema': SCHEMA, 'objective': state['objective'],
               'origin': state['origin'], 'inverse': _arrays(state['inverse'], inverse),
               'main': _adam(state['main'], main, steps, exact=steps if state['origin'] == 'FRESH' else None),
-              'rng': _rng(state['rng']), 'bootstrap': []}
+              'rng': _rng(state['rng']), 'bootstrap': [],
+              'drift': drift.validate_state(state.get('drift'))}
     for member in state['bootstrap']:
         if type(member) is not dict or set(member) != {'adam', 'rng'}:
             raise ValueError('invalid World-JEPA bootstrap state')
@@ -110,20 +129,23 @@ def from_model(model):
 def snapshot(adam):
     if type(adam) is not wj.Adam:
         raise ValueError('reviewed World-JEPA Adam required')
-    return {'t': adam.t, 'lr': adam.lr,
+    return {'t': adam.t, 'lr': adam.lr, 'steps': dict(adam.steps),
             'm': {k: v.copy() for k, v in adam.m.items()},
             'v': {k: v.copy() for k, v in adam.v.items()}}
 
 
 def restore_adam(adam, state):
     checked = _adam(state, {k: v.shape for k, v in adam.p.items()}, MAX_STEPS)
-    adam.t, adam.lr, adam.m, adam.v = checked['t'], checked['lr'], checked['m'], checked['v']
+    adam.t, adam.lr, adam.steps, adam.m, adam.v = (
+        checked['t'], checked['lr'], checked['steps'], checked['m'], checked['v']
+    )
 
 
-def capture(opt, inverse, rng, bootstrap, d, actions, seed, ensemble, steps, origin='FRESH'):
+def capture(opt, inverse, rng, bootstrap, d, actions, seed, ensemble, steps, origin='FRESH', drift_state=None):
     return validate({'schema': SCHEMA, 'objective': objective(seed, ensemble), 'origin': origin,
                      'main': snapshot(opt), 'inverse': inverse,
-                     'rng': rng.bit_generator.state, 'bootstrap': bootstrap},
+                     'rng': rng.bit_generator.state, 'bootstrap': bootstrap,
+                     'drift': drift.validate_state(drift_state)},
                     d, actions, seed, ensemble, steps)
 
 
@@ -165,19 +187,20 @@ def pack(model):
         for group in ('m', 'v'):
             for key, array in value[group].items():
                 arrays[PREFIX + name + '__' + group + '__' + key] = array
-        return {'t': value['t'], 'lr': value['lr']}
+        return {'t': value['t'], 'lr': value['lr'], 'steps': dict(value['steps'])}
     for key, array in state['inverse'].items():
         arrays[PREFIX + 'inverse__' + key] = array
     meta = {'schema': SCHEMA, 'objective': state['objective'], 'origin': state['origin'], 'rng': state['rng'],
-            'main': adam(state['main'], 'main'), 'bootstrap': []}
+            'main': adam(state['main'], 'main'), 'bootstrap': [], 'drift': state['drift']}
     for i, value in enumerate(state['bootstrap']):
         meta['bootstrap'].append({'adam': adam(value['adam'], 'boot' + str(i)), 'rng': value['rng']})
     return meta, arrays
 
 
 def unpack(meta, arrays, base_meta, base_arrays):
+    meta_keys = {'schema', 'objective', 'origin', 'rng', 'main', 'bootstrap'}
     if (type(base_meta.get('fit_steps')) is not int or not 1 <= base_meta['fit_steps'] <= MAX_STEPS
-            or type(meta) is not dict or set(meta) != {'schema', 'objective', 'origin', 'rng', 'main', 'bootstrap'}
+            or type(meta) is not dict or set(meta) not in (meta_keys, meta_keys | {'drift'})
             or type(meta['bootstrap']) is not list or len(meta['bootstrap']) != base_meta['ensemble'] - 1):
         raise ValueError('invalid World-JEPA training metadata')
     main, pred, inverse = _shapes(len(base_arrays['mu']), len(base_arrays['action_counts']))
@@ -188,13 +211,16 @@ def unpack(meta, arrays, base_meta, base_arrays):
             raise ValueError('missing World-JEPA optimizer tensor')
         return arrays[name]
     def adam(value, name, shapes):
-        if type(value) is not dict or set(value) != {'t', 'lr'}:
+        if (type(value) is not dict
+                or set(value) not in ({'t', 'lr'}, {'t', 'lr', 'steps'})):
             raise ValueError('invalid World-JEPA optimizer metadata')
         return dict(value, **{group: {key: get(name + '__' + group + '__' + key) for key in shapes}
                               for group in ('m', 'v')})
     state = {'schema': meta['schema'], 'objective': meta['objective'], 'origin': meta['origin'], 'rng': meta['rng'],
              'inverse': {key: get('inverse__' + key) for key in inverse},
              'main': adam(meta['main'], 'main', main), 'bootstrap': []}
+    if 'drift' in meta:
+        state['drift'] = meta['drift']
     for i, member in enumerate(meta['bootstrap']):
         if type(member) is not dict or set(member) != {'adam', 'rng'}:
             raise ValueError('invalid World-JEPA bootstrap metadata')
