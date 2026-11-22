@@ -78,6 +78,7 @@ class FakeSession:
 
     def __init__(self, binding, context, out, cancel, deadline, **kwargs):
         self.context = context
+        Path(out).mkdir(parents=True, exist_ok=True)
         self.context_sha = digest(dumps(context))
         self.metrics = {"process_reaped": True}
 
