@@ -234,6 +234,44 @@ def test_media_projection_frame_reaches_a5_a4_and_existing_ui_context(monkeypatc
         assert not any(frame)
 
 
+def test_verified_frame_snapshot_prevents_post_receipt_buffer_swap(monkeypatch):
+    from v13 import vision
+    from v13.vision_ui_frame_ingress import _issue_provider_frame_verifier
+
+    runtime = make_runtime(monkeypatch)
+    obs = observation()
+    frame = image_buffer()
+    replacement = image_buffer()
+    original_hash = hashlib.sha256(frame).hexdigest()
+    decoded = []
+    original_decode = vision.decode
+
+    def tracked_decode(data, cfg):
+        decoded.append((hashlib.sha256(data).hexdigest(), data))
+        return original_decode(data, cfg)
+
+    monkeypatch.setattr("v13.vision_ui_frame_ingress.vision.decode", tracked_decode)
+
+    def verify_then_mutate(candidate, digest, size):
+        accepted = candidate == obs and digest == original_hash and size == len(frame)
+        frame[:] = replacement
+        return accepted
+
+    with lease_for(runtime, obs) as lease:
+        verifier = _issue_provider_frame_verifier(lease, obs, verify_then_mutate)
+        result = consume_projected_frame(
+            runtime, obs, frame, consent_lease=lease,
+            frame_verifier=verifier, current_source="Describe this screen.",
+            goal="red panel", token_budget=512,
+        )
+
+    assert decoded[0][0] == original_hash
+    assert result["packet"]["frame_sha256"] == original_hash
+    assert not any(frame)
+    assert not any(decoded[0][1])
+    replacement[:] = b"\\x00" * len(replacement)
+
+
 def test_provisional_frame_is_never_admitted_to_c3_context(monkeypatch):
     runtime = make_runtime(monkeypatch)
     obs = observation(finality="PROVISIONAL")
