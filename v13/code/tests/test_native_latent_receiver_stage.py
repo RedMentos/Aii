@@ -27,9 +27,19 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     overlay_spec.loader.exec_module(overlay)
     with pytest.raises(ValueError, match="separate from source tree"):
         overlay.apply_staged(CODE, CODE)
+    callosum_path = destination / "v13/callosum.py"
+    operator_path = destination / "v13/operator.py"
+    callosum_before = callosum_path.read_bytes()
+    operator_before = operator_path.read_bytes()
     manifest = overlay.apply_staged(CODE, destination)
-    assert manifest["native_probe_approval_overlay"]["status"] == "SHADOW_REVIEW_ONLY"
-    assert manifest["native_probe_approval_overlay"]["ttl_seconds"] == 120
+    approval_meta = manifest["native_probe_approval_overlay"]
+    assert approval_meta["status"] == "SHADOW_REVIEW_ONLY"
+    assert approval_meta["composition_mode"] == "PRECOMPOSED_VERIFIED"
+    assert approval_meta["model_byte_integrity_verified"] is True
+    assert approval_meta["replaced_files"] == []
+    assert approval_meta["ttl_seconds"] == 120
+    assert callosum_path.read_bytes() == callosum_before
+    assert operator_path.read_bytes() == operator_before
     cognition = (destination / "v13/cognition.py").read_text(encoding="utf-8")
     callosum = (destination / "v13/callosum.py").read_text(encoding="utf-8")
     operator_help = (destination / "v13/operator.py").read_text(encoding="utf-8")
@@ -73,7 +83,15 @@ def _minimal_overlay_stage(tmp_path, overlay):
     code_dir = tmp_path / "source"
     source_v13 = code_dir / "v13"
     source_v13.mkdir(parents=True)
-    approval_source = b"def arm():\n    return None\n"
+    approval_source = (
+        b"def _file_sha256(path):\n    return 'digest'\n"
+        b"def _model_binding(path, resolved, digest, models_root):\n"
+        b"    actual_digest = _file_sha256(resolved)\n"
+        b"    if actual_digest != digest:\n        raise PermissionError()\n"
+        b"    if not resolved.is_relative_to(models_root):\n        raise PermissionError()\n"
+        b"    if path.resolve(strict=True) != resolved:\n        raise PermissionError()\n"
+        b"def arm():\n    return None\n"
+    )
     (source_v13 / "native_probe_approval.py").write_bytes(approval_source)
 
     stage_dir = tmp_path / "stage"
@@ -101,6 +119,25 @@ def _minimal_overlay_stage(tmp_path, overlay):
     }
     (stage_dir / "INTEGRATION_STAGE.json").write_text(json.dumps(manifest), encoding="utf-8")
     return code_dir, stage_dir
+
+
+def test_native_probe_overlay_rejects_partial_precomposition_without_writing(tmp_path):
+    overlay_path = CODE / "scripts/integrated_native_probe_approval_candidate_20261122.py"
+    spec = importlib.util.spec_from_file_location("v14_native_probe_partial_overlay", overlay_path)
+    overlay = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(overlay)
+    code_dir, stage_dir = _minimal_overlay_stage(tmp_path, overlay)
+    callosum_path = stage_dir / "v13/callosum.py"
+    callosum = callosum_path.read_bytes() + b"\\n# arm-probe\\n"
+    callosum_path.write_bytes(callosum)
+    manifest_path = stage_dir / "INTEGRATION_STAGE.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["files_sha256"]["v13/callosum.py"] = hashlib.sha256(callosum).hexdigest()
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    before = callosum_path.read_bytes()
+    with pytest.raises(ValueError, match="composition is partial or inconsistent"):
+        overlay.apply_staged(code_dir, stage_dir)
+    assert callosum_path.read_bytes() == before
 
 
 def test_native_probe_overlay_rejects_symlinked_stage_parent_without_writing_outside(tmp_path):
