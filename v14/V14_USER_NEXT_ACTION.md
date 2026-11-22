@@ -1,14 +1,15 @@
-# Research & Perception — latest verified candidate (2026-11-22 18:12 UTC)
+# Research & Perception — latest verified candidate (2026-11-22 18:14 UTC)
 
-- PR [#2366](https://github.com/RedMentos/Aii/pull/2366), branch `research-perception/v14-vision-source-revocation-atomic-20261122`, head at last read `dd0090b5e428c4dc537693388645fa88acf667dd`; code/test commit `f8a9faf66b64352f8e1703e634b79f03ec3c0984`. It serializes stored IMAGE ingest/read/forget and the ephemeral RAW EYE A5→A4/admission path; two barrier regressions cover in-flight A5 vs forget and re-ingest vs final unlink. PR #2363 is closed as superseded.
-- LOCAL_LINUX CPython 3.13.5 isolated fake-Store concurrency harness: **2/2 PASS**. Exact Perception CI run [45053728753](https://github.com/RedMentos/Aii/actions/runs/45053728753) is pending with no jobs at last read. Full local Aii checkout remains blocked by GitHub DNS.
+- PR [#2366](https://github.com/RedMentos/Aii/pull/2366), branch `research-perception/v14-vision-source-revocation-atomic-20261122`, head at last read `468d2fb3aa023db6fd13f0e70b1b592cd629d963`; code/test commit `f8a9faf66b64352f8e1703e634b79f03ec3c0984`. It serializes stored IMAGE ingest/read/forget and the ephemeral RAW EYE A5→A4/admission path; two barrier regressions cover in-flight A5 vs forget and re-ingest vs final unlink. PR #2363 is closed as superseded.
+- LOCAL_LINUX CPython 3.13.5 isolated fake-Store concurrency harness: **2/2 PASS**. Exact Perception workflow run [45053815645](https://github.com/RedMentos/Aii/actions/runs/45053815645) is pending with no jobs at last read; no CI pass is claimed. Full local Aii checkout remains blocked by GitHub DNS.
 - No Redmi test. The adapter remains unhooked from normal Runtime; no Android camera/screen provider, semantic VLM, trained projector, model/weight or permission change is claimed.
 - Installed code remains `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`, updater enabled/UP_TO_DATE; no update request or Termux action. This PR is NOT_RELEASED.
-- Research R-081: *Surprise-Gated Memory for Live Speaker Diarization* (12-page arXiv preprint) suggests a future A4 novelty-gate/full-history replay ablation; small single-seed evidence, poor causal-strict track, no linked code/weight license. No download.
+- Research R-081: full 12-page preprint review proposes an A4 novelty-gate/full-history replay ablation, but evidence is small/single-seed, causal-strict output is poor, and no code/weight license was linked. No download.
 
-**Next internal action:** wait for exact CI, then hand the source-lifecycle contract to Core for normal Runtime invocation; afterward run R-081's gate/replay ablation on existing synthetic audio. **User action: none.**
+**Next internal action:** finish exact CI, then hand the source-lifecycle contract to Core for normal Runtime invocation; afterward run R-081's gate/replay ablation on existing synthetic audio. **User action: none.**
 
 ---
+
 
 
 
