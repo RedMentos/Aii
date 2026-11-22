@@ -1028,3 +1028,47 @@ The release source has a plausible B1/B2 suppression path: default observer mode
 - Boss & Integration: keep #2258 unmerged until the Age-rights composition, exact CI and protected-file review are complete; continue whole-Canon dependency/consumer mapping.
 
 Private owner-read request #443 has no authenticated reply. Installed SHA and updater consent are UNKNOWN; REDMI_UNVERIFIED. No LOG_PAGE, UPDATE_REQUEST, remote shell, or device mutation was attempted.
+
+
+## Boss integration checkpoint — 2026-11-22 00:50 UTC
+
+**User action: none.** No Termux command, model/weight download or swap, permission change, updater toggle, device action or user-data mutation is needed.
+
+### Current base and candidate
+
+- Release-development branch remains `gpt6/v13-private-remote-bridge-20261111` at `bdcad466ffea75a2b41f7d23be168f53c7197d20`. Last accepted code release remains `f279286a4453248004c670fcaabecd85da6ab299`.
+- Current Boss candidate is [PR #2288](https://github.com/RedMentos/Aii/pull/2288), branch `boss/v14-recall-store-pin-rebind-20261122`, latest head `679f3667c5c98b867f85ae960824489da0d8fd3a`. It is DRAFT / NOT_RELEASED, 168 commits ahead and 0 behind the exact release-development base, with 64 changed files. It carries the Core staged observer fairness path and the composed #2258 Runtime/RAW-EAR/GoalWake work.
+- PR #2287 was closed as superseded after its exact-head stage, Lab-Age and controller-guard failures shared one source-recall Store pin error. PR #2279 was closed unmerged because it inherited #2278, which Core closed for a direct edit to frozen `native_turn_budget.py`; do not promote that stack. The correct staged overlay is in the #2288 candidate.
+
+### Root-cause repair in #2288
+
+The exact failure was `ValueError: Integrated source recall Store binding changed`. The Context-source recall module was pinned to the Store produced by the base composer, but later staged overlays legitimately changed the final `store.py` bytes. The recovery composer incorrectly compared the old base pin to the post-overlay Store before it could rebind it.
+
+The current #2288 head now:
+
+1. Captures exact Store and archive-stream hashes immediately after the base composer.
+2. Requires the recall module's pre-overlay pins to match those exact hashes; unknown or ambiguous pins fail closed.
+3. After all staged overlays, rebinds only those two known pins to the final composed bytes and verifies both final bindings.
+4. Rebinds the recovery wrapper Git blob SHA-1, stage-builder SHA-256 and runtime-deployer `STAGER_SHA256`; exact GitHub readback confirms the chain.
+
+The first #2288 attempt at `021b1d3c` added final rebind logic but retained the old comparison against final Store, so three workflows still failed. The follow-up at `679f3667` corrected the comparison to use the captured base pins. Do not claim the fix passes until the exact current-head suite completes.
+
+### Exact CI at the latest poll
+
+On #2288 head `679f3667`, 13 PR workflows were visible: 8 PASS, 3 IN_PROGRESS, 1 expected SKIPPED (strict additive-only validator not applicable to this broad integration), and 1 cancelled release-queue workflow. Completed PASS included runtime-deploy integrity, combined JEPA integration, Lab-Age/WebView truth, controller record-only guard, A5 UI lease, privacy scan and the push/bridge tests. Old-phone-to-new-runtime migration's job passed but its workflow was still running; private owner-read, staged/integrated regression and Python 3.13/3.14 audio/arithmetic jobs were still in progress. Exact run links and per-ticket status are in the board. No local repository tests ran: the execution container has no Aii checkout and GitHub DNS/network is unavailable there.
+
+### Required cross-agent integration
+
+- **Core:** rebase the unique #2280 `c4_offer_context_ready` receipt and tampered-OfferPacket negative control onto #2288; preserve the sequential B1/B2 fair slices and C3 reserve, then rerun exact staged/integrated tests. #2284's observer workflow PASS is on the stale #2280 stack only.
+- **QA:** rebase #2281 Age/X10 rights and #2283 runtime-only rollback onto #2288. The old-base 5/5 results do not certify the current head. Age remains developmental/tool/learning rights, never compute budget. Preserve GoalWake atomicity and all rollback refusal controls.
+- **QA/Perception:** rebase #2282's Store reader/revocation fix. The current #2288 branch does not include that race fix; #2250 still demonstrates a live source row whose shared blob can be unlinked. Serialize publication and revocation under the same Store lock and retain the threaded negative control.
+- **Perception:** rebase #2275; repair the frame-age expectation and exact audio source pin chain. Keep NumPy/speaker models OFF.
+- **Boss:** do not merge the draft until current-head CI is fully green, protected source/permission review is complete, and all accepted follow-up PRs are composed on the same exact base.
+
+### Whole-system boundary
+
+The 1,255-heading historical Canon remains preserved, but clause→implementation→consumer→test→environment→rollback mapping is still incomplete. B1/B2 same-turn output, C4→C3 receipt, B3 learned latent transfer, real JEPA parameter updates, per-session retention, full voice/audio learning, Android background/UI control, distinct sparse MoE, OS sandbox, adaptive behavior judge, Memorilla production consumer and cross-organ self-edit remain separate OPEN scope. Synthetic CI is not native model evidence or Android acceptance.
+
+Private read-only PIPELINE_STATUS request [RedMentos/Aiiii #453](https://github.com/RedMentos/Aiiii/issues/453) had no authenticated reply at 00:49:49 UTC. Installed SHA and updater consent remain UNKNOWN; REDMI_UNVERIFIED. No LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, remote shell or device mutation occurred.
+
+**Next internal step:** wait for exact #2288 current-head staged/integrated, audio, owner-read and migration results; fix only measured remaining failures, then rebase the unique C4 receipt and QA/Perception fixes onto this base. **User action: none.**
