@@ -22,6 +22,7 @@ on:
       - 'v13/code/tests/test_v14_same_turn_c4_c3_consumption.py'
       - 'v13/code/tests/test_termux_runtime_recovery_stage.py'
       - 'v13/code/tests/test_observer_fair_budget_stage_20261116.py'
+      - 'v13/code/tests/test_same_turn_body_delivery_qa.py'
       - 'v13/code/v13/brain_panel.py'
       - 'v13/code/v13/native_offer_prompt_receipt.py'
       - 'v13/code/v13/runners.py'
@@ -50,6 +51,8 @@ on:
       - 'v13/code/tests/test_v14_causal_stream_offer_receipt.py'
       - 'v14/V14_USER_NEXT_ACTION.md'
       - 'v13/code/tests/test_termux_runtime_recovery_stage.py'
+      - 'v13/code/tests/test_observer_fair_budget_stage_20261116.py'
+      - 'v13/code/tests/test_same_turn_body_delivery_qa.py'
       - 'v14/V14_WORK_BOARD.json'
       - 'v14/V14_LIVE_WORKPLAN.md'
       - 'v14/V14_CANON_COVERAGE_INDEX.md'
@@ -84,6 +87,7 @@ jobs:
             v13/code/v13/native_offer_prompt_receipt.py \
             v13/code/v13/runners.py \
             v13/code/tests/test_v14_causal_stream_offer_receipt.py \
+            v13/code/tests/test_same_turn_body_delivery_qa.py \
             v13/code/scripts/integrated_c4_c3_receipt_candidate_20261122.py \
             v13/code/scripts/run_c4_c3_current_candidate_test_20261122.py \
             v13/code/scripts/termux_runtime_recovery_candidate_20261121.py \
