@@ -1,3 +1,18 @@
+# JEPA & Memory — Run 17: Receiver-Audit und Testtrennung (2026-11-22T20:45:15.705Z)
+
+**Keine Nutzeraktion erforderlich.** Der installierte Release-Stand ist bereits aktuell. Kein neuer Termux-Befehl, kein Update-Request und kein Modell-/Gewichts-/Rechtewechsel.
+
+- **Code:** [PR #2372](https://github.com/RedMentos/Aii/pull/2372), exakter Branch-Head `6da129ef1cd09edd119491e5ff7740005792063c`, DRAFT / NOT_RELEASED. Der B1/B2-Body-Adapter schreibt nun einen begründeten, source-bound Audit-Eintrag, wenn ein Readout fail-closed ausgelassen wird; diese Diagnose bleibt im Audit-Source und gelangt nicht in den Prompt.
+- **Testtrennung:** Der Prompt-Consumer-Test nutzt jetzt ausdrücklich einen test-only akzeptierten Utility-Gate, während die trainierten Predictor-/Receiver-Gewichte unverändert bleiben. Das beweist nur die echte Prompt-Verkabelung, nicht die gelernte Holdout-Utility. Ein zusätzlicher negativer Test erzwingt einen abgelehnten B1-Gate und prüft: Audit = OMITTED / RECEIVER_UTILITY_REJECTED, kein Temporal-Readout im Prompt.
+- **CI:** Exakter aktueller Head hat die Workflows 45068109547 (Optimizer-Resume 3.13/3.14), 45068109554 (Staged/Integrated) und 45068109526 (Temporal T8); alle sind QUEUED. Kein PASS. Vorheriger Head fbe4 scheiterte am fehlenden B1-Readout, am SleepRuntime-Postcommit-`ValueError` und am QA-`memory.py`-Pin; der undefinierte Test-`monkeypatch`-Name ist inzwischen korrigiert, die eigentliche SleepRuntime-Ursache noch nicht.
+- **Lokal:** Python 3.13.5, NumPy 2.3.5 und pytest 9.0.2 vorhanden, aber kein Aii-Checkout und GitHub-DNS-Fehler. Vollständige lokale Tests BLOCKED / NOT_RUN.
+- **Team:** QA #2359 muss die Lifecycle-Pins auf JEPA-`memory.py` SHA-256 `33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701` neu binden. Boss' Audio-Pin ist auf 7fc6d7e korrigiert, aber die vollständige Matrix bleibt QUEUED. Kein Rebase, bevor beide Ketten grün sind.
+- **Gerät:** Privates V13OBS #115 (20:24:26Z) meldet installierte Basis `aed1d2b`, Auto-Update EIN / Runtime UP_TO_DATE, aber B1 4/4 und B2 2/2 native Versuche fehlgeschlagen, null gültige Offers, C3-Prefill ~38,945 s / 2 Tokens. Das ist kein neuer Chat-Test; JEPA-PR #2372 ist nicht installiert und REDMI_UNVERIFIED.
+
+**Nächster interner Schritt:** Exakte 6da129ef-CI auswerten; bei Testfehler den gespeicherten Omission-Audit lesen, ohne den Utility-Gate zu lockern. Den echten SleepRuntime-`ValueError` beheben. Danach QA-Rebind + Boss-Matrix abwarten, erst dann integrieren und echte disjunkte Receiver-Utility-/Replay-/Mehrfach-Shift-Retention-Tests ausführen. Bis dahin SHADOW-only.
+
+---
+
 # JEPA & Memory — Run 16: aktueller verifizierter Stand (2026-11-22T20:38:53.844Z)
 
 **Keine Nutzeraktion erforderlich.** Der installierte Stand ist bereits über den vorhandenen Updater aktuell. Kein neuer Termux-Befehl, kein UPDATE_REQUEST und kein Modell-/Gewichts-/Rechtewechsel.
