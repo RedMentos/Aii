@@ -2063,3 +2063,17 @@ PR #2312 signed one-shot consumer passes; staged-runtime has 238 passed / 10 ski
 | Native receiver composition | PR #2314 head af2c: Linux pinned API and Android ARM64 cross-compile pass | Python stage fails because raw-string anchor uses literal backslash-n, not newline; Core notified | No receiver semantic-use proof | OFF / FAIL |
 | JEPA staged update | PR #2311 head ae15: transactional/combined/receipt/WorldJEPA checks pass | Lab-Age/training-resume/controller/owner-read/migration fail from nested stale pins | No accepted runtime learning/weight promotion | SHADOW / PIN_CHAIN_FAIL |
 | Audio consumer | PR #2312 head 98f: focused one-shot and integrated regression pass; 238 staged tests pass, 10 skipped, 47 subtests | Two migration fixtures return PARTIAL / runtime ERROR / last_error UPDATE on old recovery profile | No microphone or Android capture | PARTIAL / MIGRATION_FAIL |
+
+## Perception run-11b evidence correction — 2026-11-22 06:08Z
+
+This overlay updates only the A-plane audio/voice evidence; it does not mark the entire A0–A5 family complete and does not change historical Canon headings.
+
+| Canon family | Current code / consumer | Exact evidence | Android / native status | Classification |
+| --- | --- | --- | --- | --- |
+| A0/A1/A4/A5 audio ingress | Signed one-shot consumer PR #2312 head `96e48534af9e55d7c898d086dfb3a863213966c7`; default request 44.1-kHz mono PCM16, max one second; source/generation/request digest/PCM hash/P-256 signature/nonce/consent/finality bound; `audio_input.submit_audio_only` passes to the existing RAW EAR Runtime consumer | Earlier head `98f434d` focused consumer workflow PASS, integrated regression PASS, but staged two-checkout migration failed 2 inherited old-profile assertions (`PARTIAL`, runtime `ERROR`, `last_error=UPDATE`; 238 passed / 10 skipped / 47 subtests). New exact-head consumer workflow pending and staged/integrated workflow queued. Local minimal P-256/44.1-kHz geometry smoke PASS only | No visible AudioRecord provider, microphone permission/capture, route/silence callback test, PCM zeroization proof, Termux or Redmi capture | CODE_PRESENT / WIRED_SYNTHETIC / CI_PENDING; NOT_ANDROID_VERIFIED |
+| RAW EAR acoustic features | Existing `audio_voice_cues.py` caller-supplied PCM16 path, pitch/voicing/energy/prosody and optional speaker evidence | Earlier #2155 additive cue tests PASS; no model identity authority | No mic source; speaker model OFF; no full-duplex/ASR/vocoder proof | PARTIAL / CALLER_SUPPLIED_ONLY |
+| A4 future speaker-change research | FASTDIAR paper/repo reviewed as R-075; 2.7M Small / 4.6M Medium / 10.4M Large, 2-s past, 80-ms embeddings, 960-ms delay; MIT repo, heavy PyTorch stack | Full arXiv:2610.02941v1 read; Threadripper-only reported RTF; overlap and DIHARD3 limitations; no Android benchmark | Not downloaded, not integrated, not a speaker-identity authority | RESEARCH_ONLY / NOT_SELECTED |
+
+**Current release/device boundary:** integration head `39b175521f50048f13ca14372b316de47527f531`; post-merge push CI not independently certified. Authenticated private PIPELINE_STATUS #480 reports auto-update enabled but `CI_WAIT` on installed SHA `89333289b8cd50da92cbf7074c9ef689a2972dbf`; no UPDATE_REQUEST was sent. REDMI_UNVERIFIED_NOT_INSTALLED.
+
+**Coordination note:** the older overlay above still contains unrelated stale Age-rights and B3 rows. They are not changed by this Perception update; Boss/Integrator should reconcile them against current board/PR evidence without rewriting historical Canon headings.
