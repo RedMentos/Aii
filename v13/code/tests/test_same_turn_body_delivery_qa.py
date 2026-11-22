@@ -97,8 +97,7 @@ class SameTurnAdmissionTests(unittest.TestCase):
 
         # Mirror the sequential observer: the first body consumes its own
         # 2-second slice, then the peer receives the remaining 2 seconds.
-        with patch("v13.cognition.time.monotonic", side_effect=lambda: now[0]), \
-             patch("v13.native_turn_budget.time.monotonic", side_effect=lambda: now[0]):
+        with patch("v13.cognition.time.monotonic", side_effect=lambda: now[0]):
             for role in ("B1_DETAIL", "B2_GIST"):
                 store.current_role = role
                 try:

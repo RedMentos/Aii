@@ -64,7 +64,7 @@ def test_arithmetic_world_source_transition_survives_restart(runtime):
     try:
         resumed = restored.world.transition(action['id'])
         assert resumed == transition
-        assert restored.store.read_source(resumed['source_ref']) == 'What is 8/4?'
+        assert restored.store.read_source(resumed['source_ref']) == 'calculate 8/4'
         assert restored.store.read_source(resumed['outcome_source_ref']) == '2'
         assert restored.cfg['learning_mode'] == 'RECORD_ONLY'
         assert restored.store.integrity(True) == []
