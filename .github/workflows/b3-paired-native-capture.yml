@@ -83,3 +83,27 @@ jobs:
       - name: Smoke-test Termux L1 shadow CLI import and argument parser
         working-directory: v13/code
         run: python scripts/b3_train_l1_shadow.py --help >/dev/null
+      - name: Emit exact source-pin diagnostics for integration repair
+        if: always()
+        run: |
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          root = Path("v13/code")
+          names = [
+              "v13/runtime.py",
+              "v13/operator.py",
+              "scripts/integrated_online_world_candidate_20261110.py",
+              "scripts/integrated_observer_fair_budget_candidate_20261116.py",
+              "scripts/termux_chat_recovery_candidate_20261112.py",
+              "scripts/termux_runtime_recovery_candidate_20261112.py",
+              "scripts/termux_runtime_recovery_candidate_20261121.py",
+              "scripts/integrated_arithmetic_guard_candidate_20261121.py",
+              "scripts/stage_integrated_candidate.py",
+              "v13/runtime_deploy.py",
+          ]
+          for name in names:
+              raw = (root / name).read_bytes()
+              blob = hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\\0" + raw).hexdigest()
+              print("SOURCE_PIN", name, "sha256=" + hashlib.sha256(raw).hexdigest(), "git_blob_sha1=" + blob)
+          PY
