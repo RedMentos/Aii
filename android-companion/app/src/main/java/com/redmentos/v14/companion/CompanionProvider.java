@@ -151,18 +151,28 @@ public final class CompanionProvider extends ContentProvider {
     }
 
     private boolean isPairedCaller(Context context) {
+        // ContentProvider exposes the exact IPC caller package on supported
+        // Android versions. Bind it to Binder's UID package set as well as the
+        // pinned signing certificate; never infer caller identity from UID alone.
+        String callingPackage = getCallingPackage();
         String[] packages = context.getPackageManager().getPackagesForUid(Binder.getCallingUid());
         SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         String pairedPackage = prefs.getString("paired_package", "");
         String pairedDigest = prefs.getString("paired_cert_sha256", "");
-        // A shared UID makes Binder identity ambiguous: another package in the
-        // same UID could otherwise inherit Termux's paired status.
-        if (!isOnlyPairedPackage(packages, pairedPackage) || pairedDigest.isEmpty()) return false;
+        if (!isExactPairedCaller(callingPackage, packages, pairedPackage) || pairedDigest.isEmpty()) {
+            return false;
+        }
         try {
-            return pairedDigest.equals(packageCertificateDigest(context, pairedPackage));
+            return pairedDigest.equals(packageCertificateDigest(context, callingPackage));
         } catch (Exception ignored) {
             return false;
         }
+    }
+
+    static boolean isExactPairedCaller(String callingPackage, String[] packages, String pairedPackage) {
+        return callingPackage != null && !callingPackage.isEmpty()
+                && callingPackage.equals(pairedPackage)
+                && isOnlyPairedPackage(packages, pairedPackage);
     }
 
     static boolean isOnlyPairedPackage(String[] packages, String pairedPackage) {
