@@ -84,6 +84,18 @@ def _add_transitions(store, session, start, count, status_overrides=None, source
     return action_ids
 
 
+def _add_receiver_transitions(store, session, start, count):
+    """Create a positive-control cohort with action-conditioned terminal outcomes."""
+    actions = tuple(world_model.ACTIONS)
+    status_overrides = {
+        index: ("FINAL" if index % len(actions) < 2 else "FAILED")
+        for index in range(start, start + count)
+    }
+    return _add_transitions(
+        store, session, start, count, status_overrides=status_overrides
+    )
+
+
 def _source_text_for_partition(target, prefix):
     for index in range(10000):
         text = f"{prefix}-{index}"
@@ -939,3 +951,323 @@ def test_source_forget_guard_waits_for_cross_process_training_lock(tmp_path):
                 process.terminate()
                 process.join(1.0)
         store.close()
+
+
+class _BodyReceiverCaptureRunner:
+    def __init__(self):
+        self.calls = []
+        self.last_metrics = {}
+
+    def generate(self, messages, cancel_event, deadline, tokens, schema):
+        import json
+        self.calls.append(messages)
+        self.last_metrics = {"status": "FINAL", "duration_s": 0.001, "generated_tokens": 1}
+        yield json.dumps({
+            "summary": "Compare the four candidate routes.",
+            "quotes": ["compare the four routes for a local test"],
+            "uncertainty": "low",
+            "needs_reentry": False,
+        })
+
+
+class _BodyReceiverCapturePool:
+    def __init__(self, runner):
+        self.runner = runner
+
+    def get(self, role):
+        return self.runner
+
+
+class _BodyReceiverModels:
+    def revision(self, role):
+        return "synthetic-" + role
+
+
+def _body_receiver_runtime(store, home, session, runner):
+    from threading import Event
+    from types import SimpleNamespace
+
+    return SimpleNamespace(
+        store=store,
+        home=home,
+        session=session,
+        cfg={
+            "b2_state_slots": 0,
+            "b2_control": "two_body",
+            "b2_context_chars": 128,
+            "memory_threshold": 0.25,
+            "b2_offer_body_state": True,
+            "b2_quote_select": "off",
+            "observer_tokens": 256,
+            "offer_style": "solve",
+            "offer_quote_min_chars": 0,
+            "offer_quote_context_chars": 0,
+            "b1_recent_source_chars": 0,
+            "segment_mode": "fixed",
+            "body_question_b1": "",
+            "body_question_b2": "",
+            "body_question_scope": "always",
+            "observer_mode": "foreground",
+            "deadline_seconds": 30,
+        },
+        guard=SimpleNamespace(state="NORMAL", mode="GREEN"),
+        models=_BodyReceiverModels(),
+        pool=_BodyReceiverCapturePool(runner),
+        cancel_event=Event(),
+    )
+
+
+
+
+def _body_receiver_diagnostics(runtime, event, text, role):
+    import json
+    import time
+    from v13 import bodyview, world_model
+    from v13.world_jepa_receiver_matrix import receiver_matrix
+
+    resource_state = getattr(runtime.guard, "state", None)
+    if resource_state not in world_model.PRESSURE:
+        resource_state = "NORMAL"
+    state = world_model.state_vec(
+        len(text), resource_state, (time.time() % 86400.0) / 3600.0
+    )
+    matrix = receiver_matrix(
+        runtime.store, state, tuple(world_model.ACTIONS),
+        home=runtime.home, nonblocking=True,
+    )
+    context, _ = bodyview._world_jepa_body_readout(runtime, event, text, role)
+    return {
+        "receiver_statuses": {
+            action: matrix[action][role].get("status")
+            for action in world_model.ACTIONS
+        },
+        "world_jepa_context_chars": (
+            len(json.dumps(context, separators=(",", ":")))
+            if isinstance(context, dict) else None
+        ),
+    }
+
+def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path, monkeypatch):
+    import json
+    import time
+    from v13 import agi
+    from v13.cognition import Cognition
+
+    class _LongSkills:
+        def select(self, _text):
+            return [
+                {"name": f"skill-{index}", "description": "x" * 250}
+                for index in range(3)
+            ]
+
+    class _Hub:
+        skills = _LongSkills()
+
+    monkeypatch.setattr(agi, "hub", lambda _runtime: _Hub())
+
+    home = tmp_path / "brain-body-receiver"
+    store, session = _make_store(home)
+    try:
+        _add_receiver_transitions(store, session, 0, 256)
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=120
+        )
+        trained = consume_after_commit(store, home, limit=256)
+        assert trained["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        assert trained["metrics"]["parameter_delta_norm"] > 0
+        assert trained["metrics"]["ema_target_delta_norm"] > 0
+        assert trained["metrics"]["train_holdout_source_sha256_disjoint"] is True
+        assert trained["metrics"]["retention_gate_accepted"] is True
+        from v13.world_jepa_consumer import receiver_utility_gate
+        for role in ("B1_DETAIL", "B2_GIST"):
+            gate = receiver_utility_gate(trained["metrics"], role)
+            assert gate["accepted"] is True, {"role": role, "gate": gate}
+
+        event = store.event(session, "Current source: compare the four routes for a local test.")
+        runner = _BodyReceiverCaptureRunner()
+        runtime = _body_receiver_runtime(store, home, session, runner)
+        cognition = Cognition(runtime)
+        for role in ("B1_DETAIL", "B2_GIST"):
+            cognition.offer(role, event, 0, time.monotonic() + 5.0)
+
+        prompts = {}
+        for messages in runner.calls:
+            body_state = json.loads(messages[1]["content"])["body_state"]
+            assert body_state["authority"] == "STATE_NOT_FACT"
+            assert "world_jepa" in body_state, {
+                "role": body_state["role"],
+                "view_keys": sorted(body_state),
+                "serialized_chars": len(json.dumps(body_state, separators=(",", ":"))),
+                **_body_receiver_diagnostics(runtime, event, "Current source: compare the four routes for a local test.", body_state["role"]),
+            }
+            assert len(json.dumps(body_state, separators=(",", ":"))) <= 700
+            assert body_state["skills"] == []
+            prompts[body_state["role"]] = body_state["world_jepa"]
+        assert set(prompts) == {"B1_DETAIL", "B2_GIST"}
+        detail = prompts["B1_DETAIL"]
+        gist = prompts["B2_GIST"]
+        assert detail["status"] == gist["status"] == "SHADOW_READOUT_ONLY"
+        assert detail["horizon"] == gist["horizon"] == "NEXT_ACTION"
+        assert detail["native_body_consumed"] is gist["native_body_consumed"] is False
+        assert detail["decision_authority"] == gist["decision_authority"] == "NONE"
+        assert "prediction only" in detail["note"] and "not fact/source/permission" in detail["note"]
+        assert "NOT_ANSWER_CORRECTNESS" in gist["target"]
+        assert "prediction only" in gist["note"] and "not fact/source/permission" in gist["note"]
+        assert detail["checkpoint"] == gist["checkpoint"] == trained["checkpoint_sha256"][:12]
+        assert detail["target"] == "B1_DURATION_OUTPUT_SIZE"
+        assert gist["target"] == "B2_P_FINAL_NOT_ANSWER_CORRECTNESS"
+        assert detail.get("unsupported_actions", []) == gist.get("unsupported_actions", []) == []
+        assert detail["support"] == gist["support"] == "TRAIN>=8"
+        assert len(detail["rows"]) == len(world_model.ACTIONS)
+        assert len(gist["rows"]) == len(world_model.ACTIONS)
+        assert [row[0] for row in detail["rows"]] == list(world_model.ACTIONS)
+        assert [row[0] for row in gist["rows"]] == list(world_model.ACTIONS)
+        assert all(row[-1] >= 8 for row in detail["rows"])
+        assert all(row[-1] >= 8 for row in gist["rows"])
+
+        query_rows = store.rows(
+            "SELECT payload FROM packets WHERE kind='QueryPacket' AND event_id=? ORDER BY created",
+            (event["event_id"],),
+        )
+        assert len(query_rows) == 2
+        for row in query_rows:
+            packet_payload = json.loads(row["payload"])
+            ref = packet_payload["bodyview"]["body_state_ref"]
+            stored_source = json.loads(store.read_source(ref))
+            assert stored_source["schema"] == "V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/1"
+            audit = stored_source["world_jepa_audit"]
+            assert audit["checkpoint_sha256"] == trained["checkpoint_sha256"]
+            assert len(audit["training_source_sha256"]) == 64
+            assert audit["event_id"] == event["event_id"]
+            assert audit["brain_generation_id"] == event["brain_generation_id"]
+            assert audit["body_prompt_consumed"] is True
+            assert audit["action_horizon"] == "NEXT_ACTION"
+            assert audit["native_body_consumed"] is False
+            assert audit["native_body_weights_changed"] is False
+            assert audit["decision_authority"] == "NONE"
+            assert audit["target_semantics"] in {
+                "ACTION_DURATION_AND_OUTPUT_SIZE",
+                "ACTION_STATUS_FINAL_NOT_ANSWER_CORRECTNESS",
+            }
+            assert set(audit["supported_action_samples"]) == set(world_model.ACTIONS)
+            assert all(count >= 8 for count in audit["supported_action_samples"].values())
+    finally:
+        store.close()
+
+
+def test_bodyview_jepa_receiver_fails_closed_without_checkpoint_and_when_lock_busy(tmp_path, monkeypatch):
+    import json
+    import fcntl
+    import time
+    from threading import Event, Thread
+    from types import SimpleNamespace
+    from v13 import bodyview, world_model, world_jepa_receiver_matrix as receiver_module
+    from v13.world_jepa_consumer import WorldJEPAStoreConsumer
+    from v13.world_jepa_receiver_matrix import receiver_matrix
+
+    home = tmp_path / "brain-body-receiver-negative"
+    store, session = _make_store(home)
+    try:
+        event = store.event(session, "Current source: compare the four routes for a local test.")
+        text = "Current source: compare the four routes for a local test."
+        runtime = SimpleNamespace(
+            store=store,
+            home=home,
+            session=session,
+            cfg={},
+            guard=SimpleNamespace(state="NORMAL", mode="GREEN"),
+        )
+        no_checkpoint = bodyview.body_state(runtime, event, "B1_DETAIL", text)
+        assert no_checkpoint is not None
+        assert "world_jepa" not in no_checkpoint["view"]
+
+        _add_receiver_transitions(store, session, 0, 256)
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=120
+        )
+        trained = consume_after_commit(store, home, limit=256)
+        assert trained["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+
+        # Negative control: one action with only two train-split rows must not
+        # receive a predictor readout, even when the global role utility gate passes.
+        original_support = receiver_module._train_split_action_support
+        monkeypatch.setattr(
+            receiver_module, "_train_split_action_support",
+            lambda active, actions: {
+                action: (2 if action == "simple" else 32) for action in actions
+            },
+        )
+        try:
+            thin_support = bodyview.body_state(runtime, event, "B1_DETAIL", text)
+        finally:
+            monkeypatch.setattr(
+                receiver_module, "_train_split_action_support", original_support
+            )
+        assert thin_support is not None
+        assert "world_jepa" in thin_support["view"], {
+            "view_keys": sorted(thin_support["view"]),
+            "serialized_chars": len(json.dumps(thin_support["view"], separators=(",", ":"))),
+            **_body_receiver_diagnostics(runtime, event, text, "B1_DETAIL"),
+        }
+        assert thin_support["view"]["world_jepa"]["unsupported_actions"] == ["simple"]
+        assert all(row[0] != "simple"
+                   for row in thin_support["view"]["world_jepa"]["rows"])
+
+        consumer = WorldJEPAStoreConsumer(
+            store, home / "world_jepa", learning_enabled=False
+        )
+        ready, release = Event(), Event()
+
+        def hold_training_lock():
+            with open(consumer.lock_path, "a+b") as lock:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+                ready.set()
+                release.wait(3.0)
+                fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
+
+        worker = Thread(target=hold_training_lock, daemon=True)
+        worker.start()
+        assert ready.wait(1.0), "test lock holder did not acquire WorldJEPA lock"
+        started = time.monotonic()
+        try:
+            busy_matrix = receiver_matrix(
+                store, [0.2, 0.1, 0.3, 0.9], tuple(world_model.ACTIONS),
+                home=home, nonblocking=True,
+            )
+            busy = bodyview.body_state(runtime, event, "B1_DETAIL", text)
+            elapsed = time.monotonic() - started
+        finally:
+            release.set()
+            worker.join(2.0)
+        assert busy_matrix["simple"]["B1_DETAIL"]["status"] == "BUSY"
+        assert elapsed < 1.0, "foreground body view waited for the JEPA training lock"
+        assert busy is not None
+        assert "world_jepa" not in busy["view"]
+    finally:
+        store.close()
+
+
+def test_bodyview_jepa_receiver_action_support_uses_train_ids_only():
+    from v13.world_jepa_receiver_matrix import _train_split_action_support
+
+    active = {
+        "train_ids": ("train-simple", "train-detail", "train-detail-2"),
+        "experience_rows": [
+            {"action_id": "train-simple", "a": "simple"},
+            {"action_id": "train-detail", "a": "detail"},
+            {"action_id": "train-detail-2", "a": "detail"},
+            # This holdout row must not increase the simple-action support.
+            {"action_id": "heldout-simple", "a": "simple"},
+        ],
+    }
+    assert _train_split_action_support(active, ("simple", "detail")) == {
+        "simple": 1, "detail": 2
+    }
+    duplicate = {
+        "train_ids": ("train-simple",),
+        "experience_rows": [
+            {"action_id": "train-simple", "a": "simple"},
+            {"action_id": "train-simple", "a": "simple"},
+        ],
+    }
+    assert _train_split_action_support(duplicate, ("simple",)) is None

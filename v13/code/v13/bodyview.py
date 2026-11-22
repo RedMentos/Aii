@@ -9,8 +9,12 @@ B5 body state: a compact world/self/skill state is stored as a source (SourceRef
   as a fact. `:bodyview state off` removes it from prompts.
 """
 import json
+import math
+import time
+
 from .attention import SOURCE_DELIVERY
 from .common import dumps
+from .resource_modes import MODE_LEGACY, mode_of
 
 KEY='bodyview';PAD=240;MAX_WINDOWS=3;MAX_CHARS=1200;B4_SCAN=60;B4_RELEVANCE=.5;STATE_CHARS=700
 DEFAULT={'state_source':'on','b4':'shadow'}
@@ -54,6 +58,145 @@ def detail_windows(store,event_id,text,ref,pad=PAD):
         out.append({'text':text[a:b],'source_ref':ref|{'char_start':base+a,'char_end':base+b}});used+=b-a
     return out
 
+def _valid_sha256(value):
+    return (isinstance(value, str) and len(value) == 64
+            and all(char in "0123456789abcdef" for char in value))
+
+
+def _world_jepa_body_readout(r, e, text, role):
+    """Read persisted B1/B2 numeric heads without blocking a foreground turn."""
+    if role not in ("B1_DETAIL", "B2_GIST"):
+        return None, None
+    try:
+        from . import world_model
+        from .world_jepa_receiver_matrix import receiver_matrix
+
+        guard = getattr(r, "guard", None)
+        resource_state = getattr(guard, "state", None)
+        if resource_state not in world_model.PRESSURE:
+            resource_state = MODE_LEGACY.get(mode_of(guard), "NORMAL")
+        state = world_model.state_vec(
+            len(text), resource_state, (time.time() % 86400.0) / 3600.0
+        )
+        actions = tuple(world_model.ACTIONS)
+        matrix = receiver_matrix(
+            r.store, state, actions, home=getattr(r, "home", None),
+            nonblocking=True,
+        )
+        entries = []
+        unsupported_actions = []
+        for action in actions:
+            item = matrix[action][role]
+            if not isinstance(item, dict):
+                return None, None
+            if item.get("status") == "ACTION_SUPPORT_INSUFFICIENT":
+                unsupported_actions.append(action)
+                continue
+            if item.get("status") != "SHADOW_READOUT_ONLY":
+                return None, None
+            entries.append((action, item))
+        if not entries:
+            return None, None
+
+        checkpoint_shas = {item.get("checkpoint_sha256") for _, item in entries}
+        source_shas = {item.get("source_sha256") for _, item in entries}
+        if len(checkpoint_shas) != 1 or len(source_shas) != 1:
+            return None, None
+        checkpoint_sha = next(iter(checkpoint_shas))
+        source_sha = next(iter(source_shas))
+        if not _valid_sha256(checkpoint_sha) or not _valid_sha256(source_sha):
+            return None, None
+
+        prediction_rows = []
+        for action, item in entries:
+            utility = item.get("receiver_utility")
+            if not isinstance(utility, dict) or utility.get("accepted") is not True:
+                return None, None
+            uncertainty = item.get("uncertainty")
+            if (isinstance(uncertainty, bool)
+                    or not isinstance(uncertainty, (int, float))
+                    or not math.isfinite(float(uncertainty))
+                    or float(uncertainty) < 0):
+                return None, None
+            support_samples = item.get("support_samples")
+            if (type(support_samples) is not int
+                    or support_samples < item.get("support_min_samples", 8)
+                    or item.get("support_scope") != "TRAIN_SPLIT_ONLY"):
+                return None, None
+            prediction = item.get("prediction")
+            if not isinstance(prediction, dict):
+                return None, None
+
+            if role == "B1_DETAIL":
+                duration = prediction.get("predicted_action_duration_s")
+                output_chars = prediction.get("predicted_output_characters")
+                if (isinstance(duration, bool) or not isinstance(duration, (int, float))
+                        or not math.isfinite(float(duration))
+                        or isinstance(output_chars, bool)
+                        or not isinstance(output_chars, (int, float))
+                        or not math.isfinite(float(output_chars))):
+                    return None, None
+                row = [
+                    action,
+                    round(min(86400.0, max(0.0, float(duration))), 3),
+                    int(round(min(1000000.0, max(0.0, float(output_chars))))),
+                    round(float(uncertainty), 4),
+                    support_samples,
+                ]
+            else:
+                success = prediction.get("predicted_success_probability")
+                if (isinstance(success, bool) or not isinstance(success, (int, float))
+                        or not math.isfinite(float(success))):
+                    return None, None
+                row = [
+                    action,
+                    round(min(1.0, max(0.0, float(success))), 3),
+                    round(float(uncertainty), 4),
+                    support_samples,
+                ]
+            prediction_rows.append(row)
+
+        # Keep the foreground prompt representation deliberately compact. Full
+        # provenance and exact target semantics remain in the stored audit below.
+        context = {
+            "status": "SHADOW_READOUT_ONLY",
+            "horizon": "NEXT_ACTION",
+            "target": ("B1_DURATION_OUTPUT_SIZE" if role == "B1_DETAIL"
+                       else "B2_P_FINAL_NOT_ANSWER_CORRECTNESS"),
+            "checkpoint": checkpoint_sha[:12],
+            "rows": prediction_rows,
+            "support": "TRAIN>=8",
+            "native_body_consumed": False,
+            "decision_authority": "NONE",
+            "note": "prediction only; not fact/source/permission",
+        }
+        if unsupported_actions:
+            context["unsupported_actions"] = unsupported_actions
+        audit = {
+            "schema": "V14_WORLDJEPA_BODY_RECEIVER_AUDIT/1",
+            "checkpoint_sha256": checkpoint_sha,
+            "training_source_sha256": source_sha,
+            "state_vector": [round(float(value), 6) for value in state],
+            "event_id": e.get("event_id"),
+            "brain_generation_id": e.get("brain_generation_id"),
+            "role": role,
+            "action_order": list(actions),
+            "supported_action_samples": {action: item.get("support_samples") for action, item in entries},
+            "unsupported_actions": unsupported_actions,
+            "target_semantics": ("ACTION_DURATION_AND_OUTPUT_SIZE" if role == "B1_DETAIL"
+                                 else "ACTION_STATUS_FINAL_NOT_ANSWER_CORRECTNESS"),
+            "action_horizon": "NEXT_ACTION",
+            "body_prompt_consumed": True,
+            "native_body_consumed": False,
+            "native_body_weights_changed": False,
+            "decision_authority": "NONE",
+        }
+        return context, audit
+    except (ValueError, TypeError, KeyError, OSError, OverflowError,
+            ArithmeticError, AttributeError):
+        return None, None
+
+
 def body_state(r,e,role,text):
     """B5: compact world/self/skill state as a stored source (SourceRef), STATE_NOT_FACT."""
     if modes(r.store)['state_source']!='on':return None
@@ -65,12 +208,37 @@ def body_state(r,e,role,text):
                    'recent':[{k:x.get(k) for k in ('channel','status','outcome') if k in x} for x in (world.get('recent') or [])[-3:] if isinstance(x,dict)]},
           'self':{'learning':(me.get('learning') or {}).get('mode'),'unfinished_actions':me.get('unfinished_actions'),
                   'external_tools':(me.get('permissions') or {}).get('external_tools'),'system_stage':(me.get('permissions') or {}).get('system_stage')}}
+    world_jepa_context, world_jepa_audit = _world_jepa_body_readout(r,e,text,role)
+    if world_jepa_context is not None:
+        view['world_jepa'] = world_jepa_context
     try:
         from .agi import hub
         view['skills']=hub(r).skills.select(text)[:3]
     except Exception:view['skills']=[]
+    def prompt_chars():
+        return len(dumps(view | {'authority':'STATE_NOT_FACT','role':role}))
+
+    if prompt_chars()>STATE_CHARS:
+        view['world']['recent']=[]
+    if prompt_chars()>STATE_CHARS and world_jepa_context is not None:
+        # Prefer the accepted next-action prior over optional skill detail, while
+        # preserving the existing 700-character foreground budget.
+        skills=view.get('skills')
+        if isinstance(skills,list) and len(skills)>1:
+            view['skills']=skills[:1]
+        if prompt_chars()>STATE_CHARS and isinstance(view.get('skills'),list):
+            view['skills']=[]
+        if prompt_chars()>STATE_CHARS:
+            view.pop('world_jepa',None)
+            world_jepa_audit=None
+
     s=dumps(view)
-    if len(s)>STATE_CHARS:view['world']['recent']=[];s=dumps(view)
+    if world_jepa_audit is not None:
+        s=dumps({
+            'schema':'V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/1',
+            'view':view,
+            'world_jepa_audit':world_jepa_audit,
+        })
     ref=r.store.source(s,'BODY_STATE')
     return {'view':view|{'authority':'STATE_NOT_FACT','role':role},'source_ref':ref}
 
