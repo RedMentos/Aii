@@ -13,7 +13,7 @@ HEALTH #632 meldet 1.494 MiB `MemAvailable`, 1.291 MiB freien Speicherplatz, abe
 
 ## Entwicklungsstand
 
-Boss-PR #2370 steht auf `c3d4d1445a953ef2baaf015d9fd876b96b7c1eff`, mit 28 ausstehenden Checks und einem erwarteten Skip. Neu hinzugekommen sind die reparierte Native-Receiver-/Builder-Pinkette, negative Tests für Datumsformen wie `2/2`, sowie ein synthetischer Test, der beide source-bound B1/B2-Offers durch C4 bis in den tatsächlichen C3-Prompt verfolgt. Diese Tests sind auf diesem exakten SHA noch nicht durchgelaufen; die Änderung ist **nicht veröffentlicht**.
+Boss-PR #2370 steht auf `c3d4d1445a953ef2baaf015d9fd876b96b7c1eff`, mit 20 queued, 7 erfolgreichen, 1 laufenden und 3 übersprungenen Checks. Neu hinzugekommen sind die reparierte Native-Receiver-/Builder-Pinkette, negative Tests für Datumsformen wie `2/2`, sowie ein synthetischer Test, der beide source-bound B1/B2-Offers durch C4 bis in den tatsächlichen C3-Prompt verfolgt. Diese Tests sind auf diesem exakten SHA noch nicht durchgelaufen; die Änderung ist **nicht veröffentlicht**.
 
 Wichtig: Das konfigurierte 35-s-Observerfenster würde bei zwei sequentiellen Körpern ungefähr 17,5 s je Körper ergeben. Die Geräteproben brauchen bisher 53,2/54,2 s bis zum TIME_BUDGET. Der Scheduler ist daher noch kein belegter Geschwindigkeits- oder Offer-Fix. Erst reale Prompt-/Prefill-Optimierung oder eine gemessene Aufteilung kann das lösen; die Deadline bloß zu erhöhen oder Modelle ungefragt auszutauschen wäre keine Lösung.
 
