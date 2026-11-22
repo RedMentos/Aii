@@ -1571,3 +1571,13 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 ### Research ledger ID correction — 2026-11-22 16:11 UTC
 
 The shared work board already assigns R-084 to Do-JEPA, R-085 to differential retention, and R-086 to fork-ledger utility. LATER is a proposed R-087 entry after those are reconciled. No existing research entry was overwritten.
+
+
+### Latest receiver-contract checkpoint — 2026-11-22 16:15 UTC
+
+- PR #2351 latest head `da2af2512b669a60496109b83d6c993ab8aba1c6` adds a batched temporal receiver matrix for B1_DETAIL/B2_GIST/SELF_MODEL. It loads the temporal checkpoint once, supports nonblocking foreground reads, preserves checkpoint/source/history provenance, train-split support and receiver-utility gates, and emits the existing bodyview-compatible SHADOW schema. Added batch-vs-single parity, source-distinct session and missing-history negative-control tests.
+- **Not yet connected to bodyview.py.** Boss's current bodyview path still calls the one-step `world_jepa_receiver_matrix.receiver_matrix`; the temporal matrix API is available for the next integration but no prompt consumer is claimed. Native GGUF weights remain unchanged.
+- Exact CI runs for the current code head: temporal windows 45042747194; Python 3.13/3.14 training-resume/source-forget 45042747086; staged/integrated 45042747080 and 45042747106. All were queued at last read; no PASS. Full local Aii checkout remains BLOCKED by DNS; no local full-suite or Redmi test.
+- Boss #2343 latest head `9a1424bbf11f3306ce1a50f1e88cbb5c3765bca2` still has the generic `Store.switch_generation` preflight outside the Store RLock; promotion-vs-forget is OPEN. The source-publication race is covered only on #2351.
+- LATER is a provisional R-087 research candidate; shared board IDs R-084 Do-JEPA, R-085 differential retention and R-086 fork-ledger utility are preserved.
+- **User action: none.** No device update, model/weight swap, permission change or manual Termux command is needed.

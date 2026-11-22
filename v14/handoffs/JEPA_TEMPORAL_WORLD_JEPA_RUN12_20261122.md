@@ -88,3 +88,17 @@ Latest owner-authenticated private V13OBS issue #115, updated 2026-11-22 15:38:2
 ### Research ID reconciliation — 2026-11-22 16:11 UTC
 
 The current shared `V14_WORK_BOARD.json` already reserves R-084 for Do-JEPA paired intervention, R-085 for differential retention, and R-086 for fork-ledger utility. Therefore LATER is **proposed R-087**, not R-084. Do not reuse or overwrite those three research IDs. The central ledger remains under Boss integration ownership; this handoff contains the LATER source notes for later append.
+
+
+## Run 13 receiver-contract extension — 2026-11-22 16:15 UTC
+
+**New code commit:** `da2af2512b669a60496109b83d6c993ab8aba1c6` on the same draft #2351 branch.
+
+- Added `TemporalWorldJEPAStoreConsumer.receiver_matrix(session_id, actions, history_length=2, nonblocking=False)`. It takes the temporal checkpoint lock once, loads the predictor once, batches the action-conditioned B1_DETAIL/B2_GIST/SELF_MODEL readouts, and emits the same per-action/per-role SHADOW fields expected by the existing bodyview receiver: `status`, `prediction`, `uncertainty`, `support_samples`, `support_scope=TRAIN_SPLIT_ONLY`, `support_min_samples=8`, receiver utility, checkpoint/source SHA, history IDs/source SHAs, and explicit no-authority/no-native-consumption flags. The temporal lock now supports nonblocking reads for a foreground caller.
+- Added batch-vs-single parity for every action and B1/B2 role, exact checkpoint/source provenance, a distinct-session source-history control, and a missing-history negative control.
+- This is a bodyview-compatible receiver API, **not yet called by bodyview.py**. Exact integration point on Boss's branch is `v13/code/v13/bodyview.py::_world_jepa_body_readout`: preserve the existing one-step `receiver_matrix`, additionally call `TemporalWorldJEPAStoreConsumer(r.store).receiver_matrix(r.session, actions, history_length=2, nonblocking=True)`, and include a separate `world_jepa_temporal` SHADOW context/audit only when its per-action B1/B2 utilities and train-split support pass. Keep the two checkpoint/source hashes separate; never replace the one-step path or claim native latent/weight changes.
+- Exact CI for this code head is newly queued: temporal-window run 45042747194 and Python 3.13/3.14 training-resume/source-forget run 45042747086; staged/integrated runs 45042747080/45042747106 also queued. No PASS yet. No local full suite or Android test.
+- The source-republish race is addressed in #2351, but generic promotion-vs-forget remains open on Boss #2343 head `9a1424bbf11f3306ce1a50f1e88cbb5c3765bca2`; `Store.switch_generation` still lacks the shared RLock and final source/update recheck. Do not call the complete source lifecycle atomic.
+- R-084/085/086 remain reserved by the shared board for Do-JEPA, differential retention and fork-ledger utility. LATER remains a provisional R-087 candidate, not a new R-084 entry.
+
+**Next:** obtain exact focused CI; have Boss wire this matrix into the real bodyview path on a reconciled integration base; add A→B→C→A matched-step replay/retention and source/action negative controls. Until that integration and Redmi receipt exist, temporal body consumption is SHADOW/API_ONLY.
