@@ -697,3 +697,22 @@ Core must provide an authenticated Android observe_ui receipt provider and retai
 - Staged Runtime: `251 passed, 10 skipped, 47 subtests`.
 - Integrated regression: `424 passed, 3 skipped, 58 subtests` (6 warnings).
 - These are CI staged/synthetic tests. They do not establish Android OS capture, a real UI provider, active-turn consumer wiring or Redmi behavior.
+
+
+## R-054 — Policy-improvement-guided contrastive replay for trusted outcomes (2026-11-22)
+
+### Primary paper
+
+- Qin-Wen Luo et al., [“Policy Improvement-Guided Replay for Continual Reinforcement Learning”](https://arxiv.org/abs/2611.25989), submitted 2026-11-19. Full arXiv text reviewed, including the method, theoretical argument, experimental setup, ablations and appendices.
+- CoLiR scores an experience using two policy-likelihood changes: increased likelihood of correct responses under the final task policy, and decreased likelihood of incorrect responses under the initial policy. It averages these terms into a contrastive score, filters to prompts with eligible mixed-correctness rollouts, stores the highest-scoring bounded set, then uniformly replays those prompts in later tasks. The paper applies a KL term only to replay prompts.
+- The theoretical connection is conditional: under an idealized KL-regularized optimum, the positive-response likelihood gain is monotonic in reference-policy advantage; for general updates, the contrastive score is related to changes in success log-odds plus a distribution-shift term. It is not a universal guarantee for arbitrary model losses.
+- Evaluation: Qwen3-VL 2B/4B/8B on a five-task MRCL sequence; 600 RL steps per task; default replay memory up to 80 prompts per prior task. The paper also reports a 40/80/160 capacity ablation and a high-/low-/random-score comparison. The authors corrected several dataset annotation, formatting, leakage and duplicate issues. Treat the reported benchmark numbers as paper claims, not V14 measurements.
+- No official code repository or software/weight license was linked or located in the reviewed paper page. No dependency, code, dataset or model weights were imported. Preprint; peer-review status was not established.
+
+### V14 interpretation
+
+- This is **not** a direct replacement for the current continuous WorldJEPA replay path. CoLiR assumes discrete verifiable outcomes and policy log-likelihoods from before/after task policies. The current numeric WorldJEPA predictor exposes continuous prediction loss, not token-response likelihoods or a calibrated binary policy distribution.
+- The transferable idea is to preserve *which source-bound experiences produced a verified improvement*, not merely which examples are difficult or currently forgotten. This is most directly applicable to C3/B1/B2 procedural/action-outcome memory once trusted T8 outcomes carry explicit success/failure labels and the relevant receiver exposes calibrated probabilities or log-likelihoods.
+- Proposed SHADOW experiment: at a task/episode boundary, compare the same trusted training-fold ActionOutcome under its pre-update and post-update receiver checkpoints. For eligible examples, compute a bounded contrastive score from success-probability/logit gain and failure-probability/logit suppression; retain top-K source/session-keyed records; replay them later under a bounded budget. Do not use final holdouts for scoring, selection or replay.
+- Compare uniform replay, current loss-demand replay, success-only gain, failure-only suppression, full contrastive score, shuffled scores and zero-score controls. Require new-task utility, per-session holdout retention, source/content disjointness, checkpoint/optimizer readback, restart and rollback. Keep the experiment separate from continuous latent JEPA until an appropriate probabilistic outcome head exists.
+- No production behavior, optimizer permission, model, weight, memory contents or device state is changed by this research note.
