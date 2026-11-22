@@ -9,7 +9,7 @@ import threading
 import numpy as np
 import pytest
 
-from v13 import contracts, world_model
+from v13 import bodyview, contracts, world_model
 from v13.memory import Memory
 from v13.sleep import SleepRuntime
 from v13.store import Store
@@ -704,7 +704,7 @@ def test_source_disjoint_partition_is_stable_across_random_runtime_ids(tmp_path)
             store.close()
 
 
-def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts(tmp_path, monkeypatch):
+def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_accepted_gate_fixture(tmp_path, monkeypatch):
     import time
     from v13 import agi
     from v13.cognition import Cognition
@@ -755,6 +755,22 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts(tmp_path
         )
         assert trained["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", trained
 
+        # Test-only gate fixture isolates the real B1/B2 prompt consumer from
+        # learned-utility acceptance. The predictor/receiver weights remain the
+        # trained checkpoint; these values are NOT evidence that its holdout
+        # utility passed. Actual utility stays covered by the training metrics.
+        state, version = store.state(STATE_KEY, None)
+        for gate_role in ("B1_DETAIL", "B2_GIST"):
+            prefix = gate_role.lower()
+            state["active"]["receiver_metrics"].update({
+                prefix + "_holdout_mse": 0.1,
+                prefix + "_mean_baseline_mse": 1.0,
+                prefix + "_zero_latent_mse": 1.0,
+                prefix + "_shuffled_latent_mse": 1.0,
+            })
+        store.set_state(STATE_KEY, state, expected=version)
+        assert state["active"]["checkpoint_sha256"] == trained["checkpoint_sha256"]
+
         text = "Current request: use the verified recent action history."
         event = store.event(sessions[0], text)
         runner = CaptureRunner()
@@ -797,29 +813,7 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts(tmp_path
             assert "body_state" in payload
             state = payload["body_state"]
             assert state["authority"] == "STATE_NOT_FACT"
-            if "world_jepa_temporal" not in state:
-                prompt_role = state["role"]
-                active = store.state(STATE_KEY, None)[0]["active"]
-                matrix = learner.receiver_matrix(
-                    sessions[0], tuple(world_model.ACTIONS),
-                    history_length=2 if prompt_role == "B1_DETAIL" else 3,
-                )
-                action_statuses = {
-                    action: matrix.get("matrix", {}).get(action, {}).get(prompt_role, {}).get("status")
-                    for action in world_model.ACTIONS
-                }
-                role_metrics = {
-                    key: value for key, value in active["receiver_metrics"].items()
-                    if key.startswith(prompt_role.lower() + "_")
-                }
-                raise AssertionError({
-                    "role": prompt_role,
-                    "matrix_status": matrix.get("status"),
-                    "action_statuses": action_statuses,
-                    "receiver_metrics": role_metrics,
-                    "action_support": active["action_support"],
-                    "history_action_ids": matrix.get("history_action_ids"),
-                })
+            assert "world_jepa_temporal" in state, state
             prior = state["world_jepa_temporal"]
             assert prior["status"] == "SHADOW_READOUT_ONLY"
             assert prior["native_body_consumed"] is False
@@ -879,3 +873,58 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts(tmp_path
         assert fallback["authority"] == "STATE_NOT_FACT"
     finally:
         store.close()
+
+def test_bodyview_records_rejected_temporal_gate_without_prompt_leak(tmp_path, monkeypatch):
+    from v13 import agi
+
+    monkeypatch.setattr(
+        agi, "hub",
+        lambda _runtime: SimpleNamespace(
+            skills=SimpleNamespace(select=lambda _text: [])
+        ),
+    )
+    home = tmp_path / "temporal-bodyview-rejected-gate"
+    store = _make_store(home)
+    try:
+        sessions, _ = _make_dataset(store, "rejected-gate", 32)
+        _permissions(store, steps=80)
+        learner = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        trained = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert trained["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", trained
+
+        # Explicit negative control: the learned holdout receiver is rejected.
+        state, version = store.state(STATE_KEY, None)
+        prefix = "b1_detail"
+        state["active"]["receiver_metrics"].update({
+            prefix + "_holdout_mse": 2.0,
+            prefix + "_mean_baseline_mse": 1.0,
+            prefix + "_zero_latent_mse": 1.0,
+            prefix + "_shuffled_latent_mse": 1.0,
+        })
+        store.set_state(STATE_KEY, state, expected=version)
+
+        text = "Do not expose an unaccepted temporal prediction."
+        event = store.event(sessions[0], text)
+        runtime = SimpleNamespace(store=store, session=sessions[0], home=home)
+        result = bodyview.body_state(runtime, event, "B1_DETAIL", text)
+        assert result is not None
+        assert "world_jepa_temporal" not in result["view"]
+        stored = json.loads(store.read_source(result["source_ref"]))
+        assert stored["schema"] == "V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/2"
+        audit = stored["temporal_world_jepa_audit"]
+        assert audit["schema"] == "V14_TEMPORAL_WORLDJEPA_BODY_RECEIVER_AUDIT/1"
+        assert audit["status"] == "OMITTED"
+        assert audit["reason"] == "RECEIVER_UTILITY_REJECTED"
+        assert audit["role"] == "B1_DETAIL"
+        assert audit["checkpoint_sha256"] if "checkpoint_sha256" in audit else True
+        assert audit["body_prompt_consumed"] is False
+        assert audit["native_body_consumed"] is False
+        assert audit["native_body_weights_changed"] is False
+        assert audit["decision_authority"] == "NONE"
+        assert text not in json.dumps(audit)
+    finally:
+        store.close()
+
