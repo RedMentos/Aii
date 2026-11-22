@@ -50,6 +50,22 @@ public final class CapabilityRegistryTest {
         }
     }
 
+    @Test public void providerBindsExactCallingPackageToThePairedUidAndCertificate() {
+        String paired = "com.termux";
+        assertTrue(CompanionProvider.isExactPairedCaller(
+                paired, new String[]{paired}, paired));
+        assertFalse(CompanionProvider.isExactPairedCaller(
+                null, new String[]{paired}, paired));
+        assertFalse(CompanionProvider.isExactPairedCaller(
+                "com.attacker", new String[]{paired}, paired));
+        assertFalse(CompanionProvider.isExactPairedCaller(
+                paired, new String[]{paired, "com.attacker"}, paired));
+        assertFalse(CompanionProvider.isExactPairedCaller(
+                paired, new String[]{"com.attacker"}, paired));
+        assertFalse(CompanionProvider.isExactPairedCaller(
+                paired, new String[]{paired}, "com.attacker"));
+    }
+
     @Test public void providerRejectsOsPermissionMisstatementAndRequiresCompanionConsent() {
         String approval = "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION";
         assertTrue(CompanionProvider.isValidLaunchScope(true, false, false, false, approval));
