@@ -14,7 +14,7 @@ AUDIO_BUILDER_BLOB_SHA1 = "5cd3f9c79e829c9ffe702d2ca9e818f8fe01133c"
 C4_RECEIPT_BUILDER = "scripts/integrated_c4_c3_receipt_candidate_20261122.py"
 C4_RECEIPT_SHA256 = "0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a22028dff3"
 NATIVE_RECEIVER_BUILDER = "scripts/integrated_native_latent_receiver_candidate_20261122.py"
-NATIVE_RECEIVER_BLOB_SHA1 = "027171c7ced3b0be4a7b0af9a45a12e390489c11"
+NATIVE_RECEIVER_BLOB_SHA1 = "17293fc117dbcf23293c75cf71af9e67ea836a05"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
