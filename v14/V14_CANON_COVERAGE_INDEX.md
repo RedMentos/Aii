@@ -2139,3 +2139,15 @@ Negative boundary: no real native B1/B2 useful offers, correct 2+2, 20-turn Redm
 ## Boss exact-head follow-up — 2026-11-22T10:00:40.871Z
 
 PR #2331 current head 535eba6f668b3990416c361368f36e3e8f1e599e is DRAFT/NOT_RELEASED. Its exact matrix is 9 failures, 4 in progress, 2 queued, 4 success, 1 skipped. Six source-composition pins are inconsistent: memory-world→feedback, feedback→context-recall, lifecycle composer→memory-world, memory.py→lifecycle composer, recovery21→stage, stage→runtime deployer. See Boss review comment 7077507340 for full byte-derived hashes. No source-forget or numeric learning acceptance is established. The current b3b92 release branch has 40/40 push check-runs and 29/29 workflow runs SUCCESS; private #520 still reports the phone on 283ac1c9 / CI_WAIT and #519 queued. This overlay changes no Canon requirement and no master bytes.
+
+
+---
+
+## Perception evidence overlay — 2026-11-22 (candidate PR #2363)
+
+| Canon path | Current candidate evidence | Not yet accepted / remaining gate |
+|---|---|---|
+| A5 user-supplied visual RAW EYE | PR #2363 builds an ephemeral source-bound PerceptPacket from an existing Store IMAGE SourceRef: global + all 16 tile summaries, exact pixel-box SourceRefs, handcrafted 37-D features, border-relative salience, STATIC_UNTIMED provenance; A4 scores all 17 segments; PerceptAdmission + A5ContextEnvelope preserve the exact current prompt and bound optional context. Local isolated synthetic reproduction 3/3 PASS; 20-run 64x64 Linux median 5.852 ms / p95 7.870 ms. | Full Aii Store/A4 CI pending. Adapter is not called by normal Runtime._turn; no image attachment ingress, Android camera/screen provider, live video, VLM semantics, trained projector, B1/B2 consumption, native latent exchange or Redmi proof. Derived packet is ephemeral; persistence requires a revocation path. |
+| A5 vision overall | **PARTIAL / WIRED_SYNTHETIC_CANDIDATE** for the narrow user-supplied local-image path only. | Historical ISOLATED_MOCK status for the complete vision/Android path is not overwritten. No REDMI_PROOF or ACCEPTED status. |
+
+This overlay is additive; it does not rewrite the historical Canon rows or promote the whole A5 vision subsystem.
