@@ -55,7 +55,9 @@ assert exact_arithmetic("What is 7-12?") is None
 assert exact_arithmetic("calculate 7-12") == "-5"
 assert exact_arithmetic("compute 11-21") == "-10"
 assert exact_arithmetic("berechne 11-21") == "-10"
-assert exact_arithmetic("8/4") == "2"
+assert exact_arithmetic("8/4") is None
+assert exact_arithmetic("What is 8/4?") is None
+assert exact_arithmetic("calculate 8/4") == "2"
 # 7-12 is ambiguous without an explicit math cue (covered above).
 assert exact_arithmetic("2/0") is None
 assert exact_arithmetic("2+2+2") is None
