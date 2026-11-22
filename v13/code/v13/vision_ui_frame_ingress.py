@@ -684,7 +684,6 @@ def consume_projected_frame(
         _overwrite_caller_buffer(frame_buffer)
 
 
-@contextmanager
 def consume_projected_frame_from_provider(
     runtime, observation, frame_buffer, *, consent_lease, verify_fn, **kwargs,
 ):
