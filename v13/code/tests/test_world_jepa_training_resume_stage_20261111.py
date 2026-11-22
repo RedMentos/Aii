@@ -68,6 +68,8 @@ def test_source_lifecycle_pins_and_downstream_builder_chain_match_exact_files():
 
     memory_world_path = CODE / 'scripts/integrated_memory_world_candidate_20261111.py'
     memory_world = _load_qa_builder(memory_world_path, 'qa_memory_world')
+    c3_base_path = CODE / 'scripts/integrated_c3_resume_candidate_20261110.py'
+    check('memory_world_base', memory_world.BASE_BUILDER_SHA, digest(c3_base_path))
     check('lifecycle', memory_world.LIFECYCLE_BUILDER_SHA, digest(lifecycle_path))
 
     feedback_path = CODE / 'scripts/integrated_feedback_bootstrap_candidate_20261111.py'
