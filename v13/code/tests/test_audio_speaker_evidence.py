@@ -1,4 +1,4 @@
-"""Synthetic and consumer tests for source-bound speaker-change evidence."""
+"""Synthetic and consumer tests for source-bound speaker-similarity diagnostics."""
 from array import array
 from contextlib import contextmanager
 import json
@@ -54,7 +54,7 @@ def consent_guard(check):
 
 
 def speaker_batch(source_id, generation_id, start_ms, end_ms, vector_at,
-                  *, revision="fastdiar-small-test-rev", threshold=0.8):
+                  *, revision="fixture-embedding-v1", threshold=0.8):
     frames = [
         {"end_ms": end, "vector": list(vector_at(end))}
         for end in range(start_ms + 80, end_ms + 1, 80)
@@ -63,14 +63,14 @@ def speaker_batch(source_id, generation_id, start_ms, end_ms, vector_at,
         "schema": SCHEMA,
         "source_id": source_id,
         "generation_id": generation_id,
-        "model_id": "microsoft/fastdiar-small",
+        "model_id": "fixture/three-dim-encoder",
         "model_revision": revision,
         "model_sha256": MODEL_SHA,
         "embedding_dim": 3,
         "frame_step_ms": 80,
         "lookback_frames": 10,
         "confidence_threshold": threshold,
-        "calibration_id": "FASTDIAR_ARXIV_2610.02941V1_DEV" if threshold is not None else None,
+        "calibration_id": "fixture:caller-asserted-unverified" if threshold is not None else None,
         "frames": frames,
     }
 
@@ -221,7 +221,7 @@ def test_model_revision_change_resets_history_before_comparison():
         activity_hint="VOICED", embeddings=first,
     )
     second = speaker_batch(SOURCE, "gen-a", 1100, 1340, lambda _: (0.0, 1.0, 0.0),
-                          revision="fastdiar-small-new-rev")
+                          revision="fixture-embedding-v2")
     evidence = registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=1340,
         activity_hint="VOICED", embeddings=second,
