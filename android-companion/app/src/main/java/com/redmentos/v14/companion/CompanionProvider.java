@@ -392,6 +392,23 @@ public final class CompanionProvider extends ContentProvider {
                     liveActionIds.add(action.actionId);
                 }
             }
+            // A claimed action without a durable receipt is not pending anymore,
+            // but its approval notification is still the user's only retry/review
+            // surface if Keystore signing or receipt persistence failed. Never
+            // clean it up until the terminal receipt is durable.
+            final List<CompanionDb.Action> claimed;
+            try {
+                claimed = db.claimedWithoutReceipt();
+            } catch (RuntimeException unavailable) {
+                // Unknown Store state is not evidence that a notification is stale.
+                return 0;
+            }
+            for (CompanionDb.Action action : claimed) {
+                if (action != null && action.actionId != null
+                        && action.actionId.matches("[0-9a-f]{32}")) {
+                    liveActionIds.add(action.actionId);
+                }
+            }
             final StatusBarNotification[] active;
             try {
                 active = manager.getActiveNotifications();
