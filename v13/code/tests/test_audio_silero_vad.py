@@ -179,3 +179,28 @@ def test_from_onnx_rejects_symlink(tmp_path):
             link, expected_sha256=hashlib.sha256(model.read_bytes()).hexdigest(),
             model_revision="fixture",
         )
+def test_reset_overwrites_retained_pcm_context_pending_and_recurrent_state():
+    vad = make_stream()
+    vad.push_pcm16(pcm_tone(samples=512), sample_rate=16000, stream_id="owned", start_ms=0)
+    vad.push_pcm16(pcm_tone(samples=128), sample_rate=16000, stream_id="owned", start_ms=32)
+    pending_reference = vad._pending
+    context_reference = vad._context
+    state_reference = vad._state
+    assert pending_reference.size == 128
+    assert np.any(context_reference)
+    assert np.any(state_reference)
+    vad.reset()
+    assert np.count_nonzero(pending_reference) == 0
+    assert np.count_nonzero(context_reference) == 0
+    assert np.count_nonzero(state_reference) == 0
+
+
+def test_push_accepts_mutable_pcm16_and_clears_temporary_state_on_return():
+    vad = make_stream()
+    pcm = bytearray(pcm_tone(samples=512))
+    result = vad.push_pcm16(pcm, sample_rate=16000, stream_id="mutable", start_ms=0)
+    assert result["frame_count"] == 1
+    # VAD consumes but does not own the provider's buffer; the outer A5
+    # consumer performs the final zeroization after all audio organs finish.
+    assert bytes(pcm) == pcm_tone(samples=512)
+    assert vad._pending.size == 0
