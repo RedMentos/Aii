@@ -5,6 +5,8 @@ import hashlib
 import threading
 from types import SimpleNamespace
 
+import numpy as np
+
 import pytest
 from PIL import Image, ImageDraw
 
@@ -35,6 +37,10 @@ class _Connection:
 class _Store:
     def __init__(self, lock):
         self.mutex = lock
+        self._state = {}
+
+    def state(self, key, default=None):
+        return self._state.get(key, default), 0
 
     @contextmanager
     def tx(self):
@@ -89,6 +95,57 @@ def image_buffer():
     image.save(output, format="PNG")
     image.close()
     return bytearray(output.getvalue())
+
+
+
+
+def install_student_projector(runtime, tmp_path):
+    """Train a tiny synthetic tile projector on a shifted UI image (held-out frame)."""
+    from v13 import vision
+
+    training = Image.new("RGB", (64, 64), (8, 8, 8))
+    draw = ImageDraw.Draw(training)
+    draw.rectangle((36, 12, 57, 50), fill=(230, 20, 18))
+    draw.rectangle((8, 8, 19, 24), fill=(12, 180, 220))
+    features, labels = [], []
+    for region in vision.boxes(64, 64, 4):
+        if not region["region_id"].startswith("r"):
+            continue
+        box = region["box"]
+        tile = training.crop(tuple(box))
+        try:
+            features.append(vision.tile_features(tile, 32))
+        finally:
+            tile.close()
+        x0, y0, x1, y1 = box
+        red_overlap = max(0, min(x1, 58) - max(x0, 36)) * max(0, min(y1, 51) - max(y0, 12))
+        blue_overlap = max(0, min(x1, 20) - max(x0, 8)) * max(0, min(y1, 25) - max(y0, 8))
+        if red_overlap >= 50:
+            labels.append("red panel")
+        elif blue_overlap >= 25:
+            labels.append("blue icon")
+        else:
+            labels.append(vision.BACKGROUND)
+    training.close()
+
+    projector = vision.Projector(0.1).fit(
+        np.stack(features),
+        np.stack([vision.hashed_embed(label) for label in labels]),
+    )
+    path = tmp_path / "data" / "vision" / "tiles-test.npz"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    sha = projector.save(path)
+    runtime.home = tmp_path
+    runtime.store._state[vision.KEY] = {
+        "tile_projector": {
+            "path": "data/vision/tiles-test.npz",
+            "sha256": sha,
+            "n": len(features),
+            "encoder": "hashed_bow",
+            "authority": "LAB_SHADOW_ONLY",
+        }
+    }
+    return path, sha
 
 
 def lease_for(runtime, obs, callbacks=None, lock=None):
@@ -316,3 +373,77 @@ def test_provider_verifier_exception_fails_closed_without_context_cache(monkeypa
             )
         assert obs["source_id"] not in getattr(runtime, "_a5_ui_context_cache", {})
         assert not any(frame)
+
+
+def test_local_a3_student_projector_scores_heldout_ui_tiles_and_reaches_a5(monkeypatch, tmp_path):
+    runtime = make_runtime(monkeypatch, with_store=True)
+    install_student_projector(runtime, tmp_path)
+    obs = observation()
+    frame = image_buffer()
+
+    with lease_for(runtime, obs, lock=runtime.store.mutex) as lease:
+        result = consume_projected_frame(
+            runtime, obs, frame, consent_lease=lease,
+            frame_binding_check=lambda _obs, _sha, _size: True,
+            current_source="What is on this screen?",
+            goal="red panel", token_budget=8192, context_budget_chars=4096,
+        )
+        margins = result["student_goal_margins"]
+        red = max(margins[key] for key in ("r12", "r13", "r22", "r23", "r32", "r33"))
+        blue = max(margins[key] for key in ("r00", "r10"))
+        assert result["student_projector_used"] is True
+        assert result["student_projector_status"] == "USED"
+        assert red > blue + 0.2
+        assert result["packet"]["student_projector_used"] is True
+        assert result["packet"]["student_estimate"]["authority"] == "STUDENT_ESTIMATE"
+        assert result["packet"]["student_estimate"]["encoder"] == "hashed_bow"
+        assert any("student_goal_margin=" in line for line in result["context_envelope"].optional_context.splitlines())
+        assert result["packet"]["teacher_used"] is False
+        assert result["packet"]["learning_authority"] is False
+        assert result["packet"]["action_authority"] is False
+        assert result["caller_buffer_overwritten"] is True
+
+
+def test_tampered_local_student_projector_hash_skips_a3_without_breaking_raw_eye(monkeypatch, tmp_path):
+    from v13 import vision
+
+    runtime = make_runtime(monkeypatch, with_store=True)
+    install_student_projector(runtime, tmp_path)
+    runtime.store._state[vision.KEY]["tile_projector"]["sha256"] = "0" * 64
+    obs = observation()
+    frame = image_buffer()
+
+    with lease_for(runtime, obs, lock=runtime.store.mutex) as lease:
+        result = consume_projected_frame(
+            runtime, obs, frame, consent_lease=lease,
+            frame_binding_check=lambda _obs, _sha, _size: True,
+            current_source="Describe this screen.", goal="red panel",
+        )
+        assert result["student_projector_used"] is False
+        assert result["student_projector_status"] == "PROJECTOR_HASH_MISMATCH"
+        assert result["packet"]["student_projector_used"] is False
+        assert result["status"] == "WIRED_SYNTHETIC"
+        assert len(result["packet"]["segments"]) == 18
+        assert result["caller_buffer_overwritten"] is True
+
+
+def test_symlinked_local_student_projector_is_rejected(monkeypatch, tmp_path):
+    runtime = make_runtime(monkeypatch, with_store=True)
+    path, _sha = install_student_projector(runtime, tmp_path)
+    outside = tmp_path / "outside-projector.npz"
+    path.replace(outside)
+    path.symlink_to(outside)
+    obs = observation()
+    frame = image_buffer()
+
+    with lease_for(runtime, obs, lock=runtime.store.mutex) as lease:
+        result = consume_projected_frame(
+            runtime, obs, frame, consent_lease=lease,
+            frame_binding_check=lambda _obs, _sha, _size: True,
+            current_source="Describe this screen.", goal="red panel",
+        )
+        assert result["student_projector_used"] is False
+        assert result["student_projector_status"] == "PROJECTOR_FILE_UNAVAILABLE"
+        assert result["packet"]["student_projector_used"] is False
+        assert result["status"] == "WIRED_SYNTHETIC"
+        assert result["caller_buffer_overwritten"] is True
