@@ -1730,7 +1730,7 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 
 ### Perception candidate #2375 — not released
 
-- PR [#2375](https://github.com/RedMentos/Aii/pull/2375), latest code/test head `f87ebac407a19c147da7eb52bc63f10e9eed25d2`; current branch head `d228e7171712c54a97be9fb04bab8264654ec4a0` (handoff-only commit after code).
+- PR [#2375](https://github.com/RedMentos/Aii/pull/2375), latest code/test head `f87ebac407a19c147da7eb52bc63f10e9eed25d2`; current branch head `eb6752d3d5cd42f5f3f964b4480c7954564cb6d9` (handoff-only commit after code).
 - Fixed two undefined helper references that would have raised `NameError` on first frame use. The config helper enforces fixed 8 MiB / 4 MP limits; the zeroization helper clears mutable buffers.
 - Closed a mutable-buffer TOCTOU: the adapter hashes and decodes the same bounded snapshot, then zeroizes both snapshot and caller buffer. Added a scoped frame-consumer context manager that revokes the per-frame source/cache after C3 returns, including when the downstream consumer raises; it does not revoke the Android OS capture session.
 - The focused test file now has 18 tests covering bounded config, invalid hash dimensions, post-verification buffer mutation, zeroization, and scoped cleanup.
