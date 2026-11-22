@@ -162,12 +162,12 @@ def apply_sources(code_dir,sources):
             raise ValueError("native receiver base source changed: "+relative)
     result=dict(sources)
     cognition=result.get("v13/cognition.py",(code_dir/"v13/cognition.py").read_bytes())
-    if not isinstance(cognition,bytes) or b"native_receive" in cognition:
+    if not isinstance(cognition,bytes) or b"def native_receive(" in cognition:
         raise ValueError("native receiver Cognition already patched or unavailable")
     cognition=_replace(cognition,b"    def body_context(self,role,e):\n",NATIVE_RECEIVE.encode("utf-8")+b"\n    def body_context(self,role,e):\n","Cognition.native_receive")
     compile(cognition,"v13/cognition.py","exec")
     callosum=result.get("v13/callosum.py",(code_dir/"v13/callosum.py").read_bytes())
-    if not isinstance(callosum,bytes) or b"native-probe" in callosum:
+    if not isinstance(callosum,bytes) or b"def native_receiver_probe(" in callosum:
         raise ValueError("native receiver Callosum already patched or unavailable")
     callosum=_replace(callosum,b"    def report(self,cfg):\n",NATIVE_PROBE_METHOD.encode("utf-8")+b"    def report(self,cfg):\n","Callosum.native_receiver_probe")
     callosum=_replace(callosum,REPORT_OLD.encode("utf-8"),REPORT_NEW.encode("utf-8"),"Callosum report")
