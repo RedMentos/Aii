@@ -197,7 +197,7 @@ def _world_jepa_body_readout(r, e, text, role):
         return None, None
 
 
-def body_state(r,e,role,text,*,include_world_jepa=True):
+def body_state(r,e,role,text):
     """B5: compact world/self/skill state as a stored source (SourceRef), STATE_NOT_FACT."""
     if modes(r.store)['state_source']!='on':return None
     world=r.store.state('WORLD_STATE:'+r.session,{})[0] or {}
@@ -208,9 +208,7 @@ def body_state(r,e,role,text,*,include_world_jepa=True):
                    'recent':[{k:x.get(k) for k in ('channel','status','outcome') if k in x} for x in (world.get('recent') or [])[-3:] if isinstance(x,dict)]},
           'self':{'learning':(me.get('learning') or {}).get('mode'),'unfinished_actions':me.get('unfinished_actions'),
                   'external_tools':(me.get('permissions') or {}).get('external_tools'),'system_stage':(me.get('permissions') or {}).get('system_stage')}}
-    world_jepa_context, world_jepa_audit = (
-        _world_jepa_body_readout(r,e,text,role) if include_world_jepa else (None,None)
-    )
+    world_jepa_context, world_jepa_audit = _world_jepa_body_readout(r,e,text,role)
     if world_jepa_context is not None:
         view['world_jepa'] = world_jepa_context
     try:
@@ -243,23 +241,6 @@ def body_state(r,e,role,text,*,include_world_jepa=True):
         })
     ref=r.store.source(s,'BODY_STATE')
     return {'view':view|{'authority':'STATE_NOT_FACT','role':role},'source_ref':ref}
-
-def world_jepa_body_state(r,e,role,text):
-    """Compact B2-only JEPA prior; preserves the legacy full-body-state ablation."""
-    if role!='B2_GIST' or modes(r.store)['state_source']!='on':return None
-    context,audit=_world_jepa_body_readout(r,e,text,role)
-    if context is None or audit is None:return None
-    view={'world_jepa':context}
-    prompt_view=view|{'authority':'STATE_NOT_FACT','role':role}
-    if len(dumps(prompt_view))>STATE_CHARS:return None
-    source=dumps({
-        'schema':'V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/1',
-        'view':view,
-        'world_jepa_audit':audit,
-    })
-    ref=r.store.source(source,'BODY_STATE')
-    return {'view':prompt_view,'source_ref':ref}
-
 
 def cross_session(r,e,role,current_text,native,budget):
     """B4: one prior coalition offer from another session on the same topic (SHADOW logs only)."""

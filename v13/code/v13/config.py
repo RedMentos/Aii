@@ -79,7 +79,7 @@ DEFAULTS={k:v[0] for k,v in KNOBS.items()}|{"schema_version":1,"speech_output_en
  # 2026-10-21 user decision (thread "Zitierhilfe an, Regeln ohne Halluzination"): quote help ON. Bodies point at exact source
  # sentences instead of copying them (measured WP-Z2/Z2b/Z2d settings: B2 rule quote .17 -> .97, 0 wrong); the standing
  # rule questions are asked only on rule-decision turns; deciding stays with the fixed recipe, never a language model.
- "offer_quote_context_chars":200,"b2_quote_select":"pointer","b2_offer_body_state":False,"b2_world_jepa_receiver":True,"offer_quote_min_chars":90,"b1_recent_source_chars":600,
+ "offer_quote_context_chars":200,"b2_quote_select":"pointer","b2_offer_body_state":False,"offer_quote_min_chars":90,"b1_recent_source_chars":600,
  "body_question_scope":"rule_decision","eligibility_reader":"fixed","tool_answer_first":True,
  "route_head_words":True,  # WP-Z6i/Z6i2: fixed word channel for new route heads (route_words.py); ON after Z6I2_PASS (2026-10-27)
  "route_head_gate":"relative",  # WP-Z6i2: a word-channel successor head must beat the active head (not a fixed 75 %); ON after Z6I2_PASS
@@ -125,7 +125,6 @@ def validate(cfg):
     if cfg.get("tool_conflict_policy","correct") not in {"log","correct"}:raise ValueError("tool_conflict_policy log|correct")
     if cfg.get("segment_mode","percept") not in {"fixed","percept","all"}:raise ValueError("segment_mode fixed|percept|all")
     if not isinstance(cfg.get("b2_offer_body_state",True),bool):raise ValueError("b2_offer_body_state true|false")
-    if not isinstance(cfg.get("b2_world_jepa_receiver",True),bool):raise ValueError("b2_world_jepa_receiver true|false")
     if not (isinstance(cfg.get("offer_quote_min_chars",0),int) and 0<=cfg.get("offer_quote_min_chars",0)<=400):raise ValueError("offer_quote_min_chars 0..400")
     if not (isinstance(cfg.get("offer_quote_context_chars",0),int) and not isinstance(cfg.get("offer_quote_context_chars",0),bool) and 0<=cfg.get("offer_quote_context_chars",0)<=400):raise ValueError("offer_quote_context_chars 0..400")
     if cfg.get("eligibility_reader","model") not in {"fixed","fixed_strict","model","c3"}:raise ValueError("eligibility_reader fixed|fixed_strict|model|c3")
