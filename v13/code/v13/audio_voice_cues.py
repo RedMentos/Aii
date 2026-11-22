@@ -759,13 +759,22 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         # The provider lease remains authoritative through A4 and C3 admission.
         # Do not reacquire its lock through consent_check here.
         candidate = audio_to_admission(audio_packet, consent_active=True)
-        summary = candidate.summary + (
+        # Packet start/end already carry the interval; drop the duplicate text
+        # field to preserve room for source-bound acoustic evidence below.
+        base_summary = candidate.summary.replace(
+            f" interval_ms={candidate.end_ms-candidate.start_ms}", "", 1
+        )
+        summary = base_summary + (
             f" activity={cues['activity_hint']} voiced={cues['voiced_fraction']:.2f}"
         )
         if cues["f0_median_hz"] is not None:
             summary += f" f0_med_hz={cues['f0_median_hz']:.0f}"
         summary += f" energy_range_db={cues['energy_range_db']:.1f}"
+        if cues["voiced_energy_range_db"] is not None:
+            summary += f" voiced_energy_range_db={cues['voiced_energy_range_db']:.1f}"
         summary += f" prosody_change={cues['prosody_change_score']:.2f}"
+        if vad_evidence is not None:
+            summary += f" vad_speech_fraction={vad_speech_fraction:.2f}"
         if speaker_evidence is not None and speaker_evidence.get("status") == "MEASURED":
             if speaker_change_candidate is not None:
                 summary += f" speaker_change_candidate={int(speaker_change_candidate)}"
