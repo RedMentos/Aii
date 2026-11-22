@@ -391,6 +391,54 @@ def test_action_intent_history_is_session_scoped_restartable_and_non_authoritati
     runtime.store.close()
 
 
+def test_unknown_companion_recovery_receipt_is_persisted_without_device_or_learning_authority(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "6" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+
+    pending = json.loads(controller.launch("com.example.app", True))
+    action_id = pending["action_id"]
+    request = transport.submitted[-1]
+    body = {
+        **BODY,
+        "action_id": action_id,
+        "digest": request["digest"],
+        "nonce": "8" * 32,
+        "status": "OUTCOME_UNKNOWN",
+        "local_consent": True,
+    }
+    transport.receipt = {
+        "body": body,
+        "key_id": KEY_ID,
+        "signature": _sign_test_body(body),
+    }
+
+    recovered = json.loads(controller.poll(action_id))
+    assert recovered["status"] == "COMPANION_DISPATCH_UNKNOWN"
+    assert recovered["observed"] is False
+    assert recovered["t8_authoritative"] is False
+    assert recovered["world_learning_eligible"] is False
+    assert recovered["receipt_status"] == "OUTCOME_UNKNOWN"
+
+    row = runtime.store.one(
+        "SELECT payload FROM packets WHERE kind='ActionOutcome' AND event_id=?",
+        (pending["source_event_id"],),
+    )
+    outcome = json.loads(row["payload"])
+    actual = outcome["actual"]
+    assert outcome["status"] == "COMPANION_DISPATCH_UNKNOWN"
+    assert actual["local_approval_evidence"] == "ANDROID_COMPANION_RECOVERY_UNKNOWN"
+    assert actual["observed"] is False
+    assert actual["t8_authoritative"] is False
+    assert actual["world_learning_eligible"] is False
+    assert json.loads(controller.poll(action_id))["status"] == "ALREADY_FINAL"
+
+    controller.broker.close()
+    runtime.store.close()
+
+
 def test_android_action_history_rejects_unbounded_or_non_integer_limits(tmp_path):
     runtime = make_runtime(tmp_path)
     controller = AndroidCompanionController(runtime, transport=FakeTransport())

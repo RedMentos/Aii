@@ -24,6 +24,7 @@ import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public final class CompanionProvider extends ContentProvider {
     static final String AUTHORITY = "com.redmentos.v14.companion";
     private static final String CHANNEL = "v14-action-approval";
     private CompanionDb db;
-    private ReceiptSigner signer;
+    private CompanionReceiptSigner signer;
 
     @Override public boolean onCreate() {
         Context context = getContext();
@@ -226,9 +227,112 @@ public final class CompanionProvider extends ContentProvider {
         return out;
     }
 
+    static boolean recoverClaimedAction(CompanionDb db, CompanionReceiptSigner signer,
+                                        String actionId, long nowMillis) throws Exception {
+        if (db == null || signer == null || actionId == null
+                || !actionId.matches("[0-9a-f]{32}")) {
+            throw new IllegalArgumentException("invalid recovery scope");
+        }
+        synchronized (ACTION_GATE_LOCK) {
+            CompanionDb.Action action = db.get(actionId);
+            if (action == null) return false;
+            if (action.receiptJson != null) return true;
+            boolean executing = "EXECUTING".equals(action.status);
+            boolean denying = "DENYING".equals(action.status);
+            if (!executing && !denying) return false;
+
+            // A claimed EXECUTING row may already have launched the app. Never
+            // dispatch again: sign only a conservative unknown outcome. A
+            // DENYING row is finalized as a signed denial.
+            JSONObject request = new JSONObject(action.requestJson);
+            JSONObject args = request.getJSONObject("args");
+            String packageName = args.getString("package");
+            String digest = request.getString("digest");
+            if (!action.actionId.equals(request.getString("action_id"))
+                    || !"launch_app".equals(request.getString("capability"))
+                    || !action.packageName.equals(packageName)
+                    || !digest.equals(Canonical.requestDigest("launch_app", packageName))) {
+                throw new SecurityException("stored action request binding mismatch");
+            }
+
+            JSONObject key = signer.publicKeyInfo();
+            String keyId = key.getString("key_id");
+            String keyStorage = key.getString("key_storage_status");
+            if (!"v14.android-companion-public-key/1".equals(key.optString("schema"))
+                    || !"ECDSA_P256_SHA256".equals(key.optString("algorithm"))
+                    || !keyId.matches("[0-9a-f]{64}")
+                    || !("ANDROID_KEYSTORE_SOFTWARE_BACKED".equals(keyStorage)
+                         || "ANDROID_KEYSTORE_HARDWARE_BACKED".equals(keyStorage))) {
+                throw new SecurityException("invalid recovery signing key");
+            }
+
+            long issuedAt = Math.max(0L, nowMillis / 1000L);
+            String status = executing ? "OUTCOME_UNKNOWN" : "USER_DENIED";
+            JSONObject body = new JSONObject();
+            body.put("schema", "v14.android-companion-receipt/1");
+            body.put("nonce", randomHex(16));
+            body.put("action_id", action.actionId);
+            body.put("capability", "launch_app");
+            body.put("digest", digest);
+            body.put("issued_at", issuedAt);
+            body.put("expires_at", issuedAt + 60L);
+            body.put("status", status);
+            body.put("local_consent", executing);
+            body.put("observed", false);
+            body.put("os_permission_status", "NOT_REQUIRED_FOR_LAUNCH_APP");
+            body.put("key_storage_status", keyStorage);
+            body.put("key_id", keyId);
+
+            JSONObject signed = signer.sign(body);
+            if (signed == null || !signed.has("body")
+                    || !sameJsonObject(body, signed.getJSONObject("body"))
+                    || !keyId.equals(signed.optString("key_id"))
+                    || !signed.optString("signature").matches("[A-Za-z0-9+/]+={0,2}")) {
+                throw new SecurityException("recovery signer returned an invalid envelope");
+            }
+            try {
+                db.finish(actionId, action.status, status, signed.toString());
+            } catch (RuntimeException failure) {
+                // A concurrent retry may have completed the same row. Read it
+                // back before deciding whether the failure was transient.
+                CompanionDb.Action after = db.get(actionId);
+                if (after != null && after.receiptJson != null) return true;
+                throw failure;
+            }
+            return true;
+        }
+    }
+
+    private static boolean sameJsonObject(JSONObject left, JSONObject right) throws Exception {
+        if (left.length() != right.length()) return false;
+        for (java.util.Iterator<String> it = left.keys(); it.hasNext();) {
+            String key = it.next();
+            if (!right.has(key) || !left.get(key).equals(right.get(key))) return false;
+        }
+        return true;
+    }
+
+    private static String randomHex(int bytes) {
+        byte[] value = new byte[bytes];
+        new SecureRandom().nextBytes(value);
+        return Canonical.hex(value);
+    }
+
     private JSONObject outcome(String actionId) throws Exception {
         if (!isHex(actionId, 32)) return error("INVALID_ACTION_ID");
         CompanionDb.Action action = db.get(actionId);
+        String recoveryStatus = "NOT_REQUIRED";
+        if (action != null && action.receiptJson == null
+                && ("EXECUTING".equals(action.status) || "DENYING".equals(action.status))) {
+            cancelApprovalNotification(getContext(), actionId);
+            try {
+                boolean recovered = recoverClaimedAction(db, signer, actionId, System.currentTimeMillis());
+                recoveryStatus = recovered ? "RECOVERED_OR_ALREADY_FINAL" : "NOT_RECOVERABLE";
+            } catch (Exception ignored) {
+                recoveryStatus = "RETRYABLE_FAILURE";
+            }
+            action = db.get(actionId);
+        }
         JSONObject out = new JSONObject();
         if (action == null) {
             out.put("status", "NOT_FOUND");
@@ -237,6 +341,10 @@ public final class CompanionProvider extends ContentProvider {
             out.put("status", "NOT_READY");
             out.put("action_id", actionId);
             out.put("action_status", action.status);
+            if (!"NOT_REQUIRED".equals(recoveryStatus)) {
+                out.put("recovery_status", recoveryStatus);
+                out.put("recovery_retryable", "RETRYABLE_FAILURE".equals(recoveryStatus));
+            }
         } else {
             out.put("status", "READY");
             out.put("action_id", actionId);

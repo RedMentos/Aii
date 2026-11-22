@@ -99,6 +99,7 @@ def accept_companion_receipt(
                     "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
                     "COMPANION_USER_DENIED",
                     "COMPANION_DISPATCH_FAILED",
+                    "COMPANION_DISPATCH_UNKNOWN",
                 }
                 or attestation.get("t8_authoritative") is not False):
             raise InvalidOutcome("companion verifier returned an unsupported authority level")
@@ -155,6 +156,7 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
                 "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
                 "COMPANION_USER_DENIED",
                 "COMPANION_DISPATCH_FAILED",
+                "COMPANION_DISPATCH_UNKNOWN",
             }
             or outcome.observed is not False
             or outcome.evidence_level != "COMPANION_RECEIPT_ONLY"
@@ -211,6 +213,12 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
                 and (consent_claim is not True
                      or receipt_status != "FAILED_TO_DISPATCH"
                      or outcome.details.get("local_approval_evidence") != "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION")
+            )
+            or (
+                outcome.status == "COMPANION_DISPATCH_UNKNOWN"
+                and (consent_claim is not True
+                     or receipt_status != "OUTCOME_UNKNOWN"
+                     or outcome.details.get("local_approval_evidence") != "ANDROID_COMPANION_RECOVERY_UNKNOWN")
             )
         )
     )

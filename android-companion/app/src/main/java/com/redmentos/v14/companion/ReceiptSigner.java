@@ -18,7 +18,7 @@ import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.util.Arrays;
 
-final class ReceiptSigner {
+final class ReceiptSigner implements CompanionReceiptSigner {
     private static final String ALIAS = "v14-companion-receipt-p256-v1";
 
     synchronized JSONObject publicKeyInfo() throws Exception {

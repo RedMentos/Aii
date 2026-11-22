@@ -1,5 +1,15 @@
 # Core & Harness — Android action intent/outcome journal
 
+## Recovery extension — 2026-11-22
+
+A claimed companion action can outlive the Activity that attempted to sign its receipt. The read-only `outcome` poll now reconciles stale `EXECUTING` rows to a signed `OUTCOME_UNKNOWN` receipt and stale `DENYING` rows to a signed `USER_DENIED` receipt. It never repeats the Android launch. Recovery is idempotent across restart, validates the stored action/request/digest binding, and leaves a failed signing or SQLite write retryable as `NOT_READY`.
+
+- `OUTCOME_UNKNOWN` is mapped end-to-end to `COMPANION_DISPATCH_UNKNOWN` with `observed=false`, `t8_authoritative=false`, and `world_learning_eligible=false`.
+- Java Robolectric regressions inject signing and SQLite finalization failures, then retry the same claimed row without redispatch.
+- Python Runtime/Store regression authenticates and persists the new signed unknown receipt while preserving the non-authoritative boundary.
+- Exact CI and Android hardware status must be recorded only after the new commit runs; no APK installation or Redmi action is claimed here.
+
+
 **Date:** 2026-11-22  
 **Owner:** Core & Harness  
 **Branch:** `core/v14-android-action-journal-20261122`  

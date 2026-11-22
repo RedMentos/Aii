@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.content.Intent;
 import android.service.notification.StatusBarNotification;
 
@@ -27,6 +28,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.json.JSONObject;
+
 import static org.junit.Assert.*;
 
 @RunWith(RobolectricTestRunner.class)
@@ -37,6 +40,47 @@ public final class CompanionDbApprovalTest {
     private Context context;
     private CompanionDb first;
     private CompanionDb second;
+
+    private static final String TEST_KEY_ID = "d".repeat(64);
+
+    private static final class FakeReceiptSigner implements CompanionReceiptSigner {
+        boolean failSigning;
+        int signCalls;
+
+        @Override public JSONObject publicKeyInfo() throws Exception {
+            JSONObject out = new JSONObject();
+            out.put("schema", "v14.android-companion-public-key/1");
+            out.put("algorithm", "ECDSA_P256_SHA256");
+            out.put("key_id", TEST_KEY_ID);
+            out.put("key_storage_status", "ANDROID_KEYSTORE_SOFTWARE_BACKED");
+            return out;
+        }
+
+        @Override public JSONObject sign(JSONObject body) throws Exception {
+            signCalls++;
+            if (failSigning) throw new Exception("injected signer failure");
+            JSONObject receipt = new JSONObject();
+            receipt.put("body", new JSONObject(body.toString()));
+            receipt.put("key_id", TEST_KEY_ID);
+            receipt.put("signature", "ZmFrZQ==");
+            return receipt;
+        }
+    }
+
+    private static final class FailOnceFinishDb extends CompanionDb {
+        boolean failNext = true;
+
+        FailOnceFinishDb(Context context) { super(context); }
+
+        @Override synchronized void finish(String actionId, String expectedStatus,
+                                            String status, String receiptJson) {
+            if (failNext) {
+                failNext = false;
+                throw new SQLiteException("injected receipt write failure");
+            }
+            super.finish(actionId, expectedStatus, status, receiptJson);
+        }
+    }
 
     @Before public void setUp() {
         context = RuntimeEnvironment.getApplication();
@@ -52,6 +96,20 @@ public final class CompanionDbApprovalTest {
         if (first != null) first.close();
         if (second != null) second.close();
         if (context != null) context.deleteDatabase("v14-companion.db");
+    }
+
+    private void insertRecoverablePending() throws Exception {
+        JSONObject args = new JSONObject();
+        args.put("package", "com.example.app");
+        JSONObject request = new JSONObject();
+        request.put("schema", "v14.android-action-request/1");
+        request.put("action_id", ACTION_ID);
+        request.put("capability", "launch_app");
+        request.put("digest", Canonical.requestDigest("launch_app", "com.example.app"));
+        request.put("args", args);
+        request.put("expires_at", (NOW + 10_000L) / 1000.0);
+        assertTrue(first.insertPending(ACTION_ID, request.toString(),
+                "com.example.app", NOW + 10_000L));
     }
 
     private void insertPending(long expiresAt) {
@@ -396,6 +454,90 @@ public final class CompanionDbApprovalTest {
         assertFalse(second.claimForDenial(ACTION_ID, NOW));
         assertEquals("CANCELLED", first.get(ACTION_ID).status);
     }
+    @Test public void executingClaimRecoversAsUnknownAndIsIdempotentAcrossRestart() throws Exception {
+        insertRecoverablePending();
+        assertTrue(first.claimForExecution(ACTION_ID, NOW));
+        FakeReceiptSigner signer = new FakeReceiptSigner();
+
+        assertTrue(CompanionProvider.recoverClaimedAction(first, signer, ACTION_ID, NOW));
+        CompanionDb.Action recovered = first.get(ACTION_ID);
+        assertEquals("OUTCOME_UNKNOWN", recovered.status);
+        String receiptJson = recovered.receiptJson;
+        JSONObject body = new JSONObject(receiptJson).getJSONObject("body");
+        assertTrue(body.getBoolean("local_consent"));
+        assertFalse(body.getBoolean("observed"));
+        assertEquals(ACTION_ID, body.getString("action_id"));
+        assertEquals("OUTCOME_UNKNOWN", body.getString("status"));
+        assertFalse("recovered execution must never be redispatched",
+                first.claimForExecution(ACTION_ID, NOW));
+        int signCalls = signer.signCalls;
+
+        first.close();
+        first = new CompanionDb(context);
+        first.getWritableDatabase();
+        assertTrue(CompanionProvider.recoverClaimedAction(first, signer, ACTION_ID, NOW + 1));
+        assertEquals(signCalls, signer.signCalls);
+        assertEquals(receiptJson, first.receipt(ACTION_ID));
+    }
+
+    @Test public void denyingClaimRecoversAsSignedDenialWithoutExecution() throws Exception {
+        insertRecoverablePending();
+        assertTrue(first.claimForDenial(ACTION_ID, NOW));
+        FakeReceiptSigner signer = new FakeReceiptSigner();
+
+        assertTrue(CompanionProvider.recoverClaimedAction(first, signer, ACTION_ID, NOW));
+        CompanionDb.Action recovered = first.get(ACTION_ID);
+        assertEquals("USER_DENIED", recovered.status);
+        JSONObject body = new JSONObject(recovered.receiptJson).getJSONObject("body");
+        assertFalse(body.getBoolean("local_consent"));
+        assertFalse(body.getBoolean("observed"));
+        assertEquals("USER_DENIED", body.getString("status"));
+        assertFalse(first.claimForExecution(ACTION_ID, NOW));
+    }
+
+    @Test public void signingFailureLeavesExecutingClaimRetryableWithoutRedispatch() throws Exception {
+        insertRecoverablePending();
+        assertTrue(first.claimForExecution(ACTION_ID, NOW));
+        FakeReceiptSigner signer = new FakeReceiptSigner();
+        signer.failSigning = true;
+
+        try {
+            CompanionProvider.recoverClaimedAction(first, signer, ACTION_ID, NOW);
+            fail("injected signing failure must leave the claim retryable");
+        } catch (Exception expected) {
+            assertEquals("injected signer failure", expected.getMessage());
+        }
+        assertEquals("EXECUTING", first.get(ACTION_ID).status);
+        assertNull(first.receipt(ACTION_ID));
+        assertFalse(first.claimForExecution(ACTION_ID, NOW));
+
+        signer.failSigning = false;
+        assertTrue(CompanionProvider.recoverClaimedAction(first, signer, ACTION_ID, NOW + 1));
+        assertEquals("OUTCOME_UNKNOWN", first.get(ACTION_ID).status);
+    }
+
+    @Test public void sqliteReceiptFailureLeavesDenialClaimRetryableAcrossRecovery() throws Exception {
+        first.close();
+        first = new FailOnceFinishDb(context);
+        first.getWritableDatabase();
+        insertRecoverablePending();
+        assertTrue(first.claimForDenial(ACTION_ID, NOW));
+        FakeReceiptSigner signer = new FakeReceiptSigner();
+
+        try {
+            CompanionProvider.recoverClaimedAction(first, signer, ACTION_ID, NOW);
+            fail("injected SQLite failure must not lose the claimed denial");
+        } catch (SQLiteException expected) {
+            assertEquals("injected receipt write failure", expected.getMessage());
+        }
+        assertEquals("DENYING", first.get(ACTION_ID).status);
+        assertNull(first.receipt(ACTION_ID));
+        assertFalse(first.claimForExecution(ACTION_ID, NOW));
+
+        assertTrue(CompanionProvider.recoverClaimedAction(first, signer, ACTION_ID, NOW + 1));
+        assertEquals("USER_DENIED", first.get(ACTION_ID).status);
+    }
+
     @Test public void companionDatabaseHasNoRawPcmOrAudioBlobStorage() {
         try (Cursor c = first.getReadableDatabase().rawQuery(
                 "SELECT name,sql FROM sqlite_master WHERE type='table'", null)) {

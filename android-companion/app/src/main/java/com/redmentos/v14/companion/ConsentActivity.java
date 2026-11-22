@@ -14,7 +14,7 @@ import java.security.SecureRandom;
 
 public final class ConsentActivity extends Activity {
     private CompanionDb db;
-    private ReceiptSigner signer;
+    private CompanionReceiptSigner signer;
     private CompanionDb.Action action;
     private JSONObject request;
 
