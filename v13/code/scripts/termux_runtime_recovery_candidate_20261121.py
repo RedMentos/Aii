@@ -13,6 +13,8 @@ AUDIO_BUILDER = "scripts/integrated_audio_context_candidate_20261121.py"
 AUDIO_BUILDER_BLOB_SHA1 = "39f7f7bb81529bd8875132ee4ac4e5a3a7e8d9ac"
 C4_RECEIPT_BUILDER = "scripts/integrated_c4_c3_receipt_candidate_20261122.py"
 C4_RECEIPT_SHA256 = "0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a22028dff3"
+NATIVE_RECEIVER_BUILDER = "scripts/integrated_native_latent_receiver_candidate_20261122.py"
+NATIVE_RECEIVER_SHA256 = "dcc910c7912b4d1ebc273f3bb365b871401c07abca48d79d0addf4577e0bf7b0"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
@@ -71,4 +73,21 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
     composed = receipt_module.apply_sources(code_dir, composed)
     if b"c4_offer_context_ready" not in composed.get("v13/cognition.py", b""):
         raise ValueError("Core C4 context-ready receipt was not composed")
+
+    native_path = code_dir / NATIVE_RECEIVER_BUILDER
+    if native_path.is_symlink() or not native_path.is_file():
+        raise ValueError("Core native receiver overlay missing or unsafe")
+    native_raw = native_path.read_bytes()
+    if hashlib.sha256(native_raw).hexdigest() != NATIVE_RECEIVER_SHA256:
+        raise ValueError("Core native receiver overlay source changed")
+    native_spec = importlib.util.spec_from_file_location(
+        "v14_core_native_latent_receiver", native_path)
+    if native_spec is None or native_spec.loader is None:
+        raise RuntimeError("Core native receiver overlay is not loadable")
+    native_module = importlib.util.module_from_spec(native_spec)
+    native_spec.loader.exec_module(native_module)
+    composed = native_module.apply_sources(code_dir, composed)
+    if (b"def native_receive(" not in composed.get("v13/cognition.py", b"")
+            or b"native_receiver_probe" not in composed.get("v13/callosum.py", b"")):
+        raise ValueError("Core native receiver overlay was not composed")
     return composed
