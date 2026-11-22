@@ -42,11 +42,12 @@ def _matrix(value, name):
 
 
 def capture_pair(cognition, event, deadline):
-    """Capture B1 and B2 native states for one event, sequentially on mobile.
+    """Capture source-aligned B1 fine slots and adaptive B2 Gist slots.
 
     The pair packet binds both immutable LatentTapPackets to the same source,
-    event, generation, and pinned model revisions. The actual feature tensors
-    stay in the existing hash-verified data/blobs files.
+    event, generation, and pinned model revisions. Native feature tensors and
+    both readout geometries are hash/lineage checked; no text message, receiver
+    injection, or body-weight learning is performed here.
     """
     if not isinstance(event, dict):
         raise ValueError("event required")
