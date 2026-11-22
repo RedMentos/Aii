@@ -44,7 +44,11 @@ public final class CompanionDbApprovalTest {
     }
 
     private void insertPending(long expiresAt) {
-        assertTrue(first.insertPending(ACTION_ID, "{\"capability\":\"launch_app\"}",
+        insertPending(ACTION_ID, expiresAt);
+    }
+
+    private void insertPending(String actionId, long expiresAt) {
+        assertTrue(first.insertPending(actionId, "{\"capability\":\"launch_app\"}",
                 "com.example.app", expiresAt));
     }
 
@@ -82,7 +86,21 @@ public final class CompanionDbApprovalTest {
         insertPending(NOW);
         assertFalse(first.claimForExecution(ACTION_ID, NOW));
         assertFalse(second.claimForDenial(ACTION_ID, NOW));
-        assertEquals("PENDING_USER_APPROVAL", first.get(ACTION_ID).status);
+        assertTrue(first.expire(ACTION_ID, NOW));
+        assertEquals("EXPIRED", first.get(ACTION_ID).status);
+        assertFalse(first.expire(ACTION_ID, NOW));
+    }
+
+    @Test public void pendingReadExpiresOldRowsAndReturnsOnlyLiveActions() {
+        String liveId = "b".repeat(32);
+        insertPending(ACTION_ID, NOW);
+        insertPending(liveId, NOW + 1L);
+        java.util.List<CompanionDb.Action> pending = first.pending(NOW);
+        assertEquals(1, pending.size());
+        assertEquals(liveId, pending.get(0).actionId);
+        assertEquals("EXPIRED", first.get(ACTION_ID).status);
+        assertEquals("PENDING_USER_APPROVAL", first.get(liveId).status);
+        assertEquals(0, first.expirePending(NOW));
     }
 
     @Test public void executionClaimSurvivesRestartAndCannotBeRetried() {
