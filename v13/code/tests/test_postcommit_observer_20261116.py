@@ -39,8 +39,9 @@ class PinValidation(unittest.TestCase):
         raw = (CODE / 'v13/runtime.py').read_bytes()
         sources = (raw, world.build_sources(CODE)['v13/runtime.py'],
                    termux.build_sources(CODE, include_postcommit=False)['v13/runtime.py'])
-        self.assertTrue({hashlib.sha256(x).hexdigest() for x in sources}
-                        <= patch.SOURCE_SHA256)
+        actual_hashes = {hashlib.sha256(x).hexdigest() for x in sources}
+        missing_hashes = actual_hashes - patch.SOURCE_SHA256
+        self.assertFalse(missing_hashes, 'unapproved Runtime source hashes: ' + ', '.join(sorted(missing_hashes)))
         for source in sources:
             with self.subTest(source=hashlib.sha256(source).hexdigest()):
                 result = patch.apply_source(source)
@@ -137,12 +138,14 @@ class RuntimePostcommit(unittest.TestCase):
         self.runtime.cfg.update(deadline_seconds=10, observer_seconds=4.4)
         self.behavior = lambda role, status: ('expire' if status != 'FINAL' else 'fail') if role == 'B1_DETAIL' else 'ok'
         event, meta = self.turn()
-        self.assertEqual(self.calls, [('B1_DETAIL', 'DRAFT'), ('C3_LANGUAGE', 'DRAFT'),
-                                      ('B2_GIST', 'FINAL'), ('B1_DETAIL', 'FINAL')])
-        self.assertEqual(meta['selected_offer_ids'], [])
+        # The short-recovery policy still gives the other body its own pre-answer slice.
+        self.assertEqual(self.calls, [('B1_DETAIL', 'DRAFT'), ('B2_GIST', 'DRAFT'),
+                                      ('C3_LANGUAGE', 'DRAFT'), ('B1_DETAIL', 'FINAL')])
+        self.assertEqual(len(meta['selected_offer_ids']), 1)
         offers = [json.loads(r['payload']) for r in self.runtime.store.rows(
             "SELECT payload FROM packets WHERE event_id=? AND kind='OfferPacket'", (event,))]
         self.assertEqual([p['role'] for p in offers], ['B2_GIST'])
+        self.assertIn(offers[0]['packet_id'], meta['selected_offer_ids'])
         row = self.runtime.store.one(
             "SELECT metrics FROM telemetry WHERE event_id=? AND kind='postcommit_offer'", (event,))
         self.assertFalse(json.loads(row['metrics'])['affects_committed_output'])
