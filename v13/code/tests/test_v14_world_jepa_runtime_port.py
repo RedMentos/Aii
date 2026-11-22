@@ -1017,6 +1017,36 @@ def _body_receiver_runtime(store, home, session, runner):
     )
 
 
+
+
+def _body_receiver_diagnostics(runtime, event, text, role):
+    import json
+    import time
+    from v13 import bodyview, world_model
+    from v13.world_jepa_receiver_matrix import receiver_matrix
+
+    resource_state = getattr(runtime.guard, "state", None)
+    if resource_state not in world_model.PRESSURE:
+        resource_state = "NORMAL"
+    state = world_model.state_vec(
+        len(text), resource_state, (time.time() % 86400.0) / 3600.0
+    )
+    matrix = receiver_matrix(
+        runtime.store, state, tuple(world_model.ACTIONS),
+        home=runtime.home, nonblocking=True,
+    )
+    context, _ = bodyview._world_jepa_body_readout(runtime, event, text, role)
+    return {
+        "receiver_statuses": {
+            action: matrix[action][role].get("status")
+            for action in world_model.ACTIONS
+        },
+        "world_jepa_context_chars": (
+            len(json.dumps(context, separators=(",", ":")))
+            if isinstance(context, dict) else None
+        ),
+    }
+
 def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path):
     import json
     import time
@@ -1054,36 +1084,32 @@ def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path):
             assert "world_jepa" in body_state, {
                 "role": body_state["role"],
                 "view_keys": sorted(body_state),
-                "serialized_chars": len(json.dumps(body_state, sort_keys=True)),
+                "serialized_chars": len(json.dumps(body_state, separators=(",", ":"))),
+                **_body_receiver_diagnostics(runtime, event, "Current source: compare the four routes for a local test.", body_state["role"]),
             }
+            assert len(json.dumps(body_state, separators=(",", ":"))) <= 700
             prompts[body_state["role"]] = body_state["world_jepa"]
         assert set(prompts) == {"B1_DETAIL", "B2_GIST"}
         detail = prompts["B1_DETAIL"]
         gist = prompts["B2_GIST"]
         assert detail["status"] == gist["status"] == "SHADOW_READOUT_ONLY"
-        assert detail["body_prompt_consumed"] is gist["body_prompt_consumed"] is True
+        assert detail["horizon"] == gist["horizon"] == "NEXT_ACTION"
         assert detail["native_body_consumed"] is gist["native_body_consumed"] is False
         assert detail["decision_authority"] == gist["decision_authority"] == "NONE"
-        assert detail["action_horizon"] == gist["action_horizon"] == "NEXT_ACTION"
-        assert "not fact" in detail["note"] and "not source evidence" in detail["note"]
-        assert "not answer correctness" in gist["note"]
-        assert "not fact" in gist["note"] and "not source evidence" in gist["note"]
-        assert detail["checkpoint_id"] == gist["checkpoint_id"] == trained["checkpoint_sha256"][:16]
-        assert detail["target_semantics"] == "ACTION_DURATION_AND_OUTPUT_SIZE"
-        assert gist["target_semantics"] == "ACTION_STATUS_FINAL_NOT_ANSWER_CORRECTNESS"
-        assert detail["unsupported_actions"] == gist["unsupported_actions"] == []
-        assert detail["predictions"]["columns"] == [
-            "action", "duration_s", "output_characters", "uncertainty", "train_support_samples"
-        ]
-        assert gist["predictions"]["columns"] == [
-            "action", "terminal_completion_probability", "uncertainty", "train_support_samples"
-        ]
-        assert len(detail["predictions"]["rows"]) == len(world_model.ACTIONS)
-        assert len(gist["predictions"]["rows"]) == len(world_model.ACTIONS)
-        assert [row[0] for row in detail["predictions"]["rows"]] == list(world_model.ACTIONS)
-        assert [row[0] for row in gist["predictions"]["rows"]] == list(world_model.ACTIONS)
-        assert all(row[-1] >= 8 for row in detail["predictions"]["rows"])
-        assert all(row[-1] >= 8 for row in gist["predictions"]["rows"])
+        assert "prediction only" in detail["note"] and "not fact/source/permission" in detail["note"]
+        assert "not answer correctness" in gist["target"]
+        assert "prediction only" in gist["note"] and "not fact/source/permission" in gist["note"]
+        assert detail["checkpoint"] == gist["checkpoint"] == trained["checkpoint_sha256"][:12]
+        assert detail["target"] == "B1_DURATION_OUTPUT_SIZE"
+        assert gist["target"] == "B2_P_FINAL_NOT_ANSWER_CORRECTNESS"
+        assert detail.get("unsupported_actions", []) == gist.get("unsupported_actions", []) == []
+        assert detail["support"] == gist["support"] == "TRAIN>=8"
+        assert len(detail["rows"]) == len(world_model.ACTIONS)
+        assert len(gist["rows"]) == len(world_model.ACTIONS)
+        assert [row[0] for row in detail["rows"]] == list(world_model.ACTIONS)
+        assert [row[0] for row in gist["rows"]] == list(world_model.ACTIONS)
+        assert all(row[-1] >= 8 for row in detail["rows"])
+        assert all(row[-1] >= 8 for row in gist["rows"])
 
         query_rows = store.rows(
             "SELECT payload FROM packets WHERE kind='QueryPacket' AND event_id=? ORDER BY created",
@@ -1100,6 +1126,8 @@ def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path):
             assert len(audit["training_source_sha256"]) == 64
             assert audit["event_id"] == event["event_id"]
             assert audit["brain_generation_id"] == event["brain_generation_id"]
+            assert audit["body_prompt_consumed"] is True
+            assert audit["action_horizon"] == "NEXT_ACTION"
             assert audit["native_body_consumed"] is False
             assert audit["native_body_weights_changed"] is False
             assert audit["decision_authority"] == "NONE"
@@ -1114,6 +1142,7 @@ def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path):
 
 
 def test_bodyview_jepa_receiver_fails_closed_without_checkpoint_and_when_lock_busy(tmp_path, monkeypatch):
+    import json
     import fcntl
     import time
     from threading import Event, Thread
@@ -1163,11 +1192,12 @@ def test_bodyview_jepa_receiver_fails_closed_without_checkpoint_and_when_lock_bu
         assert thin_support is not None
         assert "world_jepa" in thin_support["view"], {
             "view_keys": sorted(thin_support["view"]),
-            "serialized_chars": len(json.dumps(thin_support["view"], sort_keys=True)),
+            "serialized_chars": len(json.dumps(thin_support["view"], separators=(",", ":"))),
+            **_body_receiver_diagnostics(runtime, event, text, "B1_DETAIL"),
         }
         assert thin_support["view"]["world_jepa"]["unsupported_actions"] == ["simple"]
         assert all(row[0] != "simple"
-                   for row in thin_support["view"]["world_jepa"]["predictions"]["rows"])
+                   for row in thin_support["view"]["world_jepa"]["rows"])
 
         consumer = WorldJEPAStoreConsumer(
             store, home / "world_jepa", learning_enabled=False

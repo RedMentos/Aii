@@ -108,9 +108,6 @@ def _world_jepa_body_readout(r, e, text, role):
             return None, None
 
         prediction_rows = []
-        columns = (["action", "duration_s", "output_characters", "uncertainty", "train_support_samples"]
-                   if role == "B1_DETAIL"
-                   else ["action", "terminal_completion_probability", "uncertainty", "train_support_samples"])
         for action, item in entries:
             utility = item.get("receiver_utility")
             if not isinstance(utility, dict) or utility.get("accepted") is not True:
@@ -159,21 +156,22 @@ def _world_jepa_body_readout(r, e, text, role):
                 ]
             prediction_rows.append(row)
 
+        # Keep the foreground prompt representation deliberately compact. Full
+        # provenance and exact target semantics remain in the stored audit below.
         context = {
             "status": "SHADOW_READOUT_ONLY",
-            "representation": "NUMERIC_T8_OUTCOME_PRIOR",
-            "action_horizon": "NEXT_ACTION",
-            "target_semantics": ("ACTION_DURATION_AND_OUTPUT_SIZE" if role == "B1_DETAIL"
-                                 else "ACTION_STATUS_FINAL_NOT_ANSWER_CORRECTNESS"),
-            "support": "TRAIN_SPLIT_ONLY_MIN_8",
-            "unsupported_actions": unsupported_actions,
-            "checkpoint_id": checkpoint_sha[:16],
-            "predictions": {"columns": columns, "rows": prediction_rows},
-            "body_prompt_consumed": True,
+            "horizon": "NEXT_ACTION",
+            "target": ("B1_DURATION_OUTPUT_SIZE" if role == "B1_DETAIL"
+                       else "B2_P_FINAL_NOT_ANSWER_CORRECTNESS"),
+            "checkpoint": checkpoint_sha[:12],
+            "rows": prediction_rows,
+            "support": "TRAIN>=8",
             "native_body_consumed": False,
             "decision_authority": "NONE",
-            "note": "Action-outcome estimate only; not answer correctness, fact, source evidence or permission.",
+            "note": "prediction only; not fact/source/permission",
         }
+        if unsupported_actions:
+            context["unsupported_actions"] = unsupported_actions
         audit = {
             "schema": "V14_WORLDJEPA_BODY_RECEIVER_AUDIT/1",
             "checkpoint_sha256": checkpoint_sha,
@@ -187,6 +185,8 @@ def _world_jepa_body_readout(r, e, text, role):
             "unsupported_actions": unsupported_actions,
             "target_semantics": ("ACTION_DURATION_AND_OUTPUT_SIZE" if role == "B1_DETAIL"
                                  else "ACTION_STATUS_FINAL_NOT_ANSWER_CORRECTNESS"),
+            "action_horizon": "NEXT_ACTION",
+            "body_prompt_consumed": True,
             "native_body_consumed": False,
             "native_body_weights_changed": False,
             "decision_authority": "NONE",
@@ -215,14 +215,24 @@ def body_state(r,e,role,text):
         from .agi import hub
         view['skills']=hub(r).skills.select(text)[:3]
     except Exception:view['skills']=[]
+    def prompt_chars():
+        return len(dumps(view | {'authority':'STATE_NOT_FACT','role':role}))
+
+    if prompt_chars()>STATE_CHARS:
+        view['world']['recent']=[]
+    if prompt_chars()>STATE_CHARS and world_jepa_context is not None:
+        # Prefer the accepted next-action prior over optional skill detail, while
+        # preserving the existing 700-character foreground budget.
+        skills=view.get('skills')
+        if isinstance(skills,list) and len(skills)>1:
+            view['skills']=skills[:1]
+        if prompt_chars()>STATE_CHARS and isinstance(view.get('skills'),list):
+            view['skills']=[]
+        if prompt_chars()>STATE_CHARS:
+            view.pop('world_jepa',None)
+            world_jepa_audit=None
+
     s=dumps(view)
-    if len(s)>STATE_CHARS:view['world']['recent']=[];s=dumps(view)
-    if len(s)>STATE_CHARS and world_jepa_context is not None:
-        # Keep the established mobile prompt budget; omit the optional prior
-        # instead of increasing B1/B2 prefill pressure.
-        view.pop('world_jepa',None)
-        world_jepa_audit=None
-        s=dumps(view)
     if world_jepa_audit is not None:
         s=dumps({
             'schema':'V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/1',
