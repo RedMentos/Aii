@@ -160,7 +160,12 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
                 or l0_evidence.get("body_pair_ids") != list(batch["body_pair_ids"])
                 or l0_evidence.get("source_hashes") != expected_sources
                 or l0_evidence.get("test_indices") != test_indices.tolist()
-                or l0_evidence.get("seed_ids") != [str(x) for x in seeds]):
+                or l0_evidence.get("seed_ids") != [str(x) for x in seeds]
+                or l0_evidence.get("task_id") != task_id
+                or l0_evidence.get("direction") != direction
+                or l0_evidence.get("label_source") != label_source
+                or l0_evidence.get("labels") != list(labels)
+                or l0_evidence.get("label_provenance") != list(label_provenance)):
             raise ValueError("L0 baseline evidence is not pinned to these exact pairs, source hashes, holdout rows and seeds")
         l0_acc = l0_evidence.get("acc")
         l0_bytes = l0_evidence.get("bytes")
