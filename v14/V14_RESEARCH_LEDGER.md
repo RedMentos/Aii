@@ -969,3 +969,6 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **CI closure addendum (2026-11-22):** PR #2368 latest docs head `bb85ddd893d59836bac905dfb7c78342d6c0e996`; exact code/workflow head `41025f3d9bf92870f9675173d4af00638a49c203`. Initial CI failed only because pytest was absent; after pinning pytest 9.2.0, exact retry 45056272786 passed Python 3.13/3.14 2/2. This remains synthetic-only CI and does not promote the A4 runtime gate.
+
+
+**FASTDIAR rebase addendum (2026-11-22):** the reviewed adapter/test blobs were ported unchanged to [PR #2369](https://github.com/RedMentos/Aii/pull/2369), based on current release-development HEAD aed1d2 (0 behind). Exact adapter/consumer workflow 45056897981 passes Python 3.13/3.14 2/2, seven tests each, including the actual RAW EAR A5→A4→C3 consumer. Privacy scan 45056897992 and same-repo integration 45057029362 pass. The staged/integrated workflow 45056898007 is still in progress. This does not attest the embedding producer or clear checkpoint-weight licensing; no inference or weight download. A4 remains DEFER.
