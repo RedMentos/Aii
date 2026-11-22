@@ -626,7 +626,11 @@ class TemporalWorldJEPAStoreConsumer:
             all_rows = sorted(by_id.values(), key=lambda item: (item["created"], item["action_id"]))
             if len(all_rows) > MAX_ROWS:
                 raise OverflowError("temporal T8 retention budget exhausted; no rows pruned")
-            windows = build_temporal_windows(self.store, all_rows, cancel_check=cancel_check)
+            try:
+                windows = build_temporal_windows(self.store, all_rows, cancel_check=cancel_check)
+            except InterruptedError:
+                return {"status": "CANCELLED", "checkpoint_committed": False,
+                        "native_body_weights_changed": False}
             if len(windows) < MIN_WINDOWS:
                 next_state = dict(state)
                 next_state["scan_cursor"] = cursor
@@ -668,7 +672,8 @@ class TemporalWorldJEPAStoreConsumer:
                 model = world_jepa.WorldJEPA(seed=self.seed, ensemble=self.ensemble)
                 # One bootstrap step creates a resumable optimizer state. The
                 # measured before/after delta below excludes that bootstrap.
-                model.fit(X_train, A_train, X2_train, steps=1, log_every=1)
+                model.fit(X_train, A_train, X2_train, steps=1, log_every=1,
+                          cancel_check=cancel_check)
             else:
                 model = self._load_model(active)
             before_snapshot = _snapshot(model)
@@ -678,11 +683,15 @@ class TemporalWorldJEPAStoreConsumer:
                 old_X, old_A, old_X2 = _unpack_holdout(old_holdout)
                 retention_before.append(model.prediction_loss(old_X, old_A, old_X2))
             train_steps = steps if active is not None else max(1, steps - 1)
-            model.partial_fit(
-                X_train, A_train, X2_train, steps=train_steps,
-                allow_optimizer_bootstrap=True,
-                cancel_check=cancel_check,
-            )
+            try:
+                model.partial_fit(
+                    X_train, A_train, X2_train, steps=train_steps,
+                    allow_optimizer_bootstrap=True,
+                    cancel_check=cancel_check,
+                )
+            except InterruptedError:
+                return {"status": "CANCELLED", "checkpoint_committed": False,
+                        "native_body_weights_changed": False}
             if cancel_check is not None and cancel_check():
                 return {"status": "CANCELLED", "checkpoint_committed": False}
             after_snapshot = _snapshot(model)
@@ -889,6 +898,9 @@ class TemporalWorldJEPAStoreConsumer:
             history_rows = history[-history_length:]
             if len(history_rows) < history_length:
                 return {"status": "INSUFFICIENT_HISTORY", "role": role,
+                        "decision_authority": "NONE", "native_body_consumed": False}
+            if len({row["generation_id"] for row in history_rows}) != 1:
+                return {"status": "GENERATION_GAP", "role": role,
                         "decision_authority": "NONE", "native_body_consumed": False}
             if any(
                 positions.get(right["event_id"], -99) != positions.get(left["event_id"], -100) + 1
