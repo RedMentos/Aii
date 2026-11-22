@@ -88,8 +88,16 @@ def test_same_speaker_embedding_stays_confident_and_has_no_identity_label():
         activity_hint="VOICED", embeddings=batch,
     )
     assert evidence["status"] == "MEASURED"
-    assert evidence["reference_age_ms"] >= 800
-    assert evidence["reference_age_ms"] <= 920
+    reference_end = warmup["frames"][-1]["end_ms"]
+    tolerance = max(40, int(batch["frame_step_ms"] * 1.5))
+    comparable_frame_ends = [
+        frame["end_ms"] for frame in batch["frames"]
+        if abs(frame["end_ms"] - batch["lookback_ms"] - reference_end) <= tolerance
+    ]
+    assert comparable_frame_ends
+    expected_reference_age_ms = max(comparable_frame_ends) - reference_end
+    assert evidence["frame_end_ms"] == max(comparable_frame_ends)
+    assert evidence["reference_age_ms"] == expected_reference_age_ms
     assert evidence["cosine_similarity"] == 1.0
     assert evidence["confidence_gate_passed"] is True
     assert evidence["speaker_change_candidate"] is False
