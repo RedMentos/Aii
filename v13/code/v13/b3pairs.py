@@ -16,7 +16,7 @@ from .contracts import packet, validate
 from .common import atomic_write, dumps, file_hash
 
 ROLES = ("B1_DETAIL", "B2_GIST")
-SCHEMA = "v13.b3-paired-native-taps/2"
+SCHEMA = "v13.b3-paired-native-taps/3"
 B1_FINE_SLOTS = 64
 
 
