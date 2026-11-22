@@ -2232,3 +2232,15 @@ Focused B3 paired-capture workflow 45040617156 remains PASS (52 tests, compile a
 | Source revocation vs weight promotion | #2351 moves _forget_source lineage checks inside combined JEPA/temporal guard and transaction. | Store.switch_generation still preflights outside its final transaction; reverse stale-row promotion race remains. Forget also releases Store.mutex before source/blob unlink, allowing concurrent Store.source publication between live-refcount check and unlink. Both are code-inspected, not locally reproduced; barrier tests required. | PARTIAL_GUARD / P1_DATA_INTEGRITY_OPEN |
 
 **Lock order:** JEPA/temporal file lock → Store RLock/SQLite. The Store RLock must cover the full forget transaction, artifact cleanup, final blob refcount and unlink; promotion preflight/commit must share the same Store RLock and revalidate update status and source liveness in its final transaction. Preserve the two barrier interleavings and positive rollback as acceptance tests.
+
+
+## B3 shared matrix expanded failure readback — 2026-11-22
+
+Focused B3 paired-capture run 45040617156 remains PASS (52 tests, compile, CLI smoke). On the same #2346 exact head 81d225af, four shared checks are now confirmed red:
+
+- Lab-Age E2E 45040616984: integrated builder hash mismatch.
+- Old-phone migration 45040617024: both cases return PARTIAL instead of UPDATED; model/SQLite sentinel bytes remain unchanged.
+- Staged/integrated 45040617185: integrated builder mismatch, idle-recovery operator source mismatch, online-world composition source mismatch, postcommit observer runtime mismatch; 35 failed / 215 passed / 10 skipped / 2 errors / 36 subtests.
+- Runtime deployment 45040617193: plain UI recovery builder changed under Python 3.11 and 3.14.
+
+JEPA transactional update, combined online JEPA, JEPA receipt integrity, role-specific tap provenance, privacy scan and offline bridge checks passed; same-turn B1/B2/C4/C3 was still in progress and audio/arithmetic/native latent receiver queued. These are shared integrated builder/recovery composition failures, not the focused B3 capture/trainer test. Keep #2346 DRAFT / NOT_RELEASED.

@@ -79,3 +79,15 @@ The #2351 Memory._forget_source change moves update/generation checks inside the
 Required shared fix: acquire JEPA/temporal file lock first, then hold Store RLock across forget's transaction, update artifact cleanup, final live-refcount check and blob unlink. Hold the same Store RLock across Store.switch_generation's complete preflight/commit, and re-read update status/path/hash/manifest plus every source_id deleted=0 inside its final transaction. Add barrier tests for both promotion/forget orderings, source re-publication vs blob unlink, and a no-deadlock lock-order case. Details: https://github.com/RedMentos/Aii/pull/2343#issuecomment-7081736426 and https://github.com/RedMentos/Aii/pull/2343#issuecomment-7081747233.
 
 Boss #2343 advanced to 863e751ff5410dc555006c8aeb9ef6c7b28d2a88; exact matrix queued at last read. No release, learning/unlearning acceptance or Redmi proof.
+
+
+## Expanded B3 shared-matrix failures (2026-11-22)
+
+The focused B3 run 45040617156 remains PASS (52 tests, py_compile, CLI smoke). Four shared jobs fail on exact #2346 head 81d225af:
+
+- Lab-Age E2E 45040616984: integrated builder hash mismatch.
+- Old-phone migration 45040617024: previous/current release cases return PARTIAL rather than UPDATED; model and SQLite sentinel bytes remain unchanged.
+- Staged/integrated 45040617185: integrated builder hash mismatch, idle-recovery source changed at v13/operator.py, online-world composition source changed, postcommit observer runtime hash mismatch; 35 failed, 215 passed, 10 skipped, 2 errors, 36 subtests passed.
+- Runtime deployment 45040617193: Python 3.11 and 3.14 both report Pinned plain UI recovery builder changed.
+
+JEPA transactional update, combined online JEPA, JEPA receipt integrity, role-specific tap provenance, privacy scan and offline bridge checks passed. Same-turn B1/B2/C4/C3 was in progress; audio/arithmetic and native latent receiver queued. The exact #2346 branch remains DRAFT / NOT_RELEASED until the shared source/builder chain is repaired and all exact checks pass.
