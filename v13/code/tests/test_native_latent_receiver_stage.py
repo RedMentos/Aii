@@ -62,7 +62,7 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert "native-probe <sender> <receiver>" in callosum
     assert "arm-probe <sender> <receiver>" in callosum
     assert "local_approval_consumed" in callosum
-    assert "arm-probe <sender> <receiver>" in operator_help
+    assert all(marker in operator_help for marker in ("arm-probe", "native-probe", "revoke-probe"))
     assert (destination / "v13/native_probe_approval.py").is_file()
     env = dict(os.environ)
     env["PYTHONPATH"] = str(destination)
