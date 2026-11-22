@@ -162,6 +162,11 @@ class SpeakerChangeEvidenceRegistry:
                 reset_reason = "STREAM_GAP"
 
             latest = None
+            frame_evidence = []
+            candidate_count = 0
+            peak_candidate_change_score = 0.0
+            peak_candidate_frame_end_ms = None
+            peak_candidate_reference_age_ms = None
             if self.max_frames < batch["lookback_frames"] + 2:
                 raise SpeakerEvidenceError("speaker history bound is shorter than the configured lookback")
             # A batch is one publication unit. Every frame in it must compare
@@ -188,12 +193,13 @@ class SpeakerChangeEvidenceRegistry:
                     candidate = None if threshold is None else bool(
                         activity_hint == "VOICED" and not gate_passed
                     )
-                    latest = {
+                    change_score = round(max(0.0, min(1.0, (1.0 - similarity) * 0.5)), 6)
+                    frame_record = {
                         "status": "MEASURED",
                         "frame_end_ms": frame_end,
                         "reference_age_ms": frame_end - reference_end,
                         "cosine_similarity": round(similarity, 6),
-                        "change_score": round(max(0.0, min(1.0, (1.0 - similarity) * 0.5)), 6),
+                        "change_score": change_score,
                         "confidence_threshold": threshold,
                         "confidence_gate_passed": gate_passed,
                         "speaker_change_candidate": candidate,
@@ -204,6 +210,14 @@ class SpeakerChangeEvidenceRegistry:
                             "STABLE_OR_UNTHRESHOLDED"
                         ),
                     }
+                    frame_evidence.append(frame_record)
+                    latest = frame_record
+                    if candidate is True:
+                        candidate_count += 1
+                        if change_score > peak_candidate_change_score:
+                            peak_candidate_change_score = change_score
+                            peak_candidate_frame_end_ms = frame_end
+                            peak_candidate_reference_age_ms = frame_end - reference_end
                 last_seen_end_ms = frame_end
 
             # Publish the new frames only after all comparisons used the same
@@ -228,6 +242,10 @@ class SpeakerChangeEvidenceRegistry:
                     "candidate_kind": None,
                     "interpretation": "LOOKBACK_NOT_YET_AVAILABLE",
                 }
+            peak_candidate = (
+                None if batch["confidence_threshold"] is None or not frame_evidence
+                else candidate_count > 0
+            )
             return {
                 "method": METHOD,
                 "source_id": source_id,
@@ -247,6 +265,12 @@ class SpeakerChangeEvidenceRegistry:
                 "calibration_id": batch["calibration_id"],
                 "reset_reason": reset_reason,
                 **latest,
+                "frame_evidence": frame_evidence,
+                "candidate_count": candidate_count,
+                "peak_candidate_change_score": round(peak_candidate_change_score, 6),
+                "peak_candidate_frame_end_ms": peak_candidate_frame_end_ms,
+                "peak_candidate_reference_age_ms": peak_candidate_reference_age_ms,
+                "peak_speaker_change_candidate": peak_candidate,
                 "speaker_label": None,
                 "identity_authority": False,
                 "learning_authority": False,
