@@ -60,7 +60,7 @@ class Runtime:
         try:txctl.Transactions(self.store).recover()  # WP-K IH-H14: EXECUTING after a crash -> UNKNOWN, never re-run
         except Exception as exc:self.store.log('action_tx_recover_failed',None,{'error':type(exc).__name__})
         pending=self.store.pending_turns()
-        self.guard=ResourceGuard(self.cfg);self.guard.load_profile(self.store);self.notify=notify or (lambda text:None);self.stop=threading.Event();self.wake=threading.Event();self.lock=threading.RLock();self.jobs=queue.Queue(max(self.cfg['queue_count'],len(pending)));self.queued_bytes=0;self.current=None;self.paused=self.store.queue_paused();self.status='Pausiert' if self.paused else 'Bereit';self.closed=False
+        self.guard=ResourceGuard(self.cfg);self.guard.load_profile(self.store);self.notify=notify or (lambda text:None);self.stop=threading.Event();self.wake=threading.Event();self.lock=threading.RLock();self.jobs=queue.Queue(max(self.cfg['queue_count'],len(pending)));self.queued_bytes=0;self.current=None;self._preempt_background_on_start=False;self._operator_command_active=0;self.paused=self.store.queue_paused();self.status='Pausiert' if self.paused else 'Bereit';self.closed=False
         for row in pending:
             queued=time.monotonic()-max(0.,time.time()-row['accepted_at'])
             self.jobs.put_nowait(('turn',row['event'],row['bytes'],queued));self.queued_bytes+=row['bytes']
@@ -126,7 +126,28 @@ class Runtime:
     def idle(self):
         with self.lock:return self.current is None and self.jobs.empty() and self.store.queue_stats()['count']==0
     def require_idle(self):
-        if not self.idle():raise ValueError('Erst laufenden Vorgang beenden (:cancel); dann erneut ausführen.')
+        background={'observers','shadow','dream','replay','tap','sleep'}
+        deadline=time.monotonic()+5.0
+        while True:
+            with self.lock:
+                if self.current in background:
+                    self.cancel_event.set()
+                elif self.current is not None:
+                    raise ValueError('Erst laufenden Vorgang beenden (:cancel); dann erneut ausführen.')
+                else:
+                    with self.jobs.mutex:
+                        queued_kind=self.jobs.queue[0][0] if self.jobs.queue else None
+                    if queued_kind in background:
+                        self._preempt_background_on_start=True
+                    elif queued_kind is not None or self.store.queue_stats()['count']:
+                        raise ValueError('Erst laufenden Vorgang beenden (:cancel); dann erneut ausführen.')
+                    else:
+                        self.cancel_event.clear()
+                        return
+            self.wake.set()
+            if time.monotonic()>=deadline:
+                raise ValueError('Hintergrundvorgang reagiert nicht auf Abbruch; bitte :cancel prüfen.')
+            time.sleep(0.01)
     def submit(self,text):
         b=len(text.encode())
         if not text.strip():raise ValueError('Leere Eingabe')
@@ -136,7 +157,14 @@ class Runtime:
             if self.current=='probe':raise Limits('Probe läuft in einem Testkontext; danach wieder Chat-Eingaben senden')
             if self.jobs.full() or self.queued_bytes+b>self.cfg['queue_bytes']:raise Limits('Warteschlange voll; Eingabe wurde nicht angenommen')
             e=self.store.accept_turn(self.session,text,self.cfg['queue_count'],self.cfg['queue_bytes'],self.cfg['input_bytes']);self.jobs.put_nowait(('turn',e,b,time.monotonic()));self.queued_bytes+=b
-            if self.current in {'observers','shadow','dream','replay','tap','sleep'}:self.cancel_event.set()
+            background={'observers','shadow','dream','replay','tap','sleep'}
+            if self.current in background:
+                self.cancel_event.set()
+            elif self.current is None:
+                with self.jobs.mutex:
+                    queued_kind=self.jobs.queue[0][0] if self.jobs.queue else None
+                if queued_kind in background:
+                    self._preempt_background_on_start=True
             live=duplex.on_input(self,e['event_id'],text)  # WP-N14 live path: decide on overlap, no I/O under the lock
         try:duplex.record(self,live)
         except Exception as exc:self.store.log('duplex_unavailable',e['event_id'],{'stage':'record','error':type(exc).__name__})
@@ -174,7 +202,11 @@ class Runtime:
                 except queue.Empty:kind=None
                 if kind=='turn' and not self.store.claim_turn(payload['event_id']):
                     self.queued_bytes-=b;self.jobs.task_done();kind=None
-                if kind:self.queued_bytes-=b;self.current=kind;self.cancel_event.clear()
+                if kind:
+                    self.queued_bytes-=b;self.current=kind
+                    if kind in {'observers','shadow','dream','replay','tap','sleep'} and self._preempt_background_on_start:
+                        self.cancel_event.set();self._preempt_background_on_start=False
+                    else:self.cancel_event.clear()
             if not kind:
                 try:self.sleep.tick()  # idle/timer/replay wakes; enqueues background 'sleep' only when idle
                 except Exception as exc:self.store.log('job_error',None,{'kind':'sleep','error':type(exc).__name__})

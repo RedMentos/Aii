@@ -1434,3 +1434,32 @@ The release source has a plausible B1/B2 suppression path: default observer mode
 - Boss & Integration: keep #2258 unmerged until the Age-rights composition, exact CI and protected-file review are complete; continue whole-Canon dependency/consumer mapping.
 
 Private owner-read request #443 has no authenticated reply. Installed SHA and updater consent are UNKNOWN; REDMI_UNVERIFIED. No LOG_PAGE, UPDATE_REQUEST, remote shell, or device mutation was attempted.
+
+
+## JEPA & Memory checkpoint — 22 November 2026
+
+Current candidate: PR #2305, branch jepa-memory/v14-jepa-boss-head-6e6f-20261122, head ebe1dc28db2dc280d13f1dfa35497b712ea2c891, direct descendant of current Boss integration head 6e6f15322c9fa1931dcf733105d2a32d5372edeb (0 commits behind). Draft / NOT_RELEASED.
+
+### Connected code path
+
+- Trusted committed T8 ActionOutcome receipts produce source-ref/evidence-hash-bound LearningTrace and ModulatorPacket records for WorldJEPA.
+- Cursor and packet writes commit atomically; replay after restart is idempotent.
+- OFF/SHADOW preserves experience without predictor parameter mutation; ACTIVE local mode scales the actual WorldJEPA optimizer step, while a source-bound veto remains a hard zero.
+- SleepRuntime passes its shared neuromodulator controller into the postcommit JEPA runtime; the applied scale is recorded in update/replay metrics.
+- The source-forget guard remains under the same lock as JEPA training. Lifecycle, memory/world, feedback, context, JEPA, recovery, stage and deployer pins were rebound from exact source bytes.
+
+### Test evidence and remaining failures
+
+The first Boss-based PR #2303 head 571e6a561581e579a781c81483986b2e40badfaf produced 3 PASS / 4 FAIL / 2 IN_PROGRESS workflows at readback. Incremental WorldJEPA, combined online JEPA and runtime-deploy integrity passed. Optimizer-resume, owner-read staging and Lab-Age failed because the stage-builder SHA-256 was wrong; old-phone migration had two assertions fail. The exact stage/recovery/deployer pin was recalculated and corrected in PR #2305. Fresh exact-head CI on #2305 is still pending; do not reuse the earlier results as a pass.
+
+Focused #2247 code-head evidence (not yet re-run on the rebased head): the Store A-to-B-to-A replay suite reported 18 passed on Python 3.13 and 18 on 3.14, with 11 accepted updates and 1 correctly rejected per interpreter, exact rollback and disjoint manifests. That does not clear staged integration failures or prove Redmi/native weights. The previous #2247 full head was 7/15 checks PASS and 8 FAIL; its retention failures must remain strict.
+
+- Local Aii checkout absent: LOCAL_LINUX project tests BLOCKED.
+- Redmi: REDMI_UNVERIFIED; no live owner receipt, deployment or device action.
+- Release: NOT_RELEASED. WorldJEPA updates are Store-backed synthetic predictor/encoder updates, not GGUF or permanent B1/B2/C3 weight changes. B1/B2/SELF receiver readouts remain SHADOW and are not trained from actual organ outputs or human corrections. All learning promotion gates remain OFF.
+
+### Next internal action
+
+Run exact Python 3.13/3.14 optimizer-resume, staged Runtime, integrated regression, Lab-Age, owner-read and migration workflows on #2305. Fix remaining failures without weakening per-seed old-session retention. Then replace synthetic receiver targets with model-revision/source-bound real B1_DETAIL/B2_GIST outputs or explicit human corrections, and measure receiver utility, restart and rollback.
+
+User action: none. No Termux command, model/weight download or swap, permission change, updater toggle, or device action is required.

@@ -9,10 +9,10 @@ import hashlib
 import importlib.util
 from pathlib import Path
 
-BASE_SHA = 'a28e22c268d584662be53ff8e4d2472958fa5aa581d6be065f01829a42a33dfe'
-WORLD_SHA = '06afa58b5f75f6f6e4d72c5ea333b628752d2a6987a95e3c23becb1e4854121f'
+BASE_SHA = 'b0ac5511d68b05b2ff45e2026b9179b0adcc96bb3db81f99471aed840d8ed120'
+WORLD_SHA = 'b6dd353497bd08b756a491381ea4484419b0299e6263f5c4bac0ded112c9016a'
 CHECKPOINT_SHA = '560653e1a59b48991163a61b01135e2ab6e6d89c85fdeec4a8a40198f9bacf97'
-STATE_SHA = '94a785e72c279965a20fabd81eb6e78c9ca1c14b8bee66e83e693755da8a768d'
+STATE_SHA = '176ef1166b18c7c31563f650d12936ed3ddeac892455c67684b7fa9b6f1a795e'
 # These are the old pins embedded in the base Runtime guard, not current inputs.
 GUARD_WORLD_SHA = '14ee7982ab3866a13b2cca83086123281cf112a3c133b91c06df9df3669715fd'
 GUARD_CHECKPOINT_SHA = 'f88ad5eea241aacd55e5c3d0f53eb0b132a164a2d49cc0185726f1a0a8a076ae'
@@ -50,6 +50,23 @@ def build_sources(code_dir):
     guard = replace(guard, b"'history', 'enc', 'tgt', 'preds', 'zsd', '_ztrain', '_nn_med'})",
                     b"'history', 'enc', 'tgt', 'preds', 'zsd', '_ztrain', '_nn_med', '_training_state'})",
                     'exact model state fields')
+    guard = replace(guard,
+                    b"if type(model) is not wj.WorldJEPA or set(model.__dict__) != REQUIRED:\n",
+                    b"if (type(model) is not wj.WorldJEPA or not REQUIRED.issubset(model.__dict__)\n"
+                    b"            or set(model.__dict__) - REQUIRED - {'_last_gradient_projection'}):\n",
+                    'optional projection telemetry field')
+    guard = replace(guard,
+                    b"    if (type(model.seed) is not int or type(model.ensemble) is not int\n",
+                    b"    if '_last_gradient_projection' in model.__dict__:\n"
+                    b"        report = model.__dict__['_last_gradient_projection']\n"
+                    b"        if (type(report) is not dict or any(\n"
+                    b"                type(k) is not str or type(v) not in (bool, int, float, str, type(None))\n"
+                    b"                or (type(v) in (int, float) and not np.isfinite(v))\n"
+                     b"                or (type(v) is str and (k != 'projection_method' or v not in ('NO_ACTIVE_REFERENCE', 'ALREADY_FEASIBLE', 'ACTIVE_SET_ENUMERATION')))\n"
+                    b"                for k, v in report.items())):\n"
+                    b"            raise ValueError('unsupported World-JEPA projection telemetry')\n"
+                    b"    if (type(model.seed) is not int or type(model.ensemble) is not int\n",
+                    'projection telemetry validation')
     guard = replace(guard, b'    clone_meta, clone_arrays = checkpoint._extract(staged, VALIDATION_TAG)\n',
                     b'    staged._training_state=training_state.from_model(model)\n'
                     b'    clone_meta, clone_arrays = checkpoint._extract(staged, VALIDATION_TAG)\n',

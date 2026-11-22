@@ -63,6 +63,7 @@ def _vector(value, size):
 class Provenance:
     action_id: str
     event_id: str
+    session_id: str
     generation_id: str
     source_id: str
     source_sha256: str
@@ -96,6 +97,10 @@ class VerifiedT8Transition:
     @property
     def event_id(self):
         return self._proof.event_id
+
+    @property
+    def session_id(self):
+        return self._proof.session_id
 
     @property
     def generation_id(self):
@@ -161,7 +166,7 @@ def _verify_one(store, row):
         raise ValueError("transition numeric")
     meta = store.one(
         """SELECT a.id AS action_id,a.event_id,a.status,a.expected,a.outcome,a.created,
-                  a.corollary_id,e.generation_id,e.source_id,e.packet AS event_packet,
+                  a.corollary_id,e.generation_id,e.session_id,e.source_id,e.packet AS event_packet,
                   cp.kind AS corollary_kind,cp.payload AS corollary_payload
            FROM actions a JOIN events e ON e.id=a.event_id
            LEFT JOIN packets cp ON cp.id=a.corollary_id WHERE a.id=?""", (action_id,))
@@ -170,6 +175,9 @@ def _verify_one(store, row):
     meta = _mapping(meta, "action row")
     if meta.get("action_id") != action_id:
         raise ValueError("action row identity")
+    session_id = meta.get("session_id")
+    if type(session_id) is not str or not session_id or len(session_id) > 128:
+        raise ValueError("event session identity")
     status = meta.get("status")
     if type(status) is not str or status not in _TERMINAL:
         raise ValueError("action not terminal")
@@ -234,7 +242,7 @@ def _verify_one(store, row):
         raise ValueError("ActionOutcome mismatch")
     if row["y"][1] != (1.0 if status == "FINAL" else 0.0):
         raise ValueError("transition status mismatch")
-    proof = Provenance(action_id, meta["event_id"], meta["generation_id"], source_id, source_sha,
+    proof = Provenance(action_id, meta["event_id"], session_id, meta["generation_id"], source_id, source_sha,
                        source_start, source_end, source_modality,
                        _hash(outcome_packet), float(created), float(outcome_created), status, actual)
     return VerifiedT8Transition(_SEAL, row, proof)

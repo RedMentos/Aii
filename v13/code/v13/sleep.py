@@ -624,8 +624,10 @@ class SleepRuntime:
         if type(cursor) is not dict:
             cursor={}
         legacy=cursor.get('last_event_id')
+        last_recorded=cursor.get('last_recorded_event_id',legacy)
         last_learning=cursor.get('last_learning_event_id',legacy)
         last_planner=cursor.get('last_planner_event_id',legacy)
+        recording_error=cursor.get('last_recorded_error_event_id')
         learning_error=cursor.get('last_learning_error_event_id')
         planner_error=cursor.get('last_planner_error_event_id')
         gates=permission_state(self.r.store)
@@ -633,11 +635,16 @@ class SleepRuntime:
         active=(type(state) is dict and type(state.get('active')) is dict)
         learning_allowed=(gates['learning_enabled'] is True
                           and gates['optimizer_permission'] is True)
+        # T8 provenance is recorded even while the optimizer is OFF. The
+        # separate last_learning cursor lets a later explicit opt-in train
+        # from those already-persisted receipts without rescanning raw text.
+        need_recording=(last_recorded!=event_id
+                        and recording_error!=event_id)
         need_learning=(learning_allowed and last_learning!=event_id
                        and learning_error!=event_id)
         need_planner=(active and last_planner!=event_id
                       and planner_error!=event_id)
-        if not (need_learning or need_planner):
+        if not (need_recording or need_learning or need_planner):
             return None
         from .scheduler import ACTIONS
         ACTIONS.add('jepa_update')
@@ -679,7 +686,8 @@ class SleepRuntime:
             from .world_jepa_runtime import consume_after_commit
             from .world_jepa_planner import consume_world_planner_shadow
             learning=consume_after_commit(
-                self.r.store,self.r.home,limit=limit,cancel_check=cancel_check)
+                self.r.store,self.r.home,limit=limit,cancel_check=cancel_check,
+                neuromod=getattr(getattr(self,'cycle',None),'neuromod',None))
             if learning.get('status')=='CANCELLED' or cancel_check():
                 result.update(status='CANCELLED',action_status=action_status,learning=learning)
                 self.r.store.log('v14_world_jepa_postcommit_cancelled',event_id,
@@ -695,7 +703,33 @@ class SleepRuntime:
             metrics=learning.get('metrics') if type(learning) is dict else None
             metrics=metrics if type(metrics) is dict else {}
             learning_status=learning.get('status')
-            if learning_status=='UPDATED_EXPERIMENTAL_WORLD_JEPA':
+            checkpoint_sha=planner.get('checkpoint_sha256') or learning.get('checkpoint_sha256')
+            if learning_status=='NO_NEW_TRANSITIONS':
+                # An earlier Runtime worker may have committed the exact event
+                # before this idempotent SleepRuntime pass. Report the durable
+                # accepted checkpoint only when its source rows include this
+                # event and its own measured update/retention gates passed.
+                state,_=self.r.store.state('v14.world_jepa.store_consumer',None)
+                active=state.get('active') if type(state) is dict else None
+                rows=active.get('experience_rows') if type(active) is dict else None
+                includes_event=(type(rows) is list and any(
+                    type(row) is dict and row.get('event_id')==event_id for row in rows))
+                active_metrics=active.get('metrics') if type(active) is dict else None
+                if includes_event and type(active_metrics) is dict:
+                    metrics=active_metrics
+                    checkpoint_sha=active.get('checkpoint_sha256') or checkpoint_sha
+            accepted_metrics=(
+                float(metrics.get('parameter_delta_norm',0.0))>0.0
+                and float(metrics.get('ema_target_delta_norm',0.0))>0.0
+                and float(metrics.get('holdout_loss_after',float('inf')))
+                    < float(metrics.get('holdout_loss_before',float('-inf')))
+                and metrics.get('train_holdout_source_disjoint') is True
+                and metrics.get('negative_controls_separated') is True
+                and metrics.get('retention_gate_accepted') is True
+            )
+            if learning_status=='UPDATED_EXPERIMENTAL_WORLD_JEPA' or (
+                    learning_status=='NO_NEW_TRANSITIONS' and accepted_metrics
+                    and type(checkpoint_sha) is str and len(checkpoint_sha)==64):
                 telemetry_status='PASS'
             elif learning_status in {'UTILITY_GATE_REJECTED','RETENTION_GATE_REJECTED'}:
                 telemetry_status='REJECTED'
@@ -714,7 +748,7 @@ class SleepRuntime:
                 'status':telemetry_status,
                 'component':'world_predictor',
                 'mode':'shadow',
-                'sha256':planner.get('checkpoint_sha256') or learning.get('checkpoint_sha256'),
+                'sha256':checkpoint_sha,
                 'optimizer_steps':metrics.get('fit_steps_after',0),
                 'target_changed':float(metrics.get('ema_target_delta_norm',0.0))>0.0,
                 'loss_before':metrics.get('holdout_loss_before'),
@@ -734,9 +768,16 @@ class SleepRuntime:
             cursor.setdefault('last_learning_event_id',legacy)
             cursor.setdefault('last_planner_event_id',legacy)
             learning_status=learning.get('status')
+            neuromod=learning.get('neuromod') if type(learning.get('neuromod')) is dict else {}
+            record=neuromod.get('record') if type(neuromod.get('record')) is dict else {}
+            record_status=record.get('status')
             if learning_status=='ERROR':
                 cursor['last_learning_error_event_id']=event_id
-            elif learning_status not in {'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION','CANCELLED'} and learning.get('has_more') is not True:
+                cursor['last_recorded_error_event_id']=event_id
+            elif record_status in {'RECORDED','NO_NEW_OUTCOMES'} and record.get('has_more') is not True:
+                cursor['last_recorded_event_id']=event_id
+                cursor.pop('last_recorded_error_event_id',None)
+            if learning_status not in {'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION','CANCELLED','ERROR'} and learning.get('has_more') is not True:
                 cursor['last_learning_event_id']=event_id
                 cursor.pop('last_learning_error_event_id',None)
             planner_status=planner.get('status')
@@ -745,7 +786,8 @@ class SleepRuntime:
             else:
                 cursor['last_planner_event_id']=event_id
                 cursor.pop('last_planner_error_event_id',None)
-            if (cursor.get('last_learning_event_id')==event_id
+            if (cursor.get('last_recorded_event_id')==event_id
+                    or cursor.get('last_learning_event_id')==event_id
                     or cursor.get('last_planner_event_id')==event_id):
                 cursor['last_event_id']=event_id
             self.r.store.set_state(cursor_key,cursor,expected=version)
@@ -763,6 +805,8 @@ class SleepRuntime:
         last=max(row['t'] or 0.,self.r.store.meta('sleep_boot_wall',0.) or 0.)
         return max(0.,self.clock()-last)
     def tick(self,force=False):
+        with self.r.lock:
+            if getattr(self.r,'_operator_command_active',0)>0:return None
         policy=self.cycle.policy()
         if not force and self.monotonic()-self.last_tick<policy['tick_seconds']:return None
         self.last_tick=self.monotonic()
@@ -802,7 +846,9 @@ class SleepRuntime:
             if e['action']=='notice' and e['payload'].get('text'):self.r.notice(str(e['payload']['text'])[:500])
             self.scheduler.complete(e['id'],'DONE',{'recorded':True});return e
         with self.r.lock:
-            if self.r.idle() and not self.r.jobs.full():self.r.jobs.put_nowait(('sleep',e,0,time.monotonic()));queued=True
+            if (getattr(self.r,'_operator_command_active',0)==0
+                    and self.r.idle() and not self.r.jobs.full()):
+                self.r.jobs.put_nowait(('sleep',e,0,time.monotonic()));queued=True
             else:queued=False
         if not queued:self.scheduler.complete(e['id'],'RETRY',{'reason':'BUSY'})
         self.r.wake.set();return e
