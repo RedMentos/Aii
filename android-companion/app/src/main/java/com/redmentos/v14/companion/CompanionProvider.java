@@ -58,17 +58,28 @@ public final class CompanionProvider extends ContentProvider {
         }
     }
 
+    static boolean isValidLaunchScope(boolean companionConsentRequired,
+                                      boolean osPermissionRequired,
+                                      boolean permissionBypass,
+                                      boolean modelAuthority,
+                                      String localApproval) {
+        return companionConsentRequired && !osPermissionRequired && !permissionBypass
+                && !modelAuthority
+                && "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION".equals(localApproval);
+    }
+
     private JSONObject submit(Context context, String json) throws Exception {
         SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         if (!prefs.getBoolean("enabled", false)) return error("COMPANION_STOPPED");
         JSONObject request = new JSONObject(json);
         if (!"v14.android-action-request/1".equals(request.optString("schema"))
                 || !"launch_app".equals(request.optString("capability"))
-                || !request.optBoolean("companion_local_consent_required", false)
-                || !request.optBoolean("android_os_permission_required", false)
-                || request.optBoolean("permission_bypass", true)
-                || request.optBoolean("model_authority", true)
-                || !"CALLER_ASSERTED_LOCAL_UI_CONFIRMATION".equals(request.optString("local_approval"))) {
+                || !isValidLaunchScope(
+                        request.optBoolean("companion_local_consent_required", false),
+                        request.optBoolean("android_os_permission_required", true),
+                        request.optBoolean("permission_bypass", true),
+                        request.optBoolean("model_authority", true),
+                        request.optString("local_approval"))) {
             return error("INVALID_REQUEST_SCOPE");
         }
         String actionId = request.getString("action_id");
