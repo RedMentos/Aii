@@ -38,7 +38,7 @@
 
 The rebased candidate adds a bounded audio-window ingress and a conservative speaker-change cue into the existing staged audio-context route. It does not yet capture the Redmi microphone, decode speech, speak, barge in, learn speaker identity, or prove B1/B2/C3 semantic use. Canon paths: A0-A5 audio perception; STEP9/G10C/G10D VOICE_AUDIO remain OPEN; B1/B2/C3 delivery and B3 learned latent coupling remain unaccepted.
 
-## Research next step
+## Resource result and research next step
 
 The new R-065 ledger entry reviews Draft-KV, FlyGCL, LatCom, StateBridge, NinaXander, Portable Semantics, cross-model negative results and the llama.cpp/gguf-py boundary. The highest-value latent experiment is a matched-versus-deranged receiver-utility test, starting with same-checkpoint B1/B2 StateBridge-style input-prefix alignment, then pair-specific adapters only if a native extraction path and receiver-side utility gate are available. Draft-KV requires a future native KV-side-memory hook; LatCom belongs after sender interfaces work. No model weights were downloaded or changed.
 
