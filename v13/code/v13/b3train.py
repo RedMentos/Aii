@@ -15,7 +15,7 @@ from .b3bridge import Bridge, to_bf16, l1_gate
 from .common import atomic_write, dumps
 
 
-_SPLIT_POLICY = "SOURCE_SHA256_GROUPED_STRATIFIED_20PCT_V1"
+_SPLIT_POLICY = "SOURCE_SHA256_GROUPED_STRATIFIED_20PCT_MIN2_V1"
 _L0_SCHEMA = "v13.b3-l0-baselines/2"
 
 
@@ -54,7 +54,7 @@ def _source_disjoint_split(source_refs, labels, split_seed):
         if len(members) < 4:
             raise ValueError("each outcome class needs at least four source-disjoint groups")
         order = rng.permutation(len(members))
-        n_test = max(1, int(round(len(members) * 0.2)))
+        n_test = max(2, int(round(len(members) * 0.2)))
         if len(members) - n_test < 2:
             raise ValueError("insufficient per-class source groups after holdout")
         test_groups = [members[int(position)] for position in order[:n_test]]
