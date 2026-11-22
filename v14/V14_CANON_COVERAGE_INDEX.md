@@ -2368,3 +2368,8 @@ Private V13OBS #115 is an aggregate of five LOCAL_METADATA_ONLY turns. B1: 4/4 n
 ### Run 19 restart-persistence addendum (2026-11-22T21:13:00Z)
 
 The latest JEPA code head is 3f015a7442c6950d5ce0dce3a9bbbcc4517e863d. A new regression tests 32 single-session pending ActionOutcomes across Store close/reopen and a second independent session, checking cursor advancement and preservation of 64 unique IDs. Exact workflows 45070697371 optimizer-resume 3.13/3.14; 45070697433 temporal WorldJEPA 3.13/3.14; 45070697455 owner-read/staged startup — all QUEUED. No exact staged/integrated run visible for this latest test-only commit. No exact staged/integrated run is visible for this latest test-only commit. Status remains TEST_ADDED / CI_PENDING / NOT_ACCEPTED.
+
+
+### Run 19 continuation telemetry addendum (2026-11-22T21:17:00Z)
+
+Exact code head aae0330e24279ed2782451e7effe78ee005ac490 now records learning_has_more, temporal_has_more and continuation_reason in SleepRuntime scheduler completion metadata. The temporal-only regression checks TEMPORAL_PAGE. No exact-head workflow or commit status is visible yet; parent 3f015a runs remain queued. Status: CODE_PRESENT / CI_NOT_VISIBLE / NOT_ACCEPTED.
