@@ -13,6 +13,40 @@ from . import world_model
 from .world_jepa_consumer import WorldJEPAStoreConsumer, receiver_utility_gate
 
 RECEIVER_ROLES = ("B1_DETAIL", "B2_GIST", "SELF_MODEL")
+MIN_ACTION_SUPPORT = 8
+
+
+def _train_split_action_support(active, actions):
+    """Count action support from train IDs only; never count held-out rows."""
+    train_ids = active.get("train_ids")
+    rows = active.get("experience_rows")
+    if (type(train_ids) not in (list, tuple) or not train_ids
+            or type(rows) is not list):
+        return None
+    train_id_set = set()
+    for action_id in train_ids:
+        if type(action_id) is not str or not action_id or action_id in train_id_set:
+            return None
+        train_id_set.add(action_id)
+    counts = {action: 0 for action in actions}
+    seen = set()
+    for row in rows:
+        if type(row) is not dict:
+            return None
+        action_id = row.get("action_id")
+        if action_id not in train_id_set:
+            continue
+        if action_id in seen:
+            return None
+        seen.add(action_id)
+        route = row.get("a")
+        if type(route) is not str or route not in world_model.ACTIONS:
+            return None
+        if route in counts:
+            counts[route] += 1
+    if seen != train_id_set:
+        return None
+    return counts
 
 
 def _state_vector(state):
@@ -72,6 +106,9 @@ def receiver_matrix(store, state, actions, home=None, *, nonblocking=False):
             if active is None:
                 raise ValueError("WorldJEPA checkpoint unavailable")
             model = learner._load_model(active)
+            support_counts = _train_split_action_support(active, actions)
+            if support_counts is None:
+                raise ValueError("WorldJEPA train-split support unavailable")
             # Apply the same per-role held-out admission used by the single-readout
             # API. The Planner consumes this batched path directly, so gating only
             # WorldJEPAStoreConsumer.readout would leave a real consumer bypass.
@@ -81,13 +118,29 @@ def receiver_matrix(store, state, actions, home=None, *, nonblocking=False):
             }
             matrix = {}
             for action in actions:
+                matrix[action] = {}
+                support_samples = support_counts[action]
+                if support_samples < MIN_ACTION_SUPPORT:
+                    for role in RECEIVER_ROLES:
+                        matrix[action][role] = {
+                            "role": role,
+                            "status": "ACTION_SUPPORT_INSUFFICIENT",
+                            "support_samples": support_samples,
+                            "support_min_samples": MIN_ACTION_SUPPORT,
+                            "support_scope": "TRAIN_SPLIT_ONLY",
+                            "checkpoint_sha256": active["checkpoint_sha256"],
+                            "source_sha256": active["source_sha256"],
+                            "decision_authority": "NONE",
+                            "native_body_consumed": False,
+                            "native_body_weights_changed": False,
+                        }
+                    continue
                 x = np.asarray([vector + [0.0, 0.0, 0.0]], dtype=np.float64)
                 a = np.asarray([world_model.onehot(action)], dtype=np.float64)
                 latent, spread = model.predict(x, a)
                 uncertainty = float(np.asarray(spread).reshape(-1)[0])
                 if not math.isfinite(uncertainty) or uncertainty < 0:
                     raise ValueError("nonfinite receiver uncertainty")
-                matrix[action] = {}
                 for role in RECEIVER_ROLES:
                     utility = utility_by_role[role]
                     if not utility["accepted"]:
@@ -95,6 +148,9 @@ def receiver_matrix(store, state, actions, home=None, *, nonblocking=False):
                             "role": role,
                             "status": "RECEIVER_UTILITY_REJECTED",
                             "receiver_utility": utility,
+                            "support_samples": support_samples,
+                            "support_min_samples": MIN_ACTION_SUPPORT,
+                            "support_scope": "TRAIN_SPLIT_ONLY",
                             "checkpoint_sha256": active["checkpoint_sha256"],
                             "source_sha256": active["source_sha256"],
                             "decision_authority": "NONE",
@@ -116,6 +172,9 @@ def receiver_matrix(store, state, actions, home=None, *, nonblocking=False):
                         "source_sha256": active["source_sha256"],
                         "status": "SHADOW_READOUT_ONLY",
                         "receiver_utility": utility,
+                        "support_samples": support_samples,
+                        "support_min_samples": MIN_ACTION_SUPPORT,
+                        "support_scope": "TRAIN_SPLIT_ONLY",
                         "decision_authority": "NONE",
                         "native_body_consumed": False,
                         "native_body_weights_changed": False,
