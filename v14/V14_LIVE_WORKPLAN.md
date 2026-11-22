@@ -1,3 +1,11 @@
+## QA companion safety follow-up — 2026-11-22 06:58Z
+
+- QA PR #2286 has current head `0639c4e4a5b1613445ba62ed4d39188fb6f60b56`; the exact companion, broker, outcome, sandbox, migration and staged/integrated workflows are queued. Previous-head PASS results are not transferred. The stack remains far behind the release branch and must be reconciled parent-first (#2271 → #2273 → #2286), not by retargeting only the leaf.
+- Boss review comment #7075643215 found a durability gap in the new shared stop/dispatch gate: `ACTION_GATE_LOCK` linearizes in-process order, but `setEnabled()` and `toggleEnabled()` still use `SharedPreferences.apply()`. The method reports Stop before the asynchronous disk write is guaranteed. A process death immediately after Stop could restore a stale enabled value. Require checked durable `commit()` or a transactionally persisted fail-closed state plus a process-recreation regression. This is a code-review finding, not a reproduced Android crash.
+- Companion scope remains launch_app only. UI observation/control and AudioRecord are OFF_NOT_IMPLEMENTED. No APK, Android OS action, microphone permission, or Redmi proof.
+
+---
+
 ## Boss integration checkpoint — 2026-11-22 06:54Z
 
 - **Current release-development readback:** `gpt6/v13-private-remote-bridge-20261111` = `f210999cf556be4d4514427cc9b5cf6d3cf3e984`. Boss PR #2288 is merged at `39b175521f50048f13ca14372b316de47527f531` as integration, not device release. On the newer exact SHA, 8 observed push workflow runs succeeded and the release-event integration workflow was cancelled; commit status remains pending with zero aggregate contexts. Do not claim full exact post-merge push certification from these observations.
