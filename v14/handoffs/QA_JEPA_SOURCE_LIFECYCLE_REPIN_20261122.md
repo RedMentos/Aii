@@ -45,6 +45,18 @@ The QA branch includes the latest JEPA Run 14 base commit 50e3c8dfe2e270c0e7f602
 - Termux/Redmi: REDMI_UNVERIFIED. No device command, chat, native probe, update request or device mutation was issued.
 - No model, weight, SQLite, chat, permission or installed-app state was changed.
 
+## Last completed Redmi receipt available before this run
+
+Consented private owner-read evidence timestamped 2026-11-22 21:35 Europe/Berlin (read-only; no new device command was issued):
+- Pipeline auto-update enabled; runtime/dashboard UP_TO_DATE; last_error NONE; installed commit aed1d2b826290c95c70356b5d8b864b5ef382be4.
+- Service/model process reported RUNNING, but the instantaneous native-residency sample mapped 0 native processes (PSS/RSS 0; child-group readability UNKNOWN).
+- Last turn FINAL in 57.74 s, C3 TTFT 41.63 s, prompt 751 tokens, only 2 generated tokens.
+- B1_DETAIL 53.2 s TIME_BUDGET; B2_GIST 54.2 s TIME_BUDGET; no valid source-bound offers; C3 3.1 s OK; native probe SMOKE_PARTIAL.
+- Resource snapshot: 5,569 MiB RAM total, 1,494 MiB available, 1,291 MiB free disk.
+- Lab test selector was active at stage 10, but official stage remained 0; physical feature execution was unverified and learning commit authority required separate SHADOW mode.
+
+This is a timestamped failure snapshot, not a current live claim and not acceptance. The candidate branches in this handoff are not installed on Redmi. Public technical summary was added to #1904 and linked from #1984 without copying any private transcript or user input.
+
 ## Other QA findings / independent blockers
 
 - The two-checkout migration test had separately returned PARTIAL/ERROR at the earlier failing composer. The new diagnostic will identify whether another staged or startup edge remains after this repair.
