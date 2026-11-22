@@ -1,4 +1,8 @@
-"""Synthetic scheduler and real staged Runtime/SQLite observer contracts."""
+"""Synthetic scheduler and real staged Runtime/SQLite observer contracts.
+
+Short C3 recovery preserves the 26 s reserve and gives the two pre-answer
+bodies only the remaining 4 s; deep turns retain the ordinary 45% window.
+"""
 import copy
 import json
 from pathlib import Path
@@ -136,17 +140,17 @@ class SchedulingTests(unittest.TestCase):
             malformed = {'status': 'DEADLINE', 'metadata': {'runner': {
                 'role': 'C3_LANGUAGE', 'generated_tokens': count, 'last_phase': 'prefill'}}}
             self.assertFalse(native_budget.zero_token_prefill_failure(malformed))
-        fair = native_budget.plan(100, 130, 104, recent=[failed, failed],
+        fair = native_budget.plan(100, 130, 100, recent=[failed, failed],
                                   background_enabled=True, observer_deadline=113.5)
         self.assertTrue(fair['recovery'])
-        self.assertEqual(fair['preanswer_end_monotonic'], 113.5)
-        self.assertAlmostEqual(fair['preanswer_seconds_available'], 9.5, places=2)
-        self.assertAlmostEqual(fair['c3_reserved_seconds'], 16.5, places=2)
+        self.assertEqual(fair['preanswer_end_monotonic'], 104.0)
+        self.assertAlmostEqual(fair['preanswer_seconds_available'], 4.0, places=2)
+        self.assertAlmostEqual(fair['c3_reserved_seconds'], 26.0, places=2)
         self.assertEqual(fair['minimum_role_slice_s'], 1.0)
-        first_slot = native_budget.plan(100, 130, 104, recent=[failed, failed],
-                                        background_enabled=True, observer_deadline=106.75)
+        first_slot = native_budget.plan(100, 130, 100, recent=[failed, failed],
+                                        background_enabled=True, observer_deadline=102.75)
         self.assertAlmostEqual(first_slot['preanswer_seconds_available'], 2.75, places=2)
-        self.assertAlmostEqual(first_slot['c3_reserved_seconds'], 16.5, places=2)
+        self.assertAlmostEqual(first_slot['c3_reserved_seconds'], 26.0, places=2)
 
 
 class RuntimeObserverTests(unittest.TestCase):
@@ -340,8 +344,12 @@ class RuntimeObserverTests(unittest.TestCase):
                 budgets = [json.loads(row['metrics']) for row in budget_rows]
                 self.assertEqual({item['role'] for item in budgets}, {'B1_DETAIL', 'B2_GIST'})
                 self.assertTrue(all(item['status'] == 'PREANSWER_BUDGETED' for item in budgets))
-                self.assertTrue(all(abs(item['c3_reserved_seconds'] - 16.5) < .01 for item in budgets))
+                self.assertTrue(all(abs(item['c3_reserved_seconds'] - 26.0) < .01 for item in budgets))
                 self.assertTrue(all(item['recent_real_prefill_failures'] == 2 for item in budgets))
+                # The 30 s turn reserves 26 s for C3; the sequential observer
+                # therefore grants a 2 s first slice and a bounded second slice.
+                self.assertAlmostEqual(calls[0][1] - start, 2.0, places=2)
+                self.assertAlmostEqual(calls[1][1] - start, 4.0, places=2)
                 self.assertEqual(r.cfg['learning_mode'], 'RECORD_ONLY')
                 self.assertFalse(r.pool.pids())
             finally:
