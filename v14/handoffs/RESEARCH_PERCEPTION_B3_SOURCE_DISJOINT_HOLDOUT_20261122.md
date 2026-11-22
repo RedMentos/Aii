@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-22  
 **PR:** #2317 (DRAFT; stacked on #2313)  
-**Code head:** `9c9d816a0c0892610f665ff0d0be9699868c9ff5`  
+**Current code head:** `8bfe73fcaf20480d855979dbcdaf0a0157fadcdf`  
 **Parent B3 branch head at stack time:** `9068cf9d2bcd9af7a432cdba8d8e87e80e730f13`
 
 ## Finding
@@ -28,11 +28,11 @@ This is an evaluation-validity defect, not evidence that a trained receiver alre
 
 ## Verification
 
-- Isolated Python helper smoke: **PASS** — 32 source groups × 2 spans produced 52 train / 12 test samples; no SHA crossed the split; conflicting-label negative control was rejected.
+- Isolated Python helper smoke: **PASS** — 32 source groups × 2 spans produced 52 train / 12 test samples; no SHA crossed the split; conflicting-label negative control was rejected. A second minimum-size smoke with four groups per class produced two train and two test groups per class.
 - Full LOCAL_LINUX repository suite: **BLOCKED** — this execution environment has no Aii checkout.
-- Exact PR CI: **PENDING** at handoff creation.
+- Exact PR CI: **PENDING** — B3 workflow run `44995053122`; staged/integrated workflow run `44995053149`.
 - Redmi/Termux: **REDMI_UNVERIFIED**.
-- No real paired tap training, independent L0 channel measurements, L1 utility pass, native receiver injection, permanent weight change, or old-session retention proof is claimed.
+- No real paired tap training, independent L0 channel measurements, L1 utility pass, native receiver injection, permanent weight change, or old-session retention proof is claimed. Label provenance is still caller-supplied non-empty references; this patch does not yet verify those IDs against persisted `HumanDecision`/`ActionOutcome` packets. Near-duplicate semantic source leakage and session-disjoint retention are also separate future checks.
 
 ## Next action
 
