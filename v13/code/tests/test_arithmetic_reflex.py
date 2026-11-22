@@ -7,8 +7,10 @@ class ExactArithmetic(unittest.TestCase):
     def test_correctness(self):
         cases = {
             "2+2": "4", "Was ist 2+2?": "4",
-            "What is 2 + 2?": "4", "calculate -12 * 3": "-36",
-            "8/4": "2", "1/3": "1/3", "7-12": "-5",
+            "What is 2 + 2?": "4", "Wie viel ist 2+2?": "4",
+            "calculate -12 * 3": "-36", "calculate 7-12": "-5",
+            "compute 2026-11": "2015", "calculate 11-21": "-10",
+            "berechne 11-21": "-10", "8/4": "2", "1/3": "1/3",
             "2--3": "5", "0*123": "0",
         }
         for question, answer in cases.items():
@@ -24,6 +26,22 @@ class ExactArithmetic(unittest.TestCase):
         ):
             with self.subTest(question=question):
                 self.assertIsNone(exact_arithmetic(question))
+
+    def test_date_shaped_subtraction_requires_explicit_math_verb(self):
+        for question in (
+            "11-21", "7-12", "What is 11-21?", "Was ist 11-21?",
+            "What is 7-12?", "What is 2026-11?", "Was ist 2026-11?",
+            "What is 31-12?", "Was ist 12-31?", "What is 2-2?",
+        ):
+            with self.subTest(question=question):
+                self.assertIsNone(exact_arithmetic(question))
+        for question, answer in (
+            ("calculate 11-21", "-10"),
+            ("compute 2026-11", "2015"),
+            ("berechne 7-12", "-5"),
+        ):
+            with self.subTest(question=question):
+                self.assertEqual(exact_arithmetic(question), answer)
 
     def test_not_model_generated(self):
         self.assertIsNone(exact_arithmetic(None))
