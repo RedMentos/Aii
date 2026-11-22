@@ -72,6 +72,13 @@ def test_source_lifecycle_pins_and_downstream_builder_chain_match_exact_files():
     check('memory_world_base', memory_world.BASE_BUILDER_SHA, digest(c3_base_path))
     check('lifecycle', memory_world.LIFECYCLE_BUILDER_SHA, digest(lifecycle_path))
 
+    composed = lifecycle.build_sources(CODE / 'v13')
+    composed_memory = composed['memory.py']
+    assert b'combined_source_forget_guard as source_forget_guard' in composed_memory
+    assert b'with source_forget_guard(self.s,sid)' in composed_memory
+    assert b'with self.s.mutex:' in composed_memory
+    assert b'cleanup_unreferenced(self.s,sid)' in composed_memory
+
     feedback_path = CODE / 'scripts/integrated_feedback_bootstrap_candidate_20261111.py'
     feedback = _load_qa_builder(feedback_path, 'qa_feedback')
     check('feedback', feedback.BASE_BUILDER_SHA, digest(memory_world_path))
