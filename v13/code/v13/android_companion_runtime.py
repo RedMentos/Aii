@@ -222,11 +222,15 @@ class AndroidCompanionController:
             outcome_event = json.loads(outcome_row["event_packet"])
         except (TypeError, ValueError) as exc:
             raise ControlDenied("stored receipt recovery record is malformed") from exc
+        if (not isinstance(intent, dict) or not isinstance(event, dict)
+                or not isinstance(outcome, dict) or not isinstance(outcome_event, dict)):
+            raise ControlDenied("stored receipt recovery record has an invalid packet shape")
         event_id = intent_row["packet_event_id"]
-        generation_id = event.get("brain_generation_id") if isinstance(event, dict) else None
-        source_ref = event.get("source_ref") if isinstance(event, dict) else None
+        generation_id = event.get("brain_generation_id")
+        source_ref = event.get("source_ref")
         if (not isinstance(source_ref, dict)
                 or not isinstance(source_ref.get("source_id"), str)
+                or not source_ref["source_id"]
                 or event != outcome_event
                 or outcome_row["packet_event_id"] != event_id
                 or event.get("event_id") != event_id
@@ -268,7 +272,9 @@ class AndroidCompanionController:
                 or not isinstance(actual, dict)
                 or actual.get("outcome_kind") != "ANDROID_COMPANION_RECEIPT"
                 or actual.get("capability") != proposal.capability
-                or actual.get("digest") != proposal.digest
+                or type(actual.get("digest")) is not str
+                or re.fullmatch(r"[0-9a-f]{64}", actual["digest"]) is None
+                or actual["digest"] != proposal.digest
                 or type(actual.get("receipt_nonce")) is not str
                 or re.fullmatch(r"[0-9a-f]{32}", actual["receipt_nonce"]) is None
                 or actual.get("receipt_schema") != "v14.android-companion-receipt/1"
