@@ -15,6 +15,10 @@ import threading
 import time
 from .common import APP,dumps,digest,atomic_write,Cancelled,Unavailable,Limits
 from .resources import process_memory
+
+_SERVER_VERSION_CACHE = {}
+_SERVER_VERSION_LOCK = threading.Lock()
+_SERVER_VERSION_TIMEOUT_SECONDS = 1.5
 def wire_json(v):
     """Request body for llama-server. Unlike common.dumps it keeps key order: the server builds the JSON-schema
     grammar in property order, so sorting would make the model decide e.g. `action` before `options` or
@@ -62,6 +66,74 @@ class LlamaRunner:
         self.binary=os.environ.get("V13_LLAMA_SERVER",str(home/"bin/llama-server"))
         self._audit_enabled=False;self._audit_window=None;self._audit_unavailable=None;self._audit_lock=threading.Lock()
         self.memory=None;self._memory_delivery_binding=None;self._loaded_stamp=None;self._loaded_binary=None
+        self._server_version_info=None;self._prompt_cache_policy=None
+    @staticmethod
+    def _probe_server_version(binary):
+        """Read a bounded, privacy-safe llama-server build identity without loading a model."""
+        try:
+            resolved=Path(binary).resolve(strict=True)
+            info=resolved.stat()
+            if not resolved.is_file():return {"status":"UNAVAILABLE"}
+        except OSError:
+            return {"status":"UNAVAILABLE"}
+        key=(str(resolved),info.st_dev,info.st_ino,info.st_size,info.st_mtime_ns,info.st_ctime_ns)
+        with _SERVER_VERSION_LOCK:
+            cached=_SERVER_VERSION_CACHE.get(key)
+            if cached is not None:return dict(cached)
+            try:
+                probe=subprocess.run([str(resolved),"--version"],stdin=subprocess.DEVNULL,
+                    stdout=subprocess.PIPE,stderr=subprocess.STDOUT,
+                    timeout=_SERVER_VERSION_TIMEOUT_SECONDS,check=False)
+            except subprocess.TimeoutExpired:
+                result={"status":"TIMEOUT"}
+            except OSError:
+                result={"status":"UNAVAILABLE"}
+            else:
+                if probe.returncode!=0:
+                    result={"status":"NONZERO_EXIT"}
+                else:
+                    # Never retain raw stdout: it can contain build paths or environment data.
+                    raw=probe.stdout[:1024].decode("utf-8","replace")
+                    line=" ".join(part.strip() for part in raw.splitlines()[:3] if part.strip())[:256]
+                    version=re.search(r"\\bversion\\s*[:=]\\s*([0-9][A-Za-z0-9._+-]{0,31})",line,re.I)
+                    revision=re.search(r"\\(([0-9a-f]{7,40})\\)",line,re.I)
+                    if revision is None:
+                        revision=re.search(r"\\bcommit[:= ]+([0-9a-f]{7,40})\\b",line,re.I)
+                    if version and revision:
+                        prefix=revision.group(1).lower()
+                        result={"status":"VERIFIED_REVISION_PREFIX",
+                                "version":version.group(1)+"+"+prefix,
+                                "revision_prefix":prefix}
+                    elif revision:
+                        prefix=revision.group(1).lower()
+                        result={"status":"REVISION_ONLY","revision_prefix":prefix}
+                    elif version:
+                        result={"status":"VERSION_ONLY","version":version.group(1)}
+                    else:
+                        result={"status":"UNPARSEABLE"}
+            if len(_SERVER_VERSION_CACHE)>=32:_SERVER_VERSION_CACHE.clear()
+            _SERVER_VERSION_CACHE[key]=dict(result)
+            return dict(result)
+    @staticmethod
+    def _prompt_cache_policy_from_command(cmd):
+        """Expose exact V13 cache inputs; flag absence is not an inferred default."""
+        def integer(flag):
+            try:return int(cmd[cmd.index(flag)+1])
+            except (ValueError,IndexError,TypeError):return None
+        return {
+            "revision":"v13.llama-prompt-cache-policy/1",
+            "parallel_slots":integer("-np"),
+            "cache_ram_mb":integer("--cache-ram"),
+            "ctx_checkpoints":integer("--ctx-checkpoints"),
+            "cache_prompt":True,
+            "id_slot":0,
+            "no_cache_idle_slots_flag_present":"--no-cache-idle-slots" in cmd,
+            "kv_unified_flag_present":"--kv-unified" in cmd,
+            # RunnerPool uses (role, purpose), not (session, role): sessions in
+            # one Runtime therefore share this role's long-lived slot/cache.
+            "runner_scope":"RUNTIME_SHARED_PER_ROLE",
+            "session_keyed":False,
+        }
     def _lifecycle_stamp(self):
         # Warm generation checks metadata only. Approval/model/native hashes are
         # revalidated on load, never reread for every prompt on a healthy child.
@@ -187,7 +259,7 @@ class LlamaRunner:
             # still owns its loaded copy. Reap it before validating a new child.
             self.unload()
         elif self.proc or self.log_handle:self.unload()
-        self.memory=None;self._memory_delivery_binding=None;self._loaded_stamp=None;self._loaded_binary=None
+        self.memory=None;self._memory_delivery_binding=None;self._loaded_stamp=None;self._loaded_binary=None;self._server_version_info=None;self._prompt_cache_policy=None
         if not Path(self.binary).is_file():raise Unavailable("llama-server fehlt; setup.sh erneut ausführen")
         with socket.socket() as s:s.bind(("127.0.0.1",0));self.port=s.getsockname()[1]
         lp=self.home/"logs"/(self.role+".log");rotate_log(lp);self.log_handle=open(lp,"ab");env=os.environ.copy();env.pop('V13_MEMORY_FILE',None);env["LLAMA_API_KEY"]=self.key
@@ -216,7 +288,10 @@ class LlamaRunner:
         env.pop('V13_MEMORY_AUDIT',None)
         self._audit_enabled=self.purpose=='generate' and bool(self.memory) and self.cfg.get('native_memory_audit',False) is True
         if self._audit_enabled:env['V13_MEMORY_AUDIT']='1'
-        self._loaded_binary=cmd[0];launch_stamp=self._lifecycle_stamp()
+        self._loaded_binary=cmd[0]
+        self._server_version_info=self._probe_server_version(cmd[0])
+        self._prompt_cache_policy=self._prompt_cache_policy_from_command(cmd)
+        launch_stamp=self._lifecycle_stamp()
         check(cancel,deadline)
         try:
             self.proc=subprocess.Popen(cmd,stdin=subprocess.DEVNULL,stdout=self.log_handle,stderr=self.log_handle,env=env)
@@ -372,6 +447,12 @@ class LlamaRunner:
             if self.phase=='stream':self.stage_times['stream_s']=time.monotonic()-self.phase_started
             self.last_metrics.update(stage_durations_s=dict(self.stage_times),last_phase=self.phase,elapsed_in_last_phase_s=time.monotonic()-self.phase_started,requested_tokens=max_tokens or self.cfg['answer_tokens'],input_message_count=len(messages))
             self.last_metrics.update(role=self.role,duration_s=time.monotonic()-started,status=status,actual_model=self.model.name,resource_sample_count=count,resource_samples=samples,sample_interval_s=.25,sampled_peak_pss_bytes=peaks['pss_bytes'],CAN_LATENT_TAP=False,CAN_LATENT_INJECT=False,CAN_TRAIN_BODY=False)
+            if isinstance(self._server_version_info,dict):
+                for key in ('status','version','revision_prefix'):
+                    value=self._server_version_info.get(key)
+                    if value is not None:self.last_metrics['server_version' if key=='version' else 'server_revision_prefix' if key=='revision_prefix' else 'server_version_status']=value
+            if isinstance(self._prompt_cache_policy,dict):
+                self.last_metrics['prompt_cache_policy']=dict(self._prompt_cache_policy)
             values=[v for v in [self.last_metrics.get('sampled_peak_rss_bytes'),peaks['rss_bytes']] if v is not None]
             self.last_metrics['sampled_peak_rss_bytes']=max(values) if values else None
             self.last_metrics.setdefault('generated_tokens',0);self.last_metrics.setdefault('ttft_s',None)
