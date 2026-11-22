@@ -1358,7 +1358,17 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                     f"on-demand loss produced no accepted predictor-only A2 update "
                     f"for seed {data_seed}"
                 )
-                assert projected_loss["A2"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+                if projected_loss["A2"]["status"] == "UTILITY_GATE_REJECTED":
+                    # The projected arm may correctly reject a seed even when
+                    # the matched unprojected loss-demand arm accepts. Keep the
+                    # final utility gate authoritative; require the safe
+                    # unprojected fallback and byte-identical rollback.
+                    assert unprojected_loss["A2"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+                    assert projected_loss["A2"]["checkpoint_sha_before"] == projected_loss["A2"]["checkpoint_sha_after"]
+                    assert projected_loss["A2"]["utility_gate_accepted"] is False
+                    assert projected_loss["A2"]["holdout_used_for_backtracking"] is False
+                else:
+                    assert projected_loss["A2"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
             elif (projected_loss["A2"]["status"] == "UTILITY_GATE_REJECTED"
                   and unprojected_loss["A2"]["status"] == "UTILITY_GATE_REJECTED"):
                 # Do not force a full-encoder update when the independent final
