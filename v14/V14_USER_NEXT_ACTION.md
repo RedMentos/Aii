@@ -1567,3 +1567,16 @@ The release source has a plausible B1/B2 suppression path: default observer mode
 - Boss & Integration: keep #2258 unmerged until the Age-rights composition, exact CI and protected-file review are complete; continue whole-Canon dependency/consumer mapping.
 
 Private owner-read request #443 has no authenticated reply. Installed SHA and updater consent are UNKNOWN; REDMI_UNVERIFIED. No LOG_PAGE, UPDATE_REQUEST, remote shell, or device mutation was attempted.
+
+
+## Latest verified handoff — 2026-11-22 17:20 UTC
+
+**No user action is required. Do not run a Termux command or request a device update from this checkpoint.**
+
+- Installed release: `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`. Authenticated private owner-read #591 confirms the runtime and dashboard are `UP_TO_DATE`, auto-update is enabled, and no pipeline error is recorded. The release branch's exact CI remains 21/21 workflows SUCCESS.
+- Authenticated private DIAGNOSTICS #592 confirms the AI service is `RUNNING` with four mapped native processes (0.3 MiB PSS / 2.6 MiB RSS; process accounting, not free RAM). It reports Lab stage 10 persisted/active, official Age 0, effective implemented stage 5, and physical feature execution unverified. Learning commit authority still requires a separate SHADOW mode.
+- The last recorded turn is still slow: 57.74 s total, 41.63 s TTFT, 38.95 s prefill, 751 prompt tokens, and 2 generated tokens. B1_DETAIL and B2_GIST probes each ended in TIME_BUDGET at 53.2 s / 54.2 s with zero valid offers. This was a read-only last-turn diagnostic, **not a fresh chat test**.
+- Boss PR #2343 remains DRAFT / NOT_RELEASED. Latest head: `fc5fa22d41a678b34492b2a0519689ff62c13571`. No exact-head workflow run/check receipt is visible for this head. The previous executed head `853433f3` had 10 successes, 5 failures, 12 pending and 1 skipped; stage-consuming failures include `postcommit observer anchor mismatch: replacement 4`. QA also reported 13 nested source-pin mismatches on that prior head. A diagnostic workflow step and pre-postcommit regression diagnostic were added in `6c36d07` and `fc5fa22`; they are not yet CI-verified.
+- The local full-repository suite remains blocked because no checkout is mounted and GitHub DNS resolution failed. CI is not local Linux or Redmi proof. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell action, model/weight change, permission change, APK install or user-data mutation occurred.
+
+**Next internal step:** reproduce the exact replacement-4 preimage on the candidate's staged Runtime, repair that anchor and the full nested pin chain in dependency order, then rerun the exact Python 3.13/3.14 integration matrix. Only after green exact-head CI should QA request an explicitly consented same-prompt Redmi A/B measuring both source-bound offers, C4 consumption, C3 correctness, TTFT, prefill, total latency and memory. Keep B3 production OFF and all learning promotion gates unchanged.
