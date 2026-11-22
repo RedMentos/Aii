@@ -1,3 +1,14 @@
+## QA run 12 — durable Termux pairing commit gate (2026-11-22 11:31Z)
+
+- Review found that the user-approved Termux pairing path used SharedPreferences `.apply()` and showed “Termux paired” without checking durable persistence. This was a trust-state durability gap, not a permission bypass.
+- Added pure-Java `PairingPersistence`: it accepts only exact package `com.termux`, a lowercase 64-hex SHA-256 certificate fingerprint and a non-null writer; it returns success only when the writer's synchronous commit returns true, and fails closed on false/exception.
+- `MainActivity.pairTermux()` now uses checked `.commit()`; it displays success only after commit succeeds and otherwise reports that pairing was not recorded.
+- Added `PairingPersistenceTest` for successful/failed commit, invalid package, malformed/uppercase digest, missing writer and writer exception.
+- Code/test branch head: `137948c311d9be2453e7b109fe955c9d5ddef6b1`. Android Gradle/Robolectric, private bridge and outcome-adapter workflows are running on that exact head. No local Android SDK/full Aii checkout; no APK install or Redmi action. REDMI_UNVERIFIED.
+- This follow-up is stacked on the already merged companion parent. Research/Perception #2312 still points at older base SHA `58666ddfc9945612a2117e1a844f812442d4ca64`; rebase it after this QA follow-up is integrated.
+
+---
+
 ## QA run 11 — current companion, migration and phone evidence (2026-11-22 08:02Z)
 
 - QA PR #2286 current branch HEAD: `cba9e260c6c30dc780800dde5b9d82b02d751767` (handoff-only); code-bearing parent `106d181fff812c188cfe186e689cc5e78c2f121c`. The code-bearing parent's exact CI is **7/7 SUCCESS**: Android companion Gradle/Robolectric (run 45000497679, BUILD SUCCESSFUL); staged + integrated regression (45000497664: staged 240 passed / 10 skipped / 47 subtests; integrated 415 passed / 3 skipped / 58 subtests); old-phone migration (45000497607: 2 passed); Android outcome (45000497653); local sandbox (45000497669); control broker (45000497697); Core outcome adapter (45000497733).
