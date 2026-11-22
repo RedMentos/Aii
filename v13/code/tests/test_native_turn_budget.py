@@ -118,7 +118,7 @@ class NativeTurnBudgetTests(unittest.TestCase):
         cognition=Cognition(runtime)
         end=time.monotonic()+30
         with self.assertRaisesRegex(AssertionError,"source read reached"):
-            cognition.offer("B1_DETAIL",{"event_id":"e1"},1,end-18,
+            cognition.offer("B1_DETAIL",{"event_id":"e1","source_ref":{}},1,end-18,
                             valid_until=end)
         self.assertEqual(store.source_reads,1)
         self.assertEqual(store.logs[0][0],"native_body_budgeted_for_c3")
