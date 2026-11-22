@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import hashlib
-import os
+import sys
 from pathlib import Path
 import time
 
@@ -72,17 +72,28 @@ print(json.dumps(payload, allow_nan=True))
     return home, model, binary
 
 
+class _TTY:
+    def isatty(self):
+        return True
+
+
 def _extract(home, model, binary, token_ids=(2, 7)):
-    return extract_token_rows(
-        home=home,
+    previous_stdin, previous_stdout = sys.stdin, sys.stdout
+    sys.stdin, sys.stdout = _TTY(), _TTY()
+    try:
+        return extract_token_rows(
+            home=home,
         model_path=model,
         expected_model_sha256=hashlib.sha256(model.read_bytes()).hexdigest(),
         model_revision="receiver-revision-1",
         tokenizer_revision="receiver-tokenizer-1",
-        token_ids=list(token_ids),
-        deadline=time.monotonic() + 10.0,
-        binary_path=binary,
-    )
+            token_ids=list(token_ids),
+            deadline=time.monotonic() + 10.0,
+            local_confirmed=True,
+            binary_path=binary,
+        )
+    finally:
+        sys.stdin, sys.stdout = previous_stdin, previous_stdout
 
 
 def test_extract_token_rows_verifies_model_bytes_and_preserves_revision_metadata(tmp_path):
@@ -103,6 +114,7 @@ def test_extract_token_rows_verifies_model_bytes_and_preserves_revision_metadata
     assert result["training_authority"] == 0
     assert result["production_route"] is False
     assert result["semantic_use_proven"] is False
+    assert result["local_tty_confirmation"] is True
 
 
 @pytest.mark.parametrize("token_ids", [
@@ -124,6 +136,21 @@ def test_extract_token_rows_rejects_untrusted_native_receipts(tmp_path, mode):
     home, model, binary = _fixture(tmp_path, mode)
     with pytest.raises(NativeReceiverError):
         _extract(home, model, binary)
+
+
+def test_extract_token_rows_requires_explicit_local_confirmation(tmp_path):
+    home, model, binary = _fixture(tmp_path)
+    with pytest.raises(PermissionError, match="explicit local confirmation"):
+        extract_token_rows(
+            home=home,
+            model_path=model,
+            expected_model_sha256=hashlib.sha256(model.read_bytes()).hexdigest(),
+            model_revision="receiver-revision-1",
+            tokenizer_revision="receiver-tokenizer-1",
+            token_ids=[2],
+            deadline=time.monotonic() + 10.0,
+            binary_path=binary,
+        )
 
 
 def test_extract_token_rows_rechecks_model_bytes_after_native_read(tmp_path):
