@@ -25,6 +25,7 @@ public final class ConsentActivity extends Activity {
         String actionId = getIntent().getStringExtra("action_id");
         action = actionId == null ? null : db.get(actionId);
         if (action == null || !"PENDING_USER_APPROVAL".equals(action.status)) {
+            CompanionProvider.cancelApprovalNotification(this, actionId);
             Toast.makeText(this, "Action is no longer pending", Toast.LENGTH_LONG).show();
             finish();
             return;
@@ -32,6 +33,7 @@ public final class ConsentActivity extends Activity {
         long nowMillis = System.currentTimeMillis();
         if (nowMillis >= action.expiresAt) {
             db.expire(action.actionId, nowMillis);
+            CompanionProvider.cancelApprovalNotification(this, action.actionId);
             Toast.makeText(this, "Action expired", Toast.LENGTH_LONG).show();
             finish();
             return;
@@ -70,6 +72,7 @@ public final class ConsentActivity extends Activity {
         long nowMillis = System.currentTimeMillis();
         if (!db.claimForDenial(action.actionId, nowMillis)) {
             db.expire(action.actionId, nowMillis);
+            CompanionProvider.cancelApprovalNotification(this, action.actionId);
             Toast.makeText(this, "Action was cancelled, expired or already decided", Toast.LENGTH_LONG).show();
             finish();
             return;
@@ -87,12 +90,14 @@ public final class ConsentActivity extends Activity {
         long nowMillis = System.currentTimeMillis();
         if (nowMillis >= action.expiresAt) {
             db.expire(action.actionId, nowMillis);
+            CompanionProvider.cancelApprovalNotification(this, action.actionId);
             Toast.makeText(this, "Action expired", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
         if (!db.claimForExecution(action.actionId, nowMillis)) {
             db.expire(action.actionId, nowMillis);
+            CompanionProvider.cancelApprovalNotification(this, action.actionId);
             Toast.makeText(this, "Action was cancelled or already claimed", Toast.LENGTH_LONG).show();
             finish();
             return;
@@ -139,6 +144,9 @@ public final class ConsentActivity extends Activity {
         } catch (Exception e) {
             Toast.makeText(this, "Receipt signing failed: " + e.getClass().getSimpleName(), Toast.LENGTH_LONG).show();
         } finally {
+            // The decision claim is terminal even if signing/Store finalization
+            // fails; do not leave a notification advertising a pending action.
+            CompanionProvider.cancelApprovalNotification(this, action.actionId);
             finish();
         }
     }
