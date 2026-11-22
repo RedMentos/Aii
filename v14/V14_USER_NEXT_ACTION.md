@@ -27,4 +27,4 @@
 - QA #2383 head `714a09e`: staged/integrated 45075772142 fails (21 failed / 230 passed / 10 skipped / 2 errors / 41 subtests), optimizer-resume 45075772144 fails on 3.13/3.14, owner-read portion passes but staged startup fails, Lab-Age fails. Exact downstream builder-pin mismatches were sent to QA; JEPA has not changed QA files.
 - Boss #2370 head `bae7d03`: JEPA runtime/online/training-resume/receipt-integrity checks pass. Same-turn fair-budget 45077837118 fails on both Python versions (wrong `native_turn_budget.time` patch target; C3 reserve expected 26.0s, actual 16.5s). Staged/integrated and Core audio remain IN_PROGRESS; controller guard QUEUED.
 - **No rebase or release** until QA's pin chain and Boss's fair-budget/staged/audio chain are green. No user action, device update, model swap or permission change is required.
-- JEPA evidence docs PR #2374 is at head `6da0d67d9ab9458c6d6ce382cf26546e53a40c2d`, still DRAFT and stacked on QA #2371 (not integrated).
+- JEPA evidence docs PR #2374 is at head `aa5ee1b975337e9b3fcf0e50545cb17921a2c51f`, still DRAFT and stacked on QA #2371 (not integrated).
