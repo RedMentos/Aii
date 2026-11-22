@@ -1052,7 +1052,62 @@
       "2383": "11 in progress; JEPA source-lifecycle rebind"
     },
     "research_id_collision": "R-092 is AudioRecord in #2380; JEPA #2374 asked to renumber its distinct paper to R-093.",
-    "user_action_required": "NONE"
+    "user_action_required": "NONE",
+    "previous_overlay": {
+      "timestamp": "2026-11-22T12:02:49.539Z",
+      "release_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
+      "code_candidate_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
+      "candidate_ci": "EXACT_SHA_ALL_30_OBSERVED_ACTIONS_WORKFLOW_RUNS_SUCCESS",
+      "post_merge_push_ci": "CI_GREEN; DEVICE_CODE_INSTALL_CONFIRMED_BY_PRIVATE_PIPELINE_STATUS_550",
+      "device_receipt": "PRIVATE_PIPELINE_STATUS_550_AUTHENTICATED_INSTALLED_C4EB82; RUNTIME_UP_TO_DATE; DASHBOARD_UP_TO_DATE; AUTO_UPDATE_ENABLED; LAST_ERROR_NONE",
+      "device_acceptance": "DIAGNOSTICS_551_SAME_56.432S_TURN_40.818S_TTFT_39.088S_PREFILL_2_TOKENS; B1_B2_SMOKE_PARTIAL_TIME_BUDGET; 20_TURN_ACCEPTANCE_OPEN",
+      "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_OR_NETWORK; no local full pytest/native suite",
+      "pr2338_ci": "HEAD_6664C3: staged/integrated runtime.py pin mismatch; native_turn_budget KeyError source_ref; A5 UI lease store.py pin mismatch; Boss owns coordinated repair; DRAFT_NOT_RELEASED",
+      "pr2332_ci": "REMOTE_ALLOWLIST_TESTS_PASS_BUT_NOT_EXECUTABLE: operator.py dispatches to callosum.operator_command which rejects native-probe; no local source-bound tap/model consumer or local one-shot approval; DRAFT_NOT_RELEASED; PROBE_NOT_RUN",
+      "pr2286_ci": "HEAD_C74DC3: 9/9 observed workflow runs SUCCESS on stacked QA branch; app-launch prototype only; no APK/device test",
+      "active_blockers": [
+        "P0_NATIVE_B1_B2_SOURCE_BOUND_OFFERS_AND_C4_C3_CORRECTNESS",
+        "P0_C3_TTFT_PREFILL_AND_SHORT_LOW_TOKEN_OUTPUT",
+        "P0_CORE_PR2338_RUNTIME_AND_STORE_SOURCE_BUILDER_PIN_FAILURES",
+        "P0_TRAINED_B3_LATENT_UTILITY_AND_SOURCE_DISJOINT_HOLDOUT",
+        "P0_ANDROID_COMPANION_APK_UI_ACCESSIBILITY_AND_BACKGROUND_PROVIDERS",
+        "P0_ANDROID_AUDIORECORD_VOICE_CAPTURE_AND_DECODER",
+        "P0_20_TURN_REDMI_CORRECTNESS_TTFT_PSS_AND_RESIDENCY_ACCEPTANCE",
+        "P0_CANON_CLAUSE_TO_CONSUMER_TEST_PLATFORM_ROLLBACK_TRACEABILITY",
+        "P0_CORE_PR2338_NATIVE_TURN_BUDGET_TEST_SEAM_KEYERROR_SOURCE_REF",
+        "P0_ANDROID_COMPANION_PAIRING_DURABILITY_REVIEW_AND_DEVICE_PROOF",
+        "P0_LOCAL_NATIVE_PROBE_DISPATCH_AND_LOCAL_APPROVAL_NOT_IMPLEMENTED",
+        "P0_ANDROID_COMPANION_CLAIMED_RECEIPT_RECOVERY_AFTER_SIGNING_OR_SQLITE_FAILURE",
+        "P0_BOSS_FAIR_BUDGET_CANDIDATE_STAGED_HASH_CHAIN_RED"
+      ],
+      "user_action_required": "NONE; no manual Termux command, update request, model/weight swap or permission change",
+      "previous_overlay": {
+        "timestamp": "2026-11-22T10:00:40.871Z",
+        "release_sha": "b3b92f41772573732b2cba71f7ad6bf34dc8e521",
+        "code_candidate_sha": "b3b92f41772573732b2cba71f7ad6bf34dc8e521",
+        "candidate_ci": "EXACT_PUSH_CI_40_OF_40_CHECK_RUNS_SUCCESS; 29_OF_29_WORKFLOW_RUNS_SUCCESS",
+        "post_merge_push_ci": "GREEN_40_CHECK_RUNS_29_WORKFLOW_RUNS_0_FAILURE_0_PENDING",
+        "device_receipt": "PRIVATE_520_AUTHENTICATED_INSTALLED_283AC1; RUNTIME_CI_WAIT; DASHBOARD_BLOCKED_RUNNING; UPDATE_REQUEST_519_QUEUED",
+        "device_acceptance": "B3B92_CI_GREEN_NOT_PHONE_VERIFIED; 283AC1_INSTALLED_ONLY; NATIVE_QUALITY_UNVERIFIED",
+        "active_blockers": [
+          "P0_NATIVE_B1_B2_OFFER_QUALITY_C3_TTFT_AND_CORRECT_ANSWER",
+          "P0_JEPA_SOURCE_FORGET_AND_TRAINING_PIN_CHAIN_PR2331",
+          "P0_PAIRED_NATIVE_TAPS_AND_B3_L1_HOLDOUT_PR2313_PR2317",
+          "P0_ANDROID_AUDIORECORD_AND_UI_BACKGROUND_PROVIDERS",
+          "P0_TRUE_TRAINED_CROSS_MODEL_LATENT_COUPLING",
+          "P1_AGE_RIGHTS_RESOURCE_DECOUPLING_AND_GOALWAKE_NATIVE_PROOF",
+          "P1_MEMORILLA_PRODUCTION_OVERFLOW_CONSUMER",
+          "WHOLE_CANON_SEMANTIC_CLAUSE_TO_CONSUMER_COVERAGE",
+          "P0_JEPA_SIX_SOURCE_PIN_MISMATCHES_PR2331"
+        ],
+        "pr2331_ci": "HEAD_535EBA: 9_FAILURE_4_IN_PROGRESS_2_QUEUED_4_SUCCESS_1_SKIPPED; six nested source-pin mismatches; NOT_RELEASED"
+      },
+      "pr2342_ci": "HEAD_AB99AD: Android Gradle/Robolectric PASS 45018041741; private bridge PASS 45018031307; local JDK21 javac --release 17 PASS 10 assertions; no independent GitHub approval yet because author cannot self-approve",
+      "pr2288": "MERGED at 39b175521f50048f13ca14372b316de47527f531; 20 SUCCESS / 0 FAILURE / 1 expected SKIPPED / 1 cancelled; current release c4eb82 supersedes it.",
+      "device_health": "HEALTH_549: 1,293 MiB MemAvailable / 5,569 MiB total / 1,537 MiB free disk; health runtime UNAVAILABLE while diagnostics reports RUNNING",
+      "learning_status": "LEARNING_STATUS_552_UNAVAILABLE",
+      "boss_pr2343": "CURRENT_HEAD_023E56D_29_AHEAD_0_BEHIND; substantive exact CI queued. Recovery12 and some Store/Runtime pins corrected; stage/deployer, recovery21, archive stream preimage, record-only Runtime pin and fair-observer ask anchor still mismatch. Previous 70c6a5 migration failed; not current-head result."
+    }
   },
   "qa_latest_checkpoint": {
     "timestamp": "2026-11-22T12:02:49.539Z",
@@ -1105,5 +1160,35 @@
     "user_action_required": "NONE. Existing updater already reports the installed release up to date. No Termux command, model/weight/permission change or device action.",
     "active_agents": "Exactly five V14 roles: Boss & Integration, QA & Android, JEPA & Memory, Research & Perception, Core & Harness."
   },
-  "research_id_collision": "R-092 is assigned to AudioRecord in #2380; JEPA #2374 used the same ID for a distinct continual-learning paper. Boss requested that JEPA renumber its entry to R-093; do not merge duplicate IDs."
+  "research_id_collision": "R-092 is assigned to AudioRecord in #2380; JEPA #2374 used the same ID for a distinct continual-learning paper. Boss requested that JEPA renumber its entry to R-093; do not merge duplicate IDs.",
+  "previous_checkpoint": {
+    "timestamp": "2026-11-22T20:49:21.304Z",
+    "boss_branch": "boss/v14-run11-current-evidence-sync-20261122",
+    "boss_base_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
+    "release_development_branch": "gpt6/v13-private-remote-bridge-20261111",
+    "release_development_head": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
+    "release_status": "CURRENT_RELEASE_INSTALLED; 30/30 CHECK-RUNS SUCCESS; FUNCTIONAL_ACCEPTANCE_OPEN; CANDIDATE_CI_PENDING",
+    "last_accepted_code_release": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
+    "redmi_status": "AED1D2_INSTALLED; AUTO_UPDATE_ENABLED; SLOW_STORED_TURN; B1_B2_TIME_BUDGET; REDMI_FUNCTIONAL_ACCEPTANCE_OPEN",
+    "private_owner_read_issue": 619,
+    "private_diagnostics_issue": 620,
+    "private_owner_read_authenticated_reply": true,
+    "private_receipt_installed_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
+    "private_receipt_auto_update": true,
+    "local_full_checkout": "BLOCKED_NO_LOCAL_AII_CHECKOUT_OR_NETWORK",
+    "user_action_required": false,
+    "release_check_runs": {
+      "success": 30,
+      "failure": 0,
+      "pending": 0
+    },
+    "candidate_ci": {
+      "pr2370_queued": 27,
+      "pr2377_queued": 7,
+      "pr2375_queued": 8,
+      "pr2372_queued": 9
+    },
+    "canonical_inventory_headings": 1255,
+    "next_action": "Do not merge #2370 until current 8581023 exact-head staged/integrated matrix is green and valid B1/B2 OfferPackets are proven consumed by C4/C3. Keep #2367 blocked until #2377 byte/path binding is reviewed and exact CI passes. Rebase temporal JEPA and UI frame work only after their current exact-head tests and lifecycle/provider dependencies pass."
+  }
 }
