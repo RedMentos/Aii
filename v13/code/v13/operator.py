@@ -412,8 +412,11 @@ class Operator:
             raise ValueError(':consolidate semantic|procedural|status / :consolidate rollback <ID>')
         if cmd=='b3' and args==['pairs']:
             from .b3order import MIN_PAIRED
+            from .b3pairs import SCHEMA
             rows=s.rows("SELECT payload FROM packets WHERE kind='B3PairedTapPacket' ORDER BY rowid")
-            pairs=[json.loads(x['payload']) for x in rows]
+            all_pairs=[json.loads(x['payload']) for x in rows]
+            pairs=[p for p in all_pairs if p.get('packet_schema')==SCHEMA]
+            ignored_legacy_packets=len(all_pairs)-len(pairs)
             ids={p['body_pair_id'] for p in pairs}
             source_keys={(p['source_ref'].get('sha256'),p['source_ref'].get('char_start'),p['source_ref'].get('char_end')) for p in pairs}
             revisions={(p['model_revisions']['B1_DETAIL'],p['model_revisions']['B2_GIST']) for p in pairs}
@@ -421,7 +424,7 @@ class Operator:
             current_match=bool(pairs) and all(p['model_revisions']==current for p in pairs)
             fine_counts=[p['fine_readout']['plan']['native_tokens'] for p in pairs]
             gist_counts=[p['gist_readout']['shape'][0] for p in pairs]
-            return dumps({'paired_native_samples':len(source_keys),'captured_pair_packets':len(pairs),'unique_body_pair_ids':len(ids),'required_for_l1_training':MIN_PAIRED,
+            return dumps({'paired_native_samples':len(source_keys),'captured_pair_packets':len(pairs),'ignored_legacy_packets':ignored_legacy_packets,'unique_body_pair_ids':len(ids),'required_for_l1_training':MIN_PAIRED,
                           'remaining':max(0,MIN_PAIRED-len(source_keys)),
                           'pinned_revision_pairs':[list(x) for x in sorted(revisions)],
                           'b1_detail_fine_slots':{'min':min(fine_counts) if fine_counts else 0,'max':max(fine_counts) if fine_counts else 0,'budget':64},
