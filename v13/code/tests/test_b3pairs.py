@@ -86,11 +86,11 @@ class PairedNativeTapTests(unittest.TestCase):
         self.assertEqual(batch["H"].shape, (1, len(source_text), 3))
         self.assertEqual(batch["Xr"].shape, (1, batch["receiver_max_slots"] * 2))
         self.assertEqual(batch["receiver_feature_mode"], "B2_GIST_ADAPTIVE_SLOTS_FLATTENED")
-        self.assertEqual(batch["receiver_feature_mode"], "B2_GIST_ADAPTIVE_SLOTS_FLATTENED")
         self.assertEqual(batch["y"].tolist(), [1])
         reverse = training_batch(self.r.cognition, [p], [1], direction="B2_TO_B1")
         self.assertEqual(reverse["Xr"].shape, (1, 3))
         self.assertEqual(reverse["sender_role"], "B2_GIST")
+        self.assertIn("B1 mean-pool bootstrap only", reverse["claim_limit"])
 
     def test_operator_pair_command_queues_same_event_for_both_bodies(self):
         event = self.r.store.event(self.r.session, "Operator paired tap source.")
