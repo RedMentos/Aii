@@ -1129,7 +1129,7 @@ Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, mi
 
 ## Research/Perception exact-head CI follow-up — 2026-11-22 02:37 CET
 
-- Current PR branch head after documentation readback: 6444c2196b5350d25175d048859942a01760f8e0; code/test/workflow head: e85b7398b1fce84423583abf01e1389507612818; Boss base: f0d3c848dfb1d65e282f065233adbe3c9205e439.
+- Current PR branch head after documentation readback: 4f3d28982b376445b7846509248097b11c90593b; code/test/workflow head: e85b7398b1fce84423583abf01e1389507612818; Boss base: f0d3c848dfb1d65e282f065233adbe3c9205e439.
 - **PASS** RAW EAR fastpath run 44972070097 on CPython 3.13.18 and 3.14.10: 64 passed in 8.10s / 12.25s. This includes the new audio-only adapter tests, compile, backend parity, A5→A4→C3 consumer and public privacy scan.
 - **PASS** VAD/libfvad run 44972070081 on 3.13/3.14: 8 tests PASS per matrix; native libfvad test suite PASS 13/13. **PASS** offline runtime-deploy integrity 44972070113.
 - **FAIL** staged/integrated run 44972070090: staged-runtime 19 failed / 231 passed / 10 skipped / 2 errors / 41 subtests; integrated-regression 1 failed. All fail at Core-owned local-error pre-rebind semantic binding mismatch, recovery candidate line 313. The same failure exists on unmodified Boss base f0d3c848 in #44969679441. Two-checkout migration 44972070092 is PARTIAL not UPDATED; Lab Age/WebView 44972070087 and private owner-read 44972070168 fail at the same stage path.
