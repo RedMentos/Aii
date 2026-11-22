@@ -1362,7 +1362,7 @@ The 1,255 historical Canon headings remain preserved; the exact historical V13 a
  
 ## Boss live integration update — 2026-11-22T22:30:37.104Z
 
-The previous #2370 head 03909f0 had 8 successful workflows, but audio/arithmetic Python 3.13 and 3.14 each failed the same source-transition assertion (44 passed / 17 subtests): the test input was explicitly changed to calculate 8/4 while the persisted source assertion still expected What is 8/4?. New exact head bae7d03196d98ac6dfebc0a2649faf257ba8308f corrects the expected source text. Its current matrix is 0 SUCCESS / 16 QUEUED / 0 IN_PROGRESS / 2 CANCELLED / 2 SKIPPED; no new-head pass is claimed.
+The previous #2370 head 03909f0 had 8 successful workflows, but audio/arithmetic Python 3.13 and 3.14 each failed the same source-transition assertion (44 passed / 17 subtests): the test input was explicitly changed to calculate 8/4 while the persisted source assertion still expected What is 8/4?. New exact head bae7d03196d98ac6dfebc0a2649faf257ba8308f corrects the expected source text. Its current matrix is 0 SUCCESS / 16 QUEUED / 0 IN_PROGRESS / 4 CANCELLED / 4 SKIPPED; no new-head pass is claimed.
 
 The native receiver QA stack advanced to f64e994 and now persists canonical path + five-field file identity in the approval record, with a joint manifest/router redirect negative test. Its two exact workflows remain queued; duplicate test definitions must be removed. Core #2381 is still based on an older QA SHA (21 ahead / 12 behind) and its staged overlay lacks O_NONBLOCK and _verify_model_file; its test also applies the receiver twice. Do not merge.
 
