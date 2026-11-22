@@ -672,18 +672,23 @@ class SleepRuntime:
                 return result
             action_status=action['status']
             from .world_jepa_runtime import consume_after_commit
+            from .world_jepa_temporal import consume_temporal_after_commit
             from .world_jepa_planner import consume_world_planner_shadow
             learning=consume_after_commit(
                 self.r.store,self.r.home,limit=limit,cancel_check=cancel_check)
-            if learning.get('status')=='CANCELLED' or cancel_check():
-                result.update(status='CANCELLED',action_status=action_status,learning=learning)
+            temporal=consume_temporal_after_commit(
+                self.r.store,self.r.home,limit=min(64,limit),cancel_check=cancel_check)
+            if (learning.get('status')=='CANCELLED'
+                    or temporal.get('status')=='CANCELLED' or cancel_check()):
+                result.update(status='CANCELLED',action_status=action_status,
+                              learning=learning,temporal=temporal)
                 self.r.store.log('v14_world_jepa_postcommit_cancelled',event_id,
                                  {'action_status':action_status,'decision_authority':'NONE'})
                 return result
             planner=consume_world_planner_shadow(self.r.store,event_id,home=self.r.home)
             result.update(status='POSTCOMMIT_PROCESSED',action_status=action_status,
-                          learning=learning,planner=planner)
-            if learning.get('status')=='ERROR':
+                          learning=learning,temporal=temporal,planner=planner)
+            if learning.get('status')=='ERROR' or temporal.get('status')=='ERROR':
                 result['status']='ERROR'
             elif planner.get('status') in {'SOURCE_OR_RECEIPT_REJECTED','NO_COMMITTED_OUTCOME'}:
                 result['status']='PARTIAL'
@@ -702,6 +707,28 @@ class SleepRuntime:
                 telemetry_status='ERROR'
             else:
                 telemetry_status='PENDING'
+            temporal_metrics=temporal.get('metrics') if type(temporal) is dict else None
+            temporal_metrics=temporal_metrics if type(temporal_metrics) is dict else {}
+            temporal_status=temporal.get('status')
+            temporal_telemetry_status=(
+                'PASS' if temporal_status=='UPDATED_EXPERIMENTAL_TEMPORAL_JEPA' else
+                'REJECTED' if temporal_status in {'UTILITY_GATE_REJECTED','RETENTION_GATE_REJECTED'} else
+                'UNAVAILABLE' if temporal_status in {'OFF','PENDING_OPTIMIZER_PERMISSION','WAITING_FOR_MORE_T8_DATA','NO_NEW_TRANSITIONS'} else
+                'CANCELLED' if temporal_status=='CANCELLED' else
+                'ERROR' if temporal_status=='ERROR' else 'PENDING')
+            self.r.store.log('v14_world_jepa_temporal_postcommit',event_id,{
+                'status':temporal_telemetry_status,
+                'component':'world_predictor',
+                'mode':'temporal_shadow',
+                'sha256':temporal.get('checkpoint_sha256'),
+                'optimizer_steps':temporal_metrics.get('optimizer_steps',0),
+                'target_changed':float(temporal_metrics.get('ema_target_delta_norm',0.0))>0.0,
+                'loss_before':temporal_metrics.get('holdout_mse_before'),
+                'loss_after':temporal_metrics.get('holdout_mse_after'),
+                'count':temporal.get('verified_receipts',0),
+                'decision':'none',
+                'native_body_parameters_modified':False,
+            })
             self.r.store.log('v14_world_jepa_postcommit',event_id,{
                 # Store.telemetry_metrics is an explicit allowlist. Use its
                 # established scalar names so these diagnostics survive the
@@ -729,9 +756,13 @@ class SleepRuntime:
             cursor.setdefault('last_learning_event_id',legacy)
             cursor.setdefault('last_planner_event_id',legacy)
             learning_status=learning.get('status')
-            if learning_status=='ERROR':
+            temporal_status=temporal.get('status')
+            if learning_status=='ERROR' or temporal_status=='ERROR':
                 cursor['last_learning_error_event_id']=event_id
-            elif learning_status not in {'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION','CANCELLED'} and learning.get('has_more') is not True:
+            elif (learning_status not in {'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION','CANCELLED'}
+                  and temporal_status not in {'OFF','PENDING_OPTIMIZER_PERMISSION','CANCELLED'}
+                  and learning.get('has_more') is not True
+                  and temporal.get('has_more') is not True):
                 cursor['last_learning_event_id']=event_id
                 cursor.pop('last_learning_error_event_id',None)
             planner_status=planner.get('status')
