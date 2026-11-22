@@ -45,22 +45,26 @@ _FRAME_VERIFIER_ISSUER = object()
 
 
 class ProviderFrameVerifier:
-    """One-shot provider capability bound to one signed UI frame receipt.
+    """One-shot provider capability bound to one active UIObservationLease.
 
     The Android companion must construct this only after verifying the
     companion-signed receipt and binding its exact frame digest/length. This
-    Python object is an injection contract, not an OS security boundary.
+    Python object is an injection contract, not the hard OS security boundary.
     """
     __slots__ = (
-        "_source_id", "_capture_session_id", "_receipt",
-        "_capture_method", "_event_kind", "_verify", "_used",
+        "_runtime", "_lease", "_generation_id", "_source_id",
+        "_capture_session_id", "_receipt", "_capture_method",
+        "_event_kind", "_verify", "_used",
     )
 
-    def __init__(self, observation, verify_fn, *, _issuer=None):
+    def __init__(self, lease, observation, verify_fn, *, _issuer=None):
         if _issuer is not _FRAME_VERIFIER_ISSUER:
             raise PermissionError("ProviderFrameVerifier is issued only by the companion-provider factory")
         if not callable(verify_fn):
             raise TypeError("provider receipt verifier must be callable")
+        self._runtime = lease.runtime
+        self._lease = lease
+        self._generation_id = lease.generation_id
         self._source_id = observation["source_id"]
         self._capture_session_id = observation["capture_session_id"]
         self._receipt = observation["consent_receipt_ref"]
@@ -69,12 +73,16 @@ class ProviderFrameVerifier:
         self._verify = verify_fn
         self._used = False
 
-    def verify(self, observation, frame_sha256, frame_size):
+    def verify(self, runtime, lease, observation, frame_sha256, frame_size):
         if self._used:
             return False
         self._used = True
         if (
-            type(observation) is not dict
+            runtime is not self._runtime
+            or lease is not self._lease
+            or not lease.active_for(runtime, self._generation_id)
+            or not lease.matches(runtime, observation, self._generation_id)
+            or type(observation) is not dict
             or observation.get("source_id") != self._source_id
             or observation.get("capture_session_id") != self._capture_session_id
             or observation.get("consent_receipt_ref") != self._receipt
@@ -90,73 +98,17 @@ class ProviderFrameVerifier:
             return False
 
 
-def _issue_provider_frame_verifier(observation, verify_fn):
+def _issue_provider_frame_verifier(lease, observation, verify_fn):
     """Internal companion-provider API; call only after signed-receipt verification."""
     validated = validate_ui_observation(observation)
+    if (
+        not isinstance(lease, UIObservationLease)
+        or not lease.matches(lease.runtime, validated, lease.generation_id)
+    ):
+        raise PermissionError("provider frame verifier requires the exact active UI lease")
     return ProviderFrameVerifier(
-        validated, verify_fn, _issuer=_FRAME_VERIFIER_ISSUER,
+        lease, validated, verify_fn, _issuer=_FRAME_VERIFIER_ISSUER,
     )
-
-
-
-
-def _summary(observation: dict) -> str:
-    return (
-        "ui event=" + observation["event_kind"]
-        + " method=" + observation["capture_method"]
-        + " scope=" + observation["capture_scope"]
-        + " api=" + str(observation["api_level"])
-        + " clock=ELAPSED_REALTIME"
-        + " interval_ms=" + str(observation["end_ms"] - observation["start_ms"])
-    )
-
-
-def _feature_summary(region_id, box, features, salience=None) -> str:
-    if len(features) != 37:
-        raise ValueError("RAW EYE tile feature dimension changed")
-    rgb = [float(features[i]) for i in range(3)]
-    edge_energy = float(features[16])
-    luminance = sum(float(x) for x in features[21:37]) / 16.0
-    if not all(math.isfinite(x) for x in rgb + [edge_energy, luminance]):
-        raise ValueError("RAW EYE feature contains a non-finite value")
-    spread = max(rgb) - min(rgb)
-    if spread < 0.08:
-        dominant = "neutral"
-    else:
-        dominant = ("red", "green", "blue")[max(range(3), key=lambda i: rgb[i])]
-    salience_text = "" if salience is None else f" salience={float(salience):.4f}"
-    box_text = ",".join(str(int(x)) for x in box)
-    return (
-        f"RAW_EYE region={region_id} dominant_channel={dominant}_heuristic "
-        f"mean_rgb={rgb[0]:.3f},{rgb[1]:.3f},{rgb[2]:.3f} "
-        f"edge_energy={edge_energy:.4f} mean_luminance={luminance:.3f}"
-        f"{salience_text} pixel_box={box_text}"
-    )[:MAX_SUMMARY_CHARS]
-
-
-def _overwrite_caller_buffer(buffer: bytearray) -> None:
-    # Best-effort overwrite; Python/PIL internal copies cannot be guaranteed erased.
-    if type(buffer) is bytearray:
-        buffer[:] = b"\x00" * len(buffer)
-
-
-def _bounded_vision_config(cfg):
-    merged = dict(vision.DEFAULTS)
-    if cfg is not None:
-        if type(cfg) is not dict or set(cfg) - set(merged):
-            raise ValueError("unknown RAW EYE frame configuration")
-        merged.update(cfg)
-    if type(merged.get("grid")) is not int or merged["grid"] != GRID:
-        raise ValueError("MediaProjection RAW EYE requires the fixed 4x4 grid")
-    if type(merged.get("tile_px")) is not int or merged["tile_px"] != TILE_PX:
-        raise ValueError("MediaProjection RAW EYE requires 32px feature tiles")
-    for key, cap in (("max_bytes", MAX_FRAME_BYTES), ("max_pixels", MAX_FRAME_PIXELS)):
-        value = merged.get(key)
-        if type(value) is not int or value < 1:
-            raise ValueError("invalid RAW EYE frame size bound")
-        merged[key] = min(value, cap)
-    return merged
-
 
 
 def _load_local_tile_projector(runtime, cfg, query_text: str) -> dict:
@@ -397,7 +349,7 @@ def consume_projected_frame(
         frame_sha256 = hashlib.sha256(frame_buffer).hexdigest()
         if type(frame_verifier) is not ProviderFrameVerifier:
             raise PermissionError("provider-owned frame verifier capability is required")
-        if not frame_verifier.verify(observation, frame_sha256, len(frame_buffer)):
+        if not frame_verifier.verify(runtime, consent_lease, observation, frame_sha256, len(frame_buffer)):
             raise PermissionError("MediaProjection frame digest is not bound to the active provider receipt")
         image = vision.decode(frame_buffer, cfg)
         _overwrite_caller_buffer(frame_buffer)
