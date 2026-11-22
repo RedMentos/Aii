@@ -39,6 +39,7 @@ MAX_SESSION_EVENTS = 256
 MIN_WINDOWS = 16
 MIN_PARTITION = 8
 HISTORY_LENGTHS = (2, 3)
+TEMPORAL_BLOCK_EVENTS = max(HISTORY_LENGTHS) + 1
 CENSORED = {"CANCELLED", "ABORTED", "INTERRUPTED"}
 UNKNOWN = {"OUTCOME_UNKNOWN"}
 TERMINAL = {"FINAL", "FAILED", "ERROR", "DEADLINE", "REJECTED"} | CENSORED | UNKNOWN
@@ -235,8 +236,14 @@ def build_temporal_windows(store, rows, cancel_check=None):
                 raise InterruptedError("temporal window build cancelled")
             for history_length in HISTORY_LENGTHS:
                 target_index = start + history_length
-                if target_index >= len(ordered):
+                block_start = (start // TEMPORAL_BLOCK_EVENTS) * TEMPORAL_BLOCK_EVENTS
+                block_end = min(block_start + TEMPORAL_BLOCK_EVENTS, len(ordered))
+                if target_index >= block_end:
                     continue
+                block_id = _json_hash({
+                    "session_id": session_id,
+                    "block_start_event_id": event_ids[block_start],
+                })
                 history = ordered[start:target_index]
                 target = ordered[target_index]
                 if target is None or len(history) != history_length or any(item is None for item in history):
@@ -255,6 +262,7 @@ def build_temporal_windows(store, rows, cancel_check=None):
                 window_id = _window_id(action_ids, history_length)
                 windows.append({
                     "window_id": window_id,
+                    "block_id": block_id,
                     "session_id": session_id,
                     "generation_id": target["generation_id"],
                     "action_ids": action_ids,
@@ -273,11 +281,19 @@ def build_temporal_windows(store, rows, cancel_check=None):
 
 
 def _split_windows(windows, prior=None):
-    """Split whole session/source components while preserving prior train/holdout folds."""
+    """Split source-connected temporal blocks, including within long sessions.
+
+    Dense offsets inside one max-history-plus-target block share a fold. Blocks
+    sharing a source identity/digest are unioned before assignment, and prior
+    block assignments remain fixed across subsequent updates.
+    """
     if type(windows) is not list or len(windows) < MIN_WINDOWS:
         raise ValueError("insufficient temporal windows")
-    sessions = sorted({window["session_id"] for window in windows})
-    parent = {session: session for session in sessions}
+    block_ids = sorted({window.get("block_id") for window in windows})
+    if (not block_ids or any(type(value) is not str or not value for value in block_ids)
+            or any(type(window.get("block_id")) is not str for window in windows)):
+        raise ValueError("invalid temporal block identity")
+    parent = {block_id: block_id for block_id in block_ids}
 
     def find(value):
         while parent[value] != value:
@@ -291,93 +307,171 @@ def _split_windows(windows, prior=None):
             parent[max(a, b)] = min(a, b)
 
     owner_by_source = {}
+    block_sessions = {block_id: set() for block_id in block_ids}
     for window in windows:
-        session = window["session_id"]
-        for source_key in window["source_ids"]:
-            previous = owner_by_source.get(("id", source_key))
+        block_id = window["block_id"]
+        block_sessions[block_id].add(window["session_id"])
+        for source_id in window["source_ids"]:
+            source_key = ("id", source_id)
+            previous = owner_by_source.get(source_key)
             if previous is None:
-                owner_by_source[("id", source_key)] = session
+                owner_by_source[source_key] = block_id
             else:
-                union(session, previous)
-        for source_key in window["source_sha256s"]:
-            _sha(source_key)
-            previous = owner_by_source.get(("sha256", source_key))
+                union(block_id, previous)
+        for source_sha in window["source_sha256s"]:
+            _sha(source_sha)
+            source_key = ("sha256", source_sha)
+            previous = owner_by_source.get(source_key)
             if previous is None:
-                owner_by_source[("sha256", source_key)] = session
+                owner_by_source[source_key] = block_id
             else:
-                union(session, previous)
+                union(block_id, previous)
 
-    window_by_id = {window["window_id"]: window for window in windows}
-    prior_train_ids = set(prior["train_window_ids"]) if prior else set()
-    prior_holdout_ids = set(prior["holdout_window_ids"]) if prior else set()
-    prior_train_sessions = set(prior["train_session_ids"]) if prior else set()
-    prior_holdout_sessions = set(prior["holdout_session_ids"]) if prior else set()
-    prior_fold_by_session = {}
-    for session in prior_train_sessions:
-        prior_fold_by_session[session] = "train"
-    for session in prior_holdout_sessions:
-        if prior_fold_by_session.get(session) == "train":
-            raise ValueError("temporal prior session crossed train/holdout folds")
-        prior_fold_by_session[session] = "holdout"
+    prior_train_blocks = set(prior.get("train_block_ids", [])) if prior else set()
+    prior_holdout_blocks = set(prior.get("holdout_block_ids", [])) if prior else set()
+    if prior_train_blocks & prior_holdout_blocks:
+        raise ValueError("temporal prior block crossed train/holdout folds")
+    prior_train_sessions = set(prior.get("train_session_ids", [])) if prior else set()
+    prior_holdout_sessions = set(prior.get("holdout_session_ids", [])) if prior else set()
+    has_prior_blocks = bool(prior_train_blocks or prior_holdout_blocks)
 
     components = {}
-    for session in sessions:
-        components.setdefault(find(session), set()).add(session)
+    for block_id in block_ids:
+        components.setdefault(find(block_id), set()).add(block_id)
+
     component_info = []
     for members in components.values():
+        sessions = sorted({
+            session
+            for block_id in members
+            for session in block_sessions[block_id]
+        })
         sources = sorted({
             source_sha
-            for window in windows if window["session_id"] in members
+            for window in windows if window["block_id"] in members
             for source_sha in window["source_sha256s"]
         })
-        key = _json_hash({"sessions": sorted(members), "sources": sources})
-        prior_folds = {prior_fold_by_session[session] for session in members
-                       if session in prior_fold_by_session}
+        key = _json_hash({"blocks": sorted(members), "sources": sources})
+        action_targets = {action: set() for action in world_model.ACTIONS}
+        member_windows = [window for window in windows if window["block_id"] in members]
+        for window in member_windows:
+            action_targets[window["a"]].add(window["action_ids"][-1])
+        action_counts = {
+            action: len(action_targets[action]) for action in world_model.ACTIONS
+        }
+        prior_folds = set()
+        for block_id in members:
+            if block_id in prior_train_blocks:
+                prior_folds.add("train")
+            if block_id in prior_holdout_blocks:
+                prior_folds.add("holdout")
+        # Older v3 checkpoints assigned whole sessions. Preserve those folds
+        # during migration; new block-aware checkpoints may split one long
+        # session across disjoint temporal blocks.
+        if prior is not None and not has_prior_blocks:
+            for session in sessions:
+                in_train = session in prior_train_sessions
+                in_holdout = session in prior_holdout_sessions
+                if in_train and in_holdout:
+                    raise ValueError("temporal legacy session crossed train/holdout folds")
+                if in_train:
+                    prior_folds.add("train")
+                elif in_holdout:
+                    prior_folds.add("holdout")
         if len(prior_folds) > 1:
             raise ValueError("temporal source component merged prior train and holdout folds")
-        count = sum(1 for window in windows if window["session_id"] in members)
-        component_info.append((key, members, count, next(iter(prior_folds)) if prior_folds else None))
-    component_info.sort(key=lambda item: item[0])
+        component_info.append({
+            "key": key,
+            "blocks": members,
+            "sessions": sessions,
+            "window_count": len(member_windows),
+            "action_counts": action_counts,
+            "fold": next(iter(prior_folds)) if prior_folds else None,
+        })
+    component_info.sort(key=lambda item: item["key"])
 
-    fold_by_session = {}
+    fold_by_block = {}
     train_count = holdout_count = 0
-    for _key, members, count, fold in component_info:
-        if fold is None:
-            continue
-        for session in members:
-            fold_by_session[session] = fold
-        if fold == "train":
-            train_count += count
-        else:
-            holdout_count += count
-    for key, members, count, fold in component_info:
-        if fold is not None:
-            continue
-        if train_count < holdout_count:
-            assigned = "train"
-        elif holdout_count < train_count:
-            assigned = "holdout"
-        else:
-            assigned = "train" if int(key[:8], 16) % 2 == 0 else "holdout"
-        for session in members:
-            fold_by_session[session] = assigned
-        if assigned == "train":
-            train_count += count
-        else:
-            holdout_count += count
+    train_action_counts = {action: 0 for action in world_model.ACTIONS}
+    holdout_action_counts = {action: 0 for action in world_model.ACTIONS}
 
-    train = [window for window in windows if fold_by_session[window["session_id"]] == "train"]
-    holdout = [window for window in windows if fold_by_session[window["session_id"]] == "holdout"]
+    def add_component(component, fold):
+        nonlocal train_count, holdout_count
+        for block_id in component["blocks"]:
+            fold_by_block[block_id] = fold
+        if fold == "train":
+            train_count += component["window_count"]
+            for action, count in component["action_counts"].items():
+                train_action_counts[action] += count
+        else:
+            holdout_count += component["window_count"]
+            for action, count in component["action_counts"].items():
+                holdout_action_counts[action] += count
+
+    for component in component_info:
+        if component["fold"] is not None:
+            add_component(component, component["fold"])
+
+    for component in component_info:
+        if component["fold"] is not None:
+            continue
+        preferred = "train" if int(component["key"][:8], 16) % 2 == 0 else "holdout"
+
+        def assignment_score(fold):
+            train_counts = dict(train_action_counts)
+            holdout_counts = dict(holdout_action_counts)
+            if fold == "train":
+                for action, count in component["action_counts"].items():
+                    train_counts[action] += count
+            else:
+                for action, count in component["action_counts"].items():
+                    holdout_counts[action] += count
+            action_imbalance = sum(
+                abs(train_counts[action] - holdout_counts[action])
+                for action in world_model.ACTIONS
+            )
+            train_total = train_count + (
+                component["window_count"] if fold == "train" else 0
+            )
+            holdout_total = holdout_count + (
+                component["window_count"] if fold == "holdout" else 0
+            )
+            total_imbalance = abs(train_total - holdout_total)
+            tie_break = 0 if fold == preferred else 1
+            return action_imbalance, total_imbalance, tie_break
+
+        add_component(component, min(("train", "holdout"), key=assignment_score))
+
+    train = [window for window in windows if fold_by_block[window["block_id"]] == "train"]
+    holdout = [window for window in windows if fold_by_block[window["block_id"]] == "holdout"]
     if len(train) < MIN_PARTITION or len(holdout) < MIN_PARTITION:
-        raise ValueError("insufficient source-disjoint temporal partitions")
+        raise ValueError("insufficient source-disjoint temporal block partitions")
     train_sources = {source for window in train for source in window["source_sha256s"]}
     holdout_sources = {source for window in holdout for source in window["source_sha256s"]}
     if train_sources & holdout_sources:
         raise ValueError("temporal source digest leakage")
+    train_blocks = {window["block_id"] for window in train}
+    holdout_blocks = {window["block_id"] for window in holdout}
+    if train_blocks & holdout_blocks:
+        raise ValueError("temporal block leakage")
     train_sessions = {window["session_id"] for window in train}
     holdout_sessions = {window["session_id"] for window in holdout}
-    if train_sessions & holdout_sessions:
-        raise ValueError("temporal session leakage")
+    train_action_support = {
+        action: len({
+            window["action_ids"][-1] for window in train if window["a"] == action
+        })
+        for action in world_model.ACTIONS
+    }
+    holdout_action_support = {
+        action: len({
+            window["action_ids"][-1] for window in holdout if window["a"] == action
+        })
+        for action in world_model.ACTIONS
+    }
+    prior_train_ids = set(prior["train_window_ids"]) if prior else set()
+    prior_holdout_ids = set(prior["holdout_window_ids"]) if prior else set()
+    train_ids = {window["window_id"] for window in train}
+    holdout_ids = {window["window_id"] for window in holdout}
     return train, holdout, {
         "source_disjoint": True,
         "train_session_count": len(train_sessions),
@@ -386,9 +480,15 @@ def _split_windows(windows, prior=None):
         "holdout_source_count": len(holdout_sources),
         "train_session_ids": sorted(train_sessions),
         "holdout_session_ids": sorted(holdout_sessions),
-        "split_strategy": "PERSISTED_COMPONENT_ASSIGNMENT",
-        "prior_train_windows_preserved": len(prior_train_ids & {window["window_id"] for window in train}),
-        "prior_holdout_windows_preserved": len(prior_holdout_ids & {window["window_id"] for window in holdout}),
+        "train_block_ids": sorted(train_blocks),
+        "holdout_block_ids": sorted(holdout_blocks),
+        "train_block_count": len(train_blocks),
+        "holdout_block_count": len(holdout_blocks),
+        "train_action_support": train_action_support,
+        "holdout_action_support": holdout_action_support,
+        "split_strategy": "SOURCE_DISJOINT_BLOCK_STRATIFIED_PERSISTENT",
+        "prior_train_windows_preserved": len(prior_train_ids & train_ids),
+        "prior_holdout_windows_preserved": len(prior_holdout_ids & holdout_ids),
     }
 
 def _arrays(windows):
@@ -511,7 +611,9 @@ def _record_valid(record):
         "receiver_heads", "receiver_metrics", "action_support", "retention_holdouts",
         "metrics", "scan_cursor", "fit_steps",
     }
-    if type(record) is not dict or set(record) != required:
+    optional = {"train_block_ids", "holdout_block_ids"}
+    if (type(record) is not dict or not required <= set(record)
+            or set(record) - required - optional):
         raise ValueError("invalid temporal checkpoint record")
     name = record["checkpoint"]
     if type(name) is not str or re.fullmatch(r"jepa-[0-9a-f]{32}\.npz", name) is None:
@@ -539,10 +641,21 @@ def _record_valid(record):
             or set(record["train_window_ids"]) & set(record["holdout_window_ids"])
             or type(record["train_session_ids"]) is not list
             or type(record["holdout_session_ids"]) is not list
-            or set(record["train_session_ids"]) & set(record["holdout_session_ids"])
             or any(type(value) is not str or not value
                    for value in record["train_session_ids"] + record["holdout_session_ids"])):
         raise ValueError("temporal split ids")
+    if ("train_block_ids" in record) != ("holdout_block_ids" in record):
+        raise ValueError("temporal split block fields")
+    if "train_block_ids" in record:
+        train_blocks = record["train_block_ids"]
+        holdout_blocks = record["holdout_block_ids"]
+        if (type(train_blocks) is not list or type(holdout_blocks) is not list
+                or set(train_blocks) & set(holdout_blocks)
+                or any(type(value) is not str or not value
+                       for value in train_blocks + holdout_blocks)):
+            raise ValueError("temporal split block ids")
+        for block_id in train_blocks + holdout_blocks:
+            _sha(block_id)
     row_sessions = {row["session_id"] for row in rows}
     if not set(record["train_session_ids"] + record["holdout_session_ids"]) <= row_sessions:
         raise ValueError("temporal split session provenance")
@@ -889,6 +1002,14 @@ class TemporalWorldJEPAStoreConsumer:
                     "source_disjoint": split["source_disjoint"],
                     "train_session_count": split["train_session_count"],
                     "holdout_session_count": split["holdout_session_count"],
+                    "train_block_count": split["train_block_count"],
+                    "holdout_block_count": split["holdout_block_count"],
+                    "split_strategy": split["split_strategy"],
+                    "prior_train_windows_preserved": split["prior_train_windows_preserved"],
+                    "prior_holdout_windows_preserved": split["prior_holdout_windows_preserved"],
+                    "train_action_support": split["train_action_support"],
+                    "holdout_action_support": split["holdout_action_support"],
+                    "checkpoint_parent_sha256": active["checkpoint_sha256"] if active else None,
                     "holdout_mse_before": holdout_before, "holdout_mse_after": holdout_after,
                     "shuffled_target_mse": shuffled_target,
                     "shuffled_action_mse": shuffled_action,
@@ -931,9 +1052,12 @@ class TemporalWorldJEPAStoreConsumer:
             receiver_heads, receiver_metrics = _fit_role_receivers(
                 model, train_arrays, holdout_arrays, train, holdout
             )
-            action_support = {}
+            action_support_ids = {action: set() for action in world_model.ACTIONS}
             for window in train:
-                action_support[window["a"]] = action_support.get(window["a"], 0) + 1
+                action_support_ids[window["a"]].add(window["action_ids"][-1])
+            action_support = {
+                action: len(action_support_ids[action]) for action in world_model.ACTIONS
+            }
             receiver_gates = {
                 role: receiver_utility_gate(receiver_metrics, role)
                 for role in ROLE_TARGETS
@@ -967,6 +1091,14 @@ class TemporalWorldJEPAStoreConsumer:
                 "holdout_session_count": split["holdout_session_count"],
                 "train_source_count": split["train_source_count"],
                 "holdout_source_count": split["holdout_source_count"],
+                "train_block_count": split["train_block_count"],
+                "holdout_block_count": split["holdout_block_count"],
+                "split_strategy": split["split_strategy"],
+                "prior_train_windows_preserved": split["prior_train_windows_preserved"],
+                "prior_holdout_windows_preserved": split["prior_holdout_windows_preserved"],
+                "train_action_support": split["train_action_support"],
+                "holdout_action_support": split["holdout_action_support"],
+                "checkpoint_parent_sha256": active["checkpoint_sha256"] if active else None,
                 "retention_mse_before": retention_before,
                 "retention_mse_after": retention_after,
                 "retention_pass": retention_pass,
@@ -995,6 +1127,8 @@ class TemporalWorldJEPAStoreConsumer:
                 "holdout_window_ids": [window["window_id"] for window in holdout],
                 "train_session_ids": split["train_session_ids"],
                 "holdout_session_ids": split["holdout_session_ids"],
+                "train_block_ids": split["train_block_ids"],
+                "holdout_block_ids": split["holdout_block_ids"],
                 "receiver_heads": receiver_heads,
                 "receiver_metrics": receiver_metrics,
                 "action_support": action_support,
