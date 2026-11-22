@@ -93,6 +93,8 @@ def test_same_speaker_embedding_stays_confident_and_has_no_identity_label():
     assert evidence["cosine_similarity"] == 1.0
     assert evidence["confidence_gate_passed"] is True
     assert evidence["speaker_change_candidate"] is False
+    assert evidence["peak_speaker_change_candidate"] is False
+    assert evidence["candidate_count"] == 0
     assert evidence["speaker_label"] is None
     assert evidence["identity_authority"] is False
     assert evidence["learning_authority"] is False
@@ -168,6 +170,8 @@ def test_low_similarity_without_voiced_activity_is_not_speaker_change():
     )
     assert evidence["confidence_gate_passed"] is False
     assert evidence["speaker_change_candidate"] is False
+    assert evidence["peak_speaker_change_candidate"] is False
+    assert evidence["candidate_count"] == 0
     assert evidence["interpretation"] == "LOW_SIMILARITY_WITHOUT_VOICED_ACTIVITY"
 
 
@@ -186,6 +190,9 @@ def test_missing_threshold_emits_score_without_a_decision():
     assert evidence["change_score"] == 0.5
     assert evidence["speaker_change_candidate"] is None
     assert evidence["threshold_status"] == "NOT_CONFIGURED"
+    assert evidence["peak_speaker_change_candidate"] is None
+    assert evidence["candidate_count"] == 0
+    assert all(frame["speaker_change_candidate"] is None for frame in evidence["frame_evidence"])
 
 
 def test_model_revision_change_resets_history_before_comparison():
