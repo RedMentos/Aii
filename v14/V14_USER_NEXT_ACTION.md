@@ -1587,3 +1587,10 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 The earlier #592 DIAGNOSTICS snapshot at 17:11Z reported the AI service RUNNING. A later private HEALTH receipt #593 at 17:15Z reports runtime UNAVAILABLE. Therefore do **not** describe the service as continuously running: latest health is UNAVAILABLE / discrepant, even though #591 still reports the installed c4eb82 release and updater/runtime/dashboard metadata as UP_TO_DATE. The process PSS/RSS counters belong only to the earlier snapshot. QA must reconcile this discrepancy; do not send another UPDATE_REQUEST or ask the user to run Termux.
 
 The current Boss PR #2343 head is now `ba9ee5df8bf5b1bf4b4a06fa21c3586637db41b5`; exact CI at last poll is 1 success / 26 queued / 1 skipped / 0 failures. The pre-postcommit diagnostic workflow is queued, not passed. Prior head `853433f3` failed stage composition at postcommit replacement 4. No deployment has occurred.
+
+
+## Learning-state correction — 2026-11-22T17:27:00Z
+
+The read-only private LEARNING_STATUS receipt #594 reports `learning.state=UNAVAILABLE`. This means no active learning run or persistent parameter update is verified; it is stronger than merely saying that promotion is gated. The later HEALTH #593 also reports runtime `UNAVAILABLE`, despite #591's pipeline/dashboard metadata being UP_TO_DATE. #592's earlier RUNNING/PSS/RSS snapshot is point-in-time only. Do not infer a working service or learning loop from updater status. No user action or device command is needed at this checkpoint.
+
+The current Boss PR #2343 head is `3585145ebbc0530817d4aeb216c3e75251e3f695`; exact CI at last poll is 0 success / 27 queued / 1 skipped / 0 failures. The pre-postcommit diagnostic remains queued; no candidate deployment occurred.
