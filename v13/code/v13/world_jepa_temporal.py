@@ -19,7 +19,6 @@ import numpy as np
 
 from v13 import world_jepa, world_jepa_shadow_checkpoint, world_model
 from .world_jepa_consumer import (
-    WorldJEPAStoreConsumer,
     _fit_role_receivers,
     receiver_utility_gate,
     ROLE_TARGETS,
@@ -575,23 +574,28 @@ class TemporalWorldJEPAStoreConsumer:
         os.chmod(self.home, 0o700)
         if not self.home.is_dir() or self.home.is_symlink():
             raise ValueError("unsafe temporal checkpoint directory")
-        # Share the same flock as WorldJEPA updates and source-forget; deletion
-        # cannot race a temporal parameter update or its provenance check.
-        self.lock = WorldJEPAStoreConsumer(
-            store, Path(store.home) / "world_jepa", learning_enabled=False
-        )
+        # Share the exact WorldJEPA/EMA/source-forget flock without constructing
+        # WorldJEPAStoreConsumer: its constructor performs blocking crash-recovery
+        # cleanup, which would stall this optional foreground read before the
+        # nonblocking receiver lock can run.
+        self.lock_home = Path(store.home) / "world_jepa"
+        if self.lock_home.exists() and self.lock_home.is_symlink():
+            raise ValueError("unsafe WorldJEPA lock directory")
+        self.lock_home.mkdir(parents=True, exist_ok=True, mode=0o700)
+        os.chmod(self.lock_home, 0o700)
+        if not self.lock_home.is_dir() or self.lock_home.is_symlink():
+            raise ValueError("unsafe WorldJEPA lock directory")
+        self.lock_path = self.lock_home / "consumer.lock"
 
     @contextmanager
     def _locked(self, exclusive=True, blocking=True):
-        if blocking:
-            with self.lock._locked(exclusive):
-                yield
-            return
-        if self.lock.lock_path.is_symlink():
+        if self.lock_path.is_symlink():
             raise ValueError("unsafe consumer lock")
-        with open(self.lock.lock_path, "a+b") as lock:
+        with open(self.lock_path, "a+b") as lock:
             operation = fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH
-            fcntl.flock(lock.fileno(), operation | fcntl.LOCK_NB)
+            if not blocking:
+                operation |= fcntl.LOCK_NB
+            fcntl.flock(lock.fileno(), operation)
             try:
                 yield
             finally:
