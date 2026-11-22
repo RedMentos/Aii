@@ -476,7 +476,7 @@ def test_a4_and_c3_receive_explicit_defer_instead_of_false_stability_on_silence(
             lambda _: (0.0, 1.0, 0.0),
         )
         silent = consume_pcm16_voice_window(
-            runtime, b"\\x00\\x00" * 16000, sample_rate=16000, start_ms=2100,
+            runtime, b"\x00\x00" * 16000, sample_rate=16000, start_ms=2100,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE, consent_receipt=RECEIPT,
             consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
@@ -488,7 +488,7 @@ def test_a4_and_c3_receive_explicit_defer_instead_of_false_stability_on_silence(
         assert silent["a4"]["speaker_change_decision"] == "DEFER"
         assert silent["packet"]["segments"][0]["acoustic"]["speaker_change_decision"] == "DEFER"
         assert any(
-            "speaker_change_decision=DEFER" in percept.summary
+            "spk_dec=DEFER" in percept.summary
             for percept in silent["c3_admission"].selected
         )
     finally:
