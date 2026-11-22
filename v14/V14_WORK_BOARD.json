@@ -847,8 +847,7 @@
         "status": "DRAFT; 12 checks queued"
       },
       "2365": {
-        "head": "74172c7fe710579e973efbabd19e0718d3df13d2",
-        "status": "DRAFT documentation/research handoff; 6 exact-head checks queued"
+        "status": "DRAFT documentation/research handoff; exact-head CI pending (use PR's current head as authority)"
       }
     },
     "local_full_suite": "BLOCKED_NO_CHECKOUT_AND_GITHUB_DNS",
