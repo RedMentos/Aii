@@ -2,7 +2,7 @@
 
 Date: 2026-11-22  
 Lane: QA & Android / V14-017, V14-019  
-PR: #2356 (DRAFT / NOT_RELEASED)  
+PR: #2356 (OPEN, not GitHub draft / NOT_RELEASED)  
 Base: `core/v14-android-companion-native-20261121`
 
 ## Defect and acceptance gap
