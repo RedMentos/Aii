@@ -13,6 +13,8 @@ import subprocess
 import time
 import xml.etree.ElementTree as ET
 
+from process_restart_ui import button_center, transient_overlay_action, visible_labels
+
 PACKAGE = "com.redmentos.v14.companion"
 COMPONENT = PACKAGE + "/.MainActivity"
 TOGGLE_LABEL = "Enable / Stop companion"
@@ -56,15 +58,6 @@ def hierarchy() -> ET.Element:
     return ET.fromstring(hierarchy_xml())
 
 
-def visible_text() -> str:
-    root = hierarchy()
-    return "\n".join(
-        value for node in root.iter("node")
-        for value in (node.attrib.get("text", ""), node.attrib.get("content-desc", ""))
-        if value
-    )
-
-
 def foreground_diagnostic() -> str:
     activity = adb("shell", "dumpsys", "activity", "activities", check=False)
     window = adb("shell", "dumpsys", "window", "windows", check=False)
@@ -90,22 +83,49 @@ def swipe_to_top() -> None:
         str(x), str(int(height * .86)), "450")
 
 
-def wait_for_text(needle: str, timeout: float = 20.0) -> str:
+def handle_transient_overlay(root: ET.Element) -> bool:
+    """Dismiss only known benign overlays; never close an unresponsive app."""
+    action = transient_overlay_action(root)
+    if action is None:
+        return False
+    if action == "SYSTEM_UI_UNRESPONSIVE":
+        raise AssertionError(
+            "Android emulator System UI is unresponsive and exposes no Wait "
+            "button; refusing to select Close app"
+        )
+    center = button_center(root, action)
+    if center is None:
+        raise AssertionError("transient Android overlay has no safe button: " + action)
+    adb("shell", "input", "tap", str(center[0]), str(center[1]))
+    time.sleep(1.2 if action == "Wait" else 0.4)
+    return True
+
+
+def wait_for_text(needle: str, timeout: float = 45.0) -> str:
     deadline = time.monotonic() + timeout
     last = ""
+    attempts = 0
     while time.monotonic() < deadline:
         try:
-            last = visible_text()
+            root = hierarchy()
         except (RuntimeError, ET.ParseError, subprocess.TimeoutExpired):
-            time.sleep(.35)
+            time.sleep(1.0)
             continue
+        if handle_transient_overlay(root):
+            attempts = 0
+            continue
+        last = "\n".join(visible_labels(root))
         if needle in last:
             return last
-        try:
-            swipe_to_top()
-        except RuntimeError:
-            pass
-        time.sleep(.35)
+        attempts += 1
+        # Avoid flooding a slow TCG emulator with continuous UIAutomator dumps
+        # and swipes. Scroll only after several unsuccessful observations.
+        if attempts % 4 == 0:
+            try:
+                swipe_to_top()
+            except RuntimeError:
+                pass
+        time.sleep(1.0)
     try:
         xml = hierarchy_xml()[:3000]
     except Exception as exc:
@@ -116,31 +136,29 @@ def wait_for_text(needle: str, timeout: float = 20.0) -> str:
                          + "; hierarchy=" + xml)
 
 
-def tap_button(label: str) -> None:
-    deadline = time.monotonic() + 15.0
+def tap_button(label: str, timeout: float = 30.0) -> None:
+    deadline = time.monotonic() + timeout
     width, height = screen_size()
+    attempts = 0
     while time.monotonic() < deadline:
         try:
             root = hierarchy()
         except (RuntimeError, ET.ParseError, subprocess.TimeoutExpired):
-            time.sleep(.25)
+            time.sleep(1.0)
             continue
-        for node in root.iter("node"):
-            node_label = (node.attrib.get("text", "") or node.attrib.get("content-desc", ""))
-            if node_label.casefold() != label.casefold():
-                continue
-            bounds = node.attrib.get("bounds", "")
-            match = re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", bounds)
-            if not match:
-                continue
-            x1, y1, x2, y2 = map(int, match.groups())
-            adb("shell", "input", "tap", str((x1 + x2) // 2),
-                str((y1 + y2) // 2))
+        if handle_transient_overlay(root):
+            attempts = 0
+            continue
+        center = button_center(root, label)
+        if center is not None:
+            adb("shell", "input", "tap", str(center[0]), str(center[1]))
             return
-        adb("shell", "input", "swipe", str(width // 2),
-            str(int(height * .86)), str(width // 2),
-            str(int(height * .24)), "450")
-        time.sleep(.25)
+        attempts += 1
+        if attempts % 3 == 0:
+            adb("shell", "input", "swipe", str(width // 2),
+                str(int(height * .86)), str(width // 2),
+                str(int(height * .24)), "450")
+        time.sleep(1.0)
     raise AssertionError("could not locate visible companion button: " + label)
 
 
@@ -178,7 +196,7 @@ def main() -> None:
     adb("shell", "input", "keyevent", "82", check=False)
     adb("shell", "am", "start", "-W", "-n", COMPONENT)
     wait_for_process(absent=False)
-    wait_for_text(STOPPED_TEXT)
+    wait_for_text(STOPPED_TEXT, timeout=60.0)
 
     assert persisted_enabled() == "false"
 
@@ -202,7 +220,7 @@ def main() -> None:
     wait_for_process(absent=True)
     adb("shell", "am", "start", "-n", COMPONENT)
     wait_for_process(absent=False)
-    restarted = wait_for_text(STOPPED_TEXT)
+    restarted = wait_for_text(STOPPED_TEXT, timeout=60.0)
     assert ENABLED_TEXT not in restarted
     assert persisted_enabled() == "false"
 
