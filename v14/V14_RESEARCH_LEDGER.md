@@ -1004,3 +1004,12 @@ Primary source: https://arxiv.org/abs/2611.20819.
 - Redmi/Termux microphone capture, installed-runtime execution, native B1/B2/C3 delivery, learned speaker identity and full-duplex voice remain `REDMI_UNVERIFIED` / not implemented. No model, weight, permission or device data was changed.
 
 - Additional local scratch verification after the checkpoint: exact branch source bytes for `audio_input.py` and `audio_speaker_evidence.py` were copied into an isolated LOCAL_LINUX scratch package. `python3 -m py_compile` PASS; `PYTHONPATH=. python3 -m pytest -q tests/test_audio_input.py tests/test_speaker_local.py` PASS (12/12). These are synthetic API/registry tests, not the repository-wide suite or a real Runtime/model test.
+
+## R-066 — RAW EAR speaker-evidence memory compaction (2026-11-22)
+
+- **Hypothesis:** the original bounded speaker registry retained normalized vectors as Python tuples of Python floats. At the full configured cap (16 streams × 128 frames × 512 dimensions), object overhead could be much larger than the raw 32-bit data.
+- **Implementation:** `v13/code/v13/audio_speaker_evidence.py` now stores normalized internal vectors in `array('f')` (float32) while keeping the input contract and output evidence unchanged. The repository test asserts the internal typecode and 4-byte element width. The registry still keeps vectors RAM-only and emits no speaker identity.
+- **LOCAL_LINUX synthetic measurement (Python 3.13, tracemalloc, same workload before/after):** 16 streams × 128 frames × 512 dimensions = 2,048 stored frames. Tuple baseline: 32.30 MB peak, 1.3092 s, 1,564.3 frames/s. Compact float32: 4.65 MB peak, 0.9613 s, 2,130.5 frames/s. Approx. 85.6% lower traced peak and 36.2% higher throughput in this microbenchmark. Input vectors and model inference were synthetic/absent; this is not a Redmi measurement.
+- **Local scratch regressions:** `python3 -m py_compile` PASS; 13/13 synthetic audio-ingress and speaker-registry tests PASS. Full repository suite and exact-head CI remain pending.
+- **Boundary:** this optimizes only evidence-buffer representation. It does not establish diarization accuracy, calibrated speaker identity, microphone ingress, model inference, learned speaker adaptation, or Android resource behavior. Redmi remains `REDMI_UNVERIFIED`.
+
