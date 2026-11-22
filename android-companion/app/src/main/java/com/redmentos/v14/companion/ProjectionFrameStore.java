@@ -1,7 +1,5 @@
 package com.redmentos.v14.companion;
 
-import android.net.Uri;
-
 import org.json.JSONObject;
 
 import java.security.MessageDigest;
@@ -48,14 +46,17 @@ final class ProjectionFrameStore {
 
     static JSONObject status(long nowElapsed) throws Exception {
         synchronized (LOCK) {
-            if (frame == null) return response("NO_FRAME");
+            if (receipt == null) return response("NO_FRAME");
             if (nowElapsed < 0 || nowElapsed >= expiresAtElapsed) {
                 clearLocked();
                 return response("EXPIRED");
             }
-            JSONObject out = response("FRAME_READY");
+            String state = frame == null ? "FRAME_CONSUMED" : "FRAME_READY";
+            JSONObject out = response(state);
             out.put("receipt", new JSONObject(receipt.toString()));
-            out.put("frame_uri", "content://" + CompanionProvider.AUTHORITY + "/ui-frame/" + token);
+            if (frame != null) {
+                out.put("frame_uri", "content://" + CompanionProvider.AUTHORITY + "/ui-frame/" + token);
+            }
             out.put("expires_in_ms", expiresAtElapsed - nowElapsed);
             return out;
         }
@@ -66,14 +67,13 @@ final class ProjectionFrameStore {
             if (frame == null || token == null || requestedToken == null
                     || !token.equals(requestedToken) || nowElapsed < 0
                     || nowElapsed >= expiresAtElapsed) {
-                if (frame != null && nowElapsed >= expiresAtElapsed) clearLocked();
+                if (receipt != null && nowElapsed >= expiresAtElapsed) clearLocked();
                 return null;
             }
             byte[] result = frame;
             frame = null;
-            receipt = null;
-            token = null;
-            expiresAtElapsed = 0L;
+            // Keep only the signed receipt/token until expiry so the active
+            // Runtime lease can detect an explicit companion-side discard.
             return result;
         }
     }
@@ -84,8 +84,8 @@ final class ProjectionFrameStore {
 
     static boolean hasFrame(long nowElapsed) {
         synchronized (LOCK) {
-            if (frame != null && nowElapsed >= expiresAtElapsed) clearLocked();
-            return frame != null;
+            if (receipt != null && nowElapsed >= expiresAtElapsed) clearLocked();
+            return receipt != null;
         }
     }
 
