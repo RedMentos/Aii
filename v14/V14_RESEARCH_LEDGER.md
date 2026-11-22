@@ -1005,3 +1005,8 @@ The current fair-budget candidate uses a fixed 45% pre-answer allocation and a 3
 
 
 **Companion source readback (QA base branch):** current ref `qa/v14-companion-os-permission-contract-20261122` resolves to `7650ae0c19e93e4b6cbb778abb2f5123e49c364f`. Its `android-companion/app/src/main/AndroidManifest.xml` has no `RECORD_AUDIO` permission; `CapabilityRegistry.java` marks `audio_capture` unavailable with reason “No one-shot visible AudioRecord provider; capture remains disabled”; `AudioCaptureDefaultOffTest.java` asserts that RECORD_AUDIO is absent. This confirms the provider is deliberately OFF, not merely untested. PR #2312 still records its historical base SHA `58666ddfc9945612a2117e1a844f812442d4ca64`, so it must be rebased/reconciled after the QA/Boss parent chain settles.
+
+
+## Research ID reconciliation note — 2026-11-22T22:03:32.071Z
+
+PR #2380 is merged into the Boss documentation branch only (not the release branch) and assigns **R-092** to Android AudioRecord capture geometry / signed RAW EAR ingress. JEPA PR #2374 used the same ID for a distinct continual-learning paper. Boss requested on #2374 that the JEPA entry be renumbered to **R-093** while preserving both findings. Until that branch readback confirms the rename, do not merge a second R-092 or treat the collision as resolved. No research result is deleted or silently replaced.
