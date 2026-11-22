@@ -215,13 +215,13 @@
         "base": "gpt6/v13-private-remote-bridge-20261111",
         "base_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
         "code_sha": "1db8fd5fc2e18c115c632cf60577200d68db2c0b",
-        "handoff_head_sha": "116691f2480f158d3e7e85bbbdb446434f6725bb",
+        "handoff_head_sha": "3abaefda22009ca40c38793a640a5310c1a18f7f",
         "state": "OPEN_DRAFT_NOT_RELEASED",
         "scope": "Cognition.tap_pair + cancellable Runtime :tap pair for same-event/source B1_DETAIL/B2_GIST native prefill taps; typed/hash-bound B3PairedTapPacket; source-SHA grouped L1 shadow holdout; symlink-resistant private artifact persistence; no receiver injection or foundation weight authority",
         "b3_ci": "PASS_RUN_45031525111_52_TESTS_PY_COMPILE_CLI_SMOKE",
         "local_linux": "PASS_ISOLATED_DIRFD_NPZ_JSON_ATOMIC_REPORT_AND_TOP_LEVEL_NESTED_SYMLINK_NEGATIVES",
         "full_local_suite": "BLOCKED_NO_CHECKOUT_OR_GITHUB_DNS",
-        "other_exact_head_ci": "FAIL_CROSS_LANE_STALE_RUNTIME_BUILDER_AND_COGNITION_PINS; REMAINING_CHECKS_PENDING",
+        "other_exact_head_ci": "FAIL_LAB_AGE_INTEGRATED_BUILDER_HASH; MIGRATION_PARTIAL; DEPLOYER_PLAIN_UI_BUILDER_PIN_3.11_3.14; STAGED_AND_NATIVE_RECEIVER_INTEGRATED_BUILDER_HASH_3.13_3.14; AUDIO_ARITHMETIC_AND_SAME_TURN_STILL_IN_PROGRESS",
         "redmi": "REDMI_UNVERIFIED_NO_NATIVE_TAP_OR_TRAINING_RUN",
         "production_b3": "OFF_SYMBOLIC"
       }
