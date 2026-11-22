@@ -842,15 +842,18 @@ class SleepRuntime:
                 self.scheduler.complete(e['id'],'FAILED',{'error':type(exc).__name__})
                 raise
             learning=out.get('learning') if type(out) is dict else None
+            temporal=out.get('temporal') if type(out) is dict else None
             planner=out.get('planner') if type(out) is dict else None
             result={'status':out.get('status') if type(out) is dict else 'ERROR',
                     'learning_status':learning.get('status') if type(learning) is dict else None,
+                    'temporal_status':temporal.get('status') if type(temporal) is dict else None,
                     'planner_status':planner.get('status') if type(planner) is dict else None}
             completion=('CANCELLED' if result['status']=='CANCELLED'
                         else ('FAILED' if result['status']=='ERROR' else 'DONE'))
             self.scheduler.complete(e['id'],completion,result)
-            if (result['status']!='CANCELLED' and type(learning) is dict
-                    and learning.get('has_more') is True):
+            more_learning=(type(learning) is dict and learning.get('has_more') is True)
+            more_temporal=(type(temporal) is dict and temporal.get('has_more') is True)
+            if result['status']!='CANCELLED' and (more_learning or more_temporal):
                 continuation=bool(self.schedule_world_jepa(event_id))
                 result['continuation_scheduled']=continuation
                 if type(out) is dict:out['continuation_scheduled']=continuation
