@@ -195,7 +195,7 @@ def build_sources(source_dir):
     store_sha = hashlib.sha256(raw['store.py']).hexdigest().encode()
     guard = raw['archive_reader_guard_candidate.py']
     guard = _replace_once(guard, OLD_ARCHIVE_INTEGRATED_SHA.encode(), archive_sha, 'archive pin')
-    guard = _replace_once(guard, PINS['store.py'].encode(), store_sha, 'guard store pin')
+    guard = _replace_once(guard, b'40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb', store_sha, 'guard store pin')
     raw['archive_reader_guard_candidate.py'] = guard
     raw['archive_stream_range_candidate.py'] = _replace_once(
         raw['archive_stream_range_candidate.py'], b'40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb', store_sha, 'stream store pin')
