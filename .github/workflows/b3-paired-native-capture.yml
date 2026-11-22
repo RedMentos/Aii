@@ -1,5 +1,4 @@
 name: V13 B3 paired native tap regression
-          python scripts/b3_train_l1_shadow.py --help >/dev/null
 on:
   push:
     branches: ["gpt6/v13-b3-native-latent-repair-*"]
@@ -20,12 +19,15 @@ on:
     paths:
       - ".github/workflows/b3-paired-native-capture.yml"
       - "v13/code/v13/b3pairs.py"
+      - "v13/code/v13/b3train.py"
+      - "v13/code/scripts/b3_train_l1_shadow.py"
       - "v13/code/v13/contracts.py"
       - "v13/code/v13/cognition.py"
       - "v13/code/v13/operator.py"
       - "v13/code/v13/runtime.py"
       - "v13/code/v13/b3bridge.py"
       - "v13/code/tests/test_b3pairs.py"
+      - "v13/code/tests/test_b3train.py"
       - "v13/code/tests/test_b3_completion.py"
 permissions:
   contents: read
@@ -56,6 +58,7 @@ jobs:
           cd v13/code
           env PYTHONPATH=.:tests python -m unittest -v \
             tests.test_b3pairs \
+            tests.test_b3train \
             tests.test_b3bridge \
             tests.test_b3_completion \
             tests.test_b3degrade \
@@ -66,10 +69,17 @@ jobs:
         run: |
           python -m py_compile \
             v13/code/v13/b3pairs.py \
+            v13/code/v13/b3train.py \
+            v13/code/scripts/b3_train_l1_shadow.py \
             v13/code/v13/contracts.py \
             v13/code/v13/cognition.py \
             v13/code/v13/operator.py \
             v13/code/v13/runtime.py \
             v13/code/v13/b3bridge.py \
             v13/code/tests/test_b3pairs.py \
+            v13/code/tests/test_b3train.py \
             v13/code/tests/test_b3_completion.py
+
+      - name: Smoke-test Termux L1 shadow CLI import
+        working-directory: v13/code
+        run: python scripts/b3_train_l1_shadow.py --help >/dev/null
