@@ -13,6 +13,8 @@ import numpy as np
 
 from v13 import audio_voice_cues as audio_voice_cues_module
 from v13.audio_silero_vad import SileroVADStream
+from v13.audio_input import SecurePCMBuffer
+from v13.audio_ear import observe_pcm16
 from v13.audio_voice_cues import (
     consume_pcm16_voice_window,
     extract_voice_cues,
@@ -1159,3 +1161,19 @@ def test_outer_audio_lease_is_thread_bound_and_nonserializable(tmp_path):
             assert RECEIPT not in repr(lease)
     finally:
         runtime.store.close()
+
+
+def test_secure_pcm_buffer_matches_bytes_for_raw_ear_and_voice_cues():
+    pcm = tone(140)
+    secure = SecurePCMBuffer(pcm)
+    try:
+        assert observe_pcm16(
+            secure, 16000, 120, consent=True, source_id=SOURCE_ID
+        ) == observe_pcm16(
+            pcm, 16000, 120, consent=True, source_id=SOURCE_ID
+        )
+        assert extract_voice_cues(secure, 16000) == extract_voice_cues(pcm, 16000)
+    finally:
+        secure.zeroize()
+    assert secure.zeroized is True
+    assert not any(secure)
