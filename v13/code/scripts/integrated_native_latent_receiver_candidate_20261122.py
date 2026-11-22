@@ -24,7 +24,7 @@ NATIVE_FILES = {
 NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,source_ref,deadline):
         """Opt-in native llama_batch.embd receiver probe; never production B3 or learning."""
         from .models import model_key
-        from .native_latent_receiver import probe as native_probe, register_packet_contract, validate_packet
+        from .native_latent_receiver import POSITION_MODE, probe as native_probe, register_packet_contract, validate_packet
         register_packet_contract()
         if sender_role not in {"B1_DETAIL","B2_GIST"} or receiver_role not in {"B1_DETAIL","B2_GIST","C3_LANGUAGE"} or sender_role==receiver_role:
             raise ValueError("Native receiver roles must be distinct B1/B2 -> B1/B2/C3")
@@ -34,10 +34,29 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
             raise ValueError("Native receiver source must belong to this event")
 
         tap=self.tap(sender_role,e,source_ref,deadline)
+        if (tap.get("role")!=sender_role or tap.get("event_id")!=e.get("event_id")
+                or tap.get("brain_generation_id")!=e.get("brain_generation_id")
+                or tap.get("source_ref")!=source_ref):
+            raise ValueError("Sender tap identity/source differs from this event")
         # The tap runner is exclusive. Reap it before loading the receiver model
         # so the probe never intentionally holds two dense model copies at once.
         self.r.pool.unload()
         data=self.read_tap(tap)
+        token_ids=data.get("token_ids")
+        vectors=data.get("vectors")
+        metrics=tap.get("metrics")
+        if (type(token_ids) is not list or not 1<=len(token_ids)<=64
+                or any(type(token_id) is not int or token_id<0 for token_id in token_ids)
+                or type(vectors) is not list or len(vectors)!=len(token_ids)
+                or type(metrics) is not dict
+                or metrics.get("whole_sequence_prefill") is not True
+                or metrics.get("pooling")!="none"
+                or metrics.get("prompt_tokens")!=len(token_ids)):
+            raise ValueError("Sender tap lacks a verified whole-sequence position map")
+        # LlamaRunner.tap sends this exact token list to a fresh /embeddings
+        # prefill with pooling=none. Its positions are therefore 0..N-1; derive
+        # them only after checking the persisted token/vector count and runner receipt.
+        position_ids=list(range(len(token_ids)))
         key=model_key(receiver_role,self.r.models.b2_control)
         installed=self.r.models.installed.get(key)
         if not installed or installed.get("download_complete") is not True:
@@ -55,7 +74,7 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
             sender_model_sha256=tap["sender_model_sha256"],tokenizer_revision=tap.get("tokenizer_revision"),
             receiver_model_revision=installed["exact_revision"],
             source_id=source_ref["source_id"],generation_id=e["brain_generation_id"],
-            vectors=data["vectors"],position_ids=data["position_ids"],position_mode=data["position_mode"],
+            vectors=vectors,position_ids=position_ids,position_mode=POSITION_MODE,
             deadline=deadline,threads=min(2,max(1,int(self.r.cfg.get("threads",1)))),
             cancel_event=self.r.cancel_event,
         )
