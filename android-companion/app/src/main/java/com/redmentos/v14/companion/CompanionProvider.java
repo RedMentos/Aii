@@ -24,6 +24,7 @@ import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public final class CompanionProvider extends ContentProvider {
     static final String AUTHORITY = "com.redmentos.v14.companion";
     private static final String CHANNEL = "v14-action-approval";
     private CompanionDb db;
-    private ReceiptSigner signer;
+    private ReceiptIssuer signer;
 
     @Override public boolean onCreate() {
         Context context = getContext();
@@ -74,6 +75,11 @@ public final class CompanionProvider extends ContentProvider {
 
     interface EnabledWriter {
         boolean commit(Context context, boolean enabled);
+    }
+
+    interface ReceiptIssuer {
+        JSONObject publicKeyInfo() throws Exception;
+        JSONObject sign(JSONObject body) throws Exception;
     }
 
     static boolean resetProcessStateForProviderStartup(Context context) {
@@ -167,6 +173,72 @@ public final class CompanionProvider extends ContentProvider {
         }
     }
 
+    static boolean reconcileClaimedAction(CompanionDb db, String actionId,
+                                          MillisClock clock, ReceiptIssuer issuer) {
+        if (db == null || issuer == null || !isHex(actionId, 32)) return false;
+        CompanionDb.Action action = db.get(actionId);
+        if (action == null || action.receiptJson != null) return false;
+        String expectedStatus = action.status;
+        final String receiptStatus;
+        final boolean localConsent;
+        if ("EXECUTING".equals(expectedStatus)) {
+            receiptStatus = "OUTCOME_UNKNOWN";
+            localConsent = true;
+        } else if ("DENYING".equals(expectedStatus)) {
+            receiptStatus = "USER_DENIED";
+            localConsent = false;
+        } else {
+            return false;
+        }
+        // Do not race the Activity's normal receipt path. A claimed action gets
+        // its original approval window to finish; after expiry this path only
+        // signs a conservative receipt and never calls startActivity.
+        if (clock.nowMillis() < action.expiresAt) return false;
+        try {
+            JSONObject request = new JSONObject(action.requestJson);
+            JSONObject key = issuer.publicKeyInfo();
+            long issuedAt = clock.nowMillis() / 1000L;
+            JSONObject body = new JSONObject();
+            body.put("schema", "v14.android-companion-receipt/1");
+            body.put("nonce", randomHex(16));
+            body.put("action_id", action.actionId);
+            body.put("capability", "launch_app");
+            body.put("digest", request.getString("digest"));
+            body.put("issued_at", issuedAt);
+            body.put("expires_at", issuedAt + 60L);
+            body.put("status", receiptStatus);
+            body.put("local_consent", localConsent);
+            body.put("observed", false);
+            body.put("os_permission_status", "NOT_REQUIRED_FOR_LAUNCH_APP");
+            body.put("key_storage_status", key.getString("key_storage_status"));
+            body.put("key_id", key.getString("key_id"));
+            JSONObject receipt = issuer.sign(body);
+            db.finish(action.actionId, expectedStatus, receiptStatus, receipt.toString());
+            return true;
+        } catch (Exception ignored) {
+            // Leave EXECUTING/DENYING intact. A later outcome()/pending() read
+            // can retry receipt-only reconciliation; dispatch is never retried.
+            return false;
+        }
+    }
+
+    static List<String> reconcileClaimedActions(CompanionDb db, MillisClock clock,
+                                                 ReceiptIssuer issuer) {
+        List<String> recovered = new ArrayList<>();
+        for (CompanionDb.Action action : db.recoveryCandidates()) {
+            if (reconcileClaimedAction(db, action.actionId, clock, issuer)) {
+                recovered.add(action.actionId);
+            }
+        }
+        return recovered;
+    }
+
+    private static String randomHex(int bytes) {
+        byte[] value = new byte[bytes];
+        new SecureRandom().nextBytes(value);
+        return Canonical.hex(value);
+    }
+
     static boolean isImplementedCapability(String capability) {
         return "launch_app".equals(capability);
     }
@@ -228,6 +300,7 @@ public final class CompanionProvider extends ContentProvider {
 
     private JSONObject outcome(String actionId) throws Exception {
         if (!isHex(actionId, 32)) return error("INVALID_ACTION_ID");
+        reconcileClaimedAction(db, actionId, System::currentTimeMillis, signer);
         CompanionDb.Action action = db.get(actionId);
         JSONObject out = new JSONObject();
         if (action == null) {
@@ -237,6 +310,8 @@ public final class CompanionProvider extends ContentProvider {
             out.put("status", "NOT_READY");
             out.put("action_id", actionId);
             out.put("action_status", action.status);
+            out.put("recovery_required", "EXECUTING".equals(action.status) || "DENYING".equals(action.status));
+            out.put("retry_after_ms", action.expiresAt);
         } else {
             out.put("status", "READY");
             out.put("action_id", actionId);
@@ -280,6 +355,16 @@ public final class CompanionProvider extends ContentProvider {
     }
 
     private JSONObject pending(Context context) throws Exception {
+        List<String> recovered = reconcileClaimedActions(db, System::currentTimeMillis, signer);
+        org.json.JSONArray recoveredValues = new org.json.JSONArray(recovered);
+        org.json.JSONArray recoveryRequired = new org.json.JSONArray();
+        for (CompanionDb.Action action : db.recoveryCandidates()) {
+            JSONObject item = new JSONObject();
+            item.put("action_id", action.actionId);
+            item.put("action_status", action.status);
+            item.put("retry_after_ms", action.expiresAt);
+            recoveryRequired.put(item);
+        }
         org.json.JSONArray values = new org.json.JSONArray();
         for (CompanionDb.Action action : pendingActions(context, db, System.currentTimeMillis())) {
             JSONObject item = new JSONObject();
@@ -291,6 +376,8 @@ public final class CompanionProvider extends ContentProvider {
         JSONObject out = new JSONObject();
         out.put("status", "OK");
         out.put("pending", values);
+        out.put("recovered", recoveredValues);
+        out.put("recovery_required", recoveryRequired);
         return out;
     }
 
