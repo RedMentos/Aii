@@ -139,3 +139,8 @@ LOCAL_LINUX isolated CPython 3.13.5 x86_64:
 The latest exact PR head must rerun RAW EAR fastpath, prosody, comparator, staged/integrated and migration CI. The known staged/integrated blocker remains Core's pinned composer source hash: it must be updated bottom-up to the new producer blob above; Perception does not edit Core-owned composer/recovery files. The 44.1-kHz alias, phase and low-F0 controls remain in place.
 
 No microphone provider, permission, model, dependency, weight, Age, learning authority, updater, user data or device state changed. NOT_RELEASED / REDMI_UNVERIFIED.
+
+
+### Exact comparator pin readback — 2026-11-22
+
+The VAD comparator workflow's expected RAW EAR V3 Git blob was updated from the intermediate c47e21... producer to the current symmetric-FIR producer blob `b18e450162b062b09368a12b1ca18924ed8c5025`. Workflow blob: `5d90cfcab210b051a2b53b43d1ba77253839f5f2`; commit: `a98a79ec7aae62abf679f59f3db6a01a02fc9b63`. Branch readback confirms both the producer blob and workflow pin match. The exact new compare/staged/prosody matrix is now running; no results are promoted until completion.
