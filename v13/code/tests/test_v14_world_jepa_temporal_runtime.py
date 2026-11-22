@@ -452,6 +452,8 @@ def test_temporal_A_B_C_A_replay_ablation_uses_matched_steps_and_retains_old_coh
         state_a, _ = store.state(STATE_KEY, None)
         sha_a = state_a["active"]["checkpoint_sha256"]
         steps_a = state_a["active"]["fit_steps"]
+        train_a = set(state_a["active"]["train_window_ids"])
+        holdout_a = set(state_a["active"]["holdout_window_ids"])
         anchor_a = state_a["active"]["retention_holdouts"][0]
         assert len(anchor_a["target_latents"]) == len(anchor_a["X"])
         assert len(anchor_a["target_sha256"]) == 64
@@ -469,6 +471,9 @@ def test_temporal_A_B_C_A_replay_ablation_uses_matched_steps_and_retains_old_coh
         assert cohort_b_replay["metrics"]["retention_reference"] == "FIXED_EMA_TARGET_ANCHOR"
         state_b, _ = store.state(STATE_KEY, None)
         assert state_b["active"]["retention_holdouts"][0] == anchor_a
+        assert train_a <= set(state_b["active"]["train_window_ids"])
+        assert holdout_a <= set(state_b["active"]["holdout_window_ids"])
+        assert cohort_b_replay["metrics"]["split_strategy"] == "PERSISTED_COMPONENT_ASSIGNMENT"
 
         # Fork the same A checkpoint and same B receipts into a matched no-replay
         # attempt. Rollback preserves B as pending, so no new T8 event is needed.
@@ -510,6 +515,11 @@ def test_temporal_A_B_C_A_replay_ablation_uses_matched_steps_and_retains_old_coh
             optimizer_permission=True, replay_mode="uniform",
         )
         assert cohort_c["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", cohort_c
+        state_c, _ = store.state(STATE_KEY, None)
+        assert train_a <= set(state_c["active"]["train_window_ids"])
+        assert holdout_a <= set(state_c["active"]["holdout_window_ids"])
+        assert cohort_c["metrics"]["prior_train_windows_preserved"] >= len(train_a)
+        assert cohort_c["metrics"]["prior_holdout_windows_preserved"] >= len(holdout_a)
         assert len(cohort_c["metrics"]["retention_mse_before"]) == 2
         assert cohort_c["metrics"]["retention_pass"] is True
 
