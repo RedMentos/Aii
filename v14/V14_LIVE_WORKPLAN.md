@@ -1260,3 +1260,10 @@ Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, mi
 - PR #2366 branch head `9a19b8c0af01912f40d92fecac4e6ab9a82bb128`; code/test commit `f8a9faf66b64352f8e1703e634b79f03ec3c0984`. The branch's later commits are V14 handoff/board/research updates only.
 - Exact GitHub run 45053429482 is pending and currently has no jobs; no CI pass is claimed. The previous #2363 is closed as superseded by #2366.
 - R-081's surprise-gated speaker-memory paper is recorded as a research-only ablation proposal; it does not replace JEPA/EMA, trainable weights, or the full voice Canon.
+
+
+## CI queue checkpoint — PR #2366 — 2026-11-22
+
+- Branch head at the last check: `dd0090b5e428c4dc537693388645fa88acf667dd`; code/test commit: `f8a9faf66b64352f8e1703e634b79f03ec3c0984`.
+- Exact Perception workflow run `45053728753` is pending and has not created jobs yet. Do not mark CI PASS. The isolated CPython 3.13.5 two-interleaving fake-Store harness remains 2/2 PASS.
+- #2363 was closed as superseded by #2366; normal Runtime invocation and Redmi proof remain open.
