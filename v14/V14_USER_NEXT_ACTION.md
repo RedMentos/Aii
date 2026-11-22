@@ -1,3 +1,24 @@
+# QA & Android — aktueller Nutzer-Handoff (2026-11-22T11:28:06.923Z)
+
+**Keine Nutzeraktion nötig.** Der vorhandene Updater hat den aktuellen Branch-Stand bereits installiert. Bitte keinen neuen Termux-Befehl ausführen und keinen zweiten Update-Request starten.
+
+- **Installierter Stand:** `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`. Der authentifizierte private PIPELINE_STATUS bestätigt `runtime=UPDATED`, `dashboard=UP_TO_DATE`, Auto-Update EIN und `last_error=NONE`. Für diesen exakten SHA sind alle 30 beobachteten GitHub-Actions-Runs SUCCESS; CI und Geräteinstallation sind getrennte Belege.
+- **Die Runtime ist damit nicht als funktionierendes Gehirn abgenommen:** letzter gespeicherter Turn FINAL, aber 56,43 s Gesamtzeit, 40,82 s TTFT, 39,09 s Prefill, 701 Prompt-Tokens und nur 2 generierte Tokens. Inhaltliche Korrektheit wurde nicht bewertet.
+- **B1/B2:** Native Probe bleibt `SMOKE_PARTIAL`; die aufgezeichneten B1_DETAIL-/B2_GIST-Versuche endeten bei 53,2/54,2 s mit `TIME_BUDGET`. Ein frischer 20-Turn-Test mit korrekt konsumierten source-bound Offers über C4→C3 fehlt.
+- **Speicher-Snapshot:** 3 gemappte native Prozesse, 289,4 MiB PSS (B1 59,1; B2 148,9; C2 81,4; C3 im Moment der Messung 0). PSS ist Prozessbuchhaltung, nicht freier RAM und kein Langzeit-Residency-Benchmark.
+- **Age/Lab:** offizielles Age 0; angeforderte Lab-Stufe 10, effektiv implementierte Stufe 5; physische Feature-Ausführung nicht bestätigt. Lern-Commit-Autorität benötigt weiterhin separat SHADOW.
+- **Core #2338 (Fair B1/B2):** noch DRAFT. Exakte CI schlägt in staged/integrated wegen eines veralteten `v13/runtime.py`-Pins und in A5 UI lease (Python 3.13/3.14) wegen eines veralteten `store.py`-Pins fehl. Die QA-Befunde stehen im [PR-Review](https://github.com/RedMentos/Aii/pull/2338#issuecomment-7078400481). Der Code ist nicht installiert; Fair-Scheduling ist noch kein Redmi-Erfolg.
+- **Core #2332 (Native-Receiver-Probe-Allowlist):** die relevanten Bridge-, Owner-read- und staged/integrated-Checks bestehen. Der neue Befehl ist aber noch nicht integriert/auf dem Handy und wurde nicht ausgeführt. Für einen späteren echten Probe-Lauf wäre eine separate ausdrückliche Nutzerentscheidung nötig; B3 bleibt produktiv OFF/SYMBOLIC.
+- **Android Companion #2286:** 9/9 beobachtete CI-Workflows auf einem gestapelten QA-Branch erfolgreich. Der aktuelle Prototyp kann nur einen separat bestätigten App-Start vorbereiten. Kein APK-Installationsbeleg, keine UI-Beobachtung, Accessibility-Taps, Hintergrundsteuerung oder AudioRecord-Aufnahme auf dem Redmi.
+- **Audio/Voice:** kein Mikrofon-Provider und keine native Audioaufnahme. Der signierte PCM-Consumer ist kein AudioRecord-Gerätetreiber; Aufnahme bleibt OFF.
+- **Rollback:** Installation ist bestätigt, aber Prozess-Tod, Reboot, Dashboard-Rollback und runtime-only Rollback sind auf dem Handy noch nicht nachgewiesen. Modelle, SQLite und Chats wurden nicht angefasst.
+- **Lokale Tests:** vollständiger lokaler Aii-Checkout fehlt; `git ls-remote` scheitert hier an DNS. Deshalb keine lokale Vollsuite oder native Linux-Messung behauptet. Die genannten grünen/roten Resultate sind GitHub-CI.
+- **Gesamtprojekt:** V14-Master und historischer V13-Canon bleiben erhalten; das 1.255-Überschriften-Inventar ist ein Vollständigkeitsindex, keine Implementierungsabnahme. B3, JEPA-Gewichtslernen, Sleep/Replay, echte zwei MoE-Körper, Context/Memorilla-Consumer, Voice, Android-Agent und clause-level Consumer-Abdeckung bleiben offen.
+
+**Nächste interne Schritte:** Core repariert die beiden exakten Source-Builder-Pin-Ketten in #2338 und lässt die betroffenen Suites erneut laufen. Danach folgt eine integrierte Geräteprüfung für B1/B2→C4→C3 mit 20 gemischten Turns. Android-Companion und Audio bleiben default-off, bis ihre jeweiligen OS-/Consent-/Lifecycle-Tests und echten Gerätebelege vorliegen.
+
+---
+
 # JEPA-Statuskorrektur — 2026-11-22T10:00:40.871Z
 
 PR #2331 steht inzwischen auf `535eba6f668b3990416c361368f36e3e8f1e599e`, hat aber **9 fehlgeschlagene Checks** (4 laufen, 2 queued, 4 erfolgreich, 1 übersprungen). Die Fehler liegen weiter in der verschachtelten Source-Pin-Kette: sechs direkte Consumer-Pins stimmen nicht mit den aktuellen Datei-Bytes überein. Die vollständigen Hashes stehen im Boss-Review-Kommentar [7077507340](https://github.com/RedMentos/Aii/pull/2331#issuecomment-7077507340). Das ist noch kein JEPA-Lern-/Unlearning-Erfolg; PR bleibt DRAFT, Promotion OFF.
