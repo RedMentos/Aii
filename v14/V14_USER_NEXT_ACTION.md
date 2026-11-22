@@ -1,3 +1,30 @@
+# Current next action — 2026-11-22 00:57 UTC
+
+**No user action is required. Do not run Termux commands or change models, weights, Age, permissions, updater settings or phone data.**
+
+## Current candidate
+
+- Boss integration PR [#2288](https://github.com/RedMentos/Aii/pull/2288), branch `boss/v14-recall-store-pin-rebind-20261122`, latest head `c372b4e3210d04f95f092013893d4078817e855d`, base `bdcad466ffea75a2b41f7d23be168f53c7197d20`. It is DRAFT / NOT_RELEASED / REDMI_UNVERIFIED; 184 commits ahead, 0 behind, 64 changed files.
+- The current recovery composer captures the exact pre-overlay pins for Store-dependent generated consumers, then after all staged overlays rebinds World-JEPA guard, semantic evidence, archive reader, archive stream, Context-source recall and local-error's semantic-module pin. It verifies all final hashes. The recovery wrapper blob SHA-1, stage SHA-256 and runtime deployer `STAGER_SHA256` were refreshed and read back.
+- The 679f audio run found a stale Store pin in `world_semantic_evidence_candidate.py`. The 32491 follow-up fixed the wider consumer set but its controller workflow exposed a stale `recall_base_pins` variable. The current c372b4e commit replaces that reference with `dependent_base_pins`; this exact head still needs CI proof.
+
+## Current-head CI
+
+At the 00:56:40 UTC poll: bridge push queued; Lab-Age in progress; staged/integrated, A5 UI lease, controller guard, audio/arithmetic, combined JEPA, runtime deploy, migration, privacy and private owner-read queued; additive-only validator skipped; release-queue workflow cancelled. Do not reuse PASS results from earlier SHAs as evidence for c372b4e. No local Aii checkout exists, so LOCAL_LINUX tests are blocked.
+
+## Required internal next steps
+
+1. Finish exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, migration, owner-read and deployer CI; fix only measured current-head failures.
+2. Rebase #2280's C4→C3 receipt and tampered-OfferPacket negative control onto #2288.
+3. Rebase #2281 Age/X10 rights, #2282 shared-blob reader/revocation fix, #2283 runtime-only rollback, #2285 audio-lease QA and #2275 RAW EAR speaker history onto #2288; rerun exact current-base CI. Old-base green results do not certify this candidate.
+4. Keep JEPA/weight promotion, B3 latent receiver, Android background/UI control, microphone/ASR/vocoder, distinct sparse MoE, Sleep/Dream, OS sandbox, adaptive behavior judge, Memorilla production consumer and cross-organ self-edit gated until their own proofs exist.
+
+Private PIPELINE_STATUS [RedMentos/Aiiii #453](https://github.com/RedMentos/Aiiii/issues/453) has no authenticated reply at the latest poll. Installed SHA and updater consent remain UNKNOWN; no LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, remote shell or device mutation occurred. **REDMI_UNVERIFIED.** P0 issue [#1904](https://github.com/RedMentos/Aii/issues/1904) remains open: correct Redmi arithmetic, native B1/B2 offer delivery, C3 quality/TTFT/RSS, learned latent coupling and actual phone acceptance are not proven.
+
+**Next internal step:** finish exact c372b4e CI and compose the follow-up PRs on the same base. **User action: none.**
+
+---
+
 # Current next action — 2026-11-22 00:51 UTC
 
 **No user action is required. Do not run Termux commands or change models, weights, Age, permissions, updater settings or phone data.**
