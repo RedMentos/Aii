@@ -206,5 +206,71 @@ def test_visual_a5_consumption_is_serialized_with_source_forget(tmp_path, monkey
         runtime.store.close()
 
 
+def test_image_reingest_cannot_publish_between_forget_refcount_and_unlink(tmp_path, monkeypatch):
+    runtime, _ = make_runtime(tmp_path)
+    original = add_image(runtime)
+    refcount_checked = threading.Event()
+    release_forget = threading.Event()
+    ingest_started = threading.Event()
+    ingest_done = threading.Event()
+    new_records = []
+    errors = []
+    original_one = runtime.store.one
+
+    def paused_one(sql, args=()):
+        row = original_one(sql, args)
+        normalized = " ".join(sql.split()).lower()
+        if (normalized.startswith("select id from sources where hash")
+                and not row and not refcount_checked.is_set()):
+            refcount_checked.set()
+            if not release_forget.wait(5):
+                raise TimeoutError("test did not release source-forget refcount")
+        return row
+
+    monkeypatch.setattr(runtime.store, "one", paused_one)
+
+    def forget():
+        try:
+            vision.forget(runtime.store, original)
+        except BaseException as exc:
+            errors.append(exc)
+
+    def reingest():
+        ingest_started.set()
+        try:
+            new_records.append(vision.ingest(
+                runtime.store, image_bytes(), label="reingested after forget",
+            ))
+        except BaseException as exc:
+            errors.append(exc)
+        finally:
+            ingest_done.set()
+
+    revoker = threading.Thread(target=forget, daemon=True)
+    publisher = threading.Thread(target=reingest, daemon=True)
+    try:
+        revoker.start()
+        assert refcount_checked.wait(3), "forget did not reach the final live-refcount check"
+        publisher.start()
+        assert ingest_started.wait(3), "reingest thread did not start"
+        assert not ingest_done.wait(0.1), "new IMAGE source published inside the forget/unlink window"
+        release_forget.set()
+        revoker.join(5)
+        publisher.join(5)
+        assert not revoker.is_alive() and not publisher.is_alive()
+        assert not errors, errors
+        assert len(new_records) == 1
+        new_ref = new_records[0]["ref"]
+        assert new_ref["source_id"] != original["ref"]["source_id"]
+        row = runtime.store.one("SELECT * FROM sources WHERE id=?", (new_ref["source_id"],))
+        assert row and row["deleted"] == 0
+        blob = runtime.store.home / "data/blobs" / new_ref["sha256"]
+        assert blob.is_file()
+        assert vision.read_image(runtime.store, new_ref).size == (64, 64)
+    finally:
+        release_forget.set()
+        runtime.store.close()
+
+
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))
