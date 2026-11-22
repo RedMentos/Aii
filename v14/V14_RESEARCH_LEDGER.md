@@ -941,17 +941,3 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
-
-
-## R-080 — LATER: action-conditioned retrieval of delayed transition evidence (2026-11-22)
-
-**Primary source:** Zhou, Xu, Wang and Tang, *LATER: Learning Action-Conditioned Temporal Evidence Retrieval for Predictive World Models*, arXiv:2611.25671v1, submitted 2026-11-19: https://arxiv.org/abs/2611.25671 . The full text was reviewed, not only the abstract.
-
-**Method actually described:** LATER keeps partitioned memories of completed real transitions, frozen during candidate rollouts. A response bridge reads them with the current state and candidate action; auxiliary multi-cut supervision trains the memory writers while zero-initialized gates preserve the recent-only baseline at initialization. The paper separates retaining evidence from selectively reading it. Its experiments include paired-history interventions with the query observation/action held fixed, and report delayed-evidence gains on synthetic PushT/TwoRoom tasks.
-
-**V14 mapping and testable hypothesis:** keep trusted observed T8/ActionOutcome evidence immutable during speculative/counterfactual prediction; only finalized, source-verified outcomes may update the persistent writer/replay state. Readout should be conditioned on the receiving organ's current latent/state and proposed action, with an explicit no-memory/recent-only fallback. Test with identical current state/action and (a) correct earlier evidence, (b) shuffled evidence, (c) omitted evidence, and (d) hypothetical-only evidence. Use session/source-disjoint holdouts, delayed-query cohorts, restart, forget/revocation, rollback and retention measurements. This is additive to the current temporal JEPA loop, not a replacement for World/Self/Memory or the B1/B2 bodies.
-
-**Limits and reuse rights:** the paper uses a CF-JEPA/ViT-Tiny/14 backbone, 192-dimensional latent split, GRU writers, gated rank-8 bridge and simulated physical-control tasks. Reported CEM measurements include H100-class execution; this is not an Android-sized implementation or Redmi evidence. No public implementation repository or code license was identified in the paper page/full text. The paper's own reuse license was not verified from the retrieved metadata. Therefore no code, weights or datasets are copied or selected; method-level inspiration only.
-
-**Decision:** RESEARCH_ONLY / TESTABLE_HYPOTHESIS. Do not import the architecture wholesale. First complete the source-bound T8→WorldJEPA/EMA→replay/retention→B1/B2 consumer loop and establish a stable Android-sized baseline. A future prototype should compare a tiny action-conditioned readout against the current recent-history receiver and exact/no-memory/shuffled controls.
-
