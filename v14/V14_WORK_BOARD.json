@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T22:41:52.834Z",
+  "updated_at": "2026-11-22T22:44:35.672Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; private V13OBS #115 (updated 2026-11-22T20:24:26Z) confirms this SHA installed, auto-update enabled and Runtime/Dashboard UP_TO_DATE. Latest metadata still shows 0 valid B1/B2 offers, 4/4 B1 and 2/2 B2 native attempts failed, and C3 ~38.945 s prefill / 2 tokens. Functional/whole-Canon acceptance remains open; historical V13 Canon and V14 master are preserved.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -1331,7 +1331,7 @@
     "branch": "jepa-memory/v14-temporal-exact-forget-retention-20261122-run14",
     "head_sha": "c39a446036cdfba26fd7e55cf59eb633e4754227",
     "base_pr": 2351,
-    "ci": "EXACT_HEAD_C39A: NO_ACTIONS_RUNS_VISIBLE_YET; PARENT_DAA42A_WORKFLOWS_QUEUED_NOT_VALID; PARENT_BEDA653_TEMPORAL_15_OF_15_PASS_PYTHON_3.13_AND_3.14",
+    "ci": "EXACT_HEAD_C39A: TEMPORAL_45078942475_QUEUED; OPTIMIZER_RESUME_45078942490_QUEUED; STAGED_INTEGRATED_45078942505_QUEUED; OWNER_READ_45078942484_QUEUED; PARENT_BEDA653_TEMPORAL_15_OF_15_PASS_PYTHON_3.13_AND_3.14.",
     "scope": "Persistent source-verified temporal T8/WorldJEPA/EMA/replay/retention/rollback; actual measured B1/B2 disjoint-holdout gates guard Cognition.offer; positive enabled SleepRuntime postcommit test with explicit 40-step runtime cap. No native GGUF body-weight edits."
   },
   "jepa_run21": {
@@ -1344,7 +1344,7 @@
       "daa42a41c1e4a448c77da4312078744069acb830",
       "c39a446036cdfba26fd7e55cf59eb633e4754227"
     ],
-    "ci": "EXACT_HEAD_C39A: NO_ACTIONS_RUNS_VISIBLE_YET; PARENT_DAA42A_WORKFLOWS_QUEUED_NOT_VALID; PARENT_BEDA653_TEMPORAL_15_OF_15_PASS_PYTHON_3.13_AND_3.14.",
+    "ci": "EXACT_HEAD_C39A: TEMPORAL_45078942475_QUEUED; OPTIMIZER_RESUME_45078942490_QUEUED; STAGED_INTEGRATED_45078942505_QUEUED; OWNER_READ_45078942484_QUEUED; PARENT_BEDA653_TEMPORAL_15_OF_15_PASS_PYTHON_3.13_AND_3.14.",
     "local": "BLOCKED_NO_LOCAL_AII_CHECKOUT_DNS_FAILURE",
     "device": "PRIVATE_V13OBS_115_UPDATED_2026-11-22T22:17:26Z; INSTALLED_AED1D2_UP_TO_DATE; B1_4_OF_4_FAILED_ZERO_VALID_OFFERS; B2_2_OF_2_FAILED_ZERO_VALID_OFFERS; C3_PREFILL_38.945S_2_TOKENS; PR_NOT_RELEASED; REDMI_UNVERIFIED",
     "qa_dependency": {
