@@ -281,11 +281,19 @@ def require_consumed(runtime, sender_role, receiver_role, event, source_ref):
         expected_key = model_key(role, runtime.models.b2_control)
         digest = binding.get("sha256") if isinstance(binding, dict) else None
         revision = binding.get("revision") if isinstance(binding, dict) else None
+        installed = runtime.models.installed.get(expected_key)
+        main_file = installed.get("main_file") if isinstance(installed, dict) else None
+        files = installed.get("files") if isinstance(installed, dict) else None
+        entry = files.get(main_file) if isinstance(files, dict) and isinstance(main_file, str) else None
+        manifest_digest = entry.get("sha256") if isinstance(entry, dict) else None
         if (not isinstance(binding, dict) or binding.get("model_key") != expected_key
                 or not isinstance(revision, str) or not revision
                 or runtime.models.revision(role) != revision
+                or not isinstance(installed, dict) or installed.get("download_complete") is not True
+                or installed.get("exact_revision") != revision
                 or not isinstance(digest, str) or len(digest) != 64
-                or any(ch not in "0123456789abcdef" for ch in digest)):
+                or any(ch not in "0123456789abcdef" for ch in digest)
+                or manifest_digest != digest):
             raise PermissionError("native probe model binding changed after local approval")
         result[role] = dict(binding)
     return result
