@@ -103,7 +103,7 @@ class ProcessRestartWaitRecoveryTests(unittest.TestCase):
         adb_call.assert_called_once_with("shell", "input", "tap", "150", "25")
         self.assertNotIn("Close app", repr(adb_call.call_args_list))
 
-    def test_wait_for_text_fails_after_one_wait_without_selecting_close_app(self) -> None:
+    def test_wait_for_text_fails_after_two_waits_without_selecting_close_app(self) -> None:
         from unittest.mock import patch
         import test_process_restart as harness
 
@@ -113,14 +113,26 @@ class ProcessRestartWaitRecoveryTests(unittest.TestCase):
             {"text": "Wait", "class": "android.widget.Button", "bounds": "[100,0][200,50]"},
         ])
         with (
-            patch.object(harness, "hierarchy", side_effect=[overlay, overlay]),
+            patch.object(harness, "hierarchy", side_effect=[overlay, overlay, overlay]),
             patch.object(harness, "adb", return_value="") as adb_call,
             patch.object(harness.time, "sleep"),
         ):
-            with self.assertRaisesRegex(AssertionError, "after one safe Wait"):
+            with self.assertRaisesRegex(AssertionError, "after two safe Wait actions"):
                 harness.wait_for_text(harness.STOPPED_TEXT, timeout=2.0)
-        adb_call.assert_called_once_with("shell", "input", "tap", "150", "25")
+        self.assertEqual(
+            adb_call.call_args_list,
+            [
+                unittest.mock.call("shell", "input", "tap", "150", "25"),
+                unittest.mock.call("shell", "input", "tap", "150", "25"),
+            ],
+        )
         self.assertNotIn("Close app", repr(adb_call.call_args_list))
+
+    def test_wait_budget_rejects_more_than_two_safe_waits(self) -> None:
+        import test_process_restart as harness
+
+        with self.assertRaisesRegex(ValueError, "0, 1 or 2"):
+            harness.wait_for_text(harness.STOPPED_TEXT, wait_budget=3)
 
 
 class ProcessRestartFinalSnapshotRecoveryTests(unittest.TestCase):
