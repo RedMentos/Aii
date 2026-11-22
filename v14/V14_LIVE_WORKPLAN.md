@@ -1432,7 +1432,7 @@ Exact-head workflows: 45070697371 optimizer-resume 3.13/3.14; 45070697433 tempor
 
 Commits c759dece9c3f5d2cbf7c6c0448ba658955e05210 and aae0330e24279ed2782451e7effe78ee005ac490 add explicit scheduler completion metadata for the two independent cursors: learning_has_more, temporal_has_more and continuation_reason (BASE_PAGE, TEMPORAL_PAGE or BASE_AND_TEMPORAL). The temporal-only regression asserts TEMPORAL_PAGE while base has_more is false. This makes a queued temporal backlog distinguishable from a caught-up base learner in persisted scheduler history.
 
-Exact head aae0330e24279ed2782451e7effe78ee005ac490 has no workflow run or commit status visible yet. Parent 3f015a runs 45070697371 / 45070697433 / 45070697455 remain QUEUED and do not validate the later sleep.py change. Require exact staged/integrated and Python 3.13/3.14 tests before merge. Local full suite BLOCKED / NOT_RUN; Redmi REDMI_UNVERIFIED.
+At the initial readback no workflow run was visible; this is superseded by the exact-head workflow readback below, which now shows three QUEUED runs for aae0330e. Local full suite BLOCKED / NOT_RUN; Redmi REDMI_UNVERIFIED.
 
 
 ### Run 19 exact-head workflow readback (2026-11-22T21:20:00Z)
