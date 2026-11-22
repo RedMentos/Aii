@@ -55,12 +55,12 @@ No user action is required now.
 
 ## Exact-head follow-up — 2026-11-22
 
-- Current PR head after code, test and research commits: ba7dc524445ec0453ed574a4adc24568767f4eec.
+- Current PR head after latest code, test, research and handoff updates: bef6c8be146e5c44a48c70d115cf166235c63a7a.
 - Directory-race hardening: module commit 80bb94cc6a6438edfa121709beaf529f21e1681c; regression test commit f6ccc3a61b80b4d0f8545fa8ebb128da634b94a9. The loader now opens home, models and speaker_calibration as no-follow directory descriptors and reads approved.json plus the calibration artifact relative to the pinned directory descriptor. This prevents a directory rename/symlink replacement after validation from redirecting the reads.
 - LOCAL_LINUX, CPython 3.13.5: isolated reproduction of the exact directory-descriptor helper behavior PASS — after opening the directory, replacing its path with a symlink did not redirect manifest/artifact reads; final-component symlink rejection PASS. This is an isolated helper reproduction, not the repository pytest suite.
 - LOCAL_LINUX full repository tests: BLOCKED — no Aii checkout is mounted and GitHub DNS resolution is unavailable. No full local compile/pytest claim.
 - CI on exact code commit f6ccc3a61b80b4d0f8545fa8ebb128da634b94a9: public privacy scan PASS; RAW EAR vs WebRTC/libfvad comparison PASS. RAW EAR fastpath, consent-revocation, prosody-to-attention were IN_PROGRESS at last read; staged-context/integrated regression was QUEUED. Earlier exact integration head 77a459e9ad3cd77255c38c2ebe8d901e8872a92a failed because the Core-owned integrated_audio_context_candidate_20261121.py still pinned audio_voice_cues.py to the pre-PR blob. The Core/Integrator pin update is still required; see PR #2349 comment 7081848688. Do not mark the PR merge-ready based on the focused audio checks.
-- The same branch added research entries R-081 (S2SND-v2, full paper reviewed) and R-082 (streaming diarizer adaptation/identity retention, full paper reviewed). No checkpoint or dataset was downloaded; no model swap.
+- The same branch's audio research entries are R-084 (speaker calibration/CAM++), R-085 (S2SND-v2, full paper reviewed) and R-086 (streaming diarizer adaptation/identity retention, full paper reviewed). R-078 now also records the exact pinned llama.cpp internal token-embedding extraction seam. Shared team IDs R-080 through R-083 remain reserved for the JEPA receiver, Hypnos, receiver-aware latent communication and JEPA-TTT sequence. No checkpoint or dataset was downloaded; no model swap.
 - Cross-agent B3 evidence: PR #2346 focused B3 paired-tap workflow passed, but staged/deploy/migration workflows failed on stale Core-owned pins for the changed recovery builder and Cognition source. See PR #2346 comment 7081892589. No native latent coupling or Redmi proof is established.
 - TERMUX / Redmi: REDMI_UNVERIFIED for all new calibration changes. No calibration artifact is installed; speaker-change remains DEFER/OFF. No authorized microphone capture or Android test was run.
 
@@ -84,3 +84,10 @@ The queued Perception checks completed successfully:
 - Staged-context/integrated regression run 45042292782 remained QUEUED at the last read. It is still the merge blocker; the earlier exact integration head failed on the stale Core-owned audio composer pin. No full staged or deployment acceptance is claimed.
 
 These are GitHub Linux CI results, not local repository execution or Android evidence. The isolated LOCAL_LINUX directory-FD reproduction remains a separate PASS; full local Aii checkout remains BLOCKED and Redmi remains REDMI_UNVERIFIED.
+
+
+## Research-ID and receiver-space correction — 2026-11-22
+
+- Boss/JEPA coordination reserves R-080 for the JEPA receiver, R-081 for Hypnos, R-082 for receiver-aware latent communication and R-083 for JEPA-TTT. This branch's audio entries were renumbered to R-084 (speaker calibration/CAM++), R-085 (S2SND-v2) and R-086 (streaming diarizer adaptation/retention). R-078 now includes the exact llama.cpp input-embedding extraction finding. Do not reuse R-080–R-083.
+- Exact llama.cpp revision b29c606e28a01b1bc8c1351026a0fa6e616bf6c4 exposes input injection and output embeddings publicly, but not the input token-embedding table. An internal helper in src/llama-model.cpp reads model->tok_embd and dequantizes it; a row-only extractor using ggml_backend_tensor_get plus ggml_type_traits could provide the receiver input target space, but this is an internal ABI and not yet implemented or Android-tested. Core was notified on PR #2350 comment 7081998715.
+- The current native receiver still consumes raw sender final-state taps and measures only input-effect/hidden-output metrics. The B3 Bridge remains a task-logit head, not a receiver-input projector. No semantic latent communication or native Redmi acceptance is claimed. The next true latent step requires a pinned row-only receiver input-embedding extractor, source-span-aligned paired training, source-disjoint holdout, then a receiver task-output comparison against zero/shuffle/no-message/symbolic controls.
