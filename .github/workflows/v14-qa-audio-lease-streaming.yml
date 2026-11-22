@@ -1,6 +1,7 @@
 name: V14 QA Core audio lease and arithmetic correctness
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - boss/v14-core-perception-store-audio-integration-20261121
