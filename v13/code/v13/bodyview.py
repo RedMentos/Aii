@@ -83,14 +83,23 @@ def _world_jepa_body_readout(r, e, text, role):
             r.store, state, actions, home=getattr(r, "home", None),
             nonblocking=True,
         )
-        entries = [matrix[action][role] for action in actions]
-        if any(not isinstance(item, dict)
-               or item.get("status") != "SHADOW_READOUT_ONLY"
-               for item in entries):
+        entries = []
+        unsupported_actions = []
+        for action in actions:
+            item = matrix[action][role]
+            if not isinstance(item, dict):
+                return None, None
+            if item.get("status") == "ACTION_SUPPORT_INSUFFICIENT":
+                unsupported_actions.append(action)
+                continue
+            if item.get("status") != "SHADOW_READOUT_ONLY":
+                return None, None
+            entries.append((action, item))
+        if not entries:
             return None, None
 
-        checkpoint_shas = {item.get("checkpoint_sha256") for item in entries}
-        source_shas = {item.get("source_sha256") for item in entries}
+        checkpoint_shas = {item.get("checkpoint_sha256") for _, item in entries}
+        source_shas = {item.get("source_sha256") for _, item in entries}
         if len(checkpoint_shas) != 1 or len(source_shas) != 1:
             return None, None
         checkpoint_sha = next(iter(checkpoint_shas))
@@ -99,10 +108,10 @@ def _world_jepa_body_readout(r, e, text, role):
             return None, None
 
         prediction_rows = []
-        columns = (["action", "duration_s", "output_characters", "uncertainty"]
+        columns = (["action", "duration_s", "output_characters", "uncertainty", "train_support_samples"]
                    if role == "B1_DETAIL"
-                   else ["action", "success_probability", "uncertainty"])
-        for action, item in zip(actions, entries):
+                   else ["action", "terminal_completion_probability", "uncertainty", "train_support_samples"])
+        for action, item in entries:
             utility = item.get("receiver_utility")
             if not isinstance(utility, dict) or utility.get("accepted") is not True:
                 return None, None
@@ -111,6 +120,11 @@ def _world_jepa_body_readout(r, e, text, role):
                     or not isinstance(uncertainty, (int, float))
                     or not math.isfinite(float(uncertainty))
                     or float(uncertainty) < 0):
+                return None, None
+            support_samples = item.get("support_samples")
+            if (type(support_samples) is not int
+                    or support_samples < item.get("support_min_samples", 8)
+                    or item.get("support_scope") != "TRAIN_SPLIT_ONLY"):
                 return None, None
             prediction = item.get("prediction")
             if not isinstance(prediction, dict):
@@ -130,6 +144,7 @@ def _world_jepa_body_readout(r, e, text, role):
                     round(min(86400.0, max(0.0, float(duration))), 3),
                     int(round(min(1000000.0, max(0.0, float(output_chars))))),
                     round(float(uncertainty), 4),
+                    support_samples,
                 ]
             else:
                 success = prediction.get("predicted_success_probability")
@@ -140,6 +155,7 @@ def _world_jepa_body_readout(r, e, text, role):
                     action,
                     round(min(1.0, max(0.0, float(success))), 3),
                     round(float(uncertainty), 4),
+                    support_samples,
                 ]
             prediction_rows.append(row)
 
@@ -147,12 +163,16 @@ def _world_jepa_body_readout(r, e, text, role):
             "status": "SHADOW_READOUT_ONLY",
             "representation": "NUMERIC_T8_OUTCOME_PRIOR",
             "action_horizon": "NEXT_ACTION",
+            "target_semantics": ("ACTION_DURATION_AND_OUTPUT_SIZE" if role == "B1_DETAIL"
+                                 else "ACTION_STATUS_FINAL_NOT_ANSWER_CORRECTNESS"),
+            "support": "TRAIN_SPLIT_ONLY_MIN_8",
+            "unsupported_actions": unsupported_actions,
             "checkpoint_id": checkpoint_sha[:16],
             "predictions": {"columns": columns, "rows": prediction_rows},
             "body_prompt_consumed": True,
             "native_body_consumed": False,
             "decision_authority": "NONE",
-            "note": "Prediction only; not fact, source evidence or permission.",
+            "note": "Action-outcome estimate only; not answer correctness, fact, source evidence or permission.",
         }
         audit = {
             "schema": "V14_WORLDJEPA_BODY_RECEIVER_AUDIT/1",
@@ -163,6 +183,10 @@ def _world_jepa_body_readout(r, e, text, role):
             "brain_generation_id": e.get("brain_generation_id"),
             "role": role,
             "action_order": list(actions),
+            "supported_action_samples": {action: item.get("support_samples") for action, item in entries},
+            "unsupported_actions": unsupported_actions,
+            "target_semantics": ("ACTION_DURATION_AND_OUTPUT_SIZE" if role == "B1_DETAIL"
+                                 else "ACTION_STATUS_FINAL_NOT_ANSWER_CORRECTNESS"),
             "native_body_consumed": False,
             "native_body_weights_changed": False,
             "decision_authority": "NONE",
