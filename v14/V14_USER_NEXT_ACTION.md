@@ -1547,3 +1547,55 @@ The release source has a plausible B1/B2 suppression path: default observer mode
 - Boss & Integration: keep #2258 unmerged until the Age-rights composition, exact CI and protected-file review are complete; continue whole-Canon dependency/consumer mapping.
 
 Private owner-read request #443 has no authenticated reply. Installed SHA and updater consent are UNKNOWN; REDMI_UNVERIFIED. No LOG_PAGE, UPDATE_REQUEST, remote shell, or device mutation was attempted.
+
+
+---
+
+## Latest JEPA/Memory checkpoint — 2026-11-22 16:10 UTC
+
+- **Current code PR:** #2351, draft, head `e8b12868b5c1478b4faee39a2f75953350c493e1`, based on release SHA `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`. New code makes pending source-verified T8 rows retryable after rollback/rejection and restart; adds a separate `pending_retried` metric; holds `Store.mutex` through Memory source tombstone, final refcount check and blob unlink. Added positive rollback/retry and concurrent source-republication regression tests. Exact Python 3.13/3.14 CI is queued (runs 45042096354 and 45042096413), not PASS. Full local Aii tests remain BLOCKED because GitHub DNS resolution failed; no local full-suite or Redmi result is claimed.
+- **Open integration dependency:** Boss PR #2343 head `863e751ff5410dc555006c8aeb9ef6c7b28d2a88`, CI queued. `Store.switch_generation()` still performs update preflight before acquiring a transaction and does not take the shared Store RLock; promotion can race source revocation. Boss must serialize its full preflight/commit with the same RLock and recheck source/update liveness under the final transaction. Do not claim source revocation/promotion fully atomic until this is fixed.
+- **Actual installed phone status:** private V13OBS #115 updated 2026-11-22 16:08:33 UTC reports installed SHA `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; auto-update enabled, runtime/dashboard UP_TO_DATE, last_error NONE. The last observed turn took 57.74 s with 41.63 s TTFT and 38.95 s C3 prefill (751 prompt tokens, 2 generated tokens). B1_DETAIL 4/4 attempts and B2_GIST 2/2 attempts failed with TIME_BUDGET; zero valid offers. Native latent exchange and physical feature execution are false. Official Age 0; Lab Age requested 10/effective stage 5; learning commit authority still requires separate SHADOW. This branch is not installed. REDMI_UNVERIFIED for the temporal learner.
+- **Research:** LATER (Zhou et al., arXiv:2611.25671, 2026-11-19) suggests separating persistent completed-transition memory from action-conditioned readout and freezing memory during candidate rollouts. It uses an online encoder (not EMA), a visual CF-JEPA model and H100 experiments; no official code/license or Android-ready dependency was verified. Candidate only: source-bound read-only T8 retrieval into B1/B2 with action/source/history swaps, zero-memory and no-history controls. Preserve V14 EMA and all current gates. The provisional R-087 evidence is in the JEPA handoff; the integrator should append it to the shared research ledger after the concurrently edited branches are reconciled.
+- **Next internal action:** wait for exact CI, repair failures, then integrate the temporal readout into the actual B1/B2 bodyview consumer and test A→B→C→A retention with matched steps/replay controls. The updater is healthy but that does not make chat/body delivery functional.
+- **User action:** **none**. No update request, model swap, permission change, remote shell, log-page read or device mutation was performed.
+
+
+## Superseding branch readback — 2026-11-22 16:10:08 UTC
+
+- Boss PR #2343 moved from `863e751ff5410dc555006c8aeb9ef6c7b28d2a88` to `9a1424bbf11f3306ce1a50f1e88cbb5c3765bca2`. Exact `store.py` readback at the new head still shows `Store.switch_generation()` doing update-row/manifest/artifact preflight before `with self.tx()`; it still does not acquire `Store.mutex` and still does not re-read the quarantined update/source liveness inside the final transaction. The promotion-vs-forget race therefore remains OPEN; the latest Boss-head Python 3.13/3.14 workflow run 45042303309 is queued, not a pass.
+- JEPA PR #2351 remains at `042b935ae0ab92f674d6bf4f0696bccea19e7506`; exact focused temporal workflow 45042289493 and training-resume/source-forget workflow 45042289497 are still queued. No CI PASS is available yet.
+- The coordination comment was posted on #2343 with the lock-order requirement and R-084 research summary. No shared Boss-owned `store.py` changes were made by JEPA.
+
+
+### Research ledger ID correction — 2026-11-22 16:11 UTC
+
+The shared work board already assigns R-084 to Do-JEPA, R-085 to differential retention, and R-086 to fork-ledger utility. LATER is a proposed R-087 entry after those are reconciled. No existing research entry was overwritten.
+
+
+### Latest receiver-contract checkpoint — 2026-11-22 16:15 UTC
+
+- PR #2351 latest head `da2af2512b669a60496109b83d6c993ab8aba1c6` adds a batched temporal receiver matrix for B1_DETAIL/B2_GIST/SELF_MODEL. It loads the temporal checkpoint once, supports nonblocking foreground reads, preserves checkpoint/source/history provenance, train-split support and receiver-utility gates, and emits the existing bodyview-compatible SHADOW schema. Added batch-vs-single parity, source-distinct session and missing-history negative-control tests.
+- **Not yet connected to bodyview.py.** Boss's current bodyview path still calls the one-step `world_jepa_receiver_matrix.receiver_matrix`; the temporal matrix API is available for the next integration but no prompt consumer is claimed. Native GGUF weights remain unchanged.
+- Exact CI runs for the current code head: temporal windows 45042747194; Python 3.13/3.14 training-resume/source-forget 45042747086; staged/integrated 45042747080 and 45042747106. All were queued at last read; no PASS. Full local Aii checkout remains BLOCKED by DNS; no local full-suite or Redmi test.
+- Boss #2343 latest head `9a1424bbf11f3306ce1a50f1e88cbb5c3765bca2` still has the generic `Store.switch_generation` preflight outside the Store RLock; promotion-vs-forget is OPEN. The source-publication race is covered only on #2351.
+- LATER is a provisional R-087 research candidate; shared board IDs R-084 Do-JEPA, R-085 differential retention and R-086 fork-ledger utility are preserved.
+- **User action: none.** No device update, model/weight swap, permission change or manual Termux command is needed.
+
+
+### Latest matched replay/retention checkpoint — 2026-11-22 16:18 UTC
+
+- PR #2351 latest code head `dcd1ee9aae6c49cdf0d87615d1710b9bc9c1ed1b` adds explicit metrics to rejected update attempts and a source-disjoint A→B→C→A′ test. It compares B uniform replay vs no-replay from the same A checkpoint with equal optimizer steps, then replays B and tests C and A′ retention. It checks train-window budget, holdout controls, parameter/EMA deltas and three prior holdouts.
+- Exact CI runs 45043086722 (temporal windows) and 45043086693 (Python 3.13/3.14 resume/source-forget) are queued; staged/integrated 45043086711 and Core same-turn 45043086690 are queued. No PASS. Full local checkout remains BLOCKED by DNS; no Redmi test.
+- The temporal B1/B2 matrix is still API-only; no bodyview prompt consumption is claimed. Boss #2343 owns the bodyview integration and the generic `Store.switch_generation` promotion race remains open.
+- Research candidate LATER is provisional R-087 after the shared board's R-084 Do-JEPA, R-085 differential retention and R-086 fork-ledger utility. The paper's reported PushT/TwoRoom gains and H100 cost are research-only, not Android performance claims.
+- **User action: none.** No manual command, update request, model swap, permission change or device mutation is needed.
+
+
+### Latest nonblocking lock correction — 2026-11-22 16:22 UTC
+
+- PR #2351 code head `f570528268ce003bec6ed8b4a1856dc7887284c3` fixes a release-base API mismatch: the current `WorldJEPAStoreConsumer._locked` has no `blocking` keyword. Temporal blocking reads now delegate to the current method; nonblocking reads use a symlink-checked `fcntl.flock(...|LOCK_NB)` on the same lock file. A new test holds an exclusive JEPA lock and verifies a foreground temporal read fails immediately with `BlockingIOError`.
+- LOCAL_LINUX isolated flock contention: PASS. This is not a full Aii test. Full local checkout remains BLOCKED by DNS.
+- Exact CI for this code head: runs 45043382782 (Python 3.13/3.14 training-resume/source-forget), 45043382791 (temporal windows), 45043382753 (Core same-turn), 45043382774 (runtime deployment integrity), 45043382798 (staged/integrated), 45043382734 (private owner-read bootstrap) are queued. No PASS yet.
+- Temporal batch receiver remains API_ONLY/SHADOW, not wired into bodyview. Generic promotion-vs-forget remains open on Boss #2343 head `9a1424bbf11f3306ce1a50f1e88cbb5c3765bca2`.
+- **User action: none.** No device mutation or deployment.
