@@ -213,3 +213,33 @@ def test_provider_refuses_disabled_companion_or_unbound_frame_uri(tmp_path):
             provider.read_once()
     finally:
         provider.close()
+
+
+def test_runtime_turn_frame_lease_fails_closed_without_raw_eye_consumer(tmp_path):
+    frame = bytearray(b"frame")
+    observation = {
+        "source_id": "ui-" + "a" * 32,
+        "capture_session_id": "mp-" + "a" * 32,
+        "consent_receipt_ref": "mp-" + "a" * 32,
+    }
+    provider = AndroidCompanionFrameProvider(
+        transport=None,
+        verifier=SimpleNamespace(close=lambda: None),
+    )
+    provider.read_once = lambda: {
+        "observation": observation,
+        "frame_buffer": frame,
+        "receipt_body": {},
+        "verify_frame": lambda *_: True,
+    }
+    runtime = SimpleNamespace(
+        current="turn",
+        turn_event={"brain_generation_id": "generation-1"},
+    )
+    try:
+        with pytest.raises(FrameReceiptDenied, match="A5 UI lease consumer"):
+            with provider.open_current_turn(runtime):
+                pass
+        assert frame == bytearray(b"\\x00" * 5)
+    finally:
+        provider.close()
