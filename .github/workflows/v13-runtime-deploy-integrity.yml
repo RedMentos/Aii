@@ -3,9 +3,11 @@ on:
   pull_request:
     paths:
       - 'v13/code/v13/runtime_deploy.py'
+      - 'v13/code/v13/pipeline_agent.py'
       - 'v13/code/tests/test_runtime_deploy_integrity.py'
       - 'v13/code/tests/test_runtime_deploy.py'
       - 'v13/code/tests/test_runtime_activation_journal.py'
+      - 'v13/code/tests/test_pipeline_agent.py'
       - 'v14/V14_USER_NEXT_ACTION.md'
       - 'v14/V14_WORK_BOARD.json'
       - 'v14/handoffs/QA_RUNTIME_ACTIVATION_JOURNAL_20261122.md'
@@ -34,7 +36,8 @@ jobs:
       - name: Compile and run offline regressions
         working-directory: v13/code
         run: |
-          python -m py_compile v13/runtime_deploy.py tests/test_runtime_deploy_integrity.py tests/test_runtime_deploy.py tests/test_runtime_activation_journal.py
+          python -m py_compile v13/runtime_deploy.py v13/pipeline_agent.py tests/test_runtime_deploy_integrity.py tests/test_runtime_deploy.py tests/test_runtime_activation_journal.py tests/test_pipeline_agent.py
           python -m unittest discover -s tests -p test_runtime_activation_journal.py -v
           python -m unittest discover -s tests -p test_runtime_deploy_integrity.py -v
           python -m unittest discover -s tests -p test_runtime_deploy.py -v
+          python -m unittest discover -s tests -p test_pipeline_agent.py -v
