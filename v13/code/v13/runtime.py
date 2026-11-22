@@ -136,7 +136,7 @@ class Runtime:
             if self.current=='probe':raise Limits('Probe läuft in einem Testkontext; danach wieder Chat-Eingaben senden')
             if self.jobs.full() or self.queued_bytes+b>self.cfg['queue_bytes']:raise Limits('Warteschlange voll; Eingabe wurde nicht angenommen')
             e=self.store.accept_turn(self.session,text,self.cfg['queue_count'],self.cfg['queue_bytes'],self.cfg['input_bytes']);self.jobs.put_nowait(('turn',e,b,time.monotonic()));self.queued_bytes+=b
-            if self.current in {'observers','shadow','dream','replay','tap','sleep'}:self.cancel_event.set()
+            if self.current in {'observers','shadow','dream','replay','tap','tap_pair','sleep'}:self.cancel_event.set()
             live=duplex.on_input(self,e['event_id'],text)  # WP-N14 live path: decide on overlap, no I/O under the lock
         try:duplex.record(self,live)
         except Exception as exc:self.store.log('duplex_unavailable',e['event_id'],{'stage':'record','error':type(exc).__name__})
@@ -212,6 +212,12 @@ class Runtime:
                 elif kind=='tap':
                     e,role,ref=payload
                     try:self.notice(dumps(self.cognition.tap(role,e,ref,time.monotonic()+self.cfg['observer_seconds'])))
+                    finally:self.pool.unload()
+                elif kind=='tap_pair':
+                    try:
+                        pair=self.cognition.tap_pair(payload,time.monotonic()+self.cfg['observer_seconds'])
+                        p=pair['packet']
+                        self.notice(dumps({'status':'PAIRED_NATIVE_TAPS_SAVED','body_pair_id':p['body_pair_id'],'source_ref':p['source_ref'],'tap_ids':p['tap_ids'],'model_revisions':p['model_revisions'],'dimensions':p['dimensions'],'token_counts':p['token_counts'],'gist_readout':{'revision':p['gist_readout']['plan']['revision'],'mode':p['gist_readout']['plan']['mode'],'slots':p['gist_readout']['shape'][0],'slot_budget':p['gist_readout']['plan']['max_slots'],'lossless':p['gist_readout']['plan']['lossless']},'authority':pair['authority']}))
                     finally:self.pool.unload()
                 elif kind=='probe':
                     if payload=='sustained':
