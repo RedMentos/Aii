@@ -16,7 +16,7 @@
 - Vollständiger LOCAL_LINUX-Repo-Test BLOCKED / NOT_RUN: kein Checkout vorhanden; GitHub-DNS scheitert. CI ist kein lokaler Test.
 - Private V13OBS #115, aktualisiert 22:17:26Z: installiert bleibt `aed1d2b`, Auto-Update aktiv und UP_TO_DATE. B1 4/4 und B2 2/2 Native-Versuche fehlgeschlagen, null gültige Offers; letzter gespeicherter C3-Prefill 38.945 s / 2 Tokens. #2372 ist nicht installiert; JEPA auf Redmi bleibt REDMI_UNVERIFIED.
 - QA #2383 ist auf Head `714a09e` weiterhin nicht grün; Boss #2370 auf `bae7d03` hat die wesentlichen exakten Workflows noch in der Queue. Keine Rebase-/Release-Freigabe.
-- Forschung R-093: Replay kann trotz vollständigem Replay vergessen, wenn spätere Störsignale frühere Signale überwiegen; signal-aware replay bleibt eine zu testende Hypothese. Uniform Replay bleibt Baseline.
+- Forschung R-093/R-094: Full replay can still forget under noise; Replay on Demand adds a loss-difference top-k allocation idea and an Apache-2.0 repo, but its NeMo-RL/Megatron/12B/GPU stack is not suitable for Redmi. Signal-aware/demand replay remains research-only; uniform replay stays baseline.
 
 **Nächster Team-Schritt:** neue exakte CI-Ergebnisse abwarten, echte Fehler reparieren, danach bei grüner QA-/Boss-Kette die mehrphasigen Replay-/Retention-Ablationen ausführen. Keine Geräteaktion wurde ausgelöst.
 
