@@ -123,6 +123,74 @@ class ProcessRestartWaitRecoveryTests(unittest.TestCase):
         self.assertNotIn("Close app", repr(adb_call.call_args_list))
 
 
+class ProcessRestartFinalSnapshotRecoveryTests(unittest.TestCase):
+    def test_final_hierarchy_snapshot_can_recover_one_explicit_wait(self) -> None:
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        original_monotonic = harness.time.monotonic
+        clock_values = iter([0.0, 1.0])
+
+        def clock():
+            try:
+                return next(clock_values)
+            except StopIteration:
+                return original_monotonic()
+
+        stopped = make_tree([
+            {"text": harness.STOPPED_TEXT, "class": "android.widget.TextView"},
+        ])
+        overlay_xml = (
+            '<hierarchy>'
+            '<node text="System UI isn\'t responding" class="android.widget.TextView"/>'
+            '<node text="Close app" class="android.widget.Button" bounds="[0,0][100,50]"/>'
+            '<node text="Wait" class="android.widget.Button" bounds="[100,0][200,50]"/>'
+            '</hierarchy>'
+        )
+        with (
+            patch.object(harness, "hierarchy", return_value=stopped),
+            patch.object(harness, "hierarchy_xml", return_value=overlay_xml),
+            patch.object(harness, "adb", return_value="") as adb_call,
+            patch.object(harness.time, "monotonic", side_effect=clock),
+            patch.object(harness.time, "sleep"),
+        ):
+            labels = harness.wait_for_text(harness.STOPPED_TEXT, timeout=0.01)
+        self.assertIn(harness.STOPPED_TEXT, labels)
+        adb_call.assert_called_once_with("shell", "input", "tap", "150", "25")
+
+    def test_final_snapshot_without_wait_button_fails_without_tapping(self) -> None:
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        original_monotonic = harness.time.monotonic
+        clock_values = iter([0.0, 1.0])
+
+        def clock():
+            try:
+                return next(clock_values)
+            except StopIteration:
+                return original_monotonic()
+
+        overlay_xml = (
+            '<hierarchy>'
+            '<node text="System UI isn\'t responding" class="android.widget.TextView"/>'
+            '<node text="Close app" class="android.widget.Button" bounds="[0,0][100,50]"/>'
+            '</hierarchy>'
+        )
+        with (
+            patch.object(harness, "hierarchy_xml", return_value=overlay_xml),
+            patch.object(harness, "adb", return_value="") as adb_call,
+            patch.object(harness.time, "monotonic", side_effect=clock),
+        ):
+            with self.assertRaisesRegex(AssertionError, "UI did not show expected state"):
+                harness.wait_for_text(harness.STOPPED_TEXT, timeout=0.01)
+        taps = [
+            call for call in adb_call.call_args_list
+            if len(call.args) >= 3 and call.args[:3] == ("shell", "input", "tap")
+        ]
+        self.assertEqual(taps, [])
+
+
 class ProcessRestartLogcatTests(unittest.TestCase):
     def test_failure_logcat_filters_string_output_from_adb(self) -> None:
         from unittest.mock import patch
