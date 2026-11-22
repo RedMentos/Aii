@@ -81,6 +81,20 @@ class UtilityTests(Base):
             f"callosum handoff precondition: pending={pending!r}; "
             f"message_row={message_row!r}; receiver_rows={receiver_rows!r}; "
             f"note_errors={note_errors!r}")
+        pending_row=self.r.store.one(
+            "SELECT rowid FROM packets WHERE id=?",(pending[0]['msg'],))
+        exact_receiver=self.r.store.one(
+            "SELECT rowid,payload FROM packets WHERE kind='OfferPacket' AND event_id=? "
+            "AND rowid>? AND json_extract(payload,'$.role')=? ORDER BY rowid LIMIT 1",
+            (eid,pending_row['rowid'] if pending_row else 0,pending[0]['receiver']))
+        self.assertEqual(pending[0]['msg'],out['message_packet_id'],
+                         f"Callosum message identity mismatch: {pending!r}; out={out!r}")
+        self.assertEqual(pending[0]['receiver'],'B2_GIST',
+                         f"Callosum receiver mismatch: {pending!r}")
+        self.assertIsNotNone(
+            exact_receiver,
+            f"exact Callosum receiver lookup failed: pending={pending!r}; "
+            f"pending_row={pending_row!r}; receiver_rows={receiver_rows!r}")
         res=self.c.outcome(eid,[recv['packet_id']],'FINAL');self.assertEqual(res['scored'],1);self.assertGreater(res['utilities'][0],1.)
         q=self.c._load()[0]['dirs']['B1_TO_B2']['u']['SOURCE_EXACT'];self.assertEqual(q['n'],1);self.assertIn('task_gain',q['parts'])
         self.assertEqual(C.on_rating(self.r.store,eid,10)['updated'],1)
