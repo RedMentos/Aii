@@ -16,6 +16,7 @@ from v13.a5_ui_admission_bridge import A5UIRuntimeAdapter, ui_observation_lease
 from v13.vision_ui_frame_ingress import (
     ProviderFrameVerifier, _issue_provider_frame_verifier,
     _load_local_tile_projector, consume_projected_frame,
+    consume_projected_frame_scope,
 )
 
 
@@ -291,6 +292,45 @@ def test_verified_frame_snapshot_prevents_post_receipt_buffer_swap(monkeypatch):
     assert not any(frame)
     assert not any(decoded[0][1])
     replacement[:] = b"\x00" * len(replacement)
+
+
+def test_scoped_frame_consumer_revokes_source_after_success_and_failure(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation()
+    frame = image_buffer()
+    revoked = []
+    monkeypatch.setattr(
+        "v13.vision_ui_frame_ingress.revoke_ui_observation",
+        lambda _runtime, source_id: revoked.append(source_id),
+    )
+
+    with lease_for(runtime, obs) as lease:
+        verifier = provider_verifier(lease, obs, frame)
+        with consume_projected_frame_scope(
+            runtime, obs, frame, consent_lease=lease,
+            frame_verifier=verifier, current_source="Describe this screen.",
+            goal="red panel", token_budget=512,
+        ) as result:
+            assert result["status"] == "WIRED_SYNTHETIC"
+            assert obs["source_id"] in runtime._a5_ui_context_cache
+            assert lease.active_for(runtime, runtime.turn_event["brain_generation_id"])
+        assert revoked == [obs["source_id"]]
+
+    runtime2 = make_runtime(monkeypatch)
+    obs2 = observation()
+    obs2["source_id"] = "ui-frame-source-0002"
+    frame2 = image_buffer()
+    revoked.clear()
+    with lease_for(runtime2, obs2) as lease2:
+        verifier2 = provider_verifier(lease2, obs2, frame2)
+        with pytest.raises(RuntimeError, match="downstream failure"):
+            with consume_projected_frame_scope(
+                runtime2, obs2, frame2, consent_lease=lease2,
+                frame_verifier=verifier2, current_source="Describe this screen.",
+                goal="red panel", token_budget=512,
+            ):
+                raise RuntimeError("downstream failure")
+        assert revoked == [obs2["source_id"]]
 
 
 def test_provisional_frame_is_never_admitted_to_c3_context(monkeypatch):
