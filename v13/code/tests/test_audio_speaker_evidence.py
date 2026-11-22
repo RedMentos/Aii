@@ -592,12 +592,16 @@ def test_low_level_noise_does_not_become_voiced_when_window_floor_is_relaxed():
 
 
 @pytest.mark.parametrize(
-    ("sample_rate", "frequency"),
-    [(16000, 7800), (22050, 10825), (44100, 8620), (48000, 7800)],
+    ("sample_rate", "frequency", "phase"),
+    [
+        (rate, frequency, phase)
+        for rate, frequency in ((16000, 7800), (22050, 10825), (44100, 8620), (48000, 7800))
+        for phase in (0.0, 1.0, 2.4)
+    ],
 )
-def test_high_frequency_alias_is_not_misclassified_as_voiced(sample_rate, frequency):
+def test_high_frequency_alias_is_not_misclassified_as_voiced(sample_rate, frequency, phase):
     cues = audio_voice_module.extract_voice_cues(
-        tone(sample_rate=sample_rate, frequency=frequency, amplitude=32767, phase=1.0),
+        tone(sample_rate=sample_rate, frequency=frequency, amplitude=32767, phase=phase),
         sample_rate,
     )
     assert cues["activity_hint"] == "UNVOICED_NOISE"
