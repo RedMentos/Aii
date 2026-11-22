@@ -302,4 +302,6 @@ def training_batch(cognition, pair_packets, labels, direction="B1_TO_B2"):
             "receiver_max_slots": (pairs[0]["packet"]["gist_readout"]["plan"]["max_slots"] if direction == "B1_TO_B2" else 0),
             "receiver_slot_counts": ([len(p["receiver"]["gist_states"]) for p in pairs] if direction == "B1_TO_B2" else []),
             "receiver_feature_mode": ("B2_GIST_ADAPTIVE_SLOTS_FLATTENED" if direction == "B1_TO_B2" else "B1_DETAIL_MEAN_POOL_BOOT"),
-            "claim_limit": "paired native read-only taps + adaptive B2 Gist readout + explicit task labels; no receiver injection"}
+            "claim_limit": ("paired native read-only taps + adaptive B2 Gist readout + explicit task labels; no receiver injection"
+                            if direction == "B1_TO_B2" else
+                            "paired native read-only taps + B1 mean-pool bootstrap only; no detail-specific receiver readout or injection")}
