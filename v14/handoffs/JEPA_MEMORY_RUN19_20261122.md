@@ -21,13 +21,13 @@ Commits:
 
 ## Run 19 continuation addendum
 
-SleepRuntime.job now schedules a bounded continuation when either the base learner or the temporal learner reports has_more, and scheduler completion metadata includes temporal_status. The regression uses base has_more=false and temporal has_more=true. No exact-head workflow or commit status is visible yet for dbb7b143; the queued 8ba258ff parent workflows do not validate this change.
+SleepRuntime.job now schedules a bounded continuation when either the base learner or the temporal learner reports has_more, and scheduler completion metadata includes temporal_status. The regression uses base has_more=false and temporal has_more=true. Exact dbb7b143 workflows are now visible: 45070190046 (staged/integrated), 45070190084 (temporal 3.13/3.14), 45070190269 (optimizer-resume 3.13/3.14), 45070190180 (owner-read / staged startup). All jobs are QUEUED, not PASS.
 
 ## Tests and environment
 
-- Exact-head dbb7b143: no workflow or commit status visible. Parent 8ba258ff staged/integrated workflow 45069630757 — QUEUED.
-- Parent 8ba258ff temporal WorldJEPA Python 3.13/3.14: 45069630624 — QUEUED.
-- Parent 8ba258ff optimizer-resume Python 3.13/3.14: 45069630784 — QUEUED.
+- Exact-head dbb7b143 staged/integrated workflow 45070190046 — QUEUED.
+- Exact-head dbb7b143 temporal WorldJEPA Python 3.13/3.14: 45070190084 — QUEUED.
+- Exact-head dbb7b143 optimizer-resume Python 3.13/3.14: 45070190269 — QUEUED. Owner-read / staged startup 45070190180 — QUEUED.
 - LOCAL_LINUX full suite: BLOCKED / NOT_RUN. Python 3.13.5, NumPy 2.3.5 and pytest 9.0.2 exist, but no Aii checkout is mounted; git ls-remote failed because github.com DNS could not resolve.
 - TERMUX/REDMI: NOT TESTED. Private V13OBS #115 reports installed base aed1d2b, updater UP_TO_DATE; B1 4/4 and B2 2/2 native attempts failed, zero valid offers, C3 prefill ~38.945 s / 2 generated tokens. #2372 is not installed.
 
