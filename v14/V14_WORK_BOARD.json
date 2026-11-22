@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T18:43:30Z",
+  "updated_at": "2026-11-22T18:44:30Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4 (documentation/handoff-only refresh; installed code remains c4eb82deec915f65894c20d6ebbaf0ebf58fa335 per the latest reported owner receipt). The phone updater is reported enabled/UP_TO_DATE, but the separate HEALTH receipt reports runtime UNAVAILABLE. P0 issue #1904 remains open; its latest stored diagnostic snapshot is not a new turn or correctness proof. PR #2366 exact Perception, staged/integrated and same-turn synthetic CI all pass but remains DRAFT and not normal-Runtime-wired. PR #2361 exact focused CI passes but its branch is one commit behind and mergeability is false. PR #2368 adds a synthetic-only A4 ablation; local 4/4 tests pass, exact CI retry is running after fixing the missing pytest dependency. Whole-Canon acceptance remains open; no Redmi acceptance.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -392,7 +392,7 @@
       "last_checkpoint": "2026-11-22T18:43:30Z",
       "latest_candidate_pr": {
         "pr": 2368,
-        "head_sha": "ca6b385d1e9ac0461fe922dfcdca3fe796d984a6",
+        "head_sha": "bb85ddd893d59836bac905dfb7c78342d6c0e996",
         "base_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
         "branch": "research-perception/v14-a4-novelty-ablation-20261122",
         "status": "DRAFT_CI_PASS_2_OF_2",
@@ -1016,7 +1016,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T18:43:30Z",
+    "timestamp": "2026-11-22T18:44:30Z",
     "release_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "code_candidate_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "candidate_ci": "EXACT_SHA_ALL_30_OBSERVED_ACTIONS_WORKFLOW_RUNS_SUCCESS",
@@ -1088,7 +1088,7 @@
       "redmi": "NOT_RUN"
     },
     "pr2368": {
-      "head_sha": "ca6b385d1e9ac0461fe922dfcdca3fe796d984a6",
+      "head_sha": "bb85ddd893d59836bac905dfb7c78342d6c0e996",
       "tested_code_sha": "41025f3d9bf92870f9675173d4af00638a49c203",
       "status": "DRAFT_RESEARCH_ONLY",
       "local": "CP3135_PYCOMPILE_PASS_4_OF_4_PASS_3_SEED_HOLDOUT",
