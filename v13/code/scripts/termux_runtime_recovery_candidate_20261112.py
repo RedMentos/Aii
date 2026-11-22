@@ -127,7 +127,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             ):
         raise ValueError('base-composer downstream source pins are inconsistent')
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
-                     '00d5842a23db5245e2f066ea93f39cba08c538ab24df2ad697cc9fd3b4d4f267')
+                     '5c4764b29024ca938e6eac2fe2cd213dfc2cea17daf7671a8930aaf33ff41ded')
     result = observers.apply_sources(code_dir, result)
     # Apply only the reviewed ContextOS input and the exact checked builder.
     # The dependent recall module pins ContextOS, so rebind that one pin.
@@ -232,7 +232,7 @@ def build_sources(code_dir, *, include_postcommit=True):
         # pre-postcommit builder must retain its earlier exact Runtime hash.
         # RAW Age/operator/UI remain pristine for the old phone updater.
         laboratory = load(code_dir, 'scripts/lab_age_stage_candidate_20261118.py',
-                          '56beb0a8a9d49721b0032361cd7c122036e6fb45d087711521f5aab1b8fb1310')
+                          'ffad7bb200badbe4a5565f183ac38957d3a2d04b0c79202678197add859d97f4')
         result = laboratory.apply_sources(code_dir, result)
     # Integrate the reviewed C4 source-span rule into the ordinary pinned stage.
     # The overlay is exact-blob-pinned and changes only the FocalLoop redundancy calculation.
