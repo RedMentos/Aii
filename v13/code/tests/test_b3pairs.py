@@ -112,6 +112,15 @@ class PairedNativeTapTests(unittest.TestCase):
                 self.r.cognition.tap_pair(self.event, time.monotonic() + 10)
         self.assertEqual(self.r.store.rows("SELECT * FROM packets WHERE kind='B3PairedTapPacket'"), [])
 
+    def test_b3_pairs_command_reports_collection_not_training_authority(self):
+        pair = self._capture()
+        report = json.loads(Operator(self.r).run(":b3 pairs"))
+        self.assertEqual(report["paired_native_samples"], 1)
+        self.assertEqual(report["required_for_l1_training"], 64)
+        self.assertEqual(report["remaining"], 63)
+        self.assertTrue(report["task_labels_and_L0_baselines_required"])
+        self.assertEqual(report["latent_injection_authority"], 0)
+
     def test_operator_pair_command_queues_same_event_for_both_bodies(self):
         event = self.r.store.event(self.r.session, "Operator paired tap source.")
         with patch.object(self.r, "last_answer", return_value={"event_id": event["event_id"]}), \
