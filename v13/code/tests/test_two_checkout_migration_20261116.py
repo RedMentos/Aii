@@ -153,6 +153,8 @@ def exercise_worker_migration(base):
             "dashboard": old["result"].get("dashboard"),
             "last_error": old["result"].get("last_error"),
             "fetches": old.get("fetches"),
+            "deploy_errors": old.get("deploy_errors"),
+            "same_source_updater": old.get("same_source_updater"),
             "profile": old.get("profile"),
         }, sort_keys=True))
         assert old['module_path'].startswith(str(agent) + os.sep)
