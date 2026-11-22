@@ -80,6 +80,6 @@ jobs:
       - name: Public repository privacy scan
         run: python v13/code/scripts/public_repo_privacy_scan.py --base 346321c47b8b1ab23fa6058a32a8e2daec128b11 --head HEAD --no-worktree
 
-      - name: Smoke-test Termux L1 shadow CLI import
+      - name: Smoke-test Termux L1 shadow CLI import and argument parser
         working-directory: v13/code
         run: python scripts/b3_train_l1_shadow.py --help >/dev/null
