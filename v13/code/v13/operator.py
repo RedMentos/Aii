@@ -89,6 +89,15 @@ class Operator:
         for text in userrules.observe(self.r.store,line):self.r.notice(text)
     def run(self,line,origin='OPERATOR_TTY'):
         if origin!='OPERATOR_TTY':raise ValueError('Nur lokale Operator-Eingaben dürfen Befehle ausführen')
+        if not (line.startswith(':') and not line.startswith('::')):
+            return self._run_command(line,origin)
+        r=self.r
+        with r.lock:r._operator_command_active+=1
+        try:return self._run_command(line,origin)
+        finally:
+            with r.lock:r._operator_command_active=max(0,r._operator_command_active-1)
+    def _run_command(self,line,origin='OPERATOR_TTY'):
+        if origin!='OPERATOR_TTY':raise ValueError('Nur lokale Operator-Eingaben dürfen Befehle ausführen')
         if line.startswith('::'):self._user_rules(line[1:]);return self.r.submit(line[1:])
         if not line.startswith(':'):
             self._implicit_feedback(line)
