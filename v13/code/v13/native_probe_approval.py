@@ -226,6 +226,7 @@ def arm(runtime, sender_role, receiver_role, *, now=None):
         "receiver_role": receiver_role,
         "source_bound": True,
         "model_revisions_and_hashes_bound": True,
+        "model_paths_and_file_identity_bound": True,
         "runtime_instance_scoped": True,
         "production_route": False,
         "training_authority": 0,
