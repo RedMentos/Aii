@@ -13,7 +13,7 @@ FIELDS={
  "WorldTransition":{"action_id":str,"source_ref":dict,"outcome_source_ref":dict,"action_role":str,"corollary_packet_id":str,"teacher_truth_authority":bool},
  "StudentEvaluation":{"percept_packet_id":str,"source_ref":dict,"student_route":str,"teacher_route":str,"agreement":bool,"routing_authority":int},
  "LatentTapPacket":{"role":str,"source_ref":dict,"tap_id":str,"model_revision":str,"token_ids":list,"feature_path":str,"feature_sha256":str,"shape":list},
- "B3PairedTapPacket":{"packet_schema":str,"body_pair_id":str,"source_ref":dict,"sender_roles":list,"tap_packet_ids":dict,"tap_ids":dict,"model_revisions":dict,"feature_bindings":dict,"token_counts":dict,"dimensions":dict,"token_alignment":str,"receiver_pooling":str,"injection_authority":int,"learning_authority":int},
+ "B3PairedTapPacket":{"packet_schema":str,"body_pair_id":str,"source_ref":dict,"sender_roles":list,"tap_packet_ids":dict,"tap_ids":dict,"model_revisions":dict,"feature_bindings":dict,"gist_readout":dict,"token_counts":dict,"dimensions":dict,"token_alignment":str,"receiver_pooling":str,"injection_authority":int,"learning_authority":int},
  "ExecutiveDecision":{"component":str,"context_ref":dict,"baseline":str,"action":str,"learned":bool,"context_revision":str,"trajectory_offer_ids":list},
  "ActionPrediction":{"action_type":str,"profile_id":str,"prediction":dict},
  "PredictionOutcome":{"action_id":str,"observation":dict},
@@ -99,6 +99,15 @@ def validate(kind,obj):
         roles=("B1_DETAIL","B2_GIST")
         if obj["packet_schema"]!="v13.b3-paired-native-taps/1" or obj["sender_roles"]!=list(roles):raise ValueError("B3 pair schema/roles")
         if obj["source_ref"] not in obj["provenance"]:raise ValueError("B3 pair source provenance")
+        gr=obj["gist_readout"]
+        if (not isinstance(gr,dict) or not isinstance(gr.get("plan"),dict)
+                or not gr["plan"].get("lossless") or gr["plan"].get("receiver_injection_authority")!=0
+                or gr.get("tap_packet_id")!=obj["tap_packet_ids"]["B2_GIST"]
+                or not isinstance(gr.get("feature_path"),str) or not gr.get("feature_path")
+                or not isinstance(gr.get("feature_sha256"),str) or len(gr["feature_sha256"])!=64
+                or not isinstance(gr.get("shape"),list) or len(gr["shape"])!=2
+                or any(type(v) is not int or v<1 for v in gr["shape"])):
+            raise ValueError("B3 pair adaptive Gist readout binding")
         for field in ("tap_packet_ids","tap_ids","model_revisions","feature_bindings","token_counts","dimensions"):
             if not isinstance(obj[field],dict) or set(obj[field])!=set(roles):raise ValueError("B3 pair "+field)
         if any(not isinstance(obj[field][role],str) or not obj[field][role] for field in ("tap_packet_ids","tap_ids","model_revisions") for role in roles):raise ValueError("B3 pair identity")
