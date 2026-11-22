@@ -136,7 +136,7 @@ class Runtime:
             if self.current=='probe':raise Limits('Probe läuft in einem Testkontext; danach wieder Chat-Eingaben senden')
             if self.jobs.full() or self.queued_bytes+b>self.cfg['queue_bytes']:raise Limits('Warteschlange voll; Eingabe wurde nicht angenommen')
             e=self.store.accept_turn(self.session,text,self.cfg['queue_count'],self.cfg['queue_bytes'],self.cfg['input_bytes']);self.jobs.put_nowait(('turn',e,b,time.monotonic()));self.queued_bytes+=b
-            if self.current in {'observers','shadow','dream','replay','tap','sleep'}:self.cancel_event.set()
+            if self.current in {'observers','shadow','dream','replay','tap','tap_pair','sleep'}:self.cancel_event.set()
             live=duplex.on_input(self,e['event_id'],text)  # WP-N14 live path: decide on overlap, no I/O under the lock
         try:duplex.record(self,live)
         except Exception as exc:self.store.log('duplex_unavailable',e['event_id'],{'stage':'record','error':type(exc).__name__})
