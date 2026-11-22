@@ -8,6 +8,7 @@ from v13.models import model_key
 from v13.operator import Operator
 from v13.runtime import Runtime
 from v13 import native_probe_approval as approval
+import v13.callosum as callosum
 
 
 def setup_runtime(tmp_path):
@@ -193,5 +194,33 @@ def test_revoke_clears_pending_local_approval_without_probe(tmp_path):
         with pytest.raises(PermissionError):
             operator.run(":callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm")
         assert calls == []
+    finally:
+        runtime.close()
+
+
+def test_native_probe_deadline_is_hard_capped_at_120_seconds(tmp_path, monkeypatch):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    runtime.cfg["observer_seconds"] = 99999
+    captured = []
+    runtime.cognition.native_receive = lambda sender, receiver, e, ref, deadline: (
+        captured.append(deadline) or {
+            "status": "NATIVE_INPUT_EFFECT",
+            "native_input_consumed": True,
+            "input_effect_detected": True,
+            "production_route": False,
+            "semantic_use_proven": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+        }
+    )
+    operator = Operator(runtime)
+    monkeypatch.setattr(callosum.time, "monotonic", lambda: 1000.0)
+    try:
+        operator.run(":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+        result = json.loads(operator.run(
+            ":callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm"
+        ))
+        assert result["local_approval_consumed"] is True
+        assert captured == [1120.0]
     finally:
         runtime.close()

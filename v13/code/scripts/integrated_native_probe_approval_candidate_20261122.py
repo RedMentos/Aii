@@ -5,6 +5,7 @@ production recovery/stage/deployer pin chain.
 """
 import hashlib
 import json
+import os
 from pathlib import Path
 
 OPERATOR_PREFIX_OLD = r"""    c=controller(r)
@@ -55,7 +56,7 @@ OPERATOR_PREFIX_NEW = r"""    c=controller(r)
         from .native_probe_approval import consume as consume_native_probe
         approval=consume_native_probe(r,sender,receiver,event,ref)
         r.models.path_for(receiver)
-        deadline=time.monotonic()+max(120,r.cfg['observer_seconds'])
+        deadline=time.monotonic()+120.0
         try:
             packet=r.cognition.native_receive(sender,receiver,event,ref,deadline)
         finally:
@@ -83,6 +84,42 @@ def _replace(raw, old, new, label):
     return raw.replace(old, new, 1)
 
 
+def _safe_file(root: Path, relative: str, label: str) -> Path:
+    root = Path(root).resolve(strict=True)
+    rel = Path(relative)
+    if rel.is_absolute() or not rel.parts or ".." in rel.parts:
+        raise ValueError(label + " path is unsafe")
+    current = root
+    for part in rel.parts[:-1]:
+        current = current / part
+        if current.is_symlink():
+            raise ValueError(label + " path contains a symlink")
+        if not current.is_dir():
+            raise ValueError(label + " parent directory is missing")
+    path = current / rel.parts[-1]
+    if path.is_symlink() or not path.is_file():
+        raise ValueError(label + " file is missing or unsafe")
+    resolved = path.resolve(strict=True)
+    if not resolved.is_relative_to(root):
+        raise ValueError(label + " path escaped its root")
+    return path
+
+
+def _atomic_write(path: Path, payload: bytes) -> None:
+    temporary = path.with_name(path.name + ".native-probe.tmp")
+    if temporary.exists() or temporary.is_symlink():
+        raise ValueError("native probe overlay temporary path already exists")
+    try:
+        with temporary.open("xb") as stream:
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    finally:
+        if temporary.exists() and not temporary.is_symlink():
+            temporary.unlink()
+
+
 def apply_staged(code_dir: Path, staging_dir: Path) -> dict:
     code_dir = Path(code_dir).resolve(strict=True)
     if Path(staging_dir).is_symlink():
@@ -91,11 +128,37 @@ def apply_staged(code_dir: Path, staging_dir: Path) -> dict:
     if (staging_dir == code_dir or staging_dir in code_dir.parents
             or code_dir in staging_dir.parents):
         raise ValueError("native probe approval staging directory must be separate from source tree")
-    callosum_path = staging_dir / "v13/callosum.py"
-    operator_path = staging_dir / "v13/operator.py"
-    approval_path = code_dir / "v13/native_probe_approval.py"
-    if any(path.is_symlink() or not path.is_file() for path in (callosum_path, operator_path, approval_path)):
-        raise ValueError("native probe approval source or staged consumer is missing/unsafe")
+
+    # Validate the stage identity and every pre-overlay byte before touching it.
+    manifest_path = _safe_file(staging_dir, "INTEGRATION_STAGE.json", "staged Runtime manifest")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if manifest.get("status") != "SHADOW_REVIEW_ONLY":
+        raise ValueError("native probe approval overlay only accepts a review-only staged Runtime")
+    if Path(manifest.get("source", "")).resolve() != code_dir:
+        raise ValueError("native probe approval source tree differs from staged manifest")
+    file_hashes = manifest.get("files_sha256")
+    if not isinstance(file_hashes, dict) or not file_hashes:
+        raise ValueError("staged Runtime integrity manifest is missing")
+    for relative, expected in sorted(file_hashes.items()):
+        if not isinstance(relative, str) or not isinstance(expected, str) or len(expected) != 64:
+            raise ValueError("staged Runtime integrity manifest is malformed")
+        path = _safe_file(staging_dir, relative, "staged Runtime file")
+        actual = hashlib.sha256(path.read_bytes()).hexdigest()
+        if actual != expected:
+            raise ValueError("staged Runtime integrity mismatch: " + relative)
+    for path in staging_dir.rglob("*"):
+        if path.is_symlink():
+            raise ValueError("staged Runtime contains a symlink")
+
+    callosum_path = _safe_file(staging_dir, "v13/callosum.py", "staged Callosum")
+    operator_path = _safe_file(staging_dir, "v13/operator.py", "staged Operator")
+    staged_approval = _safe_file(staging_dir, "v13/native_probe_approval.py", "staged approval module")
+    approval_path = _safe_file(code_dir, "v13/native_probe_approval.py", "native probe approval source")
+    approval = approval_path.read_bytes()
+    if staged_approval.read_bytes() != approval:
+        raise ValueError("staged approval module differs from the reviewed source")
+    compile(approval, "v13/native_probe_approval.py", "exec")
+
     callosum = callosum_path.read_bytes()
     if b"arm-probe" in callosum or b"local_approval_consumed" in callosum:
         raise ValueError("native probe approval overlay is already applied")
@@ -113,24 +176,7 @@ def apply_staged(code_dir: Path, staging_dir: Path) -> dict:
     operator = _replace(operator, HELP_OLD.encode("utf-8"), HELP_NEW.encode("utf-8"),
                         "local operator help")
     compile(operator, "v13/operator.py", "exec")
-    approval = approval_path.read_bytes()
-    compile(approval, "v13/native_probe_approval.py", "exec")
 
-    callosum_path.write_bytes(callosum)
-    operator_path.write_bytes(operator)
-    staged_approval = staging_dir / "v13/native_probe_approval.py"
-    if staged_approval.is_symlink() or not staged_approval.is_file():
-        raise ValueError("native probe approval module was not copied into the staged Runtime")
-    staged_approval.write_bytes(approval)
-
-    manifest_path = staging_dir / "INTEGRATION_STAGE.json"
-    if not manifest_path.is_file() or manifest_path.is_symlink():
-        raise ValueError("staged Runtime manifest is missing or unsafe")
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    if manifest.get("status") != "SHADOW_REVIEW_ONLY":
-        raise ValueError("native probe approval overlay only accepts a review-only staged Runtime")
-    if Path(manifest.get("source", "")).resolve() != code_dir:
-        raise ValueError("native probe approval source tree differs from staged manifest")
     changed = ["v13/callosum.py", "v13/operator.py", "v13/native_probe_approval.py"]
     manifest["native_probe_approval_overlay"] = {
         "status": "SHADOW_REVIEW_ONLY",
@@ -140,16 +186,21 @@ def apply_staged(code_dir: Path, staging_dir: Path) -> dict:
         "local_arm_command": ":callosum arm-probe <sender> <receiver> --last-source --confirm",
         "remote_consumer_command": ":callosum native-probe <sender> <receiver> --last-source --confirm",
         "ttl_seconds": 120,
+        "native_probe_deadline_seconds": 120,
         "runtime_instance_scoped": True,
         "production_route": False,
         "training_authority": 0,
         "native_receiver_authority": 0,
     }
     manifest["replaced_files"] = sorted(set(manifest.get("replaced_files", [])) | set(changed))
-    manifest["files_sha256"] = {
-        str(path.relative_to(staging_dir)): hashlib.sha256(path.read_bytes()).hexdigest()
-        for path in sorted(staging_dir.rglob("*"))
-        if path.is_file() and path != manifest_path
-    }
-    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    _atomic_write(callosum_path, callosum)
+    _atomic_write(operator_path, operator)
+    updated_hashes = {}
+    for path in sorted(staging_dir.rglob("*")):
+        if path.is_symlink():
+            raise ValueError("staged Runtime contains a symlink")
+        if path.is_file() and path != manifest_path:
+            updated_hashes[str(path.relative_to(staging_dir))] = hashlib.sha256(path.read_bytes()).hexdigest()
+    manifest["files_sha256"] = updated_hashes
+    _atomic_write(manifest_path, (json.dumps(manifest, indent=2) + "\n").encode("utf-8"))
     return manifest
