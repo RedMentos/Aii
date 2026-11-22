@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T07:04:00Z",
+  "updated_at": "2026-11-22T07:06:00Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at f210999cf556be4d4514427cc9b5cf6d3cf3e984; V14 master and historical V13 appendix preserved. This board is a Boss handoff branch stacked on Perception handoff PR #2316.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -313,10 +313,10 @@
       "owner": "Core & Harness + Boss",
       "priority": "P0",
       "status": "IN_PROGRESS_PARTIAL",
-      "last_checkpoint": "2026-11-22T07:04:00Z",
-      "proof_environment": "Boss #2314 head 87975814a1e134a4b12dc5961b6250d9125d65eb composes the native llama.cpp input-embedding probe into staged Runtime. Runtime deployment, old-phone migration, Lab-Age, owner-read, same-turn B1/B2/C4/C3 and staged/integrated checks PASS. Dedicated PR native workflow run 44994147854 is IN_PROGRESS: Python 3.14 compile PASS/tests running, Python 3.13 dependency install running, pinned Linux llama.cpp build and Android ARM64 cross-compile both running. Separate push-triggered native workflow 44994143550 remains QUEUED. Binary is not auto-installed; production_route=false, semantic_use_proven=false, training_authority=0, native_receiver_authority=0. No actual GGUF receiver inference or Redmi proof.",
+      "last_checkpoint": "2026-11-22T07:06:00Z",
+      "proof_environment": "Boss #2314 head 87975814a1e134a4b12dc5961b6250d9125d65eb: Linux pinned llama.cpp receiver build/selftest PASS. Python 3.13 and 3.14 compile PASS but both fail the staged Runtime test because nested test_callosum.py::UtilityTests.test_message_fields_outcome_rating_and_doctor returns scored=0 instead of 1 (22 passed/1 failed in each nested suite; 7 passed/1 failed outer stage). Android ARM64 cross-compile remains IN_PROGRESS. Other gates (runtime deploy, old-phone migration, Lab-Age, owner-read, same-turn, staged/integrated) PASS. This is not a complete native workflow PASS, not a receiver inference or Redmi proof.",
       "proof": "PR #2266 head 3166858133844fc80201334f53ade450557d1191; explicit operator-only probe through pinned llama.cpp input-embedding API. Six isolated wrapper tests and C++ core compile/selftest reported PASS; real pinned library/model run and Android arm64 build remain pending. production_route=false; no semantic use, trained alignment, cross-organ learning or Redmi proof.",
-      "next_step": "Wait for run 44994147854 to finish and inspect all four job conclusions; if green, compare/retarget onto release tip f210999 and rerun the full exact-release-base matrix. Then, only with separate approval, test same-model parity and zero/shuffle/dimension/revision controls using an already-installed model. No model download, auto-install, production route or weight edit."
+      "next_step": "Fix the staged Callosum message→offer utility regression without deleting/weaking the test. Diagnose why Cognition.communicate's Callosum.note pending record is not consumed by Callosum.outcome or why the subsequent B2 OfferPacket lookup fails; add a targeted state/rowid regression, pass Python 3.13+3.14, finish Android ARM64 cross-compile, and rerun all four jobs. Only after green compare/retarget onto release f210999 and rerun the exact release-base matrix."
     },
     {
       "id": "V14-017",
