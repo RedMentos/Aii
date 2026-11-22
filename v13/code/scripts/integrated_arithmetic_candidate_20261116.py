@@ -14,7 +14,7 @@ SOURCE_PINS = {
     'v13/focal.py': 'e1f17b7865c35a268feb898551c1fd8d190f63a68819fec3b0c07dd21ceef6cf',
     'v13/arithmetic_reflex.py': '93486e8e5e7e9c9c66178833d3c25218e57172688623fb2a29af8e45b6246927',
 }
-UPSTREAM_RUNTIME_SHA = '0196f880576a1f1f95840ef12eb0b35928f3f442715f3d86f17dc38c4c22305d'
+UPSTREAM_RUNTIME_SHA = 'cf6da240935d60bbef5472af07db7a0b0a495d53cb6f6206f95fc3b47a4317d7'
 
 
 def _replace(raw, old, new, label):
