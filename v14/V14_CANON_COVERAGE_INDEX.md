@@ -2112,3 +2112,13 @@ This is an additive evidence overlay only. The historical 1,255-heading inventor
 | Canon family | Current source path | Exact evidence | Limit / next acceptance | Classification |
 | --- | --- | --- | --- | --- |
 | B1/B2 same-turn observer scheduling and C3 recovery | `native_turn_budget.plan()`, `Cognition.offer()`, `observer_schedule.run()`; QA #2277 | Source-level review of #2277 identifies a 30 s background turn after two real C3 zero-token prefill deadlines: 26 s is reserved for C3, leaving ~4 s for pre-answer B1/B2; the current offer guard then defers both to postcommit. The PR's 3 metadata/security checks pass, but its new regression test is explicitly NOT_EXECUTED because workflow branch/path filters do not include it. | Rebase QA test onto current release and run Python 3.13/3.14 staged Runtime. Require both B1/B2 to reach the same-turn offer boundary and C4 consumption, plus a negative control where one body may be deferred. Preserve C3 reserve. Separately test the 90 s/40.5 s sequential fair-share risk from the latest device configuration. | SOURCE_REPRODUCED / TEST_NOT_EXECUTED / NOT_ANDROID_VERIFIED |
+
+
+### Additive Boss correction — Android companion stack, 2026-11-22
+
+The preceding historical overlay row that lists #2286 at its earlier 11/12 handoff head is superseded by this newer exact integration evidence:
+
+- QA leaf #2286 was merged into its intended parent branch #2273 at `f3c46ae1da69cd7fb9da9f9e15104a45f33048fc` after the exact leaf head passed 12/12 checks (Android Gradle/Robolectric, staged/integrated Runtime, old-phone migration, broker, sandbox and outcome adapter).
+- The merged parent PR #2273 now has 17 checks: 6 in progress, 11 queued, 0 failures at first readback. It remains stacked on #2271, whose current head still has 7 failed checks.
+- The merged code includes checked synchronous `SharedPreferences.commit()`, process-restart default-stopped behavior, failed-commit fail-closed behavior, and one-shot approval/cancellation durability. This is QA-branch integration only, not release or device deployment.
+- Only `launch_app` is implemented. UI/screen observation, tap/type, background app operations, AudioRecord and all other native capabilities remain OFF/unimplemented; no APK was installed and no Redmi OS action was tested.
