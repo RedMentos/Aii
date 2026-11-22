@@ -1097,7 +1097,7 @@ def test_bodyview_jepa_receiver_fails_closed_without_checkpoint_and_when_lock_bu
     import time
     from threading import Event, Thread
     from types import SimpleNamespace
-    from v13 import bodyview, world_model
+    from v13 import bodyview, world_model, world_jepa_receiver_matrix as receiver_module
     from v13.world_jepa_consumer import WorldJEPAStoreConsumer
     from v13.world_jepa_receiver_matrix import receiver_matrix
 
@@ -1126,31 +1126,19 @@ def test_bodyview_jepa_receiver_fails_closed_without_checkpoint_and_when_lock_bu
 
         # Negative control: one action with only two train-split rows must not
         # receive a predictor readout, even when the global role utility gate passes.
-        original_read_state = WorldJEPAStoreConsumer._read_state
-
-        def thin_simple_support(instance):
-            state, version = original_read_state(instance)
-            state = dict(state)
-            active = dict(state["active"])
-            train_ids = tuple(active["train_ids"])
-            train_id_set = set(train_ids)
-            simple_ids = [
-                row["action_id"] for row in active["experience_rows"]
-                if row["a"] == "simple" and row["action_id"] in train_id_set
-            ]
-            keep_simple = set(simple_ids[:2])
-            active["train_ids"] = tuple(
-                action_id for action_id in train_ids
-                if action_id not in simple_ids or action_id in keep_simple
-            )
-            state["active"] = active
-            return state, version
-
-        monkeypatch.setattr(WorldJEPAStoreConsumer, "_read_state", thin_simple_support)
+        original_support = receiver_module._train_split_action_support
+        monkeypatch.setattr(
+            receiver_module, "_train_split_action_support",
+            lambda active, actions: {
+                action: (2 if action == "simple" else 32) for action in actions
+            },
+        )
         try:
             thin_support = bodyview.body_state(runtime, event, "B1_DETAIL", text)
         finally:
-            monkeypatch.setattr(WorldJEPAStoreConsumer, "_read_state", original_read_state)
+            monkeypatch.setattr(
+                receiver_module, "_train_split_action_support", original_support
+            )
         assert thin_support is not None
         assert thin_support["view"]["world_jepa"]["unsupported_actions"] == ["simple"]
         assert all(row[0] != "simple"
