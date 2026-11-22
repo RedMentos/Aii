@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T07:58:52.317Z",
+  "updated_at": "2026-11-22T07:59:42.138Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c03ff0aa9e18b5ffebd1109f3c078105f53c6afe; documentation-only PR #2316 merged. Current device code receipt is f210999cf556be4d4514427cc9b5cf6d3cf3e984.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Latest 2026-11-22 owner-authenticated phone receipt supersedes earlier #480/#477/#466 snapshots. Current phone pipeline is UP_TO_DATE at f210999; last-turn performance and B1/B2 probe failures remain unresolved. Never promote synthetic/CI evidence to native Android proof.",
@@ -914,7 +914,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T07:58:52.317Z",
+    "timestamp": "2026-11-22T07:59:42.138Z",
     "release_sha": "c03ff0aa9e18b5ffebd1109f3c078105f53c6afe",
     "release_push_ci": "39_SUCCESS_0_FAILURE_0_PENDING_39_CHECK_RUNS",
     "last_code_sha_installed": "f210999cf556be4d4514427cc9b5cf6d3cf3e984",
@@ -929,11 +929,11 @@
       "2273": "89e2c2: 11/13 checks, staged-runtime and old-phone migration fail.",
       "2277": "c3dc3a8: 3 metadata/security checks success, but the added same-turn starvation test has NOT been executed because branch/path filters do not trigger the workflow. Source-level 30 s recovery path reserves 26 s for C3 and defers both B1/B2.",
       "2286": "cc29b06: 12 queued, 1 in progress; companion durability/permission review incomplete.",
-      "2309": "8a73ae5: native receiver rebase on old Boss base, 8/19 checks success and 11 fail; not ready and overlaps the newer #2314 receiver candidate.",
+      "2309": "8a73ae5: 8/19 checks, 11 fail; do not merge as a duplicate. It contains a safer additive operator insertion hunk that preserves c=controller(r); port only that hunk into #2314, then close/supersede after readback.",
       "2311": "ba058f1: 8/17 checks, 9 fail; feedback/bootstrap source pin mismatch cascades through staged runtime and migration.",
       "2312": "5221314: 4/5 checks, staged-runtime fail; stacked QA base, caller PCM only.",
       "2313": "9068cf9: 5/14 checks, 8 fail, 1 skipped; stale base, three-seed EXACT result but test expects two, staged pins fail.",
-      "2314": "846ad876: 15/19 checks; Python 3.13/3.14 fail NameError c undefined after overlay removed c=controller(r); native Linux build and Android ARM64 cross-compile pass.",
+      "2314": "846ad876: 15/19 checks, Python 3.13/3.14 fail NameError because OPERATOR_PREFIX_NEW replaces c=controller(r); port the additive insertion pattern from #2309, which inserts before the status branch and preserves initialization. Linux native build/Android ARM64 cross-compile pass.",
       "2317": "4d6c180: 3/5 checks, staged/integrated fail; no accepted source-disjoint L1 gate.",
       "2319": "713b188: docs-only child of merged #2316; superseded by this current Boss evidence refresh.",
       "2320": "2ad1530: diagnostic-only child; Python 3.13/3.14 reproduce parent NameError."
