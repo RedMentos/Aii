@@ -434,7 +434,7 @@ class Operator:
                           'pair_collection_threshold_met':len(source_keys)>=MIN_PAIRED and len(revisions)==1 and current_match,
                           'task_labels_and_L0_baselines_required':True,
                           'shadow_trainer_available':True,
-                          'l1_utility_gate':'CLOSED_UNTIL_L0_BASELINES_AND_ROLE_RETENTION',
+                          'l1_utility_gate':'NOT_EVALUATED_BY_PAIR_COLLECTION_STATUS',
                           'latent_injection_authority':0,'body_learning_authority':0})
         if cmd=='tap':
             if args==['pair']:
