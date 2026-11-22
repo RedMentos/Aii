@@ -2287,3 +2287,14 @@ Android command-line documentation identifies `-accel off` as slow software emul
 | A5 RAW EAR → staged Runtime / downstream composition | Boss #2370 head 4d771: `integrated_audio_context_candidate_20261121.py` expects Git blob `30360f40eb784be5ea975ee85e94a57f0b154164` for `v13/runtime.py`, but exact current file blob is `6e61af07326c5bb11406ee72361a710d5facc9a5` | Lab-Age, Python 3.14 owner-read stage, JEPA optimizer-resume 3.13/3.14, staged/integrated and audio/arithmetic fail; migration is PARTIAL downstream | SHARED_PIN_BLOCKER / NOT_RELEASED |
 
 The RECORD_ONLY controller guard itself passes on this head. The audio overlay uses Git blob SHA-1; recovery/stage/deployer use their own SHA-256 chain. Preserve both strict checks and coordinate with the audio-overlay owner before rebinding. QA comment: #2370 comment 7085162144.
+
+## Exact companion CI poll — 2026-11-22T20:30:00Z
+
+| Exact head | Workflow | Current result |
+|---|---|---|
+| #2356 `3829465e5180ce237ef98b36181bda6caea601a5` | Android outcome contract 45065638347 | PASS |
+| #2356 `3829465e5180ce237ef98b36181bda6caea601a5` | Core companion outcome adapter 45065638341 | PASS |
+| #2356 `3829465e5180ce237ef98b36181bda6caea601a5` | Staged/integrated 45065638335 | IN_PROGRESS |
+| #2356 `3829465e5180ce237ef98b36181bda6caea601a5` | Android Gradle + emulator 45065638333 | QUEUED |
+
+No exact-head emulator result exists yet. Previous-head System UI ANR is not a product pass or a Redmi measurement.
