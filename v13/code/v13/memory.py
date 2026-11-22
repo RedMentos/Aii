@@ -370,35 +370,37 @@ class Memory:
         return 'Ausgabereferenz gelöscht; abhängige Kandidaten gesperrt. Chatverlauf und separate Backups bleiben unverändert.'
     def _forget_source(self,sid,event_id,mid=None):
         from .world_jepa_temporal import combined_source_forget_guard as source_forget_guard
-        # The JEPA file lock serializes both one-step and temporal checkpoints.
-        # BEGIN IMMEDIATE then serializes non-JEPA update/promotion rows with the
-        # active-generation check and the source tombstone in the same transaction.
+        # Lock order is JEPA file lock -> Store RLock. The Store lock must cover
+        # publication, tombstoning, the final live-refcount check and blob unlink.
+        # Store.switch_generation must take the same RLock around its full
+        # preflight/commit and recheck source liveness before promotion.
         with source_forget_guard(self.s,sid) as forget_guard_report:
-            with self.s.tx() as c:
-                affected=[dict(row) for row in c.execute('SELECT * FROM updates').fetchall()
-                          if sid in json.loads(row['manifest']).get('source_ids',[])]
-                active=self.s.generation()['hashes']
-                if any(u['path'] in active for u in affected):
-                    raise ValueError('Quelle steckt in aktiven Gewichten. Zuerst :rollback '+next(
-                        u['id'] for u in affected if u['path'] in active))
-                c.execute('UPDATE memories SET active=0,value=? WHERE source_id=?',('[GELÖSCHT]',sid))
-                c.execute('DELETE FROM feedback WHERE source_id=?',(sid,))
-                c.execute('UPDATE sources SET deleted=1 WHERE id=?',(sid,))
-                for u in affected:
-                    c.execute("UPDATE updates SET status='QUARANTINED',path=NULL,hash=NULL WHERE id=?",(u['id'],))
-                c.execute('DELETE FROM states WHERE key LIKE ?',('%'+sid+'%',))
-                for packet_row in c.execute('SELECT id,payload FROM packets').fetchall():
-                    if sid in packet_row['payload']:
-                        c.execute('DELETE FROM packets WHERE id=? AND id NOT IN (SELECT corollary_id FROM actions)',
-                                  (packet_row['id'],))
-            for update in affected:
-                if update['path']:
-                    (self.s.home/update['path']).unlink(missing_ok=True)
-            source=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
-            if source and not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(source['hash'],)):
-                (self.s.home/'data/blobs'/source['hash']).unlink(missing_ok=True)
-                (self.s.home/'data/blobs'/(source['hash']+'.z')).unlink(missing_ok=True)
-            self.s.log('forget',event_id,{'memory_id':mid,'source_id':sid,
-                'scope':'source and dependent candidates; independent backups unchanged',
-                'temporal_pending_rows_removed':forget_guard_report.get('temporal_pending_rows_removed',0),
-                'jepa_pending_rows_removed':forget_guard_report.get('pending_rows_removed',0)})
+            with self.s.mutex:
+                with self.s.tx() as c:
+                    affected=[dict(row) for row in c.execute('SELECT * FROM updates').fetchall()
+                              if sid in json.loads(row['manifest']).get('source_ids',[])]
+                    active=self.s.generation()['hashes']
+                    if any(u['path'] in active for u in affected):
+                        raise ValueError('Quelle steckt in aktiven Gewichten. Zuerst :rollback '+next(
+                            u['id'] for u in affected if u['path'] in active))
+                    c.execute('UPDATE memories SET active=0,value=? WHERE source_id=?',('[GELÖSCHT]',sid))
+                    c.execute('DELETE FROM feedback WHERE source_id=?',(sid,))
+                    c.execute('UPDATE sources SET deleted=1 WHERE id=?',(sid,))
+                    for u in affected:
+                        c.execute("UPDATE updates SET status='QUARANTINED',path=NULL,hash=NULL WHERE id=?",(u['id'],))
+                    c.execute('DELETE FROM states WHERE key LIKE ?',('%'+sid+'%',))
+                    for packet_row in c.execute('SELECT id,payload FROM packets').fetchall():
+                        if sid in packet_row['payload']:
+                            c.execute('DELETE FROM packets WHERE id=? AND id NOT IN (SELECT corollary_id FROM actions)',
+                                      (packet_row['id'],))
+                for update in affected:
+                    if update['path']:
+                        (self.s.home/update['path']).unlink(missing_ok=True)
+                source=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
+                if source and not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(source['hash'],)):
+                    (self.s.home/'data/blobs'/source['hash']).unlink(missing_ok=True)
+                    (self.s.home/'data/blobs'/(source['hash']+'.z')).unlink(missing_ok=True)
+                self.s.log('forget',event_id,{'memory_id':mid,'source_id':sid,
+                    'scope':'source and dependent candidates; independent backups unchanged',
+                    'temporal_pending_rows_removed':forget_guard_report.get('temporal_pending_rows_removed',0),
+                    'jepa_pending_rows_removed':forget_guard_report.get('pending_rows_removed',0)})

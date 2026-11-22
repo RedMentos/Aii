@@ -214,6 +214,139 @@ def test_sleep_runtime_invokes_temporal_consumer_but_default_permissions_stay_of
         store.close()
 
 
+def test_temporal_rollback_restores_previous_checkpoint_and_retries_pending_rows_after_restart(tmp_path):
+    home = tmp_path / "temporal-rollback-retry-store"
+    store = _make_store(home)
+    try:
+        _make_dataset(store, "rollback-A", 32)
+        _permissions(store, steps=80)
+        learner = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        first = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert first["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", first
+        first_state, _ = store.state(STATE_KEY, None)
+        first_record = first_state["active"]
+        first_sha = first_record["checkpoint_sha256"]
+
+        _make_dataset(store, "rollback-B", 32)
+        second = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert second["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", second
+        second_state, _ = store.state(STATE_KEY, None)
+        second_record = second_state["active"]
+        assert second_record["checkpoint_sha256"] != first_sha
+        assert second_record["fit_steps"] > first_record["fit_steps"]
+
+        rollback = learner.rollback()
+        assert rollback["status"] == "ROLLED_BACK", rollback
+        restored, _ = store.state(STATE_KEY, None)
+        assert restored["active"]["checkpoint_sha256"] == first_sha
+        assert restored["active"]["fit_steps"] == first_record["fit_steps"]
+        assert restored["previous"] is None
+        assert len(restored["pending_rows"]) >= 100
+        assert not (learner.home / second_record["checkpoint"]).exists()
+
+        # Restart must preserve the restored checkpoint and make rolled-back
+        # source-verified rows explicitly retryable without requiring a new T8 event.
+        restarted = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        retry = restarted.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert retry["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", retry
+        assert retry["verified_receipts"] == 0
+        assert retry["pending_retried"] >= 100
+        assert retry["optimizer_state_persisted"] is True
+        assert retry["metrics"]["parameter_delta_norm"] > 0
+        assert retry["metrics"]["ema_target_delta_norm"] > 0
+        assert retry["metrics"]["optimizer_steps"] > first_record["fit_steps"]
+        active, _ = store.state(STATE_KEY, None)
+        assert active["active"]["checkpoint_sha256"] == retry["checkpoint_sha256"]
+        assert active["previous"]["checkpoint_sha256"] == first_sha
+        assert active["pending_rows"] == []
+    finally:
+        store.close()
+
+
+def test_source_forget_holds_store_lock_through_blob_unlink_against_republication(tmp_path):
+    home = tmp_path / "source-forget-republication-store"
+    store = _make_store(home)
+    allow_unlink = threading.Event()
+    refcount_checked = threading.Event()
+    publish_started = threading.Event()
+    publish_done = threading.Event()
+    forget_done = threading.Event()
+    errors = []
+    new_ref = {}
+    original_one = store.one
+    try:
+        source = store.source("shared-blob-content")
+        session = store.new_session("forget race")
+        event = store.event(session, "forget race event")
+        memory = Memory(store, {})
+
+        def gated_one(sql, params=()):
+            result = original_one(sql, params)
+            if "SELECT id FROM sources WHERE hash=? AND deleted=0" in sql:
+                refcount_checked.set()
+                if not allow_unlink.wait(5):
+                    raise AssertionError("source-forget race gate timed out")
+            return result
+
+        store.one = gated_one
+
+        def forget_source():
+            try:
+                memory._forget_source(source["source_id"], event["event_id"])
+            except BaseException as exc:
+                errors.append(exc)
+            finally:
+                forget_done.set()
+
+        def republish_source():
+            publish_started.set()
+            try:
+                new_ref["value"] = store.source("shared-blob-content")
+            except BaseException as exc:
+                errors.append(exc)
+            finally:
+                publish_done.set()
+
+        forget_thread = threading.Thread(target=forget_source, daemon=True)
+        forget_thread.start()
+        assert refcount_checked.wait(5)
+        publish_thread = threading.Thread(target=republish_source, daemon=True)
+        publish_thread.start()
+        assert publish_started.wait(5)
+
+        # The forget thread is paused after the zero-refcount read. Its Store
+        # RLock must remain held so Store.source cannot publish a new row that
+        # would be orphaned by the pending blob unlink.
+        lock_available = store.mutex.acquire(blocking=False)
+        if lock_available:
+            store.mutex.release()
+        assert lock_available is False
+        assert not publish_done.is_set()
+
+        allow_unlink.set()
+        forget_thread.join(5)
+        publish_thread.join(5)
+        assert not forget_thread.is_alive()
+        assert not publish_thread.is_alive()
+        assert forget_done.is_set() and publish_done.is_set()
+        assert errors == []
+        assert store.read_source(new_ref["value"]) == "shared-blob-content"
+        assert (home / "data" / "blobs" / new_ref["value"]["sha256"]).is_file()
+    finally:
+        allow_unlink.set()
+        store.one = original_one
+        store.close()
+
+
 def test_temporal_rollback_reports_absence_without_fabricating_a_prior_checkpoint(tmp_path):
     home = tmp_path / "temporal-rollback-store"
     store = _make_store(home)

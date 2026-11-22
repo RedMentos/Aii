@@ -577,6 +577,9 @@ class TemporalWorldJEPAStoreConsumer:
             pending = {row["action_id"]: row for row in state["pending_rows"]}
             active = state["active"]
             active_fingerprints = dict(active["fingerprints"]) if active else {}
+            # A rejected update or explicit rollback keeps source-verified rows pending.
+            # They remain eligible for a deliberate retry even after the scan cursor advances.
+            retry_ids = set(pending) - set(active_fingerprints)
             new_ids = set()
             rejected = censored = unknown = scanned = 0
             has_more = False
@@ -611,7 +614,8 @@ class TemporalWorldJEPAStoreConsumer:
                 cursor = next_cursor
                 if not has_more:
                     break
-            if not new_ids:
+            eligible_ids = new_ids | retry_ids
+            if not eligible_ids:
                 next_state = dict(state)
                 next_state["scan_cursor"] = cursor
                 next_state["pending_rows"] = sorted(
@@ -657,7 +661,7 @@ class TemporalWorldJEPAStoreConsumer:
             if replay_mode == "none" and active is not None:
                 train = [
                     window for window in train
-                    if any(action_id in new_ids for action_id in window["action_ids"])
+                    if any(action_id in eligible_ids for action_id in window["action_ids"])
                 ]
             if len(train) < MIN_PARTITION:
                 next_state = dict(state)
@@ -782,6 +786,7 @@ class TemporalWorldJEPAStoreConsumer:
                 "optimizer_steps": model._fit_steps,
                 "steps_this_update": train_steps,
                 "censored_observed": censored, "unknown_skipped": unknown,
+                "pending_retried": len(retry_ids),
                 "source_disjoint": split["source_disjoint"],
                 "train_session_count": split["train_session_count"],
                 "holdout_session_count": split["holdout_session_count"],
@@ -836,7 +841,8 @@ class TemporalWorldJEPAStoreConsumer:
             self._prune(next_state)
             return {
                 "status": "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA",
-                "verified_receipts": len(new_ids), "rejected_receipts": rejected,
+                "verified_receipts": len(new_ids), "pending_retried": len(retry_ids),
+                "rejected_receipts": rejected,
                 "censored_observed": censored, "unknown_skipped": unknown,
                 "scanned_rows": scanned, "scan_cursor": cursor, "has_more": has_more,
                 "windows": len(windows), "train_windows": len(train),
