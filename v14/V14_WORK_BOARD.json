@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T10:00:40.871Z",
-  "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at b3b92f41772573732b2cba71f7ad6bf34dc8e521; exact post-merge push CI green; phone install remains separately gated. V14 master and historical V13 appendix preserved.",
+  "updated_at": "2026-11-22T16:52:10.339Z",
+  "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; 21/21 listed GitHub Actions workflow runs SUCCESS. Private V13OBS #115 updated 2026-11-22T16:39:55Z confirms installed c4eb82, auto-update ON, runtime/dashboard UP_TO_DATE; no new audio or learning acceptance.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -197,9 +197,9 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Perception: preserve the #2327 RAW EAR FIR anti-alias feature path and its staged A5/A4/C3 regression; do not equate caller-supplied PCM with Android microphone capture. Next, reconcile the signed one-shot consumer with QA's companion provider and measure Android lifecycle/route/silence/revocation only after explicit device permission.",
+      "next_step": "Keep #2312 signed AudioRecord/companion-provider path separate and default OFF. Review #2361 exact CI; do not download FASTDIAR weights until checkpoint licensing is explicit and user separately approves. Redmi microphone and ARM timing remain UNVERIFIED.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-22T16:52:10.339Z",
       "latest_candidate_pr": {
         "pr": 2312,
         "head_sha": "5221314d3c01ab6d874ecc0a8b8ff72c34e504a2",
@@ -208,7 +208,15 @@
         "scope": "signed one-shot RAW EAR consumer; Android-guaranteed 44.1 kHz mono PCM16; 88,200-byte / 117,600-character one-second cap; exact source/generation/signature/consent/replay checks; no microphone provider or learning/action authority",
         "ci": "RUN_44992975596_PENDING; RUN_44992975599_QUEUED"
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture."
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. PR #2361 adds an in-memory FASTDIAR frame-output adapter to the existing A5→A4→C3 consumer; synthetic embeddings only, no weights or device capture. LOCAL_LINUX isolated adapter tests 4/4 PASS; full consumer CI pending.",
+      "latest_adapter_pr": {
+        "pr": 2361,
+        "head_sha": "169f69e8c85d2de04c367d36dff8eb5faeaf9bd7",
+        "code_sha": "21962aba86dbf9a502ed4a6b567d761293ca2c17",
+        "test_sha": "3d698fed4259df7795b64041787baa30c2bfbfa4",
+        "ci": "PENDING_EXACT_PR_HEAD",
+        "scope": "FASTDIAR frame-output adapter to existing A5→A4→C3 consumer; diagnostic-only"
+      }
     },
     {
       "id": "V14-007",
@@ -386,18 +394,27 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "LOCAL_LINUX isolated + CI; no Android timing",
-      "next_step": "Perception: retain source timestamps and pre-batch temporal history for speaker-change evidence. No AudioRecord provider, calibrated speaker model, Android CPU benchmark or speaker identity authority is present; keep optional backend disabled.",
+      "proof_environment": "LOCAL_LINUX isolated adapter unit tests + exact PR CI pending; no Android timing",
+      "next_step": "Review exact-head CI for #2361; resolve the separate FASTDIAR checkpoint-weight license before any download; compare only after separate user approval and source-disjoint consented data. Keep calibration unset and A4 DEFER. Repair #2349's Core-owned audio composer pin chain before calibrated integration.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-22T16:52:10.339Z",
       "latest_candidate_pr": {
+        "pr": 2361,
+        "head_sha": "169f69e8c85d2de04c367d36dff8eb5faeaf9bd7",
+        "base_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
+        "code_sha": "21962aba86dbf9a502ed4a6b567d761293ca2c17",
+        "test_sha": "3d698fed4259df7795b64041787baa30c2bfbfa4",
+        "ci": "PENDING_EXACT_PR_HEAD",
+        "scope": "FASTDIAR v0.1.0 float16 (n,192) frame adapter into existing RAW EAR A5/A4/C3 consumer; synthetic vectors only; no model weights or calibration"
+      },
+      "proof": "RAW EAR FIR anti-alias decimator is integrated in 9097d634 and candidate CI passed. Speaker-change decision remains DEFER without verified calibration; no identity model, Android mic or learned acoustic weights. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. PR #2361 adds a pinned FASTDIAR frame-output adapter to the existing A5→A4→C3 consumer; LOCAL_LINUX CPython 3.13.5 isolated adapter suite 4/4 PASS, real NumPy float16 input included. Full consumer regression is pending exact PR CI. No checkpoint weight license, model inference, calibration, Android microphone or Redmi proof.",
+      "previous_candidate_pr": {
         "pr": 2275,
         "head_sha": "b19ff77cc769e670a46b6467798fba94a6d19046",
         "base_sha": "34eb645357d65bdd5ac69b9fb2c834d043086dac",
         "ci": "FAIL_RAW_EAR_44958073016_STAGED_44958072992",
         "tested_code_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c"
-      },
-      "proof": "RAW EAR FIR anti-alias decimator is integrated in 9097d634 and candidate CI passed. Speaker-change decision remains DEFER without verified calibration; no identity model, Android mic or learned acoustic weights. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture."
+      }
     },
     {
       "id": "V14-019",
