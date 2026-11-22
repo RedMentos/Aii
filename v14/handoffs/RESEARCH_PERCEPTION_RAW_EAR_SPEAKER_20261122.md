@@ -81,3 +81,12 @@ Current candidate: PR #2293 (DRAFT, NOT_RELEASED)
 ## Core pin-generation correction — 2026-11-22
 
 Boss comment #7072186155 clarified that Record-Only control_guard.apply_sources() rewrites both world_semantic_evidence_candidate.py and the local-error consumer pin. The correct expected value for the later Store rebind is therefore the GUARD-OUTPUT local-error pin, not the original base pin. Sequence: capture guard_semantic_sha and guard_local_error_pin immediately after the guard; assert equality; after Store rebind, rebind from guard_local_error_pin to final_semantic_sha; keep the final exact-pin check. Perception corrected its follow-up comment #7072323336 accordingly. No Core-owned file was changed.
+
+
+## Cross-lane active-perception review — V14-006 / PR #2282 (2026-11-22)
+
+- PR #2282 current head 857d13b4d2aa616cb7e6b154af20ac59e10803be is based on stale #2258 base 9922cf86ecf8801d30a46a1e98817e5c6c1db092, not current Boss #2288. It adds the valuable Store read-vs-revocation FD-under-lock behavior, but is not merge-ready.
+- Exact CI: A5 UI lease #44967013094 PASS and runtime deploy integrity #44967013022 PASS; staged/integrated #44967013033 FAIL, Lab Age/WebView #44967012983 FAIL, private owner-read #44967013038 FAIL, two-checkout migration #44967013041 FAIL.
+- QA's security finding #6009216985 is still open: validate the stored source hash as exactly 64 lowercase hex characters before using it as a dir_fd-relative path. O_NOFOLLOW only protects the final path component; it does not reject '..' or separators. Add a negative test proving os.open is never called with a path containing separators.
+- QA also found the nested stream pin failure: the lifecycle overlay rebinds archive_stream_range to the changed Store, which changes composed stream bytes, but integrated_context_recall still expects the old STREAM_SHA. QA calculated candidate 69267e2772143219b16fbc33118707f413b992e3e71b5715f7744508fd1f406c for the current stale branch, subject to recomputation after rebase.
+- Next owner action: after Core's current guard-generation pin chain is green, Boss/QA rebases #2282 onto #2288, adds strict digest-key confinement, recomputes the lifecycle→archive stream→context recall→recovery→stage→deployer chain, and reruns blocking-reader/revocation plus post-revoke negative controls. Perception reviews source/consent provenance; no Android UI provider is inferred.
