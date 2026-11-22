@@ -56,6 +56,8 @@ jobs:
       - name: Compile Python
         run: |
           python -m py_compile v13/code/v13/flow_audit.py v13/code/v13/flow_audit_dashboard.py v13/code/v13/mobile_dashboard.py
+      - name: Public repository privacy scan
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/boss/v14-recall-store-pin-rebind-20261122 --head HEAD --no-worktree
       - name: Validate inline dashboard JavaScript syntax
         run: |
           python - <<'PY'
