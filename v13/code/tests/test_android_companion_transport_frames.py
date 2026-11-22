@@ -12,7 +12,7 @@ from v13.android_companion_transport import (
 
 
 def test_read_frame_uses_only_paired_provider_uri_and_binary_content_read():
-    frame = b"\xff\\xd8fixture\\xff\\xd9"
+    frame = b"\xff\xd8fixture\xff\xd9"
     calls = []
 
     def runner(command, **kwargs):
