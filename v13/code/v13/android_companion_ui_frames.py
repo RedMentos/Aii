@@ -269,11 +269,6 @@ class AndroidCompanionFrameProvider:
             "frame_buffer": frame,
             "receipt_body": body,
             "verify_frame": verify_frame,
-            "frame_verifier": None,
-            "perception_contract": (
-                "After the V14 RAW EYE module is present, issue its one-shot "
-                "ProviderFrameVerifier from this verified observation and verify_frame callback."
-            ),
         }
 
     def open_current_turn(self, runtime):
@@ -482,6 +477,9 @@ def _open_current_turn(provider, runtime):
         observation, provider.transport, provider.verifier, bundle["receipt_body"]
     )
     adapter = A5UIRuntimeAdapter(runtime)
+    if not callable(getattr(adapter, "lease", None)):
+        bundle["frame_buffer"][:] = b"\\x00" * len(bundle["frame_buffer"])
+        raise FrameReceiptDenied("the V14 A5 UI lease adapter is not installed in this checkout")
     try:
         with adapter.lease(
             observation, state.consent_check, state.consent_guard, state.revocation_subscribe
