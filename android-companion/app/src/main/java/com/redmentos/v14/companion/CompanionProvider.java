@@ -231,6 +231,9 @@ public final class CompanionProvider extends ContentProvider {
         } catch (RuntimeException ignored) {
             processEnabled = false;
             ProjectionFrameStore.clear();
+            try {
+                context.stopService(new Intent(context, MediaProjectionCaptureService.class));
+            } catch (RuntimeException ignoredStop) {}
             return false;
         }
     }
