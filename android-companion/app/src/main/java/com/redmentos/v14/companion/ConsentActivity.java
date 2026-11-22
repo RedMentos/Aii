@@ -108,7 +108,9 @@ public final class ConsentActivity extends Activity {
             try {
                 dispatchResult = CompanionProvider.claimAndDispatch(this, db, action.actionId,
                         System::currentTimeMillis, () -> {
-                            if (launchIntent == null) throw new IllegalStateException("No launch intent");
+                            if (launchIntent == null) {
+                                throw new CompanionProvider.DispatchNotAttemptedException();
+                            }
                             startActivity(launchIntent);
                         });
             } catch (RuntimeException e) {
@@ -124,8 +126,15 @@ public final class ConsentActivity extends Activity {
                 Toast.makeText(this, "Action was cancelled, expired or already claimed", Toast.LENGTH_LONG).show();
                 finish(); return;
             }
-            finishWithReceipt("DISPATCHED".equals(dispatchResult)
-                    ? "DISPATCHED_UNVERIFIED" : "FAILED_TO_DISPATCH", true, "EXECUTING");
+            String receiptStatus;
+            if ("DISPATCHED".equals(dispatchResult)) {
+                receiptStatus = "DISPATCHED_UNVERIFIED";
+            } else if ("FAILED_TO_DISPATCH".equals(dispatchResult)) {
+                receiptStatus = "FAILED_TO_DISPATCH";
+            } else {
+                receiptStatus = "OUTCOME_UNKNOWN";
+            }
+            finishWithReceipt(receiptStatus, true, "EXECUTING");
         }
     }
 
