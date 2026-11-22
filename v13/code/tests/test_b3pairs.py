@@ -127,7 +127,7 @@ class PairedNativeTapTests(unittest.TestCase):
         self.assertEqual(reverse["source_span_alignments"][0]["covered_chars"], len(source_text))
         self.assertEqual(reverse["sender_token_ids"][0], p["native_token_readout"]["token_ids"])
         self.assertEqual(reverse["receiver_token_ids"][0], p["fine_readout"]["plan"]["token_ids"])
-        self.assertIn("B1 native fine token slots", reverse["claim_limit"])
+        self.assertIn("B1 fine token slots", reverse["claim_limit"])
         gist_path = self.r.home / p["gist_readout"]["feature_path"]
         original = gist_path.read_text()
         gist_path.write_text(original + " ")
