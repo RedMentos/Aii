@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 from v13.contracts import packet
 from v13.runtime import Runtime
+from v13.operator import Operator
 from v13.b3pairs import load_pair, training_batch, SCHEMA
 from v13.common import atomic_write, dumps, file_hash
 
@@ -72,6 +73,14 @@ class PairedNativeTapTests(unittest.TestCase):
         self.assertEqual(reverse["H"].shape, (1, 2, 2))
         self.assertEqual(reverse["Xr"].shape, (1, 3))
         self.assertEqual(reverse["sender_role"], "B2_GIST")
+
+    def test_operator_pair_command_queues_same_event_for_both_bodies(self):
+        event = self.r.store.event(self.r.session, "Operator paired tap source.")
+        with patch.object(self.r, "last_answer", return_value={"event_id": event["event_id"]}), \\
+             patch.object(self.r, "enqueue") as enqueue:
+            result = Operator(self.r).run(":tap pair")
+        enqueue.assert_called_once_with("tap_pair", event)
+        self.assertIn("Keine Injection, kein Lernen", result)
 
     def test_rejects_cross_source_pair(self):
         def tap(role, event, source_ref, deadline):
