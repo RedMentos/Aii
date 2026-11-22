@@ -8,13 +8,13 @@ import importlib.util
 from pathlib import Path
 
 BASE_BUILDER = "scripts/termux_runtime_recovery_candidate_20261112.py"
-BASE_BUILDER_BLOB_SHA1 = "a287bbe2edb19649fd76af1051a12b99008dff52"
+BASE_BUILDER_BLOB_SHA1 = "534b0e0d3fafee2fad9a46d6f07ceb9e001a9b0a"
 AUDIO_BUILDER = "scripts/integrated_audio_context_candidate_20261121.py"
-AUDIO_BUILDER_BLOB_SHA1 = "fb59de5040081b1407ba5cbee8f9102e9921d149"
+AUDIO_BUILDER_BLOB_SHA1 = "831080bceec90711bd42e0fa4eba47c669975c98"
 C4_RECEIPT_BUILDER = "scripts/integrated_c4_c3_receipt_candidate_20261122.py"
 C4_RECEIPT_SHA256 = "0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a22028dff3"
 NATIVE_RECEIVER_BUILDER = "scripts/integrated_native_latent_receiver_candidate_20261122.py"
-NATIVE_RECEIVER_BLOB_SHA1 = "474ffc2bc1c37079863e721dc7da76d8b6fbcb51"
+NATIVE_RECEIVER_BLOB_SHA1 = "027171c7ced3b0be4a7b0af9a45a12e390489c11"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
