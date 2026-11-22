@@ -24,6 +24,8 @@ import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class CompanionProvider extends ContentProvider {
     static final String PREFS = "v14-companion";
@@ -50,8 +52,8 @@ public final class CompanionProvider extends ContentProvider {
             if ("public_key".equals(method)) return result(signer.publicKeyInfo());
             if ("submit".equals(method)) return result(submit(context, decode(arg)));
             if ("outcome".equals(method)) return result(outcome(decode(arg)));
-            if ("cancel".equals(method)) return result(cancel(decode(arg)));
-            if ("pending".equals(method)) return result(pending());
+            if ("cancel".equals(method)) return result(cancel(context, decode(arg)));
+            if ("pending".equals(method)) return result(pending(context));
             return result(error("UNKNOWN_METHOD"));
         } catch (Exception e) {
             return result(error("REJECTED:" + e.getClass().getSimpleName()));
@@ -131,23 +133,29 @@ public final class CompanionProvider extends ContentProvider {
         return out;
     }
 
-    private JSONObject cancel(String actionId) throws Exception {
+    private JSONObject cancel(Context context, String actionId) throws Exception {
         if (!isHex(actionId, 32)) return error("INVALID_ACTION_ID");
+        boolean cancelled = db.cancel(actionId);
+        // A remote cancellation, expiry or concurrent decision must not leave
+        // a stale notification that appears to offer an action still pending.
+        cancelApprovalNotification(context, actionId);
         JSONObject out = new JSONObject();
-        out.put("status", db.cancel(actionId) ? "CANCELLED" : "NOT_CANCELLABLE");
+        out.put("status", cancelled ? "CANCELLED" : "NOT_CANCELLABLE");
         out.put("action_id", actionId);
         return out;
     }
 
-    private JSONObject pending() throws Exception {
+    private JSONObject pending(Context context) throws Exception {
         org.json.JSONArray values = new org.json.JSONArray();
-        for (CompanionDb.Action action : db.pending(System.currentTimeMillis())) {
+        List<String> expired = new ArrayList<>();
+        for (CompanionDb.Action action : db.pending(System.currentTimeMillis(), expired)) {
             JSONObject item = new JSONObject();
             item.put("action_id", action.actionId);
             item.put("package", action.packageName);
             item.put("expires_at_ms", action.expiresAt);
             values.put(item);
         }
+        for (String actionId : expired) cancelApprovalNotification(context, actionId);
         JSONObject out = new JSONObject();
         out.put("status", "OK");
         out.put("pending", values);
@@ -190,6 +198,13 @@ public final class CompanionProvider extends ContentProvider {
             throw new IllegalArgumentException("invalid action id");
         }
         return actionId;
+    }
+
+    static void cancelApprovalNotification(Context context, String actionId) {
+        if (context == null || actionId == null || !actionId.matches("[0-9a-f]{32}")) return;
+        NotificationManager manager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (manager != null) manager.cancel(approvalNotificationTag(actionId), 0);
     }
 
     static Intent approvalIntent(Context context, String actionId) {
