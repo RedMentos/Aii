@@ -140,20 +140,20 @@
       "reviewer": "Core & QA",
       "priority": "P1",
       "status": "IN_PROGRESS_PARTIAL",
-      "scope": "Registry, licensing, alternatives for C3/B1/B2 and controller",
+      "scope": "Registry, licensing and alternatives for C3/B1/B2/controller plus lightweight audio speaker-encoder candidates; no active model/weight changes.",
       "acceptance": "Dated candidate matrix, reproducible local/Redmi timing-quality comparisons, isolated try/rollback, UI proposal without replacing active models",
-      "proof_environment": "#2275 remains on old #2258 base: focused RAW EAR Python 3.13 failed 55/1 (reference_age_ms 920 vs expected 800); staged/integrated failed stale audio_voice_cues pin. No speaker model or NumPy promotion.",
-      "next_step": "Perception: rebase #2275 onto #2288, derive expected frame age from timestamps, recompute integrated-audio→recovery→stage→deployer pins, rerun exact 3.13/3.14 and staged/integrated; keep optional NumPy/model OFF.",
+      "proof_environment": "PR_2293_RAW_EAR_64_PASS_PY3.13_3.14; VAD_LIBFVAD_8_PLUS_13_NATIVE_PASS; DEPLOY_INTEGRITY_PASS; STAGED_INTEGRATED_FAIL_CORE_GUARD_PIN; FASTDIAR_PAPER_FULL_READ_CODE_MIT_WEIGHT_LICENSE_UNKNOWN; NO_MODEL_DOWNLOAD_OR_SWAP; REDMI_UNVERIFIED",
+      "next_step": "After Core fixes the guard-output semantic pin ordering, rebase #2293 onto the verified head and rerun staged/integrated. Keep speaker embeddings caller-supplied and model OFF. Resolve FASTDIAR checkpoint license and compare a genuinely licensed small frame encoder only after explicit experimental-download approval and actual ARM64 RSS/RTF/quality measurements.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T00:57:11.246Z",
+      "last_checkpoint": "2026-11-22T02:40:15+01:00",
       "latest_candidate_pr": {
-        "pr": 2142,
-        "head_sha": "67c1300093dd99ffcf818f370fff29b58fd7fc3b",
-        "tested_code_sha": "40deb8a56686455b361ba41e63cb57b981b5a71b",
-        "ci": "PASS_44861145442_23_TESTS",
-        "scope": "read-only sequential C3 candidate lab; native inference NOT_RUN"
+        "pr": 2293,
+        "head_sha": "e85b7398b1fce84423583abf01e1389507612818",
+        "base_sha": "f0d3c848dfb1d65e282f065233adbe3c9205e439",
+        "tested_code_sha": "e85b7398b1fce84423583abf01e1389507612818",
+        "ci": "RAW_EAR_44972070097_PASS_64_PY3.13_3.14; VAD_LIBFVAD_44972070081_PASS_8_AND_NATIVE_13; DEPLOY_INTEGRITY_44972070113_PASS; STAGED_INTEGRATED_44972070090_FAIL_CORE_PIN"
       },
-      "proof": "Perception PR #2256 head 08fce3420ff2fc548276c421e99e79390d78e910 failed the RAW EAR speaker-evidence tests on Python 3.13 and 3.14: test_low_similarity_without_voiced_activity_is_not_speaker_change expected confidence_gate_passed=false but got true; test_missing_threshold_emits_score_without_a_decision expected change_score=0.5 but got 0.0. Inspection shows later frames in the same incoming batch are added to the look-back state and then reused as their own reference, overwriting the earlier cross-window score. No model/dependency download or swap occurred."
+      "proof": "PR #2293 supersedes the stale #2275 speaker-evidence attempt. It now includes a batch-isolated source/generation-bound 192-D speaker-change consumer, a no-transcript audio-only ingress adapter, and candidate B1/B2/C3 acoustic QueryPacket context with consent rechecks. Focused RAW EAR CI 44972070097 passed 64 tests on Python 3.13/3.14; VAD/libfvad 44972070081 passed 8 tests on each version and native Linux 13/13; deploy integrity 44972070113 passed. Staged/integrated remains blocked by the Core guard-output semantic pin ordering. R-063: FASTDIAR full preprint read; code MIT, checkpoint license unverified; 960 ms delayed clustering and Threadripper-only metrics. speech-core detail is an R-033 follow-up, not a new dependency. No model or dependency downloaded; no NumPy/model promotion, ARM or Redmi benchmark, model swap or user approval request."
     },
     {
       "id": "V14-006",
@@ -164,16 +164,15 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "A5 UI lease CI on #2288 is queued; shared-blob reader/revocation fix #2282 is not included. #2250 still demonstrates a live SQLite row whose shared blob can be unlinked. Old #2282 branch failed downstream stream pin; no race fix accepted.",
-      "next_step": "QA/Perception: rebase #2282 onto #2288, serialize producer publication and revocation unlink under the same Store lock/SQLite critical section, and run threaded blocking/recreation negative control plus exact stage/migration tests.",
+      "proof_environment": "PR_2282_FOCUSED_A5_UI_44967013094_PASS; DEPLOY_INTEGRITY_44967013022_PASS; STAGED_INTEGRATED_44967013033_FAIL_CORE_PIN; LAB_AGE_WEBVIEW_44967012983_FAIL; OWNER_READ_44967013038_FAIL; MIGRATION_44967013041_FAIL; STALE_BASE_9922cf; QA_PATH_TRAVERSAL_REVIEW_OPEN; NO_ANDROID_PROVIDER",
+      "next_step": "After Core repairs the guard-output pin chain, rebase #2282 onto the verified current Boss head. Address QA's digest-key path traversal finding before merge; serialize producer publication and revocation unlink under the same Store lock/SQLite critical section, then run blocking-reader, unlink/recreate negative control, exact stage/migration and Android-provider checks. Perception should review A5 packet provenance/consent; do not claim Android UI observation.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T00:57:11.246Z",
+      "last_checkpoint": "2026-11-22T02:40:15+01:00",
       "latest_candidate_pr": {
-        "pr": 2155,
-        "head_sha": "40e1f877157df57643267470bab3aff39c1eaaee",
-        "merge_commit_sha": "c0cedbde718ede6107f4df1f1bf9c784df4e00cf",
-        "ci": "PASS_44862523075_8_TESTS_AND_44862523082_240_STAGED_415_INTEGRATED",
-        "scope": "additive RAW EAR acoustic-cue adapter only; no normal Runtime consumer"
+        "pr": 2282,
+        "head_sha": "857d13b4d2aa616cb7e6b154af20ac59e10803be",
+        "base_sha": "9922cf86ecf8801d30a46a1e98817e5c6c1db092",
+        "ci": "A5_UI_LEASE_44967013094_PASS; DEPLOY_INTEGRITY_44967013022_PASS; STAGED_44967013033_FAIL; AGE_WEBVIEW_44967012983_FAIL; OWNER_READ_44967013038_FAIL; MIGRATION_44967013041_FAIL"
       },
       "proof": "Perception's A5 UI source-publication/revocation race fix is composed into #2258. Focused A5 UI lease tests passed 17 tests / 5 subtests on Python 3.13 and 3.14, including privacy scan. This proves a synthetic source-bound metadata lease and Store blob serialization only; there is no official Android UI observation provider, MediaProjection capture or Android action consumer."
     },
@@ -216,11 +215,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
-      "proof_environment": "#2288 contains caller-supplied PCM16/consent lease and staged TTS fallback only. Core audio/arithmetic workflow remains IN_PROGRESS on 679f366. No Android AudioRecord/microphone, ASR, trainable decoder/vocoder, nonverbal learning or full duplex proof.",
-      "next_step": "Core/Perception: keep raw acoustic features and nonverbal cues distinct from optional ASR; continue toward Android consented audio producer and trainable decoder/vocoder, with source-bound replay/retention tests. Do not call caller PCM16 full voice.",
+      "proof_environment": "CALLER_PCM16_CONSENT_LEASE_SYNTHETIC_CI; AUDIO_ONLY_API_LOCAL_7_PASS_AND_CI_64_PASS; CANDIDATE_B1_B2_C3_QUERY_CONTEXT_NOT_STAGE_ACCEPTED; NO_AUDIORECORD; NO_ANDROID_TTS_OR_BARGE_IN; REDMI_UNVERIFIED",
+      "next_step": "Core fixes the guard-generation pin chain. Core/Perception then connect a consented Android AudioRecord producer to the RAW EAR API; separately add a trainable speech decoder/vocoder and full-duplex AEC/turn/cancel path without replacing nonverbal RAW EAR or requiring STT. Validate lifecycle, stop, revocation, restart and retention on the real Redmi.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T00:50:52.733Z",
-      "proof": "#2258 adds a caller-supplied PCM16 audio-window lease with process-local consent callbacks, one-second bounds, revocation lifecycle and A5/A4/C3 admission, plus an explicit local Termux TTS fallback disabled by default. Synthetic audio lifecycle/arithmetic suite: 52 passed / 26 subtests on Python 3.13 and 3.14. This is not microphone capture, ASR, trainable speech decoder/vocoder, full duplex/barge-in or Android AudioRecord."
+      "last_checkpoint": "2026-11-22T02:40:15+01:00",
+      "proof": "#2288 adds a caller-supplied PCM16 audio-window lease, one-second bounds, revocation lifecycle and A5/A4 admission; the candidate audio builder adds source-bound acoustic context to B1/B2/C3 QueryPackets with per-consumer consent rechecks. PR #2293 adds submit_audio_only(runtime, audio_window) so a caller can submit PCM16 without a transcript; local adapter tests 7/7 and focused RAW EAR CI 64/64 on Python 3.13/3.14. This is API/CI evidence only; staged/integrated is blocked by the Core guard-output pin ordering. No microphone capture, Android AudioRecord, ASR, trainable decoder/vocoder, full duplex/barge-in or Redmi proof."
     },
     {
       "id": "V14-010",
