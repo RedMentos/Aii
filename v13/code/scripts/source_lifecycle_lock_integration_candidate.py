@@ -43,6 +43,60 @@ EVENT_NEW = b'''        path=self.home/'data/blobs'/h
         from .source_lifecycle_candidate import verify_or_create_blob
         verify_or_create_blob(path,b,h)
 '''
+READ_SOURCE_OLD = b'''    def read_source(self,ref):
+        r=self.one("SELECT * FROM sources WHERE id=?",(ref.get("source_id"),))
+        if not r or r["deleted"] or r["hash"]!=ref.get("sha256"):raise ValueError("Dangling/gel\xc3\xb6schter SourceRef")
+        b=self.blob_bytes(r["hash"])
+        if digest(b)!=r["hash"]:raise ValueError("Source-Hash falsch")
+        txt=b.decode()
+        if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef au\xc3\x9ferhalb Text")
+        return txt[ref["char_start"]:ref["char_end"]]
+'''
+READ_SOURCE_NEW = b'''    def read_source(self,ref):
+        # Linearize the read against forget: validate the row and acquire the
+        # exact file descriptor under the same Store lock used by revocation.
+        # The potentially large read/decompression then happens outside the lock.
+        with self.mutex:
+            r=self.one("SELECT * FROM sources WHERE id=?",(ref.get("source_id"),))
+            if not r or r["deleted"] or r["hash"]!=ref.get("sha256"):raise ValueError("Dangling/deleted SourceRef")
+            if not all(hasattr(os,name) for name in ("O_DIRECTORY","O_NOFOLLOW","O_NONBLOCK")):
+                raise OSError("safe source read primitives unavailable")
+            directory=self.home/"data/blobs"
+            dir_fd=os.open(directory,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+            fd=None
+            try:
+                try:
+                    fd=os.open(r["hash"],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=dir_fd)
+                    compressed=False
+                except FileNotFoundError:
+                    try:
+                        fd=os.open(r["hash"]+".z",os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=dir_fd)
+                        compressed=True
+                    except FileNotFoundError:
+                        raise FileNotFoundError(str(directory/r["hash"]))
+                import stat
+                if not stat.S_ISREG(os.fstat(fd).st_mode):
+                    raise ValueError("Source blob is not a regular file")
+                source_file=os.fdopen(fd,"rb")
+                fd=None
+            finally:
+                if fd is not None:os.close(fd)
+                os.close(dir_fd)
+        with source_file:
+            raw=source_file.read()
+        if compressed:
+            import zlib
+            d=zlib.decompressobj()
+            try:b=d.decompress(raw,64*1024*1024)
+            except zlib.error as exc:raise ValueError("Archive blob corrupt") from exc
+            if d.unconsumed_tail or not d.eof:raise ValueError("Archive blob corrupt or too large")
+        else:
+            b=raw
+        if digest(b)!=r["hash"]:raise ValueError("Source-Hash falsch")
+        txt=b.decode()
+        if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef out of bounds")
+        return txt[ref["char_start"]:ref["char_end"]]
+'''
 MEMORY_OLD = b'''        src=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
         if not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(src['hash'],)):(self.s.home/'data/blobs'/src['hash']).unlink(missing_ok=True);(self.s.home/'data/blobs'/(src['hash']+'.z')).unlink(missing_ok=True)
 '''
@@ -130,6 +184,7 @@ def build_sources(source_dir):
             ('store.py', STORE_OLD, STORE_NEW),
             ('store.py', RECOVER_OLD, RECOVER_NEW),
             ('store.py', EVENT_OLD, EVENT_NEW),
+            ('store.py', READ_SOURCE_OLD, READ_SOURCE_NEW),
             ('memory.py', MEMORY_OLD, MEMORY_NEW),
             ('vision.py', VISION_OLD, VISION_NEW),
             ('vision.py', VISION_FORGET_OLD, VISION_FORGET_NEW),

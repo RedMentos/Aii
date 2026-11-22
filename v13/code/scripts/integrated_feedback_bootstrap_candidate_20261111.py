@@ -3,7 +3,7 @@ import hashlib
 import importlib.util
 from pathlib import Path
 
-BASE_BUILDER_SHA = '7a3b6c939d097fd3ab14bb4cb5ffec9ad2369dc07d498672f6a054a8f2cfaaf0'
+BASE_BUILDER_SHA = 'bd1303a26d1ec8b6eaf81636c3cbe207f921a15a12fe4c3e6a30a14ff7e2f1bd'
 PINS = {
     'v13/inputs.py': '235cce055cdc5eb1c889593dd279d9c837a718f0630b8427223a3883c5079539',
     'v13/actionlearn.py': '603e874d8fbb37f41aee1fae5fcb6c07007310388dc2c653f1b84ec5d264a7d6',

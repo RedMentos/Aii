@@ -1,4 +1,4 @@
-name: V14 Core same-turn B1 B2 C4 C3 consumer
+name: V14 Core same-turn B1 B2 C4 C3 and source-read revocation
 on:
   push:
     branches:
@@ -6,8 +6,14 @@ on:
       - core/v14-c4-c3-consumption-rebase-20261122-run2
       - core/v14-fair-budget-diagnostic-20261122
       - boss/v14-recall-store-pin-rebind-20261122
-      - gpt6/v13-private-remote-bridge-20261111
     paths:
+      - 'v13/code/scripts/source_lifecycle_lock_integration_candidate.py'
+      - 'v13/code/scripts/termux_runtime_recovery_candidate_20261112.py'
+      - 'v13/code/scripts/integrated_context_recall_candidate_20261111.py'
+      - 'v13/code/scripts/integrated_feedback_bootstrap_candidate_20261111.py'
+      - 'v13/code/scripts/integrated_memory_world_candidate_20261111.py'
+      - 'v13/code/scripts/integrated_world_training_resume_candidate_20261111.py'
+      - 'v13/code/tests/test_v14_store_source_blob_serialization.py'
       - 'v13/code/scripts/integrated_c4_c3_receipt_candidate_20261122.py'
       - 'v13/code/scripts/run_c4_c3_current_candidate_test_20261122.py'
       - 'v13/code/scripts/termux_runtime_recovery_candidate_20261121.py'
@@ -30,7 +36,7 @@ on:
   pull_request:
     branches:
       - boss/v14-recall-store-pin-rebind-20261122
-    paths:
+      - gpt6/v13-private-remote-bridge-20261111
       - 'v13/code/scripts/integrated_c4_c3_receipt_candidate_20261122.py'
       - 'v13/code/scripts/run_c4_c3_current_candidate_test_20261122.py'
       - 'v13/code/scripts/termux_runtime_recovery_candidate_20261121.py'
@@ -83,6 +89,13 @@ jobs:
             v13/code/scripts/termux_runtime_recovery_candidate_20261121.py \
             v13/code/scripts/stage_integrated_candidate.py \
             v13/code/v13/runtime_deploy.py \
+            v13/code/scripts/source_lifecycle_lock_integration_candidate.py \
+            v13/code/scripts/termux_runtime_recovery_candidate_20261112.py \
+            v13/code/scripts/integrated_context_recall_candidate_20261111.py \
+            v13/code/scripts/integrated_feedback_bootstrap_candidate_20261111.py \
+            v13/code/scripts/integrated_memory_world_candidate_20261111.py \
+            v13/code/scripts/integrated_world_training_resume_candidate_20261111.py \
+            v13/code/tests/test_v14_store_source_blob_serialization.py \
             v13/code/tests/test_v14_same_turn_c4_c3_consumption.py
       - name: Exercise final staged fair-budget and C4 composition
         env:
@@ -92,6 +105,7 @@ jobs:
           python -m pytest -q \
             v13/code/tests/test_termux_runtime_recovery_stage.py \
             v13/code/tests/test_observer_fair_budget_stage_20261116.py
+            v13/code/tests/test_v14_store_source_blob_serialization.py
       - name: Exercise source-pinned composed Runtime and negative control
         env:
           PYTHONPATH: v13/code
