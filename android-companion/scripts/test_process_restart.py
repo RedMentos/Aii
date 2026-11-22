@@ -72,8 +72,12 @@ def wait_for_text(needle: str, timeout: float = 20.0) -> str:
     deadline = time.monotonic() + timeout
     last = ""
     while time.monotonic() < deadline:
-        swipe_to_top()
-        last = visible_text()
+        try:
+            swipe_to_top()
+            last = visible_text()
+        except (RuntimeError, ET.ParseError, subprocess.TimeoutExpired):
+            time.sleep(.35)
+            continue
         if needle in last:
             return last
         time.sleep(.35)
@@ -85,7 +89,11 @@ def tap_button(label: str) -> None:
     deadline = time.monotonic() + 15.0
     width, height = screen_size()
     while time.monotonic() < deadline:
-        root = hierarchy()
+        try:
+            root = hierarchy()
+        except (RuntimeError, ET.ParseError, subprocess.TimeoutExpired):
+            time.sleep(.25)
+            continue
         for node in root.iter("node"):
             if node.attrib.get("text", "").casefold() != label.casefold():
                 continue
