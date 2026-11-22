@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T03:55:43.537Z",
+  "updated_at": "2026-11-22T03:56:59.367Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -186,10 +186,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Boss PR #2288 is DRAFT at 483ef6ddc7140bf76f197d538ec973df42dd95e0, base bdcad466ffea75a2b41f7d23be168f53c7197d20, 237 commits ahead / 0 behind, 76 changed files. Exact-head CI is 26 SUCCESS / 0 FAILURE / 1 expected SKIPPED. QA #2298 is merged into the Boss branch; Age-rights #2281 remains on a stale base and blocks release readiness. Local full suite and Redmi remain unverified.",
+      "proof_environment": "Boss PR #2288 current head a3ec1fb986a39d64746cb891631dd71504b3d236 is a docs-only checkpoint; code-bearing parent 483ef6ddc7140bf76f197d538ec973df42dd95e0 has 26 SUCCESS / 0 FAILURE / 1 expected SKIPPED. New exact-head CI on a3ec1fb986a39d64746cb891631dd71504b3d236: 9 SUCCESS, 17 IN_PROGRESS, 1 expected SKIPPED. PR remains DRAFT, 237 commits ahead / 0 behind, 76 files. QA #2298 activation journal is in the code-bearing parent; Age-rights #2281 still stale and blocks release readiness.",
       "next_step": "Boss: keep #2288 draft until QA composes Age-rights without resource-budget coupling; then re-review all changed runtime consumers, rerun exact CI, preserve the V13 appendix, and only then consider release-branch integration.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T03:55:43.537Z",
+      "last_checkpoint": "2026-11-22T03:56:59.367Z",
       "proof": "Boss integration PR #2258 remains DRAFT / NOT_RELEASED. Current branch head after workflow-scope commit is 273a60bda3105f3163bf2ad606e58f885681da8b; code-bearing tested head is 0dc337edfb7a71168e15f3db08bcedc424e32d4f. The prior strict additive job failed before running tests because the integration PR changed 60 changed files (the original 59-file code composition plus the workflow-scope file) while the additive harness accepts 2..30 strictly-added files. Boss changed only the workflow scope: the validator now runs only on v13-additive/* branches or PRs labelled v13-additive-candidate; the 2..30/add-only checks themselves are unchanged. Exact CI for the new head is queued. Manual protected-file review is not complete. Current pre-final-handoff exact-head check readback: 16 total, 15 queued, 1 expected additive-validator skip; no completed checks on this head."
     },
     {
@@ -201,10 +201,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "v14/V14_USER_NEXT_ACTION.md; verified repo state, phone deployment evidence and model-choice suggestions",
       "acceptance": "At each meaningful integration checkpoint, dated user-level update, suggested actions only when needed, no invented Termux command",
-      "proof_environment": "This handoff, live workplan, research ledger, coverage overlay and board are synchronized at Boss candidate 483ef6ddc7140bf76f197d538ec973df42dd95e0. Private owner-read #461 unanswered; no device/user action is required.",
+      "proof_environment": "Board, user handoff, workplan, research ledger and coverage overlay are synchronized on Boss docs-only head a3ec1fb986a39d64746cb891631dd71504b3d236; code-bearing parent 483ef6ddc7140bf76f197d538ec973df42dd95e0. New exact-head CI is still running. Private owner-read #461 unanswered; no device action required.",
       "next_step": "Boss: keep exact SHA/check evidence and device receipt status current in the same handoff; never turn CI into Android acceptance.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T03:55:43.537Z",
+      "last_checkpoint": "2026-11-22T03:56:59.367Z",
       "proof": "Current user handoff is being refreshed against #2258 head 273a60b and private PIPELINE_STATUS #440 (no authenticated response). No user action, Termux command, model/weight/Age/permission change or updater change is required."
     },
     {
@@ -368,9 +368,9 @@
   ],
   "current_redmi_status": "REDMI_UNVERIFIED. Private read-only PIPELINE_STATUS request RedMentos/Aiiii #461 was created at approximately 2026-11-22T03:43Z and still has zero authenticated comments at 2026-11-22 03:55:43 UTC. Installed SHA and updater consent remain UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, shell action or device mutation.",
   "last_code_release_head": "f279286a4453248004c670fcaabecd85da6ab299",
-  "latest_integrated_head": "483ef6ddc7140bf76f197d538ec973df42dd95e0",
-  "latest_integrated_head_verified_at": "2026-11-22T03:55:43.537Z",
-  "release_gate_status": "NOT_RELEASED. Boss PR #2288 is DRAFT at 483ef6ddc7140bf76f197d538ec973df42dd95e0, base release-development branch bdcad466ffea75a2b41f7d23be168f53c7197d20, 237 commits ahead / 0 behind, 76 changed files. Exact-head check-runs: 26 SUCCESS, 0 FAILURE, 0 IN_PROGRESS, 1 expected SKIPPED. The 19 associated workflow runs are 18 SUCCESS and 1 expected SKIPPED. QA PR #2298 crash-consistent activation journal was merged into the Boss integration branch at 483ef6ddc7140bf76f197d538ec973df42dd95e0; this did not update the release-development branch or deploy to Android. Age-rights composition is still blocking release readiness.",
+  "latest_integrated_head": "a3ec1fb986a39d64746cb891631dd71504b3d236",
+  "latest_integrated_head_verified_at": "2026-11-22T03:56:59.367Z",
+  "release_gate_status": "NOT_RELEASED. Boss PR #2288 current branch head a3ec1fb986a39d64746cb891631dd71504b3d236 is a docs-only status/coverage/research checkpoint; its code-bearing parent 483ef6ddc7140bf76f197d538ec973df42dd95e0 has 26 SUCCESS, 0 FAILURE, 0 pending, 1 expected SKIPPED check-runs. New exact-head CI for a3ec1fb986a39d64746cb891631dd71504b3d236: 9 SUCCESS, 0 FAILURE, 17 IN_PROGRESS, 1 expected SKIPPED at 2026-11-22T03:56:59.367Z. Base release-development branch remains bdcad466ffea75a2b41f7d23be168f53c7197d20. QA #2298 activation journal is merged in the code-bearing parent only; no release or Android deployment. Age-rights composition remains the release blocker.",
   "phone_receipt": {
     "state": "NO_AUTHENTICATED_OWNER_READ_REPLY",
     "installed_sha": "UNKNOWN",
@@ -614,8 +614,8 @@
     "code_bearing_release_sha": "f279286a4453248004c670fcaabecd85da6ab299",
     "code_release_checks": "Last accepted code release remains f279286a4453248004c670fcaabecd85da6ab299. No newer release is certified.",
     "integrated_code_candidate": "483ef6ddc7140bf76f197d538ec973df42dd95e0",
-    "integrated_code_candidate_checks": "Boss PR #2288 DRAFT at 483ef6ddc7140bf76f197d538ec973df42dd95e0, 237 commits ahead / 0 behind base bdcad466, 76 changed files. Exact-head check-runs: 26 SUCCESS, 0 FAILURE, 0 pending, 1 expected SKIPPED; associated Actions workflows: 18 SUCCESS, 1 expected SKIPPED. This exact head includes QA PR #2298 merged at 483ef6ddc7140bf76f197d538ec973df42dd95e0: owner-only crash-consistent launcher/runtime-marker activation journal, hash-checked backups, fsync/recovery, explicit runtime-only rollback and managed-chat stop/resume guards. The QA source head f415d83187b948f7a654c2a2babf595576c350ab passed 11/11 exact-head checks before merge. Current Boss CI includes same-turn B1/B2→C4→C3 source-bound synthetic receipt, Store source-read/revocation regression, A5 UI lease, audio/arithmetic, Lab-Age, migration, owner-read, privacy, source-contract, native-stream and offline-bridge checks. This is CI/synthetic evidence, not local Linux, native model execution or Android deployment.",
-    "pr2288": "DRAFT_NOT_RELEASED. Exact current head 483ef6ddc7140bf76f197d538ec973df42dd95e0, base bdcad466ffea75a2b41f7d23be168f53c7197d20, 237 commits ahead, 76 changed files, mergeable. Do not merge until Age rights/resource separation is composed and independently reviewed.",
+    "integrated_code_candidate_checks": "Code-bearing parent 483ef6ddc7140bf76f197d538ec973df42dd95e0: exact-head CI 26 SUCCESS / 0 FAILURE / 1 expected SKIPPED. Current PR branch head a3ec1fb986a39d64746cb891631dd71504b3d236 is docs-only and its exact CI is 9 SUCCESS / 0 FAILURE / 17 IN_PROGRESS / 1 expected SKIPPED. QA #2298 activation journal remains in the code-bearing parent; no code change was made by the documentation checkpoint.",
+    "pr2288": "DRAFT_NOT_RELEASED. Current PR head a3ec1fb986a39d64746cb891631dd71504b3d236 is docs-only; code-bearing parent 483ef6ddc7140bf76f197d538ec973df42dd95e0. Base bdcad466ffea75a2b41f7d23be168f53c7197d20, 237 commits ahead, 76 changed files. New exact-head CI 9 success, 17 in progress, 1 expected skip. Do not merge until Age rights/resource separation is composed and reviewed.",
     "pr2298": "MERGED_IN_BOSS_INTEGRATION_ONLY. QA head f415d83187b948f7a654c2a2babf595576c350ab passed 11/11 exact checks; merge commit 483ef6ddc7140bf76f197d538ec973df42dd95e0. Runtime-only rollback; dashboard rollback remains unimplemented. Not a release or phone deployment.",
     "pr2281": "OPEN_DRAFT_STALE_BASE. QA head 31a9cbc69e56a9e77f9f24bf1ab6f5d574df3384 passed 9/9 checks on old base 9922cf86ecf8801d30a46a1e98817e5c6c1db092, but diverges from current Boss head. Recompose only Age-rights changes onto current Boss; preserve GoalWake and refresh all nested pins. Current Boss effort.py/sleep.py/goals.py still include Age-derived focal/replay resource caps.",
     "pr2247": "OPEN_DRAFT_FAIL. Current head 9b1f319af750e42f47aa399089abe16df8afce85 has 7/15 checks SUCCESS and 8 FAILURE, including Python 3.13/3.14 optimizer resume, staged runtime, Lab-Age, integrated regression, Python 3.14 source/SQLite staging and old-phone migration. No accepted per-session retention or production weight update.",
@@ -630,7 +630,8 @@
     "canon_coverage": "The 1,255-heading historical Canon inventory remains preserved. Clause→code→consumer→test→environment→rollback mapping is incomplete. No whole-system completion claim.",
     "research": "New primary-source intake R-052 MobileMoE and R-053 LARS/phone-NPU LoRA. No code, weights, dependency or model imported; QVAC Fabric MIT and HexaTrain Apache-2.0 were license-checked, but documented hardware support does not establish Redmi compatibility.",
     "user_action_required": "NONE. No Termux command, model/weight download or swap, permission change, Age change, updater toggle, device action or user-data mutation.",
-    "active_agents": "Exactly five enabled V14 jobs only: Boss & Integration, QA & Android, JEPA & Memory, Research & Perception, Core & Harness. No extra agents claimed."
+    "active_agents": "Exactly five enabled V14 jobs only: Boss & Integration, QA & Android, JEPA & Memory, Research & Perception, Core & Harness. No extra agents claimed.",
+    "boss_integration_branch_head": "a3ec1fb986a39d64746cb891631dd71504b3d236"
   },
   "active_agent_automations": [
     {
@@ -684,7 +685,7 @@
   "latest_checkpoint": {
     "timestamp": "2026-11-22T03:55:43.537Z",
     "boss_branch": "boss/v14-recall-store-pin-rebind-20261122",
-    "boss_head": "483ef6ddc7140bf76f197d538ec973df42dd95e0",
+    "boss_head": "a3ec1fb986a39d64746cb891631dd71504b3d236",
     "code_candidate_sha": "483ef6ddc7140bf76f197d538ec973df42dd95e0",
     "release_development_branch": "gpt6/v13-private-remote-bridge-20261111",
     "release_development_head": "bdcad466ffea75a2b41f7d23be168f53c7197d20",
@@ -697,12 +698,16 @@
     "user_action_required": false,
     "current_head_checks": {
       "total": 27,
-      "completed_success": 26,
+      "completed_success": 9,
       "completed_failure": 0,
-      "in_progress": 0,
+      "in_progress": 17,
       "skipped": 1,
       "cancelled": 0,
-      "read_at": "2026-11-22T03:55:43.537Z"
+      "read_at": "2026-11-22T03:56:59.367Z",
+      "prior_code_head": "483ef6ddc7140bf76f197d538ec973df42dd95e0",
+      "prior_code_head_success": 26,
+      "prior_code_head_failure": 0,
+      "prior_code_head_skipped": 1
     },
     "changed_files": 76,
     "boss_commits_ahead": 237,
@@ -712,7 +717,8 @@
       "R-052 MobileMoE",
       "R-053 LARS and phone-NPU first-order LoRA"
     ],
-    "canonical_inventory_headings": 1255
+    "canonical_inventory_headings": 1255,
+    "boss_branch_head_type": "DOCS_ONLY_STATUS_COVERAGE_RESEARCH_CHECKPOINT"
   },
   "capability_matrix": [
     {

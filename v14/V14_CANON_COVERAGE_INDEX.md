@@ -1970,8 +1970,8 @@ Private PIPELINE_STATUS #453 remains unanswered; installed SHA/updater consent U
 
 ### Exact branch and environment
 
-- Boss candidate `483ef6ddc7140bf76f197d538ec973df42dd95e0` on `boss/v14-recall-store-pin-rebind-20261122`; PR #2288 is DRAFT / NOT_RELEASED, 237 commits ahead / 0 behind release-development base `bdcad466ffea75a2b41f7d23be168f53c7197d20`, 76 changed files.
-- Exact current-head CI: 26 SUCCESS, 0 FAILURE, 0 pending, 1 expected SKIPPED. Associated Actions workflows: 18 SUCCESS, 1 expected SKIPPED.
+- Current PR head `a3ec1fb986a39d64746cb891631dd71504b3d236` is a documentation-only checkpoint; code-bearing candidate `483ef6ddc7140bf76f197d538ec973df42dd95e0` on `boss/v14-recall-store-pin-rebind-20261122`. PR #2288 is DRAFT / NOT_RELEASED, 237 commits ahead / 0 behind release-development base `bdcad466ffea75a2b41f7d23be168f53c7197d20`, 76 changed files.
+- Code-bearing parent CI: 26 SUCCESS, 0 FAILURE, 1 expected SKIPPED. New docs-only head `a3ec1fb986a39d64746cb891631dd71504b3d236` exact CI at last read: 9 SUCCESS, 0 FAILURE, 17 IN_PROGRESS, 1 expected SKIPPED.
 - QA #2298 activation-journal head `f415d83187b948f7a654c2a2babf595576c350ab` passed 11/11 exact checks and merged into Boss integration at `483ef6ddc7140bf76f197d538ec973df42dd95e0`; it did not update the release branch or phone.
 - No local Aii checkout; full LOCAL_LINUX tests BLOCKED. Private PIPELINE_STATUS #461 unanswered; `REDMI_UNVERIFIED`.
 

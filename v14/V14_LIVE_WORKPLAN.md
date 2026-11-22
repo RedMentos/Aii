@@ -6,13 +6,13 @@
 
 ## 0A. Latest Boss integration checkpoint — 22/11/2026 04:55 CET
 
-**Current verified candidate:** `483ef6ddc7140bf76f197d538ec973df42dd95e0` on `boss/v14-recall-store-pin-rebind-20261122`; PR #2288 remains DRAFT / NOT_RELEASED. Release-development base is still `bdcad466ffea75a2b41f7d23be168f53c7197d20`; last accepted code release remains `f279286a4453248004c670fcaabecd85da6ab299`.
+**Current PR head:** `a3ec1fb986a39d64746cb891631dd71504b3d236` (documentation-only checkpoint); **code-bearing candidate:** `483ef6ddc7140bf76f197d538ec973df42dd95e0` on `boss/v14-recall-store-pin-rebind-20261122`. PR #2288 remains DRAFT / NOT_RELEASED. Release-development base is still `bdcad466ffea75a2b41f7d23be168f53c7197d20`; last accepted code release remains `f279286a4453248004c670fcaabecd85da6ab299`.
 
 ### New integrated runtime slice
 
 QA #2298 was reviewed and merged into this Boss branch. It adds a durable owner-only `.runtime-activation.json` journal for the launcher + `runtime-active.json` pair, hash-checked backup files, fsync around atomic replacement, crash recovery only while the runtime is stopped, and explicit runtime-only rollback through the pipeline worker. Rollback disables future auto-update first, takes the exclusive lock, stops only a managed V13 chat and resumes only after a confirmed safe result. The QA head `f415d83187b948f7a654c2a2babf595576c350ab` passed 11/11 exact checks; merge commit is `483ef6ddc7140bf76f197d538ec973df42dd95e0`. Dashboard rollback is still OPEN.
 
-The current Boss exact head has **26 SUCCESS, 0 FAILURE, 0 pending, 1 expected SKIPPED** check-runs (18 successful and one skipped associated workflow). The same-turn synthetic B1/B2 OfferPacket→C4→C3 receipt, Store source-read/revocation regression, A5 UI lease, audio/arithmetic, Lab-Age, owner-read, migration, privacy and source-contract workflows pass on this exact candidate. No Redmi deployment is inferred.
+The code-bearing parent `483ef6ddc7140bf76f197d538ec973df42dd95e0` has **26 SUCCESS, 0 FAILURE, 1 expected SKIPPED** check-runs (18 successful and one skipped associated workflow). The new documentation-only PR head `a3ec1fb986a39d64746cb891631dd71504b3d236` currently has **9 SUCCESS, 0 FAILURE, 17 IN_PROGRESS, 1 expected SKIPPED**; wait for its exact-head rerun. The same-turn synthetic B1/B2 OfferPacket→C4→C3 receipt, Store source-read/revocation regression, A5 UI lease, audio/arithmetic, Lab-Age, owner-read, migration, privacy and source-contract workflows pass on this exact candidate. No Redmi deployment is inferred.
 
 ### Hard release blocker: Age is not a resource budget
 

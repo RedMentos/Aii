@@ -1,3 +1,9 @@
+# Current branch-head correction — 22/11/2026 04:56 CET
+
+The Boss branch head is now `a3ec1fb986a39d64746cb891631dd71504b3d236`, a documentation-only checkpoint that refreshed the board, handoff, workplan, research ledger and whole-Canon evidence overlay. The code-bearing parent remains `483ef6ddc7140bf76f197d538ec973df42dd95e0`; its exact CI completed with 26 SUCCESS, 0 FAILURE and 1 expected SKIPPED. New exact-head CI for the docs-only head currently shows 9 SUCCESS, 0 FAILURE, 17 IN_PROGRESS and 1 expected SKIPPED. The release-development branch remains `bdcad466ffea75a2b41f7d23be168f53c7197d20`; nothing has been released or deployed. This correction supersedes the immediately following earlier snapshot's branch-head line.
+
+---
+
 # Current next action — 22/11/2026 04:55 CET (Boss integration run 11)
 
 **User action: none.** No Termux command, model/weight download or swap, permission change, Age change, updater toggle, device action or user-data mutation is required.
