@@ -2260,3 +2260,12 @@ JEPA transactional update, combined online JEPA, JEPA receipt integrity, role-sp
 - Local full Aii suite BLOCKED (no checkout and GitHub DNS unavailable in the execution container). CI is not local or Android proof. No model, weight, permission, setting or user data changed.
 
 This overlay changes only current evidence status. It does not promote any Canon clause, remove historical FAILs, or alter the V14 master/historical Canon bytes.
+
+
+## Release-branch / device divergence correction — 2026-11-22T17:55:17.015Z
+
+- The release-development branch moved to `aed1d2b826290c95c70356b5d8b864b5ef382be4` through documentation-only PR #2340. Exact push CI was 37 QUEUED at this poll. The Redmi remains installed at `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; no update request has been sent and no `aed1d2` install is claimed.
+- The last stored phone turn remains 57.739 s / 41.627 s TTFT / 38.945 s prefill / 751 prompt tokens / 2 generated; correctness UNKNOWN. B1/B2 TIME_BUDGET; native probe SMOKE_PARTIAL; no 20-turn acceptance.
+- Boss #2343 head `8e5cabb` contains the postcommit anchor correction; local isolated anchor simulation PASS, exact push workflow QUEUED. #2346 remains blocked by two paired-capture assertion failures; #2364 receiver probe checks are queued.
+- Whole-Canon classifications remain unchanged: no trained latent coupling, no accepted permanent weight update, no Android AudioRecord/UI-control provider, no production Memorilla consumer, and no Android companion device acceptance.
+
