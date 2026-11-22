@@ -2090,3 +2090,52 @@ This overlay updates only the A-plane audio/voice evidence; it does not mark the
 | Learning / weights | No change | No gradient, parameter diff, trained adapter, persistent promotion, retention or rollback experiment in this package. | NOT_TESTED | OPEN / NO_WEIGHT_PROOF |
 
 **Negative boundary:** no real Redmi model activation, native B1/B2 useful offers, trained latent coupling, weight update, Android UI control or full user-facing turn was demonstrated by this run. Production B3 remains OFF. Historical Canon inventory and master bytes are unchanged.
+
+
+## Boss evidence overlay — 2026-11-22 (run 11)
+
+| Requirement family | Integrated change / exact evidence | Platform boundary | Acceptance status |
+|---|---|---|---|
+| B1/B2 same-turn budget | Core #2325 merge `283ac1c9`; budgeted subminimum deferral lets the peer retain its remaining slice; exact-threshold and unbudgeted legacy negatives. Exact push CI 46/46; private PIPELINE_STATUS #517 confirms install. | Phone code installed; no post-fix native offer/correctness measurement yet. | MERGED_INTEGRATION / PHONE_INSTALLED; NATIVE_QUALITY_OPEN |
+| Sender-model integrity | #2325 resolves sender path strictly, rejects symlinks, enforces containment under `home/models`, then verifies pinned digest; outside/symlink negatives. | CI + phone code install; no permission/model change. | MERGED_INTEGRATION / PHONE_INSTALLED |
+| RAW EAR anti-alias | Boss #2327 merge `9097d634`; cached centered Hamming FIR before decimation, alias/phase negatives, low-F0 positives, direct-reference parity, A5→A4→C3 and provisional/final admission tests. Exact candidate CI 27 SUCCESS / 1 expected SKIPPED. | Exact post-merge push CI pending at last poll; not yet installed. Isolated x86 Linux parity/decimator timing only. | MERGED_INTEGRATION / PUSH_CI_PENDING |
+| Core source-pin chain | Composer producer SHA-1, recovery wrapper SHA-256, stage builder SHA-256 and runtime deployer pin were recomputed and readback-verified on #2327. | Candidate CI staged-runtime/integrated passed; merge push CI pending. | CANDIDATE_CI_PASS / RELEASE_GATE_PENDING |
+| B3 / Enlightened Space | Core #2323 remains a diagnostic native input-embedding probe; #2325 adds sender containment. Production route remains OFF. #2313/#2317 paired-tap/L1 stack is draft and stale. | Android ARM64 cross-compile is not a Redmi native run; no trained adapter, independent labels or utility/retention proof. | DIAGNOSTIC_ONLY / NOT_PRODUCTION |
+| JEPA / World / Self / Sleep | #2311 exact head has 11 failures dominated by stale integrated OnlineWorld and observer source pins; diff deletes the #2323 diagnostic receiver files. | No accepted staged training path, parameter diff, restart, retention or rollback. | OPEN / NOT_MERGE_READY |
+| Voice / Audio / Android | Caller-supplied PCM16 RAW EAR feature path and synthetic consumer are improved. #2312 signed capture consumer remains stacked on QA companion and does not open AudioRecord. | No microphone provider, RECORD_AUDIO grant, ASR, trainable vocoder, full-duplex or Redmi capture. | PARTIAL_FEATURE_ONLY / ANDROID_OPEN |
+| Android UI/background agency | Existing companion PR stack remains separate and default-OFF; no new OS executor integrated. | No APK installation, screen capture, tap/type or background action on Redmi. | OFF / NOT_IMPLEMENTED |
+| Update / recovery | #283ac1 exact push CI 46/46 and private #517 installation receipt. #9097 merge push CI still pending. | Code install only; no Android process-death/reboot or dashboard rollback acceptance. | PHONE_VERIFIED_FOR_283AC1_ONLY |
+| Whole Canon | V14 master blob `9748ad5b...`; historical V13 Canon blob `218464b1...` is an exact byte-identical substring. Inventory remains 1,255 headings. | Semantic clause→consumer→test→platform→rollback mapping remains partial. | PRESERVED / MAPPING_INCOMPLETE |
+
+**Negative boundary:** no correct native B1/B2 offer, trained B3 latent transfer, permanent weight update, Android microphone/UI/background control, full voice learning, sparse MoE, or AGI claim is established by this overlay. Production B3 and learning promotion remain OFF.
+
+
+## Boss follow-up overlay — 2026-11-22 (R-079)
+
+| Requirement family | Evidence | Boundary | Status |
+|---|---|---|---|
+| RAW EAR vs WebRTC/libfvad research comparator | PR #2329 merged at `b3b92f41`; exact head 4/4 SUCCESS; missing `os` import fixed and CLI regression exercises pinned CI-built libfvad shared library. R-079 records upstream revision `532ab666...`, BSD-3-Clause. | Synthetic harmonic WAV only; no real corpus, Android/ARM64/Redmi, production VAD or dependency import. | RESEARCH_COMPARATOR_ONLY |
+| Release/update | #9097 push CI 41/41 SUCCESS; #b3b92 post-merge push CI 38 queued/in-progress / 0 failures at last poll. Phone #517 remains on 283ac1; #519 update request pending. | No b3b92 install receipt. | MERGED_INTEGRATION / PUSH_CI_PENDING |
+| Native receiver diagnostic | Current local/remote operator allowlist does not expose the native receiver probe. | No attempt made; do not bypass. Requires an exact explicit-confirmation command plus regression. | NOT_YET_REMOTE_ACCESSIBLE |
+
+
+
+## Boss evidence overlay — 2026-11-22T09:58:33.516Z (run 12; append-only)
+
+| Canon family | Current code / consumer | Exact evidence | Environment | Current classification |
+| --- | --- | --- | --- | --- |
+| A0–A5 / RAW EAR | #2327 merges the caller-supplied PCM16 FIR anti-alias feature producer into the staged A5→A4→C3 composition; #2329 repairs the research comparator CLI | b3b92 exact push CI 40/40 check-runs and 29/29 workflow runs SUCCESS; #2329 exact PR head 4/4 SUCCESS; no microphone provider or real speech corpus | GitHub CI + prior isolated Linux parity only; no Redmi capture | CODE_PRESENT / WIRED_SYNTHETIC / ANDROID_UNVERIFIED |
+| B1_DETAIL + B2_GIST | #2324 fair-share acceptance and #2325 observer/sender-path code; phone install receipt #517 confirms 283ac1c9 | #2325 exact post-merge CI 46/46; #518 still reports B1/B2 TIME_BUDGET 53.2/54.2 s and prior 63.22 s turn; no fresh post-fix turn | CI + authenticated Redmi metadata, not native quality proof | MERGED / CODE_INSTALLED_283AC1 / NATIVE_OFFERS_UNVERIFIED |
+| B3 / Enlightened Space | #2323 diagnostic native input-embedding receiver; #2313/#2317 paired taps and L1 shadow remain drafts | no trained cross-family projector, paired native activation training, L0 baseline, semantic utility or retention acceptance | Linux/CI probe only; no Redmi | DIAGNOSTIC_ONLY / PRODUCTION_OFF |
+| C3 / answer correctness and latency | Native C3 remains in existing Runtime; exact arithmetic guard is a separate deterministic path | #518 last recorded 709-token prompt, 2 generated tokens, TTFT 42.48 s, prefill 34.96 s; no new correct-answer or 20-turn receipt | Authenticated prior Redmi metadata | P0_OPEN / NOT_ACCEPTED |
+| World/Self/Memory/JEPA | #2331 current-base source-forget guard candidate | head 6a9b; 20 checks queued at last read; recovery-wrapper and stage/deployer nested pins still mismatch exact content hashes; source-forget tests not yet accepted | GitHub PR/CI pending; no local full suite or Redmi | DRAFT / NOT_RELEASED / LEARNING_PROMOTION_OFF |
+| Voice and Android control | signed one-shot PCM consumer #2312 stacked on QA companion; companion #2271 remains default-OFF app-launch prototype | no AudioRecord capture provider, ASR/decoder/vocoder, MediaProjection, AccessibilityService, tap/type or background OS executor | No Android test | OFF / NOT_IMPLEMENTED |
+| Runtime update and rollback | #2325 installed at 283ac1c9; b3b92 contains #2327/#2329 | b3b92 exact push CI 40/40 check-runs and 29/29 workflow runs SUCCESS; private #520 still reports 283ac1c9 / CI_WAIT / BLOCKED_RUNNING; #519 queued | CI green + private authenticated read-only receipt | MERGED_INTEGRATION / DEVICE_PENDING |
+| Whole-Canon coverage | 1,255 historical headings remain indexed; semantic atomic-clause mapping continues | Master blob 9748ad5...; historical Canon blob 218464b1... remains byte-identical within master; no master edit in this run | GitHub readback | INVENTORY_PRESERVED / SEMANTIC_COVERAGE_INCOMPLETE |
+
+Negative boundary: no real native B1/B2 useful offers, correct 2+2, 20-turn Redmi acceptance, trained B3 latent transfer, permanent body-weight update, Android microphone/UI/background action, or production Memorilla consumer was demonstrated. No model, weight, Age, permission, updater setting or user data was changed.
+
+
+## Boss exact-head follow-up — 2026-11-22T10:00:40.871Z
+
+PR #2331 current head 535eba6f668b3990416c361368f36e3e8f1e599e is DRAFT/NOT_RELEASED. Its exact matrix is 9 failures, 4 in progress, 2 queued, 4 success, 1 skipped. Six source-composition pins are inconsistent: memory-world→feedback, feedback→context-recall, lifecycle composer→memory-world, memory.py→lifecycle composer, recovery21→stage, stage→runtime deployer. See Boss review comment 7077507340 for full byte-derived hashes. No source-forget or numeric learning acceptance is established. The current b3b92 release branch has 40/40 push check-runs and 29/29 workflow runs SUCCESS; private #520 still reports the phone on 283ac1c9 / CI_WAIT and #519 queued. This overlay changes no Canon requirement and no master bytes.
