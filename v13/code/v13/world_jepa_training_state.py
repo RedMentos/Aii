@@ -15,6 +15,7 @@ import zipfile
 import numpy as np
 
 from . import world_jepa as wj
+from . import world_jepa_drift as drift
 
 SCHEMA = 'v13.world-jepa.training-state.v1'
 PREFIX = 'training__'
@@ -84,7 +85,8 @@ def validate(state, d, actions, seed, ensemble, steps):
             or type(ensemble) is not int or not 1 <= ensemble <= 16
             or type(steps) is not int or not 0 <= steps <= MAX_STEPS):
         raise ValueError('invalid World-JEPA training dimensions')
-    if (type(state) is not dict or set(state) != {'schema', 'objective', 'origin', 'inverse', 'main', 'rng', 'bootstrap'}
+    legacy_fields = {'schema', 'objective', 'origin', 'inverse', 'main', 'rng', 'bootstrap'}
+    if (type(state) is not dict or set(state) not in (legacy_fields, legacy_fields | {'drift'})
             or state['schema'] != SCHEMA or state['objective'] != objective(seed, ensemble)
             or state['origin'] not in ('FRESH', 'BOOTSTRAPPED_FROM_INFERENCE_ONLY')
             or type(state['bootstrap']) is not list or len(state['bootstrap']) != ensemble - 1):
@@ -93,7 +95,8 @@ def validate(state, d, actions, seed, ensemble, steps):
     result = {'schema': SCHEMA, 'objective': state['objective'],
               'origin': state['origin'], 'inverse': _arrays(state['inverse'], inverse),
               'main': _adam(state['main'], main, steps, exact=steps if state['origin'] == 'FRESH' else None),
-              'rng': _rng(state['rng']), 'bootstrap': []}
+              'rng': _rng(state['rng']), 'bootstrap': [],
+              'drift': drift.validate_state(state.get('drift'))}
     for member in state['bootstrap']:
         if type(member) is not dict or set(member) != {'adam', 'rng'}:
             raise ValueError('invalid World-JEPA bootstrap state')
@@ -120,10 +123,12 @@ def restore_adam(adam, state):
     adam.t, adam.lr, adam.m, adam.v = checked['t'], checked['lr'], checked['m'], checked['v']
 
 
-def capture(opt, inverse, rng, bootstrap, d, actions, seed, ensemble, steps, origin='FRESH'):
+def capture(opt, inverse, rng, bootstrap, d, actions, seed, ensemble, steps, origin='FRESH',
+            drift_state=None):
     return validate({'schema': SCHEMA, 'objective': objective(seed, ensemble), 'origin': origin,
                      'main': snapshot(opt), 'inverse': inverse,
-                     'rng': rng.bit_generator.state, 'bootstrap': bootstrap},
+                     'rng': rng.bit_generator.state, 'bootstrap': bootstrap,
+                     'drift': drift.validate_state(drift_state)},
                     d, actions, seed, ensemble, steps)
 
 
@@ -169,15 +174,16 @@ def pack(model):
     for key, array in state['inverse'].items():
         arrays[PREFIX + 'inverse__' + key] = array
     meta = {'schema': SCHEMA, 'objective': state['objective'], 'origin': state['origin'], 'rng': state['rng'],
-            'main': adam(state['main'], 'main'), 'bootstrap': []}
+            'main': adam(state['main'], 'main'), 'bootstrap': [], 'drift': state['drift']}
     for i, value in enumerate(state['bootstrap']):
         meta['bootstrap'].append({'adam': adam(value['adam'], 'boot' + str(i)), 'rng': value['rng']})
     return meta, arrays
 
 
 def unpack(meta, arrays, base_meta, base_arrays):
+    legacy_meta_fields = {'schema', 'objective', 'origin', 'rng', 'main', 'bootstrap'}
     if (type(base_meta.get('fit_steps')) is not int or not 1 <= base_meta['fit_steps'] <= MAX_STEPS
-            or type(meta) is not dict or set(meta) != {'schema', 'objective', 'origin', 'rng', 'main', 'bootstrap'}
+            or type(meta) is not dict or set(meta) not in (legacy_meta_fields, legacy_meta_fields | {'drift'})
             or type(meta['bootstrap']) is not list or len(meta['bootstrap']) != base_meta['ensemble'] - 1):
         raise ValueError('invalid World-JEPA training metadata')
     main, pred, inverse = _shapes(len(base_arrays['mu']), len(base_arrays['action_counts']))
@@ -195,6 +201,8 @@ def unpack(meta, arrays, base_meta, base_arrays):
     state = {'schema': meta['schema'], 'objective': meta['objective'], 'origin': meta['origin'], 'rng': meta['rng'],
              'inverse': {key: get('inverse__' + key) for key in inverse},
              'main': adam(meta['main'], 'main', main), 'bootstrap': []}
+    if 'drift' in meta:
+        state['drift'] = meta['drift']
     for i, member in enumerate(meta['bootstrap']):
         if type(member) is not dict or set(member) != {'adam', 'rng'}:
             raise ValueError('invalid World-JEPA bootstrap metadata')
