@@ -1964,3 +1964,13 @@ The 32491b attempt still failed controller guard with `NameError: recall_base_pi
 Updated family status: B1/B2 fair budget and source-bound OfferPacket→C4/C3 synthetic path remain candidate-only; #2280's unique C4 receipt still requires rebase. B3 remains symbolic/diagnostic. World/Self/Memory and JEPA integration tests do not constitute accepted numeric weight updates or per-session retention. Voice remains caller-supplied PCM16/TTS fallback, not microphone/ASR/vocoder/full duplex. Android background/UI control remains OFF. Age-rights, source-reader race, rollback, audio QA and RAW EAR branches remain old-base follow-ups requiring rebase. Distinct sparse MoE, OS sandbox, adaptive judge, Memorilla production consumer, Sleep/Dream and cross-organ self-edit remain OPEN.
 
 Private PIPELINE_STATUS #453 remains unanswered; installed SHA/updater consent UNKNOWN. No device action, LOG_PAGE, UPDATE_REQUEST or shell occurred. Local Aii checkout unavailable; no LOCAL_LINUX suite. `REDMI_UNVERIFIED`, `NOT_RELEASED`.
+
+
+## Perception evidence overlay — 2026-11-22 02:35 CET
+
+| Canon family | New verified function | Evidence / environment | Still open |
+|---|---|---|---|
+| A5 RAW EAR / audio-only ingress | New submit_audio_only(runtime, audio_window) adapter sends a fixed no-transcript marker plus caller-supplied PCM16 into the staged Runtime audio_window API; consent preflight, linearizable guard and two-phase revocation are mandatory | LOCAL_LINUX isolated exact-file py_compile PASS + 7/7 unit tests; GitHub focused CI #44972070097 pending. Previous speaker-evidence A5→A4→C3 tests passed on Python 3.13/3.14. Full staged/integrated is still blocked by the Core pre-rebind pin failure on unchanged base | No full audio-only Runtime E2E on current base, no Android AudioRecord/microphone permission, no ASR/decoder/vocoder, no full-duplex/barge-in, no native speaker encoder, no Redmi proof |
+| VOICE_AUDIO / duplex | No transcript is required by the new API; acoustic context remains a separate A5 path | API/unit proof only; speech-core research R-063 | Android caller/UI wiring, actual capture, AEC/turn detector and TTS effector are not integrated |
+
+The new adapter is an API candidate, not a production release or Android acceptance. PR #2293 remains DRAFT / NOT_RELEASED; REDMI_UNVERIFIED. Full Aii local tests are blocked by DNS resolution of github.com.
