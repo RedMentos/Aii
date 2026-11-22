@@ -98,6 +98,7 @@ def validate(kind,obj):
     if kind=="B3PairedTapPacket":
         roles=("B1_DETAIL","B2_GIST")
         if obj["schema"]!="v13.b3-paired-native-taps/1" or obj["sender_roles"]!=list(roles):raise ValueError("B3 pair schema/roles")
+        if obj["source_ref"] not in obj["provenance"]:raise ValueError("B3 pair source provenance")
         for field in ("tap_packet_ids","tap_ids","model_revisions","feature_bindings","token_counts","dimensions"):
             if not isinstance(obj[field],dict) or set(obj[field])!=set(roles):raise ValueError("B3 pair "+field)
         if any(not isinstance(obj[field][role],str) or not obj[field][role] for field in ("tap_packet_ids","tap_ids","model_revisions") for role in roles):raise ValueError("B3 pair identity")
