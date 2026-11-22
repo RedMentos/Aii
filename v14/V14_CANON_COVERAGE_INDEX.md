@@ -2298,3 +2298,11 @@ The RECORD_ONLY controller guard itself passes on this head. The audio overlay u
 | #2356 `3829465e5180ce237ef98b36181bda6caea601a5` | Android Gradle + emulator 45065638333 | QUEUED |
 
 No exact-head emulator result exists yet. Previous-head System UI ANR is not a product pass or a Redmi measurement.
+
+## Native probe model-byte integrity — 2026-11-22
+
+| Requirement | Exact finding/fix | Remaining proof | Classification |
+|---|---|---|---|
+| Source/model-bound local native receiver approval | Core #2367 `_model_binding()` previously trusted the manifest SHA-256 without hashing the actual GGUF; `ModelManager.path_for()` checked only file existence/size. QA #2377 head 335d501 streams actual sender/receiver SHA-256 during arm and consume, O_NOFOLLOW + regular-file/identity stability checks, TTL revalidation, and four same-size tamper negatives. Local helper reproduction: original PASS; tamper/symlink REJECTED. | Exact native receiver + staged/integrated CI 45066641859/45066641897; full Runtime tests; Android large-model hash cost; Core review; no native probe/Redmi proof | CODE_PRESENT / LOCAL_HELPER_PASS / CI_QUEUED / NOT_RELEASED |
+
+Keep production B3 OFF and do not treat manifest metadata alone as proof of installed model bytes.
