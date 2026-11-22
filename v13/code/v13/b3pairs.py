@@ -41,12 +41,6 @@ def _matrix(value, name):
     return out, width
 
 
-def _mean_pool(rows):
-    n = len(rows)
-    d = len(rows[0])
-    return [sum(row[j] for row in rows) / n for j in range(d)]
-
-
 def capture_pair(cognition, event, deadline):
     """Capture B1 and B2 native states for one event, sequentially on mobile.
 
