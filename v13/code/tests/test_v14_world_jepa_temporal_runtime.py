@@ -3,6 +3,8 @@
 No native GGUF, Android or Redmi behavior is claimed by these fixtures.
 """
 from types import SimpleNamespace
+import importlib.util
+from pathlib import Path
 import json
 import threading
 
@@ -1163,3 +1165,28 @@ def test_bodyview_records_rejected_temporal_gate_without_prompt_leak(tmp_path, m
     finally:
         store.close()
 
+
+
+def test_training_resume_builder_accepts_exact_persisted_world_jepa_sources():
+    """Exercise the JEPA-owned builder without the downstream Termux pin chain."""
+    code_dir = Path(__file__).resolve().parents[1]
+    builder_path = code_dir / "scripts" / "integrated_world_training_resume_candidate_20261111.py"
+    spec = importlib.util.spec_from_file_location(
+        "integrated_world_training_resume_candidate", builder_path
+    )
+    assert spec is not None and spec.loader is not None
+    builder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(builder)
+
+    result = builder.build_sources(code_dir)
+    world = (code_dir / "v13" / "world_jepa.py").read_bytes()
+    checkpoint = (code_dir / "v13" / "world_jepa_shadow_checkpoint.py").read_bytes()
+    state = (code_dir / "v13" / "world_jepa_training_state.py").read_bytes()
+    assert result["v13/world_jepa.py"] == world
+    assert result["v13/world_jepa_shadow_checkpoint.py"] == checkpoint
+    assert result["v13/world_jepa_training_state.py"] == state
+    guard = result["v13/world_jepa_runtime_guard_candidate.py"]
+    assert b"world_jepa_training_state as training_state" in guard
+    assert b"optimizer_steps=candidate._training_state['main']['t']" in guard
+    lineage = result["v13/world_jepa_lineage_checkpoint_candidate.py"]
+    assert b"optimizer_state_persisted" in lineage
