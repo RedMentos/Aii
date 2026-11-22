@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T11:37:04.338Z",
+  "updated_at": "2026-11-22T11:38:04.785Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; all 30 observed exact-SHA Actions runs completed SUCCESS; authenticated private PIPELINE_STATUS confirms the same SHA installed. Functional/whole-Canon acceptance remains open; V14 master and historical V13 appendix preserved.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -250,10 +250,10 @@
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
       "proof_environment": "CI + Android source review; no APK or Redmi OS execution",
-      "next_step": "Core/QA: complete #2342 exact Android Gradle/Robolectric tests, integrate the small durability leaf, then separately integrate/install the companion with explicit user approval. Implement UI observation, Accessibility, audio and background providers only behind their own OS permissions, lifecycle tests and device receipts.",
+      "next_step": "Core/QA: complete #2342 exact Android Gradle/Robolectric tests, integrate the small durability leaf, then separately integrate/install the companion with explicit user approval. Implement UI observation, Accessibility, audio and background providers only behind their own OS permissions, lifecycle tests and device receipts. QA #2342 is CI-green and ready for review; still requires Core integration and separate APK/Redmi proof before any device capability is marked enabled.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T11:37:04.338Z",
-      "proof": "The QA companion parent stack is merged into Core branch 24e059d1. QA follow-up #2342 (head ab99ad94) fixes durable Termux pairing persistence only; private bridge CI PASS, Android Gradle/Robolectric IN_PROGRESS, isolated JDK21 javac helper smoke PASS (7 controls). No APK install, Android OS action, UI observation, tap/type or Redmi proof."
+      "last_checkpoint": "2026-11-22T11:38:04.785Z",
+      "proof": "The QA companion parent stack is merged into Core branch 24e059d1. QA follow-up #2342 (head ab99ad94) fixes durable Termux pairing persistence only; private bridge CI PASS, Android Gradle/Robolectric PASS (run 45018041741); private bridge PASS (45018031307); local JDK21 helper smoke 7/7 controls PASS; PR #2342 READY_FOR_REVIEW, isolated JDK21 javac helper smoke PASS (7 controls). No APK install, Android OS action, UI observation, tap/type or Redmi proof."
     },
     {
       "id": "V14-010",
@@ -372,10 +372,10 @@
       "owner": "Core & Harness + QA & Android",
       "priority": "P0",
       "status": "BLOCKED_REVIEW",
-      "last_checkpoint": "2026-11-22T11:37:04.338Z",
+      "last_checkpoint": "2026-11-22T11:38:04.785Z",
       "proof_environment": "CI only; no Android APK/device proof",
       "proof": "Core parent companion branch is at 24e059d1. QA #2342 adds checked durable Termux pairing; exact Android Gradle/Robolectric CI is still running, local JDK21 helper smoke passes 7 controls. No APK or Redmi action. Research #2312 remains stacked on stale QA base SHA 58666dd and must rebase after #2342 integration.",
-      "next_step": "QA/Core: finish exact #2342 Gradle/Robolectric CI and review; after integration, ask Research/Perception to rebase #2312 on the updated Core companion head. Keep audio/UI/tap/background providers OFF until separately implemented and device-verified."
+      "next_step": "QA/Core: finish exact #2342 Gradle/Robolectric CI and review; after integration, ask Research/Perception to rebase #2312 on the updated Core companion head. Keep audio/UI/tap/background providers OFF until separately implemented and device-verified. QA #2342 is CI-green and ready for review; still requires Core integration and separate APK/Redmi proof before any device capability is marked enabled."
     },
     {
       "id": "V14-018",
@@ -1000,7 +1000,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T11:37:04.338Z",
+    "timestamp": "2026-11-22T11:38:04.785Z",
     "release_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "code_candidate_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "candidate_ci": "EXACT_SHA_ALL_30_OBSERVED_ACTIONS_WORKFLOW_RUNS_SUCCESS",
@@ -1021,7 +1021,7 @@
       "P0_20_TURN_REDMI_CORRECTNESS_TTFT_PSS_AND_RESIDENCY_ACCEPTANCE",
       "P0_CANON_CLAUSE_TO_CONSUMER_TEST_PLATFORM_ROLLBACK_TRACEABILITY",
       "P0_CORE_PR2338_NATIVE_TURN_BUDGET_TEST_SEAM_KEYERROR_SOURCE_REF",
-      "P0_ANDROID_COMPANION_PAIRING_DURABILITY_PR2342_CI_PENDING"
+      "P0_ANDROID_COMPANION_PAIRING_DURABILITY_REVIEW_AND_DEVICE_PROOF"
     ],
     "user_action_required": "NONE; no manual Termux command, update request, model/weight swap or permission change",
     "previous_overlay": {
@@ -1045,10 +1045,10 @@
       ],
       "pr2331_ci": "HEAD_535EBA: 9_FAILURE_4_IN_PROGRESS_2_QUEUED_4_SUCCESS_1_SKIPPED; six nested source-pin mismatches; NOT_RELEASED"
     },
-    "pr2342_ci": "HEAD_AB99AD: private bridge PASS; Android companion Gradle/Robolectric IN_PROGRESS; local JDK21 javac helper smoke PASS (7 controls); DRAFT_NOT_RELEASED"
+    "pr2342_ci": "HEAD_AB99AD: Android companion Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; local JDK21 javac helper smoke PASS (7 controls); READY_FOR_REVIEW; NOT_INSTALLED_ON_REDM I"
   },
   "qa_latest_checkpoint": {
-    "timestamp": "2026-11-22T11:37:04.338Z",
+    "timestamp": "2026-11-22T11:38:04.785Z",
     "owner": "QA & Android",
     "base_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "branch": "qa/v14-redmi-c4eb82-evidence-20261122-run11",
@@ -1061,7 +1061,7 @@
       "pr2338": "BLOCKED: runtime.py pin + store.py lifecycle pin + test seam KeyError source_ref; Boss is integrating/rebinding on a separate descendant branch; no parallel pin edits",
       "pr2332": "ALLOWLIST_TESTS_PASS_PROBE_NOT_RUN",
       "pr2286": "STACKED_COMPANION_CI_PASS_NO_DEVICE_PROOF",
-      "pr2342": "DRAFT_HEAD_AB99AD; private bridge PASS; Android Gradle/Robolectric IN_PROGRESS; local javac 7 controls PASS"
+      "pr2342": "READY_FOR_REVIEW; exact Android Gradle/Robolectric + private bridge 2/2 PASS; local JDK21 javac 7 controls PASS; no APK/Redmi proof"
     },
     "user_action_required": false
   }
