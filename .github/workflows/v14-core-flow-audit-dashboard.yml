@@ -24,6 +24,13 @@ on:
       - "v13/code/tests/test_flow_audit_dashboard_route.py"
       - ".github/workflows/v14-core-flow-audit-dashboard.yml"
 
+permissions:
+  contents: read
+
+concurrency:
+  group: v14-core-flow-audit-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   dashboard-flow:
     runs-on: ubuntu-latest
