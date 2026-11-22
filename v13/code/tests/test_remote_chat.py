@@ -221,13 +221,18 @@ class RemoteChatTests(unittest.TestCase):
             if method == "send":
                 self.assertEqual(kw["line"], command)
                 receipt = self.receipt()
+                payload = {
+                    "native_receiver_probe": {
+                        "status": "NATIVE_INPUT_CONSUMED",
+                        "production_route": False,
+                        "semantic_use_proven": False,
+                        "training_authority": 0,
+                        "native_receiver_authority": 0,
+                    }
+                }
                 with self.path.open("a", encoding="utf8") as out:
-                    out.write(
-                        "[du> " + command + "]\\n"
-                        "assistant> {\\"native_receiver_probe\\":{\\"status\\":\\"NATIVE_INPUT_CONSUMED\\","
-                        "\\"production_route\\":false,\\"semantic_use_proven\\":false,"
-                        "\\"training_authority\\":0,\\"native_receiver_authority\\":0}}\\n\\ndu>\\n"
-                    )
+                    out.write("[du> " + command + "]\nassistant> "
+                              + json.dumps(payload) + "\n\ndu>\n")
                 return receipt
             raise AssertionError("Unexpected RPC " + method)
 
