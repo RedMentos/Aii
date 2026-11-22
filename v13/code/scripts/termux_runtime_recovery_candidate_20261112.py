@@ -86,11 +86,10 @@ def build_sources(code_dir, *, include_postcommit=True):
             raise ValueError('Integrated source recall pin malformed: ' + name)
         return value.decode('ascii')
 
-    if recall_pin(recall, 'store.py') != hashlib.sha256(result['v13/store.py']).hexdigest():
-        raise ValueError('Integrated source recall Store binding changed')
-    if recall_pin(recall, 'archive_stream_range_candidate.py') != hashlib.sha256(
-            result['v13/archive_stream_range_candidate.py']).hexdigest():
-        raise ValueError('Integrated source recall stream binding changed')
+    if recall_pin(recall, 'store.py') != recall_base_pins['store.py']:
+        raise ValueError('Integrated source recall base Store binding changed')
+    if recall_pin(recall, 'archive_stream_range_candidate.py') != recall_base_pins['archive_stream_range_candidate.py']:
+        raise ValueError('Integrated source recall base stream binding changed')
     old_pin = b'a35966dbe77a603470d73285eac9c8087163d8cf675a1b8516e3b9f38b267232'
     if recall_pin(recall, 'context_os.py').encode('ascii') != old_pin:
         raise ValueError('Integrated source recall ContextOS pin changed')
