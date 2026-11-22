@@ -113,16 +113,35 @@ def test_sleep_runtime_postcommit_requires_observed_outcome_and_keeps_gates_defa
         assert store.state("v14.world_jepa.store_consumer", None)[0] is None
 
         observed = _add_transitions(store, session, 1, 1)[0]
-        assert sleep.schedule_world_jepa(observed) is None
-        result = sleep._run_world_jepa(observed)
+        posted = sleep.schedule_world_jepa(observed)
+        assert type(posted) is str and posted
+        dispatched = sleep.scheduler.next(idle=True, resource_state="NORMAL", quiet=False)
+        assert dispatched is not None and dispatched["id"] == posted
+        result = sleep.job(dispatched)
         assert result["status"] == "POSTCOMMIT_PROCESSED"
         assert result["learning"]["status"] == "OFF"
+        assert result["learning"]["neuromod"]["record"]["status"] == "RECORDED"
+        assert result["learning"]["neuromod"]["record"]["verified_receipts"] == 1
         assert result["planner"]["status"] == "NO_CHECKPOINT"
         assert result["decision_authority"] == "NONE"
         assert result["native_body_consumed"] is False
         assert result["native_body_weights_changed"] is False
+        assert len(store.rows("SELECT id FROM packets WHERE kind='LearningTrace' AND event_id=?", (observed,))) == 1
+        assert len(store.rows("SELECT id FROM packets WHERE kind='ModulatorPacket' AND event_id=?", (observed,))) == 1
+        cursor, _ = store.state("v14.world_jepa.sleep_cursor", None)
+        assert cursor["last_recorded_event_id"] == observed
+        assert cursor.get("last_learning_event_id") != observed
+        assert sleep.schedule_world_jepa(observed) is None
         assert store.state(PERMISSION_KEY, None)[0] is None
         assert store.state("v14.world_jepa.store_consumer", None)[0] is None
+
+        # Restart proves that record-only provenance is durable and idempotent.
+        store.close()
+        store = Store(home)
+        restarted = _sleep(store, home)
+        assert restarted.schedule_world_jepa(observed) is None
+        assert len(store.rows("SELECT id FROM packets WHERE kind='LearningTrace' AND event_id=?", (observed,))) == 1
+        assert len(store.rows("SELECT id FROM packets WHERE kind='ModulatorPacket' AND event_id=?", (observed,))) == 1
 
         missing = store.event(session, "no committed action outcome")
         rejected = sleep._run_world_jepa(missing["event_id"])
@@ -137,8 +156,17 @@ def test_sleep_tick_schedules_one_authorized_idle_batch_and_coalesces_turn_burst
     try:
         sleep = _sleep(store, home)
         first_event = _add_transitions(store, session, 0, 1)[0]
+        record_only_id = sleep.schedule_world_jepa()
+        assert type(record_only_id) is str and record_only_id
+        record_only_job = sleep.scheduler.next(idle=True, resource_state="NORMAL", quiet=False)
+        assert record_only_job is not None and record_only_job["id"] == record_only_id
+        record_only_result = sleep.job(record_only_job)
+        assert record_only_result["learning"]["status"] == "OFF"
+        assert record_only_result["learning"]["neuromod"]["record"]["status"] == "RECORDED"
         assert sleep.schedule_world_jepa() is None
 
+        # Learning remains separately gated: opt-in can now train from the
+        # persisted receipt without requiring the raw T8 scan to run again.
         store.set_state(PERMISSION_KEY, {
             "learning_enabled": True, "optimizer_permission": True,
             "steps": 40, "replay_mode": "uniform",
