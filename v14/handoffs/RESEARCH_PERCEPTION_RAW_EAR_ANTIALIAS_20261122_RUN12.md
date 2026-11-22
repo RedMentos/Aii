@@ -144,3 +144,12 @@ No microphone provider, permission, model, dependency, weight, Age, learning aut
 ### Exact comparator pin readback — 2026-11-22
 
 The VAD comparator workflow's expected RAW EAR V3 Git blob was updated from the intermediate c47e21... producer to the current symmetric-FIR producer blob `b18e450162b062b09368a12b1ca18924ed8c5025`. Workflow blob: `5d90cfcab210b051a2b53b43d1ba77253839f5f2`; commit: `a98a79ec7aae62abf679f59f3db6a01a02fc9b63`. Branch readback confirms both the producer blob and workflow pin match. The exact new compare/staged/prosody matrix is now running; no results are promoted until completion.
+
+
+## Exact-head CI readback — 2026-11-22 08:40 UTC
+
+At branch head `a5494d48ce26fa570245fd0e5b24733a20ce304d`:
+- **PASS:** RAW EAR fastpath Python 3.13 + 3.14; RAW EAR→A4→C3 prosody regression Python 3.11 + 3.13 (66 passed in 9.82 s / 8.34 s); VAD comparator Python 3.13 + 3.14; consent-revocation; A5 UI lease Python 3.13 + 3.14; privacy; offline-bridge-security; integrate-same-repo-only; model-lab and latent-cache-tiny.
+- **FAIL:** staged-runtime and integrated-regression. Both fail at Core-owned `scripts/integrated_audio_context_candidate_20261121.py:50` with `ValueError: audio source blob changed: v13/audio_voice_cues.py`. That builder still pins an older producer blob; the comparator's own pin is now correct. The migration fixture then reports `last_result=PARTIAL`, `runtime=ERROR` because staged runtime construction fails. Do not treat the resulting migration assertion as a separate device or updater failure.
+- **NOT_RUN:** Android AudioRecord, microphone permission/lifecycle, native ARM ABI, Termux/Redmi, whole-turn native voice generation.
+- Exact PR remains DRAFT / NOT_RELEASED. Core must update the composer pin to `b18e450162b062b09368a12b1ca18924ed8c5025` and rerun staged/integrated. Perception-owned comparator and focused audio matrices are green.
