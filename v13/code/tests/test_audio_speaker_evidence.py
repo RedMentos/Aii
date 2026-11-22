@@ -442,6 +442,9 @@ def test_three_regime_gate_defers_short_or_insufficient_voiced_windows():
     assert _speaker_change_decision(
         evidence, _decision_cues(frame_count=50, voiced_fraction=0.02)
     ) == "DEFER"
+    assert _speaker_change_decision(
+        evidence, _decision_cues(frame_count=100, voiced_fraction=0.8)
+    ) == "CONTINUITY_SUPPORTED"
 
 
 def test_a4_and_c3_receive_explicit_defer_instead_of_false_stability_on_silence(tmp_path):
