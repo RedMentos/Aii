@@ -140,7 +140,11 @@ class Bridge:
             for i in range(0,len(y),batch):
                 j=idx[i:i+batch]
                 if len(j)<2:continue
-                loss,gr,part=self.loss_and_grads(H[j],mask[j],Xr[j],y[j],aux=None if aux is None else aux[j],**kw);t+=1;parts.append(part)
+                loss,gr,part=self.loss_and_grads(H[j],mask[j],Xr[j],y[j],aux=None if aux is None else aux[j],**kw);t+=1
+                grad_norm_sq=sum(float(np.square(g).sum()) for g in gr.values())
+                part=dict(part)
+                part['gradient_norm']=float(np.sqrt(max(0.0,grad_norm_sq)))
+                parts.append(part)
                 for k in self.p:
                     mom[k]=.9*mom[k]+.1*gr[k];vel[k]=.999*vel[k]+.001*gr[k]**2
                     self.p[k]-=lr*(mom[k]/(1-.9**t))/(np.sqrt(vel[k]/(1-.999**t))+1e-8)
