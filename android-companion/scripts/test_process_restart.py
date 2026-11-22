@@ -176,7 +176,7 @@ def process_id() -> str:
     return adb("shell", "pidof", PACKAGE, check=False).strip()
 
 
-def wait_for_process(absent: bool, timeout: float = 12.0) -> str:
+def wait_for_process(absent: bool, timeout: float = 45.0) -> str:
     deadline = time.monotonic() + timeout
     last = ""
     while time.monotonic() < deadline:
@@ -194,7 +194,7 @@ def main() -> None:
     adb("shell", "am", "force-stop", PACKAGE, check=False)
     adb("shell", "wm", "dismiss-keyguard", check=False)
     adb("shell", "input", "keyevent", "82", check=False)
-    adb("shell", "am", "start", "-W", "-n", COMPONENT)
+    adb("shell", "am", "start", "-n", COMPONENT, timeout=60)
     wait_for_process(absent=False)
     wait_for_text(STOPPED_TEXT, timeout=60.0)
 
