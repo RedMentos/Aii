@@ -64,6 +64,23 @@ class UtilityTests(Base):
         recv=packet('OfferPacket','B2_GIST',eid,gen,[],role='B2_GIST',based_on_state_version=0,deadline_monotonic_ns=time.monotonic_ns()+10**9,evidence_refs=[],
                     offer={'summary':'total 391','quotes':[],'uncertainty':'','needs_reentry':False},confidence=0.,native_metrics={'duration_s':3.})
         self.r.store.add_packet('OfferPacket',recv)
+        # Diagnose the persisted handoff before scoring. This makes a missing
+        # Callosum.note write distinguishable from a receiver-row lookup error.
+        state,_=self.r.store.state(C.KEY,None)
+        pending=(state or {}).get('pending',{}).get(eid,[])
+        message_row=self.r.store.one("SELECT rowid FROM packets WHERE id=?",(out['message_packet_id'],))
+        receiver_rows=self.r.store.rows(
+            "SELECT rowid,json_extract(payload,'$.role') AS role FROM packets "
+            "WHERE kind='OfferPacket' AND event_id=? ORDER BY rowid",(eid,))
+        note_errors=self.r.store.rows(
+            "SELECT metrics FROM telemetry WHERE kind='callosum_unavailable' AND event_id=?",(eid,))
+        self.assertTrue(
+            pending and message_row and any(
+                row['rowid']>message_row['rowid'] and row['role']=='B2_GIST'
+                for row in receiver_rows),
+            f"callosum handoff precondition: pending={pending!r}; "
+            f"message_row={message_row!r}; receiver_rows={receiver_rows!r}; "
+            f"note_errors={note_errors!r}")
         res=self.c.outcome(eid,[recv['packet_id']],'FINAL');self.assertEqual(res['scored'],1);self.assertGreater(res['utilities'][0],1.)
         q=self.c._load()[0]['dirs']['B1_TO_B2']['u']['SOURCE_EXACT'];self.assertEqual(q['n'],1);self.assertIn('task_gain',q['parts'])
         self.assertEqual(C.on_rating(self.r.store,eid,10)['updated'],1)
