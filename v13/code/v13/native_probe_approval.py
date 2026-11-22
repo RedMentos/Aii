@@ -5,6 +5,7 @@ authority. The approval is tied to one Runtime instance and one completed turn.
 """
 from __future__ import annotations
 
+import hashlib
 import math
 import secrets
 import time
@@ -33,6 +34,18 @@ def _runtime_nonce(runtime):
         nonce = secrets.token_hex(16)
         setattr(runtime, "_native_probe_approval_runtime_nonce", nonce)
     return nonce
+
+
+def _file_sha256(path):
+    """Hash a model with bounded memory; manifest metadata alone is not byte proof."""
+    digest = hashlib.sha256()
+    try:
+        with Path(path).open("rb") as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(chunk)
+    except OSError as exc:
+        raise PermissionError("native probe model bytes could not be verified") from exc
+    return digest.hexdigest()
 
 
 def _roles(sender_role, receiver_role):
@@ -75,7 +88,15 @@ def _model_binding(runtime, role):
     size = entry.get("size")
     if size is not None and (type(size) is not int or size < 1 or resolved.stat().st_size != size):
         raise PermissionError("native probe model size differs from its manifest")
-    return {"model_key": key, "revision": revision, "sha256": digest}
+    actual_digest = _file_sha256(resolved)
+    if actual_digest != digest:
+        raise PermissionError("native probe model content hash differs from its manifest")
+    try:
+        if path.is_symlink() or path.resolve(strict=True) != resolved:
+            raise PermissionError("native probe model path changed during verification")
+    except OSError as exc:
+        raise PermissionError("native probe model path changed during verification") from exc
+    return {"model_key": key, "revision": revision, "sha256": actual_digest}
 
 
 def _current_event(runtime):
@@ -184,6 +205,16 @@ def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None)
         sender_role: _model_binding(runtime, sender_role),
         receiver_role: _model_binding(runtime, receiver_role),
     }
+    # Hashing large local GGUFs can take time. Recheck the one-shot window and
+    # current source after verification, before consuming the approval.
+    runtime.require_idle()
+    clock = _clock(now)
+    if clock >= expires:
+        raise PermissionError("native probe local approval expired during model verification")
+    verified_event, verified_ref = _current_event(runtime)
+    if (verified_event.get("event_id") != current_event.get("event_id")
+            or verified_ref != current_ref):
+        raise PermissionError("native probe source/session/event changed during model verification")
     if record.get("models") != models:
         raise PermissionError("native probe model revision/hash changed after local approval")
     consumed = dict(record)
