@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T22:49:27.644Z",
+  "updated_at": "2026-11-22T22:50:03.966Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; private V13OBS #115 (updated 2026-11-22T20:24:26Z) confirms this SHA installed, auto-update enabled and Runtime/Dashboard UP_TO_DATE. Latest metadata still shows 0 valid B1/B2 offers, 4/4 B1 and 2/2 B2 native attempts failed, and C3 ~38.945 s prefill / 2 tokens. Functional/whole-Canon acceptance remains open; historical V13 Canon and V14 master are preserved.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -1331,7 +1331,7 @@
     "branch": "jepa-memory/v14-temporal-exact-forget-retention-20261122-run14",
     "head_sha": "908af64b44f2f670229f0b75a18eed563c85223b",
     "base_pr": 2351,
-    "ci": "EXACT_HEAD_908AF64: NO_ACTIONS_RUNS_VISIBLE_YET (test-name-only rename); PARENT_C39A446_RUNS_45078942475_45078942490_45078942505_45078942484_QUEUED_NOT_VALID; PARENT_BEDA653_TEMPORAL_15_OF_15_PASS_PYTHON_3.13_AND_3.14.",
+    "ci": "EXACT_HEAD_908AF64: OPTIMIZER_RESUME_45079752228_QUEUED; TEMPORAL_T8_45079752116_QUEUED; STAGED_INTEGRATED_45079752129_QUEUED; OWNER_READ_45079752183_QUEUED; PARENT_BEDA653_TEMPORAL_15_OF_15_PASS_PYTHON_3.13_AND_3.14.",
     "scope": "Persistent source-verified temporal T8/WorldJEPA/EMA/replay/retention/rollback; actual measured B1/B2 disjoint-holdout gates guard Cognition.offer; positive enabled SleepRuntime postcommit test with explicit 40-step runtime cap. No native GGUF body-weight edits."
   },
   "jepa_run21": {
@@ -1345,7 +1345,7 @@
       "c39a446036cdfba26fd7e55cf59eb633e4754227",
       "908af64b44f2f670229f0b75a18eed563c85223b"
     ],
-    "ci": "EXACT_HEAD_908AF64: NO_ACTIONS_RUNS_VISIBLE_YET (test-name-only rename); PARENT_C39A446_RUNS_45078942475_45078942490_45078942505_45078942484_QUEUED_NOT_VALID; PARENT_BEDA653_TEMPORAL_15_OF_15_PASS_PYTHON_3.13_AND_3.14.",
+    "ci": "EXACT_HEAD_908AF64: OPTIMIZER_RESUME_45079752228_QUEUED; TEMPORAL_T8_45079752116_QUEUED; STAGED_INTEGRATED_45079752129_QUEUED; OWNER_READ_45079752183_QUEUED; PARENT_BEDA653_TEMPORAL_15_OF_15_PASS_PYTHON_3.13_AND_3.14.",
     "local": "BLOCKED_NO_LOCAL_AII_CHECKOUT_DNS_FAILURE",
     "device": "PRIVATE_V13OBS_115_UPDATED_2026-11-22T22:17:26Z; INSTALLED_AED1D2_UP_TO_DATE; B1_4_OF_4_FAILED_ZERO_VALID_OFFERS; B2_2_OF_2_FAILED_ZERO_VALID_OFFERS; C3_PREFILL_38.945S_2_TOKENS; PR_NOT_RELEASED; REDMI_UNVERIFIED",
     "qa_dependency": {
@@ -1364,7 +1364,7 @@
     "user_action_required": false,
     "research_followup_at": "2026-11-22T22:41:52.834Z",
     "test_contract_correction": "SleepRuntime temporal adapter clamps to 40 steps; regression corrected to assert steps_this_update==40.",
-    "docs_branch_head": "6da0d67d9ab9458c6d6ce382cf26546e53a40c2d",
+    "docs_branch_head": "040d0fb9b572529887ddec2a324e3d671e874e47",
     "docs_pr": 2374,
     "docs_pr_state": "DRAFT_STACKED_ON_QA_2371_NOT_INTEGRATED_MERGEABLE_FALSE",
     "test_name_cleanup": "Renamed prompt-consumer test from accepted_gate_fixture to measured_gate; no runtime change."
