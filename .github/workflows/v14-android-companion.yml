@@ -77,7 +77,7 @@ jobs:
       - name: Exercise stop and process-death restart on Android emulator
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2, Apache-2.0
         with:
-          emulator-options: -no-window -gpu software -no-snapshot -noaudio -no-boot-anim -accel auto -cores 2 -memory 3072 -partition-size 512
+          emulator-options: -no-window -gpu lavapipe -no-snapshot -noaudio -no-boot-anim -accel auto -cores 2 -memory 3072 -partition-size 512
           api-level: 33
           target: default
           arch: x86_64
