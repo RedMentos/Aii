@@ -72,3 +72,18 @@ Next:
 5. Keep all production learning/receiver gates OFF until utility, retention, restart, rollback and separate Android evidence pass.
 
 User action: NONE. No model or weight change is proposed.
+
+
+## Exact-head follow-up — 2026-11-22T20:22:48Z
+
+The JEPA branch advanced to fbe4f9d2e2aaa063dea9ddc090f6adbfd580f1df after two additional commits:
+- 64959cd2388c7d692264fc9417630fc72bc22e27 adds wrapper-safe tracing around the base WorldJEPA, temporal WorldJEPA and planner postcommit consumers.
+- fbe4f9d2e2aaa063dea9ddc090f6adbfd580f1df switches the B1/B2 prompt-consumer fixture to the deterministic matrix cohort already used by the passing receiver test.
+
+Exact current-head workflows 45065612067 (staged/integrated), 45065612113 (temporal T8), and 45065612072 (Python 3.13/3.14 optimizer-resume/source-forget) remain QUEUED. The predecessor 64ae bodyview test failed to produce a supported readout; the fbe4 correction is not yet tested by CI. The staged predecessor reproduced SleepRuntime postcommit ERROR in both numeric and planner-only tests. The new trace will identify whether base JEPA, temporal JEPA or planner throws; no root-cause fix is claimed yet.
+
+Two source-chain blockers must be cleared before composition:
+1. JEPA/QA memory lifecycle pins remain stale against memory.py SHA-256 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701 (blob SHA-1 172417b49c0abb301db9367fd1c9947a91b3c458). The inherited #2372 pin expects 61e881ad… and QA #2359 expects b2059016….
+2. Boss branch #2370 has an independent audio-overlay mismatch: expected runtime.py blob SHA-1 30360f40eb784be5ea975ee85e94a57f0b154164; actual 6e61af07326c5bb11406ee72361a710d5facc9a5. QA exact readback: #2359 comment 7085162144. Audio/Core owner must rebind this before JEPA is rebased onto Boss. JEPA did not edit runtime.py or the audio overlay.
+
+The installed release remains aed1d2b826290c95c70356b5d8b864b5ef382be4 per private receipt #602. PR #2372 is NOT_RELEASED; its new feature is REDMI_UNVERIFIED. Full local repository tests remain BLOCKED by absent checkout/DNS. No model, weight, permission, updater or device change occurred.
