@@ -239,6 +239,21 @@ class RuntimeObserverTests(unittest.TestCase):
                 answer = r.last_answer()
                 self.assertEqual(answer['status'], 'FINAL', answer)
                 diagnostic = json.loads(answer['metadata'])
+                effort_row = r.store.one(
+                    "SELECT payload FROM packets WHERE event_id=? AND kind='EffortDecision' ORDER BY created DESC LIMIT 1",
+                    (event['event_id'],))
+                effort_diagnostic = json.loads(effort_row['payload']) if effort_row else None
+                print("FAIR_BUDGET_DIAGNOSTIC=" + json.dumps({
+                    'resource_mode': diagnostic.get('resource_mode'),
+                    'observer_mode': r.cfg.get('observer_mode'),
+                    'observer_schedule_config': r.cfg.get('observer_schedule'),
+                    'observer_schedule': diagnostic.get('observer_schedule'),
+                    'effort': effort_diagnostic,
+                    'fast_forward': diagnostic.get('fast_forward'),
+                    'reflex': diagnostic.get('reflex'),
+                    'offers': offer_diagnostics if 'offer_diagnostics' in locals() else [],
+                    'runner_calls': [role for role, _ in calls],
+                }, sort_keys=True))
                 offer_diagnostics = [
                     {'kind': row['kind'], 'metrics': json.loads(row['metrics'])}
                     for row in r.store.rows(
