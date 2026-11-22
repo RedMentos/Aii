@@ -76,16 +76,17 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "JEPA #2247 current head 9b1f319af750e42f47aa399089abe16df8afce85 has 7/15 checks SUCCESS and 8 FAILURE, including optimizer-resume on Python 3.13/3.14, staged Runtime, Lab-Age, integrated regression, Python 3.14 source/SQLite staging and old-phone migration. Strict old-session retention remains unaccepted; no checkpoint/production weight update is accepted.",
-      "next_step": "JEPA: repair each exact current-head failure and propagate checkpoint_sha_before/after through phase helpers; retain per-seed A→B→A and old-session holdout gates. Rebase onto current Boss only after the current head is green; no production promotion.",
+      "proof_environment": "PR #2305, branch jepa-memory/v14-jepa-boss-head-6e6f-20261122, head ebe1dc28db2dc280d13f1dfa35497b712ea2c891, direct base Boss 6e6f15322c9fa1931dcf733105d2a32d5372edeb. Prior #2303 head 571e6a had incremental WorldJEPA, combined online JEPA and runtime-deploy workflows PASS; optimizer-resume failed because stage_integrated_candidate BUILDER_SHA was wrong, owner-read staging and Lab-Age failed on the same stage pin, old-phone migration had 2 failures, and staged integrated/Core same-turn checks were still running. Exact recovery21/stage/deployer hashes have now been recalculated from final bytes on #2305; no new exact-head CI is available yet. Local Aii checkout absent; LOCAL_LINUX BLOCKED. REDMI_UNVERIFIED; no accepted per-session retention or native body-weight update.",
+      "next_step": "Run exact #2305 Python 3.13/3.14 optimizer-resume, staged Runtime, integrated regression, Lab-Age, owner-read and migration matrix. Fix each remaining failure without loosening per-seed old-session retention; then replace synthetic receiver targets with source-bound real B1/B2 outputs or explicit human corrections.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T03:55:43.537Z",
+      "last_checkpoint": "2026-11-22T04:15:10.384Z",
       "latest_candidate_pr": {
-        "pr": 2151,
-        "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
-        "merge_commit_sha": "a7a31077213a6e2810270816c716292a64e40905",
-        "ci": "PASS_RUN_44861797478_64_TESTS_PY313_PY314",
-        "scope": "source-bound synthetic Store-backed numeric WorldJEPA/EMA with holdout utility + prior retention gate; not Runtime-wired"
+        "pr": 2305,
+        "branch": "jepa-memory/v14-jepa-boss-head-6e6f-20261122",
+        "head_sha": "ebe1dc28db2dc280d13f1dfa35497b712ea2c891",
+        "base_sha": "6e6f15322c9fa1931dcf733105d2a32d5372edeb",
+        "ci": "PENDING_EXACT_HEAD_AFTER_STAGE_PIN_REPAIR",
+        "scope": "T8 ActionOutcome to LearningTrace/ModulatorPacket to persistent WorldJEPA predictor/EMA/replay/rollback; SHADOW/experimental Store path only"
       },
       "latest_followup_pr": {
         "pr": 2148,
@@ -231,10 +232,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Selected trainable adapters/heads and later cross-organ weights; meta update predictor; sandboxed code/structure proposals; independent OS capability boundary; approval, holdout, retention and rollback",
       "acceptance": "Prove a real numeric parameter diff on an approved target, measurable heldout utility and retention, checkpoint/restart/rollback, and cross-organ consumer benefit. Code/structure self-edit remains sandboxed and human-approved; no self-issued permissions.",
-      "proof_environment": "No accepted B1/B2/C3 master or adapter update, no cross-organ gradient path and no self-edit. JEPA #2247 fails 8/15 checks; the numeric WorldJEPA path remains SHADOW and promotion gates OFF.",
-      "next_step": "JEPA/Core: fix per-session retention and checkpoint/restart proof first, then demonstrate a real target-parameter diff and actual downstream consumer before any bounded production weight update.",
+      "proof_environment": "PR #2305 carries numeric Store-backed WorldJEPA predictor/encoder updates, persisted optimizer state, checkpoint readback and strict source-disjoint holdout/retention controls. The previous #2247 exact head did not establish stable per-session retention; the first Boss-based #2303 run exposed a stage-builder pin failure now corrected in #2305, pending fresh CI. No real B1/B2/C3 adapter/master update, no cross-organ gradients and no self-edit. Gates remain OFF.",
+      "next_step": "After exact Python 3.13/3.14 retention and restart gates pass, implement a source/model-revision-bound receiver target from actual B1_DETAIL/B2_GIST outputs or explicit user corrections, with persistent target optimizer, disjoint holdouts, zero/shuffle/OOD/wrong-action controls and measured downstream utility.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T03:55:43.537Z",
+      "last_checkpoint": "2026-11-22T04:15:10.384Z",
       "proof": "Current JEPA code candidate #2247 has not yet passed its exact current head. Previous head 77b3239 showed per-seed synthetic A2 predictor/EMA changes and checkpoint deltas, but current head 4ec92e is still queued. No accepted production optimizer/checkpoint path, B1/B2/C3 master-weight change, cross-organ gradients or self-edit. All learning gates remain OFF."
     },
     {
@@ -246,10 +247,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Fast episodic memory, replay selection, semantic consolidation, dream/counterfactual samples, slow EMA, cleanup and provenance",
       "acceptance": "Source-linked replay survives restart; observed events remain distinct from generated dream samples; consolidation has measured retention/ablation and rollback; synthetic dream data never gains truth or tool authority.",
-      "proof_environment": "Sleep postcommit worker code exists, but no accepted replay/dream consolidation or stable JEPA per-session retention. #2247 fails its current staged/optimizer/retention matrix; promotion remains OFF.",
-      "next_step": "JEPA: keep replay source-bound and cancellable; require old-session holdout, before/after parameter diff, optimizer persistence, restart, rollback and negative controls before accepting any consolidation.",
+      "proof_environment": "PR #2305 wires SleepRuntime's shared neuromod controller into the postcommit JEPA consumer; trusted T8 traces and ModulatorPackets commit with the cursor atomically, and restart replay is idempotent. OFF/SHADOW records experience without parameter mutation; ACTIVE scales the actual local WorldJEPA optimizer step, while source-bound veto stays zero. These are synthetic/CI candidate paths only; no accepted Dream consolidation or Redmi lifecycle proof.",
+      "next_step": "After current-head retention passes, test replay selection (zero, uniform, session-contiguous, loss-demand), old-session retention and sleep/dream provenance; keep observed ActionOutcomes separate from generated dream samples and require restart/rollback evidence.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T03:55:43.537Z",
+      "last_checkpoint": "2026-11-22T04:15:10.384Z",
       "proof": "Sleep/Dream remains SHADOW/OFF for promotion. WorldJEPA candidate evidence is synthetic and current exact-head CI is pending; no accepted native Dream consolidation or Android lifecycle proof."
     },
     {
@@ -916,5 +917,38 @@
       "primary": "arXiv:2604.22783v2 (2026-10-16); arXiv:2610.24816v2 (2026-10-26); QVAC Fabric tag v10549.5.1; HexaTrain repository",
       "next": "After JEPA retention is stable, run a small isolated CPU-adapter baseline and measure peak RSS/PSS, sequence scaling, power/latency, old-session retention and restart; do not import or swap production models."
     }
-  ]
+  ],
+  "latest_jepa_checkpoint": {
+    "timestamp": "2026-11-22T04:15:10.384Z",
+    "branch": "jepa-memory/v14-jepa-boss-head-6e6f-20261122",
+    "head_sha": "ebe1dc28db2dc280d13f1dfa35497b712ea2c891",
+    "base_branch": "boss/v14-recall-store-pin-rebind-20261122",
+    "base_sha": "6e6f15322c9fa1931dcf733105d2a32d5372edeb",
+    "pr": 2305,
+    "pr_state": "DRAFT_NOT_RELEASED",
+    "code_changes": [
+      "T8 ActionOutcome to source-ref/evidence-hash-bound LearningTrace and ModulatorPacket",
+      "atomic cursor/packet commit and restart-idempotent replay",
+      "OFF/SHADOW experience recording; ACTIVE local optimizer scaling; source-bound veto",
+      "SleepRuntime neuromod handoff and persisted update metrics",
+      "per-session replay/GEM, optimizer-state, checkpoint, rollback and holdout tests",
+      "rebound lifecycle to memory/world to feedback to context to JEPA to recovery to stage to deployer source pins"
+    ],
+    "prior_exact_head_ci": {
+      "pr": 2303,
+      "head_sha": "571e6a561581e579a781c81483986b2e40badfaf",
+      "success": 3,
+      "failure": 4,
+      "in_progress": 2,
+      "details": "PASS: incremental WorldJEPA, combined online JEPA, runtime-deploy integrity. FAIL: optimizer-resume stage-builder hash, owner-read staged installer, Lab-Age staged source, old-phone migration (2 assertions). Staged integrated regression and Core same-turn workflow were still running at readback."
+    },
+    "current_exact_head_ci": "PENDING_AFTER_STAGE_PIN_REPAIR",
+    "local_linux": "BLOCKED_NO_LOCAL_AII_CHECKOUT",
+    "redmi_status": "REDMI_UNVERIFIED",
+    "release_sha": "NOT_RELEASED",
+    "learning_promotion": "OFF",
+    "receiver_status": "B1/B2/SELF READOUTS SHADOW; NOT TRAINED FROM REAL ORGAN OUTPUTS",
+    "user_action_required": false,
+    "next_action": "Run exact Python 3.13/3.14 CI on #2305; fix remaining failures without weakening retention; then train and validate a real source-bound B1/B2 receiver."
+  }
 }
