@@ -1,3 +1,19 @@
+# Research & Perception — verified handoff 2026-11-22 16:50 CET
+
+**Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein neuer UPDATE_REQUEST, kein Modell-/Gewichts-/Rechtewechsel und keine Mikrofonfreigabe.
+
+- **Release-development HEAD:** gpt6/v13-private-remote-bridge-20261111 = c4eb82deec915f65894c20d6ebbaf0ebf58fa335 (0 ahead / 0 behind). c4eb changes only a WorldJEPA rollback/source-forget test file; exact commit workflow readback 21/21 SUCCESS. Last code-bearing release remains 283ac1c9.
+- **Device receipts:** private #567 confirms installed c4eb, auto-update ON, pipeline runtime/dashboard UP_TO_DATE, last_error NONE. Later #569 HEALTH reports runtime.state=UNAVAILABLE, 983 MiB available of 5,569 MiB and 1,629 MiB free disk. #568 has an opted-in but redacted diagnostic excerpt, so no correctness conclusion. Installed SHA is verified; functional runtime health is inconclusive. No new update request was sent.
+- **PR #2346:** current docs/evidence head e68c2488cb474e1b70149f2e3d95f2bbb29220c6; last code-bearing head b72633927e2849f50de69614306e5f27650b6a9c; code commit 1db8fd5fc2e18c115c632cf60577200d68db2c0b. Focused B3 run 45032406629 on b726 passes 52 tests, touched-module py_compile and CLI import/help smoke. Current docs-only head has 12 queued, 1 pending, 1 skipped, 1 cancelled workflows; no exact-current-head green result. Previous broader code-bearing head had 6 success / 7 failure / 1 cancelled / 1 skipped. PR remains DRAFT / NOT_RELEASED.
+- **PR #2343:** Boss head 55b76c4c79b24b5ac674366d6bcb32aa15ab1f9d; 7 success / 4 failure / 2 queued / 2 in progress / 1 skipped / 1 cancelled. Current failures include integrated-builder hash mismatch in staged tests on Python 3.13 and 3.14, old-to-new updater migration returning PARTIAL, and Python 3.14 owner-read staged startup refusing the builder. Runtime-deployment-integrity itself passes; the staged consumer chain does not. The observer-overlay anchor was previously flagged and the same-turn workflow remains in progress.
+- **C3 budget:** the fair-slice candidate changes C3 reserve to 55% and observers to 45%. A consented Redmi observation still showed slow C3 prefill and only two generated tokens; no same-prompt A/B proves the candidate reserve produces a correct final answer. Keep #2343 DRAFT.
+- **LOCAL_LINUX:** CPython 3.13.5 / NumPy 2.3.5. Exact source-reproduced _secure_shadow_output_dir helper: 7 targeted checks PASS. Exact _source_disjoint_split: 12 source hashes × 2 spans (24 experiences), deterministic and source-disjoint; conflict labels, malformed hash, boolean label and undersized-class negatives rejected. Not a full repository import or pytest run. Full checkout remains BLOCKED because GitHub DNS is unavailable to the container.
+- **Research:** R-081 Hypnos and R-082 XKV/XBridge/kvloom are recorded. No code, models, weights, data or dependencies were imported.
+- **E2E impact:** no new Runtime code or user-visible behavior changed in this run. B3 remains OFF/SYMBOLIC; no real paired native taps, L1 training, receiver injection, permanent weight change, microphone capture or Redmi B3 proof.
+- **Next:** Boss repairs the staged-builder hash/migration path and completes the observer/same-turn/C3-reserve evidence; then rebase #2346 and preserve R-080 → R-081 → R-082 → R-083. After accepted release plus a separate device receipt, collect source-bound native B1/B2 pairs with explicit labels and full L0/same-model/no-message/zero/shuffled/OOD and held-out/retention controls. No user action required.
+
+---
+
 # Research & Perception — verified handoff 2026-11-22 16:39 CET
 
 **Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein neuer UPDATE_REQUEST, kein Modell-/Gewichts-/Rechtewechsel und keine Mikrofonfreigabe.
