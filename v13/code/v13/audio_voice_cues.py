@@ -742,7 +742,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                     summary += f" speaker_change_latest_candidate={int(latest_candidate)}"
                 if speaker_evidence.get("candidate_count", 0) > 1:
                     summary += f" speaker_change_candidate_frames={speaker_evidence['candidate_count']}"
-                if speaker_change_candidate and speaker_evidence.get("candidate_kind"):
+                if speaker_change_candidate:
                     summary += " speaker_change_kind=CHANGE_OR_OVERLAP"
             else:
                 summary += f" speaker_change_score={speaker_evidence['change_score']:.2f}"
