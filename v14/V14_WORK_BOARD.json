@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T11:49:52.784Z",
+  "updated_at": "2026-11-22T11:51:59.870Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; all 30 observed exact-SHA Actions workflow runs completed SUCCESS. Fresh owner-authenticated private PIPELINE_STATUS #550 confirms the same SHA installed and UP_TO_DATE. Functional/whole-Canon acceptance remains open; V14 master and historical V13 appendix preserved.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -250,10 +250,10 @@
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
       "proof_environment": "CI + Android source review; no APK or Redmi OS execution",
-      "next_step": "Boss/Core: provide independent review and integrate the checked pairing-persistence leaf into the complete companion parent stack. Then request a separately authorized bounded APK/Redmi pairing test; keep all other providers and capabilities OFF.",
+      "next_step": "Core/QA: integrate the checked pairing persistence leaf after independent review; before APK/device tests, add idempotent receipt-only recovery for claimed EXECUTING/DENYING rows after signing/SQLite failure (EXECUTING must reconcile conservatively to a signed unknown outcome, never redispatch; DENYING can reconcile to signed denial), and failure-injection/restart tests. Keep companion default-OFF and all other providers OFF.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T11:38:04.785Z",
-      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test."
+      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance."
     },
     {
       "id": "V14-010",
@@ -374,8 +374,8 @@
       "status": "BLOCKED_REVIEW",
       "last_checkpoint": "2026-11-22T11:38:04.785Z",
       "proof_environment": "CI only; no Android APK/device proof",
-      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test.",
-      "next_step": "Boss/Core: provide independent review and integrate the checked pairing-persistence leaf into the complete companion parent stack. Then request a separately authorized bounded APK/Redmi pairing test; keep all other providers and capabilities OFF."
+      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance.",
+      "next_step": "Core/QA: integrate the checked pairing persistence leaf after independent review; before APK/device tests, add idempotent receipt-only recovery for claimed EXECUTING/DENYING rows after signing/SQLite failure (EXECUTING must reconcile conservatively to a signed unknown outcome, never redispatch; DENYING can reconcile to signed denial), and failure-injection/restart tests. Keep companion default-OFF and all other providers OFF."
     },
     {
       "id": "V14-018",
@@ -1010,7 +1010,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T11:49:52.784Z",
+    "timestamp": "2026-11-22T11:51:59.870Z",
     "release_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "code_candidate_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "candidate_ci": "EXACT_SHA_ALL_30_OBSERVED_ACTIONS_WORKFLOW_RUNS_SUCCESS",
@@ -1032,7 +1032,8 @@
       "P0_CANON_CLAUSE_TO_CONSUMER_TEST_PLATFORM_ROLLBACK_TRACEABILITY",
       "P0_CORE_PR2338_NATIVE_TURN_BUDGET_TEST_SEAM_KEYERROR_SOURCE_REF",
       "P0_ANDROID_COMPANION_PAIRING_DURABILITY_REVIEW_AND_DEVICE_PROOF",
-      "P0_LOCAL_NATIVE_PROBE_DISPATCH_AND_LOCAL_APPROVAL_NOT_IMPLEMENTED"
+      "P0_LOCAL_NATIVE_PROBE_DISPATCH_AND_LOCAL_APPROVAL_NOT_IMPLEMENTED",
+      "P0_ANDROID_COMPANION_CLAIMED_RECEIPT_RECOVERY_AFTER_SIGNING_OR_SQLITE_FAILURE"
     ],
     "user_action_required": "NONE; no manual Termux command, update request, model/weight swap or permission change",
     "previous_overlay": {
@@ -1062,7 +1063,7 @@
     "learning_status": "LEARNING_STATUS_552_UNAVAILABLE"
   },
   "qa_latest_checkpoint": {
-    "timestamp": "2026-11-22T11:49:52.784Z",
+    "timestamp": "2026-11-22T11:51:59.870Z",
     "owner": "QA & Android",
     "base_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "branch": "qa/v14-redmi-c4eb82-evidence-20261122-run11",
@@ -1079,7 +1080,8 @@
       "pr2342": "EXACT_ANDROID_GRADLE_ROBOLECTRIC_PASS_45018041741; PRIVATE_BRIDGE_PASS_45018031307; independent QA readback found no blocker; GitHub self-approval rejected because PR author is same account; separate Boss/Core review required",
       "pr2338": "BLOCKED_AT_REVIEWED_HEAD: runtime.py/store.py builder pins and native_turn_budget source_ref fixture; Boss owns coordinated descendant; QA did not edit shared chain",
       "pr2332": "REMOTE_ALLOWLIST_ONLY_NOT_EXECUTABLE: exact source readback shows operator.py -> callosum.operator_command has no native-probe branch; no local source-bound receiver invocation or distinct local approval; Boss+QA comments on PR #2332; no CHAT_OPERATOR/probe sent",
-      "latest_release": "c4eb82 installed; no new update request or manual command required"
+      "latest_release": "c4eb82 installed; no new update request or manual command required",
+      "android_companion_recovery": "OPEN_DEFECT: ConsentActivity finalization failure can leave EXECUTING/DENYING without receipt after notification cleanup; no receipt-only recovery; QA comment 7078714601 on #2342; no action redispatch allowed"
     },
     "user_action_required": false
   },
