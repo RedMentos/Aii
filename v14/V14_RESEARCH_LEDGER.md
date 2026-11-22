@@ -952,3 +952,14 @@ PR #2361 adds a dependency-free in-memory adapter from the official FASTDIAR v0.
 **License/runtime boundary:** official FASTDIAR repository code is MIT at the pinned revision. The inspected v0.1.0 README/LICENSE/NOTICE attaches checkpoints but does not state a separate checkpoint-weight license; weights remain uncleared and were not downloaded. The pinned PyTorch/torchaudio/torchcodec/SciPy/pyannote stack is not Termux-ready. The paper is an arXiv preprint (2026-10-02), not peer-reviewed evidence; CPU measurements are on AMD Threadripper PRO 5995WX, not ARM/Redmi. No model inference, Android ABI, microphone, Redmi benchmark, or deployment is claimed.
 
 **Decision:** ADAPTER_WIRED_TO_EXISTING_SYNTHETIC_CONSUMER / RESEARCH_ONLY / NO_MODEL_SELECTED / NO_WEIGHT_DOWNLOAD / REDMI_UNVERIFIED. Full calibrated speaker-change integration remains blocked on #2349's Core-owned composer source-pin repair and later real-data calibration.
+
+
+### R-075 provenance hardening — checkpoint hash is computed, not asserted (2026-11-22)
+
+PR #2361 was tightened after review found that the first adapter revision only checked the syntax of a caller-supplied SHA256 string. The adapter now opens the actual checkpoint beneath a caller-trusted model root using directory-relative file descriptors with O_NOFOLLOW/O_DIRECTORY, rejects paths outside the root, symlinked path components, non-regular/empty/oversized files, and detects file metadata changes during hashing. The emitted model_sha256 is computed from the bytes read; callers can no longer attach an arbitrary well-formed digest.
+
+**Important limit:** this verifies which local file was hashed, not that the caller-supplied embedding matrix was genuinely produced by that checkpoint. The embeddings remain caller-supplied; no FASTDIAR inference, weight download, checkpoint redistribution or model selection occurred. A4 remains DEFER, with no speaker identity, learning or action authority.
+
+**LOCAL_LINUX evidence:** CPython 3.13.5 x86_64 isolated helper reproduction, exact algorithm shape, 7/7 tests PASS: byte-for-byte SHA, NumPy float16 matrix acceptance, outside-root path, empty file, final symlink, symlinked parent directory, pinned revision and timestamp bounds. This is not the full Aii checkout or the committed A5/A4/C3 consumer test. Full local consumer test BLOCKED because the worker has no checkout and GitHub DNS resolution is unavailable. Exact PR Python 3.13/3.14 CI is pending on live PR head `9428380b4d47e7297e42774c0eefdedb34effe33`.
+
+**Compatibility boundary:** platforms without dir_fd, O_NOFOLLOW or O_DIRECTORY fail closed. Android/Termux support and ARM timing have not been measured. FASTDIAR checkpoint-weight license remains unresolved; do not download weights.
