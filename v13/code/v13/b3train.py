@@ -87,6 +87,44 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
     Hte, Mte, Xte, yte = H[test_indices], mask[test_indices], Xr[test_indices], y[test_indices]
     output_dir = cognition.r.home / "b3" / "shadow" / direction / task_id
     output_dir.mkdir(parents=True, exist_ok=True)
+    l0_acc = l0_bytes = role_drop = None
+    l0_evidence_sha256 = None
+    if l0_evidence is not None:
+        required_l0 = ("EXACT", "CONTROL", "SYMBOLIC")
+        expected_sources = [x.get("sha256") for x in batch["source_refs"]]
+        if (not isinstance(l0_evidence, dict)
+                or l0_evidence.get("schema") != "v13.b3-l0-baselines/1"
+                or l0_evidence.get("body_pair_ids") != list(batch["body_pair_ids"])
+                or l0_evidence.get("source_hashes") != expected_sources
+                or l0_evidence.get("test_indices") != test_indices.tolist()
+                or l0_evidence.get("seed_ids") != [str(x) for x in seeds]
+                or l0_evidence.get("task_id") != task_id
+                or l0_evidence.get("direction") != direction
+                or l0_evidence.get("label_source") != label_source
+                or l0_evidence.get("labels") != list(labels)
+                or l0_evidence.get("label_provenance") != list(label_provenance)):
+            raise ValueError("L0 baseline evidence is not pinned to these exact pairs, source hashes, labels, holdout rows and seeds")
+        l0_acc = l0_evidence.get("acc")
+        l0_bytes = l0_evidence.get("bytes")
+        if not isinstance(l0_acc, dict) or not isinstance(l0_bytes, dict):
+            raise ValueError("L0 baseline evidence needs acc and bytes mappings")
+        if any(channel not in l0_acc or channel not in l0_bytes for channel in required_l0):
+            raise ValueError("L0 baseline evidence must include EXACT, CONTROL and SYMBOLIC")
+        if any(not isinstance(l0_acc[channel], list) or len(l0_acc[channel]) != len(seeds)
+               for channel in required_l0):
+            raise ValueError("L0 accuracy vectors must match the paired seed count")
+        if any(any(type(x) not in (int, float) or not np.isfinite(float(x)) or not 0 <= float(x) <= 1
+                       for x in l0_acc[channel]) for channel in required_l0):
+            raise ValueError("L0 accuracy values must be finite fractions in [0,1]")
+        if any(type(l0_bytes[channel]) not in (int, float) or not np.isfinite(float(l0_bytes[channel]))
+               or float(l0_bytes[channel]) < 0 for channel in required_l0):
+            raise ValueError("L0 channel byte costs must be finite non-negative numbers")
+        role_drop = l0_evidence.get("role_drop")
+        if (type(role_drop) not in (int, float) or not np.isfinite(float(role_drop))
+                or not 0 <= float(role_drop) <= 1):
+            raise ValueError("L0 evidence requires a finite role_drop fraction")
+        l0_evidence_sha256 = hashlib.sha256(dumps(l0_evidence).encode("utf-8")).hexdigest()
+
     seed_reports = []
     trained_bridges = []
 
@@ -151,41 +189,8 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
         })
 
     gate = None
-    l0_evidence_sha256 = None
     if l0_evidence is not None:
         required_l0 = ("EXACT", "CONTROL", "SYMBOLIC")
-        expected_sources = [x.get("sha256") for x in batch["source_refs"]]
-        if (not isinstance(l0_evidence, dict)
-                or l0_evidence.get("schema") != "v13.b3-l0-baselines/1"
-                or l0_evidence.get("body_pair_ids") != list(batch["body_pair_ids"])
-                or l0_evidence.get("source_hashes") != expected_sources
-                or l0_evidence.get("test_indices") != test_indices.tolist()
-                or l0_evidence.get("seed_ids") != [str(x) for x in seeds]
-                or l0_evidence.get("task_id") != task_id
-                or l0_evidence.get("direction") != direction
-                or l0_evidence.get("label_source") != label_source
-                or l0_evidence.get("labels") != list(labels)
-                or l0_evidence.get("label_provenance") != list(label_provenance)):
-            raise ValueError("L0 baseline evidence is not pinned to these exact pairs, source hashes, holdout rows and seeds")
-        l0_acc = l0_evidence.get("acc")
-        l0_bytes = l0_evidence.get("bytes")
-        if not isinstance(l0_acc, dict) or not isinstance(l0_bytes, dict):
-            raise ValueError("L0 baseline evidence needs acc and bytes mappings")
-        if any(channel not in l0_acc or channel not in l0_bytes for channel in required_l0):
-            raise ValueError("L0 baseline evidence must include EXACT, CONTROL and SYMBOLIC")
-        if any(not isinstance(l0_acc[channel], list) or len(l0_acc[channel]) != len(seeds)
-               for channel in required_l0):
-            raise ValueError("L0 accuracy vectors must match the paired seed count")
-        if any(any(type(x) not in (int, float) or not np.isfinite(float(x)) or not 0 <= float(x) <= 1
-                       for x in l0_acc[channel]) for channel in required_l0):
-            raise ValueError("L0 accuracy values must be finite fractions in [0,1]")
-        if any(type(l0_bytes[channel]) not in (int, float) or not np.isfinite(float(l0_bytes[channel]))
-               or float(l0_bytes[channel]) < 0 for channel in required_l0):
-            raise ValueError("L0 channel byte costs must be finite non-negative numbers")
-        role_drop = l0_evidence.get("role_drop")
-        if (type(role_drop) not in (int, float) or not np.isfinite(float(role_drop))
-                or not 0 <= float(role_drop) <= 1):
-            raise ValueError("L0 evidence requires a finite role_drop fraction")
         required = ("NO_MESSAGE", "LATENT", "LATENT_SHUFFLED", "LATENT_RANDOM",
                     "EXACT", "CONTROL", "SYMBOLIC")
         acc = {
@@ -209,7 +214,6 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
             "reload_identical": all(x["reload_identical"] for x in seed_reports),
         }
         gate = l1_gate(gate_task)
-        l0_evidence_sha256 = hashlib.sha256(dumps(l0_evidence).encode("utf-8")).hexdigest()
 
     if gate is None:
         gate_status = "NOT_RUN_MISSING_L0_CHANNEL_BASELINES_AND_ROLE_RETENTION"
