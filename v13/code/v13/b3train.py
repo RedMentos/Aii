@@ -15,6 +15,67 @@ from .b3bridge import Bridge, to_bf16, l1_gate
 from .common import atomic_write, dumps
 
 
+_SPLIT_POLICY = "SOURCE_SHA256_GROUPED_STRATIFIED_20PCT_V1"
+_L0_SCHEMA = "v13.b3-l0-baselines/2"
+
+
+def _source_disjoint_split(source_refs, labels, split_seed):
+    """Deterministic stratified holdout grouped by whole source SHA-256.
+
+    Different spans/events from the same underlying source stay in one split.
+    A source group with conflicting task labels is rejected rather than leaked.
+    """
+    if (not isinstance(source_refs, (list, tuple)) or not source_refs
+            or len(source_refs) != len(labels)):
+        raise ValueError("source-disjoint split requires one SourceRef per label")
+    groups = {}
+    for index, (source_ref, label) in enumerate(zip(source_refs, labels)):
+        if type(source_ref) is not dict:
+            raise ValueError("source-disjoint split requires SourceRef objects")
+        source_id = source_ref.get("source_id")
+        digest = source_ref.get("sha256")
+        if (type(source_id) is not str or not source_id.strip() or len(source_id) > 128
+                or type(digest) is not str or len(digest) != 64
+                or any(char not in "0123456789abcdef" for char in digest)):
+            raise ValueError("source-disjoint split requires a valid source_id and SHA-256")
+        if isinstance(label, (bool, np.bool_)) or not isinstance(label, (int, np.integer)):
+            raise ValueError("source-disjoint split labels must be integer task labels")
+        label = int(label)
+        group = groups.setdefault(digest, {"label": label, "indices": []})
+        if group["label"] != label:
+            raise ValueError("one source SHA-256 has conflicting task labels")
+        group["indices"].append(index)
+
+    rng = np.random.default_rng(split_seed)
+    train_indices, test_indices = [], []
+    train_source_hashes, test_source_hashes = [], []
+    for label in sorted({group["label"] for group in groups.values()}):
+        members = sorted(digest for digest, group in groups.items() if group["label"] == label)
+        if len(members) < 4:
+            raise ValueError("each outcome class needs at least four source-disjoint groups")
+        order = rng.permutation(len(members))
+        n_test = max(1, int(round(len(members) * 0.2)))
+        if len(members) - n_test < 2:
+            raise ValueError("insufficient per-class source groups after holdout")
+        test_groups = [members[int(position)] for position in order[:n_test]]
+        train_groups = [members[int(position)] for position in order[n_test:]]
+        test_source_hashes.extend(test_groups)
+        train_source_hashes.extend(train_groups)
+        for digest in test_groups:
+            test_indices.extend(groups[digest]["indices"])
+        for digest in train_groups:
+            train_indices.extend(groups[digest]["indices"])
+
+    if len(test_indices) < 2:
+        raise ValueError("L1 shadow holdout requires at least two source-disjoint test experiences")
+    return (
+        np.asarray(sorted(train_indices), dtype=np.int64),
+        np.asarray(sorted(test_indices), dtype=np.int64),
+        sorted(train_source_hashes),
+        sorted(test_source_hashes),
+    )
+
+
 def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
                     label_source, direction="B1_TO_B2", seeds=(11, 17, 23),
                     epochs=10, head_steps=25, split_seed=20261122, l0_evidence=None):
@@ -64,24 +125,12 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
     if not (len(H) == len(mask) == len(Xr) == len(y) == len(pair_packets)):
         raise ValueError("paired native batch cardinality mismatch")
 
-    # One deterministic stratified split is shared by every seed so that
-    # seed-to-seed comparisons remain paired.
-    split_rng = np.random.default_rng(split_seed)
-    train_indices, test_indices = [], []
-    for label in range(len(label_values)):
-        members = np.flatnonzero(y == label)
-        if len(members) < 4:
-            raise ValueError("each outcome class needs at least four paired experiences")
-        members = split_rng.permutation(members)
-        n_test = max(1, int(round(len(members) * 0.2)))
-        if len(members) - n_test < 2:
-            raise ValueError("insufficient per-class training examples after holdout")
-        test_indices.extend(int(x) for x in members[:n_test])
-        train_indices.extend(int(x) for x in members[n_test:])
-    train_indices = np.asarray(sorted(train_indices), dtype=np.int64)
-    test_indices = np.asarray(sorted(test_indices), dtype=np.int64)
-    if len(test_indices) < 2:
-        raise ValueError("L1 shadow holdout requires at least two test experiences")
+    # Every seed shares a deterministic label-stratified split, but the split
+    # unit is the complete source SHA-256, never an individual span/event.
+    split_policy = _SPLIT_POLICY
+    train_indices, test_indices, train_source_hashes, test_source_hashes = _source_disjoint_split(
+        batch["source_refs"], y, split_seed
+    )
 
     Htr, Mtr, Xtr, ytr = H[train_indices], mask[train_indices], Xr[train_indices], y[train_indices]
     Hte, Mte, Xte, yte = H[test_indices], mask[test_indices], Xr[test_indices], y[test_indices]
@@ -93,10 +142,15 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
         required_l0 = ("EXACT", "CONTROL", "SYMBOLIC")
         expected_sources = [x.get("sha256") for x in batch["source_refs"]]
         if (not isinstance(l0_evidence, dict)
-                or l0_evidence.get("schema") != "v13.b3-l0-baselines/1"
+                or l0_evidence.get("schema") != _L0_SCHEMA
+                or l0_evidence.get("split_policy") != split_policy
                 or l0_evidence.get("body_pair_ids") != list(batch["body_pair_ids"])
                 or l0_evidence.get("source_hashes") != expected_sources
+                or l0_evidence.get("train_indices") != train_indices.tolist()
                 or l0_evidence.get("test_indices") != test_indices.tolist()
+                or l0_evidence.get("train_source_hashes") != train_source_hashes
+                or l0_evidence.get("test_source_hashes") != test_source_hashes
+                or set(train_source_hashes) & set(test_source_hashes)
                 or l0_evidence.get("seed_ids") != [str(x) for x in seeds]
                 or l0_evidence.get("task_id") != task_id
                 or l0_evidence.get("direction") != direction
@@ -132,7 +186,9 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
         "sender_revision": batch["sender_revision"],
         "receiver_revision": batch["receiver_revision"],
         "seeds": list(seeds), "epochs": epochs, "head_steps": head_steps,
-        "split_seed": split_seed, "bridge_config": {"K": 4, "r": 8, "h": 16},
+        "split_seed": split_seed, "split_policy": split_policy,
+        "train_source_hashes": train_source_hashes, "test_source_hashes": test_source_hashes,
+        "bridge_config": {"K": 4, "r": 8, "h": 16},
         "l0_evidence_sha256": l0_evidence_sha256,
     }
     run_key = hashlib.sha256(dumps(run_identity).encode("utf-8")).hexdigest()[:12]
@@ -176,6 +232,9 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
                 "source_refs": list(batch["source_refs"]),
                 "train_indices": train_indices.tolist(),
                 "test_indices": test_indices.tolist(),
+                "split_policy": split_policy,
+                "train_source_hashes": train_source_hashes,
+                "test_source_hashes": test_source_hashes,
                 "label_values": label_values,
                 "l1_utility_gate": "NOT_RUN_MISSING_L0_CHANNEL_BASELINES_AND_ROLE_RETENTION",
                 "latent_authority": 0, "receiver_injection_authority": 0,
@@ -250,6 +309,9 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
                 "source_refs": list(batch["source_refs"]),
                 "train_indices": train_indices.tolist(),
                 "test_indices": test_indices.tolist(), "label_values": label_values,
+                "split_policy": split_policy,
+                "train_source_hashes": train_source_hashes,
+                "test_source_hashes": test_source_hashes,
                 "l1_gate": gate, "l1_utility_gate": gate_status,
                 "l0_evidence_sha256": l0_evidence_sha256,
                 "latent_authority": 0, "receiver_injection_authority": 0,
@@ -267,6 +329,9 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
         "task_id": task_id, "run_key": run_key, "direction": direction, "label_source": label_source,
         "samples": len(pair_packets), "train_samples": len(train_indices),
         "test_samples": len(test_indices), "label_values": label_values,
+        "split_policy": split_policy,
+        "train_source_hashes": train_source_hashes,
+        "test_source_hashes": test_source_hashes,
         "label_provenance": list(label_provenance),
         "body_pair_ids": list(batch["body_pair_ids"]),
         "sender_revision": batch["sender_revision"],
