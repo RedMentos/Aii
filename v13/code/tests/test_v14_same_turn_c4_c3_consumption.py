@@ -236,6 +236,18 @@ def test_two_recent_c3_prefill_failures_still_reach_same_turn_c4_and_c3(tmp_path
             (event_id,),
         )
         assert deferred == []
+        bounded = runtime.store.rows(
+            "SELECT metrics FROM telemetry "
+            "WHERE event_id=? AND kind='native_body_preanswer_bounded'",
+            (event_id,),
+        )
+        assert {json.loads(row["metrics"])["role"] for row in bounded} == {
+            "B1_DETAIL", "B2_GIST"
+        }
+        assert all(
+            json.loads(row["metrics"])["c3_reserved_seconds"] >= 21
+            for row in bounded
+        )
 
         # Negative control: a modified selected offer must fail the persisted
         # OfferPacket binding and must not create another C4 -> C3 receipt.
