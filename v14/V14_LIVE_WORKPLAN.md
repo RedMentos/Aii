@@ -1378,4 +1378,9 @@ Private diagnostics report Lab-Age mode ACTIVE, requested stage 10, effective im
 
 ## Final queue refresh — 2026-11-22T22:34:58.624Z
 
-#2370 exact head bae7d031 now has 0 SUCCESS / 15 QUEUED / 1 IN_PROGRESS / 6 CANCELLED / 6 SKIPPED; the in-progress run is private owner-read bootstrap. No new-head functional pass. #2356 exact head 27aaa29 has Android outcome contract and Core Store/caller gate SUCCESS, while emulator process-restart and staged/integrated regression remain QUEUED. The latter are not process-death acceptance. All other current stack blockers remain as recorded above; no release or device mutation.
+#2370 exact head bae7d031 now has 1 SUCCESS / 14 QUEUED / 1 IN_PROGRESS / 7 CANCELLED / 7 SKIPPED; the in-progress run is private owner-read bootstrap. No new-head functional pass. #2356 exact head 27aaa29 has Android outcome contract and Core Store/caller gate SUCCESS, while emulator process-restart and staged/integrated regression remain QUEUED. The latter are not process-death acceptance. All other current stack blockers remain as recorded above; no release or device mutation.
+
+
+## Latest CI detail — 2026-11-22T22:36:01.944Z
+
+#2370 exact head bae7d031: private owner-read bootstrap run 45077837232 SUCCESS (CI only), JEPA Runtime transactional update IN_PROGRESS, 14 other workflows QUEUED; 7 cancelled/7 skipped are not passes. #2379 exact head 4ce32890: one-shot MediaProjection provider run 45077108220 SUCCESS, staged/integrated regression still QUEUED; base remains 11 commits behind #2356. No device capture or process-death acceptance.
