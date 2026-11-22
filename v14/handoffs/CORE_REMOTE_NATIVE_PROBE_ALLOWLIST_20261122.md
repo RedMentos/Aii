@@ -112,3 +112,18 @@ No action is needed now. The probe remains NOT_RUN. Do not send a Termux command
 The local one-shot native-probe approval now verifies the actual installed model bytes against the pinned manifest SHA-256 using a 1 MiB streaming hash (bounded memory), both when arming and when consuming. It also rechecks the resolved model path after hashing and rechecks the approval TTL/current source after potentially slow model verification, before the approval is consumed. A same-size post-arm mutation is a negative regression and must not reach `native_receive`.
 
 This is still only an explicitly armed diagnostic probe: no production routing, weight update, training authority, or Android device proof is added. Exact CI and local test evidence must be recorded on the new head.
+
+## Remote-consumer approval correction — 2026-11-22
+
+The local TTY is required to **arm** or **revoke** the one-shot approval, but not to consume it. The exact, separately consented private `CHAT_OPERATOR` request runs inside the background service and has no interactive TTY; requiring a TTY at consumption made the intended remote diagnostic path unusable. Remote `--confirm` still cannot create or revoke the capability.
+
+The staged `Cognition.native_receive` boundary now independently requires a `CONSUMED` record and rechecks Runtime-instance nonce, active session, latest FINAL event, exact source reference, role pair, installed revisions and current manifest hashes before running the sender tap. It compares both actual model bindings to the locally approved hashes; the existing sender tap checks its pinned model bytes, and the native receiver independently checks receiver bytes before and after decode. Direct calls without a consumed local approval and post-consumption manifest drift fail before native receiver execution.
+
+Regression coverage now includes:
+- local TTY required for arm/revoke, but not for consumption after a valid local arm;
+- direct receiver invocation without consumed approval rejected before sender tap;
+- model revision/hash-manifest drift after consumption rejected;
+- the operator consumer succeeds without a TTY after the local arm;
+- existing source/session/generation/role/expiry/restart/symlink/hash/negative-control checks remain.
+
+This is still a staged, non-authoritative diagnostic candidate. No production B3 routing, model/weight change, permission change, native receiver execution on Redmi, or deployment is claimed. Full repository tests and exact-head CI must pass before Boss integration; Redmi remains REDMI_UNVERIFIED.
