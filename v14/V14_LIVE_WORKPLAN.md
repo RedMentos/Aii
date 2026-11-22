@@ -1261,3 +1261,20 @@ Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, mi
 6. Whole Canon: preserve all V13 functions and the 1,255-heading inventory; semantic clause→consumer→test→platform→rollback mapping remains incomplete.
 
 **User action:** none. No manual Termux command, update request, model/weight swap, permission change, APK install or microphone grant was performed.
+
+
+## JEPA & Memory execution checkpoint — 2026-11-22
+
+**Current candidate:** PR [#2360](https://github.com/RedMentos/Aii/pull/2360), branch `jepa-memory/v14-temporal-bodyview-integration-20261122-run13`. Code-bearing commit `a1bc8ee967c8430ccbc691b726d6444e73b8f1f2`; documentation/board follow-ups are on the current branch head recorded by GitHub. PR remains DRAFT / NOT_RELEASED and is stacked on Boss #2343. #2360's recorded base is `9a1424b`; Boss #2343 has advanced to `8e5cabb`, so rebase is required after Boss review.
+
+**Connected implementation in the candidate:** Store-verified T8 action outcomes are converted into bounded contiguous temporal windows at valid offsets, trained by a persistent WorldJEPA encoder/predictor/EMA path, checkpointed with optimizer/replay state, and exposed through B5 BODY_STATE to B1_DETAIL (2-event history) and B2_GIST (3-event history). The B1/B2 receiver is a source-provenance prompt prior in SHADOW only; `native_body_consumed=false`, `native_body_weights_changed=false`, and `decision_authority=NONE`. No native latent activation exchange or GGUF weight update is established.
+
+**New code correction:** commit `a1bc8ee` adds separately measurable encoder and predictor parameter-delta norms to accepted and rejected temporal-update metrics. GitHub blob readback confirms all three metric paths. An isolated local NumPy delta-norm smoke test passed; this is not a repository test.
+
+**Exact test evidence:** previous temporal workflow run [45051064751](https://github.com/RedMentos/Aii/actions/runs/45051064751), exact head `f5def920`, failed 12 tests / passed 48. Failures included missing separate delta metrics, temporal utility/retention rejection, insufficient per-action support, absent bodyview context, and SleepRuntime postcommit errors. The corrected code SHA's temporal workflow [45052734551](https://github.com/RedMentos/Aii/actions/runs/45052734551) is QUEUED, not PASS; general bridge runs are also queued. Full LOCAL_LINUX Aii tests are BLOCKED because no checkout is mounted and GitHub DNS resolution fails. No CI result is Redmi proof.
+
+**Device/deployment evidence:** private DIAGNOSTICS #596 is the last detailed turn read; B1/B2 were TIME_BUDGET, TTFT 41.63s, 2 generated tokens. Newer private V13OBS #115 reports auto-update enabled, last_error NONE, but pipeline/dashboard/runtime CI_WAIT; last known installed SHA is `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`. HEALTH #597 reports status OK but runtime UNAVAILABLE, 1,218 MiB available memory and 1,412 MiB free disk. No UPDATE_REQUEST or other device mutation was sent. V14 candidate is NOT_DEPLOYED; REDMI_UNVERIFIED.
+
+**Research:** R-088 adds JEPA-TTT (arXiv:2610.00722). Dense multi-offset replay and persistence of predictor plus optimizer state are promising, but its single fixed-shift experiment does not prove multi-shift retention. Next comparison: predictor-only adaptation against a stable target snapshot versus full encoder+EMA updates, with matched replay/steps, source-disjoint holdouts, A→B→A and A→B→C→A retention, negative controls, restart and rollback. Keep the encoder/EMA path trainable in a separately measured slow lane; no permanent frozen teacher.
+
+**Next executable work:** obtain exact CI for `a1bc8ee`; repair temporal utility/retention and per-action receiver support without weakening controls; diagnose the SleepRuntime postcommit exception; then rebase #2360 onto the reviewed #2343 head and rerun Python 3.13/3.14, staged and integrated tests. Keep promotion OFF. **User action: none.**
