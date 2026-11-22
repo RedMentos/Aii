@@ -1,0 +1,52 @@
+{
+  "status": "SYNTHETIC_RESEARCH_ONLY",
+  "environment": {
+    "python": "3.13.5",
+    "torch": "2.10.0+cpu",
+    "device": "cpu"
+  },
+  "setup": {
+    "task": "two sequential context-conditioned binary functions",
+    "samples_per_task": 512,
+    "epochs_per_task": 12,
+    "seeds": 10,
+    "learned_gate": "32 hidden units, deterministic top-8 inference, Bernoulli + straight-through training",
+    "static_gate": "fixed top-8 of 32 hidden units",
+    "dense_reference": "8 dense hidden units",
+    "batch_size": 64,
+    "learning_rate": 0.01,
+    "replay": false,
+    "binarization": false,
+    "metaplasticity": false
+  },
+  "metrics_mean_stdev": {
+    "dense": {
+      "old_task_accuracy_before_task_2": [0.9863, 0.0026],
+      "old_task_accuracy_after_task_2": [0.7486, 0.0552],
+      "new_task_accuracy_after_task_2": [0.8563, 0.1002],
+      "forgetting": [0.2377, 0.0543]
+    },
+    "static_topk": {
+      "old_task_accuracy_before_task_2": [0.9844, 0.0053],
+      "old_task_accuracy_after_task_2": [0.7467, 0.0479],
+      "new_task_accuracy_after_task_2": [0.8801, 0.0867],
+      "forgetting": [0.2377, 0.0470]
+    },
+    "learned_context_topk": {
+      "old_task_accuracy_before_task_2": [0.9559, 0.0077],
+      "old_task_accuracy_after_task_2": [0.7473, 0.0295],
+      "new_task_accuracy_after_task_2": [0.9688, 0.0071],
+      "forgetting": [0.2086, 0.0253],
+      "total_parameter_l1_delta": [174.2003, 8.3546],
+      "gate_parameter_l1_delta": [84.7361, 4.0899],
+      "maximum_gate_gradient_l2": [0.1977, 0.0267],
+      "majority_mask_jaccard_between_contexts": [0.0, 0.0],
+      "old_task_accuracy_with_context_flipped": [0.4967, 0.0258]
+    }
+  },
+  "interpretation": {
+    "positive": "The learned gate receives nonzero gradients, changes its parameters, selects exactly 8/32 units per sample at inference, and learns disjoint majority masks for the two context values. Flipping the context reduces old-task accuracy to chance.",
+    "not_proven": "Old-task final accuracy is essentially the same as dense/static baselines. The lower measured forgetting partly reflects lower pre-task accuracy; this does not demonstrate a retention improvement.",
+    "limits": "Synthetic two-task binary functions only; no BNN, metaplastic optimizer, replay, real perceptual data, sparse expert kernels, model-family coupling, Android/ARM measurement, or production consumer."
+  }
+}
