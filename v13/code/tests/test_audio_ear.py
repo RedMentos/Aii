@@ -56,3 +56,6 @@ class TestPCMBufferHygiene(unittest.TestCase):
         self.assertEqual(list(retained_reference), [0, 0, 0, 0])
         self.assertTrue(zeroize_pcm16_buffer(pcm))
         self.assertEqual(bytes(pcm), bytes(len(pcm)))
+
+if __name__ == '__main__':
+    unittest.main()
