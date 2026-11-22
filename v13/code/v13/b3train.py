@@ -7,6 +7,9 @@ evidence through b3bridge.l1_gate.
 """
 from pathlib import Path
 import hashlib
+import os
+import stat
+import uuid
 import numpy as np
 
 from .b3pairs import training_batch
@@ -17,6 +20,81 @@ from .common import atomic_write, dumps
 
 _SPLIT_POLICY = "SOURCE_SHA256_GROUPED_STRATIFIED_20PCT_MIN2_V1"
 _L0_SCHEMA = "v13.b3-l0-baselines/2"
+
+
+def _secure_shadow_output_dir(home, relative_dir):
+    """Create a private shadow run directory without following symlinked parents.
+
+    The returned path is anchored to an open directory descriptor through
+    /proc/self/fd, so later Bridge.save/load and atomic report writes keep
+    resolving to the same directory. The caller must close the returned fd.
+    """
+    home = Path(home).resolve(strict=True)
+    if not home.is_absolute() or not home.is_dir():
+        raise OSError("runtime home must resolve to an existing directory")
+    if (not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "O_DIRECTORY")
+            or os.open not in os.supports_dir_fd or os.mkdir not in os.supports_dir_fd):
+        raise OSError("secure no-follow directory operations are unavailable")
+    relative_dir = Path(relative_dir)
+    parts = relative_dir.parts
+    if (relative_dir.is_absolute() or not parts
+            or any(part in ("", ".", "..") or "/" in part or "\\\\" in part for part in parts)):
+        raise ValueError("unsafe shadow output path")
+
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    fd = os.open("/", flags)
+    run_fd = None
+    try:
+        # Walk the canonical runtime-home path one component at a time.
+        # O_NOFOLLOW on each open rejects a parent swapped to a symlink.
+        for component in home.parts[1:]:
+            next_fd = os.open(component, flags, dir_fd=fd)
+            os.close(fd)
+            fd = next_fd
+
+        root_stat = os.fstat(fd)
+        if (not stat.S_ISDIR(root_stat.st_mode) or root_stat.st_uid != os.getuid()
+                or root_stat.st_mode & 0o022):
+            raise OSError("runtime home ownership or permissions are unsafe")
+
+        # Existing parents must be app-owned, non-symlink directories and
+        # must not be writable by group/other.
+        for component in parts[:-1]:
+            try:
+                os.mkdir(component, 0o700, dir_fd=fd)
+            except FileExistsError:
+                pass
+            next_fd = os.open(component, flags, dir_fd=fd)
+            parent_stat = os.fstat(next_fd)
+            if (not stat.S_ISDIR(parent_stat.st_mode) or parent_stat.st_uid != os.getuid()
+                    or parent_stat.st_mode & 0o022):
+                os.close(next_fd)
+                raise OSError("shadow output parent is not a private owned directory")
+            os.close(fd)
+            fd = next_fd
+
+        # A fresh run directory prevents deterministic reruns from reusing
+        # attacker-precreated seed/report files. Its mode is private (0700).
+        os.mkdir(parts[-1], 0o700, dir_fd=fd)
+        run_fd = os.open(parts[-1], flags, dir_fd=fd)
+        run_stat = os.fstat(run_fd)
+        if (not stat.S_ISDIR(run_stat.st_mode) or run_stat.st_uid != os.getuid()
+                or run_stat.st_mode & 0o077):
+            raise OSError("shadow run directory is not private")
+        os.close(fd)
+        fd = None
+
+        proc_path = Path(f"/proc/self/fd/{run_fd}")
+        if not proc_path.is_dir():
+            raise OSError("procfs descriptor paths are unavailable")
+        return proc_path, Path(*parts), run_fd
+    except Exception:
+        if run_fd is not None:
+            os.close(run_fd)
+        raise
+    finally:
+        if fd is not None:
+            os.close(fd)
 
 
 def _source_disjoint_split(source_refs, labels, split_seed):
@@ -87,8 +165,9 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
     """
     if direction not in {"B1_TO_B2", "B2_TO_B1"}:
         raise ValueError("unsupported B3 direction")
-    if not isinstance(task_id, str) or not task_id or any(not (x.isalnum() or x in "-_") for x in task_id):
-        raise ValueError("task_id must be a simple identifier")
+    if (not isinstance(task_id, str) or not task_id.isascii()
+            or not __import__("re").fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}", task_id)):
+        raise ValueError("task_id must be a 1..64 character ASCII identifier")
     if not isinstance(label_source, str) or not label_source.strip():
         raise ValueError("explicit label_source required")
     if len(pair_packets) < MIN_PAIRED:
@@ -191,159 +270,166 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
         "bridge_config": {"K": 4, "r": 8, "h": 16},
         "l0_evidence_sha256": l0_evidence_sha256,
     }
-    run_key = hashlib.sha256(dumps(run_identity).encode("utf-8")).hexdigest()[:12]
-    output_dir = cognition.r.home / "b3" / "shadow" / direction / task_id / run_key
-    output_dir.mkdir(parents=True, exist_ok=True)
-    seed_reports = []
-    trained_bridges = []
+    # A unique run namespace avoids reusing an old directory or its files.
+    run_identity["run_nonce"] = uuid.uuid4().hex
+    run_key = hashlib.sha256(dumps(run_identity).encode("utf-8")).hexdigest()[:16]
+    relative_output_dir = Path("b3") / "shadow" / direction / task_id / run_key
+    output_dir, relative_output_dir, output_fd = _secure_shadow_output_dir(
+        cognition.r.home, relative_output_dir
+    )
+    try:
+        seed_reports = []
+        trained_bridges = []
 
-    for seed in seeds:
-        bridge = Bridge(d=H.shape[-1], K=4, r=8, h=16,
-                        classes=len(label_values), seed=seed, direction=direction)
-        bridge.fit_head(Xtr, ytr, steps=head_steps)
-        history = bridge.fit(Htr, Mtr, Xtr, ytr, epochs=epochs,
-                             batch=min(64, len(train_indices)), seed=seed)
-        calibration = bridge.calibrate(Htr, Mtr)
+        for seed in seeds:
+            bridge = Bridge(d=H.shape[-1], K=4, r=8, h=16,
+                            classes=len(label_values), seed=seed, direction=direction)
+            bridge.fit_head(Xtr, ytr, steps=head_steps)
+            history = bridge.fit(Htr, Mtr, Xtr, ytr, epochs=epochs,
+                                 batch=min(64, len(train_indices)), seed=seed)
+            calibration = bridge.calibrate(Htr, Mtr)
 
-        no_message_logits = bridge.logits(Hte, Mte, Xte, gate_open=False)
-        latent_logits = bridge.logits(Hte, Mte, Xte, gate_open=True)
-        z = to_bf16(bridge.encode(Hte, Mte))
-        shuffled_z = z[np.roll(np.arange(len(z)), 1)]
-        shuffled_logits = bridge.receive(shuffled_z, Xte, gate_open=True)
+            no_message_logits = bridge.logits(Hte, Mte, Xte, gate_open=False)
+            latent_logits = bridge.logits(Hte, Mte, Xte, gate_open=True)
+            z = to_bf16(bridge.encode(Hte, Mte))
+            shuffled_z = z[np.roll(np.arange(len(z)), 1)]
+            shuffled_logits = bridge.receive(shuffled_z, Xte, gate_open=True)
 
-        random_rng = np.random.default_rng(seed + 100_003)
-        random_z = random_rng.normal(size=z.shape).astype(np.float32)
-        target_norm = np.linalg.norm(z, axis=(1, 2), keepdims=True)
-        random_norm = np.linalg.norm(random_z, axis=(1, 2), keepdims=True) + 1e-8
-        random_z = to_bf16(random_z * (target_norm / random_norm))
-        random_logits = bridge.receive(random_z, Xte, gate_open=True)
+            random_rng = np.random.default_rng(seed + 100_003)
+            random_z = random_rng.normal(size=z.shape).astype(np.float32)
+            target_norm = np.linalg.norm(z, axis=(1, 2), keepdims=True)
+            random_norm = np.linalg.norm(random_z, axis=(1, 2), keepdims=True) + 1e-8
+            random_z = to_bf16(random_z * (target_norm / random_norm))
+            random_logits = bridge.receive(random_z, Xte, gate_open=True)
 
-        accuracy = lambda logits: float(np.mean(np.argmax(logits, axis=1) == yte))
-        ood_rate = float(np.mean(bridge.ood(z) > calibration["ood_tau"]))
-        prefix = output_dir / f"seed-{seed}"
-        manifest = bridge.save(
-            prefix, sender_revision=batch["sender_revision"],
-            receiver_revision=batch["receiver_revision"],
-            extra={
-                "status": "L1_SHADOW_CANDIDATE_NOT_PROMOTED",
-                "task_id": task_id, "run_key": run_key, "label_source": label_source,
-                "label_provenance": list(label_provenance),
-                "body_pair_ids": list(batch["body_pair_ids"]),
-                "source_refs": list(batch["source_refs"]),
-                "train_indices": train_indices.tolist(),
-                "test_indices": test_indices.tolist(),
-                "split_policy": split_policy,
-                "train_source_hashes": train_source_hashes,
-                "test_source_hashes": test_source_hashes,
-                "label_values": label_values,
-                "l1_utility_gate": "NOT_RUN_MISSING_L0_CHANNEL_BASELINES_AND_ROLE_RETENTION",
-                "latent_authority": 0, "receiver_injection_authority": 0,
-                "body_learning_authority": 0,
+            accuracy = lambda logits: float(np.mean(np.argmax(logits, axis=1) == yte))
+            ood_rate = float(np.mean(bridge.ood(z) > calibration["ood_tau"]))
+            prefix = output_dir / f"seed-{seed}"
+            manifest = bridge.save(
+                prefix, sender_revision=batch["sender_revision"],
+                receiver_revision=batch["receiver_revision"],
+                extra={
+                    "status": "L1_SHADOW_CANDIDATE_NOT_PROMOTED",
+                    "task_id": task_id, "run_key": run_key, "label_source": label_source,
+                    "label_provenance": list(label_provenance),
+                    "body_pair_ids": list(batch["body_pair_ids"]),
+                    "source_refs": list(batch["source_refs"]),
+                    "train_indices": train_indices.tolist(),
+                    "test_indices": test_indices.tolist(),
+                    "split_policy": split_policy,
+                    "train_source_hashes": train_source_hashes,
+                    "test_source_hashes": test_source_hashes,
+                    "label_values": label_values,
+                    "l1_utility_gate": "NOT_RUN_MISSING_L0_CHANNEL_BASELINES_AND_ROLE_RETENTION",
+                    "latent_authority": 0, "receiver_injection_authority": 0,
+                    "body_learning_authority": 0,
+                })
+            reloaded = Bridge.load(prefix, sender_revision=batch["sender_revision"],
+                                   receiver_revision=batch["receiver_revision"])
+            reload_logits = reloaded.logits(Hte, Mte, Xte, gate_open=True)
+            reload_identical = bool(np.array_equal(latent_logits, reload_logits))
+            if not reload_identical:
+                raise RuntimeError("B3 L1 shadow candidate changed across save/reload")
+
+            trained_bridges.append((bridge, prefix, seed))
+            seed_reports.append({
+                "seed": seed, "candidate_manifest": str(relative_output_dir / f"seed-{seed}.json"),
+                "candidate_weights": str(relative_output_dir / f"seed-{seed}.npz"),
+                "manifest_sha256": manifest["sha256"],
+                "no_message_accuracy": accuracy(no_message_logits),
+                "latent_accuracy": accuracy(latent_logits),
+                "shuffled_latent_accuracy": accuracy(shuffled_logits),
+                "random_norm_matched_accuracy": accuracy(random_logits),
+                "ood_rate": ood_rate, "reload_identical": reload_identical,
+                "last_training_metrics": ({k: float(v) for k, v in history[-1].items()} if history else {}),
             })
-        reloaded = Bridge.load(prefix, sender_revision=batch["sender_revision"],
-                               receiver_revision=batch["receiver_revision"])
-        reload_logits = reloaded.logits(Hte, Mte, Xte, gate_open=True)
-        reload_identical = bool(np.array_equal(latent_logits, reload_logits))
-        if not reload_identical:
-            raise RuntimeError("B3 L1 shadow candidate changed across save/reload")
 
-        trained_bridges.append((bridge, prefix, seed))
-        seed_reports.append({
-            "seed": seed, "candidate_manifest": str(prefix.with_suffix(".json").relative_to(cognition.r.home)),
-            "candidate_weights": str(prefix.with_suffix(".npz").relative_to(cognition.r.home)),
-            "manifest_sha256": manifest["sha256"],
-            "no_message_accuracy": accuracy(no_message_logits),
-            "latent_accuracy": accuracy(latent_logits),
-            "shuffled_latent_accuracy": accuracy(shuffled_logits),
-            "random_norm_matched_accuracy": accuracy(random_logits),
-            "ood_rate": ood_rate, "reload_identical": reload_identical,
-            "last_training_metrics": ({k: float(v) for k, v in history[-1].items()} if history else {}),
-        })
+        gate = None
+        if l0_evidence is not None:
+            required_l0 = ("EXACT", "CONTROL", "SYMBOLIC")
+            required = ("NO_MESSAGE", "LATENT", "LATENT_SHUFFLED", "LATENT_RANDOM",
+                        "EXACT", "CONTROL", "SYMBOLIC")
+            acc = {
+                "NO_MESSAGE": [x["no_message_accuracy"] for x in seed_reports],
+                "LATENT": [x["latent_accuracy"] for x in seed_reports],
+                "LATENT_SHUFFLED": [x["shuffled_latent_accuracy"] for x in seed_reports],
+                "LATENT_RANDOM": [x["random_norm_matched_accuracy"] for x in seed_reports],
+                **{channel: l0_acc[channel] for channel in required_l0},
+            }
+            message_bytes = 4 * 8 * 4
+            byte_cost = {
+                "NO_MESSAGE": 0, "LATENT": message_bytes,
+                "LATENT_SHUFFLED": message_bytes, "LATENT_RANDOM": message_bytes,
+                **{channel: l0_bytes[channel] for channel in required_l0},
+            }
+            seed_map = {channel: [str(x) for x in seeds] for channel in required}
+            gate_task = {
+                "acc": acc, "bytes": byte_cost, "seed_ids": seed_map,
+                "role_drop": float(role_drop),
+                "ood_rate": float(np.mean([x["ood_rate"] for x in seed_reports])),
+                "reload_identical": all(x["reload_identical"] for x in seed_reports),
+            }
+            gate = l1_gate(gate_task)
 
-    gate = None
-    if l0_evidence is not None:
-        required_l0 = ("EXACT", "CONTROL", "SYMBOLIC")
-        required = ("NO_MESSAGE", "LATENT", "LATENT_SHUFFLED", "LATENT_RANDOM",
-                    "EXACT", "CONTROL", "SYMBOLIC")
-        acc = {
-            "NO_MESSAGE": [x["no_message_accuracy"] for x in seed_reports],
-            "LATENT": [x["latent_accuracy"] for x in seed_reports],
-            "LATENT_SHUFFLED": [x["shuffled_latent_accuracy"] for x in seed_reports],
-            "LATENT_RANDOM": [x["random_norm_matched_accuracy"] for x in seed_reports],
-            **{channel: l0_acc[channel] for channel in required_l0},
+        if gate is None:
+            gate_status = "NOT_RUN_MISSING_L0_CHANNEL_BASELINES_AND_ROLE_RETENTION"
+            overall_status = "L1_SHADOW_CANDIDATES_SAVED_NOT_PROMOTED"
+        elif gate["verdict"] == "PASS":
+            gate_status = "PASS_L2_PREFIX_SHADOW_ALLOWED_NO_NATIVE_AUTHORITY"
+            overall_status = "L1_SHADOW_PASSED_L2_SHADOW_ALLOWED_NOT_PROMOTED"
+        else:
+            gate_status = "FAIL_B3_LATENT_UNAVAILABLE"
+            overall_status = "L1_SHADOW_UTILITY_REJECTED_NOT_PROMOTED"
+
+        # Rewrite only shadow manifests with the final gate receipt.
+        for bridge, prefix, seed in trained_bridges:
+            final_manifest = bridge.save(
+                prefix, sender_revision=batch["sender_revision"],
+                receiver_revision=batch["receiver_revision"],
+                extra={
+                    "status": overall_status, "task_id": task_id, "run_key": run_key,
+                    "label_source": label_source, "label_provenance": list(label_provenance),
+                    "body_pair_ids": list(batch["body_pair_ids"]),
+                    "source_refs": list(batch["source_refs"]),
+                    "train_indices": train_indices.tolist(),
+                    "test_indices": test_indices.tolist(), "label_values": label_values,
+                    "split_policy": split_policy,
+                    "train_source_hashes": train_source_hashes,
+                    "test_source_hashes": test_source_hashes,
+                    "l1_gate": gate, "l1_utility_gate": gate_status,
+                    "l0_evidence_sha256": l0_evidence_sha256,
+                    "latent_authority": 0, "receiver_injection_authority": 0,
+                    "body_learning_authority": 0,
+                })
+            Bridge.load(prefix, sender_revision=batch["sender_revision"],
+                        receiver_revision=batch["receiver_revision"])
+            for seed_report in seed_reports:
+                if seed_report["seed"] == seed:
+                    seed_report["manifest_sha256"] = final_manifest["sha256"]
+
+        report = {
+            "schema": "v13.b3-l1-shadow-training/1",
+            "status": overall_status,
+            "task_id": task_id, "run_key": run_key, "direction": direction, "label_source": label_source,
+            "samples": len(pair_packets), "train_samples": len(train_indices),
+            "test_samples": len(test_indices), "label_values": label_values,
+            "split_policy": split_policy,
+            "train_source_hashes": train_source_hashes,
+            "test_source_hashes": test_source_hashes,
+            "label_provenance": list(label_provenance),
+            "body_pair_ids": list(batch["body_pair_ids"]),
+            "sender_revision": batch["sender_revision"],
+            "receiver_revision": batch["receiver_revision"],
+            "seed_reports": seed_reports,
+            "l1_utility_gate": gate_status,
+            "l1_gate": gate,
+            "l0_evidence_sha256": l0_evidence_sha256,
+            "latent_authority": 0, "receiver_injection_authority": 0,
+            "body_learning_authority": 0,
         }
-        message_bytes = 4 * 8 * 4
-        byte_cost = {
-            "NO_MESSAGE": 0, "LATENT": message_bytes,
-            "LATENT_SHUFFLED": message_bytes, "LATENT_RANDOM": message_bytes,
-            **{channel: l0_bytes[channel] for channel in required_l0},
-        }
-        seed_map = {channel: [str(x) for x in seeds] for channel in required}
-        gate_task = {
-            "acc": acc, "bytes": byte_cost, "seed_ids": seed_map,
-            "role_drop": float(role_drop),
-            "ood_rate": float(np.mean([x["ood_rate"] for x in seed_reports])),
-            "reload_identical": all(x["reload_identical"] for x in seed_reports),
-        }
-        gate = l1_gate(gate_task)
-
-    if gate is None:
-        gate_status = "NOT_RUN_MISSING_L0_CHANNEL_BASELINES_AND_ROLE_RETENTION"
-        overall_status = "L1_SHADOW_CANDIDATES_SAVED_NOT_PROMOTED"
-    elif gate["verdict"] == "PASS":
-        gate_status = "PASS_L2_PREFIX_SHADOW_ALLOWED_NO_NATIVE_AUTHORITY"
-        overall_status = "L1_SHADOW_PASSED_L2_SHADOW_ALLOWED_NOT_PROMOTED"
-    else:
-        gate_status = "FAIL_B3_LATENT_UNAVAILABLE"
-        overall_status = "L1_SHADOW_UTILITY_REJECTED_NOT_PROMOTED"
-
-    # Rewrite only shadow manifests with the final gate receipt.
-    for bridge, prefix, seed in trained_bridges:
-        final_manifest = bridge.save(
-            prefix, sender_revision=batch["sender_revision"],
-            receiver_revision=batch["receiver_revision"],
-            extra={
-                "status": overall_status, "task_id": task_id, "run_key": run_key,
-                "label_source": label_source, "label_provenance": list(label_provenance),
-                "body_pair_ids": list(batch["body_pair_ids"]),
-                "source_refs": list(batch["source_refs"]),
-                "train_indices": train_indices.tolist(),
-                "test_indices": test_indices.tolist(), "label_values": label_values,
-                "split_policy": split_policy,
-                "train_source_hashes": train_source_hashes,
-                "test_source_hashes": test_source_hashes,
-                "l1_gate": gate, "l1_utility_gate": gate_status,
-                "l0_evidence_sha256": l0_evidence_sha256,
-                "latent_authority": 0, "receiver_injection_authority": 0,
-                "body_learning_authority": 0,
-            })
-        Bridge.load(prefix, sender_revision=batch["sender_revision"],
-                    receiver_revision=batch["receiver_revision"])
-        for seed_report in seed_reports:
-            if seed_report["seed"] == seed:
-                seed_report["manifest_sha256"] = final_manifest["sha256"]
-
-    report = {
-        "schema": "v13.b3-l1-shadow-training/1",
-        "status": overall_status,
-        "task_id": task_id, "run_key": run_key, "direction": direction, "label_source": label_source,
-        "samples": len(pair_packets), "train_samples": len(train_indices),
-        "test_samples": len(test_indices), "label_values": label_values,
-        "split_policy": split_policy,
-        "train_source_hashes": train_source_hashes,
-        "test_source_hashes": test_source_hashes,
-        "label_provenance": list(label_provenance),
-        "body_pair_ids": list(batch["body_pair_ids"]),
-        "sender_revision": batch["sender_revision"],
-        "receiver_revision": batch["receiver_revision"],
-        "seed_reports": seed_reports,
-        "l1_utility_gate": gate_status,
-        "l1_gate": gate,
-        "l0_evidence_sha256": l0_evidence_sha256,
-        "latent_authority": 0, "receiver_injection_authority": 0,
-        "body_learning_authority": 0,
-    }
-    report_path = output_dir / "report.json"
-    report["report_path"] = str(report_path.relative_to(cognition.r.home))
-    atomic_write(report_path, dumps(report))
-    return report
+        report_path = output_dir / "report.json"
+        report["report_path"] = str(relative_output_dir / "report.json")
+        atomic_write(report_path, dumps(report))
+        return report
+    finally:
+        os.close(output_fd)
