@@ -20,6 +20,9 @@ on:
       - "v13/code/scripts/stage_integrated_candidate.py"
       - "v13/code/v13/runtime_deploy.py"
       - "v13/code/v13/b3bridge.py"
+      - "v13/code/v13/b3projector.py"
+      - "v13/code/scripts/b3_train_receiver_projector.py"
+      - "v13/code/tests/test_b3projector.py"
       - "v13/code/tests/test_b3pairs.py"
       - "v13/code/tests/test_b3train.py"
       - "v13/code/tests/test_b3_completion.py"
@@ -76,6 +79,7 @@ jobs:
             tests.test_b3pairs \
             tests.test_b3train \
             tests.test_b3bridge \
+            tests.test_b3projector \
             tests.test_b3_completion \
             tests.test_b3degrade \
             tests.test_b3order \
@@ -92,6 +96,9 @@ jobs:
             v13/code/v13/operator.py \
             v13/code/v13/runtime.py \
             v13/code/v13/b3bridge.py \
+            v13/code/v13/b3projector.py \
+            v13/code/scripts/b3_train_receiver_projector.py \
+            v13/code/tests/test_b3projector.py \
             v13/code/tests/test_b3pairs.py \
             v13/code/tests/test_b3train.py \
             v13/code/tests/test_b3_completion.py
@@ -99,6 +106,9 @@ jobs:
       - name: Smoke-test Termux L1 shadow CLI import and argument parser
         working-directory: v13/code
         run: python scripts/b3_train_l1_shadow.py --help >/dev/null
+      - name: Smoke-test explicit receiver-input projector CLI help
+        working-directory: v13/code
+        run: python scripts/b3_train_receiver_projector.py --help >/dev/null
       - name: Emit exact source-pin diagnostics for integration repair
         if: always()
         run: |
