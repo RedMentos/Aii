@@ -1568,34 +1568,47 @@ class WorldJEPAStoreConsumer:
             replay_start = None
             replay_cohort_ranges = None
             replay_constraint_session_keys = ()
+            projection_fallback_reason = None
             if replay_projection:
-                if active is None or len(new_fit_rows) < 2 or len(replay_rows) < 2:
+                if len(new_fit_rows) < 2:
                     persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
                     if persisted != "PERSISTED":
                         return {"status": persisted, "pending_rows": len(pending_by_id),
                                 "scan_cursor": state["scan_cursor"],
                                 "native_body_weights_changed": False}
-                    return {"status": "INSUFFICIENT_REPLAY_FOR_PROJECTION",
+                    return {"status": "INSUFFICIENT_NEW_TRAIN_ROWS",
                             "new_train_rows": len(new_train_rows), "replay_rows": len(replay_rows),
                             "pending_rows": len(pending_by_id), "scan_cursor": next_cursor,
                             "native_body_weights_changed": False}
-                replay_start = len(new_fit_rows)
-                if replay_mode in {"session_contiguous", "on_demand_conflict", "on_demand_loss"}:
-                    grouped = _ordered_replay_rows_and_ranges(replay_rows, replay_start)
-                    if grouped is None:
-                        persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
-                        if persisted != "PERSISTED":
-                            return {"status": persisted, "pending_rows": len(pending_by_id),
-                                    "scan_cursor": state["scan_cursor"],
-                                    "native_body_weights_changed": False}
-                        return {
-                            "status": "INSUFFICIENT_REPLAY_COHORT_CAPACITY",
-                            "replay_rows": len(replay_rows),
-                            "max_replay_constraints": world_jepa.MAX_REPLAY_CONSTRAINTS,
-                            "pending_rows": len(pending_by_id), "scan_cursor": next_cursor,
-                            "native_body_weights_changed": False,
-                        }
-                    replay_rows, replay_cohort_ranges, replay_constraint_session_keys = grouped
+                # A requested GEM/AGEM constraint can be unavailable when the
+                # loss-demand selector finds no prior session with positive
+                # replay demand (or when this is the first checkpoint). This is
+                # not a reason to discard otherwise useful new-task learning:
+                # the independent source-disjoint prior/current guard cohorts
+                # and final old-holdout retention gate still decide promotion.
+                # Report the fallback explicitly; never claim projection ran.
+                if active is None:
+                    projection_fallback_reason = "NO_PRIOR_CHECKPOINT"
+                elif len(replay_rows) < 2:
+                    projection_fallback_reason = "NO_ELIGIBLE_REPLAY_ROWS"
+                else:
+                    replay_start = len(new_fit_rows)
+                    if replay_mode in {"session_contiguous", "on_demand_conflict", "on_demand_loss"}:
+                        grouped = _ordered_replay_rows_and_ranges(replay_rows, replay_start)
+                        if grouped is None:
+                            persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
+                            if persisted != "PERSISTED":
+                                return {"status": persisted, "pending_rows": len(pending_by_id),
+                                        "scan_cursor": state["scan_cursor"],
+                                        "native_body_weights_changed": False}
+                            return {
+                                "status": "INSUFFICIENT_REPLAY_COHORT_CAPACITY",
+                                "replay_rows": len(replay_rows),
+                                "max_replay_constraints": world_jepa.MAX_REPLAY_CONSTRAINTS,
+                                "pending_rows": len(pending_by_id), "scan_cursor": next_cursor,
+                                "native_body_weights_changed": False,
+                            }
+                        replay_rows, replay_cohort_ranges, replay_constraint_session_keys = grouped
             fit_rows = (
                 train_rows if active is None
                 else list(new_fit_rows) + list(replay_rows)
@@ -1679,6 +1692,7 @@ class WorldJEPAStoreConsumer:
                 ).encode("utf-8")).hexdigest(),
                 "replay_projection_requested": replay_projection,
                 "replay_projection_enabled": replay_start is not None,
+                "replay_projection_fallback_reason": projection_fallback_reason,
                 "replay_projection_mode": (
                     "per_session_gem" if replay_cohort_ranges is not None
                     else "aggregate_agem" if replay_start is not None else "off"
@@ -1776,6 +1790,7 @@ class WorldJEPAStoreConsumer:
                 getattr(candidate, "_last_gradient_projection", {})
             )
             candidate_gradient_projection["requested"] = replay_projection
+            candidate_gradient_projection["fallback_reason"] = projection_fallback_reason
             candidate_gradient_projection["mode"] = replay_metrics["replay_projection_mode"]
             candidate_gradient_projection["constraint_session_count"] = replay_metrics["replay_constraint_session_count"]
             candidate_gradient_projection["optimizer_direction_scale"] = 1.0
