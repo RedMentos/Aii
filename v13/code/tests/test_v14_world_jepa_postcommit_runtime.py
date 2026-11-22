@@ -267,13 +267,13 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         assert first["planner"]["checkpoint_sha256"] == first_sha
         assert read_world_planner_shadow(store, first_events[-1])["status"] == first_planner_status
 
-        second_events = _add_transitions(store, session, 256, 32)
+        second_events = _add_transitions(store, session, 256, 256)
         store.set_state(PERMISSION_KEY, {
             "learning_enabled": True, "optimizer_permission": True,
-            "steps": 24, "replay_mode": "uniform",
+            "steps": 120, "replay_mode": "uniform",
         })
         second = sleep._run_world_jepa(second_events[-1], limit=256)
-        assert second["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        assert second["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA", second["learning"]
         second_metrics = second["learning"]["metrics"]
         assert second_metrics["replay_rows"] >= 8
         assert second_metrics["fit_steps_after"] > second_metrics["fit_steps_before"]
