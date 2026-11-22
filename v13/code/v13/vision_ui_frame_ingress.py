@@ -204,8 +204,8 @@ def _load_local_tile_projector(runtime, cfg, query_text: str) -> dict:
         if vision.digest(bytes(raw)) != expected_sha:
             return {"status": "PROJECTOR_HASH_MISMATCH"}
         with zipfile.ZipFile(io.BytesIO(raw), "r") as archive:
-            names = set(archive.namelist())
-            if names != {"mu.npy", "sd.npy", "W.npy", "meta.npy"}:
+            archive_names = archive.namelist()
+            if len(archive_names) != 4 or set(archive_names) != {"mu.npy", "sd.npy", "W.npy", "meta.npy"}:
                 return {"status": "PROJECTOR_ARCHIVE_SHAPE_INVALID"}
             if sum(item.file_size for item in archive.infolist()) > MAX_PROJECTOR_UNPACKED_BYTES:
                 return {"status": "PROJECTOR_ARCHIVE_TOO_LARGE"}
