@@ -269,7 +269,7 @@ def test_verified_frame_snapshot_prevents_post_receipt_buffer_swap(monkeypatch):
     assert result["packet"]["frame_sha256"] == original_hash
     assert not any(frame)
     assert not any(decoded[0][1])
-    replacement[:] = b"\\x00" * len(replacement)
+    replacement[:] = b"\x00" * len(replacement)
 
 
 def test_provisional_frame_is_never_admitted_to_c3_context(monkeypatch):
