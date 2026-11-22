@@ -2279,3 +2279,12 @@ The historical 1,255-heading Canon inventory above is unchanged. This overlay re
 **Integrity and deployment boundary:** #2372 current memory.py SHA-256 is 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701. The inherited lifecycle builder and QA #2359 still contain stale memory.py pins; QA was notified with exact blob and file digests in #2359 comment 7085003800. Current exact #2372 CI runs 45064802546/45064802561/45064802545 were queued at last readback. Full local repository tests are BLOCKED by missing checkout/DNS. No Redmi result, native model-weight change, deployment, updater request or user-data mutation is claimed.
 
 **Next JEPA acceptance:** exact-head CI → QA lifecycle rebind → Boss review/current-base integration → disjoint correct/omitted/shuffled/hypothetical history ablations with matched replay → native Android measurement. Do not promote any synthetic result to REAL_REDM I_PROOF or ACCEPTED.
+
+
+### Run 15 exact-head follow-up — 2026-11-22T20:22:48Z
+
+- Current JEPA code head is fbe4f9d2e2aaa063dea9ddc090f6adbfd580f1df. Exact workflows 45065612067 / 45065612113 / 45065612072 remain QUEUED. The new B1/B2 prompt-consumer regression was corrected after predecessor 64ae failed to produce a supported receiver row from its fixture split; fbe4 uses the proven deterministic matrix cohort. This is still CI_PENDING, not PASS.
+- Staged predecessor also reproduced a SleepRuntime postcommit ERROR in numeric and planner-only tests. Commit 64959cd adds a base/temporal/planner component trace; root cause remains OPEN.
+- JEPA source lifecycle still has stale memory.py pins: exact file SHA-256 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701; inherited #2372 pin 61e881ad…; QA #2359 pin b2059016….
+- Independent shared integration blocker on Boss #2370: audio overlay expected runtime.py Git blob SHA-1 30360f40eb784be5ea975ee85e94a57f0b154164; actual Boss runtime.py blob SHA-1 6e61af07326c5bb11406ee72361a710d5facc9a5. This is audio/Core-owned; no JEPA edit. Do not rebase JEPA until the audio owner rebinds the source and downstream chain.
+- Full local repository suite BLOCKED by missing checkout/DNS. Installed release aed1d2b is UP_TO_DATE; JEPA PR #2372 is NOT_RELEASED; REDMI_UNVERIFIED for all new JEPA features. No native weight changes or production promotion.
