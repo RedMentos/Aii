@@ -1357,3 +1357,15 @@ Status: signed consumer CI PASS / staged migration FAIL / provider absent / REDM
 The 1,255 historical Canon headings remain preserved; the exact historical V13 appendix remains unchanged in the V14 master. Semantic clause→implementation→consumer→test→environment→rollback mapping is still incomplete. P0 open paths remain: correct responsive C3 output; actual B1/B2 offer delivery and C4/C3 use; learned B3 latent utility; JEPA source-forget/real parameter diffs; Android process-death/rollback, MediaProjection and AudioRecord providers; self-optimization/cross-organ gradients; full Canon traceability. All five enabled V14 automations were verified (Boss, QA & Android, JEPA & Memory, Forschung & Perception, Core & Harness).
 
 **Next:** finish exact #2370 CI and review the fair-budget viability; repair the approval identity binding in #2377; rebase #2381/#2383/#2376/#2379 on their current parents; await #2384 exact tests; continue independent whole-Canon work rather than treating any one PR as completion. **User action: none.**
+
+
+ 
+## Boss live integration update — 2026-11-22T22:30:37.104Z
+
+The previous #2370 head 03909f0 had 8 successful workflows, but audio/arithmetic Python 3.13 and 3.14 each failed the same source-transition assertion (44 passed / 17 subtests): the test input was explicitly changed to calculate 8/4 while the persisted source assertion still expected What is 8/4?. New exact head bae7d03196d98ac6dfebc0a2649faf257ba8308f corrects the expected source text. Its current matrix is 0 SUCCESS / 16 QUEUED / 0 IN_PROGRESS / 2 CANCELLED / 2 SKIPPED; no new-head pass is claimed.
+
+The native receiver QA stack advanced to f64e994 and now persists canonical path + five-field file identity in the approval record, with a joint manifest/router redirect negative test. Its two exact workflows remain queued; duplicate test definitions must be removed. Core #2381 is still based on an older QA SHA (21 ahead / 12 behind) and its staged overlay lacks O_NONBLOCK and _verify_model_file; its test also applies the receiver twice. Do not merge.
+
+RAW EYE #2384 advanced to 5cd8ffae with direct numeric feature-summary tests, but two test functions are duplicated and its two workflows are queued. Companion QA #2356 advanced to 27aaa29 with a single safe System-UI Wait attempt and filtered logcat; all four workflows are queued and process-death remains unaccepted. Core #2379/#2376 remain 11/14 commits behind the current companion QA parent. JEPA #2383 has five workflow failures; #2372 remains three failures / one success. No model/weight or device change.
+
+The only newly fixed issue in this update is the arithmetic test's persisted-source expectation; no production code changed. The installed release remains aed1d2b826290c95c70356b5d8b864b5ef382be4; no user action.
