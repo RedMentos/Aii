@@ -1013,3 +1013,14 @@ Primary source: https://arxiv.org/abs/2611.20819.
 - **Local scratch regressions:** `python3 -m py_compile` PASS; 13/13 synthetic audio-ingress and speaker-registry tests PASS. Full repository suite and exact-head CI remain pending.
 - **Boundary:** this optimizes only evidence-buffer representation. It does not establish diarization accuracy, calibrated speaker identity, microphone ingress, model inference, learned speaker adaptation, or Android resource behavior. Redmi remains `REDMI_UNVERIFIED`.
 
+
+
+## R-067 — Calibration status must gate speaker-change decisions (2026-11-22)
+
+**Observed implementation inconsistency:** the speaker registry emitted `threshold_status=CALLER_ASSERTED_UNVERIFIED`, but its cosine threshold still produced boolean `confidence_gate_passed` / `speaker_change_candidate` fields. The A4 helper checked only for a caller-supplied `calibration_id` and numeric threshold, so the same unverified input could become `CONTINUITY_SUPPORTED` or `CHANGE_OR_OVERLAP_CANDIDATE`, and a change candidate could influence A4 attention and C3 admission. A paper identifier or caller label is not a calibration artifact.
+
+**Correction on this branch:** unverified thresholds now preserve only cosine similarity / raw delta; per-frame and aggregate decisions remain `null`, `candidate_count=0`, and `peak_speaker_change_candidate=null`. A4 requires a future `CALIBRATED_VERIFIED` status plus a pinned 64-hex calibration receipt before any decision; the current producer cannot emit either, so its actual decision is `DEFER`. C3 receives `speaker_similarity_delta`, `spk_cal=UNVERIFIED`, and `spk_dec=DEFER`; no speaker-derived interrupt gain is applied. The audio percept still preserves prosody, timing, source and consent metadata.
+
+**Evidence boundary:** LOCAL_LINUX scratch mirror PASS for caller-asserted thresholds, absent threshold, and missing calibration receipt all remaining DEFER while retaining the measured raw delta. Full Aii pytest and exact-head CI have not yet run on this commit. No labeled speaker corpus, calibrated threshold, embedding model weights, microphone or Android test was available. This is a false-positive prevention / evidence-integrity correction, not a working diarizer or speaker-identification claim.
+
+**Research implication:** FASTDIAR's published setup and any paper-specific thresholds cannot calibrate a different model/embedding distribution. Before enabling decisions, obtain a model-revision-bound labeled validation set with speaker-disjoint splits, FAR/FRR/EER and confidence intervals, then pin the calibration artifact to the exact embedding model hash and test domain shift. Keep all current thresholds diagnostic-only until that exists.
