@@ -40,6 +40,8 @@ def test_recovery_composes_with_existing_learning_and_preserves_frozen_sources(t
     cognition_source = (dest / 'v13/cognition.py').read_text(encoding='utf-8')
     assert 'observer_deadline=None' in budget_source
     assert 'minimum_role_slice_s' in cognition_source
+    assert 'c4_offer_context_ready' in cognition_source
+    assert 'audio_context_refs' in cognition_source
     assert 'def _audio_context_query' in cognition_source
     helper_spec = importlib.util.spec_from_file_location('activation_validate', CODE / 'scripts/activate_termux_recovery.py')
     helper = importlib.util.module_from_spec(helper_spec)

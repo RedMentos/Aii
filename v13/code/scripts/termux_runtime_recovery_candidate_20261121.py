@@ -11,6 +11,8 @@ BASE_BUILDER = "scripts/termux_runtime_recovery_candidate_20261112.py"
 BASE_BUILDER_BLOB_SHA1 = "7439b862b1d7ca0166467367a0b7d305dc35e09a"
 AUDIO_BUILDER = "scripts/integrated_audio_context_candidate_20261121.py"
 AUDIO_BUILDER_BLOB_SHA1 = "b63df557e2729bc67c8f6ecc99497c0e9394b27f"
+C4_RECEIPT_BUILDER = "scripts/integrated_c4_c3_receipt_candidate_20261122.py"
+C4_RECEIPT_SHA256 = "0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a22028dff3"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
@@ -45,6 +47,27 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
         raise ValueError("base stage no longer contains the reviewed bounded arithmetic route")
 
     composed = audio.apply_sources(code_dir, result)
+    # The base composer already applies the fair B1/B2 observer overlay. The
+    # audio overlay must preserve it; fail closed rather than reapply Runtime.
+    if b"minimum_role_slice_s" not in composed.get("v13/cognition.py", b""):
+        raise ValueError("A5 audio composition removed the Core observer fair-budget path")
+    receipt_path = code_dir / C4_RECEIPT_BUILDER
+    if receipt_path.is_symlink() or not receipt_path.is_file():
+        raise ValueError("Core C4 receipt overlay missing or unsafe")
+    receipt_raw = receipt_path.read_bytes()
+    if hashlib.sha256(receipt_raw).hexdigest() != C4_RECEIPT_SHA256:
+        raise ValueError("Core C4 receipt overlay source changed")
+    receipt_spec = importlib.util.spec_from_file_location(
+        "v14_core_c4_c3_receipt", receipt_path)
+    if receipt_spec is None or receipt_spec.loader is None:
+        raise RuntimeError("Core C4 receipt overlay is not loadable")
+    receipt_module = importlib.util.module_from_spec(receipt_spec)
+    receipt_spec.loader.exec_module(receipt_module)
+    composed = receipt_module.apply_sources(code_dir, composed)
+    if b"c4_offer_context_ready" not in composed.get("v13/cognition.py", b""):
+        raise ValueError("Core C4 context-ready receipt was not composed")
+    if b"minimum_role_slice_s" not in composed.get("v13/cognition.py", b""):
+        raise ValueError("Core observer fair-budget path missing after C4 receipt composition")
     if composed.get("v13/focal.py") != focal_before:
         raise ValueError("A5 audio composition must not replace the existing C4 body integration")
     if b"LOCAL_EXACT_ARITHMETIC" not in composed.get("v13/runtime.py", b""):
