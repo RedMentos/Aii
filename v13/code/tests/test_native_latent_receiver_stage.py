@@ -65,6 +65,10 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     cognition = (destination / "v13/cognition.py").read_text(encoding="utf-8")
     callosum = (destination / "v13/callosum.py").read_text(encoding="utf-8")
     operator_help = (destination / "v13/operator.py").read_text(encoding="utf-8")
+    approval = (destination / "v13/native_probe_approval.py").read_text(encoding="utf-8")
+    assert "os.O_NONBLOCK" in approval
+    assert "runtime.models.path_for(role)" in approval
+    assert "selected model path differs from verified manifest file" in approval
     assert "def native_receive(" in cognition
     assert "native-probe" in callosum
     assert "production_route=False" in cognition
