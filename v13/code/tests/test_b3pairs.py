@@ -65,6 +65,11 @@ class PairedNativeTapTests(unittest.TestCase):
         self.assertEqual(batch["Xr"].shape, (1, 2))
         self.assertEqual(batch["y"].tolist(), [1])
         self.assertEqual(batch["claim_limit"], "paired native read-only taps + explicit task labels; no receiver injection")
+        with patch.object(self.r.cognition, "read_tap", side_effect=lambda tap: rows[tap["packet_id"]]):
+            reverse = training_batch(self.r.cognition, [p], [1], direction="B2_TO_B1")
+        self.assertEqual(reverse["H"].shape, (1, 2, 2))
+        self.assertEqual(reverse["Xr"].shape, (1, 3))
+        self.assertEqual(reverse["sender_role"], "B2_GIST")
 
     def test_rejects_cross_source_pair(self):
         count = {"n": 0}
