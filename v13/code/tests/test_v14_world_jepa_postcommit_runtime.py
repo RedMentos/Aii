@@ -227,8 +227,9 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         })
         sleep = _sleep(store, home)
         first = sleep._run_world_jepa(first_events[-1], limit=256)
-        assert first["status"] == "POSTCOMMIT_PROCESSED"
-        assert first["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        assert first["status"] == "POSTCOMMIT_PROCESSED", first
+        assert "learning" in first, first
+        assert first["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA", first
         first_metrics = first["learning"]["metrics"]
         assert first_metrics["optimizer_moments_persisted"] is EXPECT_OPTIMIZER_STATE_PERSISTED
         assert first_metrics["inverse_dynamics_optimizer_persisted"] is EXPECT_OPTIMIZER_STATE_PERSISTED
@@ -393,7 +394,8 @@ def test_planner_only_checkpoint_readout_does_not_consume_future_learning_opt_in
         })
         sleep = _sleep(store, home)
         first = sleep._run_world_jepa(first_events[-1], limit=256)
-        assert first["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        assert "learning" in first, first
+        assert first["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA", first
         first_planner_status = _planner_expected_status(first["learning"]["metrics"])
         assert first["planner"]["status"] == first_planner_status
 
