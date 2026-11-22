@@ -1,3 +1,11 @@
+## Boss #2314 native build matrix update — 2026-11-22 07:09Z
+
+- Run `44994147854`: pinned Linux llama.cpp receiver build/selftest **PASS**; Android arm64-v8a NDK cross-compile **PASS** and uploaded review-only artifact `v14-native-latent-receiver-android-arm64` (11,640,425 bytes, expires 2026-12-06). No device installation or execution.
+- Python 3.13 and 3.14 still **FAIL** the staged Runtime test: nested `test_callosum.py::UtilityTests.test_message_fields_outcome_rating_and_doctor` returns `scored=0`, expected 1 (22 passed / 1 failed in each nested suite; outer stage 7 passed / 1 failed). Thus 2/4 jobs PASS and 2/4 FAIL; workflow remains red. Exact details on #2314 comments #7075731192 and #7075756920.
+- Core must fix the staged Callosum message→offer lookup/pending-state path without deleting or weakening the test; run targeted regression on both Python versions and rerun all four jobs. Keep the Android artifact review-only. No native GGUF receiver inference, semantic alignment or Redmi proof.
+
+---
+
 ## Boss #2314 native workflow regression — 2026-11-22 07:06Z
 
 - PR run 44994147854: exact pinned Linux llama.cpp native receiver build/selftest **PASS**. Python 3.13 job 137121435521 and Python 3.14 job 137121435493 both compile successfully but **FAIL** the staged Runtime test. Nested suite: test_callosum.py::UtilityTests.test_message_fields_outcome_rating_and_doctor expected one scored message and got scored=0 (22 passed / 1 failed); outer stage suite 7 passed / 1 failed. This is a Callosum message→receiver-offer utility regression in the staged tree, not a C++ build failure.
