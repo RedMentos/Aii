@@ -11,7 +11,7 @@ PINS = {
     'v13/runtime.py': {
         # Exact current source SHA for the fair-budget runtime input. The
         # recovery composer validates its pinned overlay chain separately.
-        'f4763263de1c496cf12c40cd91ec57e96916b49d7d09e4f5e72656e3ce326703',
+        '08c1ef961b0c7316da8c1c8265feb71a7a4acf009018788e7accb81eecb2337d',
         'c23a5a133deaff66f6be560509580b83394064bbff5a72d35d47c14461536978',
         'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2',
     },
