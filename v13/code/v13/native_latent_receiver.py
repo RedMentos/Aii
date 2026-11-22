@@ -226,8 +226,9 @@ def extract_token_rows(*, home, model_path, expected_model_sha256, model_revisio
     This is a local, read-only diagnostic. It is not a production B3 route,
     semantic-use proof, trained adapter, or learning permission. The native
     executable uses a pinned internal llama.cpp header and copies only the
-    requested rows; this wrapper binds the result to exact model bytes and
-    tokenizer/model revisions.
+    requested rows. This wrapper verifies exact model bytes; the caller must
+    source model/tokenizer revision identifiers from the installed manifest,
+    and those identifiers remain explicitly caller-supplied metadata.
     """
     if not isinstance(model_revision, str) or not model_revision:
         raise NativeReceiverError("receiver model revision is missing")
@@ -341,6 +342,7 @@ def extract_token_rows(*, home, model_path, expected_model_sha256, model_revisio
         "source": "RECEIVER_INPUT_TOKEN_EMBEDDING_TABLE",
         "model_revision": model_revision,
         "tokenizer_revision": tokenizer_revision,
+        "revision_binding_source": "caller_supplied_unverified",
         "model_sha256": expected_model_sha256,
         "runner_revision": PINNED_LLAMA_REVISION,
         "llama_version": str(raw.get("llama_version", ""))[:80],
