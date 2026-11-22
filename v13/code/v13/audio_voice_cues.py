@@ -764,11 +764,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         )
         if cues["f0_median_hz"] is not None:
             summary += f" f0_med_hz={cues['f0_median_hz']:.0f}"
-        if cues["f0_range_hz"] is not None:
-            summary += f" f0_range_hz={cues['f0_range_hz']:.0f}"
         summary += f" energy_range_db={cues['energy_range_db']:.1f}"
-        if cues["voiced_energy_range_db"] is not None:
-            summary += f" voiced_energy_range_db={cues['voiced_energy_range_db']:.1f}"
         summary += f" prosody_change={cues['prosody_change_score']:.2f}"
         if speaker_evidence is not None and speaker_evidence.get("status") == "MEASURED":
             if speaker_change_candidate is not None:
@@ -778,8 +774,8 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                     summary += " speaker_change_kind=CHANGE_OR_OVERLAP"
             else:
                 summary += f" speaker_change_score={speaker_evidence['change_score']:.2f}"
-        if vad_evidence is not None:
-            summary += f" vad_speech_fraction={vad_speech_fraction:.2f}"
+        # The structured packet retains every cue; reserve the bounded C3
+        # summary tail for the speaker score/kind and explicit three-state decision.
         decision_suffix = f" spk_dec={speaker_change_decision}"
         summary = summary[:256-len(decision_suffix)] + decision_suffix
         candidate = Percept(
