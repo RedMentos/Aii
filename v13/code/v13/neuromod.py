@@ -255,11 +255,20 @@ class Neuromod:
         if mode=='ACTIVE' and authority!='EXPLICIT_HUMAN':raise PermissionError('ACTIVE nur per expliziter Nutzerfreigabe (Age 0)')
         def f(st):st['local_mode']=mode;return mode
         out=self._mutate(f);self.s.log('neuromod_local_mode',None,{'mode':mode,'authority':authority});return out
+    def step_scale_report(self,component):
+        """Return the measured gate and applied scale for one organ.
+
+        SHADOW keeps ordinary local learning at scale 1.0, but a source-bound
+        safety veto is always a hard zero. ACTIVE additionally applies the
+        eligibility × modulator × Age/meta/homeostasis factor.
+        """
+        gate=self.gate(component);mode=self.local_mode()
+        if gate.get('veto'):scale=0.
+        elif mode!='ACTIVE':scale=1.
+        else:scale=gate['factor']
+        return {'mode':mode,'scale':float(scale),'gate':gate}
     def step_scale(self,component):
-        """WP-U6 §12.7: factor for a head's own step size. SHADOW (default) -> 1.0, the head learns as before;
-        ACTIVE -> the plasticity gate factor of its path (eligibility x modulator x Age/meta/homeostasis; veto/conflict -> 0)."""
-        if self.local_mode()!='ACTIVE':return 1.
-        return self.gate(component)['factor']
+        return self.step_scale_report(component)['scale']
     def local_update(self,component,delta=None):
         """§12.4 Δθ_i ∝ e_i × δ_i × M_i × P_i. delta: the sample's own signed error in [-1, 1]; default the path's last
         mapped reward-prediction error. Returns the signed scale (negative = do not imitate this sample)."""
