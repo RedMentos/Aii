@@ -1974,3 +1974,16 @@ Private PIPELINE_STATUS #453 remains unanswered; installed SHA/updater consent U
 | VOICE_AUDIO / duplex | No transcript is required by the new API; acoustic context remains a separate A5 path | API/unit proof only; speech-core research R-063 | Android caller/UI wiring, actual capture, AEC/turn detector and TTS effector are not integrated |
 
 The new adapter is an API candidate, not a production release or Android acceptance. PR #2293 remains DRAFT / NOT_RELEASED; REDMI_UNVERIFIED. Full Aii local tests are blocked by DNS resolution of github.com.
+
+
+## Exact Perception CI follow-up — 2026-11-22 02:37 CET
+
+| Family | Exact result | Acceptance boundary |
+|---|---|---|
+| A5 RAW EAR / audio-only API | GitHub Actions #44972070097 PASS: 64 tests on Python 3.13 and 3.14, including audio-only no-transcript ingress tests; local isolated module 7/7 PASS | API/unit proof; not full staged Runtime audio-only E2E, not Android microphone |
+| A5 VAD backend comparison | #44972070081 PASS on Python 3.13/3.14; native Linux libfvad 13/13 PASS | Native Linux only; not Android ARM |
+| Runtime deployment integrity | #44972070113 PASS | Offline candidate integrity only; no deployment |
+| Whole staged Runtime | #44972070090 FAIL: 19 failed / 231 passed / 10 skipped / 2 errors / 41 subtests; root is local-error pre-rebind semantic pin mismatch at recovery line 313 | Core-owned blocker reproduced on unchanged Boss base; no Runtime acceptance |
+| Redmi / Android | No live microphone, AudioRecord, TTS, barge-in or device receipt | REDMI_UNVERIFIED / NOT_RELEASED |
+
+Perception supplied a fail-closed repair proposal in #2288 comment 7072323336; no Core source was modified. Audio-only adapter remains a candidate API, not production acceptance.
