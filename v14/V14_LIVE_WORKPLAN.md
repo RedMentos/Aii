@@ -1270,3 +1270,9 @@ Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, mi
 A new upstream llama.cpp issue #27148 reports stale prompt/KV content crossing unrelated requests; #27624 remains open for LRU-victim stale-state, while #30295 is merged for a separate busy-pinned-slot path. V13 at c4eb82 launches per-role `llama-server -np 1 --cache-ram 128 --ctx-checkpoints 6`, does not set `--no-cache-idle-slots`, and sends `cache_prompt=true,id_slot=0`. Eight managed sessions were reported by the latest private diagnostic. This is a potential privacy/correctness risk, **not yet reproduced on V13**; exact installed binary revision and session-to-runner multiplexing remain unknown.
 
 **Action:** QA/Core must add a privacy-safe server version field, inspect RunnerPool session ownership, then run 30+ sequential and 30+ concurrent synthetic unique-marker rounds on the actual `-np 1` path. Compare current flags, `--cache-ram 0`, `--no-cache-idle-slots`, both, and `--no-cache-prompt`; retain same-session cache reuse and measure TTFT/PSS/RSS. Do not change the user's cache settings or restart live runners before the test proves isolation and acceptable performance. See R-080 and board item V14-020.
+
+
+## Handoff PR exact-head checkpoint — 2026-11-22T18:00:05.009Z
+
+- This documentation/research handoff PR #2365 now points to `74172c7fe710579e973efbabd19e0718d3df13d2`; 6 exact-head checks were QUEUED at the latest poll. It is still DRAFT and has not been merged.
+- The release branch remains `aed1d2b826290c95c70356b5d8b864b5ef382be4` with push workflows still pending; the device remains installed at `c4eb82`. No UPDATE_REQUEST was sent.
