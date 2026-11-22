@@ -1594,3 +1594,18 @@ The current Boss PR #2343 head is now `ba9ee5df8bf5b1bf4b4a06fa21c3586637db41b5`
 The read-only private LEARNING_STATUS receipt #594 reports `learning.state=UNAVAILABLE`. This means no active learning run or persistent parameter update is verified; it is stronger than merely saying that promotion is gated. The later HEALTH #593 also reports runtime `UNAVAILABLE`, despite #591's pipeline/dashboard metadata being UP_TO_DATE. #592's earlier RUNNING/PSS/RSS snapshot is point-in-time only. Do not infer a working service or learning loop from updater status. No user action or device command is needed at this checkpoint.
 
 The current Boss PR #2343 head is `3585145ebbc0530817d4aeb216c3e75251e3f695`; exact CI at last poll is 0 success / 27 queued / 1 skipped / 0 failures. The pre-postcommit diagnostic remains queued; no candidate deployment occurred.
+
+
+## Cross-agent integration review — 2026-11-22T17:31:00Z
+
+Current code-bearing Boss diagnostic/test commit is `fc5fa22`; the branch readback before this documentation update was `38c309b81bb105d94b4650740f44751e0c4d6daa` (the intervening commits are handoff/board/coverage updates). Exact Boss-branch checks at that readback: 0 success / 27 queued / 1 skipped / 0 failures. The pre-postcommit diagnostic workflow is still queued.
+
+Other open candidate stacks are not merge-ready:
+- **#2351/#2359 JEPA + Store source-forget:** #2359 exact head has 4 success / 9 failures. Optimizer-resume fails the Body/World builder SHA check in C3-resume; A5 fails the Memory source-cleanup anchor. #2355 is an older superseded stack with 6 failures.
+- **#2346 B3:** paired capture/tap provenance and ARM64 cross-compile pass, but staged receiver fails `integrated builder hash mismatch`; no latent receiver utility.
+- **#2349 RAW EAR:** staged audio source pin fails for `v13/audio_voice_cues.py`; migration tests return PARTIAL instead of UPDATED. No microphone evidence.
+- **#2362 arithmetic:** staged tests fail because the arithmetic composer pins the previous `arithmetic_reflex.py` source. The isolated parser test claim does not prove runtime integration.
+- **#2360 temporal bodyview:** stacked on #2343 and 4 success / 11 failures; no actual B1/B2 prompt consumption.
+- **#2350 native probe byte integrity:** 18/18 green but stacked on #2332 and diagnostic-only; it is not a trained latent channel.
+
+No candidate was merged or deployed. Private #593 HEALTH and #594 LEARNING_STATUS are UNAVAILABLE despite #591 pipeline metadata being UP_TO_DATE. User action remains NONE.
