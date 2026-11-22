@@ -339,6 +339,13 @@ def test_action_intent_history_is_session_scoped_restartable_and_non_authoritati
     # Bind the signed fixture to this exact request. Reusing SUCCESS_RECEIPT
     # would correctly fail because its digest belongs to com.example.app.
     request = transport.submitted[-1]
+    assert request["args"]["package"] == "com.example.private_app"
+    source_message = runtime.store.one(
+        "SELECT text FROM messages WHERE event_id=? AND role='user'",
+        (pending["source_event_id"],),
+    )
+    assert source_message["text"] == "Operator requested launch_app"
+    assert "com.example.private_app" not in source_message["text"]
     body = {
         **BODY,
         "action_id": action_id,
