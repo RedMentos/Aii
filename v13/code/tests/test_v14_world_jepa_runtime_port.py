@@ -1176,3 +1176,29 @@ def test_bodyview_jepa_receiver_fails_closed_without_checkpoint_and_when_lock_bu
         assert "world_jepa" not in busy["view"]
     finally:
         store.close()
+
+
+def test_bodyview_jepa_receiver_action_support_uses_train_ids_only():
+    from v13.world_jepa_receiver_matrix import _train_split_action_support
+
+    active = {
+        "train_ids": ("train-simple", "train-detail", "train-detail-2"),
+        "experience_rows": [
+            {"action_id": "train-simple", "a": "simple"},
+            {"action_id": "train-detail", "a": "detail"},
+            {"action_id": "train-detail-2", "a": "detail"},
+            # This holdout row must not increase the simple-action support.
+            {"action_id": "heldout-simple", "a": "simple"},
+        ],
+    }
+    assert _train_split_action_support(active, ("simple", "detail")) == {
+        "simple": 1, "detail": 2
+    }
+    duplicate = {
+        "train_ids": ("train-simple",),
+        "experience_rows": [
+            {"action_id": "train-simple", "a": "simple"},
+            {"action_id": "train-simple", "a": "simple"},
+        ],
+    }
+    assert _train_split_action_support(duplicate, ("simple",)) is None
