@@ -1,7 +1,8 @@
 """Narrow Termux ContentProvider client for the separately installed Android companion.
 
-This module invokes only the fixed Android `content call` command, without a
-shell. It cannot approve, execute, or grant an action; the companion UI does that.
+No method in this module approves, executes, or grants an Android action. The
+screen-frame read is a one-use pipe from the paired companion and is bounded
+to the signed MediaProjection receipt's maximum size.
 """
 from __future__ import annotations
 
@@ -15,6 +16,8 @@ from typing import Callable
 
 
 URI = "content://com.redmentos.v14.companion"
+MAX_FRAME_BYTES = 8 * 1024 * 1024
+_FRAME_URI = re.compile(r"content://com\\.redmentos\\.v14\\.companion/ui-frame/([0-9a-f]{32})\\Z")
 _PAYLOAD = re.compile(r"payload_b64=([A-Za-z0-9+/=]+)")
 
 
@@ -43,7 +46,10 @@ class AndroidCompanionTransport:
     def _call(self, method: str, value: str | None = None) -> dict:
         if self.content_path is None:
             raise CompanionTransportError("Android content command unavailable")
-        if method not in {"capabilities", "public_key", "submit", "outcome", "pending", "cancel"}:
+        if method not in {
+            "capabilities", "public_key", "submit", "outcome", "pending",
+            "cancel", "screen_frame_status",
+        }:
             raise CompanionTransportError("unsupported companion method")
         command = [self.content_path, "call", "--uri", URI, "--method", method]
         if value is not None:
@@ -57,7 +63,7 @@ class AndroidCompanionTransport:
             raise CompanionTransportError(type(exc).__name__) from exc
         if result.returncode != 0:
             raise CompanionTransportError("Android content call failed")
-        output = (result.stdout or "") + "\n" + (result.stderr or "")
+        output = (result.stdout or "") + "\\n" + (result.stderr or "")
         if len(output) > 65536:
             raise CompanionTransportError("companion response too large")
         match = _PAYLOAD.search(output)
@@ -105,3 +111,33 @@ class AndroidCompanionTransport:
 
     def pending(self) -> dict:
         return self._call("pending")
+
+    def screen_frame_status(self) -> dict:
+        """Read metadata for the current one-shot frame; does not consume its bytes."""
+        return self._call("screen_frame_status")
+
+    def read_frame(self, frame_uri: str, *, max_bytes: int = MAX_FRAME_BYTES) -> bytes:
+        """Read exactly one paired ContentProvider frame pipe, never an arbitrary URI."""
+        if self.content_path is None:
+            raise CompanionTransportError("Android content command unavailable")
+        if type(max_bytes) is not int or not 1 <= max_bytes <= MAX_FRAME_BYTES:
+            raise CompanionTransportError("invalid frame byte bound")
+        match = _FRAME_URI.fullmatch(frame_uri) if isinstance(frame_uri, str) else None
+        if not match:
+            raise CompanionTransportError("invalid one-shot frame URI")
+        command = [self.content_path, "read", "--uri", frame_uri]
+        try:
+            result = self.runner(
+                command, capture_output=True, text=False,
+                timeout=max(self.timeout, 10.0), check=False,
+            )
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            raise CompanionTransportError(type(exc).__name__) from exc
+        if result.returncode != 0:
+            raise CompanionTransportError("Android one-shot frame read failed")
+        raw = result.stdout or b""
+        if isinstance(raw, str):
+            raw = raw.encode("latin-1", errors="strict")
+        if type(raw) is not bytes or not 1 <= len(raw) <= max_bytes:
+            raise CompanionTransportError("one-shot frame byte length is outside the signed bound")
+        return raw
