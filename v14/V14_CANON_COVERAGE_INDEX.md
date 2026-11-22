@@ -2346,3 +2346,10 @@ The historical 1,255-heading Canon inventory above is unchanged. This overlay re
 | Android / Redmi | Installed base remains aed1d2b; auto-updater metadata is up to date. | Private V13OBS #115 still reports zero valid B1/B2 offers and slow C3 prefill; #2372 is not released. | Real Redmi consumer, persistent learning, native body-weight delta, restart/rollback, 20-turn correctness/latency/RSS. | BASE_INSTALL_VERIFIED / JEPA_FEATURE_REDMI_UNVERIFIED |
 
 **Environment:** LOCAL_LINUX full repository tests BLOCKED / NOT_RUN (no checkout; GitHub DNS resolution failed). Exact GitHub Actions runs are QUEUED, not PASS. No Android test, native GGUF weight update, trained cross-organ latent transfer or release acceptance is claimed. Historical 1,255-heading Canon inventory is unchanged.
+
+
+### Run 19 continuation addendum (2026-11-22T21:06:00Z)
+
+| Canon family | Current implementation / consumer | Exact evidence | Remaining gap | Status |
+|---|---|---|---|---|
+| SleepRuntime temporal paging | Scheduler records temporal_status and requeues when either base or temporal JEPA consumer reports has_more. | PR #2372 commits ebd58266 and dbb7b143; regression covers base caught up / temporal page remaining. No exact-head workflow or status is visible yet. | Exact staged/integrated and Python 3.13/3.14 tests; real long-stream Android continuation. | CODE_PRESENT / CI_NOT_VISIBLE / REDMI_UNVERIFIED |
