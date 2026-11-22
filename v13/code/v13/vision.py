@@ -372,7 +372,7 @@ def status(runtime):
             'tile_projector':{k:tp[k] for k in ('n','salient_tiles','encoder','created')} if tp else None}
 
 def operator_command(runtime,args):
-    """:image [status|add <Pfad> [Label]|list|describe [id|last] [g|rIJ|hl|hr|ht|hb|qtl|qtr|qbl|qbr]|train|tiles|look [id|last]|locate <id|last> <Text>|find <id|last> <Text>|teacher on|off|forget <id>]"""
+    """:image [status|add <Pfad> [Label]|list|describe [id|last] [g|rIJ|hl|hr|ht|hb|qtl|qtr|qbl|qbr]|train|tiles|look [id|last]|locate <id|last> <Text>|find <id|last> <Text>|ask <id|last> <Frage>|teacher on|off|forget <id>]"""
     a=args[0] if args else 'status'
     if a=='status':return status(runtime)
     if a=='add':
@@ -389,6 +389,10 @@ def operator_command(runtime,args):
     if a=='find':
         if len(args)<3:raise ValueError(':image find <id|last> <Text>')
         return find(runtime,_find(load(runtime.store),args[1]),' '.join(args[2:]))
+    if a=='ask':
+        if len(args)<3:raise ValueError(':image ask <id|last> <Frage>')
+        from .vision_runtime_bridge import submit_question
+        return submit_question(runtime,_find(load(runtime.store),args[1]),' '.join(args[2:]))
     if a=='teacher':
         if len(args)!=2 or args[1] not in ('on','off'):raise ValueError(':image teacher on|off')
         return teacher_switch(runtime.store,args[1]=='on')
@@ -399,4 +403,4 @@ def operator_command(runtime,args):
     if a=='forget':
         if len(args)!=2:raise ValueError(':image forget <id>')
         return forget(runtime.store,_find(load(runtime.store),args[1]))
-    raise ValueError(':image [status|add <Pfad>|list|describe [id] [g|rIJ|hl|hr|ht|hb|qtl|qtr|qbl|qbr]|train|tiles|look [id]|locate <id> <Text>|find <id> <Text>|teacher on|off|forget <id>]')
+    raise ValueError(':image [status|add <Pfad>|list|describe [id] [g|rIJ|hl|hr|ht|hb|qtl|qtr|qbl|qbr]|train|tiles|look [id]|locate <id> <Text>|find <id> <Text>|ask <id> <Frage>|teacher on|off|forget <id>]')

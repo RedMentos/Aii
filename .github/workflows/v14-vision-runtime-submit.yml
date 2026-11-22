@@ -1,0 +1,31 @@
+name: V14 vision runtime submit
+on:
+  pull_request:
+    paths:
+      - "v13/code/v13/vision.py"
+      - "v13/code/v13/vision_runtime_bridge.py"
+      - "v13/code/tests/test_vision_runtime_bridge.py"
+      - ".github/workflows/v14-vision-runtime-submit.yml"
+  push:
+    branches:
+      - "research-perception/v14-vision-runtime-submit-20261122-run11"
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: \${{ matrix.python-version }}
+      - name: Install focused test dependency
+        run: python -m pip install --upgrade pip pytest
+      - name: Compile exact changed modules
+        run: python -m py_compile v13/code/v13/vision.py v13/code/v13/vision_runtime_bridge.py
+      - name: Run source-bound A5/A4/Runtime tests
+        env:
+          PYTHONPATH: v13/code
+        run: python -m pytest -q v13/code/tests/test_vision_runtime_bridge.py
