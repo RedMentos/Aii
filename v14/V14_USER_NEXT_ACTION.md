@@ -1430,3 +1430,5 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 ## Core pin-generation correction — 2026-11-22
 
 Boss comment #7072186155 clarified that Record-Only control_guard.apply_sources() rewrites both world_semantic_evidence_candidate.py and the local-error consumer pin. The correct expected value for the later Store rebind is therefore the GUARD-OUTPUT local-error pin, not the original base pin. Sequence: capture guard_semantic_sha and guard_local_error_pin immediately after the guard; assert equality; after Store rebind, rebind from guard_local_error_pin to final_semantic_sha; keep the final exact-pin check. Perception corrected its follow-up comment #7072323336 accordingly. No Core-owned file was changed.
+
+Epic acceptance evidence for this Perception checkpoint is linked in #1984 comment 7072368983. User action remains none.
