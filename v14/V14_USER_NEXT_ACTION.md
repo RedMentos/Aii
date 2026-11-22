@@ -1751,3 +1751,13 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 4. JEPA/Memory only then evaluates a compact adapter with source-disjoint holdout, OOD, old-session retention, restart and rollback.
 
 **Release:** NOT_RELEASED. **Redmi:** installed SHA aed1d2 / updater UP_TO_DATE, but the last recorded chat is slow and B1/B2 still time out; visual and latent acceptance REDMI_UNVERIFIED. **User action: NONE.**
+
+
+### RAW EAR signed one-shot audio ingress — current Perception branch
+
+- [PR #2312](https://github.com/RedMentos/Aii/pull/2312), exact code head `5221314d3c01ab6d874ecc0a8b8ff72c34e504a2`, is the 44.1-kHz mono PCM16 Termux-side signed receipt consumer. It verifies the pinned P-256 receipt, source/generation, exact PCM geometry/hash, monotonic interval, RECORD_AUDIO status, local consent, FINAL provenance and one-shot nonce/request replay, then calls the existing `audio_input.submit_audio_only` path. It persists replay metadata only; no PCM, transcript, speaker identity, weight, T8 or action authority.
+- Dedicated signed-consumer CI run `44992975596`: SUCCESS. Staged/integrated run `44992975599`: FAILURE in two inherited migration assertions (expected `last_result=UPDATED`, observed `PARTIAL`; 238 passed / 10 skipped / 47 subtests). This is a QA/Core updater migration blocker, not a signed-consumer unit failure. Do not weaken the migration assertions.
+- PR #2310 is the stale 16-kHz predecessor; do not merge it or keep divergent copies. #2312 is the 44.1-kHz successor and remains stacked on QA #2286; rebase/deduplicate `audio_input.py` from #2304 after the parent chain is integrated.
+- Android provider remains absent: no AudioRecord, visible RECORD_AUDIO permission flow, foreground capture lifecycle, AudioRecordingCallback, or real microphone feed. The 44.1-kHz choice follows Android's official AudioRecord guarantee; it does not prove hardware capture. No Termux/Redmi microphone test was run.
+- Next: Core/QA implement the explicit one-shot AudioRecord provider and fix the shared migration failure; Perception then rebases #2312 and runs the composed RAW EAR → A5 → A4 → C3 chain.
+- Status: signed consumer CI PASS / staged migration FAIL / provider absent / REDMI_UNVERIFIED. No user action, device action or model change.
