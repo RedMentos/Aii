@@ -12,7 +12,7 @@ import hashlib
 import json
 import math
 
-from .contracts import packet
+from .contracts import packet, validate
 from .common import atomic_write, dumps, file_hash
 
 ROLES = ("B1_DETAIL", "B2_GIST")
@@ -176,6 +176,7 @@ def load_pair(cognition, pair_packet):
         (pair_packet.get("packet_id"),))
     if not stored or json.loads(stored["payload"]) != pair_packet:
         raise ValueError("B3 pair packet is not the stored immutable record")
+    validate("B3PairedTapPacket", pair_packet)
     if pair_packet.get("packet_schema") != SCHEMA:
         raise ValueError("B3 pair schema mismatch")
     source = pair_packet["source_ref"]
