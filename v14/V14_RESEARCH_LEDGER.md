@@ -943,6 +943,17 @@ This correction supersedes older branch-level status claims without deleting the
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
 
 
+### R-075 provenance hardening — checkpoint hash is computed, not asserted (2026-11-22)
+
+The FASTDIAR component was tightened after review found that the first adapter revision only checked the syntax of a caller-supplied SHA256 string. The adapter now opens the actual checkpoint beneath a caller-trusted model root using directory-relative file descriptors with O_NOFOLLOW/O_DIRECTORY, rejects paths outside the root, symlinked path components, non-regular/empty/oversized files, and detects file metadata changes during hashing. The emitted model_sha256 is computed from the bytes read; callers can no longer attach an arbitrary well-formed digest.
+
+**Important limit:** this verifies which local file was hashed, not that the caller-supplied embedding matrix was genuinely produced by that checkpoint. The embeddings remain caller-supplied; no FASTDIAR inference, weight download, checkpoint redistribution or model selection occurred. A4 remains DEFER, with no speaker identity, learning or action authority.
+
+**LOCAL_LINUX evidence:** CPython 3.13.5 x86_64 isolated helper reproduction, exact algorithm shape, 7/7 tests PASS: byte-for-byte SHA, NumPy float16 matrix acceptance, outside-root path, empty file, final symlink, symlinked parent directory, pinned revision and timestamp bounds. This is not the full Aii checkout or the committed A5/A4/C3 consumer test. Full local consumer test BLOCKED because the worker has no checkout and GitHub DNS resolution is unavailable. Exact PR Python 3.13/3.14 CI is pending on the live PR branch; code commit is `9428380b4d47e7297e42774c0eefdedb34effe33`, test commit is `114c971ee37a9ff81f86db9cb87fad389c83c10b`. Documentation-only follow-up commits may advance the branch head; read the current PR head before review.
+
+**Compatibility boundary:** platforms without dir_fd, O_NOFOLLOW or O_DIRECTORY fail closed. Android/Termux support and ARM timing have not been measured. FASTDIAR checkpoint-weight license remains unresolved; do not download weights.
+
+
 ## R-080 — Source-bound RAW EYE image ingress into A5/A4/C3 candidate context (2026-11-22)
 
 **Existing implementation reused:** V13 WP-N15 `v13/code/v13/vision.py` (revision `wp-n15-vision-v1`) already provides content-addressed IMAGE sources, exact region SourceRefs, 37-dimensional handcrafted tile features, border-relative salience and an optional student/teacher lab. The uncovered gap was that those features did not produce an A5 PerceptPacket or a bounded current-turn context candidate.
