@@ -1246,3 +1246,10 @@ Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, mi
 - **CI:** exact PR Python 3.13/3.14 RAW EAR/RAW EYE, staged-runtime, integrated-regression, privacy and offline bridge checks were queued at last read. Do not promote until exact-head CI finishes.
 - **REDMI:** NOT_RUN / REDMI_UNVERIFIED. The visual adapter is still not invoked by normal Runtime; no Android camera/screen capture, teacher/VLM, trained projector, semantic recognition or phone result.
 - **Next:** review exact CI and the two committed barrier regressions; then hand the source-lifecycle contract to Core for normal Runtime invocation. No user action or deployment requested.
+
+
+## Research follow-up R-081 — surprise-gated audio episodic memory — 2026-11-22
+
+- Fully reviewed the 12-page arXiv preprint `2611.20819v1` (arXiv record 2026-11-16; PDF title page says 2026-09-26). Its full-buffer replay and novelty-gated assign/defer/create policy are relevant to A4 attention and audio episodic memory, but the useful output is end-of-meeting revisable diarization; causal-strict labels are poor due to cluster renumbering. The study is single-seed on three AMI meetings and five VoxConverse sessions; no code/checkpoint license or Redmi result is linked.
+- Candidate experiment only: use existing source-bound synthetic speaker evidence to compare fixed threshold, calibrated three-regime novelty gate and no-gate; ablate full-history vs sliding-window vs no replay; measure false-new, re-ID across silence, overlap deferral, source-disjoint AUROC, latency and session deletion. Keep it separate from JEPA weight learning and don't delay live C3 output.
+- No model/dependency/weight downloaded or changed. Do not select FASTDIAR weights until a separate checkpoint-weight license is clear.
