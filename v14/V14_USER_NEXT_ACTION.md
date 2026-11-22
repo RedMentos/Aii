@@ -1,3 +1,28 @@
+# Current next action — 2026-11-22 02:25 CET (QA activation journal exact-head refresh)
+
+**User action: none. Do not run Termux or change installed models, weights, permissions, Age, updater settings, SQLite or chat data.**
+
+## Current QA candidate
+
+- Boss integration candidate remains `boss/v14-recall-store-pin-rebind-20261122` at `f0d3c848dfb1d65e282f065233adbe3c9205e439`, DRAFT / NOT_RELEASED.
+- QA [PR #2295](https://github.com/RedMentos/Aii/pull/2295), branch `qa/v14-activation-journal-20261122`, code/test commit `38b2c55627ea62959a55095a9bfb8d10defda0b9`, adds a durable launcher + runtime-marker transaction journal, parent-directory fsync, idempotent recovery/rollback, a runtime-only rollback API/CLI, and pending-journal detection in `needs_deploy()`.
+- Exact-head [runtime-deploy integrity](https://github.com/RedMentos/Aii/actions/runs/44971098511) PASS on Python 3.11 and 3.14: 43 tests per interpreter (9 activation-journal + 3 deploy-integrity + 31 runtime-deploy). [Private bridge tests](https://github.com/RedMentos/Aii/actions/runs/44971096994) PASS.
+- [Staged/integrated regression](https://github.com/RedMentos/Aii/actions/runs/44971098478), [Lab-Age](https://github.com/RedMentos/Aii/actions/runs/44971098466), and [two-checkout migration](https://github.com/RedMentos/Aii/actions/runs/44971098456) FAIL at `termux_runtime_recovery_candidate_20261112.py:313`: `local-error pre-rebind semantic binding mismatch`. The Python 3.14 staged-startup subjob in [owner-read](https://github.com/RedMentos/Aii/actions/runs/44971098475) fails on the same issue; its separate owner-read subjob succeeds. Migration returns PARTIAL because staged runtime cannot be built. These are the independent Boss #2288 source-pin defect, not regressions in #2295.
+- Refined pin invariant posted on #2288 and [whole-Canon issue #1984](https://github.com/RedMentos/Aii/issues/1984): **base → guard-output → final-output**. Preserve the original/base pin for provenance if useful; immediately after `control_guard.apply_sources()`, capture the actual guard-output semantic SHA and local-error pin and assert they match; after the later Store rebind, rebind from that captured guard-output pin to the final semantic SHA. Do not compare the guard-generation pin to the post-Store hash or weaken validation.
+- Private PIPELINE_STATUS [#454](https://github.com/RedMentos/Aiiii/issues/454) expired at 2026-11-22 01:24:53 UTC with zero authenticated replies. Installed SHA and updater consent remain UNKNOWN. No duplicate relay request, LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, remote shell or device mutation. **REDMI_UNVERIFIED / NOT_RELEASED.**
+- Full local Aii checkout: BLOCKED. No Android/Redmi runtime, rollback, native model, voice, PSS/TTFT or 20-turn test was performed.
+
+## Remaining integration
+
+1. Boss repairs the base→guard-output→final semantic pin chain on #2288 and reruns the full exact-head release gate.
+2. QA rebases/combines #2281 Age/X10 rights and #2295 crash journal onto that exact candidate.
+3. Wire `rollback()` and pending-journal recovery into the pipeline worker under the existing owner consent, graceful stop, audit and resume path. Runtime CLI/API is present; pipeline/UI integration remains open. Dashboard rollback remains explicitly unimplemented.
+4. Rerun Python 3.11/3.14 first-install/second-deploy, process death after launcher replacement, marker replacement and marker unlink, committed recovery, backup/journal tamper, busy/active-runtime refusal, two-checkout migration and restart.
+5. Only after exact CI is green, use the authorized normal update path and obtain a separate owner-authenticated phone receipt. GitHub push or Linux CI is not Redmi deployment proof.
+
+No model/weight swap, permission change, Age change, updater setting change, shell action or device mutation was performed.
+---
+---
 # Current next action — 2026-11-22 02:19 CET (QA crash-safe activation)
 
 **User action: none. Do not run Termux or change installed models, weights, permissions, Age, updater settings, SQLite or chat data.**
