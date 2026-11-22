@@ -99,7 +99,23 @@ class UtilityTests(Base):
         loaded_pending=self.c._load()[0].get('pending',{}).get(eid,[])
         self.assertEqual(loaded_pending,pending,
                          f"Callosum instance sees different persisted pending state: {loaded_pending!r} vs {pending!r}")
-        res=self.c.outcome(eid,[recv['packet_id']],'FINAL');self.assertEqual(res['scored'],1);self.assertGreater(res['utilities'][0],1.)
+        original_one=self.r.store.one
+        outcome_queries=[]
+        def traced_one(sql,params=()):
+            result=original_one(sql,params)
+            if "packets WHERE id=?" in sql or "kind='OfferPacket'" in sql:
+                outcome_queries.append({'sql':sql,'params':params,'result':result})
+            return result
+        self.r.store.one=traced_one
+        try:
+            res=self.c.outcome(eid,[recv['packet_id']],'FINAL')
+        finally:
+            self.r.store.one=original_one
+        self.assertEqual(res['scored'],1,
+                         f"Callosum outcome trace: result={res!r}; queries={outcome_queries!r}; "
+                         f"method={self.c.outcome.__func__.__code__.co_firstlineno}; "
+                         f"module={self.c.__class__.__module__}")
+        self.assertGreater(res['utilities'][0],1.)
         q=self.c._load()[0]['dirs']['B1_TO_B2']['u']['SOURCE_EXACT'];self.assertEqual(q['n'],1);self.assertIn('task_gain',q['parts'])
         self.assertEqual(C.on_rating(self.r.store,eid,10)['updated'],1)
         doc=b3_doctor(self.r)['B1_TO_B2'];self.assertEqual((doc['latent_level'],doc['status'],doc['injection_level']),('unavailable','PASS',0))
