@@ -2139,3 +2139,108 @@ Negative boundary: no real native B1/B2 useful offers, correct 2+2, 20-turn Redm
 ## Boss exact-head follow-up — 2026-11-22T10:00:40.871Z
 
 PR #2331 current head 535eba6f668b3990416c361368f36e3e8f1e599e is DRAFT/NOT_RELEASED. Its exact matrix is 9 failures, 4 in progress, 2 queued, 4 success, 1 skipped. Six source-composition pins are inconsistent: memory-world→feedback, feedback→context-recall, lifecycle composer→memory-world, memory.py→lifecycle composer, recovery21→stage, stage→runtime deployer. See Boss review comment 7077507340 for full byte-derived hashes. No source-forget or numeric learning acceptance is established. The current b3b92 release branch has 40/40 push check-runs and 29/29 workflow runs SUCCESS; private #520 still reports the phone on 283ac1c9 / CI_WAIT and #519 queued. This overlay changes no Canon requirement and no master bytes.
+
+
+---
+
+## QA & Android evidence overlay — 2026-11-22T11:41:17.374Z (append-only; historical 1,255-heading inventory preserved)
+
+This overlay updates proof status only. It does not edit the V14 master, historical V13 Canon, or any implementation requirement. A code file, test fixture, synthetic staged consumer, Linux CI result, device installation receipt and accepted product capability are distinct proof levels.
+
+### Exact release and device boundary
+
+- Current release branch `gpt6/v13-private-remote-bridge-20261111`: `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`.
+- Exact SHA Actions readback: 30 observed workflow runs, all SUCCESS. Earlier Boss integration #2288 merged at `39b175521f50048f13ca14372b316de47527f531`; its exact code head `1105ab56dae6604d927fc4ea868121000010fb93` had 20 SUCCESS / 0 FAILURE / 1 expected SKIPPED / 1 cancelled. The later current release head is c4eb82.
+- Authenticated private PIPELINE_STATUS #544: exact c4eb82 installed; auto-update enabled; runtime/dashboard UP_TO_DATE; last_error NONE. This proves installation/update state, not product acceptance.
+- Authenticated DIAGNOSTICS #545 repeats the last stored turn: FINAL, 56.43 s total, 40.82 s TTFT, 39.09 s prefill, 701 admitted prompt tokens, 2 generated tokens. Correctness is UNKNOWN because content was not scored. No new user turn was triggered by this QA check.
+- Native probe remains SMOKE_PARTIAL: B1_DETAIL and B2_GIST TIME_BUDGET at 53.2 s / 54.2 s; C3 3.1 s. Instant process snapshot: 3 mapped native processes, 285.8 MiB PSS (B1 58.8, B2 145.7, C2 81.3, C3 0 at that instant). PSS is not free RAM and this is not sustained residency.
+- No 20-turn mixed acceptance, correct-answer benchmark, source-bound offer-consumption trace or rollback/reboot test is available. Redmi is installed but whole-system acceptance remains OPEN.
+
+### Whole-Canon proof matrix — QA & Android readback
+
+| Canon family | Current code / consumer evidence | Exact tests / environment | Missing acceptance | Classification |
+| --- | --- | --- | --- | --- |
+| A0–A5 perception / RAW EAR | Source-bound FIR feature decimator and staged A5→A4→C3 consumer are in the merged Boss integration; libfvad remains a research comparator only (R-077/R-079). | Boss #2288 exact PR head CI passed; current c4eb82 exact release CI passed. | No real AudioRecord source, annotated real-speech corpus, ARM/Redmi acoustic latency or microphone consent receipt. | CODE_PRESENT / WIRED_SYNTHETIC / ANDROID_UNVERIFIED |
+| B1_DETAIL + B2_GIST | Distinct model routes and fair observer/sender path are retained. Core #2338 proposes budgeted pre-answer slices without dropping either body. | #2338 exact head `6664c3e6`: staged/integrated fails a runtime.py source pin; focused native_turn_budget fixture fails `KeyError: source_ref`; A5 UI lease Python 3.13/3.14 fails the store.py source pin. | Current phone still reports both B1/B2 TIME_BUDGET. No useful native OfferPacket pair delivered and consumed by C4/C3; no 20-turn correctness/latency acceptance. | CODE_PRESENT / CI_BLOCKED / NATIVE_ACCEPTANCE_OPEN |
+| B3 / Enlightened Space | #2323 is a diagnostic native input-embedding receiver; #2332 adds a bounded one-shot owner-confirmed command allowlist. | #2332 private-bridge, owner-read and staged/integrated checks pass; safe-additive validator is skipped by policy and release-event queue is cancelled on PR event. | No native probe executed; no paired native taps, source-disjoint training labels, trained projector, held-out utility, parity/shuffled/zero/OOD controls or retention. Production B3 stays OFF/SYMBOLIC. | DIAGNOSTIC_ONLY / PROBE_NOT_RUN / PRODUCTION_OFF |
+| C / JEF / C3 output | Existing Runtime produces a FINAL turn; staged same-turn C4→C3 source-read tests exist. | DIAGNOSTICS #545: 56.43 s / 40.82 s TTFT / 2 tokens. Current synthetic CI does not substitute for native model correctness. | No scored correct-answer set, no 20-turn p50/p95 TTFT/total, no proof that native B1/B2 offers changed C3's answer. | WIRED_SYNTHETIC / REAL_DEVICE_METADATA_ONLY / NOT_ACCEPTED |
+| World / Self / Memory / JEPA | c4eb82 adds rollback-checkpoint retention and independent-process WorldJEPA flock regressions; source-forget is guarded against deleting a rollback-retained source. | Exact c4eb82 staged/integrated and Python-version CI passed; test fixture is synthetic Store/model data. | No Redmi numeric weight update, optimizer/checkpoint retention on device, full sleep/replay cycle, accepted unlearning or user-visible before/after task utility. JEPA #2331 still has 9 exact-head failures from nested source pins. | WIRED_SYNTHETIC / CI_PASS / NATIVE_LEARNING_NOT_ACCEPTED |
+| Context OS / Memorilla | Context and source-recall code paths remain in the V14 stack; optional Memorilla companion remains additive research/SHADOW. | Source/pin integration is checked by CI; no production consumer receipt from current phone. | No demonstrated overflow-context synthesis consumer with durable source pointers and role-specific learning; no accepted Memorilla production path. | CODE_PRESENT / CONSUMER_ACCEPTANCE_OPEN |
+| Voice / Audio | Signed caller-supplied PCM16 ingress and RAW EAR feature processing exist; these are not a microphone provider. | Audio/consent CI on Boss candidate only; no physical Android microphone test. | No Android AudioRecord provider, ASR, trainable speech decoder/vocoder, full-duplex/barging, audio replay learning or real microphone consent/revocation receipt. #2312 is a signed PCM consumer, not AudioRecord. | PCM_CONSUMER_PRESENT / MICROPHONE_NOT_IMPLEMENTED |
+| Android app/UI/background control | Core companion has a default-OFF, per-action-consent `launch_app` path and Keystore receipts. QA #2342 changes pairing persistence to a checked synchronous commit. | #2342 exact code head `ab99ad94`: Android Gradle/Robolectric PASS (run 45018041741); private bridge PASS (45018031307); exact helper independently compiled with JDK 21 `javac --release 17` and 10 positive/negative assertions PASS. No blocking defect found in scoped QA readback; GitHub self-approval was rejected because the linked account authored the PR, so independent Boss/Core review remains required. | No APK installed, no Redmi app launch/pairing, screen observation, AccessibilityService, tap/swipe/type/back, notification lifecycle, background executor, or device receipt. All unimplemented providers remain OFF. | CODE_PRESENT / CI_PASS / QA_REVIEW_NO_BLOCKER / ANDROID_UNVERIFIED |
+| Age / X10 / ResourceGuard | Official Age remains 0; lab selector records requested stage 10 and effective implementation stage 5. | DIAGNOSTICS #545 says physical_feature_execution_verified=false and learning commit authority requires separate SHADOW. | No proof of stage-10 physical feature execution; no Age-derived CPU/RAM/time budget. ResourceGuard remains separate from developmental rights. | CONFIG_METADATA_ONLY / PHYSICAL_EXECUTION_UNVERIFIED |
+| Runtime update / stop / rollback | CI-gated updater installed c4eb82 and reports UP_TO_DATE. | 30/30 observed c4eb82 Actions workflow runs SUCCESS; authenticated #544 installation receipt. | No Android process-death, service restart, reboot, dashboard rollback or runtime-only rollback receipt. Preserve models, SQLite and chats. | DEVICE_INSTALL_VERIFIED / LIFECYCLE_ROLLBACK_UNVERIFIED |
+| Canon preservation / semantic coverage | Master SHA `9748ad5ba9a4d4f5c3d004a0577141f6779fcbca`; historical V13 Canon blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7` remains byte-identical within the master. | 1,255-heading inventory retained; board/handoff updated by QA PR #2340. | Clause-level mapping from each locked requirement to code, real consumer, test, platform, negative control and rollback remains incomplete. | INVENTORY_PRESERVED / SEMANTIC_COVERAGE_INCOMPLETE |
+
+### Current QA queue and exact ownership
+
+1. **Core #2338:** Boss owns the coordinated runtime.py/store.py source-pin rebind and the `native_turn_budget` test fixture's missing `source_ref`. QA must not edit this shared pin chain in parallel. Keep DRAFT until Python 3.13/3.14, staged, integrated, A5 UI lease and migration gates all pass on one exact SHA.
+2. **JEPA #2331:** six nested source-builder pins still fail on its exact head; no optimizer/source-forget acceptance. Recompute bottom-up and rerun the full staged/integrated matrix.
+3. **Native receiver #2332:** the bounded command is not installed or executed. A future one-shot probe requires a separate explicit user decision after integration and exact device release receipt; do not bypass the allowlist.
+4. **Android companion #2342:** READY_FOR_REVIEW, CI green, but it only hardens pairing persistence. Integrate on the Core stack; then separately request permission for APK/device tests. It does not enable audio/UI/background providers.
+5. **Audio consumer #2312:** remains based on stale QA companion SHA `58666ddfc9945612a2117e1a844f812442d4ca64`; rebase after #2342/Core integration. Caller-supplied PCM16 is not microphone access.
+6. **Redmi acceptance:** after a stable integrated candidate, run 20 mixed turns (greeting, response, arithmetic, ambiguity, memory recall and source-grounded B1/B2 cooperation) and record correctness, source-bound offers attempted/delivered/consumed, p50/p95 TTFT/total, native prefill, RSS/PSS, crashes, residency and installed SHA. No such run has occurred in this checkpoint.
+
+### Environment and user-action boundary
+
+- LOCAL_LINUX full Aii suite: BLOCKED; no checkout is mounted and `git ls-remote` failed DNS. The isolated JDK 21 helper smoke is a real local test, not a full repository build.
+- CI, local Linux, native Android build, Android OS execution and Redmi receipts remain separately classified.
+- No model/weight download or swap, permission change, microphone enablement, shell, LOG_PAGE, UPDATE_REQUEST, CHAT_SEND or device mutation was performed by QA.
+- **User action required: NONE.** The current c4eb82 code is already installed and UP_TO_DATE; no manual Termux command is needed.
+
+
+
+
+## QA & Android whole-Canon overlay — 2026-11-22 run 13 (append-only)
+
+| Canon family | Current implementation / consumer | Exact evidence | Missing acceptance | Classification |
+|---|---|---|---|---|
+| A0–A5 perception / RAW EAR / voice | Caller-supplied PCM16 acoustic path and staged A5→A4→C3 consumer exist; signed one-shot audio consumer remains stacked. | c4eb82 exact commit 49/49 check-runs SUCCESS; no live microphone/capture receipt. | AudioRecord provider, microphone consent/revocation, real speech corpus, ASR/decoder/vocoder, full duplex and Redmi latency/thermal/PSS. | CODE_PRESENT / WIRED_SYNTHETIC / NOT_ANDROID_VERIFIED |
+| B1_DETAIL + B2_GIST | Distinct model routes retained; fair-budget changes remain in Boss PR #2343 and are not installed. JEPA numeric next-action prior is prompt-level SHADOW; B2 is conditional behind default-off b2_offer_body_state. | Private #575: B1/B2 both TIME_BUDGET 53.2/54.2 s. #2343 exact head has red staged/consumer jobs. | Correct useful native offers delivered and consumed by C4/C3 in the same turn; same-prompt reserve A/B; 20-turn correctness/TTFT/RSS. | CODE_PRESENT / CI_BLOCKED / REAL_REDM I_PROOF_ABSENT |
+| B3 / Enlightened Space | #2323 diagnostic native embedding receiver exists; #2346 paired-tap/L1 shadow branch remains draft. | CI/native-build checks only; Perception/QA reported symlink output-path escape on #2346. | Trained cross-organ projector, task utility/OOD/retention, source-bound activation exchange, safe artifact output and Redmi proof. | DIAGNOSTIC_ONLY / PRODUCTION_OFF |
+| C / JEF / C3 / answer | Existing C3 Runtime emits FINAL, but the last stored turn generated only 2 tokens after 41.627 s TTFT and 38.945 s prefill. | Private #575 authenticated diagnostics; no fresh CHAT_SEND or correctness scoring. | Accurate source-grounded answers, low TTFT, robust cancellation/streaming, true B1/B2 cooperation and 20 diverse accepted turns. | CODE_PRESENT / NATIVE_DEVICE_OBSERVATION / NOT_ACCEPTED |
+| World / Self / Memory / JEPA / Sleep | Persistent WorldJEPA checkpoint/EMA/replay/rollback and numeric B1/B2 receiver tests exist; source-forget JEPA guard is present. | #2345 receiver tests are synthetic SQLite/T8 + capture runner; #2343 exact consumer chain currently fails. | Live post-commit learning hook, multi-step A→B→A retention, full source-forget/promotion serialization, real gradients/retention and native weight proof. | WIRED_SYNTHETIC / CI_BLOCKED / WEIGHTS_UNVERIFIED |
+| Android agency / companion | Pairing durability, per-action consent, signed receipts, receipt-only recovery and stale-notification reconciliation are code-present in stacked companion PRs #2342/#2347. | #2342 2/2 CI; #2347 exact head 5/5 CI SUCCESS: Android Gradle 39/39 tasks, Python 3.13/3.14 51 tests each, staged 240/10/47, integrated 415/3/58, migration 42/37. No APK or Android device execution. | App/API observation, Accessibility/MediaProjection consent, tap/swipe/type/navigation, background executor, audit/stop/rollback and integrated brain loop. | CODE_PRESENT / CI_PASS / NOT_ANDROID_VERIFIED |
+| Age / learning rights | Official Age 0 remains separate from lab selector; current receipt says requested 10/effective 5, physical execution false, commit authority requires SHADOW. | Private #575 authenticated state; no learning permission change. | Implemented rights for stages 6–10, physical feature execution and real persistent weight updates with rollback. | CONFIG_PRESENT / IMPLEMENTED_STAGE_5 / NO_WEIGHT_PROOF |
+| Runtime install / recovery | Existing updater has installed c4eb82 and reports UP_TO_DATE; no candidate request sent. | Private #574 and 49/49 exact commit check-runs. | Post-merge push CI, candidate installation receipt, process-death/reboot, rollback and UI updater acceptance. | INSTALLED_BASE / CANDIDATE_NOT_RELEASED |
+
+**P1 integrity finding:** source-forget and non-JEPA generation promotion are not yet serialized as one atomic lifecycle. The exact #2343 code permits a prevalidated pending update to race with source tombstoning/artifact removal; see #2343 QA comment 7081633818. This is a code-inspected race, not a locally executed reproduction. Do not mark unlearning, source revocation or weight-promotion safety accepted until both barrier interleavings and the lock order are tested.
+
+**Whole-Canon boundary:** the 1,255 historical headings remain preserved; semantic clause→code→consumer→test→platform→rollback mapping is still incomplete. CI success, a private install receipt, prompt-level numeric SHADOW and a diagnostic native embedding probe are not whole-system acceptance.
+
+
+## B3 shadow-security and numeric-update follow-up — 2026-11-22
+
+| Requirement | Current exact evidence | Boundary | Classification |
+|---|---|---|---|
+| B3 paired B1/B2 capture + L1 shadow trainer | PR #2346 head 81d225af; focused workflow 45040617156 PASS, 52 tests, py_compile and CLI smoke. Descriptor-anchored O_NOFOLLOW directory traversal, private 0700 run directory and top-level/nested symlink negatives. | Synthetic paired-tap fixtures only; no real native paired activations, no Redmi capture. | CODE_PRESENT / FOCUSED_CI_PASS / NOT_ANDROID_VERIFIED |
+| B3 numeric adapter update | Per-epoch gradient norm, before/after SHA-256, nonzero per-tensor delta, exact save/reload, no-message identity; master B1/B2/C3/JEPA weights untouched. | Old-task role retention NOT_MEASURED; L0 baseline/utility gate and held-out native task evidence missing; no receiver injection. | SYNTHETIC_WEIGHT_UPDATE / SHADOW_ONLY / NO_PRODUCTION_AUTHORITY |
+| B3 integration | Shared staged/integrated, migration, JEPA, Lab-Age, native receiver and deployment checks remain queued/in progress on the current PR head. | Focused B3 PASS is not whole-PR merge readiness. | DRAFT / NOT_RELEASED |
+
+
+## B3 shared integration failure overlay — 2026-11-22
+
+Focused B3 paired-capture workflow 45040617156 remains PASS (52 tests, compile and CLI smoke). The exact #2346 shared matrix is nevertheless NOT_GREEN: Lab-Age E2E run 45040616984 fails at integrated builder hash mismatch; old-phone migration run 45040617024 returns PARTIAL instead of UPDATED in both cases while preserving model/SQLite sentinels. This is the same shared composition/migration blocker as #2343, not a failure of the B3 focused test. Keep #2346 DRAFT / NOT_RELEASED until the Boss-owned source chain is repaired and exact full matrix passes.
+
+
+## World/Self/Memory/JEPA temporal T8 overlay — 2026-11-22
+
+| Path | Current code / evidence | Missing proof | Classification |
+|---|---|---|---|
+| Temporal T8 sequence learner | PR #2351 adds contiguous history windows (length 2/3), explicit censored omissions, unknown-gap breaks, connected session/source split, EMA/Adam checkpoint state and B1/B2/SELF shadow readouts; SleepRuntime post-commit consumer is wired. | Exact PR CI queued; fixtures use synthetic T8 outcomes; no native model output, no prompt consumption, no body-weight change, no Android measurement. | CODE_PRESENT / WIRED_SYNTHETIC / CI_PENDING / SHADOW_ONLY |
+| Temporal rollback | rollback() restores the previous checkpoint and returns ROLLED_BACK in code. | Current tests only assert NO_ROLLBACK_CHECKPOINT; no two-successive-checkpoint rollback/restart/optimizer/readout identity regression. | CODE_PRESENT / POSITIVE_ROLLBACK_NOT_TESTED |
+| Source revocation vs weight promotion | #2351 moves _forget_source lineage checks inside combined JEPA/temporal guard and transaction. | Store.switch_generation still preflights outside its final transaction; reverse stale-row promotion race remains. Forget also releases Store.mutex before source/blob unlink, allowing concurrent Store.source publication between live-refcount check and unlink. Both are code-inspected, not locally reproduced; barrier tests required. | PARTIAL_GUARD / P1_DATA_INTEGRITY_OPEN |
+
+**Lock order:** JEPA/temporal file lock → Store RLock/SQLite. The Store RLock must cover the full forget transaction, artifact cleanup, final blob refcount and unlink; promotion preflight/commit must share the same Store RLock and revalidate update status and source liveness in its final transaction. Preserve the two barrier interleavings and positive rollback as acceptance tests.
+
+
+## B3 shared matrix expanded failure readback — 2026-11-22
+
+Focused B3 paired-capture run 45040617156 remains PASS (52 tests, compile, CLI smoke). On the same #2346 exact head 81d225af, four shared checks are now confirmed red:
+
+- Lab-Age E2E 45040616984: integrated builder hash mismatch.
+- Old-phone migration 45040617024: both cases return PARTIAL instead of UPDATED; model/SQLite sentinel bytes remain unchanged.
+- Staged/integrated 45040617185: integrated builder mismatch, idle-recovery operator source mismatch, online-world composition source mismatch, postcommit observer runtime mismatch; 35 failed / 215 passed / 10 skipped / 2 errors / 36 subtests.
+- Runtime deployment 45040617193: plain UI recovery builder changed under Python 3.11 and 3.14.
+
+JEPA transactional update, combined online JEPA, JEPA receipt integrity, role-specific tap provenance, privacy scan and offline bridge checks passed; same-turn B1/B2/C4/C3 was still in progress and audio/arithmetic/native latent receiver queued. These are shared integrated builder/recovery composition failures, not the focused B3 capture/trainer test. Keep #2346 DRAFT / NOT_RELEASED.

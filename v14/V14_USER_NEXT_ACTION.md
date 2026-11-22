@@ -1,3 +1,105 @@
+# QA & Android — temporal JEPA and source-lifecycle follow-up (2026-11-22)
+
+- JEPA/Memory PR [#2351](https://github.com/RedMentos/Aii/pull/2351), exact head 3df0c8a6a65dd2545bde62db92efc761d143032a, adds dense contiguous T8 temporal windows (history lengths 2/3), explicit censored omissions, unknown-gap breaks, connected session/source split, NumPy WorldJEPA + EMA/Adam/checkpoint persistence, and B1/B2/SELF shadow readouts. It is wired into SleepRuntime post-commit but has no prompt consumer or native body-weight effect. Synthetic Store/T8 fixtures only. Exact CI currently queued; PR is DRAFT / NOT_RELEASED.
+- #2351's positive temporal rollback method exists, but its current tests only exercise NO_ROLLBACK_CHECKPOINT; a two-checkpoint positive rollback/restart proof is still needed.
+- #2351 moves Memory._forget_source lineage checks into the combined JEPA+temporal guard and SQLite transaction. This closes the promotion-first stale-check direction, but the reverse prevalidated-promotion race remains because Store.switch_generation still preflights outside its final transaction and does not re-read update status/source liveness. A separate source-blob resurrection race remains because forget releases Store.mutex before refcount check/unlink while Store.source publishes under that same mutex. These are code-inspected, not locally reproduced; see [promotion race](https://github.com/RedMentos/Aii/pull/2343#issuecomment-7081736426) and [blob race](https://github.com/RedMentos/Aii/pull/2343#issuecomment-7081747233).
+- Boss PR [#2343](https://github.com/RedMentos/Aii/pull/2343) advanced to head 863e751ff5410dc555006c8aeb9ef6c7b28d2a88; its 19 exact-head checks are queued at last read. The new source-forget change is partial; no release or learning/unlearning safety acceptance yet.
+- B3 PR #2346 head 81d225af has focused workflow PASS (52 tests, py_compile, CLI smoke) and descriptor-anchored symlink-safe output, but shared Lab-Age and old-phone migration checks fail (integrated builder hash mismatch; migration PARTIAL). Keep DRAFT.
+- Companion #2347 is 5/5 exact CI SUCCESS but remains stacked on draft #2271 and NOT_RELEASED; pairing #2342 is 2/2 CI SUCCESS and also not installed.
+
+---
+
+# QA & Android — B3 shadow-security follow-up (2026-11-22)
+
+- PR [#2346](https://github.com/RedMentos/Aii/pull/2346) is now at exact head 81d225af972e8b3d6b645aba09cd01ccac5fa020. The earlier symlinked output-path issue has been addressed with descriptor-anchored O_NOFOLLOW traversal, private 0700 run directories and top-level/nested symlink negative tests.
+- Focused B3 workflow [45040617156](https://github.com/RedMentos/Aii/actions/runs/45040617156) PASS: 52 tests, touched-module py_compile and L1 CLI import/help smoke.
+- New synthetic L1 shadow tests measure per-epoch gradient norms, nonzero adapter parameter deltas, initial/final SHA-256, exact save/reload and no-message identity. Old-task role retention remains NOT_MEASURED; no real paired native taps, L0 acceptance, production injection or Redmi B3 training is proven.
+- The focused B3 workflow is green, but the shared exact-head integration matrix is not green: Lab-Age 45040616984 (integrated builder hash mismatch); old-phone migration 45040617024 (PARTIAL instead of UPDATED, sentinels unchanged); staged/integrated 45040617185 (integrated builder, operator, online-world and observer source/runtime pin failures; 35 failed / 215 passed / 10 skipped / 2 errors / 36 subtests); runtime deployment 45040617193 (plain UI recovery builder changed on Python 3.11 and 3.14). JEPA/receipt/tap-provenance/privacy checks pass; same-turn B1/B2/C4/C3 is still in progress, audio/arithmetic and native latent receiver are queued. #2346 stays DRAFT / NOT_RELEASED. No user action or device action is needed.
+
+---
+
+
+# QA & Android — current whole-Canon checkpoint (2026-11-22, supersedes older entries below)
+
+**No user action is required. Do not rerun Termux or send an UPDATE_REQUEST.** The existing authorized updater already reports the current release-development SHA installed; the candidate PRs below are not released.
+
+## Installed release and authenticated phone evidence
+
+- Release branch: `gpt6/v13-private-remote-bridge-20261111` = `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`.
+- Exact commit check-runs: **49/49 SUCCESS** (GitHub check-runs; not a post-merge push-CI receipt).
+- Private owner-read PIPELINE_STATUS [#574](https://github.com/RedMentos/Aiiii/issues/574): auto-update enabled, installed SHA c4eb82, runtime/dashboard `UP_TO_DATE`, `last_error=NONE`.
+- Private DIAGNOSTICS [#575](https://github.com/RedMentos/Aiiii/issues/575): last stored turn `FINAL`, 57.739 s total, 41.627 s TTFT, 38.945 s C3 prefill, 751 admitted prompt tokens, 2 generated tokens. This repeats the stored turn; no new turn was sent and correctness is UNKNOWN.
+- Same diagnostics: B1_DETAIL and B2_GIST both `TIME_BUDGET` at 53.2 s / 54.2 s; C3 probe 3.1 s; native probe `SMOKE_PARTIAL`. Four mapped process entries show 0.3 MiB PSS / 2.9 MiB RSS in this instant sample. This is not sustained model-weight residency or free RAM.
+- Private HEALTH [#576](https://github.com/RedMentos/Aiiii/issues/576) reports 1,352 MiB MemAvailable / 5,569 MiB total and 1,567 MiB disk free, but its runtime field is `UNAVAILABLE` while DIAGNOSTICS says RUNNING. Keep the two snapshots separate; the discrepancy is unresolved.
+- Official Age remains 0; lab request 10 / effective implemented stage 5; physical feature execution is false; learning commit authority still requires separate SHADOW. No model, weight, permission or learning setting was changed.
+
+## Current candidate branches — not released
+
+- Android companion QA PR [#2347](https://github.com/RedMentos/Aii/pull/2347), exact head `955cb4b3c37f2c054bd0fc4d6e26177e2d41a365`: adds recovery of a durable terminal receipt's stale approval notification, using the same action gate and preserving live approvals. Exact-head CI: **5/5 SUCCESS**. Android Gradle/Robolectric build succeeded (39/39 Gradle tasks); Python 3.13 and 3.14 each passed 51 companion outcome tests; staged-runtime passed 240 tests / 10 skipped / 47 subtests; integrated regression passed 415 tests / 3 skipped / 58 subtests; migration sub-suite passed 42 tests / 37 subtests. No local Android or Redmi proof. It remains stacked on draft Core #2271, default-OFF, NOT_RELEASED and not installed.
+- Termux pairing durability PR [#2342](https://github.com/RedMentos/Aii/pull/2342), head `24b8f9760939eccea6e877536027101204fe04f8`: exact Android Gradle/Robolectric and offline-security CI **2/2 SUCCESS**. It is a separate leaf stacked on #2271; no APK, pairing or Redmi test.
+- Boss fair-budget integration PR [#2343](https://github.com/RedMentos/Aii/pull/2343), exact head `55b76c4c79b24b5ac674366d6bcb32aa15ab1f9d`: NOT_READY. Staged/integrated, Lab-Age, JEPA Python 3.13/3.14, owner-read Python 3.14 and old-phone migration fail on integrated stage/source-builder composition; native-receiver and audio/arithmetic consumers also fail. QA has posted the exact job findings and is not editing the Boss-owned pin chain.
+- JEPA receiver PR [#2345](https://github.com/RedMentos/Aii/pull/2345) is represented in the Boss candidate; the B1/B2 addition is numeric prompt-level SHADOW, not native latent exchange. B2 prompt activation remains conditional because the production default is `b2_offer_body_state=false`; no default-active B2 delivery is proven.
+- B3 paired-tap/L1 shadow PR [#2346](https://github.com/RedMentos/Aii/pull/2346) remains draft and has failed exact-head checks; Perception/QA has reported a symlinked output-path escape requiring a no-follow, containment-checked output helper and negative test. No B3 training/receiver acceptance is claimed.
+
+## New QA findings
+
+- **P1 source-forget vs non-JEPA weight-promotion TOCTOU:** exact #2343 source inspection shows Memory._forget_source checks update lineage/active generation before the JEPA guard, while Store.switch_generation pre-reads update status/path/hash and validates the artifact before its final transaction. A concurrent forget can quarantine/delete the source/artifact between promotion preflight and commit; the final transaction currently rechecks only the active generation. This is a code-derived interleaving, **not locally reproduced**. Required fix: consistent lock order JEPA file lock → Store RLock/SQLite; re-read update row/status/manifest and require every manifest source_id still live inside the final promotion transaction; move forget's update/generation checks inside its guard and Store lock; add both barrier-driven interleavings. Full details are on [#2343 QA comment](https://github.com/RedMentos/Aii/pull/2343#issuecomment-7081633818).
+- Adjacent WorldJEPA lock issue: symlink check followed by ordinary open is a check-then-open race; use O_NOFOLLOW plus fstat regular-file validation.
+- The new companion notification reconciliation on #2347 addresses a different lifecycle gap: process death after a terminal receipt is committed but before notification cancellation. It never redispatches an action and is still CI-pending.
+
+## Environment and next steps
+
+- This execution container has no Aii checkout, Android SDK or Gradle. Full local Linux/Android companion tests are BLOCKED / NOT_RUN; GitHub CI is the only test evidence for these PRs. No APK was installed and no Redmi companion action was executed.
+- First finish exact-head staged/integrated CI on #2347; if green, hand it to Core/Boss for review on the companion stack. Do not merge or deploy independently.
+- Boss must clear #2343's exact source-pin/consumer failures and the P1 forget/promotion race before a release candidate or any learning/unlearning acceptance.
+- Whole-Canon acceptance remains open: correct native chat, useful B1+B2 offers consumed by C4/C3, trained B3 latent coupling, persistent weight learning/retention/rollback, voice capture/decoder/full duplex, Android screen/UI/background control, restart/update rollback, and semantic clause-to-consumer coverage.
+
+
+# QA & Android — fresh authenticated read-only Redmi checkpoint (2026-11-22T11:48:50.657Z)
+
+**Keine Nutzeraktion nötig.** Der bestehende Updater hat den exakten Stand bereits installiert. Kein Termux-Befehl, kein zweiter UPDATE_REQUEST und kein Modell-/Gewichts-/Rechtewechsel.
+
+- **Installation:** Private owner-authenticated PIPELINE_STATUS [#550](https://github.com/RedMentos/Aiiii/issues/550) bestätigt `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`, Auto-Update EIN, Runtime/Dashboard `UP_TO_DATE`, `last_error=NONE`. Die 30 beobachteten Actions-Runs für diesen SHA waren SUCCESS. Das ist Installationsbeleg, keine Funktionsabnahme.
+- **Aktueller Runtime-Snapshot:** DIAGNOSTICS [#551](https://github.com/RedMentos/Aiiii/issues/551) meldet Runtime, Service und Dashboard RUNNING. Der letzte gespeicherte Turn bleibt FINAL, aber langsam: 56,43 s gesamt, 40,82 s TTFT, 39,09 s Prefill, 701 Prompt-Tokens und nur 2 generierte Tokens. Korrektheit wurde nicht bewertet und bleibt UNKNOWN.
+- **B1/B2:** Native Probe bleibt `SMOKE_PARTIAL`; B1_DETAIL und B2_GIST endeten weiterhin bei 53,2/54,2 s mit `TIME_BUDGET`; C3-Probe 3,1 s. Es gibt keinen neuen Probe-Lauf und keinen Nachweis, dass echte native Offers in diesem Turn über C4→C3 konsumiert wurden.
+- **Speicher:** DIAGNOSTICS #551 zeigt einen einzelnen Moment-Snapshot mit 3 gemappten nativen Prozessen und 90,7 MiB PSS (B1 1,7; B2 88,7; C2 0,3; C3 0). PSS ist weder freier RAM noch ein Residency-/Peak-Benchmark. HEALTH [#549](https://github.com/RedMentos/Aiiii/issues/549) meldet 1.293 MiB MemAvailable von 5.569 MiB und 1.537 MiB freien Speicherplatz. HEALTHs Runtime-Feld ist `UNAVAILABLE`, während DIAGNOSTICS Runtime `RUNNING` meldet; diese getrennten Snapshot-Antworten werden nicht zu einer stärkeren Aussage zusammengezogen.
+- **Lernen/Age:** LEARNING_STATUS [#552](https://github.com/RedMentos/Aiiii/issues/552) meldet `UNAVAILABLE`. Offizielles Age 0; Teststufe 10, effektiv implementierte Stufe 5; physische Feature-Ausführung nicht bestätigt; Lern-Commit-Autorität benötigt separat SHADOW. Kein X10-/Weight-Learning-Erfolg belegt.
+- **Pairing-Leaf #2342:** Exact Android Gradle/Robolectric [run 45018041741](https://github.com/RedMentos/Aii/actions/runs/45018041741) PASS; private bridge [run 45018031307](https://github.com/RedMentos/Aii/actions/runs/45018031307) PASS. Der exakte Java-Helper wurde lokal mit JDK 21 / `javac --release 17` getestet: 10 positive/negative Assertions PASS. Keine Blockade im engen Pairing-Persistenz-Scope gefunden. GitHub verweigert eine Selbstfreigabe, weil derselbe Account Autor des PR ist; ein unabhängiges Boss/Core-Review steht noch aus. Kein APK-/Redmi-Test.
+- **Lokale Vollsuite:** BLOCKED, da kein vollständiger Aii-Checkout verfügbar ist und GitHub-DNS im lokalen Runner scheitert. Kein lokaler Full-Pytest- oder nativer Linux-Erfolg behauptet.
+- **Zusätzlicher Android-Companion-Lifecycle-Befund:** `ConsentActivity.finishWithReceipt()` kann nach einem erfolgreichen `EXECUTING`/`DENYING`-Claim beim Receipt-Signing oder `db.finish()` scheitern; `finally` entfernt trotzdem die Notification und beendet die Activity. Dann bleibt die DB-Zeile ohne Receipt in einem Claim-State, `outcome()` liefert `NOT_READY` und `pending()` bietet keinen Recovery-Pfad. QA hat das auf #2342 dokumentiert. Vor einem APK-/Redmi-Test braucht es idempotente **Receipt-only**-Reconciliation (bei EXECUTING konservativ `OUTCOME_UNKNOWN`, niemals erneut dispatchen; bei DENYING signed denial) plus Failure-Injection-/Restart-Tests.
+
+- **Boss-Fair-Budget-Kandidat #2343:** aktueller Head `023e56d166ab128f1038033067db681903757bcb`, 29 ahead / 0 behind c4eb82; alle 13 substanziellen Exact-Head-Workflows waren beim letzten Poll QUEUED. Recovery12-Blob `bca4152c…` sowie Source-Lifecycle-Store `c413e…` und Fair-Observer-Runtime `08c1ef…` stimmen jetzt. Noch offen: runtime_deploy erwartet Stage `3b4d…`, tatsächliche Stage-Datei `53d8…`; Stage erwartet recovery21 `4e20…`, tatsächlicher Builder `7efd…`; Archive-Stream erwartet Store `40a3…`, tatsächlicher Store `c413e…`, während der Rebinder nach dem falschen Preimage sucht; Record-only Guard erwartet Runtime `a533…`, tatsächliches Runtime `08c1…`; Fair-Observer sucht weiter den alten ask()-Anchor, obwohl Runtime role_end enthält. Der vorherige Head `70c6a5` hatte einen roten Migrationstest (beide Fälle PARTIAL/runtime ERROR); das ist historische Evidenz, nicht das Ergebnis für 023e56d. Boss besitzt die Kette; QA editiert sie nicht parallel.
+- **Unverändert offen:** P0 bleibt echte korrekte, schnelle B1/B2→C4→C3-Kooperation plus 20 gemischte Redmi-Turns. #2338s gemeinsamer `runtime.py`/`store.py`-Pin-Rebind und fehlendes `source_ref` im Test-Seam gehören Boss; QA editiert die gemeinsame Pin-Kette nicht parallel. **Zusätzlicher QA-Sicherheitsbefund #2332:** die Remote-Allowlist ist noch kein lokaler Probe-Handler. Der exakte Quellpfad `operator.py → callosum.operator_command` hat keinen `native-probe`-Zweig; der lokale Callosum-Parser weist ihn zurück. `--confirm` ist nur Remote-Regex, keine separate lokale Einmalfreigabe. Boss und QA haben den Befund auf #2332 dokumentiert. Kein CHAT_OPERATOR/Probe wurde gesendet; Core muss lokalen source-bound Handler + lokale Freigabe + End-to-End/No-approval-Negativtest ergänzen. Trainiertes B3, JEPA-Gewichtslernen, AudioRecord/Voice, UI-/Accessibility-/Hintergrundsteuerung, Prozess-Tod/Restart/Rollback und semantische Canon-Abdeckung sind nicht abgeschlossen.
+- **Nicht ausgeführt:** kein CHAT_SEND, LOG_PAGE, Shell, nativer Receiver-Probe, UPDATE_REQUEST, APK-Install, Modell-/Gewichtsänderung, Berechtigungsänderung oder Geräte-Mutation.
+
+**Nächster interner Schritt:** Boss/Core soll #2342 unabhängig reviewen und in den vollständigen Companion-Stack integrieren. Danach nur mit separater ausdrücklicher Gerätefreigabe APK-/Pairing-/Lifecycle-Tests durchführen. Parallel bleibt die echte native Chat-Akzeptanz offen; kein manueller Eingriff von dir nötig.
+
+---
+
+# QA & Android — aktueller Nutzer-Handoff (2026-11-22T11:37:29.200Z)
+
+**Keine Nutzeraktion nötig.** Der vorhandene Updater hat den aktuellen Branch-Stand bereits installiert. Bitte keinen neuen Termux-Befehl ausführen und keinen zweiten Update-Request starten.
+
+- **Letzter Boss-Integrationsstand:** PR #2288 wurde bei `39b175521f50048f13ca14372b316de47527f531` integriert; der exakte Code-Head `1105ab56` hatte 20 SUCCESS, 0 FAIL, 1 erwartetes SKIP und 1 abgebrochenen Release-Queue-Lauf. Der aktuelle Release-Branch `c4eb82` ist neuer, hat 30/30 beobachtete Actions-Runs SUCCESS und ist laut #544 auf dem Handy installiert. Das bedeutet weiterhin keine funktionale Abnahme.
+- **Installierter Stand:** `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`. Der neueste authentifizierte private PIPELINE_STATUS #544 bestätigt `runtime=UP_TO_DATE`, `dashboard=UP_TO_DATE`, Auto-Update EIN und `last_error=NONE`. Für diesen exakten SHA sind alle 30 beobachteten GitHub-Actions-Runs SUCCESS; CI und Geräteinstallation sind getrennte Belege.
+- **Die Runtime ist damit nicht als funktionierendes Gehirn abgenommen:** DIAGNOSTICS #545 bestätigt den letzten gespeicherten Turn FINAL, aber 56,43 s Gesamtzeit, 40,82 s TTFT, 39,09 s Prefill, 701 Prompt-Tokens und nur 2 generierte Tokens. Inhaltliche Korrektheit wurde nicht bewertet.
+- **B1/B2:** Native Probe bleibt `SMOKE_PARTIAL`; die aufgezeichneten B1_DETAIL-/B2_GIST-Versuche endeten bei 53,2/54,2 s mit `TIME_BUDGET`. DIAGNOSTICS #545 wiederholt dieselben Turn-Werte; es wurde kein neuer Turn ausgelöst. Ein frischer 20-Turn-Test mit korrekt konsumierten source-bound Offers über C4→C3 fehlt.
+- **Speicher-Snapshot:** 3 gemappte native Prozesse, 285,8 MiB PSS (B1 58,8; B2 145,7; C2 81,3; C3 im Moment der Messung 0). PSS ist Prozessbuchhaltung, nicht freier RAM und kein Langzeit-Residency-Benchmark.
+- **Age/Lab:** offizielles Age 0; angeforderte Lab-Stufe 10, effektiv implementierte Stufe 5; physische Feature-Ausführung nicht bestätigt. Lern-Commit-Autorität benötigt weiterhin separat SHADOW.
+- **Core #2338 (Fair B1/B2):** noch DRAFT. Exakte CI schlägt in staged/integrated wegen eines veralteten `v13/runtime.py`-Pins, zusätzlich am `native_turn_budget`-Test-Seam (`KeyError: source_ref`) und in A5 UI lease (Python 3.13/3.14) wegen eines veralteten `store.py`-Pins fehl. Boss übernimmt den gemeinsamen Pin-Rebind und Test-Seam-Fix auf einem separaten Descendant-Branch; QA editiert diese Kette nicht parallel. Die QA-Befunde stehen im [PR-Review](https://github.com/RedMentos/Aii/pull/2338#issuecomment-7078400481). Der Code ist nicht installiert; Fair-Scheduling ist noch kein Redmi-Erfolg.
+- **JEPA #2331:** weiterhin DRAFT/NOT_RELEASED. Der aktuelle exakte PR-Stand hat 9 fehlgeschlagene Checks; sechs direkte Source-Builder-Pins stimmen nicht mit den aktuellen Datei-Bytes überein. Das ist kein akzeptierter numerischer Weight-Update- oder Forgetting-Nachweis. JEPA muss die Kette bottom-up neu binden und Python 3.13/3.14 sowie staged/integrated erneut ausführen.
+- **Core #2332 (Native-Receiver-Probe-Allowlist):** die relevanten Bridge-, Owner-read- und staged/integrated-Checks bestehen. Der neue Befehl ist aber noch nicht integriert/auf dem Handy und wurde nicht ausgeführt. Für einen späteren echten Probe-Lauf wäre eine separate ausdrückliche Nutzerentscheidung nötig; B3 bleibt produktiv OFF/SYMBOLIC.
+- **Android Companion #2286:** 9/9 beobachtete CI-Workflows auf einem gestapelten QA-Branch erfolgreich. Der aktuelle Prototyp kann nur einen separat bestätigten App-Start vorbereiten. Kein APK-Installationsbeleg, keine UI-Beobachtung, Accessibility-Taps, Hintergrundsteuerung oder AudioRecord-Aufnahme auf dem Redmi.
+- **QA Pairing-Follow-up #2342:** die sichtbare Termux-Paarung verwendet jetzt einen geprüften synchronen Commit statt ungeprüftem `.apply()`; der reine Java-Helper besteht lokal 7 `javac --release 17`-Kontrollen. Der exakte Android-Gradle/Robolectric-Lauf PASS (run 45018041741); private bridge PASS (run 45018031307); PR #2342 READY_FOR_REVIEW. Keine neue Android-Fähigkeit, kein APK- oder Redmi-Test.
+- **Audio/Voice:** kein Mikrofon-Provider und keine native Audioaufnahme. Der signierte PCM-Consumer ist kein AudioRecord-Gerätetreiber; Aufnahme bleibt OFF.
+- **Rollback:** Installation ist bestätigt, aber Prozess-Tod, Reboot, Dashboard-Rollback und runtime-only Rollback sind auf dem Handy noch nicht nachgewiesen. Modelle, SQLite und Chats wurden nicht angefasst.
+- **Lokale Tests:** vollständiger lokaler Aii-Checkout fehlt; `git ls-remote` scheitert hier an DNS. Deshalb keine lokale Vollsuite oder native Linux-Messung behauptet. Die genannten grünen/roten Resultate sind GitHub-CI.
+- **Gesamtprojekt:** V14-Master und historischer V13-Canon bleiben erhalten; das 1.255-Überschriften-Inventar ist ein Vollständigkeitsindex, keine Implementierungsabnahme. B3, JEPA-Gewichtslernen, Sleep/Replay, echte zwei MoE-Körper, Context/Memorilla-Consumer, Voice, Android-Agent und clause-level Consumer-Abdeckung bleiben offen.
+
+**Nächste interne Schritte:** Core repariert die beiden exakten Source-Builder-Pin-Ketten in #2338 und lässt die betroffenen Suites erneut laufen. Danach folgt eine integrierte Geräteprüfung für B1/B2→C4→C3 mit 20 gemischten Turns. Android-Companion und Audio bleiben default-off, bis ihre jeweiligen OS-/Consent-/Lifecycle-Tests und echten Gerätebelege vorliegen.
+
+---
+
 # JEPA-Statuskorrektur — 2026-11-22T10:00:40.871Z
 
 PR #2331 steht inzwischen auf `535eba6f668b3990416c361368f36e3e8f1e599e`, hat aber **9 fehlgeschlagene Checks** (4 laufen, 2 queued, 4 erfolgreich, 1 übersprungen). Die Fehler liegen weiter in der verschachtelten Source-Pin-Kette: sechs direkte Consumer-Pins stimmen nicht mit den aktuellen Datei-Bytes überein. Die vollständigen Hashes stehen im Boss-Review-Kommentar [7077507340](https://github.com/RedMentos/Aii/pull/2331#issuecomment-7077507340). Das ist noch kein JEPA-Lern-/Unlearning-Erfolg; PR bleibt DRAFT, Promotion OFF.
@@ -1547,3 +1649,44 @@ The release source has a plausible B1/B2 suppression path: default observer mode
 - Boss & Integration: keep #2258 unmerged until the Age-rights composition, exact CI and protected-file review are complete; continue whole-Canon dependency/consumer mapping.
 
 Private owner-read request #443 has no authenticated reply. Installed SHA and updater consent are UNKNOWN; REDMI_UNVERIFIED. No LOG_PAGE, UPDATE_REQUEST, remote shell, or device mutation was attempted.
+
+
+## QA & Android checkpoint — 2026-11-22 (current run)
+
+**User action: none.** No new phone command, chat send, model/weight change, permission change, updater request or device mutation was performed.
+
+### Release and authenticated Redmi evidence
+
+- Release-development branch `gpt6/v13-private-remote-bridge-20261111` is still exactly `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; its exact commit has **47/47 GitHub check-runs SUCCESS**. This is CI evidence, not whole-Canon acceptance.
+- Private owner-read PIPELINE_STATUS #567 confirms that the Redmi reports runtime and dashboard `UP_TO_DATE`, auto-update enabled, `last_error=NONE`, and installed commit exactly `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`.
+- Private DIAGNOSTICS #568 reports the last *recorded* turn at 57.74 s total, 41.63 s TTFT, 38.95 s prefill, 751 prompt tokens and only 2 generated tokens. B1_DETAIL and B2_GIST both report TIME_BUDGET (53.2 s / 54.2 s); C3 reports 3.1 s. QA did not send a new turn, and this is not a 20-turn acceptance run or a verified correctness result.
+- The same instant process sample reports four mapped native processes, 0.3 MiB PSS and 2.9 MiB RSS. It is process accounting, not proof that model weights are resident or a measurement of free RAM. Separate HEALTH #569 reports 983 MiB MemAvailable of 5,569 MiB and 1,629 MiB free disk. Its runtime field is UNAVAILABLE while DIAGNOSTICS reports the service RUNNING; these are different endpoint snapshots, not enough to infer a crash.
+- Age/Lab receipt: official Age 0; active test selector requested at X10; implemented test ceiling 5; physical feature execution unverified; learning commit authority still requires separate SHADOW mode. The code explicitly treats 6–10 as having no additional implemented rules and does not use Lab Age as a compute budget. No learning run or permission change was initiated.
+
+### Android companion receipt-recovery candidate
+
+- QA PR [#2347](https://github.com/RedMentos/Aii/pull/2347), branch `qa/v14-companion-receipt-only-recovery-20261122-run12`, current head `dda9947accd81e8310e3d8f7d581bb88aa3655d5`. It adds durable receipt-only recovery for EXECUTING/DENYING claims; recovery never repeats the external launch. Python persists `COMPANION_OUTCOME_UNKNOWN` as source-bound, observed=false, and non-authoritative for T8/World learning.
+- This is stacked on draft companion PR #2271's core branch at `24e059d1f54e54d2285c9a542df207372fb27f4a`, itself stacked on #2134/#2119. It is not based on the release branch and is NOT_RELEASED.
+- Exact current-head checks at head `dda9947accd81e8310e3d8f7d581bb88aa3655d5`: **7/7 SUCCESS**, including Android Gradle/Robolectric, companion-outcome Python 3.13/3.14, contract, offline-bridge-security, staged-runtime and integrated-regression. Staged-runtime passed (240 passed, 10 skipped, 47 subtests; additional migration suite 42 passed, 37 subtests). The legacy-worker diagnostic deliberately asserts fail-closed refusal because the stacked branch's pinned plain-UI recovery builder differs; this is not a successful phone migration.
+- The first Android unit run exposed a test-harness issue, not a production JSON defect: `ReceiptFactoryTest` lacked the Robolectric runner, so Android `org.json` SDK stubs returned defaults under `returnDefaultValues`. Adding `@RunWith(RobolectricTestRunner.class)` and SDK 33 made the exact Android Gradle job pass.
+- The execution container has JDK 21 but no Aii checkout, Gradle or Android SDK. No LOCAL_LINUX repository suite, APK install, Android Keystore device test or Redmi companion action was run.
+
+### Termux pairing durability candidate
+
+- QA PR [#2342](https://github.com/RedMentos/Aii/pull/2342), exact head `24b8f9760939eccea6e877536027101204fe04f8`, has **2/2 exact-head CI SUCCESS** (Android Gradle/Robolectric and offline-bridge-security). A local JDK 21 harness also passed the pure-Java pairing helper cases.
+- The additional failure mode was that Android `SharedPreferences.Editor.commit()` can update its in-memory map even when the disk write returns false. The dialog now snapshots the previous Termux package/certificate pair and restores/removes both keys via `apply()` if the checked commit fails or throws. The helper requires a rollback callback; success is displayed only on a true durable commit.
+- #2342 is a separate, non-overlapping QA stack on draft #2271's companion branch (MainActivity/PairingPersistence); #2347 covers provider/consent receipt recovery. Both remain NOT_RELEASED and have no APK, Android Keystore or Redmi proof. No pairing was attempted.
+
+### Other blocking QA findings
+
+- B3 paired-tap/L1-shadow PR #2346 remains draft and has multiple failed exact-head checks. QA identified an output-path escape: `b3train.py` creates `home/b3/shadow/... ` and writes via `atomic_write` without rejecting symlinked ancestors or proving containment. A blocking comment requests a fail-closed no-follow/dirfd output helper and a symlink regression test. No L1 artifact or native B3 training is accepted.
+- Boss fair-budget integration PR #2343 remains draft with multiple failed exact-head checks, including staged/consumer/migration paths. It is not a release candidate until its current source pins and composed consumers pass.
+- Production Android UI observation, screen capture, Accessibility, tap/type, microphone capture, full voice learning, trained B3 latent transfer, correct B1/B2 offers and persistent numeric JEPA learning remain OPEN; none is established by this QA run.
+
+### Next internal actions
+
+1. Complete #2347's exact-head integrated-regression workflow; then hand the tested stacked PR to Core/Boss for integration on the current companion base, not directly to the release branch.
+2. Keep #2346 blocked until the symlink-safe output boundary and its negative control are implemented and all exact-head checks pass.
+3. Continue whole-Canon QA; do not use the green release CI or updater receipt as evidence that the slow/incorrect native chat path is fixed.
+
+**Redmi status:** installed c4eb82 / updater up-to-date; native quality and Android companion acceptance remain UNVERIFIED. **User action: none.**
