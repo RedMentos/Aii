@@ -1059,7 +1059,7 @@ Private PIPELINE_STATUS issue #443 has no authenticated reply. Installed SHA and
 
 ### Research/Perception V14-018 frame-level event retention — 2026-11-22 01:06 CET
 
-- PR #2275 current head: `2996153a1244afa318e084df419b01a53095aeda`, base #2258 `9922cf86ecf8801d30a46a1e98817e5c6c1db092`, DRAFT / NOT_RELEASED / mergeable.
+- PR #2275 latest docs head: `a7c2bbf6040e404e01246d9d142b2ae99b4a6493`; tested code/test head `2996153a1244afa318e084df419b01a53095aeda`; base #2258 `9922cf86ecf8801d30a46a1e98817e5c6c1db092`, DRAFT / NOT_RELEASED / mergeable.
 - New runtime behavior: bounded per-frame scalar evidence plus peak candidate/score/time; A4 attention and C3 summary use the peak when the final measured frame has returned to a stable embedding. The latest-frame fields remain backward-compatible. No vectors or speaker identities are persisted.
 - LOCAL_LINUX CPython 3.13.5 isolated algorithm reproduction PASS for A→B→A peak retention, 1s/2s batch invariance, same-speaker stability, threshold-absent and unvoiced controls. Full local Aii checkout remains unavailable.
 - Exact-head RAW EAR workflow `44964762458`: Python 3.13 PASS and Python 3.14 PASS (compile, focused RAW EAR/A5-A4-C3 tests, deterministic synthetic benchmark, secret scan). Staged Runtime and integrated regression workflow `44964762227` FAIL because `scripts/integrated_audio_context_candidate_20261121.py` still pins `v13/audio_voice_cues.py` to `b62442c6...`; actual new blob is `9b6bafe1e02b3f49503d57399b43248b9e6d8bb1`. Core must re-pin the new audio source and recompute the dependent chain; no hash gate was weakened.
