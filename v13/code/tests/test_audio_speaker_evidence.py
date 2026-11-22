@@ -716,3 +716,79 @@ def test_provisional_audio_is_persisted_but_not_admitted_until_final(tmp_path):
         assert final["action_authority"] is False
     finally:
         runtime.store.close()
+def test_mutable_pcm16_is_zeroized_after_complete_audio_consumer_success(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    pcm = bytearray(tone())
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, pcm, sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL",
+        )
+        assert result["pcm_zeroization_status"] == "ZEROIZED_CALLER_BUFFER"
+        assert bytes(pcm) == bytes(len(pcm))
+        assert result["packet"]["segments"][0]["acoustic"]["voice_cues"]["activity_hint"] == "VOICED"
+    finally:
+        runtime.store.close()
+
+
+def test_mutable_pcm16_is_zeroized_when_consent_check_fails(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    pcm = bytearray(tone())
+    try:
+        with pytest.raises(PermissionError):
+            consume_pcm16_voice_window(
+                runtime, pcm, sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE, consent_receipt=RECEIPT,
+                consent_check=lambda *_: False,
+                consent_guard=consent_guard(consent_ok), finality="FINAL",
+            )
+        assert bytes(pcm) == bytes(len(pcm))
+    finally:
+        runtime.store.close()
+
+
+def test_immutable_pcm16_is_explicitly_reported_as_not_zeroized(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    pcm = tone()
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, pcm, sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL",
+        )
+        assert result["pcm_zeroization_status"] == "IMMUTABLE_INPUT_NOT_ZEROIZED"
+    finally:
+        runtime.store.close()
+
+
+def test_speaker_embedding_vectors_are_overwritten_on_reset_and_lru_eviction():
+    registry = SpeakerChangeEvidenceRegistry(max_streams=1)
+    first = speaker_batch(SOURCE, "gen-cleanup", 100, 1100, lambda _: (1.0, 0.0, 0.0))
+    registry.update(
+        source_id=SOURCE, generation_id="gen-cleanup", start_ms=100, end_ms=1100,
+        activity_hint="VOICED", embeddings=first,
+    )
+    retained = registry._states[(SOURCE, "gen-cleanup")].frames[0][1]
+    assert any(retained)
+    registry.reset(source_id=SOURCE, generation_id="gen-cleanup")
+    assert not any(retained)
+
+    registry.update(
+        source_id=SOURCE, generation_id="gen-cleanup-2", start_ms=100, end_ms=1100,
+        activity_hint="VOICED",
+        embeddings=speaker_batch(SOURCE, "gen-cleanup-2", 100, 1100, lambda _: (0.0, 1.0, 0.0)),
+    )
+    evicted = registry._states[(SOURCE, "gen-cleanup-2")].frames[0][1]
+    other = "fixture:other-speaker-source"
+    registry.update(
+        source_id=other, generation_id="gen-other", start_ms=100, end_ms=1100,
+        activity_hint="VOICED",
+        embeddings=speaker_batch(other, "gen-other", 100, 1100, lambda _: (0.0, 0.0, 1.0)),
+    )
+    assert not any(evicted)
