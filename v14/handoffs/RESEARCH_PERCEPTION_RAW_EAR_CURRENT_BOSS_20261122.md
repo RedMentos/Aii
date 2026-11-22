@@ -59,3 +59,16 @@ Status: DRAFT / NOT_RELEASED / REDMI_UNVERIFIED. User action: none.
 - No model or weights were downloaded, selected, or swapped.
 
 Status remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED. Next: Boss/QA review and separate consent-gated Android AudioRecord provider, then real Redmi measurements.
+
+
+## Low-gain RAW EAR correction — 2026-11-22
+
+- PR #2304 code-bearing head: e28982337ca714fb4d14a3a972f3beafacc248c4.
+- Defect: a 140 Hz, 100-count PCM16 tone produced whole-window RMS 0.002144 (<0.003), voiced_fraction 1.0 and confidence 0.992, but the old whole-window silence gate returned SILENCE. The new gate requires both low RMS and voiced_fraction<0.25. A seeded 50-count noise control remains SILENCE.
+- A4 runtime-consumer regression and noise negative control were added. The voice-cue blob is now 4c5641adf6758762ce0fdf616a9b2a798e6de408; integrated builder blob fb59de5040081b1407ba5cbee8f9102e9921d149; recovery SHA-256 e9b32f4935652c7a3d0d322acf9358b2cf8dba256cecdf3e94f3655c36ff3034; stage SHA-256 79a5667adda7922e06dcc260e6696ed7f6c966cf2fa2b1f0c14438e663896bfa; runtime deployer and VAD workflow pins read back.
+- LOCAL_LINUX scratch reproduction PASS; full local repo suite BLOCKED (no checkout/DNS). RAW EAR and VAD CI pass on both Python versions; staged/integrated and Core 3.14 still running at last readback. NOT_RELEASED / REDMI_UNVERIFIED.
+- Private V13OBS #115 is stale (2026-11-18; LOCAL_METADATA_ONLY, B1/B2 valid offers 0). Private read-only PIPELINE_STATUS #463 is pending; no receipt yet. No UPDATE_REQUEST or device mutation.
+
+## Next integration contract
+
+See RESEARCH_PERCEPTION_ANDROID_AUDIO_CAPTURE_CONTRACT_20261122.md. Core owns companion/provider and Termux bridge; QA owns permission/lifecycle/revocation acceptance; Perception owns A-plane source/finality contract and Termux consumer. Keep microphone OFF until a visible OS permission prompt and explicit local approval exist. No raw PCM persistence, no background capture, no model/weight changes.
