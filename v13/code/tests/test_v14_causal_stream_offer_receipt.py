@@ -131,6 +131,7 @@ class EvidenceStore:
             "metadata": json.dumps(metadata),
         }
         self.telemetry = {"metrics": json.dumps({
+            "role": "C3_LANGUAGE",
             "status": "PASS",
             "count": len(selected_ids),
             "selected_offer_ids": list(selected_ids),
