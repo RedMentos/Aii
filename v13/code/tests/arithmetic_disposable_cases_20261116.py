@@ -41,7 +41,7 @@ def packets(r, event, kind):
         (event, kind))]
 
 
-@pytest.mark.parametrize('expression', ['2/2', '12/11', '2026/11', '2026-11'])
+@pytest.mark.parametrize('expression', ['2/2', '12/11', '8/4', '2026/11', '2026-11'])
 def test_slash_or_iso_date_shapes_do_not_enter_arithmetic_without_cue(expression):
     assert exact_arithmetic(expression) is None
 
