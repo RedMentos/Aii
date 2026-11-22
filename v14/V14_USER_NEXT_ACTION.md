@@ -1413,3 +1413,15 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - Research R-063: FASTDIAR paper fully reviewed; code MIT but checkpoint license unclear. speech-core Apache-2.0 C++17/Android is a possible low-level VAD/AEC/cancel reuse, not a replacement for V14 organs. No download.
 
 **Next internal action:** Core fixes the exact Boss source-pin blocker; Perception rebases #2293, obtains green staged/integrated proof, then wires the audio-only API into the Android caller. **User action: none.**
+
+
+## Exact CI update — 2026-11-22 02:37 CET
+
+- RAW EAR fastpath #44972070097: PASS, 64 tests on CPython 3.13 and 3.14, including 7 new audio-only ingress tests.
+- VAD/libfvad #44972070081: PASS, 8 tests on both Python versions and native libfvad 13/13. Runtime deploy integrity #44972070113: PASS.
+- Staged/integrated #44972070090: FAIL at Core-owned local-error pre-rebind semantic pin mismatch (recovery candidate line 313); same root on unchanged Boss base #44969679441. Two-checkout migration #44972070092 returns PARTIAL; Lab Age/WebView #44972070087 and owner-read bootstrap #44972070168 fail at the same stage path.
+- Perception posted the exact safe pin-rebind diagnosis to Boss PR #2288 comment 7072323336. No Core file was modified.
+- Audio-only adapter's isolated local test remains 7/7 PASS; full Aii checkout is unavailable because GitHub DNS resolution fails. No full local Runtime test.
+- PR #2293 is still DRAFT / NOT_RELEASED; current docs head 6444c219, tested code head e85b7398. No Android microphone, AudioRecord, TTS, barge-in, Redmi or native model proof. REDMI_UNVERIFIED. No model, weight, permission, updater or device change.
+
+**Next internal action:** Core repairs the semantic pin using the captured pre-overlay dependency pin; Perception rebases and reruns full staged/integrated, then adds Runtime-level audio-only E2E. **User action: none.**
