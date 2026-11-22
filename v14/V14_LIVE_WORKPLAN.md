@@ -1521,3 +1521,5 @@ On JEPA exact head `50e3c8d`, the changed-path compilation step is PASS on Pytho
 
 **Next:** poll the exact latest `c39a446` workflows; repair any actual SleepRuntime or measured receiver-gate failure rather than weakening the test. Once QA/Boss source chains are green, run matched-step replay-on/off, persistent-vs-reset, stable/gradual/abrupt/two-shift/return-to-A retention, parameter/EMA diffs, restart and rollback. No user action or device mutation is required now.
 
+**Run 21 test-contract follow-up (2026-11-22T22:39:25Z):** exact code head advanced to `c39a446036cdfba26fd7e55cf59eb633e4754227`. Source inspection confirmed `consume_temporal_after_commit` clamps temporal optimizer work to 40 steps; the new SleepRuntime regression now asserts `steps_this_update == 40` and cumulative `optimizer_steps >= 40`, not 80. This is a test expectation correction only; no runtime code changed. No Actions runs are visible yet for c39a446. The previously queued daa42a4 workflows do not validate this latest edit. Parent beda653 remains 15/15 temporal tests PASS on Python 3.13/3.14.
+
