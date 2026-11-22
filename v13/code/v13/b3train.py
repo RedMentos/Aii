@@ -8,6 +8,7 @@ evidence through b3bridge.l1_gate.
 from pathlib import Path
 import hashlib
 import os
+import re
 import stat
 import uuid
 import numpy as np
@@ -166,7 +167,7 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
     if direction not in {"B1_TO_B2", "B2_TO_B1"}:
         raise ValueError("unsupported B3 direction")
     if (not isinstance(task_id, str) or not task_id.isascii()
-            or not __import__("re").fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}", task_id)):
+            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}", task_id)):
         raise ValueError("task_id must be a 1..64 character ASCII identifier")
     if not isinstance(label_source, str) or not label_source.strip():
         raise ValueError("explicit label_source required")
