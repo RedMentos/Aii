@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T10:00:40.871Z",
-  "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at b3b92f41772573732b2cba71f7ad6bf34dc8e521; exact post-merge push CI green; phone install remains separately gated. V14 master and historical V13 appendix preserved.",
+  "updated_at": "2026-11-22T17:49:39.410Z",
+  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; exact SHA CI 53/53 SUCCESS; authenticated private receipt confirms same SHA installed. Functional acceptance remains open.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -14,11 +14,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "CI + authenticated phone code-install receipt; no native-model acceptance",
-      "next_step": "Core/QA: retain both B1_DETAIL and B2_GIST in the fair same-turn schedule and measure real native offers→C4→C3 after the existing updater confirms b3b92. Baseline #518 remains 63.22 s total / 42.48 s TTFT / 34.96 s prefill, B1/B2 TIME_BUDGET 53.2/54.2 s, 2 generated tokens; no post-update turn or correctness proof yet.",
+      "proof_environment": "CI + authenticated Android install/diagnostic metadata; no correct-answer or useful native B1/B2 acceptance",
+      "next_step": "Boss/Core: P0 remains open. Latest stored turn is 57.739 s / TTFT 41.627 s / prefill 38.945 s / 751 prompt tokens / 2 generated; B1/B2 TIME_BUDGET. Require real same-turn offers→C4→C3 and 20-turn correctness/latency acceptance.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
-      "proof": "PR #2325 merged 283ac1c9; exact merge push CI 46/46 SUCCESS and private PIPELINE_STATUS #517 confirms installed. PR #2327 merged 9097d634; candidate CI 27 SUCCESS / 1 expected SKIPPED; exact push CI pending. Post-fix DIAGNOSTICS #518 pending. Native B1/B2 offer correctness/quality remains unverified.",
+      "last_checkpoint": "2026-11-22T17:49:39.410Z",
+      "proof": "PR #2325 merged 283ac1c9; exact merge push CI 46/46 SUCCESS and private PIPELINE_STATUS #517 confirms installed. PR #2327 merged 9097d634; candidate CI 27 SUCCESS / 1 expected SKIPPED; exact push CI pending. Post-fix DIAGNOSTICS #518 pending. Native B1/B2 offer correctness/quality remains unverified.; 2026-11-22T17:49:39.410Z: c4eb82 installed, 53/53 exact SHA checks SUCCESS; diagnostics repeat last turn 57.739s/41.627s/38.945s, 751 prompt, 2 generated; B1/B2 TIME_BUDGET; correctness UNKNOWN.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -45,10 +45,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "ANDROID_DEVICE code installation for 283ac1 only; 9097 NOT_INSTALLED",
-      "next_step": "QA: do not send another UPDATE_REQUEST. #519 is already QUEUED; authenticated #520 still says installed 283ac1c9, runtime CI_WAIT, dashboard BLOCKED_RUNNING, last_error NONE. Wait for a separate receipt that confirms exact b3b92 installation, then verify restart/rollback without touching models or user data.",
+      "proof_environment": "ANDROID_DEVICE installed c4eb82; exact SHA CI 53/53; rollback/reboot and product acceptance still open",
+      "next_step": "No user update action: current c4eb82 is installed and updater/runtime/dashboard are UP_TO_DATE. Next release requires exact post-merge CI and a separate install receipt; preserve models, weights and SQLite.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-22T17:49:39.410Z",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -66,7 +66,7 @@
           "redmi": "NO_LIVE_RECEIPT; issues #351–354 unanswered; installed SHA unknown"
         }
       },
-      "proof": "Release merge 283ac1c9 has 46/46 push checks SUCCESS and is installed per private #517. Newer merge 9097d634 has candidate 27 SUCCESS / 1 expected SKIPPED; exact push CI pending. Existing updater remains enabled; no model/weight/permission change."
+      "proof": "Release merge 283ac1c9 has 46/46 push checks SUCCESS and is installed per private #517. Newer merge 9097d634 has candidate 27 SUCCESS / 1 expected SKIPPED; exact push CI pending. Existing updater remains enabled; no model/weight/permission change.; 2026-11-22T17:49:39.410Z: authenticated receipt confirms c4eb82 installed, auto-update enabled, runtime/dashboard UP_TO_DATE, last_error NONE."
     },
     {
       "id": "V14-003",
@@ -78,10 +78,10 @@
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
       "proof_environment": "CI synthetic + Android ARM64 cross-compile only; no Redmi native receiver proof",
-      "next_step": "Core/JEPA: rebase #2313/#2317 onto current b3b92, preserve the merged #2323 diagnostic receiver, and require real paired native activations, source-disjoint labels, same-model parity, shuffled/zero/OOD controls and heldout utility before any L1/L2 authority. Production B3 remains OFF/SYMBOLIC.",
+      "next_step": "Research/Perception: fix #2346 paired-capture assertion mismatch and rerun exact paired, staged/integrated, Lab-Age and migration matrix; retain production B3 OFF/SYMBOLIC until real paired taps, source-disjoint labels and receiver utility pass.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
-      "proof": "Core #2323 native llama.cpp input-embedding path is a diagnostic-only receiver probe. #2325 adds sender path containment. Production B3 remains OFF/SYMBOLIC. #2313 paired taps and #2317 source-disjoint L1 holdout remain draft/stale and have no native training/utility proof.",
+      "last_checkpoint": "2026-11-22T17:49:39.410Z",
+      "proof": "Core #2323 native llama.cpp input-embedding path is a diagnostic-only receiver probe. #2325 adds sender path containment. Production B3 remains OFF/SYMBOLIC. #2313 paired taps and #2317 source-disjoint L1 holdout remain draft/stale and have no native training/utility proof.; 2026-11-22T17:49:39.410Z: #2346 head d2c459 has paired-capture 1/54 failure (claim wording assertion); no trained latent or Redmi proof.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -737,33 +737,50 @@
     }
   ],
   "latest_checkpoint": {
-    "timestamp": "2026-11-22T10:00:40.871Z",
-    "boss_branch": "boss/v14-run12-whole-system-handoff-20261122",
-    "boss_head": "b3b92f41772573732b2cba71f7ad6bf34dc8e521",
-    "release_development_branch": "gpt6/v13-private-remote-bridge-20261111",
-    "release_development_head": "b3b92f41772573732b2cba71f7ad6bf34dc8e521",
-    "release_status": "MERGED_INTEGRATION_EXACT_PUSH_CI_GREEN_DEVICE_PENDING",
-    "last_accepted_code_release": "283ac1c9b38d38c68030391710df852a3c38fdfc",
-    "redmi_status": "INSTALLED_283AC1_ONLY; B3B92_CI_WAIT; NATIVE_QUALITY_UNVERIFIED",
-    "private_owner_read_issue": 520,
-    "private_owner_read_authenticated_reply": true,
-    "private_receipt_installed_sha": "283ac1c9b38d38c68030391710df852a3c38fdfc",
-    "private_receipt_auto_update": true,
-    "private_receipt_predates_merge": true,
-    "local_full_checkout": "BLOCKED_NO_LOCAL_AII_CHECKOUT_OR_NETWORK",
-    "user_action_required": false,
-    "post_merge_push_ci": "b3b92: 40/40 check-runs SUCCESS; 29/29 workflow runs SUCCESS",
-    "candidate_ci": {
-      "success": 40,
-      "failure": 0,
-      "pending": 0,
-      "workflow_runs_success": 29
+    "timestamp": "2026-11-22T17:49:39.410Z",
+    "release_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
+    "exact_sha_ci": "53/53 SUCCESS",
+    "device": "AUTHENTICATED_INSTALLED; auto-update enabled; runtime/dashboard UP_TO_DATE; last_error NONE",
+    "last_turn": {
+      "status": "FINAL",
+      "duration_s": 57.73882742600108,
+      "ttft_s": 41.626904203003505,
+      "prefill_s": 38.945270141004585,
+      "prompt_tokens": 751,
+      "generated_tokens": 2,
+      "correctness": "UNKNOWN"
     },
-    "canonical_inventory_headings": 1255,
-    "private_receipt_pipeline": "CI_WAIT_283AC1; UPDATE_REQUEST_519_QUEUED",
-    "next_action": "Wait for the already queued #519 update and authenticated PIPELINE_STATUS; repair all six #2331 source pins bottom-up and rerun the exact matrix; then rebase paired native taps and signed audio consumer onto b3b92.",
-    "documentation_pr": 2333,
-    "documentation_branch": "boss/v14-run12-whole-system-handoff-20261122"
+    "body_probes": {
+      "B1_DETAIL": "TIME_BUDGET 53.2s",
+      "B2_GIST": "TIME_BUDGET 54.2s",
+      "native_probe": "SMOKE_PARTIAL",
+      "C3_probe": "3.1s"
+    },
+    "native_process_sample": "4 entries; 0.3 MiB PSS / 2.6 MiB RSS instantaneous only",
+    "age": {
+      "official": 0,
+      "requested_lab": 10,
+      "effective_implemented": 5,
+      "physical_feature_execution": false,
+      "learning_commit_authority": "REQUIRES_SEPARATE_SHADOW"
+    },
+    "prs": {
+      "2343": {
+        "head": "62fb2194313cc9d308d4b6a801a9a9cc71362dd2",
+        "status": "DRAFT; 28 exact-head checks queued at last poll"
+      },
+      "2346": {
+        "head": "d2c459288c99a5b4e4fa43fce32bd028c142e0c3",
+        "status": "DRAFT; paired-capture 1 failure / 53 pass; other matrix queued"
+      },
+      "2364": {
+        "head": "73b30a0a04eef676afc0f5b843aaeb98fe0470ea",
+        "status": "DRAFT; 12 checks queued at last poll"
+      }
+    },
+    "local_full_suite": "BLOCKED_NO_CHECKOUT_AND_GITHUB_DNS",
+    "redmi_functional_acceptance": "OPEN_P0_1904",
+    "user_action_required": false
   },
   "capability_matrix": [
     {
