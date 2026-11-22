@@ -30,3 +30,14 @@ This branch ports the source-reviewed diagnostic adapter and its actual RAW EAR 
 ## Next
 
 Resolve checkpoint-weight licensing and obtain a separately consented, source-disjoint labelled embedding source before any calibrated A4 decision. Keep the optional adapter diagnostic-only and A4 DEFER. Core still owns normal Runtime dispatch.
+
+
+## Follow-up — exact current-PCM binding (2026-11-22)
+
+The diagnostic embedding contract is now version 2. Each supplied frame batch must carry `current_chunk_sha256`; the RAW EAR consumer independently hashes the PCM16 bytes it actually received and rejects a mismatch before the speaker registry mutates temporal history. Accepted diagnostic evidence reports `source_binding_status=CURRENT_PCM_CHUNK_SHA256_MATCH`. The hash is provenance only; no PCM or embedding vector is persisted.
+
+This closes an accidental/cross-source mix-up between caller-supplied frame embeddings and the current PCM chunk. It does **not** attest that FASTDIAR produced the vectors, nor does it attest the model's preceding two-second recurrent state. No identity, calibration, learning or action authority is added; A4 remains DEFER.
+
+Added negative controls at both registry and actual `consume_pcm16_voice_window` A5→A4→C3 consumer levels. A mismatched chunk hash must yield REJECTED/DEFER and no speaker-similarity summary. The positive consumer path asserts the exact PCM digest match.
+
+LOCAL_LINUX CPython 3.13.5 isolated hash-binding helper: 5/5 PASS (matching digest plus malformed, missing, uppercase and mismatched negative cases). Full Aii checkout remains unavailable in this worker; exact repository tests are delegated to the new PR-head CI. No FASTDIAR inference, weight download, AudioRecord, Android/Termux or Redmi test was performed.
