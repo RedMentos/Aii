@@ -1,8 +1,10 @@
 """Whole-turn recovery policy using genuine-shaped, content-free Redmi metrics."""
+import importlib.util
 import json
 import threading
 import time
 import unittest
+from pathlib import Path
 from v13.cognition import Cognition
 from v13.common import Limits
 from v13 import native_turn_budget as budget
@@ -199,6 +201,23 @@ class NativeTurnBudgetTests(unittest.TestCase):
         d=budget.plan(100,130,100,recent=rows)
         self.assertTrue(d["recovery"])
         self.assertEqual(d["recent_success_streak"],0)
+
+
+    def test_source_patch_is_idempotent_when_old_bytes_are_inside_new_block(self):
+        script = (Path(__file__).resolve().parents[1] / "scripts" /
+                  "integrated_observer_fair_budget_candidate_20261116.py")
+        spec = importlib.util.spec_from_file_location("observer_overlay_test", script)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        old = b'            and native.get("generated_tokens") == 0\\n'
+        new = (b'            and type(native.get("generated_tokens")) is int\\n'
+               b'            and native.get("generated_tokens") == 0\\n')
+        raw = b'prefix\\n' + new + b'suffix\\n'
+        self.assertEqual(module.replace(raw, old, new, "overlap"), raw)
+
+        # A genuinely separate old block plus the new block remains ambiguous.
+        with self.assertRaisesRegex(ValueError, "overlap"):
+            module.replace(old + b"separator\\n" + new, old, new, "overlap")
 
     def test_bound_monotonic_inputs_and_conflicting_clock_rejected(self):
         with self.assertRaises(ValueError):

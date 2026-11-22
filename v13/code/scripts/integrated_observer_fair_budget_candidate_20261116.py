@@ -24,6 +24,11 @@ def replace(raw, old, new, label):
         return raw.replace(old, new, 1)
     if old_count == 0 and new_count == 1:
         return raw
+    if old_count == 1 and new_count == 1 and old in new:
+        # The current source already contains the exact replacement block;
+        # the old bytes are a suffix/subsequence of that same block, not a
+        # second competing patch. Preserve strict ambiguity rejection otherwise.
+        return raw
     raise ValueError('observer fairness anchor changed: ' + label)
 
 
