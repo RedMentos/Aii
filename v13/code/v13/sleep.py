@@ -681,8 +681,36 @@ class SleepRuntime:
                                  {'action_status':action_status,'decision_authority':'NONE'})
                 return result
             planner=consume_world_planner_shadow(self.r.store,event_id,home=self.r.home)
+            receiver_training={"status":"SKIPPED_WORLD_JEPA_NOT_UPDATED"}
+            if learning.get('status')=='UPDATED_EXPERIMENTAL_WORLD_JEPA':
+                from .world_jepa_b3_supervision import train_l1_shadow_directions_from_t8
+                receiver_training=train_l1_shadow_directions_from_t8(
+                    self.r.store,self.r.cognition,self.r.home,
+                    directions=("B1_TO_B2","B2_TO_B1"),limit=256,
+                    seeds=(11,17),epochs=1,head_steps=25,
+                    cancel_check=cancel_check)
+                for direction,outcome in receiver_training.get("directions",{}).items():
+                    candidate_status=outcome.get("status")
+                    if candidate_status in {
+                        "L1_SHADOW_CANDIDATES_SAVED_NOT_PROMOTED",
+                        "TRAINING_REJECTED",
+                    }:
+                        manifest=outcome.get("manifest_sha256")
+                        manifest=manifest[0] if type(manifest) is list and manifest else None
+                        self.r.store.log('v14_world_jepa_b3_receiver',event_id,{
+                            'status':'PASS' if candidate_status.startswith('L1_SHADOW') else 'REJECTED',
+                            'component':'b3_receiver_adapter',
+                            'mode':'shadow',
+                            'sha256':manifest,
+                            'optimizer_steps':len(outcome.get("parameter_delta_by_seed",[])),
+                            'target_changed':float(outcome.get("parameter_delta_l2",0.0))>0.0,
+                            'count':outcome.get("pair_count",0),
+                            'decision':'none',
+                            'native_body_parameters_modified':False,
+                        })
             result.update(status='POSTCOMMIT_PROCESSED',action_status=action_status,
-                          learning=learning,planner=planner)
+                          learning=learning,planner=planner,
+                          receiver_training=receiver_training)
             if learning.get('status')=='ERROR':
                 result['status']='ERROR'
             elif planner.get('status') in {'SOURCE_OR_RECEIPT_REJECTED','NO_COMMITTED_OUTCOME'}:
