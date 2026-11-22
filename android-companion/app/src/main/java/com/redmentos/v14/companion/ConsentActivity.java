@@ -126,15 +126,8 @@ public final class ConsentActivity extends Activity {
                 Toast.makeText(this, "Action was cancelled, expired or already claimed", Toast.LENGTH_LONG).show();
                 finish(); return;
             }
-            String receiptStatus;
-            if ("DISPATCHED".equals(dispatchResult)) {
-                receiptStatus = "DISPATCHED_UNVERIFIED";
-            } else if ("FAILED_TO_DISPATCH".equals(dispatchResult)) {
-                receiptStatus = "FAILED_TO_DISPATCH";
-            } else {
-                receiptStatus = "OUTCOME_UNKNOWN";
-            }
-            finishWithReceipt(receiptStatus, true, "EXECUTING");
+            finishWithReceipt(
+                    CompanionProvider.receiptStatusForDispatchResult(dispatchResult), true, "EXECUTING");
         }
     }
 
