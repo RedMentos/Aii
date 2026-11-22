@@ -11,7 +11,7 @@
 
 - `v13/code/v13/audio_input.py`: caller-supplied mono PCM16 audio-window ingress, bounded sample rate/duration, source and consent provenance, provisional/final event path. This is an API adapter, not Android microphone capture.
 - `v13/code/v13/audio_speaker_evidence.py`: source-bound speaker similarity evidence with caller-asserted, unverified thresholds with batch isolation, age checks and no speaker identity persistence.
-- `v13/code/v13/audio_voice_cues.py`: integrates the conservative A4 decision with acoustic/prosody cues; no transcript-only substitution.
+- `v13/code/v13/audio_voice_cues.py`: preserves RAW EAR acoustic/prosody cues and sends `DEFER` for speaker decisions until a model-bound calibration artifact and pinned receipt are available; no transcript-only substitution.
 - `v13/code/scripts/integrated_audio_context_candidate_20261121.py`: source pins for the exact voice-cue and speaker-evidence blobs; retained the current Boss `cognition = result.get(...)` overlay so audio composition does not erase the fair B1/B2 budget result.
 - Recovery, stage and deployer hashes were rebound and read back as a complete chain.
 
@@ -56,3 +56,13 @@ A code audit found that the registry explicitly labeled its threshold `CALLER_AS
 On the current branch, unverified thresholds now yield only raw cosine similarity/delta. Candidate and confidence booleans are `null`, peak decision is `null`, and A4/C3 state is `DEFER`. The C3 summary says `speaker_similarity_delta`, `spk_cal=UNVERIFIED`, and `spk_dec=DEFER`; no speaker-derived attention gain is applied. A future positive decision requires a model-bound verified calibration status and pinned receipt; no such artifact is available today.
 
 LOCAL_LINUX isolated scratch logic: PASS for caller-asserted thresholds, no-threshold input, and a claimed calibrated status without a receipt all remaining DEFER while preserving raw similarity. Full Aii tests and exact-head CI are pending; no Redmi/microphone/model/weight proof.
+
+
+## Latest code readback — 2026-11-22 04:00
+
+- Branch: `research-perception/v14-raw-ear-rebase-d06c637-20261122`; latest branch commit: `0fb98e483219e867f950abec49a3611a25b94be1`.
+- `audio_speaker_evidence.py` blob: `37aa9c392bbb68d60ccff9749c75b41b8783c539`; `audio_voice_cues.py` blob: `596d14487b9f2b28609eea79fb8b1b39f8da009c`; `test_audio_speaker_evidence.py` blob: `63221711d369651f9be157be2ee4da6cce7b502b`.
+- Method label is now `COSINE_LOOKBACK_DIAGNOSTIC_V1`; no FastDiar model/code/weights are imported. Test fixtures use neutral fake model identifiers.
+- LOCAL_LINUX scratch mirror: `py_compile` PASS and 4/4 unittest cases PASS (caller-asserted threshold, no threshold, missing receipt, and no speaker-derived attention interrupt).
+- Full repository pytest: BLOCKED (no checkout mounted; GitHub DNS unavailable). Exact-head GitHub Actions readback returned no runs/statuses for the latest code commit; therefore CI is NOT_RUN/PENDING, not PASS.
+- Boss base #2288 latest observed head `679f3667c5c98b867f85ae960824489da0d8fd3a`: runtime-deploy integrity, combined JEPA, Lab-Age, controller guard and A5 UI lease PASS; migration, owner-read/Python 3.14 startup, audio/arithmetic, staged/integrated regression and privacy were still in progress. No all-green base or release claim.
