@@ -52,7 +52,7 @@ def _readout_output(role, prediction):
     }
 
 
-def receiver_matrix(store, state, actions, home=None):
+def receiver_matrix(store, state, actions, home=None, *, nonblocking=False):
     """Read role heads for candidate actions with exactly one checkpoint load."""
     vector = _state_vector(state)
     if (type(actions) not in (list, tuple) or not actions
@@ -64,7 +64,7 @@ def receiver_matrix(store, state, actions, home=None):
     root = Path(home if home is not None else store.home) / "world_jepa"
     learner = WorldJEPAStoreConsumer(store, root, learning_enabled=False)
     try:
-        with learner._locked(False):
+        with learner._locked(False, blocking=not nonblocking):
             stored, _ = learner._read_state()
             active = stored["active"]
             if active is None:
@@ -119,6 +119,21 @@ def receiver_matrix(store, state, actions, home=None):
                         "native_body_weights_changed": False,
                     }
             return matrix
+    except BlockingIOError:
+        return {
+            action: {
+                role: {
+                    "status": "BUSY",
+                    "role": role,
+                    "error": "LOCK_BUSY",
+                    "decision_authority": "NONE",
+                    "native_body_consumed": False,
+                    "native_body_weights_changed": False,
+                }
+                for role in RECEIVER_ROLES
+            }
+            for action in actions
+        }
     except (ValueError, TypeError, KeyError, OSError, OverflowError,
             ArithmeticError, AttributeError) as exc:
         status = "NO_CHECKPOINT" if "checkpoint unavailable" in str(exc) else "UNAVAILABLE"
