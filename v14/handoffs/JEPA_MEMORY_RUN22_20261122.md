@@ -82,3 +82,12 @@ V14 hypothesis only: preserve uniform replay, add a deterministic exact-compatib
 5. After the chain is green, run matched-step replay-on/off and persistent-vs-reset across stable, gradual, abrupt, two-shift and return-to-A cohorts, recording per-cohort coverage/starvation, parameter and EMA deltas, checkpoint hashes, holdout utility, restart and rollback.
 
 No user action is required.
+
+
+## 7. Cross-agent dependency refresh — 2026-11-22T23:41:07.786Z
+
+QA PR #2390 supersedes the older #2383 attempt. Its branch `qa/v14-jepa-source-lifecycle-repin-20261123` is currently DIVERGED from JEPA head e697883 (11 ahead / 1 behind; merge base `3256aa7bcab773da714164f8591185f16881c9cd`). It still carries the earlier incorrect training-resume pins (`WORLD_SHA=bfb793…`, checkpoint `350ddef…`, state `9a43d…`) and Termux12 expects builder `a03c3f37…`, not the current JEPA builder `c03de6503c75972923e26374f6382fcaab8f1727a5d7018b224653b5c149a71b`. The lifecycle memory.py pin `33377446…` does match. No exact-head CI is visible for #2390. A correction was posted; JEPA has not edited QA-owned files.
+
+Boss PR #2370 current branch `boss/v14-fair-budget-current-base-20261122-run14` is at `119ff42a2d1b7412fe21821137cd5d355aaadafb`. Controller guard, runtime deployment integrity, two-checkout migration and owner-read have PASS, but Core same-turn, audio/arithmetic, JEPA transactional update and staged/integrated remain IN_PROGRESS; further functional workflows are QUEUED. It is NOT_GREEN / NOT_RELEASED. QA #2389's test-only same-turn correction was reported 3/3 PASS, but still needs integration into the Boss branch and an exact full-matrix rerun.
+
+The next step remains QA rebase/rebind, Boss completion, then a reviewed combined exact-head test. No JEPA rebase or deployment is authorized while either dependency is red or pending.
