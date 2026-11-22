@@ -260,10 +260,12 @@ class Neuromod:
         ACTIVE -> the plasticity gate factor of its path (eligibility x modulator x Age/meta/homeostasis; veto/conflict -> 0)."""
         if self.local_mode()!='ACTIVE':return 1.
         return self.gate(component)['factor']
-    def local_update(self,component,delta=None):
+    def local_update(self,component,delta=None,observe=True):
         """§12.4 Δθ_i ∝ e_i × δ_i × M_i × P_i. delta: the sample's own signed error in [-1, 1]; default the path's last
-        mapped reward-prediction error. Returns the signed scale (negative = do not imitate this sample)."""
-        g=self.gate(component);d=g['delta']['value'] if delta is None and g.get('delta') else (0. if delta is None else clamp(delta,-1.,1.))
+        mapped reward-prediction error. Returns the signed scale (negative = do not imitate this sample).
+        observe=False keeps a runtime learner from triggering meta-authority observation during its own update."""
+        if type(observe) is not bool:raise ValueError('observe must be bool')
+        g=self.gate(component,observe=observe);d=g['delta']['value'] if delta is None and g.get('delta') else (0. if delta is None else clamp(delta,-1.,1.))
         if g['veto'] or g['conflict']['verify_first']:return {'scale':0.,'delta':d,'gate':g}
         p=g['age_plasticity']*(g['meta']['p_applied'] if g['meta']['mode']=='ACTIVE' else 1.)
         return {'scale':round(g['eligibility']*d*g['modulator']['combined']*p,6),'delta':d,'gate':g}
