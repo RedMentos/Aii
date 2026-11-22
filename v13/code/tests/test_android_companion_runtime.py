@@ -89,19 +89,39 @@ class FakeTransport:
         self.submitted = []
         self.pending_items = []
         self.cancelled = []
+        self.capability_calls = 0
 
     def public_key(self):
         return dict(PUBLIC_KEY_INFO)
 
     def capabilities(self):
+        self.capability_calls += 1
         return {
             "schema": "v14.android-capability-registry/1",
+            "android_api": 35,
             "enabled": self.enabled,
             "termux_paired": True,
-            "capabilities": [{
-                "capability": "launch_app",
-                "status": "READY_WITH_PER_ACTION_CONSENT" if self.enabled else "OFF_STOP_SWITCH",
-            }],
+            "capabilities": [
+                {
+                    "capability": "launch_app",
+                    "status": "READY_WITH_PER_ACTION_CONSENT" if self.enabled else "OFF_STOP_SWITCH",
+                    "per_action_consent": True,
+                    "android_os_permission_required": False,
+                    "result_observed": False,
+                    "learning_authority": False,
+                },
+                {
+                    "capability": "observe_ui",
+                    "status": "OFF_NOT_IMPLEMENTED",
+                    "per_action_consent": False,
+                    "android_os_permission_required": False,
+                    "result_observed": False,
+                    "learning_authority": False,
+                },
+            ],
+            "network_enabled": False,
+            "shell_enabled": False,
+            "model_authority": False,
         }
 
     def submit(self, request):
@@ -319,6 +339,13 @@ def test_action_intent_history_is_session_scoped_restartable_and_non_authoritati
     # Bind the signed fixture to this exact request. Reusing SUCCESS_RECEIPT
     # would correctly fail because its digest belongs to com.example.app.
     request = transport.submitted[-1]
+    assert request["args"]["package"] == "com.example.private_app"
+    source_message = runtime.store.one(
+        "SELECT text FROM messages WHERE event_id=? AND role='user'",
+        (pending["source_event_id"],),
+    )
+    assert source_message["text"] == "Operator requested launch_app"
+    assert "com.example.private_app" not in source_message["text"]
     body = {
         **BODY,
         "action_id": action_id,
@@ -446,4 +473,83 @@ def test_android_action_history_rejects_unbounded_or_non_integer_limits(tmp_path
         with pytest.raises(ValueError, match="history limit"):
             controller.history(invalid)
     controller.broker.close()
+    runtime.store.close()
+
+def test_status_combines_read_only_native_registry_without_granting_authority(tmp_path):
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+
+    status = json.loads(controller.status())
+    companion = status["companion"]
+
+    assert status["status"] == "LOCAL_COMPANION_CONTROLLER"
+    assert status["read_only_probe"] is True
+    assert status["android_device_verified"] is False
+    assert status["redmi_status"] == "REDMI_UNVERIFIED"
+    assert companion["provider_status"] == "AVAILABLE"
+    assert companion["enabled"] is True
+    assert companion["termux_paired"] is True
+    assert companion["android_api"] == 35
+    assert companion["capabilities"][0]["status"] == "READY_WITH_PER_ACTION_CONSENT"
+    assert companion["capabilities"][0]["per_action_consent"] is True
+    assert companion["capabilities"][0]["result_observed"] is False
+    assert companion["capabilities"][0]["learning_authority"] is False
+    assert companion["capabilities"][1]["status"] == "OFF_NOT_IMPLEMENTED"
+    assert companion["network_enabled"] is False
+    assert companion["shell_enabled"] is False
+    assert companion["model_authority"] is False
+    assert transport.capability_calls == 1
+    assert transport.submitted == []
+    assert transport.cancelled == []
+    controller.broker.close()
+    runtime.store.close()
+
+
+def test_status_reports_pairing_required_without_inventing_device_state(tmp_path):
+    class UnpairedTransport(FakeTransport):
+        def capabilities(self):
+            self.capability_calls += 1
+            return {"status": "DENIED", "reason": "TERMUX_NOT_PAIRED"}
+
+    runtime = make_runtime(tmp_path)
+    transport = UnpairedTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+
+    status = json.loads(controller.status())
+    assert status["companion"] == {
+        "provider_status": "PAIRING_REQUIRED",
+        "termux_paired": False,
+    }
+    assert status["android_device_verified"] is False
+    assert status["redmi_status"] == "REDMI_UNVERIFIED"
+    assert transport.submitted == []
+    controller.broker.close()
+    runtime.store.close()
+
+
+def test_status_remains_available_when_native_provider_is_unreachable(tmp_path):
+    class OfflineTransport(FakeTransport):
+        def capabilities(self):
+            self.capability_calls += 1
+            raise OSError("private provider details must not be surfaced")
+
+    runtime = make_runtime(tmp_path)
+    transport = OfflineTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+
+    status = json.loads(controller.status())
+    assert status["status"] == "LOCAL_COMPANION_CONTROLLER"
+    assert status["companion"]["provider_status"] == "UNAVAILABLE"
+    assert status["companion"]["error_type"] == "OSError"
+    assert "private provider details" not in json.dumps(status)
+    assert status["android_device_verified"] is False
+    controller.broker.close()
+    runtime.store.close()
+
+
+def test_android_help_lists_the_history_command_without_opening_the_companion(tmp_path):
+    runtime = make_runtime(tmp_path)
+    help_text = Operator(runtime).run(":android help")
+    assert "history [1..50]" in help_text
     runtime.store.close()
