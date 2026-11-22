@@ -259,6 +259,17 @@ def _do_update(name, root, state, *, runtime_busy, tested_commits, manual):
         state[name] = "ERROR"
         return
     key = (commit, name)
+    # An interrupted two-file activation is a recovery operation, not a new
+    # source install. Recover it only after the runtime is stopped and the
+    # existing automatic-update consent (or an explicit manual request) allows
+    # the worker to act. This rollback/finalize must precede CI gating so a red
+    # candidate cannot strand a mixed launcher/marker pair.
+    if name == "runtime" and must_deploy and not runtime_busy and (manual or enabled()):
+        state["runtime_activation_recovery"] = runtime_deploy.recover_pending_activation()
+        must_deploy = runtime_deploy.needs_deploy(root)
+        if probe["status"] == "UP_TO_DATE" and not must_deploy:
+            state[name] = "UP_TO_DATE"
+            return
     # The first check may have happened before a graceful chat stop.
     # Re-read the exact-commit workflow results immediately before mutation so
     # a newer failed/queued run cannot be hidden by the pre-stop success.
