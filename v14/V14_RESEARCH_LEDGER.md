@@ -1024,3 +1024,18 @@ Primary source: https://arxiv.org/abs/2611.20819.
 **Evidence boundary:** LOCAL_LINUX scratch mirror PASS for caller-asserted thresholds, absent threshold, and missing calibration receipt all remaining DEFER while retaining the measured raw delta. Full Aii pytest and exact-head CI have not yet run on this commit. No labeled speaker corpus, calibrated threshold, embedding model weights, microphone or Android test was available. This is a false-positive prevention / evidence-integrity correction, not a working diarizer or speaker-identification claim.
 
 **Research implication:** FASTDIAR's published setup and any paper-specific thresholds cannot calibrate a different model/embedding distribution. Before enabling decisions, obtain a model-revision-bound labeled validation set with speaker-disjoint splits, FAR/FRR/EER and confidence intervals, then pin the calibration artifact to the exact embedding model hash and test domain shift. Keep all current thresholds diagnostic-only until that exists.
+
+
+## R-068 — llama.cpp output embeddings are not the receiver's input-token space (2026-11-22)
+
+**Primary source reviewed:** `ggml-org/llama.cpp` commit `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4`, created 2026-09-14, version bump to 0.4.1. The exact pinned `include/llama.h`, `src/llama-context.cpp`, and MIT LICENSE were read.
+
+- `llama_batch.embd` is documented as input token embeddings, one float vector of size `n_embd` per token, used when `token == NULL` (`include/llama.h:246-255`).
+- `llama_get_embeddings_ith(ctx, i)` returns an output token embedding with shape `[n_embd]` (`include/llama.h:1043-1057`). The pinned implementation resolves the row and offsets by `model.hparams.n_embd_out()` (`src/llama-context.cpp:920-935`).
+- The decode input path uses `hparams.n_embd_inp()` for `batch.embd` outside the MTP/DFlash special cases (`src/llama-context.cpp:1668+`). The same source explicitly notes that `n_embd_out` can differ from `n_embd_inp` for deepstack models (`src/llama-context.cpp:1526+`).
+- Therefore the current Core probe's `llama_get_embeddings_ith` → `llama_batch.embd` path is an **output-token-representation → input-token-representation** crossing. A matching vector length only proves geometric compatibility; it does not prove the two spaces are semantically aligned. The native receiver may consume the float batch and change its output, but that is not learned latent coupling or semantic utility.
+- The current Python wrapper records the supplied vector width as `input_dim` and compares it to `receiver_input_dim`; the receipt does not yet explicitly label sender `n_embd_out` / representation kind separately from receiver `n_embd_inp`. Recommend fields `sender_output_dim`, `sender_representation=OUTPUT_TOKEN_EMBEDDING`, and `receiver_representation=TOKEN_EMBEDDING_INPUT`, while retaining `alignment_status=UNTRAINED_UNKNOWN` even on a dimension match.
+
+**Testable next experiment:** retain the current native ingress as a diagnostic only; add a same-model/token-embedding control and a pair-specific trained projector only after both representations are explicitly typed. Evaluate held-out receiver-task utility against source-exact, zero, shuffled, random same-norm and OOD controls, with exact model/tokenizer hashes. Nonzero output RMS is an input-effect measurement, not semantic-use evidence. Do not promote production B3 or JEPA coupling from dimension match.
+
+**License/provenance:** pinned llama.cpp source is MIT; no upstream code or model weights were imported in this review.
