@@ -4,7 +4,7 @@
 
 - Base: `boss/v14-recall-store-pin-rebind-20261122` at `d06c63794adc0ef802af9c7d91dc683d8a1057bf`
 - Working branch: `research-perception/v14-raw-ear-rebase-d06c637-20261122`
-- New commits: 13 ahead of base at checkpoint; no merge, release or deployment claimed
+- New commits: 15 ahead of base at PR creation (#2299); no merge, release or deployment claimed
 - Scope: Perception-owned RAW EAR input API, speaker-change evidence and A4 voice-cue integration, rebased without overwriting the Boss-owned fair-budget Cognition overlay
 
 ## Code now on the rebased branch
@@ -28,7 +28,7 @@
 ## Test and deployment state
 
 - Base candidate `d06c637`: 14 successful, 2 skipped, 1 cancelled workflow run in its current PR-triggered matrix. This is base CI only.
-- New rebased branch: exact-head CI pending PR creation. Do not inherit the old branch's 64-test pass as proof for this SHA.
+- New rebased branch: exact-head CI pending/awaiting GitHub Actions dispatch after PR #2299 creation; do not inherit the old branch's 64-test pass as proof for this SHA. Do not inherit the old branch's 64-test pass as proof for this SHA.
 - Local full-repository test suite: BLOCKED; no Aii checkout is mounted in the execution environment. No repository-local Python/native test was run.
 - Native llama.cpp model execution: NOT RUN.
 - Redmi/Termux: `REDMI_UNVERIFIED`; no live receipt or connected device proof in this run.
