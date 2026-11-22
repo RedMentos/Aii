@@ -2244,3 +2244,18 @@ Focused B3 paired-capture run 45040617156 remains PASS (52 tests, compile, CLI s
 - Runtime deployment 45040617193: plain UI recovery builder changed under Python 3.11 and 3.14.
 
 JEPA transactional update, combined online JEPA, JEPA receipt integrity, role-specific tap provenance, privacy scan and offline bridge checks passed; same-turn B1/B2/C4/C3 was still in progress and audio/arithmetic/native latent receiver queued. These are shared integrated builder/recovery composition failures, not the focused B3 capture/trainer test. Keep #2346 DRAFT / NOT_RELEASED.
+
+
+## QA & Android evidence overlay — 2026-11-22 run 7
+
+| Path | Exact evidence | Acceptance boundary | Classification |
+|---|---|---|---|
+| Release/install | Release-development SHA `aed1d2b826290c95c70356b5d8b864b5ef382be4`, 41/41 exact GitHub check-runs; private PIPELINE_STATUS #602 confirms same SHA installed/up-to-date | This proves code installation, not correct chat or whole-system behavior | EXACT_CI_PASS / AUTHENTICATED_INSTALL / FUNCTIONAL_ACCEPTANCE_OPEN |
+| Native chat and B1/B2 | Private DIAGNOSTICS #603: stored FINAL turn 57.739 s / 41.627 s TTFT / 38.945 s prefill / 2 tokens; B1/B2 TIME_BUDGET 53.2/54.2 s | No new turn, correctness score, consumed source-bound offers or 20-turn acceptance | DEVICE_OBSERVATION / NOT_ACCEPTED |
+| Android companion trust | PR #2356 adds current installed Termux signer verification under trust lock and fail-closed status; Robolectric/Gradle succeeded on predecessor head 128efc8 | Exact head 99cc3c emulator stop/restart plus staged/integrated workflows still pending; no APK or Redmi companion test | CODE_PRESENT / FOCUSED_CI_PASS_ON_PREDECESSOR / CURRENT_HEAD_CI_PENDING / NOT_ANDROID_VERIFIED |
+| Android stop/restart | Predecessor emulator run failed reading UI hierarchy from /sdcard; test-only path changed to /data/local/tmp on current head | Must pass exact-head emulator test; this is not a product failure or Redmi measurement | TEST_HARNESS_FIX_PENDING |
+| Store/source-forget and JEPA | PR #2359 exact head da0b2df: 6/13 pass, 7 fail; semantic pin 609c… vs actual 461650…; Context Recall Store pin 03cbe… vs actual 062689… | Rebind complete nested chain; expose independent SleepRuntime postcommit error; no pin relaxation or learning claim | CI_BLOCKED / NOT_RELEASED |
+| Age and learning rights | Private DIAGNOSTICS #603: official Age 0, X10 requested, effective stage 5, physical feature execution false, commit authority requires SHADOW | No stage-6–10 feature execution or weight update is proven | CONFIG_OBSERVED / FEATURE_EXECUTION_UNVERIFIED |
+| Whole-Canon | Historical Canon remains preserved; current release and companion CI are only partial paths | Correct B1/B2→C4→C3, B3 learned latent coupling, numeric weights/retention, full voice, Android UI/background executor, sparse MoE, self-edit and semantic coverage remain open | WHOLE_SYSTEM_ACCEPTANCE_OPEN |
+
+No private transcript or sensitive user content was copied into public artifacts. No LOG_PAGE, CHAT_SEND, shell, UPDATE_REQUEST, model/weight/permission change or device mutation occurred.

@@ -1,3 +1,39 @@
+# QA & Android — aktueller Gesamt-Checkpoint (2026-11-22, Run 7)
+
+**Keine Nutzeraktion erforderlich.** Der vorhandene Updater hat den aktuellen Release-Branch-Stand bereits installiert. Kein Termux-Befehl, kein neuer UPDATE_REQUEST, kein CHAT_SEND, keine LOG_PAGE-Abfrage und kein Modell-/Gewichts-/Rechtewechsel.
+
+## Release und echtes Redmi
+
+- Release-Branch `gpt6/v13-private-remote-bridge-20261111` steht exakt auf `aed1d2b826290c95c70356b5d8b864b5ef382be4`; **41/41 GitHub-Check-Runs SUCCESS**.
+- Authentifizierter privater PIPELINE_STATUS [#602](https://github.com/RedMentos/Aiiii/issues/602) bestätigt genau diesen SHA als installiert, Auto-Update EIN, Runtime/Dashboard `UP_TO_DATE`, `last_error=NONE`.
+- DIAGNOSTICS [#603](https://github.com/RedMentos/Aiiii/issues/603) meldet Service, Modellprozess und Dashboard RUNNING. Der letzte gespeicherte Turn ist FINAL, aber 57,739 s gesamt, 41,627 s TTFT, 38,945 s Prefill, 751 Prompt-Tokens und nur 2 generierte Tokens. Das ist ein wiedergegebener gespeicherter Turn; kein neuer Chat und keine Korrektheitsbewertung.
+- B1_DETAIL und B2_GIST endeten weiterhin mit `TIME_BUDGET` nach 53,2 s bzw. 54,2 s; C3-Probe 3,1 s. Die momentane Residency-Abfrage zeigt 0 gemappte Prozesse/0 MiB PSS/RSS, aber `readability=UNKNOWN_NO_GROUP_CHILDREN`; daraus folgt weder, dass das Modell gestoppt ist, noch ein freier-RAM-Wert.
+- Offizielles Age 0; Lab-Testauswahl X10 angefordert, effektiv implementierte Stufe 5; physische Feature-Ausführung nicht bestätigt; Lern-Commit-Autorität benötigt separat SHADOW. Private HEALTH #608 und LEARNING_STATUS #609 erhielten innerhalb ihrer TTL keine authentifizierte Antwort.
+- Kein neuer Turn, kein Probe-Lauf, keine Geräteaktion und keine Änderung an Modell, Weights, Berechtigungen oder Updater.
+
+## Android Companion QA — PR #2356
+
+- QA-Branch `qa/v14-companion-final-qa-20261122`, aktueller Head `99cc3c351ceb228c154c82340f3cf552bd2a4fec`, PR [#2356](https://github.com/RedMentos/Aii/pull/2356), gestapelt auf `core/v14-android-companion-native-20261121`; **NOT_RELEASED**.
+- Neuer Status-Fix: die Capability-Registry akzeptiert nicht mehr nur gespeicherte Paket-/Digest-Strings. Sie prüft den SHA-256 des aktuell installierten `com.termux`-Signers unter dem Pairing-Trust-Lock. Fehlendes Paket, ungültiger oder geänderter Digest sowie widerrufener Trust-Latch sperren den Caller. MainActivity zeigt nur noch denselben verifizierten Zustand. Regressionen decken Match, Signerwechsel, fehlendes Paket, malformed Digest und widerrufenen Trust ab.
+- Android Gradle/Robolectric war auf dem Vorgänger-Head `128efc8` erfolgreich; der Emulator-Stop/Restart-Test lief noch. Der frühere Emulatorlauf `fcaf355` scheiterte danach ausschließlich am Test-Hilfspfad: `/sdcard/v14-window.xml` war für den Shell-Read nicht zugänglich. Das Skript wurde auf `/data/local/tmp/v14-window.xml` umgestellt (Head `99cc3c3`). Die exakten Workflows für diesen Head laufen; **noch kein Emulator-PASS**.
+- Kein APK wurde installiert, kein Termux-Pairing ausgeführt und keine Android-Aktion autorisiert. Redmi-Companion bleibt UNVERIFIED.
+
+## Store-/JEPA-Source-Lifecycle — PR #2359
+
+- Exakter Head `da0b2dfad72124639f1c8dbf0656246ba55859c4`: **6/13 SUCCESS, 7/13 FAILURE**, DRAFT / NOT_RELEASED.
+- Exakte Logs zeigen stale Pin `world_semantic_evidence_candidate.py`: erwartet `609c9d…`, tatsächlich `461650…`; Context-Recall-Store-Pin erwartet `03cbe…`, tatsächlich `062689…`. Dadurch scheitern staged/integrated, Lab-Age, Optimizer-Resume und Migration.
+- Zusätzlich liefert der synthetische SleepRuntime-Postcommit-Test `status=ERROR` statt `POSTCOMMIT_PROCESSED`; der Test gibt den zugrundeliegenden Fehler noch nicht aus. QA hat die beiden Hash-Abweichungen und den separaten Laufzeitfehler im PR dokumentiert. Keine Pin-Gates wurden gelockert.
+
+## Voll-Canon-Proofgrenze und nächste Schritte
+
+- Der aktuelle Branch-/Installationsbeleg beweist keine korrekte Gehirnantwort. P0 bleibt echte B1/B2→C4→C3-Kooperation, kurze TTFT, korrekte Antworten und ein gemischter 20-Turn-Redmi-Test.
+- B3 gelernte Latent-Kopplung, persistente numerische Weight-Updates mit Retention/Forget/Rollback, vollständige Stimme, Android-UI-/Background-Executor, zwei echte sparse-MoE-Körper, Self-Edit und vollständige Canon-Klausel→Consumer→Test→Plattform→Rollback-Zuordnung bleiben getrennte offene Anforderungen.
+- Nächster QA-Schritt: exakte #2356 Emulator-/Staged-/Integrated-CI abwarten; bei einem roten Lauf den konkreten Fehler beheben. Danach #2359 bottom-up neu binden und den SleepRuntime-Fehler offenlegen, ohne Source-/Learning-Gates zu lockern. Kein Redmi-PASS ohne echte Gerätequittung.
+
+**Nutzeraktion: keine.**
+
+---
+
 # QA & Android — temporal JEPA and source-lifecycle follow-up (2026-11-22)
 
 - JEPA/Memory PR [#2351](https://github.com/RedMentos/Aii/pull/2351), exact head 3df0c8a6a65dd2545bde62db92efc761d143032a, adds dense contiguous T8 temporal windows (history lengths 2/3), explicit censored omissions, unknown-gap breaks, connected session/source split, NumPy WorldJEPA + EMA/Adam/checkpoint persistence, and B1/B2/SELF shadow readouts. It is wired into SleepRuntime post-commit but has no prompt consumer or native body-weight effect. Synthetic Store/T8 fixtures only. Exact CI currently queued; PR is DRAFT / NOT_RELEASED.
