@@ -237,8 +237,27 @@ class RuntimeObserverTests(unittest.TestCase):
 
                 answer = r.last_answer()
                 self.assertEqual(answer['status'], 'FINAL', answer)
+                diagnostic = json.loads(answer['metadata'])
+                offer_diagnostics = [
+                    {'kind': row['kind'], 'metrics': json.loads(row['metrics'])}
+                    for row in r.store.rows(
+                        "SELECT kind,metrics FROM telemetry WHERE event_id=? AND kind IN "
+                        "('offer_rejected','native_body_deferred_for_c3','native_body_budgeted_for_c3') ORDER BY id",
+                        (event['event_id'],))
+                ]
                 self.assertEqual([role for role, _ in calls],
-                                 ['B1_DETAIL', 'B2_GIST', 'C3_LANGUAGE'])
+                                 ['B1_DETAIL', 'B2_GIST', 'C3_LANGUAGE'],
+                                 json.dumps({
+                                     'route': diagnostic.get('route'),
+                                     'resource_mode': diagnostic.get('resource_mode'),
+                                     'observer_schedule': diagnostic.get('observer_schedule'),
+                                     'fast_forward': diagnostic.get('fast_forward'),
+                                     'reflex': diagnostic.get('reflex'),
+                                     'reasoning_effort': diagnostic.get('reasoning_effort'),
+                                     'stage_marks_s': diagnostic.get('stage_marks_s'),
+                                     'focal': diagnostic.get('focal'),
+                                     'offers': offer_diagnostics,
+                                 }, sort_keys=True))
                 rows = r.store.rows(
                     "SELECT id,payload FROM packets WHERE event_id=? AND kind='OfferPacket' ORDER BY created",
                     (event['event_id'],))
