@@ -53,7 +53,7 @@ def test_world_jepa_source_builder_pin_chain_is_exact():
         return match.group(1)
 
     lifecycle = "scripts/source_lifecycle_lock_integration_candidate.py"
-    assert pin(lifecycle, r"'memory\\.py': '([0-9a-f]{64})'") == sha("v13/memory.py")
+    assert pin(lifecycle, r"'memory[.]py': '([0-9a-f]{64})'") == sha("v13/memory.py")
     assert pin(lifecycle, r"GUARD_SCRIPT_SHA = '([0-9a-f]{64})'") == sha("scripts/archive_reader_guard_integration_candidate.py")
 
     memory_world = "scripts/integrated_memory_world_candidate_20261111.py"
@@ -69,7 +69,7 @@ def test_world_jepa_source_builder_pin_chain_is_exact():
     assert pin(feedback, r"BASE_BUILDER_SHA = '([0-9a-f]{64})'") == sha(memory_world)
     assert pin(context, r"BASE_BUILDER_SHA = '([0-9a-f]{64})'") == sha(feedback)
     assert pin(training, r"BASE_SHA = '([0-9a-f]{64})'") == sha(context)
-    assert pin(termux12, r"integrated_world_training_resume_candidate_20261111\\.py': '([0-9a-f]{64})'") == sha(training)
+    assert pin(termux12, r"integrated_world_training_resume_candidate_20261111[.]py': '([0-9a-f]{64})'") == sha(training)
 
     base = read(termux12)
     git_blob = hashlib.sha1(b"blob " + str(len(base)).encode("ascii") + bytes([0]) + base).hexdigest()
