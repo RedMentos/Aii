@@ -322,6 +322,11 @@ def needs_deploy(source, *, home=None, private=None):
     _, code, commit = _source(source)
     home = Path(home or Path.home() / "v13")
     private = Path(private or Path.home() / ".v13-private")
+    journal = private / ACTIVATION_JOURNAL_NAME
+    if journal.exists() or journal.is_symlink():
+        # A partially written pair must force the worker through deploy(),
+        # whose first operation is the journal recovery transaction.
+        return True
     target = _marker(private)
     try:
         launcher = _launcher(home)
