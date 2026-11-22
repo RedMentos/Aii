@@ -152,7 +152,7 @@ def _world_jepa_body_readout(r, e, text, role):
             "body_prompt_consumed": True,
             "native_body_consumed": False,
             "decision_authority": "NONE",
-            "note": "Prediction only; not source evidence or permission.",
+            "note": "Prediction only; not fact, source evidence or permission.",
         }
         audit = {
             "schema": "V14_WORLDJEPA_BODY_RECEIVER_AUDIT/1",
