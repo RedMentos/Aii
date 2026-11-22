@@ -685,6 +685,27 @@ def consume_projected_frame(
 
 
 @contextmanager
+def consume_projected_frame_from_provider(
+    runtime, observation, frame_buffer, *, consent_lease, verify_fn, **kwargs,
+):
+    """Issue the one-shot provider verifier and consume the frame under one lease.
+
+    The caller still owns the mutable bytearray until this entry point returns.
+    Always overwrite it even when verifier issuance fails before the consumer's
+    own cleanup scope can begin.
+    """
+    try:
+        verifier = _issue_provider_frame_verifier(
+            consent_lease, observation, verify_fn,
+        )
+        return consume_projected_frame(
+            runtime, observation, frame_buffer,
+            consent_lease=consent_lease, frame_verifier=verifier, **kwargs,
+        )
+    finally:
+        _overwrite_caller_buffer(frame_buffer)
+
+
 def consume_projected_frame_scope(runtime, observation, frame_buffer, **kwargs):
     """Scope one UI frame through all downstream consumers, then revoke its cache/source.
 
@@ -701,4 +722,9 @@ def consume_projected_frame_scope(runtime, observation, frame_buffer, **kwargs):
         revoke_ui_observation(runtime, validated["source_id"])
 
 
-__all__ = ["REVISION", "consume_projected_frame", "consume_projected_frame_scope"]
+__all__ = [
+    "REVISION",
+    "consume_projected_frame",
+    "consume_projected_frame_from_provider",
+    "consume_projected_frame_scope",
+]
