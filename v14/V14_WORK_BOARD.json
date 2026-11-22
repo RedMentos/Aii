@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T08:02:52.138Z",
+  "updated_at": "2026-11-22T08:03:26.755Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c03ff0aa9e18b5ffebd1109f3c078105f53c6afe; documentation-only PR #2316 merged. Current device code receipt is f210999cf556be4d4514427cc9b5cf6d3cf3e984.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Latest 2026-11-22 owner-authenticated phone receipt supersedes earlier #480/#477/#466 snapshots. Current phone pipeline is UP_TO_DATE at f210999; last-turn performance and B1/B2 probe failures remain unresolved. Never promote synthetic/CI evidence to native Android proof.",
@@ -14,10 +14,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "Authenticated Redmi PIPELINE_STATUS/DIAGNOSTICS receipt: installed code SHA f210999cf556be4d4514427cc9b5cf6d3cf3e984, auto-update=true, runtime/dashboard UP_TO_DATE, last_error NONE. Latest turn FINAL but 63.22 s total / 42.48 s TTFT / 34.96 s prefill / 709 prompt tokens / 2 generated tokens. Native probe SMOKE_PARTIAL: B1 53.2 s TIME_BUDGET, B2 54.2 s TIME_BUDGET; process snapshot has B1=1, B2=0, C2=1, C3=1; mapped PSS 85.8 MiB (not free RAM). User input is redacted; correctness is not accepted. Code branch c03ff0 is docs-only after f210999. Separate QA #2277 source-reproduces a 30 s C3-recovery branch that reserves 26 s for C3 and defers both B1/B2, but its test has not executed; three metadata/security checks do not count as that regression passing.",
+      "proof_environment": "Authenticated Redmi PIPELINE_STATUS/DIAGNOSTICS receipt: installed code SHA f210999cf556be4d4514427cc9b5cf6d3cf3e984, auto-update=true, runtime/dashboard UP_TO_DATE, last_error NONE. Latest turn FINAL but 63.22 s total / 42.48 s TTFT / 34.96 s prefill / 709 prompt tokens / 2 generated tokens. Native probe SMOKE_PARTIAL: B1 53.2 s TIME_BUDGET, B2 54.2 s TIME_BUDGET; process snapshot has B1=1, B2=0, C2=1, C3=1; mapped PSS 85.8 MiB (not free RAM). User input is redacted; correctness is not accepted. Code branch c03ff0 is docs-only after f210999. Separate QA #2277 source-reproduces a 30 s C3-recovery branch that reserves 26 s for C3 and defers both B1/B2, but its test has not executed; three metadata/security checks do not count as that regression passing. Diagnostics also report AI runtime/service RUNNING, autostart=true, 8 managed sessions; last session exit code remains UNVERIFIED. Console errors are USER_NOT_OPTED_IN, so no LOG_PAGE was requested.",
       "next_step": "Core: preserve both independent bodies and C4→C3 on the same turn. Measure a fair bounded budget for the default sequential A_THEN_B schedule: with deadline=90 s, observer_end=start+40.5 s and observer_seconds=35 s, the first body can consume 35 s and leave at most ~5.5 s for the second. Treat this as a source-derived starvation risk, not yet proven causal for the sampled turn. Add per-role budget/offer/TTFT telemetry, test both orders and negative controls, then run 20 mixed native Redmi turns with correctness, p50/p95 TTFT and PSS. QA must rebase #2277 and trigger its actual staged regression on Python 3.13/3.14; assert both B1/B2 reach same-turn C4 and include a legitimate single-body-defer negative control. Core preserves C3 reserve without blanket-deferring both bodies.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T07:58:52.317Z",
+      "last_checkpoint": "2026-11-22T08:03:26.755Z",
       "proof": "Private owner-authenticated receipt confirms exact installed code SHA f210999 and current up-to-date pipeline. Latest diagnostic reports the timings and per-role TIME_BUDGET above. No 20-turn acceptance, correct-answer benchmark, native latent transfer or B1/B2 offer delivery is proven."
     },
     {
@@ -914,7 +914,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T08:02:52.138Z",
+    "timestamp": "2026-11-22T08:03:26.755Z",
     "release_sha": "c03ff0aa9e18b5ffebd1109f3c078105f53c6afe",
     "release_push_ci": "39_SUCCESS_0_FAILURE_0_PENDING_39_CHECK_RUNS",
     "last_code_sha_installed": "f210999cf556be4d4514427cc9b5cf6d3cf3e984",
@@ -948,6 +948,7 @@
       "P0_AUDIORECORD_PROVIDER_ZEROIZATION_AND_REVOCATION",
       "WHOLE_CANON_SEMANTIC_COVERAGE",
       "P0_C3_RECOVERY_DEFER_ALL_B1_B2_SOURCE_REPRODUCED_TEST_NOT_EXECUTED_PR2277"
-    ]
+    ],
+    "device_runtime_state": "AI_RUNTIME_RUNNING; SERVICE_RUNNING; AUTOSTART_TRUE; MANAGED_SESSION_COUNT_8; LAST_SESSION_EXIT_CODE_UNVERIFIED; CONSOLE_ERRORS_USER_NOT_OPTED_IN"
   }
 }
