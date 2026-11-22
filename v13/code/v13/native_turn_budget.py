@@ -24,6 +24,9 @@ MAX_RECENT = 6
 RECOVERY_MAX_DEADLINE_S = 50
 NATIVE_FIRST_RESERVE_FRACTION = .87
 DEFAULT_PREANSWER_FRACTION = .45
+# A user-forced high/max turn keeps a bounded multi-organ pre-answer slice.
+# The remaining 70% is still reserved for the single outward C3 response.
+USER_FORCED_PREANSWER_FRACTION = .30
 
 
 def zero_token_prefill_failure(row):
@@ -58,12 +61,14 @@ def recent_proof(store):
         return []
 
 
-def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=False):
+def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=False, user_forced_deep=False):
     for number in (start,deadline,now):
         if type(number) not in (int, float) or not math.isfinite(number):
             raise ValueError("invalid monotonic budget")
     if deadline < start or now < start-1:
         raise ValueError("time plan clocks invalid")
+    if type(user_forced_deep) is not bool:
+        raise ValueError("invalid user effort override")
     total = deadline-start
     ordinary_end = start+DEFAULT_PREANSWER_FRACTION*total
     bounded = list(recent)[:MAX_RECENT]
@@ -84,7 +89,16 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
         and total <= RECOVERY_MAX_DEADLINE_S and total >= 5
         and failures >= 2 and recent_good < 2
     )
-    if recover:
+    recovery_overridden = bool(recover and user_forced_deep)
+    if recovery_overridden:
+        # The user's explicit high/max request keeps both body organs eligible,
+        # but never consumes the whole turn: at most 30% is available before
+        # C3, with the rest reserved for the outward answer.
+        reserve = total*(1.0-USER_FORCED_PREANSWER_FRACTION)
+        allotted = min(ordinary_end,deadline-reserve)
+        reason="USER_FORCED_DEEP_BOUNDED_PREANSWER"
+        recover = False
+    elif recover:
         reserve = min(total*NATIVE_FIRST_RESERVE_FRACTION,
                       max(26.0,total*.80))
         allotted = min(ordinary_end,deadline-reserve)
@@ -99,6 +113,7 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
     return {
         "schema": SCHEMA,
         "recovery": recover,
+        "recovery_overridden": recovery_overridden,
         "reason": reason,
         "preanswer_end_monotonic": max(start, allotted),
         "preanswer_seconds_available": round(remaining,3),
