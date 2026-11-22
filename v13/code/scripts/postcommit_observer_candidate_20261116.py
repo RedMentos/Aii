@@ -12,6 +12,8 @@ from pathlib import Path
 SOURCE_SHA256 = {
     # Exact release, reviewed World builder, and reviewed Termux builder output.
     'a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38',
+    '08c1ef961b0c7316da8c1c8265feb71a7a4acf009018788e7accb81eecb2337d',
+    '85a2f94e642a787173fcc973270516a39bef4cb2145c3a19a638cb71975f9235',
     'a217e50b6a821675e2b799d1d4de8c957708aa04aabc95a2e34da9b24c0c215b',
     '0196f880576a1f1f95840ef12eb0b35928f3f442715f3d86f17dc38c4c22305d',
     'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2',
@@ -90,17 +92,31 @@ def apply_source(raw):
     source_hash = sha256(raw).hexdigest()
     if source_hash not in SOURCE_SHA256:
         raise ValueError('postcommit observer runtime hash mismatch')
-    for before, after in REPLACEMENTS:
+    for index, (before, after) in enumerate(REPLACEMENTS):
+        # Current fair-budget Runtime sources removed the older "and not offers"
+        # guard before this overlay was composed. Accept that exact known variant
+        # as well; the final replacement still applies only to a pinned source.
+        if index == 4 and raw.count(before.encode('utf-8')) == 0 and raw.count(after.encode('utf-8')) == 0:
+            before = (
+                "        if status=='FINAL' and not direct and self.cfg['observer_mode']=='background' and not (wake_decision and wake_decision['learned'] and wake_decision['action']=='none') and self.jobs.empty() and not self.stop.is_set() and rmodes.policy(self.guard.mode)['background_observers']:\n"
+            )
         # The reviewed #1990 stage already adds per-role deadline support.
         # Preserve that signature while adding foreground-attempt tracking.
-        if (source_hash == 'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2'
+        if (source_hash in ('d3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2',
+                             '08c1ef961b0c7316da8c1c8265feb71a7a4acf009018788e7accb81eecb2337d', '85a2f94e642a787173fcc973270516a39bef4cb2145c3a19a638cb71975f9235')
                 and before == "                def ask(role,focus=None,use_peer=True):\n"):
             before = before.replace('use_peer=True)', 'use_peer=True,role_end=None)')
             after = after.replace('use_peer=True)', 'use_peer=True,role_end=None)')
         old, new = before.encode('utf-8'), after.encode('utf-8')
-        if raw.count(old) != 1:
-            raise ValueError('postcommit observer anchor mismatch')
-        raw = raw.replace(old, new, 1)
+        old_count, new_count = raw.count(old), raw.count(new)
+        if old_count == 1 and new_count == 0:
+            raw = raw.replace(old, new, 1)
+        elif old_count == 0 and new_count == 1:
+            # The exact source hash is allowlisted above; this replacement is
+            # already present in the staged Runtime and must not be duplicated.
+            pass
+        else:
+            raise ValueError('postcommit observer anchor mismatch: replacement ' + str(index))
     compile(raw, 'v13/runtime.py', 'exec')
     return raw
 

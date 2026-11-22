@@ -1,4 +1,5 @@
 name: V14 JEPA training-resume and source-forget Python 3.13/3.14
+# Boss integration diagnostic checkpoint: keep source-pin hash evidence on this exact PR head.
 
 on:
   pull_request:
@@ -10,6 +11,7 @@ on:
       - "v13/code/v13/memory.py"
       - "v13/code/tests/test_v14_world_jepa_runtime_port.py"
       - "v13/code/v13/world_jepa_receiver_matrix.py"
+      - "v13/code/v13/bodyview.py"
       - "v13/code/v13/world_jepa_planner.py"
       - "v13/code/tests/test_world_jepa_training_resume_stage_20261111.py"
       - "v13/code/tests/world_jepa_training_resume_disposable_cases_20261111.py"
@@ -33,9 +35,71 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "${{ matrix.python-version }}"
+      - name: Print exact source pin chain (diagnostic)
+        run: |
+          python - <<'PY'
+          import hashlib
+          import subprocess
+          from pathlib import Path
+
+          paths = [
+              "v13/code/scripts/integrated_arithmetic_candidate_20261116.py",
+              "v13/code/scripts/integrated_observer_fair_budget_candidate_20261116.py",
+              "v13/code/scripts/integrated_online_world_candidate_20261110.py",
+              "v13/code/scripts/termux_probe_recovery_candidate_20261112.py",
+              "v13/code/scripts/termux_chat_recovery_candidate_20261112.py",
+              "v13/code/scripts/termux_idle_recovery_candidate_20261112.py",
+              "v13/code/scripts/termux_runtime_recovery_candidate_20261112.py",
+              "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py",
+              "v13/code/scripts/stage_integrated_candidate.py",
+              "v13/code/v13/runtime_deploy.py",
+          ]
+          for name in paths:
+              path = Path(name)
+              data = path.read_bytes()
+              git_blob = subprocess.check_output(
+                  ["git", "hash-object", name], text=True
+              ).strip()
+              print(
+                  f"SOURCE_PIN {name} "
+                  f"sha256={hashlib.sha256(data).hexdigest()} "
+                  f"git_blob_sha1={git_blob}"
+              )
+          PY
+      - name: Diagnose exact postcommit Runtime anchor before application
+        run: |
+          PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python - <<'PY'
+          import hashlib
+          import importlib.util
+          from pathlib import Path
+
+          code = Path("v13/code")
+          builder_path = code / "scripts/termux_runtime_recovery_candidate_20261112.py"
+          spec = importlib.util.spec_from_file_location("v14_prepostcommit_diag", builder_path)
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          result = module.build_sources(code, include_postcommit=False)
+          runtime = result["v13/runtime.py"]
+          print("PRE_POSTCOMMIT_RUNTIME_SHA256", hashlib.sha256(runtime).hexdigest())
+
+          post_path = code / "scripts/postcommit_observer_candidate_20261116.py"
+          namespace = {"__name__": "v14_postcommit_diag", "__file__": str(post_path)}
+          raw = post_path.read_bytes()
+          exec(compile(raw, str(post_path), "exec"), namespace)
+          for index, (before, after) in enumerate(namespace["REPLACEMENTS"]):
+              if index == 4:
+                  old_count = runtime.count(before.encode("utf-8"))
+                  new_count = runtime.count(after.encode("utf-8"))
+                  print("POSTCOMMIT_REPLACEMENT_4_COUNTS", old_count, new_count)
+          for number, line in enumerate(runtime.decode("utf-8", "replace").splitlines(), 1):
+              if "if status=='FINAL'" in line:
+                  print("RUNTIME_FINAL_CONDITION", number, line[:1400])
+          PY
       - name: Install pinned test dependencies
         run: python -m pip install --disable-pip-version-check numpy==2.3.5 pytest==9.2.0
       - name: Run staged optimizer-resume source-composition regression
         run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_world_jepa_training_resume_stage_20261111.py
       - name: Run source-forget guard regressions
         run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_v14_world_jepa_runtime_port.py -k "memory_forget or source_forget_guard"
+      - name: Run B1/B2 WorldJEPA body-receiver regressions
+        run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_v14_world_jepa_runtime_port.py -k "bodyview_jepa_receiver"

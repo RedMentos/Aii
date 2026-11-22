@@ -8,13 +8,13 @@ from pathlib import Path
 
 
 SOURCE_PINS = {
-    'v13/runtime.py': 'a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38',
+    'v13/runtime.py': '08c1ef961b0c7316da8c1c8265feb71a7a4acf009018788e7accb81eecb2337d',
     'v13/broker.py': '3be190e0f2314ab360915996d1bd3e9f6a6ef69e7134c2ef86dccc01b4bc5562',
     'v13/contracts.py': '25466e9f938251db981256e8cbf7313c414aeddb4d7c9b880598fe61d92765b1',
     'v13/focal.py': 'e1f17b7865c35a268feb898551c1fd8d190f63a68819fec3b0c07dd21ceef6cf',
     'v13/arithmetic_reflex.py': '93486e8e5e7e9c9c66178833d3c25218e57172688623fb2a29af8e45b6246927',
 }
-UPSTREAM_RUNTIME_SHA = '0196f880576a1f1f95840ef12eb0b35928f3f442715f3d86f17dc38c4c22305d'
+UPSTREAM_RUNTIME_SHA = 'cf6da240935d60bbef5472af07db7a0b0a495d53cb6f6206f95fc3b47a4317d7'
 
 
 def _replace(raw, old, new, label):
@@ -36,7 +36,7 @@ def apply_sources(code_dir, sources):
     result = dict(sources)
     runtime = result['v13/runtime.py']
     if hashlib.sha256(runtime).hexdigest() != UPSTREAM_RUNTIME_SHA:
-        raise ValueError('upstream arithmetic Runtime changed; review composition')
+        raise ValueError('upstream arithmetic Runtime changed; expected=' + UPSTREAM_RUNTIME_SHA + '; actual=' + hashlib.sha256(runtime).hexdigest() + '; review composition')
     for name in ('v13/broker.py', 'v13/contracts.py', 'v13/focal.py'):
         if result.get(name, original[name]) != original[name]:
             raise ValueError('upstream arithmetic source changed: ' + name)

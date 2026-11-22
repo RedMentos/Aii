@@ -295,24 +295,31 @@ class Cognition:
         for value in (deadline,valid_until):
             if isinstance(value,bool) or not isinstance(value,(int,float)) or not math.isfinite(value) or value<=0:raise ValueError('Offer deadline ungültig')
         deadline=min(deadline,valid_until);check(self.r.cancel_event,deadline)
-        # On repeated measured zero-token C3 prefill deadlines, pre-answer
-        # B passes must not consume the remaining foreground native time.
-        # The existing postcommit body observer is unaffected (its caller
-        # omits valid_until). Both B1 and B2 retain real source/provenance.
+        # Repeated C3 prefill failures reserve the remaining C3 window, while
+        # the Runtime gives each sequential B1/B2 pass a fair native deadline.
+        # Defer only when this role's own slice is too small to attempt.
         if preanswer_observer and self.r.cfg.get('observer_mode') == 'background':
             try:
                 from .native_turn_budget import plan,recent_proof
                 budget=plan(valid_until-self.r.cfg['deadline_seconds'],
                             valid_until,time.monotonic(),
                             recent=recent_proof(self.s),
-                            background_enabled=True)
+                            background_enabled=True,
+                            observer_deadline=deadline)
             except (OSError,ValueError,RuntimeError,KeyError,TypeError):
                 budget=None
             if budget and budget['recovery']:
-                self.s.log('native_body_deferred_for_c3',e['event_id'],
-                           {'role':role,'status':'POSTCOMMIT_ELIGIBLE',
-                            'recent_failures':budget['recent_real_prefill_failures']})
-                raise Limits('Redmi C3 braucht native Antwortzeit; B-Observer nach erfolgreicher Antwort')
+                available=budget['preanswer_seconds_available']
+                metrics={'role':role,
+                         'preanswer_seconds_available':round(available,3),
+                         'c3_reserved_seconds':budget['c3_reserved_seconds'],
+                         'recent_real_prefill_failures':budget['recent_real_prefill_failures']}
+                if available < budget['minimum_role_slice_s']:
+                    self.s.log('native_body_deferred_for_c3',e['event_id'],
+                               metrics|{'status':'POSTCOMMIT_ELIGIBLE'})
+                    raise Limits('No fair B1/B2 slice remains inside the C3-reserved turn window')
+                self.s.log('native_body_budgeted_for_c3',e['event_id'],
+                           metrics|{'status':'PREANSWER_BUDGETED'})
         control=self.r.cfg.get('b2_control','two_body')
         # §85.1 controls: the B2 role keeps its own state slot but may borrow B1's policy.
         policy='B1_DETAIL' if role=='B1_DETAIL' or control=='same_model_same_policy' else 'B2_GIST'

@@ -8,7 +8,7 @@ import importlib.util
 from pathlib import Path
 
 BUILDERS = {
-    'scripts/integrated_world_training_resume_candidate_20261111.py': 'b05a5f4c6533f82f8c5092d9392e6a824f5c86d6857b06df04125fac2eaeed4d',
+    'scripts/integrated_world_training_resume_candidate_20261111.py': 'c22a6b68653cb98c40369e1a008e195088465b007350b048665eb73e97d71a64',
     'scripts/termux_probe_recovery_candidate_20261112.py': '27aec15dc1f003fd2c90d3d5a08d5a4a9af223ab57c188720ea9cd18aebc1b2b',
     'scripts/termux_chat_recovery_candidate_20261112.py': 'befbaca164fd5453d4c93017eca1b556f2d771b1b7cf54879c6764e4716587c7',
     'scripts/termux_idle_recovery_candidate_20261112.py': '2cc656b102b9950fdb9cb81970708692573189995218bff8a18f95ff01fa97d7',
@@ -40,7 +40,7 @@ def build_sources(code_dir, *, include_postcommit=True):
     result.update(chat.apply_sources(composed))
     result = idle.apply_sources(code_dir, result)
     arithmetic = load(code_dir, 'scripts/integrated_arithmetic_candidate_20261116.py',
-                      '72bf8a829a7de064e7703271228bcdf02632108418c41c571126fbd8c05d5567')
+                      'ab339dbb135800686e05927c3f9f81ceee6505b2d88b3207b224bebd46861ac8')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
                               'b568613863fef6a687a3237d089b91d8b612ce4163ccb5795df9e21af51c1489')
@@ -127,7 +127,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             ):
         raise ValueError('base-composer downstream source pins are inconsistent')
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
-                     'ed8b0e0bec5d1a929e2956af8e76f7bb039254fa04318010b2db12c6831465f4')
+                     'c450501fb98104b3359578c144e04c86f9a5e01591c7b61cc9ca53b35a3799e6')
     result = observers.apply_sources(code_dir, result)
     # Apply only the reviewed ContextOS input and the exact checked builder.
     # The dependent recall module pins ContextOS, so rebind that one pin.
@@ -173,13 +173,13 @@ def build_sources(code_dir, *, include_postcommit=True):
         if path.is_symlink() or not path.is_file():
             raise ValueError('Postcommit observer builder missing or unsafe')
         raw_candidate = path.read_bytes()
-        if hashlib.sha256(raw_candidate).hexdigest() != '0fec24d5b5bf7c1d270a3143811a4e62da65893beae84c3b8ce72baf3765e670':
+        if hashlib.sha256(raw_candidate).hexdigest() != '32deb40d2e1d820a654ee26b1a01dd434bc768c1b8717d877ab759c46928f5b2':
             raise ValueError('Postcommit observer builder source changed')
         namespace = {'__name__': 'v13_checked_postcommit', '__file__': str(path)}
         exec(compile(raw_candidate, str(path), 'exec'), namespace)
         runtime = result['v13/runtime.py']
-        if hashlib.sha256(runtime).hexdigest() != 'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2':
-            raise ValueError('Integrated observer Runtime source changed')
+        if hashlib.sha256(runtime).hexdigest() != '85a2f94e642a787173fcc973270516a39bef4cb2145c3a19a638cb71975f9235':
+            raise ValueError('Integrated observer Runtime source changed: ' + hashlib.sha256(runtime).hexdigest())
         runtime = namespace['apply_source'](runtime)
         # LateWatch runs during C3 streaming and must obey the same resolved
         # per-turn body selection as the foreground and post-answer schedules.

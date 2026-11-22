@@ -6,6 +6,7 @@ on:
       - core/v14-c4-c3-consumption-rebase-20261122-run2
       - core/v14-fair-budget-diagnostic-20261122
       - boss/v14-recall-store-pin-rebind-20261122
+      - boss/v14-fair-budget-rebind-20261122-run13
     paths:
       - 'v13/code/scripts/source_lifecycle_lock_integration_candidate.py'
       - 'v13/code/scripts/termux_runtime_recovery_candidate_20261112.py'
@@ -34,6 +35,8 @@ on:
       - 'v14/V14_LIVE_WORKPLAN.md'
       - 'v14/V14_CANON_COVERAGE_INDEX.md'
       - '.github/workflows/v14-core-c4-c3-consumption.yml'
+      - 'v13/code/tests/observer_fair_budget_disposable_cases_20261116.py'
+      - 'v13/code/scripts/integrated_observer_fair_budget_candidate_20261116.py'
   pull_request:
     branches:
       - boss/v14-recall-store-pin-rebind-20261122

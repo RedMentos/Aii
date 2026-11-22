@@ -9,6 +9,9 @@ from pathlib import Path
 
 PINS = {
     'v13/runtime.py': {
+        # Exact current source SHA for the fair-budget runtime input. The
+        # recovery composer validates its pinned overlay chain separately.
+        'f4763263de1c496cf12c40cd91ec57e96916b49d7d09e4f5e72656e3ce326703',
         'c23a5a133deaff66f6be560509580b83394064bbff5a72d35d47c14461536978',
         'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2',
     },
@@ -58,11 +61,23 @@ def apply_sources(code_dir, sources):
         path = code_dir / name
         if path.is_symlink() or not path.is_file():
             raise ValueError('controller guard source missing or unsafe: ' + name)
+        source_raw = path.read_bytes()
+        # Runtime is already transformed by the pinned upstream recovery,
+        # arithmetic and observer composers when this guard is applied. Pin
+        # the immutable on-disk source here; the caller's exact builder pins
+        # authenticate the composed bytes, and the anchors below validate
+        # that the guard can still be applied to that composition.
         raw = result.get(name)
-        if raw is None:
-            raw = path.read_bytes()
-        if hashlib.sha256(raw).hexdigest() not in allowed:
-            raise ValueError('controller guard source changed: ' + name)
+        if name == 'v13/runtime.py':
+            if hashlib.sha256(source_raw).hexdigest() not in allowed:
+                raise ValueError('controller guard source changed: ' + name)
+            if raw is None:
+                raw = source_raw
+        else:
+            if raw is None:
+                raw = source_raw
+            if hashlib.sha256(raw).hexdigest() not in allowed:
+                raise ValueError('controller guard source changed: ' + name)
         checked[name] = raw
 
     runtime = checked['v13/runtime.py']
