@@ -97,8 +97,10 @@ READ_SOURCE_NEW = b'''    def read_source(self,ref):
         if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef out of bounds")
         return txt[ref["char_start"]:ref["char_end"]]
 '''
-MEMORY_OLD = b'''            src=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
-            if not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(src['hash'],)):(self.s.home/'data/blobs'/src['hash']).unlink(missing_ok=True);(self.s.home/'data/blobs'/(src['hash']+'.z')).unlink(missing_ok=True)
+MEMORY_OLD = b'''                source=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
+                if source and not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(source['hash'],)):
+                    (self.s.home/'data/blobs'/source['hash']).unlink(missing_ok=True)
+                    (self.s.home/'data/blobs'/(source['hash']+'.z')).unlink(missing_ok=True)
 '''
 MEMORY_NEW = b'''            from .source_lifecycle_candidate import cleanup_unreferenced
             cleanup_unreferenced(self.s,sid)
