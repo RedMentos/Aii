@@ -14,9 +14,9 @@
 
 New file: v13/code/v13/audio_capture_consumer.py.
 
-1. Builds a fixed request for one second or less of mono 16-kHz PCM16. The request includes a 32-hex request ID, short expiry, canonical SHA-256 digest, permission_bypass=false and model_authority=false. Building it does not contact Android or request a permission.
+1. Builds a fixed request for one second or less of mono 44.1-kHz PCM16 (the AudioRecord rate Android guarantees across devices). The request includes a 32-hex request ID, short expiry, canonical SHA-256 digest, permission_bypass=false and model_authority=false. Building it does not contact Android or request a permission.
 2. Uses the existing companion controller's pinned key and receipt DB via verifier_from_pinned_controller(controller). It does not auto-pair or trust a new key.
-3. Verifies the signed result envelope and P-256 signature using the existing android_companion_ecdsa primitive. It binds the request digest/ID, android.mic source, expected active Runtime generation, PCM SHA-256, exact sample count, monotonic capture interval, 16-kHz mono PCM16 format, actual UNPROCESSED or MIC source, Android RECORD_AUDIO status, local consent, and FINAL provenance.
+3. Verifies the signed result envelope and P-256 signature using the existing android_companion_ecdsa primitive. It binds the request digest/ID, android.mic source, expected active Runtime generation, PCM SHA-256, exact sample count, monotonic capture interval, 44.1-kHz mono PCM16 format, actual UNPROCESSED or MIC source, Android RECORD_AUDIO status, local consent, and FINAL provenance.
 4. Commits both the nonce and request ID to the existing receipt DB before one-shot submission. Only nonce/request metadata is stored; PCM is not written to disk.
 5. Calls audio_input.submit_audio_only(runtime, audio_window) with the live consent check, linearizable guard and two-phase revocation callback. The Runtime still performs its own consent/lease checks. The returned status is SUBMIT_RETURNED, not a claim of semantic use or successful speech recognition.
 
@@ -54,7 +54,7 @@ Required provider behavior:
 
 ## Research note
 
-Android's official API docs say 44.1 kHz is the only AudioRecord rate guaranteed on every device; 16 kHz may work on some devices. The provider must check the actual rate and fail closed if it is not exactly 16 kHz. Android documents UNPROCESSED support discovery, foreground microphone restrictions, and capture silencing/device/preprocessing changes under concurrent capture. Sources are recorded as R-073 in V14_RESEARCH_LEDGER.md:
+Android's official API docs say 44.1 kHz is the only AudioRecord rate guaranteed on every device; 16 kHz may work on some devices. The provider must check the actual rate and fail closed if it is not exactly 44.1 kHz. Android documents UNPROCESSED support discovery, foreground microphone restrictions, and capture silencing/device/preprocessing changes under concurrent capture. Sources are recorded as R-073 in V14_RESEARCH_LEDGER.md:
 
 - https://developer.android.com/reference/android/media/AudioRecord
 - https://developer.android.com/media/platform/mediarecorder
@@ -68,3 +68,20 @@ No new paper, model, OSS dependency or weight was selected or downloaded.
 2. QA: implement the Android permission/lifecycle/short-read/silence/reroute/revocation/replay/no-persistence negative controls.
 3. Perception: wire the returned signed result into this consumer after the provider exists, then run the composed staged Runtime tests and real Redmi capture test.
 4. Boss: rebase the Core/QA and Perception parents onto the current Boss integration head, deduplicate the identical audio_input.py dependency, recompute exact pins and review the composed result. Keep PR #2312 DRAFT until that review and exact-head CI are complete.
+
+## Run 11b correction — Android-guaranteed capture rate
+
+A code review found that the first consumer defaulted to 16 kHz even though Android's AudioRecord API documents 44.1 kHz as the only rate guaranteed across devices; 16 kHz may work only on some devices. The existing V14 audio ingress and RAW EAR consumers accept 8–48 kHz, so there was no reason to make the provider depend on an unguaranteed rate.
+
+- Consumer default is now 44,100 Hz mono PCM16.
+- The bounded Base64 envelope is derived from the exact one-second PCM byte limit (88,200 bytes; 117,600 Base64 characters), instead of the old 16-kHz-specific 44,000-character cap.
+- The receipt still binds the exact requested rate, sample count, duration, PCM hash, source, Runtime generation, signature, local consent and FINAL status. No resampling or rate relabeling is performed by the consumer.
+- Existing audio_input.submit_audio_only, audio_ear.observe_pcm16 and audio_voice_cues.extract_voice_cues accept 8–48 kHz; the latter applies its bounded block-average reduction before pitch/prosody extraction.
+- Android's AudioRecordingCallback must still be registered before capture and used to abort on silencing, route, preprocessing or format changes. Android may convert hardware format to the client format; the signed receipt must describe the actual client PCM bytes returned by AudioRecord, not a guessed hardware rate.
+
+Primary API sources (accessed 2026-11-22):
+- https://developer.android.com/reference/android/media/AudioRecord — 44.1 kHz guaranteed; getState()/getSampleRate() contract.
+- https://developer.android.com/reference/android/media/AudioFormat — client sample rate and platform conversion guidance.
+- https://developer.android.com/media/platform/sharing-audio-input — AudioRecordingCallback, silence and route/preprocessing changes.
+
+Evidence status: code and test changes are committed only after exact-head CI; no Android provider, microphone capture, Termux device test, native model, deployment or Redmi proof is claimed.
