@@ -55,7 +55,7 @@ def setup_runtime(tmp_path):
 
 
 
-def test_native_probe_requires_actual_interactive_tty(tmp_path, monkeypatch):
+def test_native_probe_requires_tty_only_for_local_arm_and_revoke(tmp_path, monkeypatch):
     runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
     try:
         monkeypatch.setattr(approval, "_is_local_tty", lambda: False)
@@ -64,11 +64,21 @@ def test_native_probe_requires_actual_interactive_tty(tmp_path, monkeypatch):
         state, _ = runtime.store.state(approval.KEY, None)
         assert state is None
 
+        # A real local TTY creates the one-shot capability. The later exact,
+        # consented private CHAT_OPERATOR consumer has no TTY and may consume it.
         monkeypatch.setattr(approval, "_is_local_tty", lambda: True)
         approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
         monkeypatch.setattr(approval, "_is_local_tty", lambda: False)
-        with pytest.raises(PermissionError, match="interactive local TTY"):
-            approval.consume(runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"])
+        consumed = approval.consume(runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"])
+        assert consumed["consumed"] is True
+        state, _ = runtime.store.state(approval.KEY, None)
+        assert state["status"] == "CONSUMED"
+
+        # Revoke remains a local-console operation and cannot be triggered
+        # through the remote consumer boundary.
+        monkeypatch.setattr(approval, "_is_local_tty", lambda: True)
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        monkeypatch.setattr(approval, "_is_local_tty", lambda: False)
         with pytest.raises(PermissionError, match="interactive local TTY"):
             approval.revoke(runtime)
         state, _ = runtime.store.state(approval.KEY, None)
