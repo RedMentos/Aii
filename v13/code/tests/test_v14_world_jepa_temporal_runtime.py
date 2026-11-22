@@ -292,6 +292,42 @@ def test_sleep_runtime_invokes_temporal_consumer_but_default_permissions_stay_of
         store.close()
 
 
+def test_sleep_runtime_commits_source_verified_base_and_temporal_learning_after_t8_outcome(tmp_path):
+    home = tmp_path / "sleep-enabled-temporal-postcommit"
+    store = _make_store(home)
+    try:
+        _sessions, event_ids = _make_dataset(store, "sleep-enabled", 64)
+        _permissions(store, steps=80)
+        sleep = _sleep(store, home)
+
+        # This is the real SleepRuntime postcommit entry point: it discovers the
+        # committed ActionOutcome in Store and invokes both persistent learners.
+        result = sleep._run_world_jepa(event_ids[-1], limit=64)
+        assert result["status"] in {"POSTCOMMIT_PROCESSED", "PARTIAL"}, result
+        assert result["action_status"] in {"FINAL", "FAILED", "ERROR", "DEADLINE", "REJECTED"}
+        assert result["learning"]["status"] not in {"ERROR", "CANCELLED"}, result["learning"]
+        temporal = result["temporal"]
+        assert temporal["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", temporal
+        assert temporal["checkpoint_committed"] is True
+        assert temporal["metrics"]["source_disjoint"] is True
+        assert temporal["metrics"]["parameter_delta_norm"] > 0
+        assert temporal["metrics"]["ema_target_delta_norm"] > 0
+        assert temporal["metrics"]["optimizer_steps"] >= 80
+        assert temporal["optimizer_state_persisted"] is True
+        assert temporal["native_body_weights_changed"] is False
+        assert temporal["decision_authority"] == "NONE"
+
+        persisted, _ = store.state(STATE_KEY, None)
+        assert persisted["active"]["checkpoint_sha256"] == temporal["checkpoint_sha256"]
+        assert len(persisted["active"]["experience_rows"]) >= 100
+        assert store.one(
+            "SELECT id FROM actions WHERE event_id=? AND outcome IS NOT NULL",
+            (event_ids[-1],),
+        ) is not None
+    finally:
+        store.close()
+
+
 def test_temporal_rollback_restores_previous_checkpoint_and_retries_pending_rows_after_restart(tmp_path):
     home = tmp_path / "temporal-rollback-retry-store"
     store = _make_store(home)
