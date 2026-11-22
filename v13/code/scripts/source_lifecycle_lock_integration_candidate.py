@@ -5,15 +5,16 @@ from pathlib import Path
 
 PINS = {
     'archive.py': 'adbdd844c2275d527a689eda789a3f247759967677e573b92bf7af7ad68404bf',
-    'store.py': '40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb',
+    'store.py': 'bc7ab8edfd26bf0222ebcccbf57c95612f3fe305646eb46571b35b6f72942bd1',
     'common.py': '0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a',
-    'memory.py': '61e881ad8b3f8cb60a96339599a1627cd5af7b5a5bfd29fe5f371c17f5a29ebc',
+    'memory.py': 'b205901627af857fc4465204ebc12518d9955d2d62b8ce20f1a83731ef560799',
     'vision.py': '758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5',
     'archive_reader_guard_candidate.py': '84c06a9f5c0b6054f836615023822ff577984d3efe9ddfb07cae569ec124f438',
     'archive_stream_range_candidate.py': 'd2d021adcc844c1f321312cbfa60a4affb0a6b7fddc09e41a234cdf83f1eec98',
     'source_lifecycle_candidate.py': '3ace74b802d3e3e7340eabcccb03275d348deae2297fe8a1b4d2e1eab17d62b0',
 }
-GUARD_SCRIPT_SHA = '69a20b1c9e10882f80086c0620e8f87575c4559e7113ed19fd53002330be8747'
+GUARD_SCRIPT_SHA = '313f2dc078366fa851c3ef76b425fb800e7369c73ed5cb69ea93f96cc95f0596'
+OLD_STORE_SHA = '40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb'
 OLD_ARCHIVE_INTEGRATED_SHA = '3f421423ce890b90033470e15150b1ba9830642e6b5e92e61b654801602e90b4'
 
 STORE_OLD = b'''        with self.mutex:
@@ -97,8 +98,10 @@ READ_SOURCE_NEW = b'''    def read_source(self,ref):
         if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef out of bounds")
         return txt[ref["char_start"]:ref["char_end"]]
 '''
-MEMORY_OLD = b'''            src=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
-            if not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(src['hash'],)):(self.s.home/'data/blobs'/src['hash']).unlink(missing_ok=True);(self.s.home/'data/blobs'/(src['hash']+'.z')).unlink(missing_ok=True)
+MEMORY_OLD = b'''                source=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
+                if source and not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(source['hash'],)):
+                    (self.s.home/'data/blobs'/source['hash']).unlink(missing_ok=True)
+                    (self.s.home/'data/blobs'/(source['hash']+'.z')).unlink(missing_ok=True)
 '''
 MEMORY_NEW = b'''            from .source_lifecycle_candidate import cleanup_unreferenced
             cleanup_unreferenced(self.s,sid)
@@ -195,10 +198,10 @@ def build_sources(source_dir):
     store_sha = hashlib.sha256(raw['store.py']).hexdigest().encode()
     guard = raw['archive_reader_guard_candidate.py']
     guard = _replace_once(guard, OLD_ARCHIVE_INTEGRATED_SHA.encode(), archive_sha, 'archive pin')
-    guard = _replace_once(guard, PINS['store.py'].encode(), store_sha, 'guard store pin')
+    guard = _replace_once(guard, OLD_STORE_SHA.encode(), store_sha, 'guard store pin')
     raw['archive_reader_guard_candidate.py'] = guard
     raw['archive_stream_range_candidate.py'] = _replace_once(
-        raw['archive_stream_range_candidate.py'], PINS['store.py'].encode(), store_sha, 'stream store pin')
+        raw['archive_stream_range_candidate.py'], OLD_STORE_SHA.encode(), store_sha, 'stream store pin')
     return {name: raw[name] for name in ('archive.py', 'store.py', 'memory.py', 'vision.py',
                                          'archive_reader_guard_candidate.py', 'archive_stream_range_candidate.py',
                                          'source_lifecycle_candidate.py')}
