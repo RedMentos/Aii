@@ -222,7 +222,7 @@ class AndroidCompanionController:
             raise ControlDenied("launch_app capability is not ready")
         self.broker.start()
         session = self.runtime.session or self.runtime.store.new_session()
-        event = self.runtime.store.event(session, "Operator requested launch_app package=" + package)
+        event = self.runtime.store.event(session, "Operator requested launch_app")
         proposal = self.broker.propose(
             "launch_app", {"package": package}, ttl=30,
             event_id=event["event_id"], source_ref=event["source_ref"],
