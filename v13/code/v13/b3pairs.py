@@ -109,7 +109,8 @@ def capture_pair(cognition, event, deadline):
     # exact source span, never by assuming token index equivalence.
     pair_key = hashlib.sha256(json.dumps(
         [event_id, generation, source, taps["B1_DETAIL"]["model_revision"],
-         taps["B2_GIST"]["model_revision"], gist_plan["revision"], gist_plan["mode"],
+         taps["B2_GIST"]["model_revision"], taps["B1_DETAIL"]["tap_id"],
+         taps["B2_GIST"]["tap_id"], gist_plan["revision"], gist_plan["mode"],
          gist_plan["tokens_per_group"], gist_plan["max_slots"]],
         sort_keys=True, separators=(",", ":"), ensure_ascii=True
     ).encode()).hexdigest()
