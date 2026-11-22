@@ -1298,3 +1298,6 @@ Exact CI: signed-consumer run `44992975596` SUCCESS; staged/integrated run `4499
 Official platform evidence: AudioRecord docs require checking `getState()` and actual `getSampleRate()`; API 29+ `AudioRecordingCallback` can report silencing, route, preprocessing and stream-property changes and must be registered before capture. The provider must reject silence/reroute/format change/short reads, bind the receipt to actual client PCM, stop/release the recorder and clear the one-shot buffer. Core/QA own the visible foreground provider and permission lifecycle; Perception owns the Termux verifier and RAW EAR consumer.
 
 Status: signed consumer CI PASS / staged migration FAIL / provider absent / REDMI_UNVERIFIED. No Android microphone, Termux capture, model/weight change, permission or deployment was performed.
+
+
+**Companion readback:** current QA branch ref `qa/v14-companion-os-permission-contract-20261122` is `7650ae0c19e93e4b6cbb778abb2f5123e49c364f`; its manifest has no `RECORD_AUDIO`, its CapabilityRegistry reports `audio_capture` unavailable, and `AudioCaptureDefaultOffTest` asserts the permission is absent. This is an intentional OFF state. PR #2312 still has historical base `58666ddfc9945612a2117e1a844f812442d4ca64`; do not call it current-base until the QA/Boss parent stack is reconciled and the Perception consumer is rebased.
