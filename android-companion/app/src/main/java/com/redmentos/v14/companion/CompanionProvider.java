@@ -137,7 +137,7 @@ public final class CompanionProvider extends ContentProvider {
 
     private JSONObject pending() throws Exception {
         org.json.JSONArray values = new org.json.JSONArray();
-        for (CompanionDb.Action action : db.pending()) {
+        for (CompanionDb.Action action : db.pending(System.currentTimeMillis())) {
             JSONObject item = new JSONObject();
             item.put("action_id", action.actionId);
             item.put("package", action.packageName);
