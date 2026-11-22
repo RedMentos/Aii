@@ -13,7 +13,7 @@ FIELDS={
  "WorldTransition":{"action_id":str,"source_ref":dict,"outcome_source_ref":dict,"action_role":str,"corollary_packet_id":str,"teacher_truth_authority":bool},
  "StudentEvaluation":{"percept_packet_id":str,"source_ref":dict,"student_route":str,"teacher_route":str,"agreement":bool,"routing_authority":int},
  "LatentTapPacket":{"role":str,"source_ref":dict,"tap_id":str,"model_revision":str,"token_ids":list,"feature_path":str,"feature_sha256":str,"shape":list},
- "B3PairedTapPacket":{"packet_schema":str,"body_pair_id":str,"source_ref":dict,"sender_roles":list,"tap_packet_ids":dict,"tap_ids":dict,"model_revisions":dict,"feature_bindings":dict,"gist_readout":dict,"token_counts":dict,"dimensions":dict,"token_alignment":str,"receiver_pooling":str,"injection_authority":int,"learning_authority":int},
+ "B3PairedTapPacket":{"packet_schema":str,"body_pair_id":str,"source_ref":dict,"sender_roles":list,"tap_packet_ids":dict,"tap_ids":dict,"model_revisions":dict,"feature_bindings":dict,"gist_readout":dict,"fine_readout":dict,"token_counts":dict,"dimensions":dict,"token_alignment":str,"receiver_pooling":str,"injection_authority":int,"learning_authority":int},
  "ExecutiveDecision":{"component":str,"context_ref":dict,"baseline":str,"action":str,"learned":bool,"context_revision":str,"trajectory_offer_ids":list},
  "ActionPrediction":{"action_type":str,"profile_id":str,"prediction":dict},
  "PredictionOutcome":{"action_id":str,"observation":dict},
@@ -113,6 +113,32 @@ def validate(kind,obj):
         if any(not isinstance(obj[field][role],str) or not obj[field][role] for field in ("tap_packet_ids","tap_ids","model_revisions") for role in roles):raise ValueError("B3 pair identity")
         if any(type(obj[field][role]) is not int or obj[field][role]<1 for field in ("token_counts","dimensions") for role in roles):raise ValueError("B3 pair geometry")
         if any(obj["token_counts"][role]>64 for role in roles):raise ValueError("B3 pair native tap exceeds 64-token slot ceiling")
+        fr=obj["fine_readout"];fp=fr.get("plan") if isinstance(fr,dict) else None
+        if (not isinstance(fp,dict) or fr.get("tap_packet_id")!=obj["tap_packet_ids"]["B1_DETAIL"]
+                or fp.get("tap_id")!=obj["tap_ids"]["B1_DETAIL"]
+                or fp.get("source_ref")!=obj["source_ref"]
+                or fp.get("native_tokens")!=obj["token_counts"]["B1_DETAIL"]
+                or fp.get("dim")!=obj["dimensions"]["B1_DETAIL"]
+                or fp.get("max_slots")!=64 or fp.get("lossless") is not True
+                or fp.get("receiver_injection_authority")!=0 or fp.get("body_learning_authority")!=0
+                or not isinstance(fp.get("token_ids"),list)
+                or len(fp["token_ids"])!=obj["token_counts"]["B1_DETAIL"]
+                or not isinstance(fp.get("slots"),list)
+                or len(fp["slots"])!=obj["token_counts"]["B1_DETAIL"]):
+            raise ValueError("B3 pair B1 fine readout binding")
+        cursor=obj["source_ref"]["char_start"]
+        for index,slot in enumerate(fp["slots"]):
+            sr=slot.get("source_ref") if isinstance(slot,dict) else None
+            if (not isinstance(sr,dict) or slot.get("slot")!=index
+                    or slot.get("token_id")!=fp["token_ids"][index]
+                    or sr.get("source_id")!=obj["source_ref"].get("source_id")
+                    or sr.get("sha256")!=obj["source_ref"].get("sha256")
+                    or sr.get("char_start")!=cursor
+                    or type(sr.get("char_end")) is not int or sr["char_end"]<cursor
+                    or sr["char_end"]>obj["source_ref"]["char_end"]):
+                raise ValueError("B3 pair B1 fine slot source coverage")
+            cursor=sr["char_end"]
+        if cursor!=obj["source_ref"]["char_end"]:raise ValueError("B3 pair B1 fine slots are not lossless")
         plan=gr["plan"];shape=gr["shape"]
         if (type(plan.get("max_slots")) is not int or plan["max_slots"]<1
                 or shape[0]>plan["max_slots"] or shape[1]!=obj["dimensions"]["B2_GIST"]
