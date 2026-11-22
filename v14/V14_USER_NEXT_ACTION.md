@@ -1311,3 +1311,36 @@ Implement a model-revision/source-bound trainable B1/B2 adapter using actual org
 - Full LOCAL_LINUX repository tests: BLOCKED (Python 3.13.5 exists, but no complete checkout is mounted and GitHub DNS fails). Local artifact/diagnostic replay checks PASS; those are not full project tests.
 - Redmi: REDMI_UNVERIFIED. No authenticated owner receipt, install/update request or device write. No production model, weight, permission or updater change.
 - Boss/Core PR #2258 remains DRAFT and owns the integration pin chain. This appendix is a proposed handoff update for Boss review; no direct Boss-branch overwrite or merge was performed.
+
+
+## JEPA & Memory lane refresh — 2026-11-22 (verified checkpoint)
+
+This section supersedes the earlier V14-004/010/011 status below where it conflicts.
+
+### Current learner code and exact evidence
+
+- PR #2247 branch head: `9b1f319af750e42f47aa399089abe16df8afce85`. Its code-bearing tested tree is `c599cb9926973b70235c38c3747e5d7ad5020cb8`; the later commit adds only handoff/research documents.
+- Exact SHA-256 of `v13/code/v13/world_jepa.py` in that tested tree: `b6dd353497bd08b756a491381ea4484419b0299e6263f5c4bac0ded112c9016a`.
+- New functional path: `on_demand_conflict` scores per-session interference from source/content-disjoint prior guard rows. Projected `on_demand_conflict` and `on_demand_loss` pass separate prior-guard microbatches to `WorldJEPA.fit/partial_fit` as per-session GEM constraints; fit-fold replay rows identify selected sessions, and final promotion holdouts remain separate. Guard-fold provenance/action-ID hashes and reference batch/row counts are recorded. Invalid/undersized reference batches fail before fitting; the negative test verifies unchanged parameters, optimizer-state identity and fit-step count.
+- Exact Python 3.13.13 and 3.14.10 CI: `test_v14_world_jepa_store_aba_replay.py` passed **18/18 on each version** (140.61 s / 144.34 s). Each interpreter exercised 54 A→B→A seed/arm reports. Twelve projected on-demand conflict/loss cases used `constraint_source=prior_guard`; eleven were accepted and one was correctly rejected per interpreter. Accepted cases had nonzero parameter/checkpoint deltas and persisted optimizer moments; rejected candidates left checkpoints unchanged. All split manifests were source- and content-disjoint, and rollback readback restored the prior checkpoint exactly. The rejected seed-43 full-encoder case differed by interpreter (conflict on 3.13; loss-demand on 3.14); the utility gate was not weakened.
+- This is a local WorldJEPA predictor/encoder/EMA numeric update in the Store/T8 synthetic test path, **not** B1/B2/C3 GGUF body-weight learning, trained B3 latent alignment, or an Android-native learning proof.
+
+### Current exact-head CI and integration blocker
+
+- On PR #2247 current docs head `9b1f319`, workflow `44981941796` ran both Python versions: the A→B→A test itself passed 18/18 each, but the workflow then failed at `test_world_jepa_training_state_in_real_staged_runtime`.
+- Exact error: `ValueError: production WorldJEPA training-resume input changed`. The PR branch's integration builder expects `WORLD_SHA=3e952f21c60e53defff64b69886a04c6d770ed0860bf856e62a95ba5576494e2`, but the tested source SHA-256 is `b6dd353497bd08b756a491381ea4484419b0299e6263f5c4bac0ded112c9016a`.
+- The PR also changes `memory.py` (current Git blob `07fcb24038079184b2a4c663204ae070f1da4217`); the source-lifecycle builder still pins the older SHA-256 `391668fff0b4ad3d7c36d5d7a9823055ff74821c10f71b945e87edaa62597484`.
+- Other exact-head results: incremental WorldJEPA PASS; combined online JEPA PASS; runtime deployment integrity PASS; privacy scan PASS. Staged context, owner-read staged startup, Lab-Age and two-checkout updater migration FAIL downstream of the stale source pin. Safe-additive validator fails by policy because this is not an additive-only PR. The PR remains DRAFT / NOT_RELEASED.
+- Do not transplant one pin alone. The current Boss #2288 branch uses a different `WORLD_SHA` (`06afa58b...`) and a different integration tree. Boss/Core must recompose JEPA + memory changes on its current branch and recompute the complete source chain: WorldJEPA → source lifecycle/memory → integrated memory/world → recovery → stage → runtime deployer.
+- The current Boss #2288 head is `483ef6ddc7140bf76f197d538ec973df42dd95e0`; at the last read it had 13 successful workflows, 5 in progress, 1 skipped and 0 failures. It is still DRAFT and not merged.
+- Core PR #2300 remains a diagnostic native input-embedding receiver probe at `767a8006760498c63f7a1f81bd9e4c5e003fd57c`, based on stale `91227b...`: Boss review reports 7/18 checks passing and 11 failing. Linux pinned-API build and Android arm64 cross-compile pass, but Python staged integration fails on a stale builder hash. This is not trained semantic alignment, not production B3 and not Redmi proof.
+
+### Research and next work
+
+- Added `v14/handoffs/JEPA_IGFA_INTERFERENCE_RESEARCH_20261122.md` for Störk, “Interference and Retention in Continual Learning,” arXiv:2607.09202, and author code repo `geometry-of-forgetting@31aa798`. The repo metadata declares MIT and NumPy; no code was copied. Proposed shared ledger entry R-056 remains pending Boss review.
+- First: complete the current Boss integration rebase and recompute the whole pin chain, then rerun the exact Python 3.13/3.14 staged, owner-read, Lab-Age, migration and integrated tests.
+- Next learner milestone: connect the persistent learner to actual source-bound B1/B2 outputs or explicit user corrections, then prove receiver utility against zero/shuffle/OOD/wrong-action and receiver-only controls. Do not use synthetic transition labels as evidence of semantic cross-organ learning.
+- After that: controlled target-organ LearningIntent/optimizer, then source-bound Sleep/Dream consolidation with replay/retention and rollback. Keep production weight edits and B3 promotion OFF until the actual receiver benefits.
+- Local full Aii checkout remains unavailable; full LOCAL_LINUX suite BLOCKED. REDMI_UNVERIFIED. Last accepted code release remains `f279286a4453248004c670fcaabecd85da6ab299`; no new deployment, model swap, permission change or phone action occurred.
+
+**User action required: none.** No manual Termux command, model download/swap, permission grant, updater toggle or device mutation is needed for this checkpoint.
