@@ -124,12 +124,13 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
         l0_evidence_sha256 = hashlib.sha256(dumps(l0_evidence).encode("utf-8")).hexdigest()
 
     run_identity = {
-        "task_id": task_id, "direction": direction,
+        "task_id": task_id, "direction": direction, "label_source": label_source,
         "body_pair_ids": list(batch["body_pair_ids"]),
         "labels": list(labels), "label_provenance": list(label_provenance),
         "sender_revision": batch["sender_revision"],
         "receiver_revision": batch["receiver_revision"],
         "seeds": list(seeds), "epochs": epochs, "head_steps": head_steps,
+        "split_seed": split_seed, "bridge_config": {"K": 4, "r": 8, "h": 16},
         "l0_evidence_sha256": l0_evidence_sha256,
     }
     run_key = hashlib.sha256(dumps(run_identity).encode("utf-8")).hexdigest()[:12]
