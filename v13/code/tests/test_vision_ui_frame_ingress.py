@@ -297,3 +297,22 @@ def test_frame_receipt_verifier_is_mandatory_and_oversized_buffer_is_rejected(mo
                 current_source="Describe this.",
             )
         assert not any(frame)
+
+
+def test_provider_verifier_exception_fails_closed_without_context_cache(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation()
+    frame = image_buffer()
+
+    def verifier_failure(*_args):
+        raise RuntimeError("provider receipt unavailable")
+
+    with lease_for(runtime, obs) as lease:
+        with pytest.raises(PermissionError, match="digest"):
+            consume_projected_frame(
+                runtime, obs, frame, consent_lease=lease,
+                frame_binding_check=verifier_failure,
+                current_source="Describe this.",
+            )
+        assert obs["source_id"] not in getattr(runtime, "_a5_ui_context_cache", {})
+        assert not any(frame)
