@@ -222,13 +222,44 @@ class RemoteChatTests(unittest.TestCase):
                 self.assertEqual(kw["line"], command)
                 receipt = self.receipt()
                 payload = {
-                    "native_receiver_probe": {
-                        "status": "NATIVE_INPUT_CONSUMED",
-                        "production_route": False,
-                        "semantic_use_proven": False,
-                        "training_authority": 0,
-                        "native_receiver_authority": 0,
-                    }
+                    "sender_role": "B1_DETAIL",
+                    "receiver_role": "C3_LANGUAGE",
+                    "sender_tap_id": "lfm2.detail.final.v1",
+                    "sender_model_revision": "sender-r1",
+                    "sender_model_sha256": "a" * 64,
+                    "tokenizer_revision": "tokenizer-r1",
+                    "receiver_model_revision": "receiver-r1",
+                    "receiver_model_sha256": "b" * 64,
+                    "runner_revision": "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4",
+                    "llama_version": "b10964",
+                    "input_rows": 2,
+                    "input_dim": 3072,
+                    "position_ids": [0, 1],
+                    "position_mode": "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL",
+                    "receiver_input_dim": 3072,
+                    "output_dim": 3072,
+                    "input_sha256": "c" * 64,
+                    "decode_status": 0,
+                    "output_norm": 1.25,
+                    "input_effect_rms": 0.5,
+                    "zero_control_cosine": 0.01,
+                    "shuffle_control_cosine": 0.02,
+                    "row_shuffle_control_cosine": 0.03,
+                    "row_shuffle_control_applicable": True,
+                    "repeat_cosine": 1.0,
+                    "native_input_consumed": True,
+                    "input_effect_detected": True,
+                    "status": "NATIVE_INPUT_EFFECT",
+                    "production_route": False,
+                    "semantic_use_proven": False,
+                    "training_authority": 0,
+                    "native_receiver_authority": 0,
+                    "completed": True,
+                    "queued": False,
+                    "requires_explicit_confirmation": True,
+                    "source_ref": {"source_id": "private-source-id"},
+                    "event_id": "private-event-id",
+                    "sender_tap_packet_id": "private-tap-packet-id",
                 }
                 with self.path.open("a", encoding="utf8") as out:
                     out.write("[du> " + command + "]\nassistant> "
@@ -246,9 +277,37 @@ class RemoteChatTests(unittest.TestCase):
             client.comments_sent[0][1]["device_status"]["status"], "SENT"
         )
         result = remote_chat.result(ident)
-        self.assertEqual(result["status"], "ANSWER_VISIBLE")
-        self.assertIn("NATIVE_INPUT_CONSUMED", result["output"])
-        self.assertNotIn("private question", result["output"])
+        self.assertEqual(result["status"], "OPERATOR_RESULT_VISIBLE")
+        self.assertEqual(result["operator"], "NATIVE_RECEIVER_PROBE")
+        self.assertTrue(result["complete"])
+        self.assertEqual(result["correlation"], "ATOMIC_INPUT_WINDOW")
+        probe = result["result"]
+        self.assertEqual(probe["status"], "NATIVE_INPUT_EFFECT")
+        self.assertEqual((probe["sender_role"], probe["receiver_role"]),
+                         ("B1_DETAIL", "C3_LANGUAGE"))
+        self.assertEqual((probe["input_rows"], probe["input_dim"],
+                          probe["receiver_input_dim"]), (2, 3072, 3072))
+        self.assertTrue(probe["native_input_consumed"])
+        self.assertTrue(probe["input_effect_detected"])
+        self.assertFalse(probe["production_route"])
+        self.assertFalse(probe["semantic_use_proven"])
+        self.assertEqual(probe["training_authority"], 0)
+        self.assertEqual(probe["native_receiver_authority"], 0)
+        encoded = json.dumps(result)
+        for private_field in ("private-source-id", "private-event-id",
+                              "private-tap-packet-id", "source_ref",
+                              "input_sha256", "position_ids"):
+            self.assertNotIn(private_field, encoded)
+        self.assertNotIn("private question", encoded)
+
+        for unsafe in (
+            dict(payload, production_route=True),
+            dict(payload, native_receiver_authority=1),
+            dict(payload, receiver_role="B2_GIST"),
+        ):
+            self.assertIsNone(remote_chat._native_receiver_probe_summary(
+                ["assistant> " + json.dumps(unsafe)], "B1_DETAIL", "C3_LANGUAGE"
+            ))
 
         bad = self.make_issue(
             "CHAT_OPERATOR",
