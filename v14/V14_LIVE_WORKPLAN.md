@@ -1274,3 +1274,16 @@ The 1,255 historical Canon headings remain preserved. Clause-level mapping to ex
 - Boss: integrate only after exact-head matrix green, keep #1904 as P0, and expand clause-level coverage rather than treating one green organ as system completion.
 
 **Local test boundary:** no full Aii checkout is present in this execution environment and GitHub DNS access from the local test container is unavailable. No full LOCAL_LINUX repository suite ran. CI results above are GitHub CI, not local or Android tests. Current installed SHA remains aed1d2b826290c95c70356b5d8b864b5ef382be4; no candidate PR is released.
+
+
+## Research & Perception execution checkpoint — 2026-11-22 (Run 7)
+
+**PR #2375 — RAW EYE MediaProjection frame ingress candidate:** current code/test head `f87ebac407a19c147da7eb52bc63f10e9eed25d2`; branch handoff head `bc9e420d316d3b0106cf8cf5567388f503d90755`; DRAFT / NOT_RELEASED. The consumer now enforces fixed 8 MiB / 4 MP bounds, requires the one-shot provider frame verifier, hashes and decodes the same bytearray snapshot (closing post-verification caller-buffer mutation), zeroizes snapshot and caller buffers, and offers `consume_projected_frame_scope` to revoke the per-frame source/cache after downstream C3 use or consumer failure. A3 local tile student remains optional LAB_SHADOW_ONLY; no new model or weight was loaded.
+
+**Tests:** focused file has 18 tests. LOCAL_LINUX CPython 3.13.5 isolated helper reproduction PASS for config bounds, invalid hash dimension, snapshot/hash/decode consistency, Pillow decode, zeroization and scope cleanup on success/failure. This is not the full Aii test suite. Exact GitHub checks on code/test head `f87ebac`: 8 QUEUED / 1 policy SKIPPED (Python 3.13/3.14, staged, integrated, privacy and offline-bridge security). Full local repository suite BLOCKED because no Aii checkout is mounted.
+
+**Consumer/platform status:** WIRED_SYNTHETIC only. The Perception module can create a source-bound ephemeral PerceptPacket, A4 result and A5 context envelope from a synthetic/provider-verified frame fixture. It still does not open MediaProjection, implement Android OS consent/provider lifecycle, invoke normal Runtime/C3 dispatch, or prove actual screen understanding. No Termux, Android, or Redmi test was run; REDMI_UNVERIFIED. Core/QA must implement the signed companion provider and wire this scoped consumer into the normal Runtime while keeping the same lease alive through C3.
+
+**R-091 / PR #2380:** full-text cross-architecture steering research is recorded in the ledger. It supports pair-specific testing but not a universal 1.7B cutoff or mobile reuse of 67M-per-direction bridges. V14's current native receiver is input-embedding effect only, not mid-layer residual injection or task-level semantic utility. Core must prove same-model input-embedding parity and target-generation/task utility before B3 promotion; B3 remains OFF and `semantic_use_proven=false`.
+
+**User action:** NONE. No model/weight download or swap, permission change, update request, device probe, or deployment is required.
