@@ -947,6 +947,85 @@ def _assert_planner_is_shadow_only(store, home, event_id):
         "memory_items": len(memory.get("items", [])),
     }
 
+def test_consumer_falls_back_when_loss_demand_has_no_eligible_replay_rows(tmp_path, monkeypatch):
+    home = tmp_path / "no-loss-demand"
+    (home / "data" / "db").mkdir(parents=True)
+    (home / "data" / "blobs").mkdir(parents=True)
+    store = Store(home)
+    try:
+        _add_phase(store, seed=71, phase="A1", domain="A", count=128)
+        _set_permissions(
+            store, steps=24, replay_mode="uniform", encoder_mode="full",
+            replay_projection=False,
+        )
+        first = world_jepa_runtime.consume_after_commit(
+            store, home=home, limit=256, drift_control=DRIFT_CONFIG,
+        )
+        assert first["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        before = _active_state(store)["active"]["checkpoint_sha256"]
+
+        _add_phase(store, seed=72, phase="A2", domain="A", count=128)
+
+        def no_positive_demand(
+            model, new_rows, old_rows, *, train_encoder, salt, steps,
+            cancel_check=None,
+        ):
+            sessions = sorted({
+                row["session_id"] for row in old_rows
+                if type(row.get("session_id")) is str and row["session_id"]
+            })
+            return {
+                "scores": {session: 0.0 for session in sessions},
+                "scored_session_count": len(sessions),
+                "unscored_session_count": 0,
+                "legacy_rows_excluded": sum(
+                    1 for row in old_rows if not row.get("session_id")
+                ),
+                "probe_rows": 0,
+                "probe_steps": 0,
+            }
+
+        # Deterministic negative control: the production selector receives
+        # verified prior sessions but no positive loss-growth demand.
+        monkeypatch.setattr(
+            world_jepa_consumer, "_session_loss_demand_scores", no_positive_demand,
+        )
+        _set_permissions(
+            store, steps=16, replay_mode="on_demand_loss", encoder_mode="full",
+            replay_projection=True,
+        )
+        result = world_jepa_runtime.consume_after_commit(
+            store, home=home, limit=256, drift_control=DRIFT_CONFIG,
+        )
+        metrics = _metrics(result)
+        assert result["status"] in {
+            "UPDATED_EXPERIMENTAL_WORLD_JEPA", "UTILITY_GATE_REJECTED",
+        }
+        assert result["status"] != "INSUFFICIENT_REPLAY_FOR_PROJECTION"
+        assert metrics.get("replay_projection_requested") is True
+        assert metrics.get("replay_projection_enabled") is False
+        assert metrics.get("replay_projection_fallback_reason") == "NO_ELIGIBLE_REPLAY_ROWS"
+        assert metrics.get("replay_rows") == 0
+        projection = metrics.get("gradient_projection")
+        assert type(projection) is dict
+        assert projection.get("requested") is True
+        assert projection.get("enabled") is False
+        assert projection.get("active_constraint_count", 0) == 0
+        assert result.get("native_body_weights_changed") is False
+
+        after = _active_state(store)["active"]["checkpoint_sha256"]
+        if result["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA":
+            assert after != before
+            assert metrics.get("parameter_delta_norm", 0.0) > 0.0
+        else:
+            # The independent utility/retention gate may still reject the
+            # no-replay candidate; rejection must leave the active checkpoint
+            # byte-identical rather than turning the fallback into promotion.
+            assert after == before
+    finally:
+        store.close()
+
+
 def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
     reports = []
     for data_seed in DATA_SEEDS:
