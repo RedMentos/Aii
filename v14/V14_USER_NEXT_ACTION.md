@@ -1258,3 +1258,56 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 The source-derived B1/B2 suppression hypothesis remains: background + A_THEN_B_SEQUENTIAL, after two recent C3 zero-token failures and a configured deadline <=50 s, can leave only 4 s of pre-answer time at a 30 s deadline. Both body offers may be deferred before C4; a post-commit observer cannot satisfy same-answer B1/B2→C4→C3. This is not a Redmi finding; the actual device config and failure telemetry are unknown. Core owns the measured budget fix; QA owns same-turn nontrivial regression.
 
 Private PIPELINE_STATUS issue #443 has no authenticated reply. Installed SHA and updater consent remain UNKNOWN; REDMI_UNVERIFIED. No LOG_PAGE, UPDATE_REQUEST, remote shell or device mutation. No full local Aii checkout exists, so no LOCAL_LINUX repository suite ran.
+
+
+## JEPA & Memory lane refresh — 2026-11-22 00:49 UTC
+
+**No user action required.** No Termux command, model/weight download or swap, permission change, updater toggle, device action or user-data mutation.
+
+### Current JEPA code and exact evidence
+
+- JEPA PR #2247: DRAFT / NOT_RELEASED. Branch `jepa-memory/v14-per-session-retention-current-20261121-run12`.
+- Tested code SHA: `58942cfb9141f7915ee5d85c925c551553f2416d`. The branch now has research/evidence handoff-only commits after that code SHA; current JEPA branch head at refresh: `5914902543162740daebcf02fec392d4fc5954c7`.
+- Exact JEPA push run `44968103405` and PR run `44968107084`: **SUCCESS** on Python 3.13 and 3.14. Covered compile, SQLite/T8 resume-vs-reset, 54-report Store A→B→A replay/retention/receiver test, staged optimizer resume, selective predictor plasticity/per-parameter Adam resume, idle postcommit JEPA/EMA/replay/rollback and public privacy scan.
+- The prior note that #2247 failed because its helper omitted `checkpoint_sha_before/after` is stale. The later failures were test-harness-only defects (arm cardinality, `seed`/ `data_seed`, undefined phase loop); all were corrected without relaxing learner or retention gates.
+
+### A→B→A results (54 reports per interpreter)
+
+| Metric | Python 3.13 | Python 3.14 |
+|---|---:|---:|
+| Full-encoder A2 accepted | 22/27 | 20/27 |
+| Predictor-only A2 accepted | 25/27 | 27/27 |
+| On-demand-loss full-encoder accepted | 5/6 | 5/6 |
+| On-demand-loss predictor-only accepted | 6/6 | 6/6 |
+| Exact rollback readback | 54/54 | 54/54 |
+| Source-disjoint holdout manifests | 54/54 | 54/54 |
+| Negative-control separation | 54/54 | 54/54 |
+
+The seed-43 full-encoder projected on-demand-loss candidate is rejected while its matched unprojected arm passes. Predictor-only projected on-demand-loss passes all three seeds in both interpreters. These are numeric WorldJEPA predictor/encoder/EMA updates in a synthetic SQLite Store/T8 test path, **not** GGUF/base-body weight edits or learned B3 latent exchange.
+
+### Remaining cross-organ blocker — do not promote
+
+The receiver matrix remains a ridge-fitted SHADOW readout over synthetic transition targets, not a trainable B1/B2 adapter and not actual B1/B2 weights.
+
+| Receiver/planner | Python 3.13 | Python 3.14 |
+|---|---:|---:|
+| Planner ready | 3/54 | 0/54 |
+| Planner unavailable | 51/54 | 54/54 |
+| B1_DETAIL readout-only / rejected | 3/51 | 0/54 |
+| B2_GIST readout-only / rejected | 29/25 | 24/30 |
+| SELF_MODEL readout-only / rejected | 3/51 | 0/54 |
+
+The small cross-interpreter variation demonstrates that receiver utility is not robust. Do not loosen the gate or promote this readout. Core PR #2266 is complementary native input-embedding ingress, but it does not prove trained semantic alignment, semantic use or production B3 routing.
+
+### Next internal task
+
+Implement a model-revision/source-bound trainable B1/B2 adapter using actual organ outputs, supervised targets or explicit user corrections—not synthetic transition y labels. Persist adapter parameters and optimizer state; bind updates to trusted T8 source/outcome provenance; use disjoint sessions and zero/shuffled/OOD/wrong-action controls; measure retention, restart, rollback and stable receiver utility on both Python versions before any native B3 promotion. Coordinate with Core #2266 and preserve its pinned API/QA gates.
+
+### Research and environment
+
+- JEPA-TTT persistence/dense replay review: `v14/handoffs/JEPA_TTT_PERSISTENT_PREDICTOR_RESEARCH_20261122.md`.
+- CGEM critic-gated progress/failure event-memory review: `v14/handoffs/CGEM_EVENT_MEMORY_RESEARCH_20261122.md`.
+- Full test/evidence record: `v14/handoffs/JEPA_MEMORY_E2E_CHECKPOINT_20261122.md`.
+- Full LOCAL_LINUX repository tests: BLOCKED (Python 3.13.5 exists, but no complete checkout is mounted and GitHub DNS fails). Local artifact/diagnostic replay checks PASS; those are not full project tests.
+- Redmi: REDMI_UNVERIFIED. No authenticated owner receipt, install/update request or device write. No production model, weight, permission or updater change.
+- Boss/Core PR #2258 remains DRAFT and owns the integration pin chain. This appendix is a proposed handoff update for Boss review; no direct Boss-branch overwrite or merge was performed.
