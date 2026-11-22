@@ -312,7 +312,8 @@ def test_sleep_runtime_commits_source_verified_base_and_temporal_learning_after_
         assert temporal["metrics"]["source_disjoint"] is True
         assert temporal["metrics"]["parameter_delta_norm"] > 0
         assert temporal["metrics"]["ema_target_delta_norm"] > 0
-        assert temporal["metrics"]["optimizer_steps"] >= 80
+        assert temporal["metrics"]["optimizer_steps"] >= 40
+        assert temporal["metrics"]["steps_this_update"] == 40  # runtime adapter cap
         assert temporal["optimizer_state_persisted"] is True
         assert temporal["native_body_weights_changed"] is False
         assert temporal["decision_authority"] == "NONE"
