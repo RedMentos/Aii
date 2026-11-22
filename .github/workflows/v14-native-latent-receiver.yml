@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - boss/v14-native-latent-probe-rebase-20261122
+      - core/v14-native-receiver-release-rebase-20261122-run14
   pull_request:
     branches:
       - boss/v14-recall-store-pin-rebind-20261122
@@ -29,6 +30,8 @@ jobs:
         python-version: ["3.13", "3.14"]
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
@@ -41,6 +44,8 @@ jobs:
           PYTHONPATH: v13/code
           PYTHONDONTWRITEBYTECODE: "1"
         run: python -m pytest -q v13/code/tests/test_native_taps.py v13/code/tests/test_native_latent_receiver_stage.py v13/code/tests/test_callosum.py
+      - name: Scan public diff for private data and secrets
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/gpt6/v13-private-remote-bridge-20261111 --head HEAD --no-worktree
   linux-pinned-api:
     runs-on: ubuntu-latest
     timeout-minutes: 25
