@@ -263,10 +263,9 @@ def fit_adapter(train_pairs: Sequence[Mapping], holdout_pairs: Sequence[Mapping]
     return adapter
 
 
-def project_vector(adapter: Mapping, sender_vector, *, sender_model_sha256: str,
-                   receiver_model_sha256: str, sender_tap_id: str, receiver_tap_id: str) -> list[float]:
-    """Apply the trained adapter without NumPy or other runtime dependencies."""
-    _validate_adapter(adapter)
+def _project_vector_validated(adapter: Mapping, sender_vector, *, sender_model_sha256: str,
+                              receiver_model_sha256: str, sender_tap_id: str,
+                              receiver_tap_id: str) -> list[float]:
     if (_sha256_text(sender_model_sha256, "sender_model_sha256") != adapter["sender_model_sha256"]
             or _sha256_text(receiver_model_sha256, "receiver_model_sha256") != adapter["receiver_model_sha256"]
             or sender_tap_id != adapter["sender_tap_id"] or receiver_tap_id != adapter["receiver_tap_id"]):
@@ -282,10 +281,22 @@ def project_vector(adapter: Mapping, sender_vector, *, sender_model_sha256: str,
     return projected
 
 
+def project_vector(adapter: Mapping, sender_vector, *, sender_model_sha256: str,
+                   receiver_model_sha256: str, sender_tap_id: str, receiver_tap_id: str) -> list[float]:
+    """Apply the trained adapter without NumPy or other runtime dependencies."""
+    _validate_adapter(adapter)
+    return _project_vector_validated(
+        adapter, sender_vector, sender_model_sha256=sender_model_sha256,
+        receiver_model_sha256=receiver_model_sha256, sender_tap_id=sender_tap_id,
+        receiver_tap_id=receiver_tap_id,
+    )
+
+
 def project_rows(adapter: Mapping, sender_vectors, **bindings) -> list[list[float]]:
+    _validate_adapter(adapter)
     if not isinstance(sender_vectors, (list, tuple)) or not sender_vectors or len(sender_vectors) > 64:
         raise LatentAdapterError("sender tap must contain 1..64 activation rows")
-    return [project_vector(adapter, row, **bindings) for row in sender_vectors]
+    return [_project_vector_validated(adapter, row, **bindings) for row in sender_vectors]
 
 
 def save_adapter(adapter: Mapping, path: str | os.PathLike) -> str:
