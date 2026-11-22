@@ -549,6 +549,39 @@ class Runtime:
                 executive_view=self.executive.view(self.session)
                 from .history import native_history
                 history_records,history_refs=native_history(self.store,self.session,eid,self.cfg['history_turns'])
+                companion_receipt_refs=[]
+                if runner.role=='C3_LANGUAGE':
+                    try:  # C5 Android companion receipt is context only, never a WorldTransition.
+                        from .android_outcome_context import recent_companion_receipt_context
+                        companion_receipt=recent_companion_receipt_context(
+                            self.store,self.session,
+                            ttl_seconds=self.cfg.get('android_receipt_context_ttl_s',300.)
+                        )
+                        if companion_receipt:
+                            receipt_view={key:companion_receipt[key] for key in (
+                                'capability','status','receipt_status','observed',
+                                'evidence_level','t8_authoritative',
+                                'world_learning_eligible','trusted_transition_eligible',
+                                'claim_boundary'
+                            )}
+                            volatile.append(('ANDROID_RECEIPT',
+                                '\\nAndroid companion receipt (signed companion attestation only; not independent device observation):',
+                                receipt_view))
+                            companion_receipt_refs=companion_receipt['source_refs']
+                            meta['android_companion_receipt']={
+                                'action_id':companion_receipt['action_id'],
+                                'capability':companion_receipt['capability'],
+                                'status':companion_receipt['status'],
+                                'observed':False,
+                                't8_authoritative':False,
+                                'world_learning_eligible':False,
+                            }
+                            self.store.log('android_companion_receipt_context_ready',eid,{
+                                'role':'C3_LANGUAGE','action_id':companion_receipt['action_id'],
+                                'count':1,'status':'PASS'
+                            })
+                    except Exception as exc:
+                        self.store.log('android_receipt_context_unavailable',eid,{'error':type(exc).__name__})
                 try:  # WP-S7: sleep day digest of turns outside the history window (measured: recall of old facts 0 % -> 79-96 %)
                     if ctxos.controller(self).digest_enabled():
                         from .sleep_offline import context_items
@@ -569,12 +602,12 @@ class Runtime:
                 history=[{'role':m['role'],'content':m['text']} for m in history_records]
                 messages=[{'role':'system','content':sys}]+history+[{'role':'user','content':text}]
                 try:  # WP-N7 Context OS: SHADOW logs the plan next to this legacy view; ACTIVE hands the planned view over
-                    cplan=ctxos.controller(self).plan(eid,runner.role,stable,volatile,history_records,text,verdicts=[x['verdict'] for x in focal_run['inquisition']] if focal_run else [],warm_ids=warm_ids,provenance=[e['source_ref']],budget_scale=body['modulation'].get('context_budget_scale',1.))
+                    cplan=ctxos.controller(self).plan(eid,runner.role,stable,volatile,history_records,text,verdicts=[x['verdict'] for x in focal_run['inquisition']] if focal_run else [],warm_ids=warm_ids,provenance=[e['source_ref'],*companion_receipt_refs],budget_scale=body['modulation'].get('context_budget_scale',1.))
                     messages=cplan['messages'];meta['context_plan']={'packet_id':cplan['packet_id'],'applied':cplan['applied']}
                 except Exception as exc:self.store.log('context_os_unavailable',eid,{'stage':'plan','error':type(exc).__name__})
                 try:save_context(self.store,self.session,eid,runner.role,messages)  # WP-V5 :context
                 except Exception as exc:self.store.log('context_save_failed',eid,{'error':type(exc).__name__})
-                context_refs=[e['source_ref'],*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]
+                context_refs=[e['source_ref'],*companion_receipt_refs,*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]
                 if executive_view.get('active_task'):context_refs.append(executive_view['active_task']['source_ref'])
                 context_refs.extend(x['source_ref'] for x in executive_view['open_questions'])
                 for item in selected:context_refs.extend(item['provenance']+item['evidence_refs'])
