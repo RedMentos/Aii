@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T17:55:17.015Z",
+  "updated_at": "2026-11-22T17:59:16.409Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4 after documentation-only #2340 merge; 37 exact push checks queued. Redmi remains authenticated-installed at c4eb82 with runtime/dashboard UP_TO_DATE; no new update request.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -413,6 +413,28 @@
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T11:28:06.923Z",
       "proof": "The exact runtime code SHA c4eb82deec915f65894c20d6ebbaf0ebf58fa335 is installed, but the receipt proves installation only. No Android process-death, service restart, reboot, marker recovery or runtime-only rollback receipt exists. User models, SQLite and chats were not modified."
+    },
+    {
+      "id": "V14-020",
+      "title": "Native llama-server prompt-cache cross-session isolation",
+      "owner": "QA & Android + Core & Harness + Boss",
+      "reviewer": "Boss & Integration",
+      "priority": "P0",
+      "status": "INVESTIGATION_OPEN",
+      "scope": "Per-role llama-server processes; 8 managed sessions; prompt/KV cache reuse; privacy and correctness boundary",
+      "acceptance": [
+        "Exact installed llama-server build/revision and KV mode recorded through privacy-safe diagnostics",
+        "RunnerPool session-to-runner/slot ownership verified; no assumption that id_slot=0 isolates sessions",
+        "Synthetic unique-marker canary: at least 30 sequential and 30 concurrent rounds on the actual -np 1 path, plus fresh-server baseline",
+        "Flag matrix current / cache-ram 0 / no-cache-idle-slots / both / no-cache-prompt, with same-session reuse and TTFT/PSS/RSS measured",
+        "No cross-session marker contamination, correct cold-baseline parity, restart and rollback; Redmi proof separate from CI",
+        "No private user chat content in canary, logs, issue or CI artifacts"
+      ],
+      "proof_environment": "Upstream research + source review at V13 release c4eb82; no V13 reproduction, no exact installed llama-server build receipt, no Redmi canary",
+      "next_step": "QA/Core: add a privacy-safe exact llama-server version field and inspect RunnerPool session multiplexing; then run synthetic unique-marker canaries on actual -np1/id_slot0. Do not change native_cache_ram_mb or restart the user's runners until the flag matrix proves both isolation and acceptable same-session reuse.",
+      "user_action_required": false,
+      "last_checkpoint": "2026-11-22T17:59:16.409Z",
+      "proof": "V13 runners.py launches per-role llama-server with -np1 and --cache-ram 128, sets cache_prompt=True/id_slot=0; config default native_cache_ram_mb=128 and no explicit --no-cache-idle-slots. Upstream llama.cpp issue #27148 remains OPEN with cross-request stale prompt reports; PR #27624 OPEN for LRU stale-state; PR #30295 MERGED for busy pinned-slot path. Upstream mitigation results depend on kv_unified. Exact Redmi binary revision and V13 exposure remain UNKNOWN; no runtime setting changed."
     }
   ],
   "current_redmi_status": "Authenticated private PIPELINE_STATUS #550: installed SHA c4eb82deec915f65894c20d6ebbaf0ebf58fa335; auto-update=true; runtime=UP_TO_DATE; dashboard=UP_TO_DATE; last_result=UP_TO_DATE; last_error=NONE. DIAGNOSTICS #551: Runtime/service/dashboard RUNNING; last stored turn FINAL but 56.432 s total / 40.818 s TTFT / 39.088 s prefill / 701 prompt tokens / 2 generated tokens; correctness UNKNOWN. Native probe SMOKE_PARTIAL; B1/B2 TIME_BUDGET 53.2/54.2 s. Instant snapshot: 3 mapped processes / 90.7 MiB PSS (B1 1.7, B2 88.7, C2 0.3, C3 0); PSS is not free RAM or sustained residency. HEALTH #549 reports 1,293 MiB MemAvailable of 5,569 MiB and 1,537 MiB free disk; its separate runtime field is UNAVAILABLE, while DIAGNOSTICS reports RUNNING. LEARNING_STATUS #552 returns UNAVAILABLE. No new turn or 20-turn correctness acceptance.",
@@ -784,7 +806,7 @@
     }
   ],
   "latest_checkpoint": {
-    "timestamp": "2026-11-22T17:55:17.015Z",
+    "timestamp": "2026-11-22T17:59:16.409Z",
     "release_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "exact_sha_ci": "53/53 SUCCESS",
     "device": "AUTHENTICATED_INSTALLED; auto-update enabled; runtime/dashboard UP_TO_DATE; last_error NONE",
@@ -834,7 +856,12 @@
     "user_action_required": false,
     "release_branch_head": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "release_branch_push_ci": "37 CHECKS QUEUED",
-    "device_installed_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335"
+    "device_installed_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
+    "potential_prompt_cache_privacy_risk": "P0_INVESTIGATION_OPEN; not reproduced on V13; no cache setting changed",
+    "upstream_llama_cpp_issue": "#27148 OPEN; #27624 OPEN; #30295 MERGED for distinct busy-pinned-slot path",
+    "v13_runner_path": "per-role llama-server -np1 --cache-ram 128 --ctx-checkpoints 6; cache_prompt=true id_slot=0; no explicit --no-cache-idle-slots",
+    "binary_revision": "UNKNOWN_FROM_PHONE_RECEIPT",
+    "required_next_test": "30 sequential + 30 concurrent synthetic unique-marker rounds on actual -np1 path; flag matrix; same-session reuse/TTFT/PSS/RSS"
   },
   "capability_matrix": [
     {
