@@ -13,6 +13,7 @@ FIELDS={
  "WorldTransition":{"action_id":str,"source_ref":dict,"outcome_source_ref":dict,"action_role":str,"corollary_packet_id":str,"teacher_truth_authority":bool},
  "StudentEvaluation":{"percept_packet_id":str,"source_ref":dict,"student_route":str,"teacher_route":str,"agreement":bool,"routing_authority":int},
  "LatentTapPacket":{"role":str,"source_ref":dict,"tap_id":str,"model_revision":str,"token_ids":list,"feature_path":str,"feature_sha256":str,"shape":list},
+ "B3PairedTapPacket":{"schema":str,"body_pair_id":str,"source_ref":dict,"sender_roles":list,"tap_packet_ids":dict,"tap_ids":dict,"model_revisions":dict,"feature_bindings":dict,"token_counts":dict,"dimensions":dict,"token_alignment":str,"receiver_pooling":str,"injection_authority":int,"learning_authority":int},
  "ExecutiveDecision":{"component":str,"context_ref":dict,"baseline":str,"action":str,"learned":bool,"context_revision":str,"trajectory_offer_ids":list},
  "ActionPrediction":{"action_type":str,"profile_id":str,"prediction":dict},
  "PredictionOutcome":{"action_id":str,"observation":dict},
@@ -94,6 +95,14 @@ def validate(kind,obj):
         optional={'goal_source_ref':(dict,type(None)),'goal_sequence':list,'active_task':(dict,type(None)),'current_action_intent':(dict,type(None)),'salient_A_offer':(dict,type(None)),'salient_B_offer':list,'memory_refs':list,'uncertainty':dict,'resource_state':dict,'permission_flags':dict,'open_questions':list,'conversation_event_version':int}
         for name,types in optional.items():
             if name in obj and not isinstance(obj[name],types):raise ValueError('ExecState.'+name+': falscher Typ')
+    if kind=="B3PairedTapPacket":
+        roles=("B1_DETAIL","B2_GIST")
+        if obj["schema"]!="v13.b3-paired-native-taps/1" or obj["sender_roles"]!=list(roles):raise ValueError("B3 pair schema/roles")
+        for field in ("tap_packet_ids","tap_ids","model_revisions","feature_bindings","token_counts","dimensions"):
+            if not isinstance(obj[field],dict) or set(obj[field])!=set(roles):raise ValueError("B3 pair "+field)
+        if any(not isinstance(obj[field][role],str) or not obj[field][role] for field in ("tap_packet_ids","tap_ids","model_revisions") for role in roles):raise ValueError("B3 pair identity")
+        if any(type(obj[field][role]) is not int or obj[field][role]<1 for field in ("token_counts","dimensions") for role in roles):raise ValueError("B3 pair geometry")
+        if obj["token_alignment"]!="NOT_ASSUMED_DIFFERENT_NATIVE_TOKENIZERS" or obj["receiver_pooling"]!="MEAN_OF_RECEIVER_NATIVE_TAP_TOKENS" or obj["injection_authority"]!=0 or obj["learning_authority"]!=0:raise ValueError("B3 pair authority/semantics")
     if kind=="SourceRef" and not 0<=obj["char_start"]<=obj["char_end"]:raise ValueError("SourceRef-Bereich")
     if kind=="OfferPacket" and (obj["role"] not in {"B1_DETAIL","B2_GIST"} or not 0<=obj["confidence"]<=1):raise ValueError("Offer role/confidence")
     if kind=="BodySourceIdSelection":
