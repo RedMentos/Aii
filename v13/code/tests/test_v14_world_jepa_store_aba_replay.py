@@ -1157,16 +1157,27 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
             mode_reports = [
                 item for item in seed_reports if item["encoder_mode"] == encoder_mode
             ]
-            assert len(mode_reports) == 2
+            expected_arms = [arm for arm in ARMS if arm[1] == encoder_mode]
+            assert len(mode_reports) == len(expected_arms)
             projected_reports = [
                 item for item in mode_reports if item["replay_projection"] is True
             ]
             unprojected_reports = [
                 item for item in mode_reports if item["replay_projection"] is False
             ]
-            assert len(projected_reports) == 1
-            assert len(unprojected_reports) == 1
-            projected = projected_reports[0]
+            assert len(projected_reports) == sum(1 for arm in expected_arms if arm[2] is True)
+            assert len(unprojected_reports) == sum(1 for arm in expected_arms if arm[2] is False)
+            loss_reports = [
+                item for item in mode_reports if item["replay_mode"] == "on_demand_loss"
+            ]
+            assert len(loss_reports) == 2
+            projected_loss = next(
+                item for item in loss_reports if item["replay_projection"] is True
+            )
+            unprojected_loss = next(
+                item for item in loss_reports if item["replay_projection"] is False
+            )
+            projected = projected_loss
             diagnostic = []
             for phase_name in ("B", "A2"):
                 phase = projected[phase_name]
@@ -1201,9 +1212,12 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                 })
             print("WORLDJEPA_LOSS_DEMAND_SEED_DIAGNOSTIC", seed, encoder_mode, diagnostic)
 
-            accepted_a2 = []
+            accepted_loss_a2 = []
             for report in mode_reports:
                 a2 = report["A2"]
+                if (report["replay_mode"] == "on_demand_loss"
+                        and a2["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"):
+                    accepted_loss_a2.append(a2)
                 if a2["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA":
                     accepted_a2.append(a2)
                     assert a2["utility_gate_accepted"] is True
@@ -1232,13 +1246,15 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                     assert a2["utility_gate_accepted"] is False
                     assert a2["checkpoint_sha_before"] == a2["checkpoint_sha_after"]
                     assert a2["holdout_used_for_backtracking"] is False
-            assert accepted_a2, (
+            assert accepted_loss_a2, (
                 f"on-demand loss produced no accepted {encoder_mode} A2 update "
                 f"for seed {seed}; projected candidate may be rejected only if "
                 f"the matched unprojected loss-demand arm succeeds"
             )
+            if projected_loss["A2"]["status"] == "UTILITY_GATE_REJECTED":
+                assert unprojected_loss["A2"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
             if encoder_mode == "predictor_only":
-                assert projected["A2"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+                assert projected_loss["A2"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
 
         for phase in phases:
             if phase["status"] == "UTILITY_GATE_REJECTED":
