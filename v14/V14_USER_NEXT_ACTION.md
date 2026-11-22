@@ -1,3 +1,33 @@
+# Current user-facing handoff — 2026-11-22T09:06:29Z
+
+**No user action is required. Do not run a new Termux command.** The existing auto-updater was already enabled and completed the normal update to code-bearing runtime `c2e7ae7ebe47af6ea96995c7df112872bb404d38`. Authenticated private PIPELINE_STATUS #509 says `runtime=UPDATED`, `dashboard=UP_TO_DATE`, `last_result=UPDATED`, `last_error=NONE`, `updated_commit=c2e7ae7ebe47af6ea96995c7df112872bb404d38`. No UPDATE_REQUEST, manual shell command, model download/swap, weight change or permission change was made.
+
+The current release branch head is `f7094bdb5530813e977fcabc726e30696f73100e`, but that commit adds only QA tests, workflow paths and a handoff; it does not change runtime modules. Its exact push CI is still running. The phone's installed code-bearing runtime remains c2e7 until a later code-bearing release is separately verified.
+
+## What is now installed
+
+- PR #2323's native input-embedding receiver diagnostic is in the installed c2e7 runtime. It is a manual/idle-only diagnostic with zero production, semantic or training authority. No real GGUF probe was run; this is not B3 latent coupling.
+- The staged fair per-role B1/B2 observer budget code is present in the c2e7 integrated Runtime candidate. QA PR #2324 adds regression acceptance and is merged at f7094; those tests use synthetic boundaries and do not prove Redmi offers.
+- The updater itself has now completed a real code update through the existing authorized path. Device rollback/reboot acceptance is still open.
+
+## Latest device evidence
+
+The most recent DIAGNOSTICS #508 was collected before the c2e7 update: AI runtime/service RUNNING, autostart=true, 8 managed sessions; last turn **63.22 s total / 42.48 s TTFT / 34.96 s prefill / 709 prompt tokens / 2 generated tokens**; B1 53.2 s `TIME_BUDGET`, B2 54.2 s `TIME_BUDGET`; zero mapped native model processes in an instantaneous sample, child readability unknown. User input was redacted, so correctness is unknown. A transient MODEL_STOPPED incident #506 was followed by this RUNNING diagnostic. Post-update DIAGNOSTICS #510 is pending.
+
+Official Age remains 0. Lab selector requested stage 10, effective implemented stage 5, physical feature execution false; learning commit authority still requires separate SHADOW mode. No model or learning permission was changed.
+
+## What remains unresolved
+
+- Real B1/B2 native valid offers and useful same-turn contributions, C4 consumption, correct C3 answer, 20-turn quality and p50/p95 TTFT/PSS.
+- True trained B1↔B2 latent coupling; the merged receiver is diagnostic-only.
+- Persistent JEPA/World/Self/Memory weight updates, per-session retention, replay and safe cross-organ gradients.
+- Android AudioRecord, full voice decoder/vocoder, MediaProjection/Accessibility UI control, and background app action provider.
+- Full Canon clause-to-consumer traceability; the 1,255-heading index is not a completion count.
+
+**Next:** the team is checking post-update health and fixing the exact integration-pin failures. No action is needed from you unless a later native-model or Android-permission test genuinely requires explicit consent.
+
+---
+
 # Perception checkpoint — 2026-11-22 06:17Z
 
 **No user action is needed.** Do not run a Termux command, request an update, change models/weights/permissions, or enable microphone capture on the basis of this checkpoint.

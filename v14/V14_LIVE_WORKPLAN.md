@@ -1,3 +1,43 @@
+# Boss integration checkpoint — 2026-11-22T09:06:29Z (V14 run 11)
+
+## Release and device evidence
+
+- Release branch `gpt6/v13-private-remote-bridge-20261111` is now `f7094bdb5530813e977fcabc726e30696f73100e`. Code-bearing PR #2323 merged at `c2e7ae7ebe47af6ea96995c7df112872bb404d38`; exact push CI on c2e7 had **38/38 check-runs SUCCESS**, including all three workflows required by the phone updater. The private owner-read PIPELINE_STATUS #509 confirms the normal auto-updater completed the runtime update: `auto_update=true`, `runtime=UPDATED`, `dashboard=UP_TO_DATE`, `last_result=UPDATED`, `last_error=NONE`, `updated_commit=c2e7ae7ebe47af6ea96995c7df112872bb404d38`. This is a real install receipt, not merely a GitHub push.
+- QA PR #2324 was rebased onto c2e7 and merged as test-only commit `f7094bdb5530813e977fcabc726e30696f73100e`. Its exact PR head `70f96ee6f416bc05a4e0b3fe4590cc009209ffd2` had **7 SUCCESS / 0 FAILURE / 2 expected SKIPPED**. It adds staged same-turn B1/B2 admission, 90-second fair scheduling and one-role deferral acceptance; it changes no runtime module. The new f7094 exact push CI was still running at readback (36 check-runs queued/in progress, zero failures); wait for the three updater-required push workflows before treating f7094 as the current update target.
+- The phone's prior PIPELINE_STATUS #507 was CI_WAIT because the staged-context push workflow had not yet completed. The automatic updater later installed c2e7 without UPDATE_REQUEST or a manual Termux command. A transient MODEL_STOPPED incident #506 was followed by DIAGNOSTICS #508 showing AI runtime/service RUNNING; post-update DIAGNOSTICS #510 is pending.
+
+## What this run actually added to the product
+
+1. **Native receiver diagnostic installed:** PR #2323 composes a pinned llama.cpp input-embedding receiver diagnostic using `llama_batch.embd`/native decode. Linux pinned build/selftest and Android ARM64 cross-compile passed; the path is manual, idle-only and authority-zero. It is not trained B1↔B2 latent coupling, semantic alignment or production B3.
+2. **Same-turn fairness acceptance added:** PR #2324 is merged and tests distinct B1/B2 role deadlines, 90-second fair observer scheduling and deferral of only an insufficiently funded role. It runs against the source-pinned staged Runtime with synthetic clock/Store/model boundaries. It does not prove native offer quality or phone latency.
+3. **Normal Android update path exercised:** the already-enabled updater installed c2e7 after exact required push CI went green. No model, weight, Age, permission, user data or setting was changed.
+
+## Latest device diagnostic (pre-update)
+
+Private DIAGNOSTICS #508 reports AI runtime/service RUNNING, autostart=true, 8 managed sessions and last session exit code UNVERIFIED. Last turn: **63.222 s total / 42.485 s TTFT / 34.959 s prefill / 709 prompt tokens / 2 generated tokens**. B1_DETAIL 53.2 s and B2_GIST 54.2 s both report `TIME_BUDGET`; instantaneous native-process sample shows 0 mapped model processes, PSS 0 MiB and child readability UNKNOWN. The input is redacted, so correctness cannot be assessed. Lab selector: official Age 0, requested stage 10, effective implemented stage 5, physical feature execution false, learning commit authority still requires separate SHADOW mode. These metrics are pre-update; #510 will establish post-update health.
+
+## Exact open integration blockers
+
+- **Perception #2322:** focused anti-alias RAW EAR tests pass, but staged/integrated fail because Core's `integrated_audio_context_candidate_20261121.py` pins old `audio_voice_cues.py` blob `4c5641ad...`; new producer is `b18e4501...`. Core must rebind the composer and downstream pins bottom-up. Keep draft.
+- **JEPA #2311:** exact head d997f2e has 9 success / 9 failure / 1 skipped; staged builder pin, Store-lock fixture, operator pin, postcommit runtime hash and migration errors remain. No optimizer/retention acceptance.
+- **B3 #2313:** exact head 9068cf9 is stale-base (ancestor bdcad466) and 8/14 checks fail. Synthetic random `training_batch` is not actual paired native taps. Rebase, repair seed contract and collect source-bound taps/labels/L0 baselines before any L1 gate.
+- **Native receiver #2314:** superseded by merged #2323; its old branch has four Python staged failures. Do not merge it.
+- **Audio consumer #2312:** 4/5 checks pass but staged-runtime fails on a QA-companion parent; no AudioRecord provider or Redmi capture.
+- **Android companion #2271 stack:** still not a release-ready OS executor; no APK install, UI control or background app action has been tested.
+
+## Whole-system status
+
+Historical 1,255-heading Canon inventory and the V13 appendix remain unchanged. A new evidence overlay updates A0–A5, B1/B2, B3, C/JEF, World/Self/Memory, JEPA/Sleep, voice, Android control, Age/X10, updater, sandbox, tools, cross-organ learning and sparse-MoE families. Atomic clause→code→consumer→test→environment→rollback mapping is still incomplete. No local full-repository test was possible: this execution container has no Aii Git checkout under `/mnt/data`, `/workspace` or `/root`.
+
+## Next owned steps
+
+- QA: read post-update DIAGNOSTICS #510; monitor f7094 required push CI; do not issue manual commands or UPDATE_REQUEST while the updater is functioning.
+- Core: rebind the RAW EAR composer pin, repair the current Callosum/JEPA source chain and report the exact new source blobs before Perception/JEPA retest.
+- JEPA: fix the Store-lock fixture and recompute integrated Memory/World → recovery → stage → deployer pins; keep all promotion OFF.
+- Perception: keep FIR anti-alias work in draft until staged/integrated passes; no model/dependency swap or microphone permission.
+- Core/QA: continue the Android companion stack and real permission provider; no device action until a real authorized provider and explicit consent exist.
+- Boss: maintain the whole-Canon evidence ledger and review compatible current-head PRs; no blind merge and no force-push.
+
 ## Research/Perception follow-up — 2026-11-22 06:17Z
 
 - Current release-development integration head: `39b175521f50048f13ca14372b316de47527f531`; Boss PR #2288 is merged as integration only. Candidate-head CI was 20 success / 0 failure / 1 expected skipped / 1 cancelled; post-merge push CI remains not independently verified. Private phone receipt #480 says `CI_WAIT` on installed SHA `89333289b8cd50da92cbf7074c9ef689a2972dbf`, auto-update enabled; no update request or device mutation.

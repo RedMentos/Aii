@@ -899,3 +899,30 @@ This correction supersedes older branch-level status claims without deleting the
 **V14 adaptation hypothesis:** useful future A4 speaker-change/overlap evidence, not a speaker-identity authority. It is not a drop-in for the current one-second signed capture: the method needs a continuous 2-second state and 80-ms frame stream. A candidate must compare the existing deterministic RAW EAR heuristic, FASTDIAR Small, and NO_MODEL on the same source-bound streams, with confidence-gate ablation, overlap/noise/silence negatives, fixed-latency and retention checks. Keep identity/learning/action authority false. Because FASTDIAR expects 16-kHz input while the Android-guaranteed capture contract is 44.1 kHz, retain the original PCM for RAW EAR and evaluate a separate anti-aliased 44.1→16-kHz feature view; do not relabel samples or use the current block-average reduction as a speaker-model resampler.
 
 **Decision:** RESEARCH_ONLY / NOT_SELECTED / NOT_DOWNLOADED. No model, dependency or weight was installed. ARM latency/RSS, quantization, accuracy on local conversational audio and data-license suitability remain unmeasured.
+
+
+
+### R-076 — llama.cpp native input-embedding API boundary for B3 diagnostics (2026-11-22)
+
+**Primary source:** upstream `ggml-org/llama.cpp`, exact revision `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4`; public header `include/llama.h` and upstream `LICENSE` read at that revision on 2026-11-22. License: MIT (ggml authors).
+
+**Verified API contract:** `llama_batch.embd` carries one float embedding vector per input row when `llama_batch.token` is NULL; `llama_decode` consumes the batch. With context embeddings enabled and `pooling_type=LLAMA_POOLING_TYPE_NONE`, `llama_get_embeddings_ith` returns a token-level vector of width `n_embd`. Positions, sequence IDs and output-selection semantics are part of the pinned API contract.
+
+**V14 implementation and boundary:** PR #2323 merged this as a manual, idle-only native input-embedding receiver diagnostic. Exact c2e7 push CI passed 38/38 check-runs; the pinned Linux build/selftest and Android ARM64 cross-compile passed. This avoids tokenizing sender vectors as text, but matching dimensions only prove tensor-shape compatibility. It does not align B1/B2/C3 representation spaces, prove semantic utility, establish trained cross-family coupling, expose K/V transfer or authorize production routing/learning. `production_route=false`, `semantic_use_proven=false`, `training_authority=0`, `native_receiver_authority=0` remain mandatory.
+
+**Next experiment:** only with an already-installed model and explicit operator confirmation, compare same-model native token-prefill and embedding parity, then zero/shuffle/dimension/revision negatives and a downstream SOURCE_EXACT vs NO_MESSAGE vs RECEIVER task-utility test. Do not auto-install a binary or download/swap a model. Keep B3 OFF until a separately trained cross-family adapter passes source-disjoint holdout, role retention, OOD and rollback.
+
+**Decision:** RESEARCH_VERIFIED_API / DIAGNOSTIC_ONLY / NOT_A_LATENT_ALIGNMENT_RESULT. No model, weight, dependency or runtime permission changed.
+
+
+### R-077 — symmetric RAW EAR FIR anti-alias decimation on constrained CPU (2026-11-22)
+
+**Primary implementation references:** SciPy official `signal.decimate` API and current source document anti-alias filtering before downsampling and a symmetric windowed-FIR option: https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.decimate.html and https://github.com/scipy/scipy/blob/main/scipy/signal/_signaltools.py . V14 does not import SciPy or copy its implementation; the candidate uses a standard-library Hamming-windowed sinc feature filter.
+
+**Implementation hypothesis:** the RAW EAR feature path's prior block-average reduction could alias high-frequency periodic input into the 65–400 Hz pitch-search band. PR #2322 replaces it with cached centered odd-tap low-pass FIR coefficients and integer decimation; symmetric sample pairing preserves the direct centered FIR output while reducing multiply work. This is only the pitch/voicing feature view, not a calibrated VAD, speaker-embedding resampler or playback resampler.
+
+**Reported evidence on the Perception branch:** direct-reference parity across four sample rates and nine lengths passed with maximum absolute difference below 2e-11; 20-case regression was added. A warm-cache 11-run decimator-only benchmark reported 12–20% lower wall time than the unpaired direct implementation across 16/22.05/44.1/48 kHz. These are isolated CPython 3.13.5 x86_64 results, not ARM/Redmi timings. Focused RAW EAR alias negatives, low-F0 positives, prosody, consent and comparator tests pass on PR #2322.
+
+**Integration failure:** exact PR head e9a57dd fails staged-runtime and integrated-regression because Core's `integrated_audio_context_candidate_20261121.py` still pins old `audio_voice_cues.py` blob `4c5641ad...`; the new producer blob is `b18e4501...`. Core must rebind the composer and downstream recovery/stage/deployer pins bottom-up. No anti-alias release or device speedup is claimed until exact staged/integrated CI passes.
+
+**Decision:** CANDIDATE_FOR_REVIEW / NO_DEPENDENCY / NO_MODEL_SWAP / REDMI_UNVERIFIED. Preserve original PCM and the current deterministic classifier fallback; no model, dependency or weight was downloaded.

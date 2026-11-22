@@ -2077,3 +2077,35 @@ This overlay updates only the A-plane audio/voice evidence; it does not mark the
 **Current release/device boundary:** integration head `39b175521f50048f13ca14372b316de47527f531`; post-merge push CI not independently certified. Authenticated private PIPELINE_STATUS #480 reports auto-update enabled but `CI_WAIT` on installed SHA `89333289b8cd50da92cbf7074c9ef689a2972dbf`; no UPDATE_REQUEST was sent. REDMI_UNVERIFIED_NOT_INSTALLED.
 
 **Coordination note:** the older overlay above still contains unrelated stale Age-rights and B3 rows. They are not changed by this Perception update; Boss/Integrator should reconcile them against current board/PR evidence without rewriting historical Canon headings.
+
+---
+
+## Boss whole-Canon evidence overlay — 2026-11-22T09:06:29Z
+
+This overlay supersedes prior *status snapshots* only. It does not alter the historical 1,255-heading inventory, the V13 appendix or any failed gate. Current release branch head is `f7094bdb5530813e977fcabc726e30696f73100e`; code-bearing runtime `c2e7ae7ebe47af6ea96995c7df112872bb404d38` is authenticated installed by private PIPELINE_STATUS #509. The newest f7094 push CI was still pending at this readback.
+
+| Canon family | Executable code / consumer | Exact synthetic or CI evidence | Redmi/native evidence | Classification |
+| --- | --- | --- | --- | --- |
+| A0–A5 perception, segmentation, attention, source/time | Caller-supplied PCM16→RAW EAR; A5 UI metadata lease SHADOW; anti-alias FIR candidate in #2322 | Focused #2322 tests pass; staged/integrated fail on stale Core audio composer pin | No AudioRecord, screen capture or calibrated speaker provider | PARTIAL / WIRED_SYNTHETIC / NOT_ANDROID_VERIFIED |
+| B1_DETAIL + B2_GIST | Distinct role models, source-bound OfferPackets, fair per-role observer slices in staged Runtime | #2324 merged; 7 SUCCESS / 0 FAILURE / 2 expected SKIPPED; 6.75 s/13.5 s role deadlines, 90 s fair scheduler and single-role defer negative control | Pre-update #508: B1/B2 TIME_BUDGET; no valid native offer receipt | CODE_INSTALLED / SYNTHETIC_ACCEPTANCE / NATIVE_QUALITY_OPEN |
+| B3 / Enlightened Space | Symbolic space plus merged native input-embedding receiver diagnostic (#2323) | Pinned llama.cpp API/build and Android ARM64 cross-compile PASS; exact c2e7 push 38/38 check-runs SUCCESS | Code installed at c2e7; probe not run | DIAGNOSTIC_ONLY / B3_OFF / NO_TRAINED_LATENT_COUPLING |
+| B4/B5 workspace, C4 coalition, C5 reflex | Source-span C4 heuristic, same-turn receipt, exact arithmetic/date reflex | Staged synthetic C4/C3 and fair-budget acceptance pass | No accepted native B1/B2 contribution, no 2+2 correctness receipt | WIRED_SYNTHETIC / NOT_QUALITY_ACCEPTED |
+| C1/JEF/C2/C3 control and language | Control contracts, C4 receipt, C3 staged consumer, explicit TTS fallback | Integrated staged CI passes on c2e7 | Pre-update #508: 63.22 s turn, 42.48 s TTFT, 2 tokens; correctness unknown | CODE_INSTALLED / QUALITY_FAIL_OR_UNKNOWN |
+| World / Self / causal / episodic / semantic / procedural memory | Store/source contracts and partial Context OS | Partial synthetic retrieval and Store tests | No 20-turn or durable world/self acceptance | PARTIAL / NOT_ANDROID_VERIFIED |
+| JEPA / EMA / numeric continual learning | WorldJEPA/EMA/replay candidate remains SHADOW | #2311: 9 SUCCESS / 9 FAILURE / 1 SKIPPED; source-pin and fixture failures | No permanent B1/B2/C3 parameter change or retention proof | SHADOW / NOT_ACCEPTED |
+| Sleep / Dream / Replay / consolidation | Bounded cancellable postcommit worker | Candidate stage blocked by JEPA pin chain | No phone lifecycle, old-session retention or replay acceptance | PARTIAL / NOT_ACCEPTED |
+| Context OS / Memorilla companion | Context OS present; #1983 additive companion draft | Partial source-pointer tests only | No integrated overflow consumer or native memory writer | PARTIAL / SHADOW |
+| Voice / RAW EAR / ASR / decoder / vocoder | Caller PCM16 RAW EAR; FIR anti-alias candidate #2322; explicit TTS fallback | Alias negatives and low-F0 positives pass focused CI; staged/integrated blocked by Core pin | No microphone capture, ASR, trainable speech decoder/vocoder or full duplex | CALLER_SUPPLIED_ONLY / NOT_ANDROID_VERIFIED |
+| Android background control | Companion launch prototype and broker contracts | Synthetic broker/companion tests partial; parent stack not release-ready | No APK install or authorized background app executor | OFF / NOT_ANDROID_TESTED |
+| Android UI control / screen observation | A5 metadata lease SHADOW | Synthetic metadata ingress only | No MediaProjection, AccessibilityService, tap/type or screen decoder | OFF / NOT_ANDROID_TESTED |
+| Tools / permission fabric / audit / stop | Typed action/outcome and broker dry-run contracts | Partial synthetic contract tests | No OS-authenticated action provider or device action receipt | WIRED_SYNTHETIC / NO_DEVICE_EXECUTOR |
+| Age 0–5 / X10 / resource separation | Age rights separate from ResourceGuard | Lab-Age and migration workflows pass on c2e7 | #508: official Age 0, requested lab 10, effective 5, physical execution false | MERGED_INTEGRATION / DEVICE_FEATURES_UNVERIFIED |
+| Updater / install / rollback / remote maintenance | Owner-read and normal source updater | c2e7 required push workflows all green; migration/deployer CI pass | #509 confirms runtime UPDATED at c2e7; rollback/reboot not tested | CODE_UPDATE_ANDROID_VERIFIED / ROLLBACK_OPEN |
+| Technical OS sandbox / declared memory-egress registry | Immutable action proposal and partial Store contracts | Dry-run and contract tests only | No independent OS sandbox, complete egress registry or revocation enforcement | PARTIAL / NOT_OS_VERIFIED |
+| Adaptive behavior judge / ethical constitution | Trainable risk-head draft | Synthetic goal consumer only | No production judge; not a permission authority | DRAFT / NOT_RELEASED |
+| Self-optimization / cross-organ weight editing | No accepted master/adapter update or cross-organ gradient path | JEPA staged chain currently fails | No parameter diff, retention, restart or Android weight proof | NOT_IMPLEMENTED / GATES_OFF |
+| Two differentiated sparse MoE bodies | Two role-specific models exist; distinct sparse expert routing not proven | No accepted active-expert routing/load-balance test | No expert-cache/PSS/latency proof | NOT_PROVEN |
+| Multimodal learning | Audio/vision feature extraction only | Producer/feature tests only | No persistent audio/vision gradient or retention proof | NOT_IMPLEMENTED |
+| Long-horizon GoalStore / scheduler wake | GoalStore→EventScheduler under Store lock | Finite wake validation and rollback compensation pass in CI | No Android background wake/lifecycle proof | MERGED_INTEGRATION / NOT_ANDROID_VERIFIED |
+| Whole Canon traceability | 1,255 historical headings retained | This overlay maps major families only | Atomic clause→code→consumer→test→environment→rollback mapping incomplete | OPEN / NOT_COMPLETE |
+
