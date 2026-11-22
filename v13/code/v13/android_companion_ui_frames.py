@@ -16,6 +16,7 @@ import re
 import sqlite3
 import threading
 import time
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Callable
 
@@ -277,3 +278,219 @@ class AndroidCompanionFrameProvider:
 
     def close(self):
         self.verifier.stop()
+
+
+
+class _UIFrameGrantState:
+    """Local mirror of the companion's short-lived, revocable one-frame lease."""
+
+    def __init__(self, observation, transport, verifier, receipt_body):
+        self.observation = observation
+        self.transport = transport
+        self.verifier = verifier
+        self.receipt_body = receipt_body
+        self.lock = threading.RLock()
+        self.active = True
+        self.subscribers = []
+        self.stop_event = threading.Event()
+        self.thread = None
+
+    def _matches(self, source_id, receipt, session_id, operation, method, scope, api_level):
+        obs = self.observation
+        return (
+            source_id == obs["source_id"]
+            and receipt == obs["consent_receipt_ref"]
+            and session_id == obs["capture_session_id"]
+            and operation == "observe_ui"
+            and method == obs["capture_method"]
+            and scope == obs["capture_scope"]
+            and api_level == obs["api_level"]
+        )
+
+    def consent_check(self, *args):
+        with self.lock:
+            return self.active is True and self._matches(*args)
+
+    @contextmanager
+    def consent_guard(self, *args):
+        with self.lock:
+            yield self.active is True and self._matches(*args)
+
+    def revocation_subscribe(
+        self, source_id, receipt, session_id, operation, method, scope, api_level,
+        on_revoke_requested, on_revoked,
+    ):
+        if (not self._matches(source_id, receipt, session_id, operation, method, scope, api_level)
+                or not callable(on_revoke_requested) or not callable(on_revoked)):
+            raise FrameReceiptDenied("invalid UI frame revocation subscription")
+        entry = (on_revoke_requested, on_revoked)
+        with self.lock:
+            if not self.active:
+                raise FrameReceiptDenied("UI frame grant is already revoked")
+            self.subscribers.append(entry)
+
+        def unsubscribe():
+            with self.lock:
+                if entry in self.subscribers:
+                    self.subscribers.remove(entry)
+
+        return unsubscribe
+
+    def revoke(self):
+        # First phase runs before acquiring the same lock used by consent_guard.
+        with self.lock:
+            if not self.active:
+                return False
+            callbacks = list(self.subscribers)
+        for request_cancel, _ in callbacks:
+            try:
+                request_cancel()
+            except Exception:
+                pass
+        with self.lock:
+            if not self.active:
+                return False
+            self.active = False
+            callbacks = list(self.subscribers)
+            self.subscribers.clear()
+        # Second phase runs after releasing the provider lock.
+        for _, cleanup in callbacks:
+            try:
+                cleanup()
+            except Exception:
+                pass
+        return True
+
+    def finish(self):
+        """Normal turn completion: release cache/subscription without cancelling the finished turn."""
+        self.stop_event.set()
+        with self.lock:
+            if not self.active:
+                return
+            self.active = False
+            callbacks = list(self.subscribers)
+            self.subscribers.clear()
+        for _, cleanup in callbacks:
+            try:
+                cleanup()
+            except Exception:
+                pass
+
+    def start_polling(self):
+        if self.thread is not None:
+            return
+        expected = self.receipt_body
+
+        def poll():
+            while not self.stop_event.wait(0.5):
+                try:
+                    status = self.transport.screen_frame_status()
+                    if status.get("status") not in {"FRAME_READY", "FRAME_CONSUMED"}:
+                        self.revoke()
+                        return
+                    receipt = status.get("receipt")
+                    body = self.verifier.verify(receipt, consume_nonce=False)
+                    if (body.get("nonce") != expected["nonce"]
+                            or body.get("frame_token") != expected["frame_token"]
+                            or body.get("frame_sha256") != expected["frame_sha256"]
+                            or body.get("source_id") != expected["source_id"]
+                            or type(status.get("expires_in_ms")) is not int
+                            or status["expires_in_ms"] <= 0):
+                        self.revoke()
+                        return
+                except Exception:
+                    # An unavailable/ambiguous provider status is revocation, not permission.
+                    self.revoke()
+                    return
+
+        self.thread = threading.Thread(target=poll, name="v14-ui-frame-revocation", daemon=True)
+        self.thread.start()
+
+    def close(self):
+        self.stop_event.set()
+        thread = self.thread
+        if thread is not None and thread is not threading.current_thread():
+            thread.join(timeout=1.0)
+        self.finish()
+
+
+class UIFrameGrant:
+    """Frame and lease held together while the active Runtime turn consumes C3 context."""
+
+    def __init__(self, bundle, lease, state):
+        self.bundle = bundle
+        self.observation = bundle["observation"]
+        self.lease = lease
+        self.state = state
+        self._consumed = False
+
+    def consume(self, runtime, *, current_source, goal="", token_budget=512,
+                context_budget_chars=320, priority=0, cfg=None):
+        if self._consumed:
+            raise FrameReceiptDenied("one-shot UI frame was already consumed")
+        if not self.lease.active_for(
+            runtime, runtime.turn_event.get("brain_generation_id")
+        ):
+            raise FrameReceiptDenied("UI frame lease is no longer active")
+        try:
+            from .vision_ui_frame_ingress import (
+                _issue_provider_frame_verifier,
+                consume_projected_frame,
+            )
+        except Exception as exc:
+            raise FrameReceiptDenied(
+                "the V14 RAW EYE consumer is not installed in this checkout"
+            ) from exc
+        verifier = _issue_provider_frame_verifier(
+            self.observation, self.bundle["verify_frame"]
+        )
+        self._consumed = True
+        return consume_projected_frame(
+            runtime,
+            self.observation,
+            self.bundle["frame_buffer"],
+            consent_lease=self.lease,
+            frame_verifier=verifier,
+            current_source=current_source,
+            goal=goal,
+            token_budget=token_budget,
+            context_budget_chars=context_budget_chars,
+            priority=priority,
+            cfg=cfg,
+        )
+
+
+@contextmanager
+def _open_current_turn(provider, runtime):
+    bundle = provider.read_once()
+    observation = bundle["observation"]
+    event = getattr(runtime, "turn_event", None)
+    if (type(event) is not dict or type(event.get("brain_generation_id")) is not str
+            or getattr(runtime, "current", None) != "turn"):
+        bundle["frame_buffer"][:] = b"\\x00" * len(bundle["frame_buffer"])
+        raise FrameReceiptDenied("screen frames can only be consumed inside an active Runtime turn")
+    try:
+        from .a5_ui_admission_bridge import A5UIRuntimeAdapter
+    except Exception as exc:
+        bundle["frame_buffer"][:] = b"\\x00" * len(bundle["frame_buffer"])
+        raise FrameReceiptDenied("the V14 A5 UI lease consumer is not installed in this checkout") from exc
+
+    state = _UIFrameGrantState(
+        observation, provider.transport, provider.verifier, bundle["receipt_body"]
+    )
+    adapter = A5UIRuntimeAdapter(runtime)
+    try:
+        with adapter.lease(
+            observation, state.consent_check, state.consent_guard, state.revocation_subscribe
+        ) as lease:
+            state.start_polling()
+            yield UIFrameGrant(bundle, lease, state)
+    finally:
+        state.close()
+        # If decoding did not already overwrite the mutable caller buffer, erase it now.
+        frame = bundle.get("frame_buffer")
+        if type(frame) is bytearray and frame:
+            frame[:] = b"\\x00" * len(frame)
+
+
+AndroidCompanionFrameProvider.open_current_turn = _open_current_turn
