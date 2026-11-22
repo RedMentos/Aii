@@ -1,3 +1,17 @@
+# Boss & Integration follow-up — 2026-11-22
+
+**Keine Nutzeraktion nötig.**
+
+- Release-HEAD: `b3b92f41772573732b2cba71f7ad6bf34dc8e521`. #2329 behebt nur die bestehende libfvad-Vergleichs-CLI (fehlender `os`-Import + CLI-Regression); exakter PR-Stand 4/4 SUCCESS. R-079 hält libfvad als Research-Comparator fest, nicht als Produktions-VAD.
+- Exakte Push-CI für b3b92 hatte beim letzten Check 38 queued/in-progress Checks und 0 Fehler. Das ist noch kein vollständiges Push-CI-Green.
+- Das Handy ist laut #517 weiterhin exakt auf `283ac1c9` (Runtime UPDATED, Dashboard UP_TO_DATE, Auto-Update EIN). UPDATE_REQUEST #519 wartet; ein Receipt für b3b92 liegt noch nicht vor.
+- DIAGNOSTICS #518 zeigt weiterhin den zuletzt aufgezeichneten Turn (63,22 s / 42,48 s TTFT; B1/B2 TIME_BUDGET), aber keinen neu ausgeführten Turn nach dem Update. Deshalb ist der Effekt des Scheduler-Fixes noch nicht gemessen.
+- Der bestehende CHAT_OPERATOR-Allowlist enthält noch keinen nativen Receiver-Probe-Befehl. Kein Ausweichen auf andere Kommandos und kein Consent-Bypass. Core muss einen exakt begrenzten, explizit bestätigten Probe-Befehl samt Tests bereitstellen.
+
+**Nächster Schritt:** b3b92 Push-CI und #519 abwarten; erst danach ggf. autorisierten Diagnosepfad nutzen. Kein Termux-Befehl, kein Modell-/Gewichts-/Rechtewechsel und keine Mikrofonfreigabe nötig.
+
+---
+
 # Boss & Integration — 2026-11-22
 
 **Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein Modell-/Gewichtswechsel und keine Rechte- oder Mikrofonfreigabe erforderlich.
