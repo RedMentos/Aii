@@ -53,6 +53,10 @@ def test_world_jepa_source_builder_pin_chain_is_exact():
         return match.group(1)
 
     lifecycle = "scripts/source_lifecycle_lock_integration_candidate.py"
+    lifecycle_bytes = read(lifecycle)
+    assert b"source=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))" in lifecycle_bytes
+    assert b"cleanup_unreferenced(self.s,sid)" in lifecycle_bytes
+    assert b"src=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))" not in lifecycle_bytes
     assert pin(lifecycle, r"'memory[.]py': '([0-9a-f]{64})'") == sha("v13/memory.py")
     assert pin(lifecycle, r"GUARD_SCRIPT_SHA = '([0-9a-f]{64})'") == sha("scripts/archive_reader_guard_integration_candidate.py")
 
