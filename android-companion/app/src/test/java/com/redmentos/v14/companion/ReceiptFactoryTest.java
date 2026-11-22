@@ -2,9 +2,14 @@ package com.redmentos.v14.companion;
 
 import org.json.JSONObject;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.*;
 
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk = 33)
 public final class ReceiptFactoryTest {
     private static final String ACTION_ID = "a".repeat(32);
     private static final String PACKAGE = "com.example.app";
@@ -43,11 +48,8 @@ public final class ReceiptFactoryTest {
                 + "\"local_approval\":\"CALLER_ASSERTED_LOCAL_UI_CONFIRMATION\""
                 + "}";
         JSONObject parsed = new JSONObject(requestJson);
-        assertTrue("requestJson=" + requestJson + " parsed=" + parsed.toString(), parsed.has("schema"));
-        assertEquals("requestJson=" + requestJson + " parsed=" + parsed.toString(),
-                "v14.android-action-request/1", parsed.optString("schema"));
-        assertEquals("requestJson=" + requestJson + " parsed=" + parsed.toString(),
-                ACTION_ID, parsed.optString("action_id"));
+        assertEquals("v14.android-action-request/1", parsed.getString("schema"));
+        assertEquals(ACTION_ID, parsed.getString("action_id"));
         return new CompanionDb.Action(
                 ACTION_ID, requestJson, packageName, status, null, 2_000_000L);
     }
