@@ -779,7 +779,9 @@ class TemporalWorldJEPAStoreConsumer:
             if cancel_check is not None and cancel_check():
                 return {"status": "CANCELLED", "checkpoint_committed": False}
             after_snapshot = _snapshot(model)
-            parameter_delta = _delta(before_snapshot, after_snapshot, "enc") + _delta(before_snapshot, after_snapshot, "preds")
+            encoder_delta = _delta(before_snapshot, after_snapshot, "enc")
+            predictor_delta = _delta(before_snapshot, after_snapshot, "preds")
+            parameter_delta = encoder_delta + predictor_delta
             ema_delta = _delta(before_snapshot, after_snapshot, "tgt")
             holdout_after = _anchored_prediction_loss(
                 model, X_holdout, A_holdout, holdout_target_anchor
@@ -833,7 +835,10 @@ class TemporalWorldJEPAStoreConsumer:
                     "shuffled_action_mse": shuffled_action,
                     "no_history_mse": no_history_loss,
                     "parameter_delta_norm": parameter_delta,
+                    "encoder_delta_norm": encoder_delta,
+                    "predictor_delta_norm": predictor_delta,
                     "ema_target_delta_norm": ema_delta,
+                    "parent_checkpoint_sha256": active["checkpoint_sha256"] if active else None,
                     "retention_mse_before": retention_before,
                     "retention_mse_after": retention_after,
                     "retention_pass": retention_pass,
@@ -890,7 +895,10 @@ class TemporalWorldJEPAStoreConsumer:
                 "shuffled_action_mse": shuffled_action,
                 "no_history_mse": no_history_loss,
                 "parameter_delta_norm": parameter_delta,
+                "encoder_delta_norm": encoder_delta,
+                "predictor_delta_norm": predictor_delta,
                 "ema_target_delta_norm": ema_delta,
+                "parent_checkpoint_sha256": active["checkpoint_sha256"] if active else None,
                 "optimizer_steps": model._fit_steps,
                 "steps_this_update": train_steps,
                 "censored_observed": censored, "unknown_skipped": unknown,
