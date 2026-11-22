@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 from v13.contracts import packet
 from v13.runtime import Runtime
-from v13.b3pairs import capture_pair, SCHEMA
+from v13.b3pairs import capture_pair, load_pair, training_batch, SCHEMA
 
 
 class PairedNativeTapTests(unittest.TestCase):
@@ -56,6 +56,15 @@ class PairedNativeTapTests(unittest.TestCase):
         self.assertEqual(pair["authority"], {"native_read_only": True, "latent_injection": False, "body_learning": False})
         stored = self.r.store.one("SELECT payload FROM packets WHERE kind='B3PairedTapPacket' AND id=?", (p["packet_id"],))
         self.assertIsNotNone(stored)
+        with patch.object(self.r.cognition, "read_tap", side_effect=lambda tap: rows[tap["packet_id"]]):
+            restored = load_pair(self.r.cognition, p)
+            self.assertEqual(restored["sender"]["states"], pair["sender"]["states"])
+            batch = training_batch(self.r.cognition, [p], [1])
+        self.assertEqual(batch["H"].shape, (1, 2, 3))
+        self.assertEqual(batch["mask"].tolist(), [[1., 1.]])
+        self.assertEqual(batch["Xr"].shape, (1, 2))
+        self.assertEqual(batch["y"].tolist(), [1])
+        self.assertEqual(batch["claim_limit"], "paired native read-only taps + explicit task labels; no receiver injection")
 
     def test_rejects_cross_source_pair(self):
         count = {"n": 0}
