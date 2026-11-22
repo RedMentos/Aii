@@ -41,6 +41,7 @@ def _speaker_change_decision(evidence, cues):
         return "DEFER"
     frame_count = cues.get("frame_count")
     voiced_fraction = cues.get("voiced_fraction")
+    # The PCM ingress contract bounds window size; do not impose a 1-second cap here.
     if (type(frame_count) is not int or frame_count < 2
             or type(voiced_fraction) not in (int, float)
             or not math.isfinite(float(voiced_fraction))
