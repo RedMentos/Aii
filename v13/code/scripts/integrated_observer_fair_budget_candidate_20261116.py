@@ -150,55 +150,65 @@ def apply_sources(code_dir, sources):
         b'        "c3_reserved_seconds": round(reserve,3),\n        "minimum_role_slice_s": MIN_ROLE_SLICE_S,\n',
         'minimum fair role slice')
     cognition = result.get('v13/cognition.py', originals['v13/cognition.py'])
-    cognition = replace(cognition,
-        b"""        # On repeated measured zero-token C3 prefill deadlines, pre-answer
-        # B passes must not consume the remaining foreground native time.
-        # The existing postcommit body observer is unaffected (its caller
-        # omits valid_until). Both B1 and B2 retain real source/provenance.
-        if preanswer_observer and self.r.cfg.get('observer_mode') == 'background':
-            try:
-                from .native_turn_budget import plan,recent_proof
-                budget=plan(valid_until-self.r.cfg['deadline_seconds'],
-                            valid_until,time.monotonic(),
-                            recent=recent_proof(self.s),
-                            background_enabled=True)
-            except (OSError,ValueError,RuntimeError,KeyError,TypeError):
-                budget=None
-            if budget and budget['recovery']:
-                self.s.log('native_body_deferred_for_c3',e['event_id'],
-                           {'role':role,'status':'POSTCOMMIT_ELIGIBLE',
-                            'recent_failures':budget['recent_real_prefill_failures']})
-                raise Limits('Redmi C3 braucht native Antwortzeit; B-Observer nach erfolgreicher Antwort')
-""",
-        b"""        # A measured C3 recovery keeps the C3 reserve but does not blanket-skip
-        # both hemispheres. The staged scheduler supplies each sequential role's
-        # fair slice as this offer's deadline; only an expired/tiny slice defers.
-        if preanswer_observer and self.r.cfg.get('observer_mode') == 'background':
-            try:
-                from .native_turn_budget import plan,recent_proof
-                budget=plan(valid_until-self.r.cfg['deadline_seconds'],
-                            valid_until,time.monotonic(),
-                            recent=recent_proof(self.s),
-                            background_enabled=True,
-                            observer_deadline=deadline)
-            except (OSError,ValueError,RuntimeError,KeyError,TypeError):
-                budget=None
-            if budget and budget['recovery']:
-                available=budget['preanswer_seconds_available']
-                if available < budget['minimum_role_slice_s']:
+    # This exact source already carries the reviewed fair-slice consumer from Core.
+    # Recognize its complete behavior rather than requiring a historical text layout.
+    fair_slice_markers = (
+        b"observer_deadline=deadline",
+        b"minimum_role_slice_s",
+        b"native_body_budgeted_for_c3",
+        b"preanswer_seconds_available",
+        b"native_body_deferred_for_c3",
+    )
+    if not all(marker in cognition for marker in fair_slice_markers):
+        cognition = replace(cognition,
+            b"""        # On repeated measured zero-token C3 prefill deadlines, pre-answer
+            # B passes must not consume the remaining foreground native time.
+            # The existing postcommit body observer is unaffected (its caller
+            # omits valid_until). Both B1 and B2 retain real source/provenance.
+            if preanswer_observer and self.r.cfg.get('observer_mode') == 'background':
+                try:
+                    from .native_turn_budget import plan,recent_proof
+                    budget=plan(valid_until-self.r.cfg['deadline_seconds'],
+                                valid_until,time.monotonic(),
+                                recent=recent_proof(self.s),
+                                background_enabled=True)
+                except (OSError,ValueError,RuntimeError,KeyError,TypeError):
+                    budget=None
+                if budget and budget['recovery']:
                     self.s.log('native_body_deferred_for_c3',e['event_id'],
                                {'role':role,'status':'POSTCOMMIT_ELIGIBLE',
+                                'recent_failures':budget['recent_real_prefill_failures']})
+                    raise Limits('Redmi C3 braucht native Antwortzeit; B-Observer nach erfolgreicher Antwort')
+    """,
+            b"""        # A measured C3 recovery keeps the C3 reserve but does not blanket-skip
+            # both hemispheres. The staged scheduler supplies each sequential role's
+            # fair slice as this offer's deadline; only an expired/tiny slice defers.
+            if preanswer_observer and self.r.cfg.get('observer_mode') == 'background':
+                try:
+                    from .native_turn_budget import plan,recent_proof
+                    budget=plan(valid_until-self.r.cfg['deadline_seconds'],
+                                valid_until,time.monotonic(),
+                                recent=recent_proof(self.s),
+                                background_enabled=True,
+                                observer_deadline=deadline)
+                except (OSError,ValueError,RuntimeError,KeyError,TypeError):
+                    budget=None
+                if budget and budget['recovery']:
+                    available=budget['preanswer_seconds_available']
+                    if available < budget['minimum_role_slice_s']:
+                        self.s.log('native_body_deferred_for_c3',e['event_id'],
+                                   {'role':role,'status':'POSTCOMMIT_ELIGIBLE',
+                                    'preanswer_seconds_available':round(available,3),
+                                    'c3_reserved_seconds':budget['c3_reserved_seconds'],
+                                    'recent_real_prefill_failures':budget['recent_real_prefill_failures']})
+                        raise Limits('No fair B1/B2 slice remains inside the C3-reserved turn window')
+                    self.s.log('native_body_budgeted_for_c3',e['event_id'],
+                               {'role':role,'status':'PREANSWER_BUDGETED',
                                 'preanswer_seconds_available':round(available,3),
                                 'c3_reserved_seconds':budget['c3_reserved_seconds'],
                                 'recent_real_prefill_failures':budget['recent_real_prefill_failures']})
-                    raise Limits('No fair B1/B2 slice remains inside the C3-reserved turn window')
-                self.s.log('native_body_budgeted_for_c3',e['event_id'],
-                           {'role':role,'status':'PREANSWER_BUDGETED',
-                            'preanswer_seconds_available':round(available,3),
-                            'c3_reserved_seconds':budget['c3_reserved_seconds'],
-                            'recent_real_prefill_failures':budget['recent_real_prefill_failures']})
-""",
-        'Cognition consumes fair recovery slice')
+    """,
+            'Cognition consumes fair recovery slice')
     store = result.get('v13/store.py', originals['v13/store.py'])
     store = replace(store,
         b"TELEMETRY_FIELDS.update('observer_schedule schedule pre post parallel sampled rss_mb'.split())  # \xc2\xa722.2.4 observer scheduling, \xc2\xa773 RSS budget\n",
