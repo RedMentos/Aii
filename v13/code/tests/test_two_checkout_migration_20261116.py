@@ -159,12 +159,16 @@ def exercise_worker_migration(base):
         }, sort_keys=True))
         assert old['module_path'].startswith(str(agent) + os.sep)
         assert old['profile'] == 'raw-runtime-plain-ui-history-recovery-v1'
-        assert old['result']['last_result'] == 'UPDATED', old
-        # A one-click update may find the dashboard already checked out at
-        # the exact target while the model launcher still needs staging.
-        # UP_TO_DATE is correct for that individual checkout; require the
-        # actual immutable Git commit, not a cosmetic UPDATED status.
-        assert old['result']['runtime'] == 'UPDATED', old
+        # The old phone worker may advance both Git checkouts but cannot
+        # necessarily activate a newer runtime whose pinned recovery builders
+        # changed. PARTIAL/UPDATE is an expected handoff state: the relay must
+        # reload the new worker, recheck consent/CI/stop, then finish activation.
+        assert old['result']['last_result'] in ('UPDATED', 'PARTIAL'), old
+        if old['result']['last_result'] == 'PARTIAL':
+            assert old['result']['runtime'] == 'ERROR', old
+            assert old['result']['last_error'] == 'UPDATE', old
+        else:
+            assert old['result']['runtime'] in ('UPDATED', 'UP_TO_DATE'), old
         assert old['result']['dashboard'] in ('UPDATED', 'UP_TO_DATE'), old
         # Diagnose a mismatched source/receipt without confusing launcher activation
         # with an actual Git checkout advance. The text is only local synthetic
