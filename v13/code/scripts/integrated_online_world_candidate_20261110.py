@@ -34,10 +34,12 @@ ASSETS = {
     'test_observe_atomic_1648.py.txt': '1b476d4af877e6e7a65dc0318b4bfde2440a625b2178159cbeeaa38614551f12',
     'test_known_revocation_window.py.txt': 'e3c3fa0bcfa90afd8f6e8d23addd7439ccba614b89a521754f959ed40fd6de7f',
 }
+# SHA256 of the three files AFTER applying the reviewed #1631 patch.
+# Keep these distinct from FILES above, which pins the pre-patch inputs.
 EXPECTED_1631 = {
-    'v13/continuous_predictor.py': '65ac1d863610ba82547dc715f74a0812ed31dd39f216398defb1bdb085392d8a',
-    'v13/online_world.py': 'ebd6044651ccd031c947a2e8d0d188232c2bab2da79b19ea6c513c433d59e8c8',
-    'tests/test_online_world_20261108.py': '7a76845424f5ade953286a6684803a79778f543379a84393eecd90163de3ced6',
+    'v13/continuous_predictor.py': '6f1407c4bbc16d8f298fba2fb384f6022e88a1d8093cc5822a40069b34ee062a',
+    'v13/online_world.py': 'f4d415a0f600b1ea5313964801e06525e51bb882d09a99f04a67f678ed4126ff',
+    'tests/test_online_world_20261108.py': 'fc2c47bcf183f29a7f18cd8f5dcb1946b109ff273865242a4a5683af9c3289c7',
 }
 ASSET_DIR = Path(__file__).resolve().parents[1] / 'candidates/online_world_20261109'
 
