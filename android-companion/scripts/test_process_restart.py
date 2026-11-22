@@ -13,7 +13,7 @@ import subprocess
 import time
 import xml.etree.ElementTree as ET
 
-from process_restart_ui import button_center, transient_overlay_action, visible_labels
+from process_restart_ui import button_center, poll_delay, transient_overlay_action, visible_labels
 
 PACKAGE = "com.redmentos.v14.companion"
 COMPONENT = PACKAGE + "/.MainActivity"
@@ -109,7 +109,7 @@ def wait_for_text(needle: str, timeout: float = 45.0) -> str:
         try:
             root = hierarchy()
         except (RuntimeError, ET.ParseError, subprocess.TimeoutExpired):
-            time.sleep(1.0)
+            time.sleep(poll_delay(attempts))
             continue
         if handle_transient_overlay(root):
             attempts = 0
@@ -125,7 +125,7 @@ def wait_for_text(needle: str, timeout: float = 45.0) -> str:
                 swipe_to_top()
             except RuntimeError:
                 pass
-        time.sleep(1.0)
+        time.sleep(poll_delay(attempts))
     try:
         xml = hierarchy_xml()[:3000]
     except Exception as exc:
@@ -144,7 +144,7 @@ def tap_button(label: str, timeout: float = 30.0) -> None:
         try:
             root = hierarchy()
         except (RuntimeError, ET.ParseError, subprocess.TimeoutExpired):
-            time.sleep(1.0)
+            time.sleep(poll_delay(attempts))
             continue
         if handle_transient_overlay(root):
             attempts = 0
@@ -158,7 +158,7 @@ def tap_button(label: str, timeout: float = 30.0) -> None:
             adb("shell", "input", "swipe", str(width // 2),
                 str(int(height * .86)), str(width // 2),
                 str(int(height * .24)), "450")
-        time.sleep(1.0)
+        time.sleep(poll_delay(attempts))
     raise AssertionError("could not locate visible companion button: " + label)
 
 
