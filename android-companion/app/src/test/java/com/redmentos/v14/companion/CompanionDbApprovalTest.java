@@ -197,6 +197,59 @@ public final class CompanionDbApprovalTest {
         }
     }
 
+    @Test public void expiryCleanupWaitsForSubmitNotificationPublication() throws Exception {
+        String expiringId = "c".repeat(32);
+        NotificationManager manager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.createNotificationChannel(new NotificationChannel(
+                "v14-action-approval", "V14 action approvals", NotificationManager.IMPORTANCE_DEFAULT));
+        Notification notification = new Notification.Builder(context, "v14-action-approval")
+                .setSmallIcon(android.R.drawable.ic_menu_view).build();
+        CountDownLatch inserted = new CountDownLatch(1);
+        CountDownLatch publishNotification = new CountDownLatch(1);
+        CountDownLatch pendingStarted = new CountDownLatch(1);
+        ExecutorService pool = Executors.newFixedThreadPool(2);
+        try {
+            Future<?> submit = pool.submit(() -> {
+                synchronized (CompanionProvider.ACTION_GATE_LOCK) {
+                    insertPending(expiringId, NOW);
+                    inserted.countDown();
+                    try {
+                        if (!publishNotification.await(5, TimeUnit.SECONDS)) {
+                            throw new AssertionError("notification publication release timed out");
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new IllegalStateException(e);
+                    }
+                    manager.notify(CompanionProvider.approvalNotificationTag(expiringId),
+                            0, notification);
+                }
+            });
+            assertTrue(inserted.await(5, TimeUnit.SECONDS));
+            Future<List<CompanionDb.Action>> pending = pool.submit(() -> {
+                pendingStarted.countDown();
+                return CompanionProvider.pendingActions(context, first, NOW);
+            });
+            assertTrue(pendingStarted.await(5, TimeUnit.SECONDS));
+            try {
+                pending.get(100, TimeUnit.MILLISECONDS);
+                fail("expiry cleanup must wait until submit has published its notification");
+            } catch (java.util.concurrent.TimeoutException expected) {
+                // The shared action gate is still held by submit.
+            }
+            publishNotification.countDown();
+            submit.get(5, TimeUnit.SECONDS);
+            assertTrue(pending.get(5, TimeUnit.SECONDS).isEmpty());
+            assertEquals("EXPIRED", first.get(expiringId).status);
+            assertFalse("expiry cleanup must remove the notification posted by submit",
+                    hasApprovalNotification(manager, expiringId));
+        } finally {
+            publishNotification.countDown();
+            pool.shutdownNow();
+        }
+    }
+
     private boolean hasApprovalNotification(NotificationManager manager, String actionId) {
         for (StatusBarNotification notification : manager.getActiveNotifications()) {
             if (actionId.equals(notification.getTag()) && notification.getId() == 0) return true;
