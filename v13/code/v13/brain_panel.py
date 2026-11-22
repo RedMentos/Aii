@@ -102,7 +102,9 @@ def _latest_native_evidence(r):
     if type(c4_ids) is not list:
         c4_ids = []
     c4_ids = [x for x in c4_ids if type(x) is str]
-    ids_match = bool(c4_recorded and c4_ids and native_ids and set(c4_ids) == set(native_ids))
+    c4_accepted = bool(c4_recorded and c4_metrics.get("status") == "PASS"
+                       and c4_metrics.get("role") == "C3_LANGUAGE")
+    ids_match = bool(c4_accepted and c4_ids and native_ids and set(c4_ids) == set(native_ids))
 
     synthetic = runner.get("synthetic") is True or receipt.get("synthetic") is True
     native_submitted = receipt.get("native_template_submitted") is True
