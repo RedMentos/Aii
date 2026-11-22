@@ -4,6 +4,7 @@ import json
 import pytest
 
 from v13 import android_control
+from v13.contracts import packet
 from v13.android_companion_runtime import AndroidCompanionController
 from v13.store import Store
 from v13.operator import Operator
@@ -282,3 +283,84 @@ def test_mismatched_submit_ack_cancels_local_and_remote_action(tmp_path, monkeyp
     assert controller.broker.action_state(action_id) == "CANCELLED"
     runtime.store.close()
     controller.broker.close()
+
+
+
+def test_action_intent_history_is_session_scoped_restartable_and_non_authoritative(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "2" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport(SUCCESS_RECEIPT)
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+
+    pending = json.loads(controller.launch("com.example.private_app", True))
+    action_id = pending["action_id"]
+    intent_row = runtime.store.one(
+        "SELECT payload FROM packets WHERE kind='ActionIntent' AND event_id=?",
+        (pending["source_event_id"],),
+    )
+    intent = json.loads(intent_row["payload"])
+    assert intent["producer_component"] == "C5_ANDROID_COMPANION"
+    assert intent["action_id"] == action_id
+    assert intent["action_type"] == "launch_app"
+    assert intent["permission"] == "OPERATOR_TTY_AND_ANDROID_COMPANION_UI"
+
+    other_session = runtime.store.new_session()
+    other_event = runtime.store.event(other_session, "other session action")
+    other_intent = packet(
+        "ActionIntent", "C5_ANDROID_COMPANION", other_event["event_id"],
+        other_event["brain_generation_id"], [other_event["source_ref"]],
+        action_id="9" * 32, action_type="launch_app",
+        permission="OPERATOR_TTY_AND_ANDROID_COMPANION_UI",
+    )
+    runtime.store.add_packet("ActionIntent", other_intent)
+
+    before_restart = json.loads(controller.history())
+    assert before_restart["session_scoped"] is True
+    assert before_restart["count"] == 1
+    assert before_restart["actions"][0]["action_id"] == action_id
+    assert before_restart["actions"][0]["action_state"] == "DISPATCHED"
+    assert "com.example.private_app" not in json.dumps(before_restart)
+    assert "9" * 32 not in json.dumps(before_restart)
+
+    controller.broker.close()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    after_restart = json.loads(controller.history())
+    assert after_restart["actions"][0]["action_state"] == "DISPATCHED"
+
+    receipt = json.loads(controller.poll(action_id))
+    assert receipt["status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert receipt["observed"] is False
+    assert receipt["t8_authoritative"] is False
+    assert receipt["world_learning_eligible"] is False
+
+    history = json.loads(controller.history())
+    item = history["actions"][0]
+    assert item["action_id"] == action_id
+    assert item["outcome_status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert item["observed"] is False
+    assert item["evidence_level"] == "COMPANION_RECEIPT_ONLY"
+    assert item["t8_authoritative"] is False
+    assert item["world_learning_eligible"] is False
+    assert "com.example.private_app" not in json.dumps(history)
+    assert runtime.store.one("SELECT 1 FROM actions WHERE event_id=?", (pending["source_event_id"],)) is None
+
+    # The ordinary local operator route exposes the read-only history; model-origin calls remain blocked.
+    tty_history = json.loads(Operator(runtime).run(":android history"))
+    assert tty_history["count"] == 1
+    with pytest.raises(ValueError, match="lokale Operator-Eingaben"):
+        Operator(runtime).run(":android history", origin="MODEL")
+
+    runtime._android_companion_controller.broker.close()
+    controller.broker.close()
+    runtime.store.close()
+
+
+def test_android_action_history_rejects_unbounded_or_non_integer_limits(tmp_path):
+    runtime = make_runtime(tmp_path)
+    controller = AndroidCompanionController(runtime, transport=FakeTransport())
+    for invalid in (0, 51, True, 1.5, "5"):
+        with pytest.raises(ValueError, match="history limit"):
+            controller.history(invalid)
+    controller.broker.close()
+    runtime.store.close()
