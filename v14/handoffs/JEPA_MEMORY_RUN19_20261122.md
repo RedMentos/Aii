@@ -61,3 +61,10 @@ R-090 records *What Should World Models Forget? Stratified Retention for Continu
 ## Latest private device receipt (2026-11-22T20:55:46Z)
 
 Private V13OBS #115 now aggregates five LOCAL_METADATA_ONLY turns. B1 had 4/4 failed native attempts, B2 2/2 failed; neither produced a valid offer or a final-C3 delivery. The latest stored turn was 57.739 s total, 41.627 s TTFT, 38.945 s prefill, 751 prompt tokens and 2 generated tokens. Correctness, prompt inclusion and semantic use are UNKNOWN/UNPROVEN. Runtime/model service/dashboard are RUNNING. Instant native-process mapping is 0 with child readability UNKNOWN, not a free-RAM measure. Pipeline metadata remains installed aed1d2b, auto-update enabled/UP_TO_DATE, last_error NONE. Official Age 0; lab stage 10 requested / 5 implemented; physical feature execution false. This is not a test of PR #2372, which remains NOT_RELEASED / REDMI_UNVERIFIED. No chat send or device mutation was performed by this run.
+
+
+## Exact CI failure readback (2026-11-22T21:23:00Z)
+
+Exact-head CI for aae0330e: optimizer-resume run 45070863814 failed on Python 3.13 and 3.14 at source_lifecycle_lock_integration_candidate.py:172 with ValueError unsupported lifecycle source: memory.py. Its expected SHA-256 is 61e881ad8b3f8cb60a96339599a1627cd5af7b5a5bfd29fe5f371c17f5a29ebc; actual current memory.py is 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701 (Git blob 172417b49c0abb301db9367fd1c9947a91b3c458). Staged-runtime job in 45070863812 failed 19 / passed 231 / skipped 10 / errored 2, with the same pin mismatch; integrated-regression remains IN_PROGRESS. Temporal T8 run 45070863749 remains QUEUED. This is a QA-owned lifecycle dependency, not evidence of a JEPA numeric-model failure.
+
+The failure is in the QA-owned source-lifecycle pin chain, before the staged optimizer-resume regression reaches the JEPA learner. The temporal T8-specific run 45070863749 is still QUEUED; the integrated-regression job in 45070863812 remains IN_PROGRESS. Do not change QA-owned files from this branch. Re-run exact-head staged/optimizer tests after QA rebinds the pin. No exact-head PASS, no local full-suite run and no Redmi proof.
