@@ -49,4 +49,14 @@ public final class CapabilityRegistryTest {
             assertTrue(item.id, item.status.startsWith("OFF_"));
         }
     }
+
+    @Test public void providerRejectsOsPermissionMisstatementAndRequiresCompanionConsent() {
+        String approval = "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION";
+        assertTrue(CompanionProvider.isValidLaunchScope(true, false, false, false, approval));
+        assertFalse(CompanionProvider.isValidLaunchScope(true, true, false, false, approval));
+        assertFalse(CompanionProvider.isValidLaunchScope(false, false, false, false, approval));
+        assertFalse(CompanionProvider.isValidLaunchScope(true, false, true, false, approval));
+        assertFalse(CompanionProvider.isValidLaunchScope(true, false, false, true, approval));
+        assertFalse(CompanionProvider.isValidLaunchScope(true, false, false, false, "MODEL_ASSERTED"));
+    }
 }
