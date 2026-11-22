@@ -80,3 +80,28 @@ No action is needed now. The probe remains NOT_RUN. Do not send a Termux command
 - The review overlay now refuses to patch the source tree or any ancestor/descendant of it; it only accepts a separate `SHADOW_REVIEW_ONLY` stage whose recorded source path matches the supplied code tree.
 - The stage test includes a negative control that attempts source-tree application and expects a fail-closed rejection.
 - Remote bridge comments now state explicitly that remote `--confirm` does not grant local authority; the local TTY arm is separately required.
+
+### Verified checkpoint — 2026-11-22 14:28 UTC
+
+**Code checkpoint:** 33ba4711d47db721076f108101a9eb1faf886052 → 33ba4711d47db721076f108101a9eb1faf886052
+
+- Hardened integrated_native_probe_approval_candidate_20261122.py: validate the review-only stage identity and recorded source before writes; verify every staged file against files_sha256; reject symlinked parent components and symlinks anywhere in the staged tree; use atomic file replacement for staged consumers/manifest.
+- The staged native-probe command now has a hard 120-second execution deadline. The local approval remains single-use, source/session/generation/model-bound, 120-second TTL and Runtime-instance-scoped.
+- Added negative tests for a symlinked v13 parent, a mismatched stage source, and tampered staged bytes; added a staged dispatcher test proving a huge observer_seconds setting cannot extend the native probe beyond 120 seconds.
+
+**Exact CI on 33ba4711d47db721076f108101a9eb1faf886052:**
+- V14 native latent receiver staged runtime: PASS — Python 3.13 and 3.14, 11 outer tests each; pinned Linux llama.cpp API build PASS; Android arm64-v8a cross-compile PASS; public privacy scan CLEAN.
+- v13-private-remote-bridge-tests: PASS — 80 tests + 29 subtests on Python 3.12 and again on Python 3.14.
+- V13 private owner-read Termux bootstrap: PASS — Python 3.12 and 3.14 jobs.
+- V13 staged context and integrated regression: PASS — 424 passed, 3 skipped, 58 subtests on the Python 3.11 runner; JEPA held-out error in that CI experiment moved 0.80315 → 0.75878.
+- V13 safe additive candidate tests: SKIPPED by policy; not a pass.
+- LOCAL_FULL_REPOSITORY: BLOCKED — no Aii checkout is mounted and git ls-remote cannot resolve GitHub DNS. A separate LOCAL_LINUX_ISOLATED helper reproduction passed the symlink-parent, wrong-source and tampered-hash rejection checks; it is not a full-source pytest run.
+
+**Latest private metadata-only Redmi observation (2026-11-22 14:19 UTC):**
+- Installed runtime remains c4eb82deec915f65894c20d6ebbaf0ebf58fa335; runtime and dashboard report UP_TO_DATE, dashboard process RUNNING.
+- Five recent turns: C3 prompt 751 tokens, TTFT/prefill 38.945 s, 2 generated tokens. B1 had 4 native attempts / 4 failures; B2 had 2 / 2; 0 valid offers and neither body contributed to the final C3 report. native_probe=SMOKE_PARTIAL; no native latent exchange or semantic use is proven.
+- No raw chat text, prompt, path, key or model bytes were copied. No UPDATE_REQUEST, model swap, permission change, shell action or native receiver probe was sent.
+
+**Acceptance boundary:** this branch has a passing staged consumer path and native build/cross-compile evidence, but the local-approval overlay is still NOT in the shared production recovery/stage/deployer pin chain. It is NOT_RELEASED, not installed, and not a Redmi test. The native build does not prove real GGUF inference, learned alignment, semantic utility, trained latent coupling or production B3.
+
+**Next integration owner/action:** Boss/Integrator should compose this exact reviewed overlay after the native-receiver stage in the shared recovery → stage → runtime-deployer chain, refresh all source/blob pins, then run exact CI/readback. Keep production B3 OFF. Only after a release is actually installed may the owner separately decide whether to authorize one exact CHAT_OPERATOR probe. No user action is needed now.
