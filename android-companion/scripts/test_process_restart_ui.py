@@ -56,6 +56,23 @@ class ProcessRestartUiTests(unittest.TestCase):
         ])
         self.assertIsNone(transient_overlay_action(root))
 
+    def test_masked_attribute_token_does_not_hide_visible_companion_state(self) -> None:
+        from process_restart_ui import parse_hierarchy, visible_labels
+        xml = (
+            "<hierarchy><node text='V14 Android Companion&#10;"
+            "State: STOPPED (restart requires explicit re-enable)' "
+            "class='android.widget.TextView' long-clickable='false' "
+            "*** selected='false' bounds='[0,0][100,100]' /></hierarchy>"
+        )
+        root = parse_hierarchy(xml)
+        labels = "\\n".join(visible_labels(root))
+        self.assertIn("STOPPED (restart requires explicit re-enable)", labels)
+
+    def test_unrelated_malformed_hierarchy_still_fails_closed(self) -> None:
+        from process_restart_ui import parse_hierarchy
+        with self.assertRaises(ET.ParseError):
+            parse_hierarchy("<hierarchy><node text='unterminated></hierarchy>")
+
     def test_text_view_is_not_treated_as_a_button(self) -> None:
         root = make_tree([
             {"text": "Wait", "class": "android.widget.TextView", "bounds": "[0,0][100,50]"},
