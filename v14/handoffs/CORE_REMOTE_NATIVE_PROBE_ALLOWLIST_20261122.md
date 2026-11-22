@@ -127,3 +127,41 @@ Regression coverage now includes:
 - existing source/session/generation/role/expiry/restart/symlink/hash/negative-control checks remain.
 
 This is still a staged, non-authoritative diagnostic candidate. No production B3 routing, model/weight change, permission change, native receiver execution on Redmi, or deployment is claimed. Full repository tests and exact-head CI must pass before Boss integration; Redmi remains REDMI_UNVERIFIED.
+
+
+## Core staged integration checkpoint — 2026-11-22 17:05 UTC
+
+**Current Core branch:** PR #2350, `core/v14-native-probe-model-byte-integrity-20261122`, head `3c688a88c2210950b3991494be51b6c0e3890439`. This is a staged candidate based on the separate #2332 remote allowlist branch; it is **NOT_RELEASED** and is not installed on Redmi.
+
+### Executable changes on this head
+
+- Repaired the malformed `revoke()` definition in `native_probe_approval.py`; the prior split signature caused a real Python syntax error.
+- Rebound the nested exact-byte chain: native receiver candidate Git blob → recovery builder SHA-256 → stage builder SHA-256 → runtime deployer SHA-256. Readback currently confirms all three links.
+- The integrated candidate now dispatches `:callosum arm-probe`, `:callosum native-probe`, and `:callosum revoke-probe`; the global operator help and Callosum help advertise them.
+- The local TTY is required to arm or revoke. A separately consented typed consumer may consume a pending local arm without an interactive TTY. The capability is bound to Runtime nonce, active session, latest FINAL source/generation, exact role pair, installed model revisions and manifest SHA-256.
+- The approval lifecycle is now PENDING → CONSUMED → USED. The actual native receiver boundary atomically marks USED before native work, so a direct/replayed Python call cannot reuse the one-shot approval. A CONSUMED-but-not-yet-used approval cannot be overwritten by a new arm; it must be revoked or expire. Revoke can cancel PENDING or CONSUMED.
+- Native probe execution remains hard-capped at 120 seconds, production routing OFF, training authority 0, receiver authority 0, and semantic utility unproven.
+
+### Test evidence and environment
+
+- LOCAL_LINUX / isolated synthetic Python stubs: **7/7** approval-binding tests PASS (exact source/session/event/role, manifest hash, restart, expiry, revoke, no-arm).
+- LOCAL_LINUX / isolated synthetic state-machine tests: **5/5** PASS (PENDING/CONSUMED overwrite refusal, expiry, revoke, USED replay refusal).
+- These are isolated reproductions, **not** a full Aii pytest run and not a native GGUF execution.
+- Exact-head GitHub workflows for `3c688a88c2210950b3991494be51b6c0e3890439` are queued; no CI PASS is claimed yet. The workflow matrix includes Python 3.13/3.14, pinned Linux llama.cpp build, Android arm64 cross-compile, staged/integrated regression, runtime deployment integrity and private owner-read bootstrap.
+- LOCAL_FULL_REPOSITORY remains BLOCKED: no Aii checkout is mounted and local `git ls-remote` cannot resolve GitHub DNS.
+
+### Latest private Redmi evidence (metadata only)
+
+- PIPELINE_STATUS #579 and #582: installed SHA remains `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; auto-update enabled, Runtime/Dashboard report UP_TO_DATE, last_error NONE. This is updater state, not proof that the model runtime is healthy.
+- DIAGNOSTICS #580: last recorded turn FINAL, 57.74 s total, 41.63 s TTFT, 751 prompt tokens and 2 generated tokens; B1/B2 both TIME_BUDGET at 53.2/54.2 s, C3 3.1 s. This is a recorded prior turn, not a new post-update test.
+- HEALTH #581: status OK but Runtime state UNAVAILABLE; 1,414 MiB available RAM and 1,568 MiB free storage. Do not infer a working chat process from UP_TO_DATE alone.
+- No native receiver probe was sent or executed. No model, weight, permission, updater, database or device state was changed.
+
+### Remaining integration and actual latent-coupling gap
+
+- #2343 Boss integration head `9a1424bbf11f3306ce1a50f1e88cbb5c3765bca2` and #2346 Perception paired-tap head `81d225af972e8b3d6b645aba09cd01ccac5fa020` still have shared staged/deployer pin failures; #2346's focused B3 tests are green, but that is synthetic shadow-optimizer evidence, not native Redmi coupling. Rebase/re-pin this Core candidate only after the shared composer base is stable; do not overwrite their files.
+- The current B3 `Bridge.receive()` returns a task/readout classifier, not receiver input vectors. The current native receiver measures llama.cpp input consumption/effect and negative controls, but not semantic task utility. Neither proves a trained latent communication channel.
+- Next Core implementation: a read-only, row-bounded receiver input-embedding extractor against the exact pinned llama.cpp revision `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4`, using the internal `model->tok_embd` tensor and checked `ggml_backend_tensor_get` / `ggml_type_traits::to_float` extraction. Do not call the existing full-matrix dequantizer on Android. Then coordinate source-span-aligned B1/B2 pairs, train separate directional low-rank projectors, and measure same-model parity, zero/shuffle/no-message/symbolic controls, source-disjoint held-out task output, retention and rollback. The extractor/projector is **not implemented** yet.
+- Do not authorize a device probe until exact-head CI is green, Boss has integrated/released the candidate, the installed SHA is privately confirmed, and the user separately approves that one exact probe.
+
+**User action: none now.** No manual Termux command, UPDATE_REQUEST, model download/swap, weight change or permission change is required.
