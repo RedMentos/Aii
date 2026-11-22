@@ -16,7 +16,7 @@ from .common import atomic_write, dumps
 
 
 def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
-                    label_source, direction="B1_TO_B2", seeds=(11, 17),
+                    label_source, direction="B1_TO_B2", seeds=(11, 17, 23),
                     epochs=10, head_steps=25, split_seed=20261122, l0_evidence=None):
     """Fit persistent, non-promoted L1 candidates from real paired native taps.
 
@@ -88,6 +88,8 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
     l0_acc = l0_bytes = role_drop = None
     l0_evidence_sha256 = None
     if l0_evidence is not None:
+        if len(seeds) < 3:
+            raise ValueError("L1 utility gate requires at least three paired training seeds")
         required_l0 = ("EXACT", "CONTROL", "SYMBOLIC")
         expected_sources = [x.get("sha256") for x in batch["source_refs"]]
         if (not isinstance(l0_evidence, dict)
