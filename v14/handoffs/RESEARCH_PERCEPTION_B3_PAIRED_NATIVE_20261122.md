@@ -135,20 +135,18 @@ No user action required. No model, weight, dependency, device setting or product
 - The receiver target is the exact row from the receiver model's input embedding table for each aligned receiver token ID. The adapter is not trained against the receiver's final-layer tap and does not pretend that equal hidden dimensions imply compatible semantics.
 - The trainer uses trainable A/B matrices with Adam gradients, a deterministic source-SHA-disjoint holdout, and no-message / shuffled-input controls. It reports held-out MSE, cosine, pairwise-cosine Spearman and mutual-kNN edge Jaccard. Checkpoints bind sender/receiver roles, revisions, actual model SHA-256 values, the pinned llama.cpp revision and the receiver-row export hash.
 - Adapter checkpoints are unique/no-overwrite, mode 0600, integrity-hashed and explicitly zero-authority. A loaded candidate must pass its shadow-alignment gate and exact model/role binding. Foundation weights are never edited.
-- Added `v13/code/scripts/b3_train_receiver_projector.py`. It requires `--confirm-shadow-training`, reads only selected receiver rows, hashes the actual installed sender and receiver model files, reads persisted B3 packet IDs from Runtime storage, and writes a private SHADOW checkpoint under the Runtime home. It does not inject the adapter or alter production routing.
+- Exposes `train_from_pairs(cognition, packets, rows, row_manifest, ...)` as the executable consumer API. It calls the real persisted-pair loader, recomputes source-span alignment, and returns a zero-authority candidate checkpoint. No CLI or automatic invocation is added until Core's native row exporter and runtime contract are ready.
 
 ### Required Core row-export seam
 The Core native receiver still does **not** export receiver input rows. This Perception consumer expects the following bounded read-only contract from Core:
-- manifest schema `v14.llama.receiver-input-rows/1`;
-- `receiver_role`, exact `model_revision`, actual model `model_sha256`, pinned `runner_revision`, `embedding_dim`;
-- sorted `token_ids`, `row_count`, `rows_sha256`;
-- `data_file`, `data_sha256`, `dtype=float32-le`, `layout=row-major`;
-- binary file contains only the requested rows, row-major little-endian float32; no full vocabulary matrix. The row digest is SHA-256 over sorted little-endian int64 token IDs followed by the little-endian float32 matrix.
-- Current code caps training examples at 1,024 rows and 4,194,304 feature elements. The native exporter must reject bad token IDs, quantization block/row offsets, overflow, wrong model bytes and unsupported tensor layouts before writing.
+- Core supplies an in-memory mapping `{token_id: float32[embedding_dim]}` plus manifest schema `v14.llama.receiver-input-rows/1`.
+- Manifest fields: `receiver_role`, exact `model_revision`, actual model `model_sha256`, pinned `runner_revision`, `embedding_dim`, sorted `token_ids`, `row_count`, `rows_sha256`.
+- The row digest is SHA-256 over sorted little-endian int64 token IDs followed by the row-major little-endian float32 matrix. Only token IDs requested by the paired packets are exported; never the full vocabulary matrix.
+- Current code caps training examples/row exports at 1,024 and feature elements at 4,194,304. The native exporter must reject invalid token IDs, quantization block/row offsets, overflow, wrong model bytes and unsupported tensor layouts before returning rows.
 
 ### Local test evidence
-- **LOCAL_LINUX_ISOLATED / CPython 3.13.5 / NumPy 2.3.5:** 10/10 synthetic unit tests PASS. They cover exact row-manifest/data hashes, model/role/revision negatives, forward and reverse character-span alignment, persisted-pair consumer wiring (with only the store loader mocked), nonzero gradients and parameter changes, source-disjoint holdout, shuffled/no-message controls, checkpoint round-trip, no-overwrite and authority-escalation rejection.
-- **LOCAL_LINUX_ISOLATED:** `py_compile` PASS for projector module, CLI and tests; CLI `--help` PASS. Single-thread BLAS environment used. These are isolated algorithm/contract tests, not a full Aii checkout, real GGUF tap or native receiver run.
+- **LOCAL_LINUX_ISOLATED / CPython 3.13.5 / NumPy 2.3.5:** 7/7 synthetic unit tests PASS. They cover row manifest/model binding, forward and reverse character-span alignment, persisted-pair consumer wiring (with only the storage loader mocked), nonzero gradients and parameter changes, source-disjoint holdout, shuffled/no-message controls, checkpoint round-trip, no-overwrite and authority-escalation rejection.
+- **LOCAL_LINUX_ISOLATED:** `py_compile` PASS for projector module and tests. Single-thread BLAS environment used. These are isolated algorithm/contract tests, not a full Aii checkout, real GGUF tap or native receiver run.
 - **LOCAL_FULL_REPOSITORY:** BLOCKED — no Aii checkout is mounted in this execution environment. No full-repository unittest/compile is claimed.
 - **CI:** pending on the exact updated PR head.
 - **TERMUX/REDMI:** REDMI_UNVERIFIED. No phone, model, microphone, updater, native receiver or installed app was accessed.
@@ -165,3 +163,7 @@ The Core native receiver still does **not** export receiver input rows. This Per
 - Production B3 remains OFF/SYMBOLIC; `semantic_use_proven=false`, `production_route=false`, receiver-injection authority 0, body-learning authority 0. No release/deployment or updater request.
 - **Next concrete step:** Core supplies the pinned row-only extractor and exact manifest; then Perception runs the projector against real paired B1/B2 taps and compares source-exact, projected, zero, shuffled and no-message receiver outputs. Boss updates the shared board, research ledger and user-next-action after reviewing this handoff.
 - **User action:** none. No model download/swap, weight change, permission change or manual Termux command.
+
+
+### Implementation correction (2026-11-22)
+The first draft's file/CLI wrapper was removed before publication to avoid inventing a row-export transport or an unverified Runtime command. The committed interface is the direct Python API `train_from_pairs`; it becomes runnable end-to-end only when Core supplies the exact row mapping/manifest. No native row export, native receiver injection or Redmi proof is implied.
