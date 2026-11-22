@@ -1725,6 +1725,7 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - Private owner-read PIPELINE_STATUS [#619](https://github.com/RedMentos/Aiiii/issues/619) confirms that exact SHA installed, auto-update enabled, runtime/dashboard `UP_TO_DATE`, and `last_error=NONE`.
 - Private DIAGNOSTICS [#620](https://github.com/RedMentos/Aiiii/issues/620) repeats the stored FINAL turn: 57.739 s total, 41.627 s TTFT, 38.945 s C3 prefill, 751 admitted prompt tokens and 2 generated tokens. Correctness is UNKNOWN; no new user turn was sent.
 - B1_DETAIL and B2_GIST remain `TIME_BUDGET` at 53.2 s / 54.2 s. Native probe is `SMOKE_PARTIAL`. The instant native-process sample is 0 mapped processes / 0 MiB PSS/RSS with child readability UNKNOWN; this is not free-RAM or sustained-residency evidence.
+- Newer private V13OBS [#115](https://github.com/RedMentos/Aiiii/issues/115), updated 2026-11-22T21:11:21Z, repeats installed SHA aed1d2 / updater UP_TO_DATE and summarizes 5 observed turns: B1 4/4 native attempts failed with 0 valid offers; B2 2/2 failed with 0 valid offers; no B1/B2 delivery to final C3 report; C3 prompt inclusion/semantic use and native latent exchange remain unproven. This is an observation report, not a new owner-read command receipt; no new user turn was sent.
 - Official Age 0; test selector 10 / implemented stage ceiling 5; physical feature execution unverified; learning commit authority still requires separate SHADOW. No device state changed.
 
 ### Perception candidate #2375 — not released
