@@ -16,7 +16,7 @@ from .contracts import packet, validate
 from .common import atomic_write, dumps, file_hash
 
 ROLES = ("B1_DETAIL", "B2_GIST")
-SCHEMA = "v13.b3-paired-native-taps/3"
+SCHEMA = "v13.b3-paired-native-taps/4"
 B1_FINE_SLOTS = 64
 
 
@@ -39,6 +39,80 @@ def _matrix(value, name):
             clean.append(float(item))
         out.append(clean)
     return out, width
+
+
+
+def align_token_spans(sender_slots, receiver_slots, source_ref):
+    """Align two tokenizers by exact source-character interval overlap, never token index.
+
+    Both slot lists must losslessly partition the same SourceRef. The returned
+    overlap weights are suitable for a later receiver-input projector; they do
+    not themselves provide receiver embeddings or grant injection authority.
+    """
+    if not isinstance(source_ref, dict):
+        raise ValueError("B3 token alignment requires a SourceRef")
+    start, end = source_ref.get("char_start"), source_ref.get("char_end")
+    if type(start) is not int or type(end) is not int or start < 0 or end < start:
+        raise ValueError("B3 token alignment source range is invalid")
+    identity = (source_ref.get("source_id"), source_ref.get("sha256"), source_ref.get("modality"))
+    if not all(isinstance(value, str) and value for value in identity):
+        raise ValueError("B3 token alignment source identity is incomplete")
+
+    def checked(slots, label):
+        if not isinstance(slots, list) or not slots:
+            raise ValueError(label + " token spans are missing")
+        cursor = start
+        rows = []
+        for index, slot in enumerate(slots):
+            if not isinstance(slot, dict) or slot.get("slot") != index:
+                raise ValueError(label + " token slot order is invalid")
+            token_id = slot.get("token_id")
+            ref = slot.get("source_ref")
+            if type(token_id) is not int or token_id < 0 or not isinstance(ref, dict):
+                raise ValueError(label + " token identity is invalid")
+            if (ref.get("source_id"), ref.get("sha256"), ref.get("modality")) != identity:
+                raise ValueError(label + " token source identity changed")
+            left, right = ref.get("char_start"), ref.get("char_end")
+            if (type(left) is not int or type(right) is not int
+                    or left != cursor or right < left or right > end):
+                raise ValueError(label + " token spans are not a lossless ordered partition")
+            rows.append((left, right, token_id))
+            cursor = right
+        if cursor != end:
+            raise ValueError(label + " token spans do not cover the complete source")
+        return rows
+
+    sender = checked(sender_slots, "sender")
+    receiver = checked(receiver_slots, "receiver")
+    pairs = []
+    for sender_index, (sender_start, sender_end, sender_id) in enumerate(sender):
+        for receiver_index, (receiver_start, receiver_end, receiver_id) in enumerate(receiver):
+            left = max(sender_start, receiver_start)
+            right = min(sender_end, receiver_end)
+            if right > left:
+                pairs.append({
+                    "sender_slot": sender_index,
+                    "receiver_slot": receiver_index,
+                    "sender_token_id": sender_id,
+                    "receiver_token_id": receiver_id,
+                    "char_start": left,
+                    "char_end": right,
+                    "overlap_chars": right - left,
+                })
+    covered = sum(item["overlap_chars"] for item in pairs)
+    source_chars = end - start
+    if covered != source_chars:
+        raise ValueError("B3 cross-tokenizer overlap does not cover the exact source")
+    return {
+        "method": "CHARACTER_INTERVAL_INTERSECTION",
+        "sender_token_count": len(sender),
+        "receiver_token_count": len(receiver),
+        "overlap_pair_count": len(pairs),
+        "covered_chars": covered,
+        "source_chars": source_chars,
+        "coverage_ratio": 1.0 if source_chars == 0 else covered / source_chars,
+        "pairs": pairs,
+    }
 
 
 def capture_pair(cognition, event, deadline):
@@ -83,7 +157,7 @@ def capture_pair(cognition, event, deadline):
     # global mean over all native tokens. Verify pieces against this exact tap.
     from .age import controller as age_controller
     from .gist import resolve as resolve_gist
-    from .gist_readout import consume as consume_gist, DEFAULT_MODE
+    from .gist_readout import consume as consume_gist, DEFAULT_MODE, token_spans
     runtime = cognition.r
     source_text = cognition.s.read_source(source)
     runner = runtime.pool.get_tap("B2_GIST")
@@ -97,6 +171,30 @@ def capture_pair(cognition, event, deadline):
     gist_ids = [row["id"] for row in token_rows]
     if gist_ids != taps["B2_GIST"]["token_ids"]:
         raise ValueError("B2 Gist tokenizer pieces do not belong to this native tap")
+    gist_native_spans = token_spans(source_text, [row["piece"] for row in token_rows])
+    gist_native_slots = []
+    for index, (token_id, span) in enumerate(zip(gist_ids, gist_native_spans)):
+        start, end = span
+        gist_native_slots.append({
+            "slot": index, "token_id": token_id,
+            "source_ref": source | {
+                "char_start": source["char_start"] + start,
+                "char_end": source["char_start"] + end,
+            },
+        })
+    gist_native_plan = {
+        "revision": "b2-native-token-spans-v1",
+        "tap_id": taps["B2_GIST"]["tap_id"],
+        "source_ref": source,
+        "token_ids": gist_ids,
+        "native_tokens": len(gist_ids),
+        "dim": taps["B2_GIST"]["shape"][1],
+        "max_slots": B1_FINE_SLOTS,
+        "slots": gist_native_slots,
+        "lossless": True,
+        "receiver_injection_authority": 0,
+        "body_learning_authority": 0,
+    }
     resolution = resolve_gist(age_controller(runtime), source_text)
     gist_plan, gist_vectors = consume_gist(
         source_text, source, gist_ids, [row["piece"] for row in token_rows],
@@ -108,7 +206,6 @@ def capture_pair(cognition, event, deadline):
 
     # B1 keeps one fine slot per native token. Persist exact source spans so
     # the receiver side does not collapse Detail into a pooled summary either.
-    from .gist_readout import token_spans
     runner = runtime.pool.get_tap("B1_DETAIL")
     try:
         runner.load(runtime.cancel_event, deadline)
@@ -177,10 +274,11 @@ def capture_pair(cognition, event, deadline):
         } for role in ROLES},
         gist_readout=gist_binding,
         fine_readout={"tap_packet_id": taps["B1_DETAIL"]["packet_id"], "plan": fine_plan},
+        native_token_readout=gist_native_plan,
         token_counts={role: len(features[role]) for role in ROLES},
         dimensions={role: len(features[role][0]) for role in ROLES},
-        token_alignment="NOT_ASSUMED_DIFFERENT_NATIVE_TOKENIZERS",
-        receiver_pooling="B2_ADAPTIVE_GIST_SLOTS;B1_SOURCE_ALIGNED_FINE_NATIVE_SLOTS",
+        token_alignment="SOURCE_CHAR_SPAN_OVERLAP_ONLY;TOKEN_INDEX_EQUIVALENCE_NOT_ASSUMED",
+        receiver_pooling="B2_ADAPTIVE_GIST_SLOTS;B1_FINE_NATIVE_TOKENS;B2_FINE_NATIVE_TOKENS",
         injection_authority=0, learning_authority=0,
     )
     cognition.s.add_packet("B3PairedTapPacket", record)
@@ -190,8 +288,10 @@ def capture_pair(cognition, event, deadline):
         "source_ref": source,
         "sender": {"role": "B1_DETAIL", "states": features["B1_DETAIL"]},
         "receiver": {"role": "B2_GIST", "states": features["B2_GIST"],
-                     "gist_states": gist_vectors.tolist(), "gist_plan": gist_plan},
-        "reverse_sender": {"role": "B2_GIST", "states": features["B2_GIST"]},
+                     "gist_states": gist_vectors.tolist(), "gist_plan": gist_plan,
+                     "native_token_plan": gist_native_plan},
+        "reverse_sender": {"role": "B2_GIST", "states": features["B2_GIST"],
+                           "native_token_plan": gist_native_plan},
         "reverse_receiver": {"role": "B1_DETAIL", "states": features["B1_DETAIL"],
                              "fine_states": features["B1_DETAIL"], "fine_plan": fine_plan},
         "authority": {"native_read_only": True, "latent_injection": False,
@@ -219,6 +319,9 @@ def load_pair(cognition, pair_packet):
     if (not isinstance(fine_binding, dict) or not isinstance(fine_binding.get("plan"), dict)
             or fine_binding.get("tap_packet_id") != pair_packet["tap_packet_ids"]["B1_DETAIL"]):
         raise ValueError("B3 pair has no correctly bound B1 fine-slot readout")
+    native_binding = pair_packet.get("native_token_readout")
+    if not isinstance(native_binding, dict):
+        raise ValueError("B3 pair has no B2 native token-span readout")
     taps, features = {}, {}
     for role in ROLES:
         tap_id = pair_packet["tap_packet_ids"][role]
@@ -258,6 +361,14 @@ def load_pair(cognition, pair_packet):
             or fine_plan.get("receiver_injection_authority") != 0
             or fine_plan.get("body_learning_authority") != 0):
         raise ValueError("B1 fine readout lineage/geometry mismatch")
+    native_plan = native_binding
+    b2_tap = taps["B2_GIST"]
+    if (native_plan.get("tap_id") != b2_tap.get("tap_id")
+            or native_plan.get("token_ids") != b2_tap.get("token_ids")
+            or native_plan.get("source_ref") != source
+            or native_plan.get("native_tokens") != len(features["B2_GIST"])
+            or native_plan.get("dim") != pair_packet["dimensions"]["B2_GIST"]):
+        raise ValueError("B2 native token-span lineage/geometry mismatch")
     gist_path = cognition.r.home / gist_binding["feature_path"]
     root = (cognition.r.home / "data/blobs").resolve()
     if gist_path.is_symlink() or not gist_path.resolve().is_relative_to(root):
@@ -281,8 +392,10 @@ def load_pair(cognition, pair_packet):
         "source_ref": source,
         "sender": {"role": "B1_DETAIL", "states": features["B1_DETAIL"]},
         "receiver": {"role": "B2_GIST", "states": features["B2_GIST"],
-                     "gist_states": gist_rows, "gist_plan": gist_binding["plan"]},
-        "reverse_sender": {"role": "B2_GIST", "states": features["B2_GIST"]},
+                     "gist_states": gist_rows, "gist_plan": gist_binding["plan"],
+                     "native_token_plan": native_plan},
+        "reverse_sender": {"role": "B2_GIST", "states": features["B2_GIST"],
+                           "native_token_plan": native_plan},
         "reverse_receiver": {"role": "B1_DETAIL", "states": features["B1_DETAIL"],
                              "fine_states": features["B1_DETAIL"], "fine_plan": fine_plan},
         "authority": {"native_read_only": True, "latent_injection": False,
@@ -316,6 +429,15 @@ def training_batch(cognition, pair_packets, labels, direction="B1_TO_B2"):
     pairs = [load_pair(cognition, p) for p in pair_packets]
     sender_role, receiver_role = (("B1_DETAIL", "B2_GIST") if direction == "B1_TO_B2"
                                    else ("B2_GIST", "B1_DETAIL"))
+    def token_plan(pair, role):
+        return (pair["packet"]["fine_readout"]["plan"] if role == "B1_DETAIL"
+                else pair["packet"]["native_token_readout"])
+    sender_plans = [token_plan(pair, sender_role) for pair in pairs]
+    receiver_plans = [token_plan(pair, receiver_role) for pair in pairs]
+    span_alignments = [
+        align_token_spans(sender_plan["slots"], receiver_plan["slots"], pair["source_ref"])
+        for pair, sender_plan, receiver_plan in zip(pairs, sender_plans, receiver_plans)
+    ]
     sender_rev = pairs[0]["packet"]["model_revisions"][sender_role]
     receiver_rev = pairs[0]["packet"]["model_revisions"][receiver_role]
     sender_dim = pairs[0]["packet"]["dimensions"][sender_role]
@@ -369,6 +491,14 @@ def training_batch(cognition, pair_packets, labels, direction="B1_TO_B2"):
             "receiver_max_slots": (pairs[0]["packet"]["gist_readout"]["plan"]["max_slots"] if direction == "B1_TO_B2" else B1_FINE_SLOTS),
             "receiver_slot_counts": ([len(p["receiver"]["gist_states"]) for p in pairs] if direction == "B1_TO_B2" else [len(p["reverse_receiver"]["fine_states"]) for p in pairs]),
             "receiver_feature_mode": ("B2_GIST_ADAPTIVE_SLOTS_FLATTENED" if direction == "B1_TO_B2" else "B1_DETAIL_FINE_NATIVE_SLOTS_FLATTENED"),
-            "claim_limit": ("paired native read-only taps + adaptive B2 Gist readout + explicit task labels; no receiver injection"
+            "sender_token_ids": [plan["token_ids"] for plan in sender_plans],
+            "receiver_token_ids": [plan["token_ids"] for plan in receiver_plans],
+            "sender_token_spans": [[slot["source_ref"] for slot in plan["slots"]] for plan in sender_plans],
+            "receiver_token_spans": [[slot["source_ref"] for slot in plan["slots"]] for plan in receiver_plans],
+            "source_span_alignments": span_alignments,
+            "token_alignment_contract": "CHARACTER_INTERVAL_INTERSECTION;NO_TOKEN_INDEX_EQUIVALENCE",
+            "receiver_input_embedding_rows_available": False,
+            "receiver_input_target": "TOKEN_IDS_AND_SOURCE_SPANS_ONLY;CORE_ROW_EXPORTER_REQUIRED",
+            "claim_limit": ("paired native read-only taps + adaptive B2 Gist readout + source-span token alignment; no receiver input rows or injection"
                             if direction == "B1_TO_B2" else
-                            "paired native read-only taps + B1 native fine token slots + explicit task labels; no receiver injection")}
+                            "paired native read-only taps + B1 fine token slots + source-span token alignment; no receiver input rows or injection")}
