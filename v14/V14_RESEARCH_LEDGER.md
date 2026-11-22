@@ -941,3 +941,16 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
+
+
+## R-080 — LATER: action-conditioned retrieval of delayed transition evidence (2026-11-22)
+
+**Primary source:** Zhou, Xu, Wang and Tang, *LATER: Learning Action-Conditioned Temporal Evidence Retrieval for Predictive World Models*, arXiv:2611.25671v1, submitted 2026-11-19: https://arxiv.org/abs/2611.25671 . Full text reviewed.
+
+**Method:** partitioned memories store completed real transitions and remain fixed during candidate rollouts. A response bridge reads them using the current state and candidate action; auxiliary multi-cut supervision trains the memory writers while zero-initialized gates preserve a recent-only baseline. The paper separates retaining evidence from selectively reading it and evaluates paired-history interventions with the query observation/action held fixed.
+
+**V14 hypothesis:** keep trusted observed T8/ActionOutcome evidence immutable during speculative prediction; only finalized source-verified outcomes update persistent writer/replay state. Readout should be conditioned on the receiver's current state/latent and proposed action, with a recent-only fallback. Compare correct earlier evidence, shuffled evidence, omitted evidence and hypothetical-only evidence under session/source-disjoint holdouts, delayed queries, restart, forget/revocation and rollback. This is additive to World/Self/Memory/JEPA and does not replace B1/B2 bodies.
+
+**Limits and rights:** LATER uses a CF-JEPA/ViT-Tiny/14 backbone, 192-D latent split, GRU writers, gated rank-8 bridge and simulated physical-control tasks; its reported CEM measurements include H100-class execution. No public implementation repository or code license was identified in the paper/full-text page, and the paper's own reuse license was not verified from retrieved metadata. No code, weights or datasets are copied or selected.
+
+**Decision:** RESEARCH_ONLY / TESTABLE_HYPOTHESIS. Do not import wholesale. First complete the source-bound T8→WorldJEPA/EMA→replay/retention→B1/B2 consumer loop and establish an Android-sized baseline. Future prototype: tiny action-conditioned readout vs recent-history, exact/no-memory and shuffled controls.
