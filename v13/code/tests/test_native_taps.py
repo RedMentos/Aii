@@ -24,7 +24,7 @@ class TapBinding(unittest.TestCase):
         with self.assertRaises(Unavailable):self.r.pool.get_tap('B1_DETAIL')
     def test_tamper_or_dangling_source_detected_on_read_and_doctor(self):
         r=self.r;e=r.store.event(r.session,'Numerical binding fixture');path=r.home/'data/blobs/tap-fixture.json';atomic_write(path,dumps({'token_ids':[1],'vectors':[[.1,.2]]}))
-        p=packet('LatentTapPacket','B1_DETAIL',e['event_id'],e['brain_generation_id'],[e['source_ref']],role='B1_DETAIL',source_ref=e['source_ref'],tap_id='unit_fixture_not_native',model_revision='fixture',token_ids=[1],feature_path='data/blobs/tap-fixture.json',feature_sha256=file_hash(path),shape=[1,2]);r.store.add_packet('LatentTapPacket',p)
+        p=packet('LatentTapPacket','B1_DETAIL',e['event_id'],e['brain_generation_id'],[e['source_ref']],role='B1_DETAIL',source_ref=e['source_ref'],tap_id='unit_fixture_not_native',model_revision='fixture',sender_model_sha256='a'*64,tokenizer_revision=None,token_ids=[1],feature_path='data/blobs/tap-fixture.json',feature_sha256=file_hash(path),shape=[1,2]);r.store.add_packet('LatentTapPacket',p)
         self.assertEqual(r.cognition.read_tap(p)['vectors'],[[.1,.2]])
         atomic_write(path,'tampered')
         with self.assertRaises(ValueError):r.cognition.read_tap(p)
