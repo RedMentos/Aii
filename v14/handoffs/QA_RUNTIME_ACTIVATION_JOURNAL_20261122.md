@@ -86,3 +86,22 @@ Exact-head runtime-deploy integrity: **PASS** on Python 3.11 and 3.14; 17 activa
 - Same-turn consumer Python 3.13: **FAIL** at shell line 4 trying to execute `test_v14_store_source_blob_serialization.py` (missing YAML continuation in the current base workflow).
 - Same-turn consumer Python 3.14 and integrated regression were still running at this readback.
 These are shared-base source/workflow issues, not failures in the QA rollback test suite. No rebase or merge until the full current base is green.
+
+
+## Current Boss-base refresh — 2026-11-22
+
+This section supersedes the stale d06c637 / 91227 base references above.
+
+- Current Boss integration base: `d0d7baaa14fcf871f3eac647df8ce6718ed82a8e` on `boss/v14-recall-store-pin-rebind-20261122`.
+- Exact Boss-head workflows: **16 SUCCESS, 1 expected SKIPPED, 0 FAIL**. This includes the corrected full-composer same-turn C4/C3 workflow, audio/arithmetic Runtime, staged/integrated regression, owner-read, migration, Lab-Age, deployment integrity, privacy and controller guard. This is CI/synthetic evidence, not a phone release.
+- PR #2298 now targets that exact Boss head. GitHub reports the PR mergeable; the QA branch has not been rebased by force-push.
+- QA branch head before this handoff update: `a09f0717ccf89d9dd24681fd609b0c9e78a1dddf`. The shared `V14_USER_NEXT_ACTION.md` and `V14_WORK_BOARD.json` were synchronized byte-for-byte from Boss d0d7ba so this QA PR cannot overwrite the newer shared status with its older snapshot.
+- On that pre-handoff QA head, the new current-base workflow set was still queued/in progress: runtime-deploy integrity run `44981078044`; same-turn C4/C3 `44981078117`; owner-read `44981078196`; Lab-Age `44981078181`; staged/integrated `44981078139`. These results must be re-read on the final post-handoff commit; no pass is inferred from the earlier d06c637 runs.
+- The prior QA implementation's runtime-deploy tests passed on Python 3.11 and 3.14 (92 tests per interpreter) on its earlier merge ref. The exact current-base result remains pending.
+- Full local Aii checkout remains unavailable in this worker; no LOCAL_LINUX full-repository suite is claimed. No Android/Redmi receipt, installer, rollback, model/weight, permission, chat or SQLite mutation occurred. **REDMI_UNVERIFIED / NOT_RELEASED**.
+- The private read-only V13READ request `RedMentos/Aiiii #460` has no authenticated device reply. No LOG_PAGE, UPDATE_REQUEST, shell or device mutation was attempted.
+- Dashboard/WebView rollback remains unimplemented. The CLI/runtime-only rollback path is not a phone-verified UI action.
+
+### Next QA action
+
+Read exact-head checks for the final QA commit. If all required checks pass, request Boss integration review for #2298; retain the explicit distinction between runtime-only rollback and dashboard rollback. No user action is required on current evidence.
