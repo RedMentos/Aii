@@ -106,10 +106,10 @@ def verify_command(obj, keys, permissions, authors, *, author, now=None):
             args["text"].strip().startswith(":")):
         raise Denied("CHAT_SEND requires one normal bounded user message")
     if cmd == "CHAT_OPERATOR":
-        from .remote_chat import SAFE_OPERATOR_COMMANDS
+        from .remote_chat import is_safe_operator_command
         if (set(args) != {"command"} or type(args.get("command")) is not str
-                or args["command"] not in SAFE_OPERATOR_COMMANDS):
-            raise Denied("only exact read-oriented V13 diagnostic operators allowed")
+                or not is_safe_operator_command(args["command"])):
+            raise Denied("only exact owner-authorized V13 diagnostic operators allowed")
     if cmd in ("LOG_SHARING_ON", "LOG_SHARING_OFF") and args:
         raise Denied("log sharing toggle accepts no extra arguments")
     if cmd == "CHAT_RESULT" and (
