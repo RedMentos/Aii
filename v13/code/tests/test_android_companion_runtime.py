@@ -1,4 +1,5 @@
 import base64
+import hashlib
 import json
 
 import pytest
@@ -42,6 +43,26 @@ SUCCESS_RECEIPT = {
     "key_id": KEY_ID,
     "signature": "MEUCIQCj6DaMCL0/ofDX/AxaFXbnT+ItjasEn7c0HNpRmsW28AIgQ6UwgRkmD46+1dAyhr1NOR6tBMlnER7j/f6Lz9RiKBI=",
 }
+
+def _sign_test_body(body):
+    """Sign a test-only receipt with private scalar 1 (fixture public key is P-256 G)."""
+    raw = json.dumps(body, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("ascii")
+    order = 0xFFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551
+    generator_x = 0x6B17D1F2E12C4247F8BCE6E563A440F277037D812DEB33A0F4A13945D898C296
+    r = generator_x
+    s = (int.from_bytes(hashlib.sha256(raw).digest(), "big") + r) % order
+    if s == 0:
+        raise AssertionError("test fixture produced an invalid ECDSA scalar")
+
+    def der_integer(value):
+        encoded = value.to_bytes((value.bit_length() + 7) // 8, "big")
+        if encoded[0] & 0x80:
+            encoded = b"\\x00" + encoded
+        return b"\\x02" + bytes([len(encoded)]) + encoded
+
+    payload = der_integer(r) + der_integer(s)
+    signature = b"\\x30" + bytes([len(payload)]) + payload
+    return base64.b64encode(signature).decode("ascii")
 DENIAL_BODY = {**BODY, "nonce": "3" * 32, "status": "USER_DENIED", "local_consent": False}
 DENIAL_RECEIPT = {
     "body": DENIAL_BODY,
@@ -295,6 +316,20 @@ def test_action_intent_history_is_session_scoped_restartable_and_non_authoritati
 
     pending = json.loads(controller.launch("com.example.private_app", True))
     action_id = pending["action_id"]
+    # Bind the signed fixture to this exact request. Reusing SUCCESS_RECEIPT
+    # would correctly fail because its digest belongs to com.example.app.
+    request = transport.submitted[-1]
+    body = {
+        **BODY,
+        "action_id": action_id,
+        "digest": request["digest"],
+        "nonce": "7" * 32,
+    }
+    transport.receipt = {
+        "body": body,
+        "key_id": KEY_ID,
+        "signature": _sign_test_body(body),
+    }
     intent_row = runtime.store.one(
         "SELECT payload FROM packets WHERE kind='ActionIntent' AND event_id=?",
         (pending["source_event_id"],),
