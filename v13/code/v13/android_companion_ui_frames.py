@@ -430,36 +430,45 @@ class UIFrameGrant:
                 context_budget_chars=320, priority=0, cfg=None):
         if self._consumed:
             raise FrameReceiptDenied("one-shot UI frame was already consumed")
-        event = getattr(runtime, "turn_event", None)
-        generation_id = event.get("brain_generation_id") if type(event) is dict else None
-        if not self.lease.active_for(runtime, generation_id):
-            raise FrameReceiptDenied("UI frame lease is no longer active")
-        try:
-            from .vision_ui_frame_ingress import (
-                _issue_provider_frame_verifier,
-                consume_projected_frame,
-            )
-        except Exception as exc:
-            raise FrameReceiptDenied(
-                "the V14 RAW EYE consumer is not installed in this checkout"
-            ) from exc
-        verifier = _issue_provider_frame_verifier(
-            self.observation, self.bundle["verify_frame"]
-        )
         self._consumed = True
-        return consume_projected_frame(
-            runtime,
-            self.observation,
-            self.bundle["frame_buffer"],
-            consent_lease=self.lease,
-            frame_verifier=verifier,
-            current_source=current_source,
-            goal=goal,
-            token_budget=token_budget,
-            context_budget_chars=context_budget_chars,
-            priority=priority,
-            cfg=cfg,
-        )
+        frame_buffer = self.bundle.get("frame_buffer")
+        try:
+            if type(frame_buffer) is not bytearray:
+                raise FrameReceiptDenied("one-shot UI frame requires a mutable caller-owned buffer")
+            event = getattr(runtime, "turn_event", None)
+            generation_id = event.get("brain_generation_id") if type(event) is dict else None
+            if not self.lease.active_for(runtime, generation_id):
+                raise FrameReceiptDenied("UI frame lease is no longer active")
+            try:
+                from .vision_ui_frame_ingress import (
+                    _issue_provider_frame_verifier,
+                    consume_projected_frame,
+                )
+            except Exception as exc:
+                raise FrameReceiptDenied(
+                    "the V14 RAW EYE consumer is not installed in this checkout"
+                ) from exc
+            verifier = _issue_provider_frame_verifier(
+                self.lease, self.observation, self.bundle["verify_frame"]
+            )
+            return consume_projected_frame(
+                runtime,
+                self.observation,
+                frame_buffer,
+                consent_lease=self.lease,
+                frame_verifier=verifier,
+                current_source=current_source,
+                goal=goal,
+                token_budget=token_budget,
+                context_budget_chars=context_budget_chars,
+                priority=priority,
+                cfg=cfg,
+            )
+        finally:
+            # Factory/lease rejection happens before Perception's consumer finally.
+            # Own the mutable buffer from call entry and erase it on every exit.
+            if type(frame_buffer) is bytearray and frame_buffer:
+                frame_buffer[:] = b"\x00" * len(frame_buffer)
 
 
 @contextmanager

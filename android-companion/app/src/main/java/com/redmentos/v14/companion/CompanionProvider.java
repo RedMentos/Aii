@@ -47,7 +47,7 @@ public final class CompanionProvider extends ContentProvider {
         Context context = getContext();
         if (context == null) return false;
         resetProcessStateForProviderStartup(context);
-        ProjectionFrameStore.clear();
+        clearScreenFrame();
         db = new CompanionDb(context);
         signer = new ReceiptSigner();
         ensureChannel(context);
@@ -81,8 +81,7 @@ public final class CompanionProvider extends ContentProvider {
 
     @Override public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
         Context context = getContext();
-        if (context == null || !"r".equals(mode)
-                || !isPairedCaller(context) || !isEnabled(context)) {
+        if (context == null || !"r".equals(mode) || !isPairedCaller(context)) {
             throw new FileNotFoundException("screen frame access denied");
         }
         List<String> segments = uri == null ? null : uri.getPathSegments();
@@ -90,32 +89,56 @@ public final class CompanionProvider extends ContentProvider {
                 || !isHex(segments.get(1), 32)) {
             throw new FileNotFoundException("invalid one-shot frame URI");
         }
-        byte[] frame = ProjectionFrameStore.consume(segments.get(1), SystemClock.elapsedRealtime());
-        if (frame == null) throw new FileNotFoundException("frame expired, revoked or already consumed");
-        try {
-            ParcelFileDescriptor[] pipe = ParcelFileDescriptor.createPipe();
-            Thread writer = new Thread(() -> {
-                try (OutputStream output = new ParcelFileDescriptor.AutoCloseOutputStream(pipe[1])) {
-                    output.write(frame);
-                    output.flush();
-                } catch (IOException ignored) {
-                    // The caller closed or failed the one-shot read; the frame is still consumed.
-                } finally {
-                    Arrays.fill(frame, (byte) 0);
-                }
-            }, "v14-one-shot-frame-pipe");
-            writer.setDaemon(true);
-            writer.start();
-            return pipe[0];
-        } catch (IOException e) {
-            Arrays.fill(frame, (byte) 0);
-            throw new FileNotFoundException("could not open one-shot frame pipe");
-        }
+        return openFramePipe(context, segments.get(1), SystemClock.elapsedRealtime());
     }
 
     // The provider and both Activities use the app's default process. This
     // gate linearizes stop/enable with request insertion and the final dispatch.
     static final Object ACTION_GATE_LOCK = new Object();
+
+    /** Serialize stop/discard/expiry with frame consumption and pipe registration. */
+    static void clearScreenFrame() {
+        synchronized (ACTION_GATE_LOCK) {
+            ProjectionFrameStore.clear();
+        }
+    }
+
+    static ParcelFileDescriptor openFramePipe(Context context, String token, long nowElapsed)
+            throws FileNotFoundException {
+        synchronized (ACTION_GATE_LOCK) {
+            if (!isEnabledLocked(context)) {
+                throw new FileNotFoundException("companion stopped before frame pipe open");
+            }
+            FrameReadLease lease = ProjectionFrameStore.consumeLease(token, nowElapsed);
+            if (lease == null) {
+                throw new FileNotFoundException("frame expired, revoked or already consumed");
+            }
+            ParcelFileDescriptor[] pipe = null;
+            try {
+                pipe = ParcelFileDescriptor.createPipe();
+                lease.start(pipe[0], new ParcelFileDescriptor.AutoCloseOutputStream(pipe[1]));
+                return pipe[0];
+            } catch (Exception failure) {
+                lease.cancel();
+                if (pipe != null) {
+                    closePipeEnd(pipe[0]);
+                    closePipeEnd(pipe[1]);
+                }
+                FileNotFoundException denied = new FileNotFoundException("could not open one-shot frame pipe");
+                denied.initCause(failure);
+                throw denied;
+            }
+        }
+    }
+
+    private static void closePipeEnd(ParcelFileDescriptor descriptor) {
+        if (descriptor == null) return;
+        try {
+            descriptor.close();
+        } catch (IOException ignored) {
+            // The one-shot lease already revoked this descriptor.
+        }
+    }
     // Enabling is a per-process session grant. A process restart always starts
     // stopped; the user must explicitly enable the companion again.
     private static volatile boolean processEnabled = false;

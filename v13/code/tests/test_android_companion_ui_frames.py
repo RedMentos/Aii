@@ -1,6 +1,8 @@
 import base64
 import hashlib
 import json
+import sys
+import types
 from types import SimpleNamespace
 
 import pytest
@@ -10,6 +12,7 @@ from v13.android_companion_ui_frames import (
     AndroidCompanionFrameProvider,
     ECDSAUIFrameReceiptVerifier,
     FrameReceiptDenied,
+    UIFrameGrant,
 )
 
 
@@ -213,6 +216,60 @@ def test_provider_refuses_disabled_companion_or_unbound_frame_uri(tmp_path):
             provider.read_once()
     finally:
         provider.close()
+
+
+def test_ui_frame_grant_binds_verifier_to_exact_lease_and_zeroizes_every_exit(monkeypatch):
+    observation = {"source_id": "ui-source", "capture_session_id": "mp-session",
+                   "consent_receipt_ref": "receipt-1"}
+    frame = bytearray(b"jpeg-frame")
+    verify_fn = lambda *_: True
+    lease = SimpleNamespace(active_for=lambda runtime, generation: True)
+    runtime = SimpleNamespace(turn_event={"brain_generation_id": "generation-1"})
+    seen = {}
+    verifier = object()
+    ingress = types.ModuleType("v13.vision_ui_frame_ingress")
+
+    def issue_provider_frame_verifier(actual_lease, actual_observation, actual_verify):
+        seen.update(lease=actual_lease, observation=actual_observation, verify=actual_verify)
+        return verifier
+
+    def consume_projected_frame(runtime_arg, observation_arg, frame_buffer, **kwargs):
+        assert runtime_arg is runtime
+        assert observation_arg is observation
+        assert kwargs["consent_lease"] is lease
+        assert kwargs["frame_verifier"] is verifier
+        return {"status": "WIRED_SYNTHETIC"}
+
+    ingress._issue_provider_frame_verifier = issue_provider_frame_verifier
+    ingress.consume_projected_frame = consume_projected_frame
+    monkeypatch.setitem(sys.modules, "v13.vision_ui_frame_ingress", ingress)
+
+    grant = UIFrameGrant(
+        {"observation": observation, "frame_buffer": frame, "verify_frame": verify_fn},
+        lease,
+        SimpleNamespace(),
+    )
+    assert grant.consume(runtime, current_source="source") == {"status": "WIRED_SYNTHETIC"}
+    assert seen == {"lease": lease, "observation": observation, "verify": verify_fn}
+    assert frame == bytearray(b"\x00" * len(frame))
+    with pytest.raises(FrameReceiptDenied, match="already consumed"):
+        grant.consume(runtime, current_source="source")
+
+
+def test_ui_frame_grant_rejects_foreign_or_stale_lease_and_zeroizes(monkeypatch):
+    frame = bytearray(b"untrusted-frame")
+    observation = {"source_id": "ui-source", "capture_session_id": "mp-session",
+                   "consent_receipt_ref": "receipt-1"}
+    lease = SimpleNamespace(active_for=lambda runtime, generation: False)
+    runtime = SimpleNamespace(turn_event={"brain_generation_id": "generation-2"})
+    grant = UIFrameGrant(
+        {"observation": observation, "frame_buffer": frame, "verify_frame": lambda *_: True},
+        lease,
+        SimpleNamespace(),
+    )
+    with pytest.raises(FrameReceiptDenied, match="no longer active"):
+        grant.consume(runtime, current_source="source")
+    assert frame == bytearray(b"\x00" * len(frame))
 
 
 def test_runtime_turn_frame_lease_fails_closed_without_raw_eye_consumer(tmp_path):

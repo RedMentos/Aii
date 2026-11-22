@@ -67,13 +67,13 @@ public final class MediaProjectionCaptureService extends Service {
 
     @Override public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && ACTION_DISCARD.equals(intent.getAction())) {
-            ProjectionFrameStore.clear();
+            CompanionProvider.clearScreenFrame();
             stopCapture(true);
             stopSelf(startId);
             return START_NOT_STICKY;
         }
         if (intent == null || !ACTION_CAPTURE.equals(intent.getAction())) {
-            ProjectionFrameStore.clear();
+            CompanionProvider.clearScreenFrame();
             stopCapture(true);
             stopSelf(startId);
             return START_NOT_STICKY;
@@ -240,7 +240,7 @@ public final class MediaProjectionCaptureService extends Service {
             releaseProjection();
             updateNotification("One frame ready for paired Termux; expires in 20 seconds");
             worker.postDelayed(() -> {
-                ProjectionFrameStore.clear();
+                CompanionProvider.clearScreenFrame();
                 stopForeground(true);
                 stopSelf();
             }, ProjectionFrameStore.TTL_MS);
@@ -258,7 +258,7 @@ public final class MediaProjectionCaptureService extends Service {
     private void failCapture(String reason) {
         if (captureComplete) return;
         captureComplete = true;
-        ProjectionFrameStore.clear();
+        CompanionProvider.clearScreenFrame();
         updateNotification("Screen frame not available: " + reason);
         releaseProjection();
         stopForeground(true);
@@ -284,14 +284,14 @@ public final class MediaProjectionCaptureService extends Service {
     }
 
     private void stopCapture(boolean clearFrame) {
-        if (clearFrame) ProjectionFrameStore.clear();
+        if (clearFrame) CompanionProvider.clearScreenFrame();
         captureComplete = true;
         releaseProjection();
         stopForeground(true);
     }
 
     static void discard(Context context) {
-        ProjectionFrameStore.clear();
+        CompanionProvider.clearScreenFrame();
         Intent intent = new Intent(context, MediaProjectionCaptureService.class);
         intent.setAction(ACTION_DISCARD);
         try { context.startService(intent); }
@@ -325,7 +325,7 @@ public final class MediaProjectionCaptureService extends Service {
     }
 
     @Override public void onDestroy() {
-        ProjectionFrameStore.clear();
+        CompanionProvider.clearScreenFrame();
         stopCapture(true);
         if (workerThread != null) {
             workerThread.quitSafely();

@@ -9,6 +9,12 @@ import org.robolectric.annotation.Config;
 
 import java.security.MessageDigest;
 import java.util.Arrays;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Closeable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -42,8 +48,11 @@ public final class ProjectionFrameStoreTest {
                 ready.getString("frame_uri"));
         assertEquals(ProjectionFrameStore.TTL_MS - 1L, ready.getLong("expires_in_ms"));
 
-        assertArrayEquals(new byte[]{1, 2, 3, 4}, ProjectionFrameStore.consume(token, 102L));
-        assertNull(ProjectionFrameStore.consume(token, 103L));
+        FrameReadLease lease = ProjectionFrameStore.consumeLease(token, 102L);
+        assertNotNull(lease);
+        assertEquals(4, lease.frameLengthForTest());
+        assertEquals(1, ProjectionFrameStore.activeReadCountForTest());
+        assertNull(ProjectionFrameStore.consumeLease(token, 103L));
         JSONObject consumed = ProjectionFrameStore.status(104L);
         assertEquals("FRAME_CONSUMED", consumed.getString("status"));
         assertFalse(consumed.has("frame_uri"));
@@ -52,15 +61,21 @@ public final class ProjectionFrameStoreTest {
                 .getString("status"));
         assertEquals("NO_FRAME", ProjectionFrameStore.status(100L + ProjectionFrameStore.TTL_MS + 1L)
                 .getString("status"));
+        assertTrue(lease.isCancelledForTest());
+        assertTrue(lease.isZeroizedForTest());
+        assertEquals(0, ProjectionFrameStore.activeReadCountForTest());
     }
 
     @Test public void wrongTokenDoesNotConsumeTheFrame() throws Exception {
         byte[] frame = new byte[]{5, 6, 7};
         String token = "b".repeat(32);
         ProjectionFrameStore.publish(frame, receipt(frame, token), 200L);
-        assertNull(ProjectionFrameStore.consume("c".repeat(32), 201L));
+        assertNull(ProjectionFrameStore.consumeLease("c".repeat(32), 201L));
         assertEquals("FRAME_READY", ProjectionFrameStore.status(202L).getString("status"));
-        assertArrayEquals(frame, ProjectionFrameStore.consume(token, 203L));
+        FrameReadLease lease = ProjectionFrameStore.consumeLease(token, 203L);
+        assertNotNull(lease);
+        ProjectionFrameStore.clear();
+        assertTrue(lease.isZeroizedForTest());
     }
 
     @Test public void clearZeroesCallerOwnedFrameBytesAndRevokesReceipt() throws Exception {
@@ -69,6 +84,60 @@ public final class ProjectionFrameStoreTest {
         ProjectionFrameStore.clear();
         assertTrue(Arrays.equals(new byte[]{0, 0, 0}, frame));
         assertEquals("NO_FRAME", ProjectionFrameStore.status(301L).getString("status"));
+    }
+
+    @Test public void clearCancelsBlockedWriterAndZeroizesConsumedFrame() throws Exception {
+        byte[] frame = new byte[1024 * 1024];
+        Arrays.fill(frame, (byte) 7);
+        String token = "a".repeat(32);
+        ProjectionFrameStore.publish(frame, receipt(frame, token), 500L);
+        FrameReadLease lease = ProjectionFrameStore.consumeLease(token, 501L);
+        assertNotNull(lease);
+
+        BlockingOutputStream output = new BlockingOutputStream();
+        AtomicBoolean readerClosed = new AtomicBoolean(false);
+        Closeable reader = () -> readerClosed.set(true);
+        lease.start(reader, output);
+        assertTrue("writer should enter the blocked no-reader path",
+                output.entered.await(2, TimeUnit.SECONDS));
+        assertTrue(lease.isWriterAliveForTest());
+
+        ProjectionFrameStore.clear();
+
+        assertTrue("revocation should unblock the writer",
+                lease.awaitWriterExitForTest(2_000L));
+        assertTrue(lease.isCancelledForTest());
+        assertTrue(lease.isZeroizedForTest());
+        assertTrue(readerClosed.get());
+        assertEquals(0L, output.closed.getCount());
+        assertEquals(0, ProjectionFrameStore.activeReadCountForTest());
+        assertTrue(Arrays.equals(new byte[frame.length], frame));
+    }
+
+    private static final class BlockingOutputStream extends OutputStream {
+        final CountDownLatch entered = new CountDownLatch(1);
+        final CountDownLatch closed = new CountDownLatch(1);
+
+        @Override public void write(int value) throws IOException {
+            write(new byte[]{(byte) value}, 0, 1);
+        }
+
+        @Override public void write(byte[] bytes, int offset, int length) throws IOException {
+            entered.countDown();
+            try {
+                if (!closed.await(3, TimeUnit.SECONDS)) {
+                    throw new IOException("test writer timed out");
+                }
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                throw new IOException("test writer interrupted", interrupted);
+            }
+            throw new IOException("test pipe closed");
+        }
+
+        @Override public void close() {
+            closed.countDown();
+        }
     }
 
     @Test public void oversizedAndAuthorityBearingFramesAreRejected() throws Exception {
