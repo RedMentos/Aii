@@ -17,6 +17,7 @@ class Percept:
     consent: bool
     final: bool
     priority: int = 0
+    source_sha256: str = ''  # Optional digest; legacy callers remain compatible.
 
 @dataclass(frozen=True)
 class Admission:
@@ -48,6 +49,8 @@ def admit(percepts: Iterable[Percept], token_budget: int, *, max_items: int = 12
         if not p.source_id or len(p.source_id) > 128 or p.source_id in seen:
             raise ValueError("invalid or duplicate source_id")
         seen.add(p.source_id)
+        if type(p.source_sha256) is not str or (p.source_sha256 and (len(p.source_sha256) != 64 or any(ch not in '0123456789abcdef' for ch in p.source_sha256))):
+            raise ValueError('invalid source digest')
         if p.modality not in ("audio", "visual", "ui", "text") or not isinstance(p.start_ms, int) or not isinstance(p.end_ms, int) or p.start_ms < 0 or p.end_ms < p.start_ms or len(p.summary) > 4096:
             raise ValueError("invalid percept")
         if not p.consent or not p.final:

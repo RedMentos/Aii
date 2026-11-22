@@ -49,7 +49,7 @@ def audio_to_admission(packet, *, consent_active: bool, priority: int = 0):
     if seg.get("learning_authority") is not False or seg.get("action_authority") is not False:
         raise PermissionError("audio observation cannot grant authority")
     summary = f"audio rms={values[0]:.3f} zcr={values[1]:.3f} interval_ms={end-start}"
-    return Percept(sid, "audio", start, end, summary, True, finality == "FINAL", priority)
+    return Percept(sid, "audio", start, end, summary, True, finality == "FINAL", priority, digest)
 
 
 def admit_audio(packet, *, consent_active: bool, token_budget: int):
