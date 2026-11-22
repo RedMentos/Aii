@@ -149,6 +149,15 @@ public final class CompanionDbApprovalTest {
         return false;
     }
 
+    @Test public void signedReceiptWindowStartsAtDecisionTimeNotRequestDeadline() {
+        long requestExpirySeconds = 1_030L;
+        long issuedAtSeconds = 1_029L; // approval claim won just before request expiry
+        long receiptExpirySeconds = ConsentActivity.receiptExpiresAt(issuedAtSeconds);
+        assertTrue(issuedAtSeconds < requestExpirySeconds);
+        assertEquals(1_089L, receiptExpirySeconds);
+        assertEquals(60L, receiptExpirySeconds - issuedAtSeconds);
+    }
+
     @Test public void executionClaimSurvivesRestartAndCannotBeRetried() {
         insertPending(NOW + 10_000L);
         assertTrue(first.claimForExecution(ACTION_ID, NOW));
