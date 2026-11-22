@@ -26,9 +26,9 @@ Upstream: `ggml-org/llama.cpp` at `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4`, de
 ## Exact source pins
 
 - Native receiver overlay SHA-256: `9e3562775eb07d4384cd0d6901fd6f2e957346b297ff82c2a8fec09ff0771007`
-- Outer recovery builder SHA-256: pending until wrapper composition commit
-- Integrated stage builder SHA-256: pending until stager pin commit
-- runtime_deploy.STAGER_SHA256: pending until deployer pin commit
+- Outer recovery builder SHA-256: `668392f6f661fad4cc4dfaa2ac6972a99cc3eea5278aafbc49504711dfccd4a4`
+- Integrated stage builder SHA-256: `0d4fd8760ea49bd12ba4696e449ab33548f266984baa490a46786f847827dc3c`
+- runtime_deploy.STAGER_SHA256: exact match to `0d4fd8760ea49bd12ba4696e449ab33548f266984baa490a46786f847827dc3c`
 - Current Boss base builder Git blob: `a142f51814a521183416619b763b3a6202fe6d67`
 - Current C4 receipt SHA-256: `0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a22028dff3`
 
