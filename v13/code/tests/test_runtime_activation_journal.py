@@ -205,6 +205,17 @@ d._activation_transaction(
             (self.private / d.ACTIVATION_JOURNAL_NAME).write_text("pending", encoding="utf-8")
             self.assertTrue(d.needs_deploy(source, home=self.home, private=self.private))
 
+
+    def test_recovery_without_journal_is_noop_even_when_runtime_home_is_missing(self):
+        missing_home = self.root / "not-installed"
+        private = self.root / "empty-private"
+        private.mkdir(mode=0o700)
+        with mock.patch.object(d, "_check_stopped") as stopped:
+            self.assertEqual(
+                d.recover_pending_activation(home=missing_home, private=private), "NONE")
+        stopped.assert_not_called()
+        self.assertFalse(missing_home.exists())
+
     def test_preexisting_journal_blocks_new_transaction(self):
         old_marker, new_marker, backup, backup_marker = self.prepare()
         journal = self.private / d.ACTIVATION_JOURNAL_NAME
