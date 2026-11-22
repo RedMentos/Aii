@@ -899,3 +899,14 @@ This correction supersedes older branch-level status claims without deleting the
 **V14 adaptation hypothesis:** useful future A4 speaker-change/overlap evidence, not a speaker-identity authority. It is not a drop-in for the current one-second signed capture: the method needs a continuous 2-second state and 80-ms frame stream. A candidate must compare the existing deterministic RAW EAR heuristic, FASTDIAR Small, and NO_MODEL on the same source-bound streams, with confidence-gate ablation, overlap/noise/silence negatives, fixed-latency and retention checks. Keep identity/learning/action authority false. Because FASTDIAR expects 16-kHz input while the Android-guaranteed capture contract is 44.1 kHz, retain the original PCM for RAW EAR and evaluate a separate anti-aliased 44.1→16-kHz feature view; do not relabel samples or use the current block-average reduction as a speaker-model resampler.
 
 **Decision:** RESEARCH_ONLY / NOT_SELECTED / NOT_DOWNLOADED. No model, dependency or weight was installed. ARM latency/RSS, quantization, accuracy on local conversational audio and data-license suitability remain unmeasured.
+
+
+## R-078 — llama.cpp native input-embedding API and license check (2026-11-22)
+
+**Primary source/revision:** [ggml-org/llama.cpp revision b29c606e28a01b1bc8c1351026a0fa6e616bf6c4](https://github.com/ggml-org/llama.cpp/tree/b29c606e28a01b1bc8c1351026a0fa6e616bf6c4). The exact-revision [LICENSE](https://github.com/ggml-org/llama.cpp/blob/b29c606e28a01b1bc8c1351026a0fa6e616bf6c4/LICENSE) is MIT (ggml authors, 2023–2026). The pinned [include/llama.h](https://github.com/ggml-org/llama.cpp/blob/b29c606e28a01b1bc8c1351026a0fa6e616bf6c4/include/llama.h) defines `llama_batch.embd` as the float embedding input when `token == NULL`, documents `llama_decode` over that batch, and exposes `llama_get_embeddings_ith` for output embeddings.
+
+**V14 mapping:** the Core diagnostic receiver uses this native input path and is built in CI for Linux plus Android ARM64. This verifies the pinned API/ABI build path, not that an installed Redmi model can emit a semantically useful cross-family activation. The MIT code license does not grant model-weight rights; no model or weights were downloaded, swapped or modified.
+
+**Next experiment:** use existing installed models only, with same-model parity, zero-input, shuffled-row, dimension, model-revision and source-tap controls. Measure receiver effect and task utility against SOURCE_EXACT and NO_MESSAGE, then train/evaluate an adapter with independent labels, holdout, OOD, retention and rollback. Production B3 stays OFF until all gates pass.
+
+**Status:** SOURCE_AND_LICENSE_VERIFIED / API_REVIEWED / DIAGNOSTIC_ONLY; no new model alternative selected.

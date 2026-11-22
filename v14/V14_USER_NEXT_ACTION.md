@@ -1,3 +1,19 @@
+# Core & Harness checkpoint — 2026-11-22
+
+**Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein UPDATE_REQUEST, kein Modell-/Gewichts-/Rechtewechsel und keine Geräteaktion.
+
+- Aktueller Release-Entwicklungs-HEAD: `gpt6/v13-private-remote-bridge-20261111` = `c2e7ae7ebe47af6ea96995c7df112872bb404d38`. Core PR [#2323](https://github.com/RedMentos/Aii/pull/2323) ist integriert. Sein nativer Receiver ist ein **diagnostischer Input-Embedding-Probe**, kein trainierter B3-Latentkanal. Candidate-head CI war 21 SUCCESS / 0 FAILURE / 2 SKIPPED. Auf dem Merge-Commit waren beim letzten Check alle zehn aufgelisteten Branch-Workflows SUCCESS; ein zusätzlicher `offline-bridge-security`-Check lief noch. Daher kein vollständiges Post-Merge-CI-Green behauptet.
+- Neuer Core PR [#2325](https://github.com/RedMentos/Aii/pull/2325), Branch `core/v14-fair-scheduler-sender-containment-20261122-run15`, Code-Commit `af2a14381df9d9c0a6f67875894ec29df5ed6dba`, Basis `c2e7ae7`, ist DRAFT / CI QUEUED. Er korrigiert die Budgeted-Observer-Grenze: bei exakt 1,0 s Restbudget darf die zweite Rolle nicht durch den alten `now+1>=end`-Vorabtest verschwinden; unbudgetete Legacy-Aufrufe behalten den alten Ein-Sekunden-Schutz. Tests decken 1,5 s (erste Rolle 0,75 s deferred, Peer 1,5 s eligible), exakt 2,0 s (beide 1,0 s) und Legacy-Verhalten ab.
+- Derselbe PR ergänzt beim nativen Receiver die Senderpfad-Prüfung: Symlink ablehnen, strikt auflösen, innerhalb `<home>/models` halten, reguläre Datei verlangen und danach erst SHA-256 prüfen. Negative Tests für externe Pfade und Symlinks sind enthalten.
+- QA PR [#2324](https://github.com/RedMentos/Aii/pull/2324) bleibt QA-owned und separat. Sein 90-s-Fairness-Test ist auf seinem eigenen Branch grün; #2325 ergänzt den fehlenden Scheduler-Grenzfall, ohne die QA-Dateien zu verändern.
+- **LOCAL_LINUX:** CPython 3.13.5 x86_64 isolierte Scheduler- und Senderpfad-Reproduktion PASS. Vollständiger Aii-Checkout/pytest BLOCKED: `git ls-remote` scheitert mit `Could not resolve host: github.com`. Exakte #2325 CI noch QUEUED.
+- **Redmi:** private Owner-Receipt #505 vom 08:28 UTC meldet installiertes `c03ff0aa9e18b5ffebd1109f3c078105f53c6afe`, Auto-Update EIN, Runtime/Dashboard UP_TO_DATE, letzter Turn FINAL 63,22 s / TTFT 42,48 s / Prefill 34,96 s; B1/B2 TIME_BUDGET 53,2/54,2 s, C3 3,1 s. Receipt liegt vor Merge `c2e7ae7`; keine Post-Merge-Installation belegt. **REDMI_UNVERIFIED** für #2323/#2325. Kein UPDATE_REQUEST.
+- Kein neues Modell heruntergeladen oder getauscht, keine Gewichte verändert. Offizielles Age 0 und Lab-Rechte bleiben unberührt; B3 bleibt produktiv OFF.
+
+**Nächster interner Schritt:** exakte #2325 CI abwarten/reparieren; danach #2324 auf den aktuellen Release-Head rebasen und gemeinsam abnehmen. Anschließend den bestehenden Android-Companion-Stack (#2271/#2273/#2286) mit dem Termux-Operator/CLI verbinden; Default-OFF, explizite Nutzerbestätigung, keine APK-/Redmi-Behauptung ohne Beleg.
+
+---
+
 # Perception checkpoint — 2026-11-22 06:17Z
 
 **No user action is needed.** Do not run a Termux command, request an update, change models/weights/permissions, or enable microphone capture on the basis of this checkpoint.

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T06:17:05Z",
+  "updated_at": "2026-11-22T08:51:49Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at 39b175521f50048f13ca14372b316de47527f531; V14 master and historical V13 appendix preserved.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -14,11 +14,27 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "MERGED_INTEGRATION + CI/SYNTHETIC. Boss PR #2288 candidate 1105 exact-head CI 20 SUCCESS / 0 FAILURE / 1 expected SKIPPED / 1 CANCELLED. Same-turn B1/B2→C4→C3 and source-read/revocation passed on Python 3.13/3.14 using actual staged Runtime with synthetic runners. Native GGUF output and Redmi remain unverified.",
-      "next_step": "Core fixes #2314 Callosum report anchor, rebases #2313, then proves useful native B1/B2 offers, mutual re-entry, C4 consumption, correct C3 output and measured TTFT/PSS without dropping either body.",
+      "proof_environment": "MERGED_INTEGRATION + CI/SYNTHETIC. Boss PR #2288 candidate 1105 exact-head CI 20 SUCCESS / 0 FAILURE / 1 expected SKIPPED / 1 CANCELLED. Same-turn B1/B2→C4→C3 and source-read/revocation passed on Python 3.13/3.14 using actual staged Runtime with synthetic runners. Native GGUF output and Redmi remain unverified.\n\nCore run15: PR #2323 merged to release-development at c2e7ae7; diagnostic native receiver only. PR #2325 adds the exact MIN_ROLE_SLICE_S scheduler boundary fix and sender-path containment; exact-head CI queued. Local isolated logic PASS; full Aii local suite BLOCKED by GitHub DNS. No Redmi native offers or learned latent utility accepted.",
+      "next_step": "Core/QA: poll #2325 exact staged-runtime/Linux/Android-ABI CI and #2324 acceptance; preserve C3 reserve and same-turn B1+B2→C4→C3. Then rebase the Android companion stack and implement the permissioned operator/CLI consumer. Native Redmi quality/latency remains open.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T05:53:42Z",
-      "proof": "Release-development merge 39b175521f50048f13ca14372b316de47527f531; exact candidate CI 20/0/1/1. No native model or phone proof."
+      "last_checkpoint": "2026-11-22T08:51:49Z",
+      "proof": "Release-development merge 39b175521f50048f13ca14372b316de47527f531; exact candidate CI 20/0/1/1. No native model or phone proof.",
+      "core_run15_checkpoint": {
+        "date": "2026-11-22",
+        "owner": "Core & Harness",
+        "branch": "core/v14-fair-scheduler-sender-containment-20261122-run15",
+        "base_sha": "c2e7ae7ebe47af6ea96995c7df112872bb404d38",
+        "code_commit": "af2a14381df9d9c0a6f67875894ec29df5ed6dba",
+        "pull_request": 2325,
+        "status": "DRAFT_CI_QUEUED",
+        "tests": {
+          "local_linux_isolated": "PASS: CPython 3.13.5 scheduler subminimum/exact-threshold/legacy and sender installed/outside/symlink logic",
+          "full_repository_local": "BLOCKED: git ls-remote failed DNS; no full local pytest",
+          "exact_head_ci": "QUEUED at last poll; do not claim pass"
+        },
+        "device": "REDMI_UNVERIFIED; private receipt #505 predates merge c2e7 and reports installed c03ff0a",
+        "next_action": "Poll exact #2325 CI, fix measured failures, coordinate QA #2324 rebase, then continue Android companion operator/CLI integration"
+      }
     },
     {
       "id": "V14-002",
@@ -29,10 +45,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "PR #2288 merged at 39b; candidate-head CI 20 SUCCESS / 0 FAILURE / 1 expected SKIPPED / 1 CANCELLED. Authenticated post-merge private #480 reports auto-update enabled, runtime/dashboard CI_WAIT, old installed SHA 89333289, last_error NONE. Exact post-merge push CI not independently verified; no installation.",
-      "next_step": "QA verifies exact post-merge push CI. Phone's existing updater is already waiting; do not issue UPDATE_REQUEST until CI is green. Then fetch a separate PIPELINE_STATUS proving exact installed SHA and rollback state.",
+      "proof_environment": "PR #2288 merged at 39b; candidate-head CI 20 SUCCESS / 0 FAILURE / 1 expected SKIPPED / 1 CANCELLED. Authenticated post-merge private #480 reports auto-update enabled, runtime/dashboard CI_WAIT, old installed SHA 89333289, last_error NONE. Exact post-merge push CI not independently verified; no installation.\n\nLatest owner-authenticated private receipt #505 (2026-11-22 08:28Z): installed SHA c03ff0aa9e18b5ffebd1109f3c078105f53c6afe; auto-update true, runtime/dashboard UP_TO_DATE, last_error NONE. Latest turn FINAL 63.22 s total / 42.48 s TTFT / 34.96 s prefill; B1/B2 TIME_BUDGET 53.2/54.2 s, C3 3.1 s. Receipt predates Core merge c2e7ae7; no post-merge install receipt. Push CI on c2e7 had one offline-bridge-security check still in progress at poll; no UPDATE_REQUEST sent.",
+      "next_step": "Wait for every exact post-merge push check to finish green, then obtain a separate owner-authenticated PIPELINE_STATUS receipt. Do not send UPDATE_REQUEST or manual Termux commands before that; do not change models, weights or permissions.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T06:01:46Z",
+      "last_checkpoint": "2026-11-22T08:51:49Z",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -61,11 +77,27 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
-      "proof_environment": "Production B3 remains OFF/SYMBOLIC. #2313 current head 8a9ce includes paired native taps and a bounded L1 shadow trainer; tests use synthetic training_batch, paired-tap workflow pending, no native training or L1 gate. #2314 C++ API/ARM64 compile pass but Python stage fails because raw-string anchor constants encode literal backslash-n.",
-      "next_step": "Core fixes #2314 anchor literals and rebases onto release; Core rebases #2313, captures real same-source native taps, then supplies independently sourced labels and L0 baselines before running the L1 utility/retention gate. Keep production route and authority zero.",
+      "proof_environment": "Production B3 remains OFF/SYMBOLIC. #2313 current head 8a9ce includes paired native taps and a bounded L1 shadow trainer; tests use synthetic training_batch, paired-tap workflow pending, no native training or L1 gate. #2314 C++ API/ARM64 compile pass but Python stage fails because raw-string anchor constants encode literal backslash-n.\n\nCore #2323 is now merged at c2e7ae7: pinned llama.cpp native input-embedding probe and `:callosum native-probe` are diagnostic-only; exact-head candidate CI passed, but merge push CI had one offline-bridge-security check still in progress at poll. #2325 adds sender model containment under home/models and symlink rejection; CI queued. No trained projector/receiver, semantic utility, retention, or Redmi execution.",
+      "next_step": "After #2325 exact CI, run only the existing-model diagnostic through the consented owner path; compare same-model parity, zero/shuffle/dimension/revision controls. Keep production B3 OFF until a trained cross-family adapter has independent utility, OOD, retention and rollback evidence.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T06:01:46Z",
-      "proof": "Current PR heads 8a9ce and af2c; comments 7075095567 and 7075087798."
+      "last_checkpoint": "2026-11-22T08:51:49Z",
+      "proof": "Current PR heads 8a9ce and af2c; comments 7075095567 and 7075087798.",
+      "core_run15_checkpoint": {
+        "date": "2026-11-22",
+        "owner": "Core & Harness",
+        "branch": "core/v14-fair-scheduler-sender-containment-20261122-run15",
+        "base_sha": "c2e7ae7ebe47af6ea96995c7df112872bb404d38",
+        "code_commit": "af2a14381df9d9c0a6f67875894ec29df5ed6dba",
+        "pull_request": 2325,
+        "status": "DRAFT_CI_QUEUED",
+        "tests": {
+          "local_linux_isolated": "PASS: CPython 3.13.5 scheduler subminimum/exact-threshold/legacy and sender installed/outside/symlink logic",
+          "full_repository_local": "BLOCKED: git ls-remote failed DNS; no full local pytest",
+          "exact_head_ci": "QUEUED at last poll; do not claim pass"
+        },
+        "device": "REDMI_UNVERIFIED; private receipt #505 predates merge c2e7 and reports installed c03ff0a",
+        "next_action": "Poll exact #2325 CI, fix measured failures, coordinate QA #2324 rebase, then continue Android companion operator/CLI integration"
+      }
     },
     {
       "id": "V14-004",
@@ -202,10 +234,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "v14/V14_USER_NEXT_ACTION.md; verified repo state, phone deployment evidence and model-choice suggestions",
       "acceptance": "At each meaningful integration checkpoint, dated user-level update, suggested actions only when needed, no invented Termux command",
-      "proof_environment": "V14 next-action, workplan, board and Canon evidence overlay are synchronized on a documentation branch based on release merge 39b; historical snapshots remain below the new checkpoint.",
-      "next_step": "Keep next-action file and board aligned to exact branch/PR/phone receipts. No user action unless a real device/model/permission decision becomes necessary.",
+      "proof_environment": "V14 next-action, workplan, board and Canon evidence overlay are synchronized on a documentation branch based on release merge 39b; historical snapshots remain below the new checkpoint.\n\nCore run15 added the missing `v14/README.md` index and appended exact #2325/CI/device evidence to the live workplan, next-action, board and coverage overlay. Historical Canon and master bytes are unchanged.",
+      "next_step": "Boss/Integrator: reconcile this evidence overlay on the shared current branch without overwriting other lane updates; keep the next-action and board synchronized to the exact final PR head and post-merge phone receipt.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T05:53:42Z",
+      "last_checkpoint": "2026-11-22T08:51:49Z",
       "proof": "Post-merge documentation checkpoint on boss/v14-postmerge-release-handoff-20261122-run11."
     },
     {
@@ -313,10 +345,26 @@
       "owner": "Core & Harness + Boss",
       "priority": "P0",
       "status": "IN_PROGRESS_PARTIAL",
-      "last_checkpoint": "2026-11-22T03:55:43.537Z",
-      "proof_environment": "Core #2300 is diagnostic-only; current head 767a8006760498c63f7a1f81bd9e4c5e003fd57c has 7/18 checks SUCCESS and 11 FAILURE. ARM64 cross-compile is not a real model receiver; production route and training authority remain OFF.",
+      "last_checkpoint": "2026-11-22T08:51:49Z",
+      "proof_environment": "Core #2300 is diagnostic-only; current head 767a8006760498c63f7a1f81bd9e4c5e003fd57c has 7/18 checks SUCCESS and 11 FAILURE. ARM64 cross-compile is not a real model receiver; production route and training authority remain OFF.\n\nCore #2323 merged at c2e7ae7. Native Linux build and Android ARM64 cross-compile are CI evidence only; staged `native-probe` is diagnostic and production route remains OFF. Core #2325 adds resolved sender-path containment and negative path/symlink tests; exact CI queued. No model activation or semantic latent proof.",
       "proof": "PR #2266 head 3166858133844fc80201334f53ade450557d1191; explicit operator-only probe through pinned llama.cpp input-embedding API. Six isolated wrapper tests and C++ core compile/selftest reported PASS; real pinned library/model run and Android arm64 build remain pending. production_route=false; no semantic use, trained alignment, cross-organ learning or Redmi proof.",
-      "next_step": "Core: rebase and repair current pin chain, then run actual pinned llama.cpp model execution, same-model parity, zero/shuffle/dimension/revision controls and receiver utility; no B3 promotion without trained cross-family adapter retention."
+      "next_step": "Core: finish #2325 exact CI/review, then obtain a consented real sender tap on Redmi with same-model parity and zero/shuffle controls; keep B3 OFF until trained adapter utility/retention is demonstrated.",
+      "core_run15_checkpoint": {
+        "date": "2026-11-22",
+        "owner": "Core & Harness",
+        "branch": "core/v14-fair-scheduler-sender-containment-20261122-run15",
+        "base_sha": "c2e7ae7ebe47af6ea96995c7df112872bb404d38",
+        "code_commit": "af2a14381df9d9c0a6f67875894ec29df5ed6dba",
+        "pull_request": 2325,
+        "status": "DRAFT_CI_QUEUED",
+        "tests": {
+          "local_linux_isolated": "PASS: CPython 3.13.5 scheduler subminimum/exact-threshold/legacy and sender installed/outside/symlink logic",
+          "full_repository_local": "BLOCKED: git ls-remote failed DNS; no full local pytest",
+          "exact_head_ci": "QUEUED at last poll; do not claim pass"
+        },
+        "device": "REDMI_UNVERIFIED; private receipt #505 predates merge c2e7 and reports installed c03ff0a",
+        "next_action": "Poll exact #2325 CI, fix measured failures, coordinate QA #2324 rebase, then continue Android companion operator/CLI integration"
+      }
     },
     {
       "id": "V14-017",
@@ -325,9 +373,9 @@
       "priority": "P0",
       "status": "BLOCKED_REVIEW",
       "last_checkpoint": "2026-11-22T03:55:43.537Z",
-      "proof_environment": "Android companion #2286 head 0366e73b6f9b7350116073cf747c614fe16cd39e has 8/12 checks SUCCESS and 4 IN_PROGRESS on a stacked old base. It remains default-OFF; no installed APK, Android OS executor, app launch or Redmi proof.",
+      "proof_environment": "Android companion #2286 head 0366e73b6f9b7350116073cf747c614fe16cd39e has 8/12 checks SUCCESS and 4 IN_PROGRESS on a stacked old base. It remains default-OFF; no installed APK, Android OS executor, app launch or Redmi proof.\n\nCore has not changed the companion stack this run. #2271/#2273 remain stacked/old-base; no installed APK, OS executor, app launch, screen capture or UI action proof. No permission or device mutation.",
       "proof": "PR #2271 head 7013fe166b8a45437e45ccfa9b44b9fdb58ee1b4 is a default-OFF companion prototype limited to launch_app, paired Termux signer check and ECDSA receipt. Android build failed before Gradle compile because setup-android received one malformed semicolon-joined package string. QA separately identified a P1 duplicate-approval race: two ConsentActivity instances can both dispatch startActivity before the database CAS, and a shared-UID caller/notification-ID collision needs review. No APK/device install or Redmi proof.",
-      "next_step": "Core/QA: resolve exact staged/integrated/Android companion checks, rebase onto current Boss, preserve one-shot consent and OS-enforced scope; no device action before a real authorized provider and explicit user consent."
+      "next_step": "After #2325 and QA companion-base reconciliation, Core adds the Termux operator/CLI orchestration for status/pair/launch with explicit user confirmation and default-OFF authority; QA retains Android OS permission/lifecycle review."
     },
     {
       "id": "V14-018",
