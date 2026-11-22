@@ -1,3 +1,16 @@
+## QA & Android — Run 7 update — 2026-11-22
+
+- Release branch tip is `aed1d2b826290c95c70356b5d8b864b5ef382be4` with 41/41 exact commit checks successful; it is a documentation-only tip after code-bearing release `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`. Private PIPELINE_STATUS #602 confirms aed1d2 installed/up-to-date. DIAGNOSTICS #603 still shows 57.739 s stored turn / 41.627 s TTFT / 38.945 s prefill / 2 generated tokens and B1/B2 TIME_BUDGET 53.2/54.2 s. No new turn, no native residency proof, no device action.
+- QA Android companion PR #2356 is at `985c55efbcfaac33a41fc7b094ac76044b5c1377`. Receipt-only claimed-action recovery and failure-injection tests are present. Five local synthetic UI-helper tests pass; previous Android Gradle/Robolectric job passed. Previous emulator process-restart failed at `am start -W` timeout; current head uses nonblocking `am start -n` plus bounded process/UI checks. Exact emulator run 45063592256 and staged/integrated run 45063592215 were in progress at last poll. No emulator or Redmi PASS.
+- QA source-lifecycle PR #2359 is at `1a6d9894dba6fe700154c26de979b0d47f8997ea`; exact static builder chain readback 8/8. Exact-head CI was queued/in progress; no green claim. Once stage succeeds, inspect SleepRuntime postcommit numeric learning, optimizer resume, positive rollback and restart.
+- Boss PR #2370 head `809814ffc8468447be80fdffbeb5a5384a2efe0b` has three confirmed failures: RECORD_ONLY local-error semantic anchor, Lab-Age integrated builder hash, and migration PARTIAL. QA posted exact evidence in #2370 and #1984. Boss owns the shared source chain; QA does not edit it in parallel.
+- Core PR #2367 head `06113c60a1d411fd3121fd5bae66c5f42e8b28ba` has 18 relevant workflow successes but remains draft; no native latent coupling or Redmi probe.
+- Local full Aii/Gradle/Android SDK execution remains unavailable. Local synthetic Python helper tests are not Android tests. Official Age remains 0; X10 test selection is separate, effective stage 5, physical execution unverified, learning commit requires separate SHADOW.
+
+**Next QA sequence:** finish exact #2356 emulator/staged results; finish #2359 exact-head matrix and SleepRuntime/rollback checks; re-review #2370 only after Boss rebinds the shared chain. No user action is needed.
+
+---
+
 ## Boss follow-up — JEPA exact-head pin recheck — 2026-11-22T10:00:40.871Z
 
 - PR #2331 advanced to `535eba6f668b3990416c361368f36e3e8f1e599e` on b3b92. Exact matrix: **9 failures / 4 in progress / 2 queued / 4 success / 1 skipped**.
