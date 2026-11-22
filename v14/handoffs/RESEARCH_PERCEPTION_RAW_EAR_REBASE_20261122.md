@@ -10,7 +10,7 @@
 ## Code now on the rebased branch
 
 - `v13/code/v13/audio_input.py`: caller-supplied mono PCM16 audio-window ingress, bounded sample rate/duration, source and consent provenance, provisional/final event path. This is an API adapter, not Android microphone capture.
-- `v13/code/v13/audio_speaker_evidence.py`: calibrated, source-bound speaker-change evidence with batch isolation, age checks and no speaker identity persistence.
+- `v13/code/v13/audio_speaker_evidence.py`: source-bound speaker similarity evidence with caller-asserted, unverified thresholds with batch isolation, age checks and no speaker identity persistence.
 - `v13/code/v13/audio_voice_cues.py`: integrates the conservative A4 decision with acoustic/prosody cues; no transcript-only substitution.
 - `v13/code/scripts/integrated_audio_context_candidate_20261121.py`: source pins for the exact voice-cue and speaker-evidence blobs; retained the current Boss `cognition = result.get(...)` overlay so audio composition does not erase the fair B1/B2 budget result.
 - Recovery, stage and deployer hashes were rebound and read back as a complete chain.
@@ -36,7 +36,7 @@
 
 ## User-visible function and Canon mapping
 
-The rebased candidate adds a bounded audio-window ingress and a conservative speaker-change cue into the existing staged audio-context route. It does not yet capture the Redmi microphone, decode speech, speak, barge in, learn speaker identity, or prove B1/B2/C3 semantic use. Canon paths: A0-A5 audio perception; STEP9/G10C/G10D VOICE_AUDIO remain OPEN; B1/B2/C3 delivery and B3 learned latent coupling remain unaccepted.
+The rebased candidate adds a bounded audio-window ingress and diagnostic speaker-similarity evidence into the existing staged audio-context route. No speaker-change or continuity decision is emitted until a separately verified calibration artifact exists. It does not yet capture the Redmi microphone, decode speech, speak, barge in, learn speaker identity, or prove B1/B2/C3 semantic use. Canon paths: A0-A5 audio perception; STEP9/G10C/G10D VOICE_AUDIO remain OPEN; B1/B2/C3 delivery and B3 learned latent coupling remain unaccepted.
 
 ## Resource result and research next step
 
@@ -47,3 +47,12 @@ The new R-065 ledger entry reviews Draft-KV, FlyGCL, LatCom, StateBridge, NinaXa
 1. Review this branch against the exact Boss base and merge only after the new exact-head audio and staged/integrated workflows pass.
 2. Update `v14/V14_WORK_BOARD.json`, `v14/V14_USER_NEXT_ACTION.md` and the shared coverage index after independent review; these shared coordination files were not edited here to avoid crossing Boss ownership.
 3. After integration, obtain a fresh private device receipt before making any Redmi/Termux or microphone claim.
+
+
+## Calibration gate correction — 2026-11-22
+
+A code audit found that the registry explicitly labeled its threshold `CALLER_ASSERTED_UNVERIFIED` but still emitted boolean candidate/continuity fields, and A4 accepted those fields using only the caller's calibration label. That could produce false continuity/change claims and an A4 attention interrupt without a validated calibration dataset.
+
+On the current branch, unverified thresholds now yield only raw cosine similarity/delta. Candidate and confidence booleans are `null`, peak decision is `null`, and A4/C3 state is `DEFER`. The C3 summary says `speaker_similarity_delta`, `spk_cal=UNVERIFIED`, and `spk_dec=DEFER`; no speaker-derived attention gain is applied. A future positive decision requires a model-bound verified calibration status and pinned receipt; no such artifact is available today.
+
+LOCAL_LINUX isolated scratch logic: PASS for caller-asserted thresholds, no-threshold input, and a claimed calibrated status without a receipt all remaining DEFER while preserving raw similarity. Full Aii tests and exact-head CI are pending; no Redmi/microphone/model/weight proof.
