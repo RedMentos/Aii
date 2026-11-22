@@ -2,6 +2,7 @@
 
 Example labels file:
 {
+  "schema": "v13.b3-l1-labels/1",
   "task_id": "verified-outcome",
   "label_source": "human_feedback",
   "direction": "B1_TO_B2",
@@ -43,8 +44,9 @@ def main(argv=None):
     if not label_path.is_file():
         raise FileNotFoundError(f"L1 labels file not found: {label_path}")
     doc = json.loads(label_path.read_text(encoding="utf-8"))
-    if not isinstance(doc, dict) or not isinstance(doc.get("labels"), list):
-        raise ValueError("labels file must contain a labels array")
+    if (not isinstance(doc, dict) or doc.get("schema") != "v13.b3-l1-labels/1"
+            or not isinstance(doc.get("labels"), list)):
+        raise ValueError("labels file must use v13.b3-l1-labels/1 and contain a labels array")
     entries = doc["labels"]
     if not entries or any(not isinstance(x, dict) for x in entries):
         raise ValueError("labels array must contain label objects")
