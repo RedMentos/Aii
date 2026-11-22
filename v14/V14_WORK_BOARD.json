@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T17:26:00Z",
+  "updated_at": "2026-11-22T17:27:00Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; exact release CI 21/21 workflows SUCCESS and private owner-read confirms installed. Boss PR #2343 remains DRAFT/NOT_RELEASED; latest candidate head fc5fa22 has no exact-head CI receipt.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -46,9 +46,9 @@
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
       "proof_environment": "ANDROID_DEVICE code installation for 283ac1 only; 9097 NOT_INSTALLED",
-      "next_step": "QA: reconcile #591 PIPELINE_STATUS UP_TO_DATE with later #593 HEALTH runtime UNAVAILABLE; #592 RUNNING was only a 17:11Z point-in-time snapshot. No duplicate update request. Verify actual service lifecycle and restart/rollback only after an approved candidate.",
+      "next_step": "QA: reconcile #591 PIPELINE_STATUS UP_TO_DATE with later #593 HEALTH runtime UNAVAILABLE; #592 RUNNING was only a 17:11Z snapshot. No duplicate update request. Verify actual service lifecycle and restart/rollback only after an approved candidate.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T17:26:00Z",
+      "last_checkpoint": "2026-11-22T17:27:00Z",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -66,7 +66,7 @@
           "redmi": "NO_LIVE_RECEIPT; issues #351–354 unanswered; installed SHA unknown"
         }
       },
-      "proof": "Private #591 confirms c4eb82 installed and auto-update enabled; #592 at 17:11Z said RUNNING; later #593 at 17:15Z said UNAVAILABLE. Runtime health is currently discrepant/unavailable. No candidate installed or physical rollback test."
+      "proof": "Private #591 confirms c4eb82 installed and auto-update enabled; #592 at 17:11Z said RUNNING; later #593 at 17:15Z said UNAVAILABLE. No physical rollback test."
     },
     {
       "id": "V14-003",
@@ -109,9 +109,9 @@
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
       "proof_environment": "CI failure evidence; no accepted native/weight proof",
-      "next_step": "JEPA: fix #2351 source-forget race against generic Store.switch_generation/rollback with a common full-path lock and deterministic two-thread tests for both orderings; then finish temporal-window, optimizer/EMA, restart and retention evidence. Promotion OFF.",
+      "next_step": "JEPA: keep source-forget vs generic Store promotion/rollback race as blocker; reconcile #2351/#2355/#2359 on one base, add both barrier interleavings, positive rollback/restart and multi-shift retention. Private #594 reports learning UNAVAILABLE; no promotion.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T16:02:01Z",
+      "last_checkpoint": "2026-11-22T17:27:00Z",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -163,7 +163,7 @@
         "ci": "PR_HEAD_STAGED_249_10SKIP_47_INTEGRATED_424_3SKIP_58_PY313_314_64_EACH; MERGED_PUSH_30_OF_30_SUCCESS",
         "scope": "production Runtime/SleepRuntime Store-backed WorldJEPA numeric consumer with persistent Adam/inverse/RNG optimizer state, gated legacy optimizer bootstrap, per-role held-out-vs-mean/zero/shuffled Planner receiver gate, Android no-clobber renameat2 checkpoint publication"
       },
-      "proof": "#2351 temporal WorldJEPA candidate is wired to SleepRuntime post-commit; 4 workflows queued. Boss review identified stale-row promotion race; no accepted native weight update."
+      "proof": "No accepted native weight diff or holdout. Private LEARNING_STATUS #594: learning.state UNAVAILABLE. #2351 current head has 2 failures / 8 pending; #2355 and #2359 remain failed stacked PRs."
     },
     {
       "id": "V14-005",
@@ -220,10 +220,10 @@
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
       "proof_environment": "GitHub merge + CI; no full local checkout",
-      "next_step": "Boss: fix postcommit observer replacement-4 anchor mismatch and reconcile nested source pins; run the exact Python 3.13/3.14 staged, optimizer, consumer, Lab-Age, migration and deploy matrix. Latest #2343 head ba9ee5 has 1 success / 26 queued / 1 skipped; keep DRAFT/NOT_RELEASED.",
+      "next_step": "Boss: fix postcommit observer replacement-4 anchor mismatch and reconcile nested pins; run exact Python 3.13/3.14 staged, optimizer, consumer, Lab-Age, migration and deploy matrix. Latest #2343 head 3585145 has 0 success / 27 queued / 1 skipped; keep DRAFT/NOT_RELEASED.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T17:26:00Z",
-      "proof": "Latest PR #2343 head ba9ee5df8bf5b1bf4b4a06fa21c3586637db41b5: 28 checks, 1 success / 26 queued / 1 skipped / 0 failure at last poll. Prior executed head 853433 had 5 failures, including replacement-4 anchor mismatch. Diagnostic step/test are now queued on current head."
+      "last_checkpoint": "2026-11-22T17:27:00Z",
+      "proof": "Latest PR #2343 head 3585145ebbc0530817d4aeb216c3e75251e3f695: 28 checks, 0 success / 27 queued / 1 skipped / 0 failure at last poll. Prior executed head 853433 had 5 failures, including replacement-4 anchor mismatch. Diagnostic step/test queued."
     },
     {
       "id": "V14-008",
@@ -235,10 +235,10 @@
       "scope": "v14/V14_USER_NEXT_ACTION.md; verified repo state, phone deployment evidence and model-choice suggestions",
       "acceptance": "At each meaningful integration checkpoint, dated user-level update, suggested actions only when needed, no invented Termux command",
       "proof_environment": "Authenticated phone install receipt + pending CI",
-      "next_step": "Boss: handoff synchronized with #591–#594. User action NONE. No Termux command or update request; request same-prompt Redmi A/B only after exact candidate CI is green and explicit user consent is obtained.",
+      "next_step": "Boss: handoff synchronized with #591–#594. User action NONE. No Termux command or update request; same-prompt Redmi A/B only after exact candidate CI is green and explicit consent is obtained.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T17:26:00Z",
-      "proof": "Handoff records installed c4eb82, pipeline UP_TO_DATE, conflicting #592 RUNNING and later #593 HEALTH UNAVAILABLE, slow last recorded turn and untested DRAFT candidate ba9ee5."
+      "last_checkpoint": "2026-11-22T17:27:00Z",
+      "proof": "Handoff records installed c4eb82, pipeline UP_TO_DATE, later HEALTH and LEARNING_STATUS UNAVAILABLE, slow last recorded turn and untested DRAFT candidate 3585145."
     },
     {
       "id": "V14-009",
@@ -265,10 +265,10 @@
       "scope": "Selected trainable adapters/heads and later cross-organ weights; meta update predictor; sandboxed code/structure proposals; independent OS capability boundary; approval, holdout, retention and rollback",
       "acceptance": "Prove a real numeric parameter diff on an approved target, measurable heldout utility and retention, checkpoint/restart/rollback, and cross-organ consumer benefit. Code/structure self-edit remains sandboxed and human-approved; no self-issued permissions.",
       "proof_environment": "Runtime has experimental WorldJEPA update/save/restore path, but current implementation reports active_model_promoted=false and persisted=false for online experimental update. #2311 has mixed CI and no accepted permanent model-weight change or cross-organ gradient.",
-      "next_step": "Core/JEPA: after temporal predictor safety and retention, connect source-bound learning intents to target-organ gradients and later reversible structural edits. Keep production weight promotion OFF.",
+      "next_step": "Core/JEPA: after the source-forget/Store race and temporal holdout gates, connect source-bound learning intents to real target-organ gradients, optimizer/master weights, persistent checkpoint/restart and rollback. Keep production promotion OFF.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T16:02:01Z",
-      "proof": "No permanent B1/B2/C3 weight updates, cross-organ gradients or self-edit. #2351 is a shadow predictor candidate only."
+      "last_checkpoint": "2026-11-22T17:27:00Z",
+      "proof": "No permanent B1/B2/C3 weight update or cross-organ gradient proof. Private #594 reports learning.state UNAVAILABLE; no native parameter diff, holdout utility or retention acceptance."
     },
     {
       "id": "V14-011",
@@ -417,13 +417,13 @@
       "proof": "c4eb82 installed and exact CI green; no physical process-death/reboot or rollback test."
     }
   ],
-  "current_redmi_status": "Private #591 PIPELINE_STATUS: installed c4eb82deec915f65894c20d6ebbaf0ebf58fa335; auto-update ENABLED; runtime/dashboard UP_TO_DATE; last_error NONE. DIAGNOSTICS #592 at 17:11Z reported service RUNNING and four mapped native processes (PSS 0.3 MiB, RSS 2.6 MiB; process counters, not free RAM). Later HEALTH #593 at 17:15Z reported runtime UNAVAILABLE. Therefore the latest health state is UNAVAILABLE / inconsistent; pipeline UP_TO_DATE does not prove the service is running. Last recorded turn 57.74s / 41.63s TTFT / 38.95s prefill / 751 prompt / 2 generated; B1/B2 TIME_BUDGET at 53.2s/54.2s, zero valid offers. Lab stage 10 active, official Age 0, implemented stage 5, physical feature execution unverified; learning commit authority requires separate SHADOW mode.",
+  "current_redmi_status": "Private #591 PIPELINE_STATUS: installed c4eb82deec915f65894c20d6ebbaf0ebf58fa335; auto-update ENABLED; runtime/dashboard UP_TO_DATE; last_error NONE. DIAGNOSTICS #592 at 17:11Z reported service RUNNING and four mapped native processes (PSS 0.3 MiB, RSS 2.6 MiB; process counters, not free RAM). Later HEALTH #593 at 17:15Z reported runtime UNAVAILABLE. LEARNING_STATUS #594 reports learning.state UNAVAILABLE. Latest health/learning are therefore UNAVAILABLE / inconsistent; pipeline UP_TO_DATE does not prove a running service or active learning. Last recorded turn 57.74s / 41.63s TTFT / 38.95s prefill / 751 prompt / 2 generated; B1/B2 TIME_BUDGET at 53.2s/54.2s, zero valid offers. Lab stage 10 active, official Age 0, implemented stage 5, physical feature execution unverified.",
   "last_code_release_head": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
   "latest_integrated_head": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
   "latest_integrated_head_verified_at": "2026-11-22T16:02:01Z",
-  "release_gate_status": "Release HEAD c4eb82deec915f65894c20d6ebbaf0ebf58fa335: exact release workflow matrix 21/21 SUCCESS; private #591 confirms installed and auto-update enabled. #592 reported runtime RUNNING at 17:11Z, but later HEALTH #593 at 17:15Z reports runtime UNAVAILABLE. Boss PR #2343 head ba9ee5df8bf5b1bf4b4a06fa21c3586637db41b5 remains DRAFT/NOT_RELEASED; exact matrix 1 success / 26 queued / 1 skipped / 0 failures at last poll. Prior executed head 853433 had stage-consuming failures including postcommit observer anchor mismatch replacement 4. Do not deploy.",
+  "release_gate_status": "Release HEAD c4eb82deec915f65894c20d6ebbaf0ebf58fa335: exact release workflow matrix 21/21 SUCCESS; private #591 confirms installed and auto-update enabled. #592 reported runtime RUNNING at 17:11Z, but later #593 HEALTH reports runtime UNAVAILABLE and #594 LEARNING_STATUS reports learning UNAVAILABLE. Boss PR #2343 current head 3585145ebbc0530817d4aeb216c3e75251e3f695 remains DRAFT/NOT_RELEASED; exact matrix 0 success / 27 queued / 1 skipped / 0 failures at last poll. Prior executed head 853433 had stage-consuming failure postcommit observer anchor mismatch replacement 4. Do not deploy.",
   "phone_receipt": {
-    "state": "AUTHENTICATED_C4EB82_INSTALLED_PIPELINE_UP_TO_DATE_HEALTH_RUNTIME_UNAVAILABLE_LATEST",
+    "state": "AUTHENTICATED_C4EB82_INSTALLED_PIPELINE_UP_TO_DATE_HEALTH_AND_LEARNING_UNAVAILABLE",
     "pipeline_issue": 591,
     "diagnostics_issue": 592,
     "health_issue": 593,
@@ -438,6 +438,7 @@
       "health_20261122_1715Z": "UNAVAILABLE",
       "latest_health": "UNAVAILABLE_DISCREPANT"
     },
+    "learning_state": "UNAVAILABLE",
     "native_residency_at_1711Z": {
       "mapped_processes": 4,
       "pss_mib": 0.3,
@@ -474,7 +475,7 @@
       "physical_feature_execution_verified": false,
       "learning_commit_authority": "REQUIRES_SEPARATE_SHADOW_MODE"
     },
-    "note": "Authenticated read-only receipts only. #592 was a point-in-time RUNNING snapshot; later #593 HEALTH is UNAVAILABLE. No LOG_PAGE, CHAT_SEND, UPDATE_REQUEST, shell action, model/weight change, permission change or user-data mutation. #594 LEARNING_STATUS request is pending."
+    "note": "Authenticated read-only receipts only. #592 was a point-in-time RUNNING snapshot; later #593 HEALTH and #594 LEARNING_STATUS are UNAVAILABLE. No LOG_PAGE, CHAT_SEND, UPDATE_REQUEST, shell action, model/weight change, permission change or user-data mutation."
   },
   "capability_snapshot": [
     {
@@ -704,27 +705,27 @@
     }
   ],
   "latest_boss_checkpoint": {
-    "timestamp": "2026-11-22T17:26:00Z",
+    "timestamp": "2026-11-22T17:27:00Z",
     "branch": "boss/v14-fair-budget-rebind-20261122-run13",
-    "head": "ba9ee5df8bf5b1bf4b4a06fa21c3586637db41b5",
+    "head": "3585145ebbc0530817d4aeb216c3e75251e3f695",
     "base_branch": "gpt6/v13-private-remote-bridge-20261111",
     "base_head": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "branch_head_type": "DRAFT_NOT_RELEASED_EXACT_CI_PENDING",
-    "branch_head_checks": "Exact head ba9ee5: 28 checks = 1 success / 26 queued / 1 skipped / 0 failures at last poll. V14 JEPA diagnostic workflow run 45049172859 is queued.",
+    "branch_head_checks": "Exact head 3585145: 28 checks = 0 success / 27 queued / 1 skipped / 0 failures at last poll. V14 JEPA diagnostic workflow run 45049172859 remains queued.",
     "code_bearing_release_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "code_release_checks": "21/21 exact-head GitHub workflows SUCCESS; private #591 confirms installed.",
-    "integrated_code_candidate": "ba9ee5df8bf5b1bf4b4a06fa21c3586637db41b5",
-    "integrated_code_candidate_checks": "1 SUCCESS / 26 QUEUED / 1 SKIPPED / 0 FAILURE at last poll; not green.",
+    "integrated_code_candidate": "3585145ebbc0530817d4aeb216c3e75251e3f695",
+    "integrated_code_candidate_checks": "0 SUCCESS / 27 QUEUED / 1 SKIPPED / 0 FAILURE at last poll; not green.",
     "pr2343": "DRAFT. 45% observer / 55% C3 policy remains unproven. Prior executed head 853433 had 10 success / 5 failures / 12 pending / 1 skipped; stage-consuming failure postcommit observer anchor mismatch replacement 4; QA also reported 13 nested source-pin mismatches. Diagnostic workflow/test commits are now on ba9ee5; exact-head matrix has started but 26 checks remain queued. No release/deployment.",
     "pr2351": "DRAFT temporal WorldJEPA T8/EMA candidate; source-forget vs generic Store promotion race remains open; no accepted weight update.",
     "pr2346": "DRAFT B3 paired-tap/L1 shadow; no Redmi native activation or trained receiver utility proof; production B3 OFF.",
     "pr2347": "Android companion receipt recovery remains stacked on unmerged companion dependencies; no APK/device action proof.",
     "pr2349": "RAW EAR speaker calibration candidate remains synthetic-only; no real corpus/model/microphone.",
     "pr2350": "Native probe model-byte integrity candidate remains diagnostic; no contextual activation transfer or semantic latent utility.",
-    "redmi": "Private #591: c4eb82 installed, auto-update enabled, pipeline/dashboard UP_TO_DATE. #592 at 17:11Z reported service RUNNING and four native processes; later #593 HEALTH at 17:15Z reports runtime UNAVAILABLE. Latest health therefore UNAVAILABLE/discrepant. Last recorded turn 57.74s / 41.63s TTFT / 38.95s prefill / 2 tokens; B1/B2 TIME_BUDGET, zero valid offers.",
-    "private_owner_read": "Authenticated read-only PIPELINE_STATUS #591, DIAGNOSTICS #592, later HEALTH #593; LEARNING_STATUS #594 pending. No LOG_PAGE, CHAT_SEND, UPDATE_REQUEST or shell action.",
+    "redmi": "Private #591: c4eb82 installed, auto-update enabled, pipeline/dashboard UP_TO_DATE. #592 at 17:11Z reported service RUNNING and four native processes; later #593 HEALTH at 17:15Z reports runtime UNAVAILABLE; #594 LEARNING_STATUS reports learning UNAVAILABLE. Last recorded turn 57.74s / 41.63s TTFT / 38.95s prefill / 2 tokens; B1/B2 TIME_BUDGET, zero valid offers.",
+    "private_owner_read": "Authenticated read-only PIPELINE_STATUS #591, DIAGNOSTICS #592, later HEALTH #593, LEARNING_STATUS #594. No LOG_PAGE, CHAT_SEND, UPDATE_REQUEST or shell action.",
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_OR_NETWORK; container git ls-remote failed DNS. CI is not local Linux proof.",
-    "p0_chat": "OPEN: no fresh correct 2+2, no same-turn B1/B2 valid offer→C4 consumption, no 20-turn acceptance; current service health is unavailable/discrepant.",
+    "p0_chat": "OPEN: no fresh correct 2+2, no same-turn B1/B2 valid offer→C4 consumption, no 20-turn acceptance; latest HEALTH and LEARNING_STATUS are UNAVAILABLE.",
     "canon_coverage": "1,255-heading historical V13 inventory preserved; master and historical appendix not edited. Semantic clause→consumer→test→platform→rollback mapping remains incomplete.",
     "research": "No new research claim this run. Existing R-084 Do-JEPA, R-085 differential retention, R-086 fork-ledger utility and R-087 negative cross-model activation result remain research-only; no code/weights imported.",
     "user_action_required": "NONE; no manual Termux, update, model/weight, permission, APK or microphone action.",
@@ -1026,13 +1027,13 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T17:26:00Z",
+    "timestamp": "2026-11-22T17:27:00Z",
     "release_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
-    "boss_candidate_sha": "ba9ee5df8bf5b1bf4b4a06fa21c3586637db41b5",
+    "boss_candidate_sha": "3585145ebbc0530817d4aeb216c3e75251e3f695",
     "release_ci": "21_OF_21_WORKFLOW_RUNS_SUCCESS",
-    "boss_candidate_ci": "LATEST_HEAD_1_SUCCESS_26_QUEUED_1_SKIPPED_0_FAILURE",
-    "device_receipts": "PRIVATE #591 PIPELINE_STATUS; #592 DIAGNOSTICS; #593 HEALTH; #594 LEARNING_STATUS_PENDING",
-    "device_acceptance": "C4EB82_INSTALLED_PIPELINE_UP_TO_DATE; #592 RUNNING_SNAPSHOT_AT_1711Z; #593 LATER_HEALTH_UNAVAILABLE; LAST_RECORDED_TURN_57.74S_2_TOKENS; B1_B2_TIME_BUDGET_ZERO_VALID_OFFERS",
+    "boss_candidate_ci": "LATEST_HEAD_0_SUCCESS_27_QUEUED_1_SKIPPED_0_FAILURE",
+    "device_receipts": "PRIVATE #591 PIPELINE_STATUS; #592 DIAGNOSTICS; #593 HEALTH; #594 LEARNING_STATUS",
+    "device_acceptance": "C4EB82_INSTALLED_PIPELINE_UP_TO_DATE; LATER_HEALTH_UNAVAILABLE; LEARNING_UNAVAILABLE; LAST_RECORDED_TURN_57.74S_2_TOKENS; B1_B2_TIME_BUDGET_ZERO_VALID_OFFERS",
     "active_blockers": [
       "P0_POSTCOMMIT_OBSERVER_REPLACEMENT_4_ANCHOR_MISMATCH_BLOCKS_STAGED_RUNTIME",
       "P0_NESTED_SOURCE_PIN_CHAIN_RECONCILIATION_REPORTED_13_MISMATCHES_ON_853433",
@@ -1046,7 +1047,8 @@
       "P1_MEMORILLA_PRODUCTION_OVERFLOW_CONSUMER",
       "P1_AGE_RIGHTS_RESOURCEGUARD_DECOUPLING_AND_GOALWAKE_NATIVE_PROOF",
       "WHOLE_CANON_SEMANTIC_CLAUSE_TO_CONSUMER_COVERAGE",
-      "P0_PIPELINE_UP_TO_DATE_BUT_LATER_HEALTH_RUNTIME_UNAVAILABLE_DISCREPANCY"
+      "P0_PIPELINE_UP_TO_DATE_BUT_LATER_HEALTH_RUNTIME_UNAVAILABLE_DISCREPANCY",
+      "P0_LEARNING_STATUS_UNAVAILABLE_NO_WEIGHT_UPDATE_PROOF"
     ],
     "user_action_required": false
   }
