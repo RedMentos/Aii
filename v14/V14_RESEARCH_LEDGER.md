@@ -942,24 +942,6 @@ This correction supersedes older branch-level status claims without deleting the
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
 
-## R-081 — Hypnos dual-phase edge continual learning (2026-11-22)
-
-**Primary paper:** Guilherme Guedes, Marco P. E. Apolinario and Charlotte Frenkel, *Hypnos: A Dual-Phase End-to-End Platform for Scalable Continual Learning at the Edge*, arXiv:2611.24637v1, posted 18 Nov 2026. The PDF says it was submitted to IEEE for possible publication; this version is a preprint, not treated as peer-reviewed. https://arxiv.org/abs/2611.24637
-
-**Method:** wake-time low-cost adaptation uses a MobileNetV3-Large feature backbone and gradient-free running-mean class prototypes; intermediate activations are compressed with product quantization (PQ). Sleep-time consolidation decodes a replay buffer and uses gradient-based updates on the embedder/classifier head. The paper co-designs this with an X-HEEP RISC-V MCU, Quadrilatero matrix coprocessor and a dedicated wake accelerator; the sleep phase is placed on a smart charger with extra memory/energy.
-
-**Reported evidence and conditions:** CORe50 NICv2-391 class-incremental image stream (50 classes; 391 ordered class/session batches; 300 frames per session; three sessions per class held out). FPGA demonstration on Xilinx ZCU104: INT8 activations reach 78.6% at 7.79 s/sample; INT16 reaches 81.6% at 10.54 s/sample. The paper reports 3.8× fewer learning steps and 22× less learning compute than quantized latent replay. The chosen INT8 backbone occupies about 3.7 MB; the replay buffer is 5.48 MB (7000 samples at 784 B each after 40× PQ compression); the charger-side training budget is about 10 MB. 28-nm synthesis reports 9.43 mm² and 33.3 mW at 375 MHz.
-
-**Limits for V14:** this is supervised/class-incremental visual classification, not a general world model, JEPA objective, LLM update, multimodal learner or cross-model latent channel. The wake backbone is frozen and only the prototype head changes online; gradient consolidation happens on a separate smart-charger system. The 7.79–10.54 s/sample results are not a conversational latency result and the FPGA/ASIC design is not a Redmi ARM benchmark. It does not justify freezing V14 bodies or offloading private data to a PC/cloud.
-
-**OSS/licensing:** the cited official repository is https://github.com/cogsys-tudelft/hypnos. Its current README says only “Work in Progress”; no LICENSE file, implementation package or pinned reproducible release was available in the repository readback. The paper's “open-source” statement is not itself a code license. No code, weights, data or dependencies are reused until an exact revision and explicit license are published.
-
-**V14 adaptation hypothesis:** retain the useful system principle, not the architecture: cheap, source-bound local plasticity during ordinary operation can coexist with more expensive replay/consolidation during a user-visible, cancellable sleep window. For Android, the candidate sleep window remains on the phone (e.g. charging/idle under explicit local policy), not an assumed PC or cloud. A future experiment could compare small local prototype/adapter updates with replay consolidation, measuring numeric parameter diff, task utility, old-task retention, memory, restart and rollback. It must complement JEPA and the other learning organs, not replace them.
-
-**Decision:** RESEARCH_ONLY / NO_REUSE / NO_MODEL_CHANGE. Concrete follow-up: benchmark a tiny source-bound adaptive head against no-update and replay controls only after the B3/JEPA label, persistence and retention paths are independently validated. No model or weight was downloaded or swapped.
-
-
-
 > Ledger sequence coordination: R-080 is reserved for the WorldJEPA receiver entry in JEPA PR #2345; R-083 is the JEPA-TTT entry from that same pending integration. This branch has not yet rebased after Boss PR #2343, so the Perception entries deliberately occupy R-081 and R-082. Reconcile the final order as R-080 → R-081 → R-082 → R-083 after #2343 passes its exact full matrix.
 
 ## R-081 — Hypnos dual-phase edge continual learning (2026-11-22)
