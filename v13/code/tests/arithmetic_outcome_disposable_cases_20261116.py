@@ -41,7 +41,7 @@ def latest_packet(r, eid, kind):
 
 def test_arithmetic_world_source_transition_survives_restart(runtime):
     r = runtime
-    row, meta = turn(r, 'What is 8/4?')
+    row, meta = turn(r, 'calculate 8/4')
     assert row['status'] == 'FINAL' and row['text'] == '2'
     action = r.store.one('SELECT * FROM actions WHERE event_id=?', (row['event_id'],))
     forecast = json.loads(action['expected'])['forecast']
