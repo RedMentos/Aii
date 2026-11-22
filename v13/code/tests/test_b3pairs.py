@@ -72,17 +72,19 @@ class PairedNativeTapTests(unittest.TestCase):
         self.assertEqual(reverse["sender_role"], "B2_GIST")
 
     def test_rejects_cross_source_pair(self):
-        count = {"n": 0}
+        rows = {}
         def tap(role, event, source_ref, deadline):
-            count["n"] += 1
             if role == "B1_DETAIL":
-                return self._tap(role, source_ref)[0]
-            other = self.r.store.source("different source", "USER_INPUT")
-            return self._tap(role, other)[0]
+                p, data = self._tap(role, source_ref)
+            else:
+                other = self.r.store.source("different source", "USER_INPUT")
+                p, data = self._tap(role, other)
+            rows[p["packet_id"]] = data
+            return p
         with patch.object(self.r.cognition, "tap", side_effect=tap), \
              patch.object(self.r.cognition, "read_tap", side_effect=lambda tap: rows[tap["packet_id"]]):
             with self.assertRaisesRegex(ValueError, "source span mismatch"):
-                capture_pair(self.r.cognition, self.event, time.monotonic() + 10)
+                self.r.cognition.tap_pair(self.event, time.monotonic() + 10)
         self.assertEqual(self.r.store.rows("SELECT * FROM packets WHERE kind='B3PairedTapPacket'"), [])
 
 if __name__ == "__main__":
