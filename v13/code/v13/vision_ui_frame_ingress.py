@@ -185,6 +185,7 @@ def _load_local_tile_projector(runtime, cfg, query_text: str) -> dict:
                 os.close(parent_fd)
             parent_fd = next_fd
 
+        # O_NONBLOCK makes a malicious FIFO fail at fstat instead of blocking open().
         file_fd = os.open(
             rel.parts[-1],
             os.O_RDONLY | os.O_NOFOLLOW | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_CLOEXEC", 0),
