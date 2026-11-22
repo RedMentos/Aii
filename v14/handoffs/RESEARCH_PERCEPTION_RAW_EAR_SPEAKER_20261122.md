@@ -62,7 +62,7 @@ Current candidate: PR #2293 (DRAFT, NOT_RELEASED)
 - Exact GitHub blobs read back: module 1e9daddcb5dfd8bfb7911090218b4eaf1f103d41, tests b6b1202904efbc417971db6c0d9e3ba0664eef84. LOCAL_LINUX isolated py_compile PASS; pytest 7/7 PASS. This is not a full Runtime E2E.
 - Workflow changes are in PR #2293 current head e85b7398b1fce84423583abf01e1389507612818; focused workflow #44972070097 was pending at checkpoint. Earlier speaker-evidence head d7f3842 passed 57 tests on Python 3.13/3.14; current staged/integrated still fails at Core's pre-rebind semantic pin mismatch on unmodified Boss base f0d3c848.
 - Full local checkout unavailable: git ls-remote https://github.com/RedMentos/Aii.git HEAD returned Could not resolve host: github.com. No local full Runtime test was run.
-- R-063 added: FASTDIAR full paper read; MIT code, checkpoint license not verified; speech-core Apache-2.0 C++17/Android reviewed as a possible low-level VAD/AEC/cancel layer only. No model or dependency downloaded.
+- R-063 adds FASTDIAR full-paper evidence (MIT code, checkpoint license unverified); speech-core turn/AEC/cancel details are a follow-up to R-033, not a new dependency candidate. No model or dependency downloaded.
 - No microphone, Android AudioRecord, TTS effector, barge-in, Redmi or native model proof. No release or updater action. Next: Core fixes the pin blocker; Perception rebases and adds staged audio-only Runtime proof, then coordinates Android caller wiring.
 
 
