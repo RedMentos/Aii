@@ -64,10 +64,10 @@ def validate_owner_read(issue, cfg, *, now=None):
                 args["text"].strip().startswith(":")):
             raise bridge.Denied("invalid remote chat message")
     elif operation == "CHAT_OPERATOR":
-        from .remote_chat import SAFE_OPERATOR_COMMANDS
+        from .remote_chat import is_safe_operator_command
         if (not isinstance(args, dict) or set(args) != {"command"} or
                 type(args.get("command")) is not str or
-                args["command"] not in SAFE_OPERATOR_COMMANDS):
+                not is_safe_operator_command(args["command"])):
             raise bridge.Denied("invalid diagnostic operator")
     elif operation == "CHAT_RESULT":
         if (not isinstance(args, dict) or set(args) != {"request_id"} or
@@ -312,9 +312,9 @@ def create_read_request(command, *, now=None, session=0, page=0, text=None, requ
             raise bridge.Denied("one bounded non-operator text required")
         out["args"]={"text":text}
     if command == "CHAT_OPERATOR":
-        from .remote_chat import SAFE_OPERATOR_COMMANDS
-        if operator_command not in SAFE_OPERATOR_COMMANDS:
-            raise bridge.Denied("approved diagnostic command required")
+        from .remote_chat import is_safe_operator_command
+        if not is_safe_operator_command(operator_command):
+            raise bridge.Denied("approved exact diagnostic command required")
         out["args"]={"command":operator_command}
     if command == "CHAT_RESULT":
         if not isinstance(request_id,str) or not bridge.ID.fullmatch(request_id):
