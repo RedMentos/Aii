@@ -364,10 +364,16 @@ def _parameter_delta(report, home, direction, bridge_module):
             sender_revision=report["sender_revision"],
             receiver_revision=report["receiver_revision"],
         )
+        manifest = getattr(candidate, "manifest", {})
         manifest_sha = seed_report.get("manifest_sha256")
         if (type(manifest_sha) is not str or not _HEX64.fullmatch(manifest_sha)
-                or getattr(candidate, "manifest", {}).get("sha256") != manifest_sha):
-            raise ValueError("candidate manifest readback mismatch")
+                or manifest.get("sha256") != manifest_sha
+                or manifest.get("direction") != direction
+                or manifest.get("latent_authority") != 0
+                or manifest.get("receiver_injection_authority") != 0
+                or manifest.get("body_learning_authority") != 0
+                or "NOT_PROMOTED" not in str(manifest.get("status", ""))):
+            raise ValueError("candidate manifest authority/readback mismatch")
         baseline = bridge_module.Bridge(
             d=candidate.d, K=candidate.K, r=candidate.r, h=candidate.h,
             classes=candidate.classes, seed=seed, direction=direction,
