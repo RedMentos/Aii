@@ -5,8 +5,11 @@ authority. The approval is tied to one Runtime instance and one completed turn.
 """
 from __future__ import annotations
 
+import hashlib
 import math
+import os
 import secrets
+import stat
 import time
 from pathlib import Path
 
@@ -42,6 +45,48 @@ def _roles(sender_role, receiver_role):
         raise ValueError("native probe receiver must be a distinct B1/B2/C3 role")
 
 
+
+def _verify_model_file(path, expected_size, expected_digest):
+    """Stream the actual model bytes and bind them to the installed manifest."""
+    nofollow = getattr(os, "O_NOFOLLOW", None)
+    if nofollow is None:
+        raise PermissionError("native probe platform cannot safely open model without following symlinks")
+    flags = os.O_RDONLY | nofollow | getattr(os, "O_CLOEXEC", 0)
+    try:
+        fd = os.open(str(path), flags)
+    except OSError as exc:
+        raise PermissionError("native probe model cannot be opened safely") from exc
+    try:
+        before = os.fstat(fd)
+        if not stat.S_ISREG(before.st_mode) or before.st_size != expected_size:
+            raise PermissionError("native probe model file type or size differs from its manifest")
+        digest = hashlib.sha256()
+        with os.fdopen(os.dup(fd), "rb") as stream:
+            while True:
+                chunk = stream.read(1024 * 1024)
+                if not chunk:
+                    break
+                digest.update(chunk)
+        after = os.fstat(fd)
+        identity = lambda value: (
+            value.st_dev, value.st_ino, value.st_size,
+            value.st_mtime_ns, value.st_ctime_ns,
+        )
+        try:
+            path_stat = os.stat(path, follow_symlinks=False)
+        except OSError as exc:
+            raise PermissionError("native probe model path changed during verification") from exc
+        if (not stat.S_ISREG(path_stat.st_mode)
+                or identity(before) != identity(after)
+                or identity(after) != identity(path_stat)):
+            raise PermissionError("native probe model changed while hashing")
+        actual = digest.hexdigest()
+        if not secrets.compare_digest(actual, expected_digest):
+            raise PermissionError("native probe model file hash differs from its manifest")
+        return actual
+    finally:
+        os.close(fd)
+
 def _model_binding(runtime, role):
     key = model_key(role, runtime.models.b2_control)
     installed = runtime.models.installed.get(key)
@@ -73,8 +118,9 @@ def _model_binding(runtime, role):
     if not resolved.is_relative_to(models_root):
         raise PermissionError("native probe model escaped home/models")
     size = entry.get("size")
-    if size is not None and (type(size) is not int or size < 1 or resolved.stat().st_size != size):
-        raise PermissionError("native probe model size differs from its manifest")
+    if type(size) is not int or size < 1:
+        raise PermissionError("native probe model size is missing or invalid")
+    _verify_model_file(resolved, size, digest)
     return {"model_key": key, "revision": revision, "sha256": digest}
 
 
@@ -107,12 +153,13 @@ def arm(runtime, sender_role, receiver_role, *, now=None):
     """Arm one exact probe locally; caller is the local Operator TTY path."""
     runtime.require_idle()
     _roles(sender_role, receiver_role)
-    clock = _clock(now)
     event, source_ref = _current_event(runtime)
     models = {
         sender_role: _model_binding(runtime, sender_role),
         receiver_role: _model_binding(runtime, receiver_role),
     }
+    # Start the short approval window only after the full model-byte verification.
+    clock = _clock(now)
     runtime_nonce = _runtime_nonce(runtime)
     current, version = runtime.store.state(KEY, None)
     if isinstance(current, dict) and current.get("status") == "PENDING":
@@ -186,6 +233,10 @@ def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None)
     }
     if record.get("models") != models:
         raise PermissionError("native probe model revision/hash changed after local approval")
+    # Hashing can be slow for large GGUFs; re-check expiry after verification.
+    clock = _clock(now)
+    if clock >= expires:
+        raise PermissionError("native probe local approval expired")
     consumed = dict(record)
     consumed.update({"status": "CONSUMED", "consumed_at": clock})
     runtime.store.set_state(KEY, consumed, expected=version)
