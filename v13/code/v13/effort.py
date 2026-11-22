@@ -23,7 +23,8 @@ ONE_BODY_MODES=('detail','gist')
 WAKES=('none','detail','gist','both')
 BOOT={'default':.25,'conflict_gain':.60,'uncertainty_gain':.55,'novelty_gain':.40,'salience_gain':.35,
       'escalate_uncertainty':.45,'escalate_conflict':.40,'escalate_floor':.50,'verify_risk':.65,
-      'one_body_need':.35,'min_body_seconds':2.,'max_cycles_age0':3}
+# Keep this attempt floor aligned with native_turn_budget.MIN_ROLE_SLICE_S (1.0).
+      'one_body_need':.35,'min_body_seconds':1.,'max_cycles_age0':3}
 # Age gates developmental/tool/learning rights only. User effort and ResourceGuard
 # independently determine physical compute; Age never supplies a token/time ceiling.
 RESOURCE_MODE=rmodes.LEGACY_MODE  # §97.2: one table (PRESSURE = ORANGE, CRITICAL = RED)
