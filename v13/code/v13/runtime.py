@@ -472,12 +472,12 @@ class Runtime:
                     if jo['applied']:observer_seconds=max(1.,observer_seconds*jo['scale'])
                 except Exception as exc:self.store.log('jef_observer_unavailable',eid,{'error':type(exc).__name__})
                 _,channel_head=fastpol.head(self,'channel',e,self.cfg['channel'])  # WP-T1 channel head (applies only when approved)
-                def ask(role,focus=None,use_peer=True):
-                    p=self.cognition.offer(role,e,version,min(observer_end,time.monotonic()+observer_seconds),peers.get(role) if use_peer else None,valid_until=deadline,**({'focus':focus} if focus and 'focus' in inspect.signature(self.cognition.offer).parameters else {}))  # replaced/older offers take no focus
+                def ask(role,focus=None,use_peer=True,budget_end=None):
+                    p=self.cognition.offer(role,e,version,min(observer_end,budget_end if budget_end is not None else observer_end,time.monotonic()+observer_seconds),peers.get(role) if use_peer else None,valid_until=deadline,**({'focus':focus} if focus and 'focus' in inspect.signature(self.cognition.offer).parameters else {}))  # replaced/older offers take no focus
                     other='B2_GIST' if role=='B1_DETAIL' else 'B1_DETAIL';peers[other]=self.cognition.communicate(p,other,**({'fast':channel_head} if channel_head and channel_head.get('learned') else {}));return p
                 sched=obsched.plan(self.cfg.get('observer_schedule',obsched.DEFAULT),roles,eid,self.cfg.get('observer_sample_rate',.5),parallel_ok=rpol['max_observer_bodies']>1 and bool(getattr(getattr(self.pool,'fabric',None),'enabled',False)))  # §22.2.4 deployment knob
                 meta['observer_schedule']={k:sched[k] for k in ('schedule','pre','parallel','post','reason')}
-                offers+=obsched.run(sched,lambda role,use_peer:ask(role,use_peer=use_peer),observer_end,lambda role,exc:self.store.log('offer_rejected',eid,{'role':role,'error':str(exc)[:300]}),cancelled=(Cancelled,))
+                offers+=obsched.run(sched,lambda role,use_peer:ask(role,use_peer=use_peer,budget_end=obsched.fair_deadline(sched,role,observer_end,clock=time.monotonic)),observer_end,lambda role,exc:self.store.log('offer_rejected',eid,{'role':role,'error':str(exc)[:300]}),cancelled=(Cancelled,))
                 def reenter(role,focus=None):
                     try:return ask(role,focus)
                     except Cancelled:raise
