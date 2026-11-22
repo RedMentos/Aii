@@ -60,6 +60,14 @@ def build_sources(code_dir, *, include_postcommit=True):
             raise ValueError('malformed downstream pin: ' + label)
         return value.decode('ascii')
 
+    # Preserve the semantic generation produced by the arithmetic composer.
+    # Later overlays rewrite its Store pin; the Record-Only guard, when enabled,
+    # rewrites both this consumer pin and the semantic module together.
+    local_error_semantic_sha = hashlib.sha256(result['v13/world_semantic_evidence_candidate.py']).hexdigest()
+    if _dict_pin(result['v13/local_error_route_shadow_candidate.py'],
+                 'world_semantic_evidence_candidate.py', 'local-error semantic') != local_error_semantic_sha:
+        raise ValueError('local-error base semantic binding mismatch')
+
     def _constant_pin(raw, name, label):
         needle = name.encode('ascii') + b" ="
         if raw.count(needle) != 1:
@@ -214,6 +222,12 @@ def build_sources(code_dir, *, include_postcommit=True):
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
                              'bfcf25e8ffb4996aaae97f000c9d7086ac5530b064ed9979ee952c8250852004')
         result = control_guard.apply_sources(code_dir, result)
+        # The guard rewrites the semantic module and its local-error consumer as
+        # one reviewed generation. Snapshot that exact pair before Store overlays.
+        local_error_semantic_sha = hashlib.sha256(result['v13/world_semantic_evidence_candidate.py']).hexdigest()
+        if _dict_pin(result['v13/local_error_route_shadow_candidate.py'],
+                     'world_semantic_evidence_candidate.py', 'local-error guard output') != local_error_semantic_sha:
+            raise ValueError('local-error guard-output semantic binding mismatch')
         # Feature Age belongs to the final deployed stage. The partial
         # pre-postcommit builder must retain its earlier exact Runtime hash.
         # RAW Age/operator/UI remain pristine for the old phone updater.
@@ -302,19 +316,14 @@ def build_sources(code_dir, *, include_postcommit=True):
                           final_stream_sha, 'context recall stream')
     result['v13/context_source_recall_candidate.py'] = recall
 
-    # Earlier overlays may already have refreshed this dependent's semantic
-    # pin. Bind from the exact current semantic module before its final Store
-    # rebind, then refresh to the final semantic-module bytes.
-    pre_rebind_semantic_sha = hashlib.sha256(result['v13/world_semantic_evidence_candidate.py']).hexdigest()
-    pre_rebind_local_error_pin = _dict_pin(
-        result['v13/local_error_route_shadow_candidate.py'],
-        'world_semantic_evidence_candidate.py', 'local-error semantic')
-    if pre_rebind_local_error_pin != pre_rebind_semantic_sha:
-        raise ValueError('local-error pre-rebind semantic binding mismatch')
+    # The local-error consumer is pinned to the generation captured directly
+    # after the arithmetic composer (or the later Record-Only guard). Store
+    # overlays may subsequently change the semantic module, so rebind from the
+    # saved generation rather than comparing against the already-mutated bytes.
     final_semantic_sha = hashlib.sha256(result['v13/world_semantic_evidence_candidate.py']).hexdigest()
     result['v13/local_error_route_shadow_candidate.py'] = _rebind_dict(
         result['v13/local_error_route_shadow_candidate.py'], 'world_semantic_evidence_candidate.py',
-        pre_rebind_semantic_sha, final_semantic_sha, 'local-error semantic')
+        local_error_semantic_sha, final_semantic_sha, 'local-error semantic')
 
     # Final exact-source checks for every rebinding above.
     if _dict_pin(result['v13/world_jepa_runtime_guard_candidate.py'], 'store.py', 'World-JEPA Store') != final_store_sha:
