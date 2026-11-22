@@ -199,7 +199,7 @@ def apply_sources(code_dir, sources):
     semantic_name = 'v13/world_semantic_evidence_candidate.py'
     local_name = 'v13/local_error_route_shadow_candidate.py'
     semantic_pin = '200e7b6870c16ae4cedbf2070c2fad2c2a55b9e4c4427f41703be1f7d529ca5a'
-    semantic_reference_pin = '354306bb763fda116728bd13e8502d81ed8e6a790c4387d98e0920960a87b8a5'
+    semantic_reference_pin = '200e7b6870c16ae4cedbf2070c2fad2c2a55b9e4c4427f41703be1f7d529ca5a'
     local_pin = '819e95617e15b2099aca91842ee7888d994fabaf3325c38ec9e7d3bbadd3a383'
     action_pin = '86f79e8f3c26928f0a16399070f1b8d729760697a3b9e02ea9f6315ab6fcf87a'
     for name, expected in ((semantic_name, semantic_pin), (local_name, local_pin)):
