@@ -567,4 +567,16 @@ public final class CompanionDbApprovalTest {
         assertFalse(first.claimForExecution(ACTION_ID, NOW));
     }
 
+    @Test public void dispatchResultMapsToTruthfulReceiptStatus() {
+        assertEquals("DISPATCHED_UNVERIFIED",
+                CompanionProvider.receiptStatusForDispatchResult("DISPATCHED"));
+        assertEquals("FAILED_TO_DISPATCH",
+                CompanionProvider.receiptStatusForDispatchResult("FAILED_TO_DISPATCH"));
+        assertEquals("OUTCOME_UNKNOWN",
+                CompanionProvider.receiptStatusForDispatchResult("OUTCOME_UNKNOWN"));
+        assertEquals("OUTCOME_UNKNOWN",
+                CompanionProvider.receiptStatusForDispatchResult("unexpected"));
+    }
+
+
 }
