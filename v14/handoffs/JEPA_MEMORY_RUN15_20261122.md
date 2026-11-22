@@ -174,3 +174,38 @@ R-089 is appended to `v14/V14_RESEARCH_LEDGER.md`. JEPA-TTT (arXiv:2610.00722) r
 5. Keep all learning and receiver paths SHADOW-only until utility, restart, rollback and Android evidence pass.
 
 **User action: NONE.** The installed release is already up to date; no manual Termux command, model download/swap, permission change or device action is needed.
+
+
+## Run 18 — measure real receiver gates separately from prompt wiring (2026-11-22T20:48:16.111Z)
+
+### Code checkpoint
+
+- PR #2372 exact head `01549f1ff36937758be60b0876066264ebc7eb36`, DRAFT / NOT_RELEASED.
+- Prior Run17 bodyview omission audit remains: source-bound reason is stored when a temporal readout is omitted; diagnostic is not inserted into the prompt.
+- Prior prompt-consumer test remains explicitly test-only: trained predictor/receiver weights are retained, but a fixture marks B1/B2 utility gates accepted to exercise the actual `Cognition.offer` consumer. A separate negative control forces B1 utility rejection and verifies no temporal prediction reaches the prompt.
+- New commit `01549f1ff36937758be60b0876066264ebc7eb36` adds a distinct real-metric check: for both B1_DETAIL and B2_GIST, the test computes `receiver_utility_gate` from the persisted disjoint-holdout metrics and asserts the readout status and returned gate exactly agree. It uses the action with maximum train-split support to separate utility rejection from the minimum-support gate.
+- Thus the evidence is split cleanly: predictor/EMA training and holdout controls; actual receiver-gate calculation; prompt wiring under a test-only accepted gate. The last item is not learned utility evidence. No body weights change.
+
+### Exact test state
+
+- Exact 6da129ef workflows `45068109547` optimizer-resume 3.13/3.14, `45068109554` staged/integrated, `45068109526` temporal T8 remain QUEUED at last read.
+- No exact-head workflow run is visible yet for 01549f1. No PASS is claimed for the new measured-gate assertion.
+- Prior fbe4 temporal jobs failed 11/12 on each Python version because the B1 prompt lacked a temporal readout. Prior staged/integrated path failed at QA's stale memory.py source pin and also showed a temporal SleepRuntime `ValueError`; root cause remains open.
+- LOCAL_LINUX full Aii compile/pytest remains BLOCKED / NOT_RUN: Python 3.13.5, NumPy 2.3.5 and pytest 9.0.2 exist, but no checkout is mounted and GitHub DNS fails.
+
+### Dependencies / device
+
+- QA #2359 still needs to rebind the lifecycle chain to JEPA `memory.py` SHA-256 `33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701`; inherited JEPA pin `61e881ad…` and QA pin `b2059016…` remain stale. Request: #2359 comment 7085390248.
+- Boss #2370 audio Runtime pin is corrected on branch head 7fc6d7e, with Runtime/audio overlay blob SHA-1 `6e61af07326c5bb11406ee72361a710d5facc9a5`; full 18-workflow matrix remains queued. No JEPA rebase until Boss and QA chains are green.
+- Private V13OBS #115 (20:24:26Z) reports base release `aed1d2b` installed, updater enabled, Runtime/Dashboard UP_TO_DATE; B1 4/4 and B2 2/2 native attempts failed, zero valid offers, C3 prefill ~38.945 s / 2 tokens. No new chat or update request. #2372 not installed / REDMI_UNVERIFIED.
+- No model/weight/permission/device action occurred.
+
+### Next
+
+1. Poll 6da129ef and obtain exact 01549f1 CI.
+2. Record actual B1/B2 gate values and accepted/rejected outcomes; keep them separate from the prompt fixture.
+3. Read the actual SleepRuntime temporal ValueError message and fix its root cause.
+4. Obtain QA's lifecycle rebind and Boss's green exact-head matrix before composition/rebase.
+5. Run multi-shift retention/replay-on/off and return-to-first-cohort ablations with matched update budgets, parameter/EMA deltas, held-out utility, rollback and restart.
+
+**User action: NONE.** Installed release is already up to date; no manual Termux command, model swap or device permission change is required.
