@@ -2,9 +2,10 @@
 
 This module is deliberately separate from the Core-pinned A5 bridge. It uses
 caller-supplied PCM16 only; it never opens a microphone, stores raw PCM, runs
-ASR, identifies a speaker, or grants learning/action authority. The acoustic
-classes and prosody-change score are deterministic heuristics, not a trained
-VAD, speech classifier, or calibrated probability.
+ASR, assigns speaker identity, or grants learning/action authority. An optional
+caller-supplied frame-embedding batch may produce only a source-bound change-or-
+overlap hint; no model is loaded here. Acoustic classes and prosody scores remain
+deterministic heuristics, not a trained VAD, speech classifier, or calibrated probability.
 """
 from __future__ import annotations
 
@@ -16,6 +17,7 @@ from statistics import median
 
 from . import attention as attctl
 from .audio_temporal_evidence import TemporalVoiceEvidence, TemporalVoiceEvidenceRegistry
+from .audio_speaker_evidence import SpeakerChangeEvidenceRegistry, SpeakerEvidenceError
 from .audio_silero_vad import SileroVADStream, validate_vad_evidence
 from .a5_audio_admission_bridge import audio_to_admission
 from .audio_ear import observe_pcm16
@@ -27,6 +29,54 @@ from .contracts import validate
 
 
 _ACTIVITY_HINTS = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}
+
+def _speaker_change_decision(evidence, cues):
+    """Return a conservative A4 three-regime decision without assigning identity.
+
+    Low similarity is only a candidate after a verified, model-bound calibration
+    artifact is supplied. Caller labels and numeric thresholds are not calibration.
+    Silence, noise, short windows, missing calibration, rejected embeddings and
+    warm-up remain DEFER rather than false continuity.
+    """
+    if type(cues) is not dict or cues.get("activity_hint") != "VOICED":
+        return "DEFER"
+    frame_count = cues.get("frame_count")
+    voiced_fraction = cues.get("voiced_fraction")
+    # The PCM ingress contract bounds window size; do not impose a 1-second cap here.
+    if (type(frame_count) is not int or frame_count < 2
+            or type(voiced_fraction) not in (int, float)
+            or not math.isfinite(float(voiced_fraction))
+            or not 0.0 <= float(voiced_fraction) <= 1.0
+            or int(frame_count * float(voiced_fraction)) < 2):
+        return "DEFER"
+    if type(evidence) is not dict or evidence.get("status") != "MEASURED":
+        return "DEFER"
+    # The current RAW EAR registry only accepts caller-asserted thresholds.
+    # Until a separately reviewed calibration artifact is verified and pinned,
+    # similarity remains diagnostic and cannot support continuity/change.
+    if evidence.get("threshold_status") != "CALIBRATED_VERIFIED":
+        return "DEFER"
+    receipt_sha = evidence.get("calibration_receipt_sha256")
+    if (type(receipt_sha) is not str or len(receipt_sha) != 64
+            or any(char not in "0123456789abcdef" for char in receipt_sha)):
+        return "DEFER"
+    calibration_id = evidence.get("calibration_id")
+    confidence_threshold = evidence.get("confidence_threshold")
+    if (type(calibration_id) is not str or not calibration_id.strip()
+            or type(confidence_threshold) not in (int, float)
+            or not math.isfinite(float(confidence_threshold))
+            or not -1.0 <= float(confidence_threshold) <= 1.0):
+        return "DEFER"
+    candidate = evidence.get("peak_speaker_change_candidate")
+    if candidate is None:
+        candidate = evidence.get("speaker_change_candidate")
+    if candidate is True:
+        return "CHANGE_OR_OVERLAP_CANDIDATE"
+    if evidence.get("confidence_gate_passed") is True:
+        return "CONTINUITY_SUPPORTED"
+    return "DEFER"
+
+
 
 # Protect first-use get/create/set on a shared Runtime during concurrent audio calls.
 _RUNTIME_TEMPORAL_REGISTRY_INIT_LOCK = threading.Lock()
@@ -55,6 +105,46 @@ def _estimate_pitch(frame: list[float], sample_rate: float) -> tuple[float | Non
     if not candidates:
         return None, max(0.0, min(1.0, peak))
     lag, confidence = min(candidates, key=lambda item: item[0])
+    return sample_rate / lag, max(0.0, min(1.0, confidence))
+
+
+
+def _load_numpy():
+    """Load NumPy only when the explicitly requested accelerated backend is used."""
+    try:
+        import numpy as np
+    except ImportError:
+        return None
+    return np
+
+
+def _estimate_pitch_numpy(frame, sample_rate: float, np) -> tuple[float | None, float]:
+    """NumPy autocorrelation equivalent of _estimate_pitch for short 40-ms frames."""
+    values = np.asarray(frame, dtype=np.float64)
+    count = int(values.size)
+    minimum_lag = max(2, int(sample_rate / 400))
+    maximum_lag = min(count // 2, int(sample_rate / 65))
+    if maximum_lag < minimum_lag:
+        return None, 0.0
+    correlation = np.correlate(values, values, mode="full")[
+        count - 1 + minimum_lag:count + maximum_lag
+    ]
+    prefix = np.concatenate(([0.0], np.cumsum(values * values)))
+    lags = np.arange(minimum_lag, maximum_lag + 1)
+    denominator = np.sqrt(prefix[count - lags] * (prefix[count] - prefix[lags]))
+    valid = denominator > 1e-9
+    if not np.any(valid):
+        return None, 0.0
+    normalized = np.full(lags.shape, -np.inf, dtype=np.float64)
+    normalized[valid] = correlation[valid] / denominator[valid]
+    peak = float(np.max(normalized))
+    threshold = max(0.55, peak * 0.99)
+    candidates = np.flatnonzero(normalized >= threshold)
+    if not candidates.size:
+        return None, max(0.0, min(1.0, peak))
+    index = int(candidates[0])
+    lag = int(lags[index])
+    confidence = float(normalized[index])
     return sample_rate / lag, max(0.0, min(1.0, confidence))
 
 
@@ -129,7 +219,7 @@ def validate_voice_cues(cues: dict) -> dict:
     return dict(cues)
 
 
-def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
+def extract_voice_cues(pcm: bytes, sample_rate: int, *, backend: str = "python") -> dict:
     """Extract bounded pitch, voicing, energy and non-speech hints from mono PCM16."""
     if type(pcm) is not bytes or not pcm or len(pcm) % 2:
         raise ValueError("voice cue input must be complete PCM16 bytes")
@@ -137,6 +227,11 @@ def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
         raise ValueError("voice cue sample rate must be 8000..48000")
     if len(pcm) > sample_rate * 2:
         raise ValueError("voice cue window is limited to one second")
+    if type(backend) is not str or backend not in {"python", "numpy"}:
+        raise ValueError("voice cue backend must be 'python' or 'numpy'")
+    numpy_module = _load_numpy() if backend == "numpy" else None
+    if backend == "numpy" and numpy_module is None:
+        raise RuntimeError("NumPy voice cue backend is unavailable")
     samples = struct.unpack("<" + "h" * (len(pcm) // 2), pcm)
     overall_energy = sum(value * value for value in samples) / len(samples)
     overall_rms = math.sqrt(overall_energy) / 32768.0
@@ -167,7 +262,10 @@ def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
         frame_rms.append(rms)
         if rms < 0.002:
             continue
-        pitch, confidence = _estimate_pitch(frame, effective_rate)
+        if numpy_module is None:
+            pitch, confidence = _estimate_pitch(frame, effective_rate)
+        else:
+            pitch, confidence = _estimate_pitch_numpy(frame, effective_rate, numpy_module)
         if pitch is not None and confidence >= 0.55:
             pitches.append(pitch)
             voicing_scores.append(confidence)
@@ -204,7 +302,9 @@ def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
 
     crest = overall_peak / max(overall_rms, 1e-6)
 
-    if overall_rms < 0.003:
+    # Strong frame-level periodicity must not be overridden by the absolute window floor.
+    # VOICED remains an acoustic cue, not a calibrated speech probability.
+    if overall_rms < 0.003 and voiced_fraction < 0.25:
         activity_hint = "SILENCE"
         activity_score = max(0.0, min(1.0, 1.0 - overall_rms / 0.003))
     elif voiced_fraction >= 0.25 and voicing_confidence >= 0.55:
@@ -249,13 +349,19 @@ def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
 
 
 def reset_runtime_temporal_voice_states(runtime, *, source_id=None, generation_id=None):
-    """Clear process-local A4 voice state after source revocation or stream teardown."""
+    """Clear process-local A4 voice and speaker-change state after revocation or teardown."""
+    count = 0
     registry = getattr(runtime, "_raw_ear_temporal_registry", None)
-    if registry is None:
-        return 0
-    if not isinstance(registry, TemporalVoiceEvidenceRegistry):
-        raise ValueError("runtime RAW EAR temporal registry has an invalid type")
-    return registry.reset(source_id=source_id, generation_id=generation_id)
+    if registry is not None:
+        if not isinstance(registry, TemporalVoiceEvidenceRegistry):
+            raise ValueError("runtime RAW EAR temporal registry has an invalid type")
+        count = registry.reset(source_id=source_id, generation_id=generation_id)
+    speaker_registry = getattr(runtime, "_raw_ear_speaker_registry", None)
+    if speaker_registry is not None:
+        if not isinstance(speaker_registry, SpeakerChangeEvidenceRegistry):
+            raise ValueError("runtime RAW EAR speaker registry has an invalid type")
+        speaker_registry.reset(source_id=source_id, generation_id=generation_id)
+    return count
 
 
 def _runtime_temporal_voice_registry(runtime):
@@ -273,6 +379,22 @@ def _runtime_temporal_voice_registry(runtime):
                     raise ValueError("runtime cannot retain bounded RAW EAR temporal state") from exc
     if not isinstance(registry, TemporalVoiceEvidenceRegistry):
         raise ValueError("runtime RAW EAR temporal registry has an invalid type")
+    return registry
+
+
+def _runtime_speaker_evidence_registry(runtime):
+    registry = getattr(runtime, "_raw_ear_speaker_registry", None)
+    if registry is None:
+        with _RUNTIME_TEMPORAL_REGISTRY_INIT_LOCK:
+            registry = getattr(runtime, "_raw_ear_speaker_registry", None)
+            if registry is None:
+                registry = SpeakerChangeEvidenceRegistry()
+                try:
+                    setattr(runtime, "_raw_ear_speaker_registry", registry)
+                except Exception as exc:
+                    raise ValueError("runtime cannot retain bounded RAW EAR speaker state") from exc
+    if not isinstance(registry, SpeakerChangeEvidenceRegistry):
+        raise ValueError("runtime RAW EAR speaker registry has an invalid type")
     return registry
 
 
@@ -493,8 +615,12 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                consent_check, finality, consent_guard=None, token_budget=512,
                                temporal_state: TemporalVoiceEvidence | None = None,
                                vad_stream: SileroVADStream | None = None,
-                               consent_lease: AudioConsentLease | None = None):
+                               consent_lease: AudioConsentLease | None = None,
+                               voice_backend: str = "python",
+                                speaker_embeddings: dict | None = None):
     """Persist source-bound acoustic cues under an owned or caller-held consent lease."""
+    if type(voice_backend) is not str or voice_backend not in {"python", "numpy"}:
+        raise ValueError("voice_backend must be 'python' or 'numpy'")
     if vad_stream is not None and not isinstance(vad_stream, SileroVADStream):
         raise ValueError("vad_stream must be a SileroVADStream instance")
     # A Runtime-wide caller may already hold the same provider lease through
@@ -507,7 +633,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             pcm, sample_rate, start_ms, consent=True, source_id=source_id, max_seconds=1
         )
         segment = raw["segments"][0]
-        cues = extract_voice_cues(pcm, sample_rate)
+        cues = extract_voice_cues(pcm, sample_rate, backend=voice_backend)
         vad_evidence = None
         if vad_stream is not None:
             vad_evidence = vad_stream.push_pcm16(
@@ -530,9 +656,36 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         )
         audio_segment = audio_packet["segments"][0]
         audio_segment["acoustic"]["voice_cues"] = cues
+        speaker_evidence = None
+        if speaker_embeddings is not None:
+            try:
+                speaker_evidence = _runtime_speaker_evidence_registry(runtime).update(
+                    source_id=source_id, generation_id=generation_id,
+                    start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
+                    activity_hint=cues["activity_hint"], embeddings=speaker_embeddings,
+                )
+            except SpeakerEvidenceError as exc:
+                runtime.store.log("speaker_embedding_rejected", event_id, {"error": type(exc).__name__})
+                speaker_evidence = {
+                    "method": "COSINE_LOOKBACK_DIAGNOSTIC_V1",
+                    "status": "REJECTED",
+                    "error": type(exc).__name__,
+                    "speaker_label": None,
+                    "identity_authority": False,
+                    "learning_authority": False,
+                    "action_authority": False,
+                }
+        speaker_change_decision = _speaker_change_decision(speaker_evidence, cues)
+        if speaker_evidence is not None:
+            speaker_evidence["decision"] = speaker_change_decision
+            audio_segment["acoustic"]["speaker_change_evidence"] = speaker_evidence
+        audio_segment["acoustic"]["speaker_change_decision"] = speaker_change_decision
         audio_segment["unmeasured"] = [
             "speaker_identity", "speaker_timbre", "calibrated_speech_probability", "ASR"
         ]
+        if (speaker_evidence is None or speaker_evidence.get("status") != "MEASURED"
+                or speaker_change_decision == "DEFER"):
+            audio_segment["unmeasured"].append("speaker_change")
         # Do not claim pitch/prosody were measured when the window had no usable
         # voiced frames. A single voiced frame estimates pitch, but not dynamics.
         if cues["f0_median_hz"] is None:
@@ -572,12 +725,26 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                 end_ms=audio_segment["end_ms"],
                 cues=cues,
             )
+        speaker_change_score = 0.0
+        speaker_change_candidate = None
+        if speaker_evidence is not None:
+            speaker_change_candidate = speaker_evidence.get("peak_speaker_change_candidate")
+            if speaker_change_candidate is None:
+                speaker_change_candidate = speaker_evidence.get("speaker_change_candidate")
+            if speaker_change_candidate is True:
+                speaker_change_score = float(
+                    speaker_evidence.get("peak_candidate_change_score")
+                    or speaker_evidence.get("change_score")
+                    or 0.0
+                )
         voice_novelty = max(
             0.35 * temporal_voice["voice_evidence"],
             0.9 * cues["prosody_change_score"] if temporal_voice["voice_active"] else 0.0,
+            0.35 * speaker_change_score,
         )
         prosody_interrupt = (0.25 * cues["prosody_change_score"]
                              if temporal_voice["voice_active"] else 0.0)
+        speaker_interrupt = 0.25 * speaker_change_score
         onset_interrupt = 0.5 if temporal_voice["voice_onset"] else 0.0
         vad_speech_fraction = 0.0 if vad_evidence is None else vad_evidence["speech_fraction"]
         vad_interrupt = 0.25 * vad_speech_fraction
@@ -588,7 +755,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         attention = attctl.controller(runtime)
         attention_result = attention.modulate(event_id, sal={
             "novelty": min(1.0, max(zcr, voice_novelty)),
-            "external_interrupt": min(1.0, max(rms * 0.5, prosody_interrupt, onset_interrupt, vad_interrupt)),
+            "external_interrupt": min(1.0, max(rms * 0.5, prosody_interrupt, onset_interrupt, vad_interrupt, speaker_interrupt)),
         })
         a4 = {
             "packet_id": audio_packet["packet_id"],
@@ -598,6 +765,8 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "voice_cues": cues,
             "prosody_change_score": cues["prosody_change_score"],
             "temporal_voice": temporal_voice,
+            "speaker_change_evidence": speaker_evidence,
+            "speaker_change_decision": speaker_change_decision,
             "attention": attention_result,
             "learning_authority": False,
             "action_authority": False,
@@ -608,22 +777,43 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         # The provider lease remains authoritative through A4 and C3 admission.
         # Do not reacquire its lock through consent_check here.
         candidate = audio_to_admission(audio_packet, consent_active=True)
-        summary = candidate.summary + (
-            f" activity={cues['activity_hint']} voiced={cues['voiced_fraction']:.2f}"
+        # Packet start/end already carry the interval; drop the duplicate text
+        # field to preserve room for source-bound acoustic evidence below.
+        base_summary = " ".join(
+            token for token in candidate.summary.split()
+            if not token.startswith(("zcr=", "interval_ms="))
+        )
+        summary = base_summary + (
+            f" activity={cues['activity_hint']} v={cues['voiced_fraction']:.2f}"
         )
         if cues["f0_median_hz"] is not None:
             summary += f" f0_med_hz={cues['f0_median_hz']:.0f}"
-        if cues["f0_range_hz"] is not None:
-            summary += f" f0_range_hz={cues['f0_range_hz']:.0f}"
         summary += f" energy_range_db={cues['energy_range_db']:.1f}"
         if cues["voiced_energy_range_db"] is not None:
             summary += f" voiced_energy_range_db={cues['voiced_energy_range_db']:.1f}"
         summary += f" prosody_change={cues['prosody_change_score']:.2f}"
         if vad_evidence is not None:
             summary += f" vad_speech_fraction={vad_speech_fraction:.2f}"
+        if speaker_evidence is not None and speaker_evidence.get("status") == "MEASURED":
+            if speaker_change_candidate is not None:
+                summary += f" speaker_change_candidate={int(speaker_change_candidate)}"
+                summary += f" speaker_change_score={speaker_change_score:.2f}"
+                if speaker_change_candidate:
+                    summary += " speaker_change_kind=CHANGE_OR_OVERLAP"
+            else:
+                summary += f" speaker_similarity_delta={speaker_evidence['change_score']:.2f}"
+                summary += (
+                    " spk_cal=UNVERIFIED"
+                    if speaker_evidence.get("threshold_status") == "CALLER_ASSERTED_UNVERIFIED"
+                    else " spk_cal=UNAVAILABLE"
+                )
+        # The structured packet retains every cue; reserve the bounded C3
+        # summary tail for the speaker score/kind and explicit three-state decision.
+        decision_suffix = f" spk_dec={speaker_change_decision}"
+        summary = summary[:256-len(decision_suffix)] + decision_suffix
         candidate = Percept(
             candidate.source_id, candidate.modality, candidate.start_ms, candidate.end_ms,
-            summary[:256], candidate.consent, candidate.final, candidate.priority,
+            summary, candidate.consent, candidate.final, candidate.priority,
         )
         c3 = admit((candidate,), token_budget)
         result = {
@@ -632,6 +822,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "a4": a4,
             "c3_admission": c3,
             "temporal_voice": temporal_voice,
+            "speaker_change_evidence": speaker_evidence,
             "capture_authority": "CALLER_SUPPLIED_PCM16",
             "learning_authority": False,
             "action_authority": False,
