@@ -38,3 +38,12 @@ Keep the current full-encoder JEPA path and source-disjoint A→B→A retention 
 Current V14 implementation already has persistent numeric predictor/optimizer state, trusted T8 provenance, source-disjoint holdouts, replay selection and a predictor-only arm. The paper therefore supplies a benchmark design/control, not a dependency or a claim that current V14 meets its results.
 
 **Decision:** RESEARCH_ONLY / NO_CODE_IMPORTED / NO_LICENSE_ADOPTED / NO_ANDROID_PROOF. Do not change the active model, weights, learning permissions, or replay policy on this basis alone.
+
+
+## Independent reproduction / OSS readback
+
+- Independent reproduction: https://github.com/ZhengQingJing/jepa-ttt-reproduction, latest inspected HEAD `30002a766ecfc133245d3260d059fea2d768f486` (2026-11-21). This is **not the authors' official implementation**.
+- Repository license: MIT. Its pinned upstreams are LeWorldModel `8edfeb336732b5f3ce7b8b210d0ba370a09e2cac` (MIT) and stable-worldmodel `21446f1ede6d5284e981bd7b47f432b994e6d812` (MIT); the reproduction includes both upstream license texts.
+- The reproduction README documents a CPU-only standard-library results verifier, but training/deployment uses Linux, Python 3.11, PyTorch 2.8.0+CUDA 12.6, torchvision 0.23.0+CUDA 12.6, Transformers pinned to commit `21fac7abba2a37fae86106f87fcf9974fd1e3830`, and an RTX A6000 in reported runs. Its model is ViT-Tiny/14 with 192-dimensional latents; this is not a mobile/ARM candidate.
+- It provides separate result sets for Two-Room, Reacher and OGBench-Cube, persistence controls, fixed-trajectory prediction diagnostics, and dense/sparse stream controls. The README reports its own Two-Room results separately from paper reference values, which is useful evidence hygiene.
+- Reuse decision: **algorithm/evaluation reference only**. MIT code is technically reusable with attribution, but its CUDA/PyTorch/robotics dependency chain and model scale are inappropriate for direct Redmi integration. No source, weights, assets, or dependencies were downloaded or imported in this run.
