@@ -256,6 +256,44 @@ def test_sleep_jepa_job_requeues_one_bounded_continuation_when_more_t8_rows_exis
         store.close()
 
 
+def test_sleep_jepa_job_requeues_when_only_temporal_page_has_more_rows(tmp_path):
+    home = tmp_path / "brain-temporal-continuation"
+    store, session = _make_store(home)
+    try:
+        event_id = _add_transitions(store, session, 0, 1)[0]
+        store.set_state(PERMISSION_KEY, {
+            "learning_enabled": True, "optimizer_permission": True,
+            "steps": 40, "replay_mode": "uniform",
+        })
+        sleep = _sleep(store, home)
+        sleep._run_world_jepa = lambda event_id, limit=64: {
+            "status": "POSTCOMMIT_PROCESSED",
+            "event_id": event_id,
+            "learning": {"status": "NO_NEW_TRANSITIONS", "has_more": False},
+            "temporal": {
+                "status": "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA",
+                "has_more": True,
+            },
+            "planner": {"status": "NO_CHECKPOINT"},
+        }
+        posted = sleep.scheduler.post(
+            "IDLE", action="jepa_update", payload={"event_id": event_id},
+            dedup="v14-world-jepa",
+        )
+        dispatched = sleep.scheduler.next(idle=True, resource_state="NORMAL", quiet=False)
+        assert dispatched is not None and dispatched["id"] == posted
+        result = sleep.job(dispatched)
+        assert result["learning"]["has_more"] is False
+        assert result["temporal"]["has_more"] is True
+        assert result["temporal_status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA"
+        assert result["continuation_scheduled"] is True
+        pending = [item for item in sleep.scheduler.pending() if item["action"] == "jepa_update"]
+        assert len(pending) == 1
+        assert pending[0]["payload"] == {"event_id": event_id}
+    finally:
+        store.close()
+
+
 def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with_restart_rollback(tmp_path):
     home = tmp_path / "brain-runtime-jepa"
     store, session = _make_store(home)
