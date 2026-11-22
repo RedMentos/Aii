@@ -107,7 +107,7 @@ public final class MainActivity extends Activity {
     }
 
     private void reviewPending() {
-        java.util.List<CompanionDb.Action> pending = db.pending();
+        java.util.List<CompanionDb.Action> pending = db.pending(System.currentTimeMillis());
         if (pending.isEmpty()) {
             Toast.makeText(this, "No pending actions", Toast.LENGTH_SHORT).show();
             return;
