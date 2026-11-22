@@ -7,7 +7,7 @@ Date: 2026-11-22 13:00 CET
 - Verified HEAD at branch creation and handoff: `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`
 - Candidate PR: https://github.com/RedMentos/Aii/pull/2346
 - Candidate branch: `research-perception/v14-b3-paired-native-current-20261122-run11`
-- Candidate head after code changes: `040371439d6b4fa5510d7dda65190b8fad3a7614` (the later research-ledger and user-handoff commits are on the same PR branch; refresh exact head before review)
+- Code checkpoint after B3 fixes: `20a510d829d34d5847f3adde5546cf5cef5d3fe7`; the PR branch subsequently advances for documentation-only handoff commits, so refresh the live PR head before review.
 
 ## Actual runtime path added
 1. `:tap pair` queues a cancellable Runtime job.
@@ -25,9 +25,11 @@ Date: 2026-11-22 13:00 CET
 - Production B3 remains OFF/SYMBOLIC until same-source native taps, independent labels, L0 baselines, same-model parity, no-message, zero, shuffled and OOD controls, held-out utility, role retention, restart and target-runner measurements all pass.
 
 ## Evidence
+- **CI / exact code checkpoint `20a510d829d34d5847f3adde5546cf5cef5d3fe7`:** `V13 B3 paired native tap regression` run `45021891591` PASS. All 50 tests passed, touched Python modules compiled, and the Termux L1 shadow CLI import/argument-parser smoke passed. This is GitHub Linux CI, not Redmi/Termux execution.
+- The first B3 CI attempt exposed two real issues: the completion check lacked a literal `:tap pair` help entry, and the B3 utility scorer updated callosum state despite `RECORD_ONLY`. Both were corrected; the current B3 run passes. `Callosum.outcome` now returns `SKIPPED_RECORD_ONLY` before consuming pending utility messages when the Runtime is in `RECORD_ONLY`.
 - LOCAL_LINUX CPython 3.13.5 / NumPy 2.3.5: exact `_source_disjoint_split` helper passed 32 source hashes × 2 spans; 52 train / 12 test; no hash crosses splits; deterministic; negative controls for conflicting labels, undersized classes, boolean labels and malformed hashes all rejected.
 - LOCAL_FULL_REPOSITORY: BLOCKED because no repository checkout is available and `git ls-remote` cannot resolve `github.com`. No full local `pytest` or compile pass claimed.
-- CI for PR #2346: pending at first readback; refresh exact-head workflows before review.
+- CI beyond the focused B3 job: staged/integrated, role-specific tap-provenance, JEPA and deployment workflows were queued/in progress at the last poll. Do not call the PR merge-ready until all required exact-head checks finish.
 - TERMUX/REDMI: REDMI_UNVERIFIED. No phone, microphone, native B1/B2 weights or live device was accessed.
 
 ## Prior work and failure reconciliation
