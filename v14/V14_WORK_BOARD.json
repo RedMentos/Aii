@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T22:31:43.084Z",
+  "updated_at": "2026-11-22T22:33:13.116Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; exact SHA readback 30/30 observed check-runs SUCCESS. Authenticated private PIPELINE_STATUS #619 confirms the same SHA installed, auto-update enabled, runtime/dashboard UP_TO_DATE and last_error NONE. DIAGNOSTICS #620 still shows a slow 2-token stored turn and B1/B2 TIME_BUDGET. Current candidates remain DRAFT / CI pending; functional and whole-Canon acceptance remain open.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -15,7 +15,7 @@
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
       "proof_environment": "CI_PENDING + authenticated ANDROID_DEVICE metadata; no correct-answer/native-offer acceptance",
-      "next_step": "Boss #2370 current head bae7d031: 0 SUCCESS / 16 QUEUED / 4 CANCELLED / 4 SKIPPED. Previous head 03909f0 had 8 successes but both Python 3.13/3.14 audio-arithmetic jobs failed one stale persisted-source assertion each; new head corrects it. Native B1/B2 offers still TIME_BUDGET 53.2/54.2 s; no speed fix.",
+      "next_step": "Boss #2370 current head bae7d031: 0 SUCCESS / 16 QUEUED / 5 CANCELLED / 5 SKIPPED. Previous head 03909f0 had 8 successes but both Python 3.13/3.14 audio-arithmetic jobs failed one stale persisted-source assertion each; new head corrects it. Native B1/B2 offers still TIME_BUDGET 53.2/54.2 s; no speed fix. Lab-Age requested 10/effective 5/official 0; physical execution false.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T22:09:19.069Z",
       "proof": "PIPELINE_STATUS #550 confirms c4eb82deec915f65894c20d6ebbaf0ebf58fa335 installed. DIAGNOSTICS #551 repeats FINAL 56.432 s / TTFT 40.818 s / prefill 39.088 s / 701 prompt tokens / 2 generated tokens; correctness UNKNOWN. B1/B2 probes TIME_BUDGET 53.2/54.2 s. Health #549 reports 1,293 MiB MemAvailable and 1,537 MiB disk free; learning status #552 UNAVAILABLE. No 20-turn acceptance. Boss candidate PR #2343 exact head `71fd9e1058abd1ea15668dd76a0de9f1f8b7709e` is 11 ahead / 0 behind c4eb82 but not releasable: owner-read Python3.14 staged startup `Integrated stage builder changed`; Lab-Age `integrated builder hash mismatch`; A5 3.13/3.14 `integrated builder hash mismatch` plus `unsupported archive source: store.py`, observer anchor `ask`, and runtime/postcommit hash mismatches; native receiver 3.13/3.14 integrated builder mismatch; staged runtime 33 failed / 220 passed / 10 skipped / 2 errors / 37 subtests; migration remains PARTIAL. Exact logs reviewed and QA finding posted on #2343. Runtime deploy integrity, role-specific tap provenance and JEPA/online-world workflows pass, but this does not compensate for the red staged matrix. Byte-level diagnosis on exact #2343 head: runtime_deploy expects stage SHA256 614cfc... but actual stage_integrated_candidate is 4c7f2c...; stage builder expects recovery builder SHA256 47fa3d... but actual is 1333db...; archive_stream_range still pins store.py 40a387... while actual store.py is c413e..., and source-lifecycle rebinder searches for c413e instead of the old 40a387 preimage; record-only guard expects runtime.py a533... while actual is 08c1ef...; fair-budget overlay pin matches runtime but its old ask() anchor is already replaced by role_end. Exact values posted on #2343 comment 7078775784. C4 receipt, base recovery, audio and native receiver pins do match; avoid churning them. New Boss branch head `70c6a5bf15ab16dcd0caf7088c56584c4c8470cf` is 27 ahead / 0 behind c4eb82; exact-head CI is queued at last poll. Fresh byte readback still finds mismatches: runtime_deploy expects stage `3b4d8899…`, actual stage builder `53d8f5cb…`; stage expects recovery21 `4e20a52a…`, actual recovery builder `7efdcb5a…`; lifecycle store pin `3f5a5dd3…` vs actual store `c413e135…`, archive stream still `40a387e2…`; record-only Runtime pin `a5336607…` vs actual `08c1ef96…`; observer Runtime pin `9bb9ddc0…` vs actual `08c1ef96…` and old `ask()` anchor remains absent. The recovery12 blob pin `74901948…` now matches; C4/audio/native receiver pins also match. Prior head 71fd9e had staged/owner-read/A5/Lab-Age/migration failures; do not project those conclusions onto new head until its CI completes. Update for current Boss head 70c6a5: two-checkout migration run 45019915717 completed FAIL in both previous/current phone-release cases. Both source/runtime checkouts fast-forwarded to 70c6a5, but the one-shot helper returned last_result=PARTIAL, runtime=ERROR, last_error=UPDATE; exact assertion at test_two_checkout_migration_20261116.py:236 expected UPDATED after recoverable PARTIAL. Other exact-head workflows remained queued at last poll. Latest Boss branch head `023e56d166ab128f1038033067db681903757bcb` is 29 ahead / 0 behind c4eb82. Corrected recovery12 blob pin now matches (`bca4152c…`); source-lifecycle Store and fair-observer Runtime pins now match actual store/runtime bytes. Remaining exact readback mismatches: runtime_deploy STAGER `3b4d…` vs actual stage `53d8…`; stage BUILDER `4e20…` vs actual recovery21 `7efd…`; archive stream STORE pin `40a3…` vs actual store `c413…` while lifecycle rebinder searches `c413…` instead of the archive source's old preimage; record-only guard runtime `a533…` vs actual `08c1…`; fair-observer old ask anchor still absent because runtime already has role_end. All 13 substantive exact-head workflows queued at last poll. Previous 70c6a5 migration run failed PARTIAL/runtime ERROR; that is historical, not current-head CI.",
@@ -415,7 +415,7 @@
       "proof": "The exact runtime code SHA c4eb82deec915f65894c20d6ebbaf0ebf58fa335 is installed, but the receipt proves installation only. No Android process-death, service restart, reboot, marker recovery or runtime-only rollback receipt exists. User models, SQLite and chats were not modified."
     }
   ],
-  "current_redmi_status": "Authenticated private owner-read #634 confirms installed aed1d2b826290c95c70356b5d8b864b5ef382be4, auto-update=true, runtime/dashboard=UP_TO_DATE, last_error=NONE. DIAGNOSTICS #635: service/runtime/dashboard RUNNING; last stored FINAL turn 57.7388 s / TTFT 41.6269 s / prefill 38.9453 s / 751 prompt tokens / 2 generated tokens; B1/B2 native probes TIME_BUDGET 53.2/54.2 s; C2 OK; C3 3.1 s. Instant native residency: 0 mapped processes / 0 MiB PSS/RSS, child readability UNKNOWN; not sustained residency. HEALTH #636: 1,216 MiB MemAvailable / 5,569 MiB total / 1,364 MiB free disk, runtime=UNAVAILABLE (conflicts with DIAGNOSTICS RUNNING). LEARNING_STATUS #637 UNAVAILABLE. console_excerpt USER_OPTED_IN_REDACTED_ONLY but console_errors USER_NOT_OPTED_IN; no LOG_PAGE. No CHAT_SEND, UPDATE_REQUEST, remote shell or device mutation.",
+  "current_redmi_status": "Authenticated private owner-read #634 confirms installed aed1d2b826290c95c70356b5d8b864b5ef382be4, auto-update=true, runtime/dashboard=UP_TO_DATE, last_error=NONE. DIAGNOSTICS #635: service/runtime/dashboard RUNNING; last stored FINAL turn 57.7388 s / TTFT 41.6269 s / prefill 38.9453 s / 751 prompt tokens / 2 generated tokens; B1/B2 native probes TIME_BUDGET 53.2/54.2 s; C2 OK; C3 3.1 s. Instant native residency: 0 mapped processes / 0 MiB PSS/RSS, child readability UNKNOWN; not sustained residency. HEALTH #636: 1,216 MiB MemAvailable / 5,569 MiB total / 1,364 MiB free disk, runtime=UNAVAILABLE (conflicts with DIAGNOSTICS RUNNING). LEARNING_STATUS #637 UNAVAILABLE. console_excerpt USER_OPTED_IN_REDACTED_ONLY but console_errors USER_NOT_OPTED_IN; no LOG_PAGE. No CHAT_SEND, UPDATE_REQUEST, remote shell or device mutation. Lab-Age diagnostics: mode=ACTIVE, requested stage=10, effective implemented stage=5, official stage=0, physical feature execution verified=false; learning commit authority requires separate SHADOW.",
   "last_code_release_head": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
   "latest_integrated_head": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
   "latest_integrated_head_verified_at": "2026-11-22T22:24:48.002Z",
@@ -441,7 +441,31 @@
       "prefill_s": 38.945270141004585,
       "prompt_tokens": 751,
       "generated_tokens": 2,
-      "correctness": "UNKNOWN_CONTENT_NOT_USED_FOR_SCORING"
+      "correctness": "UNKNOWN_CONTENT_NOT_USED_FOR_SCORING",
+      "stage_marks_s": {
+        "ingress": 0.00436223900760524,
+        "perception_and_state": 0.021103332997881807,
+        "memory_recall": 0.09951109300891403,
+        "routing": 0.2460611459973734,
+        "preanswer_observers": 1.1294835930020781,
+        "focal_loop": 15.465330619001179,
+        "native_answer": 16.015758327004733,
+        "output_prepare": 15.495188588000019,
+        "finished": 57.7387891440012
+      },
+      "effective_config": {
+        "answer_tokens": 256,
+        "body_residency_mb": 2400,
+        "context_tokens": 2048,
+        "control_seconds": 4,
+        "deadline_seconds": 90,
+        "history_turns": 8,
+        "observer_seconds": 35,
+        "observer_tokens": 160,
+        "output_adapter_seconds": 8,
+        "retrieval_seconds": 8,
+        "threads": 6
+      }
     },
     "native_probe": {
       "status": "SMOKE_PARTIAL",
@@ -470,7 +494,16 @@
     "console_excerpt": "USER_OPTED_IN_REDACTED_ONLY",
     "log_page_allowed": false,
     "redmi_status": "AED1D2_INSTALLED; UPDATER_UP_TO_DATE; P0_CHAT_AND_B1_B2_ACCEPTANCE_OPEN; HEALTH_RUNTIME_CONFLICT; LEARNING_STATUS_UNAVAILABLE; NO_C3_SEMANTIC_OR_NATIVE_LATENT_PROOF",
-    "note": "No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, remote shell, model/weight/permission change or device mutation. No user action required."
+    "note": "No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, remote shell, model/weight/permission change or device mutation. No user action required.",
+    "lab_age": {
+      "mode": "ACTIVE",
+      "requested_stage": 10,
+      "effective_implemented_stage": 5,
+      "official_stage": 0,
+      "physical_feature_execution_verified": false,
+      "learning_commit_authority": "REQUIRES_SEPARATE_SHADOW_MODE",
+      "config_persisted": true
+    }
   },
   "capability_snapshot": [
     {
@@ -709,7 +742,7 @@
     "boss_work_branch": "boss/v14-fair-budget-current-base-20261122-run14",
     "boss_work_head": "bae7d03196d98ac6dfebc0a2649faf257ba8308f",
     "integrated_code_candidate": "PR #2370 — fair B1/B2 scheduler + source-bound OfferPacket to C4 to C3 integration test",
-    "integrated_code_candidate_checks": "Exact head bae7d03196d98ac6dfebc0a2649faf257ba8308f: 0 SUCCESS / 16 QUEUED / 0 IN_PROGRESS / 4 CANCELLED / 4 SKIPPED / 0 failures observed; NOT_GREEN / NOT_RELEASED. Previous head 03909f0 reached 8 successes but audio/arithmetic Python 3.13 and 3.14 each failed one stale persisted-source assertion.",
+    "integrated_code_candidate_checks": "Exact head bae7d03196d98ac6dfebc0a2649faf257ba8308f: 0 SUCCESS / 16 QUEUED / 0 IN_PROGRESS / 5 CANCELLED / 5 SKIPPED / 0 failures observed; NOT_GREEN / NOT_RELEASED. Previous head 03909f0 reached 8 successes but audio/arithmetic Python 3.13 and 3.14 each failed one stale persisted-source assertion.",
     "changes": [
       "Current recovery/stage/deployer source pins read back; native receiver cognition base pin matches exact source tree.",
       "Staged synthetic source-bound B1/B2 OfferPacket→C4→C3 consumer is present but current-head workflow is queued; no native offer proof.",
@@ -718,7 +751,7 @@
       "No production arithmetic code, model, weight, permission or device state changed."
     ],
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT; git clone failed GitHub DNS; no local full pytest/compile/native run.",
-    "pr2370": "DRAFT; exact head bae7d031; 0 success / 16 queued / 4 cancelled / 4 skipped; previous head 03909f0 audio/arithmetic Python 3.13/3.14 each failed one source-transition assertion; new head corrects assertion; no current-head pass yet.",
+    "pr2370": "DRAFT; exact head bae7d031; 0 success / 16 queued / 5 cancelled / 5 skipped; previous head 03909f0 audio/arithmetic Python 3.13/3.14 each failed one source-transition assertion; new head corrects assertion; no current-head pass yet.",
     "pr2377": "f64e994: approval record now persists canonical path + five-field file identity; joint manifest/router redirect negative present; two workflows queued; duplicate test definition remains; no merge",
     "pr2381": "07b4ffbd: 21 ahead / 12 behind #2377 f64e994; overlay lacks O_NONBLOCK and _verify_model_file; test double-applies receiver; no workflows; no merge",
     "pr2383": "714a09e: five workflows failed (optimizer resume, migration, Lab-Age, owner-read, staged/integrated); deploy integrity success; no real weight diff",
@@ -744,7 +777,8 @@
       "PR #2377 head 45f08a3: native receiver staged runtime and staged/integrated workflows SUCCESS before identity persistence update; new head f64e994 CI queued",
       "PR #2376 head e0985029: Core Android companion outcome adapter run 45074394052 SUCCESS; staged/integrated run 45074394109 SUCCESS on stale base"
     ],
-    "pr2384": "5cd8ffae: bounded numeric _feature_summary and direct malformed/nonfinite tests present; two workflows queued; duplicate test definitions need removal"
+    "pr2384": "5cd8ffae: bounded numeric _feature_summary and direct malformed/nonfinite tests present; two workflows queued; duplicate test definitions need removal",
+    "device_receipt": "PIPELINE_STATUS #634; DIAGNOSTICS #635; HEALTH #636; LEARNING_STATUS #637. Lab-Age mode active, requested stage 10, effective implemented stage 5, official stage 0, physical feature execution false, learning commit authority requires SHADOW."
   },
   "active_agent_automations": [
     {
@@ -818,14 +852,14 @@
       "success": 0,
       "queued": 16,
       "in_progress": 0,
-      "cancelled": 4,
-      "skipped": 4,
+      "cancelled": 5,
+      "skipped": 5,
       "failures": 0,
       "previous_head": "03909f0",
       "previous_head_audio_python313_failure": true,
       "previous_head_audio_python314_failure": true
     },
-    "next_action": "Wait for 16 exact-head #2370 workflows; fix any failures before claiming progress. Rebase #2383 onto current #2372, #2379/#2376 onto current #2356, and #2381 onto current #2377 after the new verifier/path-identity checks are included. Keep #2377/#2384 draft until duplicate test definitions are removed and exact CI passes. No user action.",
+    "next_action": "Wait for 16 exact-head #2370 workflows; fix any failures before claiming progress. Preserve the 35s-vs-53s B1/B2 budget gap. Rebase #2383 onto current #2372, #2379/#2376 onto current #2356, and #2381 onto current #2377 after verifier/path-identity updates. Keep #2377/#2384 draft until duplicate test definitions are removed and exact CI passes. No user action.",
     "boss_work_head": "bae7d03196d98ac6dfebc0a2649faf257ba8308f"
   },
   "capability_matrix": [
@@ -1043,10 +1077,10 @@
     "timestamp": "2026-11-22T22:30:37.104Z",
     "release_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "code_candidate_sha": "bae7d03196d98ac6dfebc0a2649faf257ba8308f",
-    "candidate_ci": "PR2370_EXACT_HEAD_0_SUCCESS_16_QUEUED_0_IN_PROGRESS_4_CANCELLED_4_SKIPPED_0_FAILURES_OBSERVED_NOT_GREEN",
+    "candidate_ci": "PR2370_EXACT_HEAD_0_SUCCESS_16_QUEUED_0_IN_PROGRESS_5_CANCELLED_5_SKIPPED_0_FAILURES_OBSERVED_NOT_GREEN",
     "post_merge_push_ci": "NOT_RUN_CANDIDATE_NOT_MERGED",
     "device_receipt": "PIPELINE_STATUS_634_AUTHENTICATED; DIAGNOSTICS_635; HEALTH_636; LEARNING_STATUS_637",
-    "device_acceptance": "P0_OPEN; 57.74S_TURN_41.63S_TTFT_38.95S_PREFILL_2_TOKENS; B1_B2_TIME_BUDGET_53.2_54.2S; HEALTH_RUNTIME_UNAVAILABLE_CONFLICTS_DIAGNOSTICS_RUNNING; NO_NATIVE_LATENT_OR_C3_SEMANTIC_PROOF",
+    "device_acceptance": "P0_OPEN; 57.74S_TURN_41.63S_TTFT_38.95S_PREFILL_2_TOKENS; B1_B2_TIME_BUDGET_53.2_54.2S; HEALTH_RUNTIME_UNAVAILABLE_CONFLICTS_DIAGNOSTICS_RUNNING; NO_NATIVE_LATENT_OR_C3_SEMANTIC_PROOF; LAB_AGE_ACTIVE_REQUESTED10_EFFECTIVE5_OFFICIAL0_PHYSICAL_EXECUTION_FALSE_SHADOW_REQUIRED",
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT; git clone failed GitHub DNS; no local full pytest/compile/native run",
     "active_blockers": [
       "P0_C3_TTFT_PREFILL_AND_CORRECT_ANSWER",
@@ -1204,7 +1238,7 @@
       }
     },
     "previous_head_ci": "PR2370_PREVIOUS_HEAD_03909F0_8_SUCCESS_6_QUEUED_2_IN_PROGRESS_3_CANCELLED_3_SKIPPED_BUT_AUDIO_ARITHMETIC_PY313_AND_PY314_FAILED_ONE_SOURCE_TRANSITION_ASSERTION_EACH",
-    "live_update": "The new head bae7d031 is awaiting 16 workflows; duplicate/safe-additive entries now show 4 cancelled and 4 skipped. Previous head 03909f0 has 8 successes but both Python audio/arithmetic jobs failed the same persisted-source assertion."
+    "live_update": "New head bae7d031 remains 0 success / 16 queued / 5 cancelled / 5 skipped; 16 functional/security workflows are not yet passes. Private diagnostics also confirm Lab-Age mode ACTIVE/requested 10/effective implemented 5/official 0, with physical feature execution false and learning commit authority requiring SHADOW."
   },
   "qa_latest_checkpoint": {
     "timestamp": "2026-11-22T12:02:49.539Z",
