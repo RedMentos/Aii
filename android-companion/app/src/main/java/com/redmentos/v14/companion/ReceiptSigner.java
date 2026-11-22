@@ -21,7 +21,7 @@ import java.util.Arrays;
 final class ReceiptSigner implements CompanionReceiptSigner {
     private static final String ALIAS = "v14-companion-receipt-p256-v1";
 
-    synchronized JSONObject publicKeyInfo() throws Exception {
+    public synchronized JSONObject publicKeyInfo() throws Exception {
         ensureKey();
         KeyStore ks = KeyStore.getInstance("AndroidKeyStore");
         ks.load(null);
@@ -36,7 +36,7 @@ final class ReceiptSigner implements CompanionReceiptSigner {
         return out;
     }
 
-    synchronized JSONObject sign(JSONObject body) throws Exception {
+    public synchronized JSONObject sign(JSONObject body) throws Exception {
         ensureKey();
         KeyStore ks = KeyStore.getInstance("AndroidKeyStore");
         ks.load(null);
