@@ -1,3 +1,30 @@
+# Current user-facing handoff — 2026-11-22 2026-11-22T07:54:34.985Z
+
+**No user action is required. Do not run a new Termux command.** The latest authenticated phone receipt says the existing updater is enabled and the runtime/dashboard are already UP_TO_DATE at code SHA `f210999cf556be4d4514427cc9b5cf6d3cf3e984`. The newer release HEAD `c03ff0aa9e18b5ffebd1109f3c078105f53c6afe` is a documentation-only merge; no runtime update is needed. No model/weight, permission, Age, updater or user-data setting was changed.
+
+## Current phone result
+
+- Last turn: FINAL, 63.22 s total, 42.48 s TTFT, 34.96 s prefill, 709 prompt tokens, 2 generated tokens. Input text is redacted, so correctness cannot be judged from this receipt.
+- Native probe: SMOKE_PARTIAL. B1_DETAIL 53.2 s TIME_BUDGET; B2_GIST 54.2 s TIME_BUDGET. Process snapshot: B1 one process, B2 zero, C2 one, C3 one; mapped PSS 85.8 MiB (this is not free RAM).
+- Official Age is 0. Lab test selector requested stage 10, effective implemented stage 5, physical feature execution unverified. Learning commits still require separate SHADOW authority.
+- The phone has not demonstrated 20 mixed turns, correct native B1/B2 contributions, trained latent exchange, permanent body-weight learning, Android UI/background actions or microphone capture.
+
+## Current integration
+
+- PR #2316 was merged as documentation/research only. Release branch is `c03ff0aa9e18b5ffebd1109f3c078105f53c6afe`; its push CI was 34 success / 0 failure / 4 in progress at the latest read. This is not fully green yet.
+- The installed code SHA f210999 is the code-bearing parent of that docs-only merge. No UPDATE_REQUEST was sent.
+- #2314 native receiver probe fails Python 3.13/3.14 staged tests because its overlay removes `c=controller(r)`; Linux native build and Android ARM64 cross-compile pass, but no real GGUF semantic receiver exists.
+- #2313 paired taps is stale and its three-seed test assertion is inconsistent; #2311 JEPA staged composition fails at the feedback/bootstrap source pin; #2312 signed caller-PCM consumer has a staged-runtime failure; Android companion #2271/#2273/#2286 remains default-OFF with failing or pending checks.
+- Production B3 remains OFF/SYMBOLIC. No permanent model-weight change, model download/swap, permission change or device action occurred.
+
+## Next internal work
+
+Core repairs the receiver initialization and fair B1/B2 budget; Core rebases paired taps and proves real native source-bound pairs; JEPA/QA repairs the nested training pin chain; QA/Core finish the permissioned Android companion; Perception/QA finish audio consent and zeroization. The complete 1,255-heading historical Canon remains the target; the coverage index is only a traceability aid, not proof of implementation.
+
+**User action: NONE.**
+
+---
+
 # Perception checkpoint — 2026-11-22 06:17Z
 
 **No user action is needed.** Do not run a Termux command, request an update, change models/weights/permissions, or enable microphone capture on the basis of this checkpoint.
