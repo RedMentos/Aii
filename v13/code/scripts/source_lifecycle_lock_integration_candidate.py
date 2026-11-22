@@ -45,11 +45,11 @@ EVENT_NEW = b'''        path=self.home/'data/blobs'/h
 '''
 READ_SOURCE_OLD = b'''    def read_source(self,ref):
         r=self.one("SELECT * FROM sources WHERE id=?",(ref.get("source_id"),))
-        if not r or r["deleted"] or r["hash"]!=ref.get("sha256"):raise ValueError("Dangling/gel\\xc3\\xb6schter SourceRef")
+        if not r or r["deleted"] or r["hash"]!=ref.get("sha256"):raise ValueError("Dangling/gel\xc3\xb6schter SourceRef")
         b=self.blob_bytes(r["hash"])
         if digest(b)!=r["hash"]:raise ValueError("Source-Hash falsch")
         txt=b.decode()
-        if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef au\\xc3\\x9ferhalb Text")
+        if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef au\xc3\x9ferhalb Text")
         return txt[ref["char_start"]:ref["char_end"]]
 '''
 READ_SOURCE_NEW = b'''    def read_source(self,ref):
@@ -94,7 +94,7 @@ READ_SOURCE_NEW = b'''    def read_source(self,ref):
             b=raw
         if digest(b)!=r["hash"]:raise ValueError("Source-Hash falsch")
         txt=b.decode()
-        if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef au\\xc3\\x9ferhalb Text")
+        if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef out of bounds")
         return txt[ref["char_start"]:ref["char_end"]]
 '''
 MEMORY_OLD = b'''        src=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
