@@ -371,7 +371,7 @@
   "last_code_release_head": "c2e7ae7ebe47af6ea96995c7df112872bb404d38",
   "latest_integrated_head": "f7094bdb5530813e977fcabc726e30696f73100e",
   "latest_integrated_head_verified_at": "2026-11-22T05:53:42Z",
-  "release_gate_status": "C2E7_CODE_RUNTIME_INSTALLED; F7094_TEST_ONLY_PUSH_CI_PENDING; FUNCTIONAL_REDM I_ACCEPTANCE_OPEN",
+  "release_gate_status": "C2E7_CODE_RUNTIME_INSTALLED; F7094_TEST_ONLY_PUSH_CI_PENDING; REDMI_FUNCTIONAL_ACCEPTANCE_OPEN",
   "phone_receipt": {
     "state": "AUTHENTICATED_RUNTIME_UPDATED",
     "issue": 509,
@@ -643,7 +643,7 @@
     "research": "R-076 llama.cpp native input-embedding API boundary and R-077 symmetric RAW EAR FIR anti-alias decimation reviewed and added. No model, weight or dependency downloaded or swapped.",
     "user_action_required": "NONE. Existing auto-updater is enabled and successfully installed c2e7; no manual Termux command, UPDATE_REQUEST, model swap or permission change is needed.",
     "active_agents": "Exactly five enabled V14 jobs only: Boss & Integration, QA & Android, JEPA & Memory, Research & Perception, Core & Harness.",
-    "boss_integration_branch_head": "PENDING_COMMIT",
+    "boss_integration_branch_head": "45c9504ae9ca0300aa2b0e492c80a36e9f3f38f6",
     "post_merge_push_ci": "C2E7_GREEN_AND_INSTALLED; F7094_PUSH_CI_PENDING",
     "pr2310": "CLOSED_UNMERGED_SUPERSEDED_BY_PR2312",
     "previous_checkpoint": {
@@ -671,7 +671,10 @@
       "boss_integration_branch_head": "39b175521f50048f13ca14372b316de47527f531",
       "post_merge_push_ci": "NOT_VERIFIED_BY_CURRENT_CONNECTOR_READ; private phone #480 independently reports CI_WAIT on old installed SHA.",
       "pr2310": "CLOSED_UNMERGED_SUPERSEDED_BY_PR_2312; duplicate signed one-shot consumer branch closed to avoid competing Perception PRs."
-    }
+    },
+    "boss_integration_branch": "boss/v14-run11d-live-release-and-phone-handoff-20261122",
+    "boss_checkpoint_commit": "45c9504ae9ca0300aa2b0e492c80a36e9f3f38f6",
+    "boss_branch_head_note": "This is the content checkpoint commit; the PR metadata records the current branch tip."
   },
   "active_agent_automations": [
     {
@@ -725,7 +728,7 @@
   "latest_checkpoint": {
     "timestamp": "2026-11-22T09:06:29Z",
     "boss_branch": "boss/v14-run11d-live-release-and-phone-handoff-20261122",
-    "boss_head": "PENDING_COMMIT",
+    "boss_head": "45c9504ae9ca0300aa2b0e492c80a36e9f3f38f6",
     "code_candidate_sha": "c2e7ae7ebe47af6ea96995c7df112872bb404d38",
     "release_development_branch": "gpt6/v13-private-remote-bridge-20261111",
     "release_development_head": "f7094bdb5530813e977fcabc726e30696f73100e",
@@ -774,7 +777,9 @@
       "boss_integration_branch_head": "39b175521f50048f13ca14372b316de47527f531",
       "post_merge_push_ci": "NOT_VERIFIED_BY_CURRENT_CONNECTOR_READ; private phone #480 independently reports CI_WAIT on old installed SHA.",
       "pr2310": "CLOSED_UNMERGED_SUPERSEDED_BY_PR_2312; duplicate signed one-shot consumer branch closed to avoid competing Perception PRs."
-    }
+    },
+    "boss_head_kind": "checkpoint_content_commit; see the PR head for the current branch tip",
+    "boss_branch_head_ref": "boss/v14-run11d-live-release-and-phone-handoff-20261122"
   },
   "capability_matrix": [
     {
