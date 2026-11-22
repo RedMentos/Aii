@@ -40,3 +40,12 @@ The adapter feeds the existing `consume_pcm16_voice_window` A5→A4→C3 consume
 2. Only after separate explicit user approval, evaluate a local checkpoint on a source-disjoint, consented dataset; compare no-model, current heuristic and FASTDIAR Small with overlap/noise/silence negatives, confidence-gate ablation, retention and latency.
 3. Keep RAW EAR original PCM at its actual capture rate; FASTDIAR's 16-kHz feature view must use a separately validated anti-aliased resampler, not relabelled or block-averaged samples.
 4. Integrate the adapter with the calibrated artifact path only after #2349's Core-owned composer pin chain is repaired and exact staged CI passes.
+
+
+## GitHub checkpoint
+
+- PR: https://github.com/RedMentos/Aii/pull/2361 (DRAFT / NOT_RELEASED), directly based on release HEAD c4eb82.
+- Code SHA: `21962aba86dbf9a502ed4a6b567d761293ca2c17`; test SHA: `3d698fed4259df7795b64041787baa30c2bfbfa4`.
+- PR head at the latest handoff checkpoint: `8a3c6617f215d44789a3872fc9c5b28979c9492c`; later commits in this branch only update shared ledger/board/next-action/handoff documents, not the adapter or tests.
+- LOCAL_LINUX isolated adapter tests 4/4 PASS. Exact PR CI is still pending; do not treat the adapter as fully integrated or deployed.
+- Release c4eb82 has 21/21 listed Actions workflow runs SUCCESS and private V13OBS #115 confirms c4eb82 installed, but the latest device metadata still shows the existing B1/B2/C3 functional failures. No new audio or model test was run on the phone.
