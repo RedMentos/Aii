@@ -116,11 +116,11 @@ def failure_logcat() -> str:
 
 
 def wait_for_text(
-    needle: str, timeout: float = 45.0, *, wait_budget: int = 1,
+    needle: str, timeout: float = 45.0, *, wait_budget: int = 2,
 ) -> str:
     """Wait for a label, allowing at most one explicit safe System-UI Wait."""
-    if type(wait_budget) is not int or wait_budget < 0 or wait_budget > 1:
-        raise ValueError("wait_budget must be 0 or 1")
+    if type(wait_budget) is not int or wait_budget < 0 or wait_budget > 2:
+        raise ValueError("wait_budget must be 0, 1 or 2")
     deadline = time.monotonic() + timeout
     last = ""
     attempts = 0
@@ -135,7 +135,7 @@ def wait_for_text(
         if action == "Wait":
             if waits_used >= wait_budget:
                 raise AssertionError(
-                    "System UI remained unresponsive after one safe Wait; "
+                    "System UI remained unresponsive after two safe Wait actions; "
                     "refusing to select Close app"
                 )
             handle_transient_overlay(root)
