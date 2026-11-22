@@ -1,3 +1,15 @@
+## QA run 11 — current companion, migration and phone evidence (2026-11-22 08:02Z)
+
+- QA PR #2286 exact head: `106d181fff812c188cfe186e689cc5e78c2f121c`. Exact-head CI is **7/7 SUCCESS**: Android companion Gradle/Robolectric (run 45000497679, BUILD SUCCESSFUL); staged + integrated regression (45000497664: staged 240 passed / 10 skipped / 47 subtests; integrated 415 passed / 3 skipped / 58 subtests); old-phone migration (45000497607: 2 passed); Android outcome (45000497653); local sandbox (45000497669); control broker (45000497697); Core outcome adapter (45000497733).
+- The Android companion's first exact-head attempt hit Maven Central HTTP 429. The failed job was retried; the retry on the same SHA passed. No code was changed to work around the rate limit.
+- Migration diagnosis: the legacy worker's `Pinned plain UI recovery builder changed` error is the expected fail-closed result when that old worker encounters a new pinned builder. The test now requires that it publish no active-runtime receipt, then requires the freshly reloaded worker to recover the exact target. This is a synthetic two-checkout CI proof, not a Redmi migration receipt.
+- QA code/test changes: fixed the missing MainActivity.refresh() SharedPreferences declaration; serialized pending-row expiry and exact notification cleanup with submit publication in both provider and MainActivity; added a latch-controlled expiry/notification regression; added Robolectric runner + paired-Termux fixture to the process-start stop-switch snapshot test. Stop/enable persistence uses checked synchronous commit and fails closed.
+- PR #2286 remains **DRAFT / NOT_RELEASED / REDMI_UNVERIFIED**. It is 193 commits ahead / 716 behind current release c03ff0, merge base d3ac638; it still depends on the #2271 → #2273 parent stack. Do not rebase this leaf alone. Perception #2312 must be reconciled after the full companion stack.
+- Latest private owner-authenticated PIPELINE_STATUS #498 (07:52Z): auto-update enabled, dashboard UPDATED, runtime CI_WAIT, last_result PARTIAL, last_error NONE, target/update commit c03ff0. Earlier #496 was UP_TO_DATE at f210999. No UPDATE_REQUEST was sent. Do not claim the c03ff0 runtime is installed; its push CI was still 34 SUCCESS / 0 FAILURE / 4 IN_PROGRESS in the latest Boss read. c03ff0 is documentation-only.
+- No local full Aii checkout or local Android SDK was available. No APK install, Android permission request, AudioRecord instance, microphone capture, screen/UI executor or Redmi action occurred. Audio remains caller-supplied PCM only; `audio_capture=OFF_NOT_IMPLEMENTED`, provider `NONE`, and zeroization of immutable Python PCM remains OPEN.
+
+---
+
 # QA Android AudioRecord acceptance matrix — 2026-11-22
 
 **Owner:** QA & Android  
