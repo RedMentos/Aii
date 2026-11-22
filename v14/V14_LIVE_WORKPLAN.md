@@ -1508,7 +1508,7 @@ On JEPA exact head `50e3c8d`, the changed-path compilation step is PASS on Pytho
 
 **Tests / exact environment:**
 - Parent head `beda653d49b8306cf2364eb5a7d25332373b302b`: temporal suite **15/15 PASS** on Python 3.13 (run `45074147629`) and Python 3.14 (run `45074147681`). This does not include the two newest regressions.
-- Exact head `c39a446`: no Actions runs are visible yet. Parent `daa42a4` runs `45078449834`, `45078447785`, `45078447802`, `45078447747` were QUEUED but do **not** validate the latest test edit. Parent `beda653` temporal suite remains 15/15 PASS on Python 3.13/3.14; no current-head PASS is claimed.
+- Exact head `c39a446` now has workflows: temporal `45078942475`, optimizer-resume `45078942490`, staged/integrated `45078942505`, owner-read `45078942484` — all QUEUED. Parent `daa42a4` runs are superseded. Parent `beda653` temporal suite remains 15/15 PASS on Python 3.13/3.14; no current-head PASS is claimed.
 - LOCAL_LINUX full repository test: **BLOCKED / NOT_RUN**. No Aii checkout is mounted; `git ls-remote` fails with `Could not resolve host: github.com`. Do not substitute CI for local execution.
 
 **Consumer / user effect:** The synthetic Store-backed path now refuses to insert a temporal B1/B2 readout into `Cognition.offer` unless the actual trained receiver metrics pass the disjoint-holdout gate. The positive SleepRuntime test will verify that an enabled committed T8 outcome invokes both persistent learners. This is still synthetic Store/NumPy evidence; no native GGUF body weights, native cross-organ latent transfer, or Android runtime behavior is established.
