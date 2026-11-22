@@ -12,7 +12,7 @@ The persisted WorldJEPA consumer already trains numeric B1_DETAIL, B2_GIST and S
 
 ## Implemented code
 
-- `v13/code/v13/world_jepa_consumer.py`: `_locked` now supports optional nonblocking acquisition. Existing learning, rollback and source-forget callers retain blocking behavior by default.
+- `v13/code/v13/world_jepa_consumer.py`: `_locked` now supports optional nonblocking acquisition. Existing learning, rollback and source-forget callers retain blocking behavior by default. A read-only receiver can also skip constructor-time pending-checkpoint recovery, avoiding an otherwise hidden blocking exclusive lock before the shared read lock.
 - `v13/code/v13/world_jepa_receiver_matrix.py`: the matrix can request a nonblocking shared lock and returns explicit `BUSY` rows when SleepRuntime is updating the checkpoint. Existing callers keep the prior blocking default.
 - `v13/code/v13/bodyview.py`: the existing B5 body-state producer now reads the accepted, persisted role head and adds a compact next-action prior:
   - B1_DETAIL: action, predicted duration, output characters, uncertainty.
@@ -34,6 +34,8 @@ The fixture is synthetic SQLite/T8 data and a capture runner. It is a test of th
 ## Exact commit sequence
 
 - `15388a737e5705dd8e3be026ff0abb286bc36d57` — nonblocking lock option.
+- `e349b5731a1ef6495e4ec7abe161aba1d7721407` — read-only receiver can skip constructor-time exclusive recovery.
+- `d27eec8648fa66b10a2aed2a1166d0791a33f361` — nonblocking matrix selects recovery-free construction.
 - `5d3bd59d2dcc307715ab6829f5a9535d3adb7a69` — receiver matrix BUSY result.
 - `b47a25257402936c5a07127be039e8a9b74aa51c` — initial body-view receiver seam.
 - `5e6a4911795360d7459591910bd322ec2bcc6af2` — compact prompt context.
