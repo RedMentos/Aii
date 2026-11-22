@@ -106,7 +106,9 @@ def consume_after_commit(store, home=None, *, limit=64, cancel_check=None, drift
         "native_body_weights_changed": False,
     }
     try:
-        neuromod_record = record_world_outcome_packets(store, limit=limit)
+        neuromod_record = record_world_outcome_packets(
+            store, limit=limit, cancel_check=cancel_check
+        )
         if neuromod is None:
             from .neuromod import Neuromod
             neuromod = Neuromod(store)
