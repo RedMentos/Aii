@@ -10,7 +10,7 @@
 
 ## Research & Perception code
 
-- PR [#2299](https://github.com/RedMentos/Aii/pull/2299), branch `research-perception/v14-raw-ear-rebase-d06c637-20261122`; latest code/test commit `9fe259c94e755ce58304a6610437766d9e416f6d`, research/handoff commit `c471765171f53c07178a4bb712830f51606fdcd5`, board checkpoint commit `27d5835a9a1cb7fa998ccca065c9ffc35f4b9450`. DRAFT / NOT_RELEASED, still based on the older candidate until #2288 is green.
+- PR [#2299](https://github.com/RedMentos/Aii/pull/2299), branch `research-perception/v14-raw-ear-rebase-d06c637-20261122`; latest code/test commit `9fe259c94e755ce58304a6610437766d9e416f6d`, research/handoff commit `c471765171f53c07178a4bb712830f51606fdcd5`, board checkpoint commit `8f8c523d9a0b06437674d6ca01291a1f62102138`. DRAFT / NOT_RELEASED, still based on the older candidate until #2288 is green.
 - The RAW EAR speaker registry now emits cosine similarity as diagnostic-only when a threshold is caller-asserted. Candidate/continuity booleans stay null; A4/C3 return `DEFER`; C3 labels the raw value `speaker_similarity_delta` / `spk_cal=UNVERIFIED`; no speaker-derived A4 interrupt is allowed. Method label is `COSINE_LOOKBACK_DIAGNOSTIC_V1`, not a claim to run FastDiar.
 - Added a repository negative-control test comparing A4 external-interrupt gain with and without uncalibrated speaker embeddings. This exact repository test has **not** run.
 - LOCAL_LINUX isolated scratch mirror: `py_compile` PASS and 4/4 unittest PASS. Full Aii checkout/pytest is BLOCKED (no checkout mounted; local GitHub DNS/network unavailable). Exact-head GitHub workflow/status readback for the latest code commit returned no runs/statuses: CI NOT_RUN/PENDING. No Redmi, microphone, native model or weight proof.
