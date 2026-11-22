@@ -26,6 +26,8 @@ on:
       - "v13/code/tests/test_native_latent_receiver_stage.py"
       - "v13/code/tests/test_native_latent_receiver_runtime.py"
       - ".github/workflows/v14-core-native-probe-operator.yml"
+      - "v14/V14_USER_NEXT_ACTION.md"
+      - "v14/handoffs/CORE_NATIVE_PROBE_OPERATOR_DISPATCH_20261122.md"
 permissions:
   contents: read
 jobs:
@@ -42,25 +44,15 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
-          python-version: \${{ matrix.python-version }}
+          python-version: ${{ matrix.python-version }}
       - name: Install focused Runtime test dependencies
         run: python -m pip install pytest==9.2.0 numpy==2.3.5 psutil PyYAML
       - name: Compile native probe operator and receiver
-        run: |
-          python -m py_compile \\
-            v13/code/v13/callosum.py \\
-            v13/code/v13/native_probe_approval.py \\
-            v13/code/v13/native_latent_receiver.py \\
-            v13/code/v13/cognition.py
+        run: python -m py_compile v13/code/v13/callosum.py v13/code/v13/native_probe_approval.py v13/code/v13/native_latent_receiver.py v13/code/v13/cognition.py
       - name: Test approval, route identity, and staged Runtime consumer
         env:
           PYTHONPATH: v13/code
           PYTHONDONTWRITEBYTECODE: "1"
-        run: |
-          python -m pytest -q \\
-            v13/code/tests/test_native_latent_receiver_approval.py \\
-            v13/code/tests/test_native_latent_receiver_operator.py \\
-            v13/code/tests/test_native_latent_receiver_runtime.py \\
-            v13/code/tests/test_native_latent_receiver_stage.py
+        run: python -m pytest -q v13/code/tests/test_native_latent_receiver_approval.py v13/code/tests/test_native_latent_receiver_operator.py v13/code/tests/test_native_latent_receiver_runtime.py v13/code/tests/test_native_latent_receiver_stage.py
       - name: Scan public diff for private data and secrets
         run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/gpt6/v13-private-remote-bridge-20261111 --head HEAD --no-worktree
