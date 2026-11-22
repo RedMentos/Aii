@@ -29,8 +29,8 @@ from .world_jepa_store_authority import verify_committed_temporal_page
 
 
 STATE_KEY = "v14.world_jepa.temporal_consumer"
-REVISION = "v14-world-jepa-temporal-v1"
-SCHEMA = 1
+REVISION = "v14-world-jepa-temporal-v2"
+SCHEMA = 2
 MAX_ROWS = 2048
 MAX_PAGES = 4
 PAGE_SIZE = 64
@@ -389,13 +389,20 @@ def _delta(before, after, group):
     return math.sqrt(sum(float(np.square(right - left).sum()) for left, right in pairs))
 
 
-def _pack_holdout(windows):
+def _pack_holdout(windows, model):
     X, A, X2 = _arrays(windows)
+    target_latents = np.asarray(model.latent(X2, target=True), dtype=np.float64)
+    if (target_latents.ndim != 2 or target_latents.shape[0] != len(X)
+            or target_latents.shape[1] < 1 or not np.isfinite(target_latents).all()):
+        raise ValueError("invalid temporal retention target anchor")
+    target_values = target_latents.tolist()
     return {
         "window_ids": [window["window_id"] for window in windows],
         "X": X.tolist(),
         "A": A.tolist(),
         "X2": X2.tolist(),
+        "target_latents": target_values,
+        "target_sha256": _json_hash(target_values),
         "source_ids": sorted({source for window in windows for source in window["source_ids"]}),
         "source_sha256s": sorted({source for window in windows for source in window["source_sha256s"]}),
     }
@@ -405,11 +412,46 @@ def _unpack_holdout(record):
     X = np.asarray(record["X"], dtype=np.float64)
     A = np.asarray(record["A"], dtype=np.float64)
     X2 = np.asarray(record["X2"], dtype=np.float64)
+    target_latents = np.asarray(record.get("target_latents"), dtype=np.float64)
     if (X.ndim != 2 or X.shape[1] != 10 or A.shape != (len(X), 4)
             or X2.shape != X.shape or len(X) < 2
-            or not all(np.isfinite(v).all() for v in (X, A, X2))):
+            or target_latents.ndim != 2 or target_latents.shape[0] != len(X)
+            or target_latents.shape[1] < 1
+            or not all(np.isfinite(v).all() for v in (X, A, X2, target_latents))
+            or record.get("target_sha256") != _json_hash(target_latents.tolist())):
         raise ValueError("invalid persisted temporal holdout")
-    return X, A, X2
+    return X, A, X2, target_latents
+
+
+def _anchored_prediction_loss(model, X, A, target_latents):
+    """Compare online predictions to a fixed EMA target coordinate snapshot."""
+    predicted, _spread = model.predict(X, A)
+    target = np.asarray(target_latents, dtype=np.float64)
+    if (predicted.shape != target.shape or predicted.ndim != 2
+            or not np.isfinite(predicted).all() or not np.isfinite(target).all()):
+        raise ValueError("invalid anchored temporal prediction")
+    value = float(np.mean(np.square(predicted - target)))
+    if not math.isfinite(value):
+        raise ValueError("nonfinite anchored temporal prediction loss")
+    return value
+
+
+def _ordered_session_history(store, experience_rows, session_id):
+    """Order T8 rows by canonical event order, not receipt timestamps or UUIDs."""
+    event_order = store.rows(
+        "SELECT id FROM events WHERE session_id=? ORDER BY created DESC,id DESC LIMIT ?",
+        (session_id, MAX_SESSION_EVENTS + 1),
+    )
+    event_order = list(reversed(event_order))
+    positions = {_mapping(item)["id"]: index for index, item in enumerate(event_order)}
+    history = [
+        row for row in experience_rows
+        if row["session_id"] == session_id and row["event_id"] in positions
+    ]
+    history.sort(key=lambda row: positions[row["event_id"]])
+    if len({row["event_id"] for row in history}) != len(history):
+        return history, positions, "MULTIPLE_ACTIONS_PER_EVENT"
+    return history, positions, None
 
 
 def _record_valid(record):
@@ -468,12 +510,22 @@ def _record_valid(record):
     if type(record["retention_holdouts"]) is not list or len(record["retention_holdouts"]) > 3:
         raise ValueError("temporal retention cohort budget")
     for holdout in record["retention_holdouts"]:
+        if (type(holdout) is not dict
+                or set(holdout) != {
+                    "window_ids", "X", "A", "X2", "target_latents", "target_sha256",
+                    "source_ids", "source_sha256s",
+                }):
+            raise ValueError("temporal retention record shape")
         _unpack_holdout(holdout)
-        if (type(holdout["source_ids"]) is not list or type(holdout["source_sha256s"]) is not list
+        if (type(holdout["window_ids"]) is not list
+                or len(holdout["window_ids"]) != len(holdout["X"])
+                or type(holdout["source_ids"]) is not list
+                or type(holdout["source_sha256s"]) is not list
                 or any(type(source) is not str or not source for source in holdout["source_ids"])):
             raise ValueError("temporal retention provenance")
         for source_sha in holdout["source_sha256s"]:
             _sha(source_sha)
+        _sha(holdout["target_sha256"])
     if type(record["metrics"]) is not dict:
         raise ValueError("temporal metrics")
     return True
@@ -700,11 +752,20 @@ class TemporalWorldJEPAStoreConsumer:
             else:
                 model = self._load_model(active)
             before_snapshot = _snapshot(model)
-            holdout_before = model.prediction_loss(X_holdout, A_holdout, X2_holdout)
+            # Hold EMA target coordinates fixed for this comparison. Comparing
+            # prediction_loss before/after would move the target with the EMA.
+            holdout_target_anchor = np.asarray(
+                model.latent(X2_holdout, target=True), dtype=np.float64
+            )
+            holdout_before = _anchored_prediction_loss(
+                model, X_holdout, A_holdout, holdout_target_anchor
+            )
             retention_before = []
             for old_holdout in (active["retention_holdouts"] if active else []):
-                old_X, old_A, old_X2 = _unpack_holdout(old_holdout)
-                retention_before.append(model.prediction_loss(old_X, old_A, old_X2))
+                old_X, old_A, _old_X2, old_target = _unpack_holdout(old_holdout)
+                retention_before.append(
+                    _anchored_prediction_loss(model, old_X, old_A, old_target)
+                )
             train_steps = steps if active is not None else max(1, steps - 1)
             try:
                 model.partial_fit(
@@ -720,21 +781,27 @@ class TemporalWorldJEPAStoreConsumer:
             after_snapshot = _snapshot(model)
             parameter_delta = _delta(before_snapshot, after_snapshot, "enc") + _delta(before_snapshot, after_snapshot, "preds")
             ema_delta = _delta(before_snapshot, after_snapshot, "tgt")
-            holdout_after = model.prediction_loss(X_holdout, A_holdout, X2_holdout)
-            shuffled_target = model.prediction_loss(
-                X_holdout, A_holdout, np.roll(X2_holdout, 1, axis=0)
+            holdout_after = _anchored_prediction_loss(
+                model, X_holdout, A_holdout, holdout_target_anchor
             )
-            shuffled_action = model.prediction_loss(
-                X_holdout, np.roll(A_holdout, 1, axis=0), X2_holdout
+            shuffled_target = _anchored_prediction_loss(
+                model, X_holdout, A_holdout, np.roll(holdout_target_anchor, 1, axis=0)
+            )
+            shuffled_action = _anchored_prediction_loss(
+                model, X_holdout, np.roll(A_holdout, 1, axis=0), holdout_target_anchor
             )
             no_history = X_holdout.copy()
             no_history[:, :9] = 0.0
-            no_history_loss = model.prediction_loss(no_history, A_holdout, X2_holdout)
+            no_history_loss = _anchored_prediction_loss(
+                model, no_history, A_holdout, holdout_target_anchor
+            )
             collapse = model.collapse_stats(X2_holdout)
             retention_after = []
             for old_holdout in (active["retention_holdouts"] if active else []):
-                old_X, old_A, old_X2 = _unpack_holdout(old_holdout)
-                retention_after.append(model.prediction_loss(old_X, old_A, old_X2))
+                old_X, old_A, _old_X2, old_target = _unpack_holdout(old_holdout)
+                retention_after.append(
+                    _anchored_prediction_loss(model, old_X, old_A, old_target)
+                )
             retention_pass = all(
                 after <= before * 1.10 + 1e-9
                 for before, after in zip(retention_before, retention_after)
@@ -770,6 +837,11 @@ class TemporalWorldJEPAStoreConsumer:
                     "retention_mse_before": retention_before,
                     "retention_mse_after": retention_after,
                     "retention_pass": retention_pass,
+                    "retention_reference": "FIXED_EMA_TARGET_ANCHOR",
+                    "holdout_target_sha256": _json_hash(holdout_target_anchor.tolist()),
+                    "retention_target_sha256s": [
+                        item["target_sha256"] for item in (active["retention_holdouts"] if active else [])
+                    ],
                     "utility_pass": utility_pass,
                     "collapse": collapse,
                 })
@@ -802,7 +874,7 @@ class TemporalWorldJEPAStoreConsumer:
                 for role in ROLE_TARGETS
             }
             old_holdouts = list(active["retention_holdouts"]) if active else []
-            retention_holdouts = (old_holdouts + [_pack_holdout(holdout)])[-3:]
+            retention_holdouts = (old_holdouts + [_pack_holdout(holdout, model)])[-3:]
             source_sha = _source_sha(all_rows)
             checkpoint_name = "jepa-" + uuid.uuid4().hex + ".npz"
             checkpoint_path = self.home / checkpoint_name
@@ -831,6 +903,11 @@ class TemporalWorldJEPAStoreConsumer:
                 "retention_mse_before": retention_before,
                 "retention_mse_after": retention_after,
                 "retention_pass": retention_pass,
+                "retention_reference": "FIXED_EMA_TARGET_ANCHOR",
+                "holdout_target_sha256": _json_hash(holdout_target_anchor.tolist()),
+                "retention_target_sha256s": [
+                    item["target_sha256"] for item in (active["retention_holdouts"] if active else [])
+                ],
                 "replay_mode": replay_mode,
                 "collapse": collapse,
                 "receiver_gates": receiver_gates,
@@ -944,27 +1021,16 @@ class TemporalWorldJEPAStoreConsumer:
                     "native_body_consumed": False,
                     "native_body_weights_changed": False,
                 }
-            history = sorted(
-                (row for row in active["experience_rows"] if row["session_id"] == session_id),
-                key=lambda row: (row["created"], row["action_id"]),
+            history, positions, history_error = _ordered_session_history(
+                self.store, active["experience_rows"], session_id
             )
-            if len(history) < 2:
+            if history_error:
+                return {"status": history_error, "role": role,
+                        "decision_authority": "NONE", "native_body_consumed": False}
+            if len(history) < history_length:
                 return {"status": "INSUFFICIENT_HISTORY", "role": role,
                         "decision_authority": "NONE", "native_body_consumed": False}
-            previous, latest = history[-2:]
-            if previous["generation_id"] != latest["generation_id"]:
-                return {"status": "GENERATION_GAP", "role": role,
-                        "decision_authority": "NONE", "native_body_consumed": False}
-            event_order = self.store.rows(
-                "SELECT id FROM events WHERE session_id=? ORDER BY created DESC,id DESC LIMIT ?",
-                (session_id, MAX_SESSION_EVENTS + 1),
-            )
-            event_order = list(reversed(event_order))
-            positions = {_mapping(item)["id"]: index for index, item in enumerate(event_order)}
             history_rows = history[-history_length:]
-            if len(history_rows) < history_length:
-                return {"status": "INSUFFICIENT_HISTORY", "role": role,
-                        "decision_authority": "NONE", "native_body_consumed": False}
             if len({row["generation_id"] for row in history_rows}) != 1:
                 return {"status": "GENERATION_GAP", "role": role,
                         "decision_authority": "NONE", "native_body_consumed": False}
@@ -974,6 +1040,7 @@ class TemporalWorldJEPAStoreConsumer:
             ):
                 return {"status": "NONCONTIGUOUS_HISTORY", "role": role,
                         "decision_authority": "NONE", "native_body_consumed": False}
+            previous, latest = history_rows[-2:]
             x = (
                 list(latest["s"])
                 + np.mean(np.asarray([row["y"] for row in history_rows], dtype=np.float64), axis=0).tolist()
@@ -1009,8 +1076,8 @@ class TemporalWorldJEPAStoreConsumer:
                 "history_length": history_length,
                 "checkpoint_sha256": active["checkpoint_sha256"],
                 "source_sha256": active["source_sha256"],
-                "history_action_ids": [previous["action_id"], latest["action_id"]],
-                "history_source_sha256s": [previous["source_sha256"], latest["source_sha256"]],
+                "history_action_ids": [row["action_id"] for row in history_rows],
+                "history_source_sha256s": [row["source_sha256"] for row in history_rows],
                 "support_samples": support,
                 "receiver_utility": utility,
                 "decision_authority": "NONE",
@@ -1035,19 +1102,15 @@ class TemporalWorldJEPAStoreConsumer:
             if active is None:
                 return {"status": "NO_CHECKPOINT", "matrix": {},
                         "decision_authority": "NONE", "native_body_consumed": False}
-            history = sorted(
-                (row for row in active["experience_rows"] if row["session_id"] == session_id),
-                key=lambda row: (row["created"], row["action_id"]),
+            history, positions, history_error = _ordered_session_history(
+                self.store, active["experience_rows"], session_id
             )
+            if history_error:
+                return {"status": history_error, "matrix": {},
+                        "decision_authority": "NONE", "native_body_consumed": False}
             if len(history) < history_length:
                 return {"status": "INSUFFICIENT_HISTORY", "matrix": {},
                         "decision_authority": "NONE", "native_body_consumed": False}
-            event_order = self.store.rows(
-                "SELECT id FROM events WHERE session_id=? ORDER BY created DESC,id DESC LIMIT ?",
-                (session_id, MAX_SESSION_EVENTS + 1),
-            )
-            event_order = list(reversed(event_order))
-            positions = {_mapping(item)["id"]: index for index, item in enumerate(event_order)}
             history_rows = history[-history_length:]
             if len({row["generation_id"] for row in history_rows}) != 1:
                 return {"status": "GENERATION_GAP", "matrix": {},
@@ -1058,7 +1121,7 @@ class TemporalWorldJEPAStoreConsumer:
             ):
                 return {"status": "NONCONTIGUOUS_HISTORY", "matrix": {},
                         "decision_authority": "NONE", "native_body_consumed": False}
-            previous, latest = history[-2:]
+            previous, latest = history_rows[-2:]
             x = (
                 list(latest["s"])
                 + np.mean(np.asarray([row["y"] for row in history_rows], dtype=np.float64), axis=0).tolist()
@@ -1072,8 +1135,8 @@ class TemporalWorldJEPAStoreConsumer:
             if (len(latent) != len(actions) or len(spread) != len(actions)
                     or not np.isfinite(latent).all() or not np.isfinite(spread).all()):
                 raise ValueError("nonfinite temporal receiver matrix")
-            history_action_ids = [previous["action_id"], latest["action_id"]]
-            history_source_sha256s = [previous["source_sha256"], latest["source_sha256"]]
+            history_action_ids = [row["action_id"] for row in history_rows]
+            history_source_sha256s = [row["source_sha256"] for row in history_rows]
             matrix = {}
             for index, action in enumerate(actions):
                 support = int(active["action_support"].get(action, 0))
