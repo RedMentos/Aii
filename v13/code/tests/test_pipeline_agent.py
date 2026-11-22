@@ -429,6 +429,33 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(state["resume_suppressed"], "ACTIVATION_RECOVERY_FAILED")
 
 
+    def test_keyboard_interrupt_during_activation_recovery_keeps_chat_stopped(self):
+        self.turn_on()
+        commit = "e" * 40
+        report = {"status": "UP_TO_DATE", "available": commit,
+                  "current": commit, "changed_files": 0}
+        with mock.patch.object(p, "_try_repo", return_value=(report, None)), \
+             mock.patch.object(u, "_runtime_active", side_effect=[True, False]), \
+             mock.patch.object(p.runtime_deploy, "needs_deploy", return_value=True), \
+             mock.patch.object(u, "ci_passed", return_value=True), \
+             mock.patch.object(p.lifecycle, "request_stop", return_value=True) as stop, \
+             mock.patch.object(p.lifecycle, "request_resume") as resume, \
+             mock.patch.object(p.runtime_deploy, "recover_pending_activation",
+                               side_effect=KeyboardInterrupt), \
+             mock.patch.object(p.runtime_deploy, "deploy") as deploy:
+            with self.assertRaises(KeyboardInterrupt):
+                p.run_cycle(force=True, now=2000000010, target="runtime")
+
+        self.assertFalse(p.enabled())
+        stop.assert_called_once()
+        resume.assert_not_called()
+        deploy.assert_not_called()
+        state = p._state_raw()
+        self.assertEqual(state["runtime_activation_recovery"], "ERROR")
+        self.assertEqual(state["runtime_activation_auto_update"], "DISABLED")
+        self.assertEqual(state["resume_suppressed"], "ACTIVATION_RECOVERY_FAILED")
+
+
     def test_15_minute_interval_and_forced_manual_check(self):
         self.turn_on()
         with mock.patch.object(u, "_runtime_active", return_value=False), \
