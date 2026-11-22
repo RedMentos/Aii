@@ -36,12 +36,16 @@ The release-development base c2e7 itself has 39/39 exact-head check-runs SUCCESS
 
 ## Latest authenticated phone evidence
 
-Private owner-authenticated receipts #504/#505 (2026-11-22 08:28Z) reported:
-- installed SHA `c03ff0aa9e18b5ffebd1109f3c078105f53c6afe`; auto-update/runtime/dashboard UP_TO_DATE;
-- B1_DETAIL and B2_GIST native probes still TIME_BUDGET;
-- latest recorded turn 63.22 s total / 42.48 s TTFT / 34.96 s prefill, 709 prompt tokens and 2 generated tokens; the redacted input does not permit a correctness inference.
+New owner-authenticated read-only receipts #511/#512 (2026-11-22 08:54Z) confirm that the phone automatically installed exact release-development SHA `c2e7ae7ebe47af6ea96995c7df112872bb404d38`:
+- pipeline: `auto_enabled=true`, runtime `UPDATED`, dashboard `UP_TO_DATE`, `last_result=UPDATED`, `last_error=NONE`; no UPDATE_REQUEST was sent;
+- AI runtime/service and dashboard report RUNNING;
+- native-residency snapshot: 0 mapped processes / 0 mapped PSS, but child readability is `UNKNOWN_NO_GROUP_CHILDREN`; this is not evidence that native processes are absent or a free-RAM measurement;
+- latest turn: FINAL, 63.22 s total / 42.48 s TTFT / 34.96 s prefill, 709 prompt tokens, 2 generated tokens; input is redacted, so correctness is unknown;
+- native probe remains `SMOKE_PARTIAL`: B1_DETAIL 53.2 s TIME_BUDGET, B2_GIST 54.2 s TIME_BUDGET, C3 3.1 s; no useful same-turn B1/B2 offer consumption is established;
+- effective config: 90 s turn deadline, 35 s observer window, 6 threads, 2,400 MiB body residency budget; no speedup is inferred;
+- Lab selector: official Age 0, requested test stage 10, effective implemented stage 5, physical feature execution not verified; learning commit authority still requires separate SHADOW mode.
 
-The later release-development head c2e7 has no authenticated installation receipt. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, model/weight change, permission change or device mutation was made. This test-only PR does not require an update.
+The current code is now installed, but this is installation proof only. The P0 multi-organ correctness/latency gate remains OPEN; native B1/B2, trained latent exchange, full learning and Android UI/voice capabilities remain unverified. No model/weight swap or permission change occurred.
 
 ## Next step
 
