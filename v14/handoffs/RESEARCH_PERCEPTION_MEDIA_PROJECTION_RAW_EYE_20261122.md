@@ -130,3 +130,6 @@ Added regression coverage for source revocation after successful consumption and
 ## Exact-head CI poll — 2026-11-22
 
 For code/test head `f87ebac407a19c147da7eb52bc63f10e9eed25d2`, the latest readback is now: `privacy` SUCCESS; `offline-bridge-security` SUCCESS; six checks QUEUED (Python 3.13/3.14 focused, staged runtime, integrated regression and duplicate matrix jobs); `validate-additive` SKIPPED by policy. This is partial CI progress, not an all-green exact-head matrix. The branch head `bc9e420d316d3b0106cf8cf5567388f503d90755` is still the handoff-only successor to the code/test head; no code changed after `f87ebac`.
+
+
+**Documentation readback:** the Perception branch now points to `d228e7171712c54a97be9fb04bab8264654ec4a0`; this commit changes only this handoff. The code/test head remains `f87ebac407a19c147da7eb52bc63f10e9eed25d2`; the partial CI results above are for that exact code/test head.
