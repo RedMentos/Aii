@@ -16,9 +16,11 @@ Run from v13/code:
   python scripts/b3_train_l1_shadow.py --labels data/b3/l1_labels.json
 
 Supply at least 64 unique pair entries, one explicit label and provenance
-reference per pair. This creates only shadow adapter artifacts. It never
-updates B1/B2 weights or enables receiver injection. Missing L0 baselines keep
-the L1 utility gate closed.
+reference per pair. Optional --l0-evidence accepts schema
+v13.b3-l0-baselines/1, pinned to those exact pair IDs, source hashes, labels,
+provenance, holdout indices and seeds, with EXACT/CONTROL/SYMBOLIC metrics.
+This creates only shadow adapter artifacts. It never updates B1/B2 weights or
+enables receiver injection; an L1 PASS only permits an L2 prefix shadow trial.
 """
 import argparse
 import json
