@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T03:15:20.565Z",
+  "updated_at": "2026-11-22T03:16:24.692Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -344,12 +344,12 @@
       "latest_candidate_pr": {
         "pr": 2299,
         "head_branch": "research-perception/v14-raw-ear-rebase-d06c637-20261122",
-        "head_sha": "c471765171f53c07178a4bb712830f51606fdcd5",
+        "head_sha": "b4884bb4fa682e050aea16cab25ff890f385e501",
         "base_branch": "boss/v14-recall-store-pin-rebind-20261122",
         "ci": "NOT_RUN_NO_WORKFLOW_STATUS",
         "tested_code_sha": "9fe259c94e755ce58304a6610437766d9e416f6d"
       },
-      "proof": "The branch changed the speaker threshold path from caller-asserted boolean decisions to diagnostic-only similarity; A4/C3 DEFER and no speaker-derived attention gain. A repository negative-control test now compares A4 external-interrupt gain with and without uncalibrated speaker embeddings, but that test has not run. Isolated LOCAL_LINUX scratch mirror 4/4 PASS; full repository and exact-head CI not run. No Redmi microphone, model, weights, native inference or Android test."
+      "proof": "The branch changed the speaker threshold path from caller-asserted boolean decisions to diagnostic-only similarity; A4/C3 DEFER and no speaker-derived attention gain. A repository negative-control test now compares A4 external-interrupt gain with and without uncalibrated speaker embeddings, but that test has not run. Isolated LOCAL_LINUX scratch mirror 4/4 PASS; full repository and exact-head CI not run. No Redmi microphone, model, weights, native inference or Android test. Metadata/readback commits through b4884bb are also present on the PR branch; the tested code commit remains 9fe259c."
     }
   ],
   "current_redmi_status": "REDMI_UNVERIFIED. Private owner-read requests #457 HEALTH, #458 PIPELINE_STATUS and #459 DIAGNOSTICS created 2026-11-22T03:13Z; zero authenticated comments at last poll. Private V13OBS #115 is last updated 2026-11-18 and is stale. Installed SHA and current updater consent UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, shell action or device mutation.",
