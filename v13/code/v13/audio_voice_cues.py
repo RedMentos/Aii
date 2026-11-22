@@ -221,7 +221,7 @@ def validate_voice_cues(cues: dict) -> dict:
 
 def extract_voice_cues(pcm: bytes, sample_rate: int, *, backend: str = "python") -> dict:
     """Extract bounded pitch, voicing, energy and non-speech hints from mono PCM16."""
-    if type(pcm) is not bytes or not pcm or len(pcm) % 2:
+    if not isinstance(pcm, (bytes, bytearray)) or not pcm or len(pcm) % 2:
         raise ValueError("voice cue input must be complete PCM16 bytes")
     if type(sample_rate) is not int or not 8000 <= sample_rate <= 48000:
         raise ValueError("voice cue sample rate must be 8000..48000")
