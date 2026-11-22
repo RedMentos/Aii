@@ -1,0 +1,62 @@
+name: V14 Core Android companion receipt context
+on:
+  push:
+    branches:
+      - core/v14-android-outcome-context-20261122
+    paths:
+      - v13/code/v13/android_outcome_context.py
+      - v13/code/v13/runtime.py
+      - v13/code/tests/test_android_outcome_context.py
+      - .github/workflows/v14-core-android-outcome-context.yml
+  pull_request:
+    branches:
+      - qa/v14-companion-single-use-approval-20261121
+    paths:
+      - v13/code/v13/android_outcome_context.py
+      - v13/code/v13/runtime.py
+      - v13/code/tests/test_android_outcome_context.py
+      - .github/workflows/v14-core-android-outcome-context.yml
+permissions:
+  contents: read
+jobs:
+  receipt-context:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install test runner
+        run: python -m pip install pytest
+      - name: Compile exact Runtime receipt consumer
+        env:
+          PYTHONPATH: v13/code
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: >-
+          python -m py_compile
+          v13/code/v13/android_outcome_context.py
+          v13/code/v13/android_outcomes.py
+          v13/code/v13/runtime.py
+          v13/code/tests/test_android_outcome_context.py
+      - name: Run companion producer and consumer regressions
+        env:
+          PYTHONPATH: v13/code
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: >-
+          python -m pytest -q
+          v13/code/tests/test_android_control.py
+          v13/code/tests/test_android_outcomes.py
+          v13/code/tests/test_android_companion_protocol.py
+          v13/code/tests/test_android_companion_outcome_adapter.py
+          v13/code/tests/test_android_companion_ecdsa.py
+          v13/code/tests/test_android_companion_transport.py
+          v13/code/tests/test_android_companion_runtime.py
+          v13/code/tests/test_android_outcome_context.py
