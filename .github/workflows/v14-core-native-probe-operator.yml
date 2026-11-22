@@ -12,6 +12,8 @@ on:
       - "v13/code/tests/test_native_latent_receiver_stage.py"
       - "v13/code/tests/test_native_latent_receiver_runtime.py"
       - ".github/workflows/v14-core-native-probe-operator.yml"
+      - "v14/V14_USER_NEXT_ACTION.md"
+      - "v14/handoffs/CORE_NATIVE_PROBE_OPERATOR_DISPATCH_20261122.md"
   pull_request:
     branches:
       - qa/v14-native-probe-model-hash-20261122
