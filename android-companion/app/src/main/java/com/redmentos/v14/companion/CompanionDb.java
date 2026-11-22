@@ -69,12 +69,33 @@ final class CompanionDb extends SQLiteOpenHelper {
         }
     }
 
+    synchronized List<String> expirePendingAndReturnIds(long nowMillis) {
+        SQLiteDatabase writable = getWritableDatabase();
+        List<String> expired = new ArrayList<>();
+        writable.beginTransaction();
+        try {
+            // Read and transition the same rows in one transaction so a
+            // concurrent approve/deny cannot lose its notification cleanup.
+            try (Cursor c = writable.rawQuery(
+                    "SELECT action_id FROM actions "
+                            + "WHERE status='PENDING_USER_APPROVAL' AND expires_at<=?",
+                    new String[]{Long.toString(nowMillis)})) {
+                while (c.moveToNext()) expired.add(c.getString(0));
+            }
+            ContentValues values = new ContentValues();
+            values.put("status", "EXPIRED");
+            writable.update("actions", values,
+                    "status='PENDING_USER_APPROVAL' AND expires_at<=?",
+                    new String[]{Long.toString(nowMillis)});
+            writable.setTransactionSuccessful();
+        } finally {
+            writable.endTransaction();
+        }
+        return expired;
+    }
+
     synchronized int expirePending(long nowMillis) {
-        ContentValues values = new ContentValues();
-        values.put("status", "EXPIRED");
-        return getWritableDatabase().update("actions", values,
-                "status='PENDING_USER_APPROVAL' AND expires_at<=?",
-                new String[]{Long.toString(nowMillis)});
+        return expirePendingAndReturnIds(nowMillis).size();
     }
 
     synchronized boolean expire(String actionId, long nowMillis) {
@@ -87,7 +108,12 @@ final class CompanionDb extends SQLiteOpenHelper {
     }
 
     synchronized List<Action> pending(long nowMillis) {
-        expirePending(nowMillis);
+        return pending(nowMillis, null);
+    }
+
+    synchronized List<Action> pending(long nowMillis, List<String> expiredIds) {
+        List<String> expired = expirePendingAndReturnIds(nowMillis);
+        if (expiredIds != null) expiredIds.addAll(expired);
         List<Action> out = new ArrayList<>();
         try (Cursor c = getReadableDatabase().rawQuery(
                 "SELECT action_id,request_json,package_name,status,receipt_json,expires_at "
