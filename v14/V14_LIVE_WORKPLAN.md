@@ -1500,7 +1500,7 @@ On JEPA exact head `50e3c8d`, the changed-path compilation step is PASS on Pytho
 
 ### JEPA & Memory Run 21 — 2026-11-22T22:34:04Z
 
-**Current code branch / PR:** #2372, `jepa-memory/v14-temporal-exact-forget-retention-20261122-run14`, exact head `daa42a41c1e4a448c77da4312078744069acb830`, DRAFT / NOT_RELEASED.
+**Current code branch / PR:** #2372, `jepa-memory/v14-temporal-exact-forget-retention-20261122-run14`, exact head `c39a446036cdfba26fd7e55cf59eb633e4754227`, DRAFT / NOT_RELEASED.
 
 **New executable regressions:**
 - Commit `a26599c315cdb8cd7944c263eb9575e6d4f380c4` removes the fabricated B1/B2 accepted-gate fixture from the actual `Cognition.offer` prompt test. Both roles must pass `receiver_utility_gate` using persisted source/session-disjoint holdout metrics from the trained checkpoint. A rejection now fails with the measured metrics instead of manufacturing success.
@@ -1508,7 +1508,7 @@ On JEPA exact head `50e3c8d`, the changed-path compilation step is PASS on Pytho
 
 **Tests / exact environment:**
 - Parent head `beda653d49b8306cf2364eb5a7d25332373b302b`: temporal suite **15/15 PASS** on Python 3.13 (run `45074147629`) and Python 3.14 (run `45074147681`). This does not include the two newest regressions.
-- Exact head `daa42a4`: temporal run `45078449834`, optimizer-resume `45078447785`, staged/integrated `45078447802`, owner-read `45078447747` are all **QUEUED** at readback. No current-head PASS is claimed.
+- Exact head `c39a446`: no Actions runs are visible yet. Parent `daa42a4` runs `45078449834`, `45078447785`, `45078447802`, `45078447747` were QUEUED but do **not** validate the latest test edit. Parent `beda653` temporal suite remains 15/15 PASS on Python 3.13/3.14; no current-head PASS is claimed.
 - LOCAL_LINUX full repository test: **BLOCKED / NOT_RUN**. No Aii checkout is mounted; `git ls-remote` fails with `Could not resolve host: github.com`. Do not substitute CI for local execution.
 
 **Consumer / user effect:** The synthetic Store-backed path now refuses to insert a temporal B1/B2 readout into `Cognition.offer` unless the actual trained receiver metrics pass the disjoint-holdout gate. The positive SleepRuntime test will verify that an enabled committed T8 outcome invokes both persistent learners. This is still synthetic Store/NumPy evidence; no native GGUF body weights, native cross-organ latent transfer, or Android runtime behavior is established.
@@ -1519,5 +1519,5 @@ On JEPA exact head `50e3c8d`, the changed-path compilation step is PASS on Pytho
 
 **Research:** R-093 records Ding et al., AISTATS/PMLR 2026: full replay can still forget when later noise overwhelms earlier signal; task order and signal strength matter in the paper's theoretical/synthetic setting. R-094 adds Replay on Demand (arXiv:2609.40089) and its Apache-2.0 code repository, but the implementation requires NeMo-RL/Megatron/Ray/SLURM and 12B/GPU-scale infrastructure. Keep uniform replay as baseline; test signal-aware and loss-difference demand replay only under matched steps, disjoint holdouts, invariant probes and starvation controls. No external code, weights or data imported. The separate WorldJEPA video repository is MIT for code but specifies a 325M V-JEPA2 encoder, 23M predictor, PyTorch and 8 GB minimum RAM; not a Redmi candidate and not adopted.
 
-**Next:** poll the exact `daa42a4` workflows; repair any actual SleepRuntime or measured receiver-gate failure rather than weakening the test. Once QA/Boss source chains are green, run matched-step replay-on/off, persistent-vs-reset, stable/gradual/abrupt/two-shift/return-to-A retention, parameter/EMA diffs, restart and rollback. No user action or device mutation is required now.
+**Next:** poll the exact latest `c39a446` workflows; repair any actual SleepRuntime or measured receiver-gate failure rather than weakening the test. Once QA/Boss source chains are green, run matched-step replay-on/off, persistent-vs-reset, stable/gradual/abrupt/two-shift/return-to-A retention, parameter/EMA diffs, restart and rollback. No user action or device mutation is required now.
 
