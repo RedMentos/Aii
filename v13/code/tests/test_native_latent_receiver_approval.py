@@ -11,6 +11,13 @@ from v13 import native_probe_approval as approval
 import v13.callosum as callosum
 
 
+@pytest.fixture(autouse=True)
+def _interactive_local_tty(monkeypatch):
+    # The stage tests exercise the real TTY gate; pytest supplies this explicit
+    # local-console fixture rather than inheriting the runner's non-TTY stdin.
+    monkeypatch.setattr(approval, "_is_local_tty", lambda: True)
+
+
 def setup_runtime(tmp_path):
     runtime = Runtime(Path(tmp_path) / "brain")
     runtime.sleep.cycle.set_policy("enabled", "off")
@@ -45,6 +52,29 @@ def setup_runtime(tmp_path):
     install("C3_LANGUAGE", receiver_path, "receiver-r1")
     runtime.pool.unload = lambda: None
     return runtime, event, sender_path, receiver_path
+
+
+
+def test_native_probe_requires_actual_interactive_tty(tmp_path, monkeypatch):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    try:
+        monkeypatch.setattr(approval, "_is_local_tty", lambda: False)
+        with pytest.raises(PermissionError, match="interactive local TTY"):
+            approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        state, _ = runtime.store.state(approval.KEY, None)
+        assert state is None
+
+        monkeypatch.setattr(approval, "_is_local_tty", lambda: True)
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        monkeypatch.setattr(approval, "_is_local_tty", lambda: False)
+        with pytest.raises(PermissionError, match="interactive local TTY"):
+            approval.consume(runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"])
+        with pytest.raises(PermissionError, match="interactive local TTY"):
+            approval.revoke(runtime)
+        state, _ = runtime.store.state(approval.KEY, None)
+        assert state["status"] == "PENDING"
+    finally:
+        runtime.close()
 
 
 def test_native_probe_requires_local_arm_and_consumes_it_once(tmp_path):
