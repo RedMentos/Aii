@@ -196,10 +196,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Perception: preserve the #2327 RAW EAR FIR anti-alias feature path and its staged A5/A4/C3 regression; do not equate caller-supplied PCM with Android microphone capture. Next, reconcile the signed one-shot consumer with QA's companion provider and measure Android lifecycle/route/silence/revocation only after explicit device permission.",
+      "proof_environment": "LOCAL_LINUX isolated CPython 3.13.5 helper + GitHub CI synthetic B3 consumer; full local Aii checkout BLOCKED; TERMUX/REDMI NOT VERIFIED",
+      "next_step": "QA: independently re-review the fixed symlink-ancestor thread on PR #2346. Boss/Integrator: repair the separate Runtime/stage/deployer source-pin failures; do not let this B3 patch rewrite their pin chain. After JEPA #2345 is integrated, insert Hypnos R-081 and latent-communication review R-082 before R-083. Keep signed RAW EAR consumer #2312 stacked on QA companion until a real AudioRecord provider and consent/revocation/zeroization checks exist; capture remains OFF.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-22T15:02:57+01:00",
       "latest_candidate_pr": {
         "pr": 2312,
         "head_sha": "5221314d3c01ab6d874ecc0a8b8ff72c34e504a2",
@@ -208,7 +208,23 @@
         "scope": "signed one-shot RAW EAR consumer; Android-guaranteed 44.1 kHz mono PCM16; 88,200-byte / 117,600-character one-second cap; exact source/generation/signature/consent/replay checks; no microphone provider or learning/action authority",
         "ci": "RUN_44992975596_PENDING; RUN_44992975599_QUEUED"
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture."
+      "proof": "RAW EAR high-frequency alias rejection remains integrated only in the synthetic A5→A4→C3 consumer; no live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 comparator CLI fix remains research-only. Additional whole-system B3 candidate #2346 adds same-event/source paired B1/B2 tap capture and a non-promoted L1 shadow training path; the symlink escape reported by QA is fixed with descriptor-relative O_NOFOLLOW traversal, app-owned/non-writable parents, fresh private 0700 run directory and top-level/nested symlink negatives. Exact B3 CI run 45031525111 passes 52 tests + py_compile + CLI smoke; isolated LOCAL_LINUX descriptor-anchored artifact/report tests pass. Full local repository tests are blocked; cross-lane source-pin CI failures remain. No real native tap, trained latent transfer, receiver injection, Android microphone, Redmi test or model-weight update is established. Production B3 remains OFF/SYMBOLIC.",
+      "latest_b3_candidate_pr": {
+        "pr": 2346,
+        "branch": "research-perception/v14-b3-paired-native-current-20261122-run11",
+        "base": "gpt6/v13-private-remote-bridge-20261111",
+        "base_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
+        "code_sha": "1db8fd5fc2e18c115c632cf60577200d68db2c0b",
+        "handoff_head_sha": "843b3e95bb0ea6f920f505dd3429f97f0fd6b28d",
+        "state": "OPEN_DRAFT_NOT_RELEASED",
+        "scope": "Cognition.tap_pair + cancellable Runtime :tap pair for same-event/source B1_DETAIL/B2_GIST native prefill taps; typed/hash-bound B3PairedTapPacket; source-SHA grouped L1 shadow holdout; symlink-resistant private artifact persistence; no receiver injection or foundation weight authority",
+        "b3_ci": "PASS_RUN_45031525111_52_TESTS_PY_COMPILE_CLI_SMOKE",
+        "local_linux": "PASS_ISOLATED_DIRFD_NPZ_JSON_ATOMIC_REPORT_AND_TOP_LEVEL_NESTED_SYMLINK_NEGATIVES",
+        "full_local_suite": "BLOCKED_NO_CHECKOUT_OR_GITHUB_DNS",
+        "other_exact_head_ci": "FAIL_CROSS_LANE_STALE_RUNTIME_BUILDER_AND_COGNITION_PINS; REMAINING_CHECKS_PENDING",
+        "redmi": "REDMI_UNVERIFIED_NO_NATIVE_TAP_OR_TRAINING_RUN",
+        "production_b3": "OFF_SYMBOLIC"
+      }
     },
     {
       "id": "V14-007",
