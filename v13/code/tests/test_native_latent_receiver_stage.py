@@ -18,6 +18,38 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     spec.loader.exec_module(builder)
     destination = tmp_path / "stage"
     manifest = builder.stage(CODE, destination)
+    receiver_overlay_path = CODE / "scripts/integrated_native_latent_receiver_candidate_20261122.py"
+    receiver_spec = importlib.util.spec_from_file_location("v14_native_receiver_overlay", receiver_overlay_path)
+    receiver_overlay = importlib.util.module_from_spec(receiver_spec)
+    receiver_spec.loader.exec_module(receiver_overlay)
+    staged_sources = {
+        "v13/cognition.py": (destination / "v13/cognition.py").read_bytes(),
+        "v13/callosum.py": (destination / "v13/callosum.py").read_bytes(),
+    }
+    receiver_files = receiver_overlay.apply_sources(CODE, staged_sources)
+    for relative, payload in receiver_files.items():
+        target = destination / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(payload)
+    manifest_path = destination / "INTEGRATION_STAGE.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    receiver_changed = sorted(receiver_files)
+    manifest["native_latent_receiver_overlay"] = {
+        "status": "SHADOW_REVIEW_ONLY",
+        "source": "scripts/integrated_native_latent_receiver_candidate_20261122.py",
+        "source_sha256": hashlib.sha256(receiver_overlay_path.read_bytes()).hexdigest(),
+        "replaced_files": receiver_changed,
+        "production_route": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+    }
+    manifest["replaced_files"] = sorted(set(manifest.get("replaced_files", [])) | set(receiver_changed))
+    manifest["files_sha256"] = {
+        str(path.relative_to(destination)): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in sorted(destination.rglob("*"))
+        if path.is_file() and path != manifest_path
+    }
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\\n", encoding="utf-8")
     assert manifest["status"] == "SHADOW_REVIEW_ONLY"
     assert "v13/native_latent_receiver.py" in manifest["files_sha256"]
     assert "v13/native/latent_receiver/native_latent_receiver.cpp" in manifest["files_sha256"]
