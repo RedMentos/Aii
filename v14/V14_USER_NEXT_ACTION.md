@@ -69,3 +69,11 @@ Wichtig: Das konfigurierte 35-s-Observerfenster würde bei zwei sequentiellen K�
 - #2383 hat auf head 714a09e fünf Workflow-Fehler; #2372 bleibt mit drei Fehlern / einem Erfolg offen. Keine Weight-Diff- oder Android-Lern-Akzeptanz.
 
 Die privaten Gerätebelege #634–#637 bleiben unverändert: aed1d2 installiert, Auto-Update an, 57,74-s letzter Turn, 2 generierte Tokens, B1/B2 TIME_BUDGET, HEALTH/DIAGNOSTICS Runtime-Widerspruch, LEARNING_STATUS unavailable. Keine Geräteaktion, kein LOG_PAGE und kein Kandidaten-Update.
+
+
+## Final live snapshot — 2026-11-22T22:33:13.116Z
+
+- Exact Boss head bae7d03196d98ac6dfebc0a2649faf257ba8308f: 0 SUCCESS / 16 QUEUED / 0 IN_PROGRESS / 5 CANCELLED / 5 SKIPPED / 0 failures observed. The preceding head's two Python jobs failed the stale source assertion; the new head corrects it but remains unverified.
+- Fresh diagnostics also show Lab-Age mode ACTIVE, requested stage 10, effective implemented stage 5, official stage 0, physical feature execution false, and learning commit authority REQUIRES_SEPARATE_SHADOW_MODE. This preserves the distinction between the user's X10 lab selector and official Age 0; it is not proof of physical feature execution or active learning.
+- The last stored turn remains 57.74 s / TTFT 41.63 s / prefill 38.95 s / 751 prompt tokens / 2 generated tokens; B1/B2 TIME_BUDGET 53.2/54.2 s. Observer budget 35 s is still split across two sequential bodies; no latency fix.
+- Installed release aed1d2 remains UP_TO_DATE. HEALTH runtime UNAVAILABLE conflicts with DIAGNOSTICS RUNNING; LEARNING_STATUS unavailable. No LOG_PAGE because console_errors opt-in is false. No user action.
