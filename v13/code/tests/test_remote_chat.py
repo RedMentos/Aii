@@ -74,47 +74,6 @@ class RemoteChatTests(unittest.TestCase):
                 "input_logged":True}
 
     def test_remote_send_issue_then_get_exact_response_from_running_ai(self):
-                payload = {
-                    "sender_role": "B1_DETAIL",
-                    "receiver_role": "C3_LANGUAGE",
-                    "sender_tap_id": "lfm2.detail.final.v1",
-                    "sender_model_revision": "sender-r1",
-                    "sender_model_sha256": "a" * 64,
-                    "tokenizer_revision": "tokenizer-r1",
-                    "receiver_model_revision": "receiver-r1",
-                    "receiver_model_sha256": "b" * 64,
-                    "runner_revision": "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4",
-                    "llama_version": "b10964",
-                    "input_rows": 2,
-                    "input_dim": 3072,
-                    "position_ids": [0, 1],
-                    "position_mode": "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL",
-                    "receiver_input_dim": 3072,
-                    "output_dim": 3072,
-                    "input_sha256": "c" * 64,
-                    "decode_status": 0,
-                    "output_norm": 1.25,
-                    "input_effect_rms": 0.5,
-                    "zero_control_cosine": 0.01,
-                    "shuffle_control_cosine": 0.02,
-                    "row_shuffle_control_cosine": 0.03,
-                    "row_shuffle_control_applicable": True,
-                    "repeat_cosine": 1.0,
-                    "native_input_consumed": True,
-                    "input_effect_detected": True,
-                    "status": "NATIVE_INPUT_EFFECT",
-                    "production_route": False,
-                    "semantic_use_proven": False,
-                    "training_authority": 0,
-                    "native_receiver_authority": 0,
-                    "completed": True,
-                    "queued": False,
-                    "requires_explicit_confirmation": True,
-                    "source_ref": {"source_id": "private-source-id"},
-                    "event_id": "private-event-id",
-                    "sender_tap_packet_id": "private-tap-packet-id",
-                }
-
         def rpc(method, **kw):
             if method=="state":return {"running":True,"last_session":self.session}
             if method=="send":
@@ -234,6 +193,47 @@ class RemoteChatTests(unittest.TestCase):
 
     def test_native_receiver_probe_requires_exact_explicit_confirmation_and_owner_relay(self):
         command = ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source --confirm"
+        payload = {
+            "sender_role": "B1_DETAIL",
+            "receiver_role": "C3_LANGUAGE",
+            "sender_tap_id": "lfm2.detail.final.v1",
+            "sender_model_revision": "sender-r1",
+            "sender_model_sha256": "a" * 64,
+            "tokenizer_revision": "tokenizer-r1",
+            "receiver_model_revision": "receiver-r1",
+            "receiver_model_sha256": "b" * 64,
+            "runner_revision": "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4",
+            "llama_version": "b10964",
+            "input_rows": 2,
+            "input_dim": 3072,
+            "position_ids": [0, 1],
+            "position_mode": "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL",
+            "receiver_input_dim": 3072,
+            "output_dim": 3072,
+            "input_sha256": "c" * 64,
+            "decode_status": 0,
+            "output_norm": 1.25,
+            "input_effect_rms": 0.5,
+            "zero_control_cosine": 0.01,
+            "shuffle_control_cosine": 0.02,
+            "row_shuffle_control_cosine": 0.03,
+            "row_shuffle_control_applicable": True,
+            "repeat_cosine": 1.0,
+            "native_input_consumed": True,
+            "input_effect_detected": True,
+            "status": "NATIVE_INPUT_EFFECT",
+            "production_route": False,
+            "semantic_use_proven": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+            "completed": True,
+            "queued": False,
+            "requires_explicit_confirmation": True,
+            "source_ref": {"source_id": "private-source-id"},
+            "event_id": "private-event-id",
+            "sender_tap_packet_id": "private-tap-packet-id",
+        }
+
         self.assertTrue(remote_chat.is_safe_operator_command(command))
         self.assertTrue(remote_chat.is_safe_operator_command(
             ":callosum native-probe B2_GIST B1_DETAIL --last-source --confirm"
