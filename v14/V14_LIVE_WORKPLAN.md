@@ -1136,4 +1136,9 @@ Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, mi
 - **Core handoff:** Perception posted a concrete fix analysis to #2288 comment 7072323336: capture the original local-error semantic pin in the pre-overlay dependency snapshot, validate it remains unchanged, then rebind it to the post-overlay semantic SHA. No Core-owned source was changed.
 - **Local environment:** isolated module py_compile PASS and pytest 7/7 PASS with exact Git blob hashes. Full local Aii checkout blocked by DNS; git ls-remote reports "Could not resolve host: github.com". No full local Runtime integration test is claimed.
 - **Product boundary:** audio-only API is not yet Android/UI-wired and has not been tested against a complete staged Runtime on this current base. No AudioRecord, microphone, native speaker model, TTS effector, barge-in, Redmi or live learning proof. PR #2293 remains DRAFT / NOT_RELEASED.
-- **Next:** Core fixes and verifies the source-pin mismatch; Perception rebases #2293, then adds staged Runtime audio-only E2E and coordinates Android caller wiring. No user action.
+- **Next:** Core fixes and verifies the guard-generation source-pin mismatch; Perception rebases #2293, then adds staged Runtime audio-only E2E and coordinates Android caller wiring. No user action.
+
+
+## Core pin-generation correction — 2026-11-22
+
+Boss comment #7072186155 clarified that Record-Only control_guard.apply_sources() rewrites both world_semantic_evidence_candidate.py and the local-error consumer pin. The correct expected value for the later Store rebind is therefore the GUARD-OUTPUT local-error pin, not the original base pin. Sequence: capture guard_semantic_sha and guard_local_error_pin immediately after the guard; assert equality; after Store rebind, rebind from guard_local_error_pin to final_semantic_sha; keep the final exact-pin check. Perception corrected its follow-up comment #7072323336 accordingly. No Core-owned file was changed.
