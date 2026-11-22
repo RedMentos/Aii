@@ -1,3 +1,10 @@
+# JEPA-Statuskorrektur — 2026-11-22T10:00:40.871Z
+
+PR #2331 steht inzwischen auf `535eba6f668b3990416c361368f36e3e8f1e599e`, hat aber **9 fehlgeschlagene Checks** (4 laufen, 2 queued, 4 erfolgreich, 1 übersprungen). Die Fehler liegen weiter in der verschachtelten Source-Pin-Kette: sechs direkte Consumer-Pins stimmen nicht mit den aktuellen Datei-Bytes überein. Die vollständigen Hashes stehen im Boss-Review-Kommentar [7077507340](https://github.com/RedMentos/Aii/pull/2331#issuecomment-7077507340). Das ist noch kein JEPA-Lern-/Unlearning-Erfolg; PR bleibt DRAFT, Promotion OFF.
+
+Unverändert: b3b92 Push-CI ist 40/40 Check-Runs und 29/29 Workflow-Runs grün. Das Handy bleibt laut #520 auf 283ac1c9, Runtime CI_WAIT, Dashboard BLOCKED_RUNNING; #519 ist bereits queued. Keine Nutzeraktion und kein manueller Termux-Befehl.
+
+---
 # Current user-facing handoff — 2026-11-22T09:58:33.516Z
 
 **Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein erneuter Installer, kein Modell-/Gewichtswechsel und keine Rechte- oder Mikrofonfreigabe. UPDATE_REQUEST #519 ist bereits in der Warteschlange; bitte nicht parallel erneut starten.
