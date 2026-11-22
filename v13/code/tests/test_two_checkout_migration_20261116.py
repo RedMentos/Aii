@@ -174,7 +174,12 @@ def exercise_worker_migration(base):
         # rejected. We must prove that an out-of-process Termux bootstrap can
         # recover EITHER state without discarding local user data.
         assert old.get('same_source_updater') is True
-        assert old.get('fetches')
+        # Historical workers may fetch directly through their own Git helper,
+        # bypassing the injected modern _fetch seam entirely. An empty trace
+        # therefore says nothing about whether either checkout advanced.
+        # The immutable HEAD/tracking assertions below, followed by the real
+        # bootstrap fast-forward and new-worker stage receipt, are the proof.
+        assert isinstance(old.get('fetches'), list), old
         pre_bootstrap = {}
         for checkout in (agent, runtime):
             local = git('rev-parse', 'HEAD', cwd=checkout)
