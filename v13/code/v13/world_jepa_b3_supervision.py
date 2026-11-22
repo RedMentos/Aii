@@ -474,7 +474,9 @@ def _train_direction(store, cognition, home, cohort, direction, *,
         split_seed=split_seed,
         l0_evidence=None,
     )
-    report_path = report.get("report_path") if type(report) is dict else None
+    if type(report) is not dict:
+        raise ValueError("B3 trainer returned a non-object report")
+    report_path = report.get("report_path")
     if type(report_path) is not str or not report_path:
         raise ValueError("trainer report path missing")
     report_file = _safe_shadow_path(home, report_path)
@@ -483,8 +485,6 @@ def _train_direction(store, cognition, home, cohort, direction, *,
     persisted_report = json.loads(report_file.read_text(encoding="utf-8"))
     if persisted_report != report:
         raise ValueError("trainer report readback mismatch")
-    if type(report) is not dict:
-        raise ValueError("B3 trainer returned a non-object report")
     if (report.get("status") != "L1_SHADOW_CANDIDATES_SAVED_NOT_PROMOTED"
             or report.get("l1_utility_gate") !=
             "NOT_RUN_MISSING_L0_CHANNEL_BASELINES_AND_ROLE_RETENTION"
