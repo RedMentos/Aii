@@ -12,6 +12,7 @@ from v13.audio_fastdiar_adapter import (
     FRAME_STEP_MS,
     LOOKBACK_FRAMES,
     MODEL_ID,
+    MODEL_REVISION,
     build_fastdiar_diagnostic_batch,
 )
 from v13.audio_speaker_evidence import SCHEMA
@@ -51,7 +52,7 @@ def make_batch(rows, *, start_ms, end_ms, first_end_ms, generation_id="gen-a"):
         matrix(rows),
         source_id=SOURCE,
         generation_id=generation_id,
-        model_revision="v0.1.0",
+        model_revision=MODEL_REVISION,
         model_sha256=MODEL_SHA,
         window_start_ms=start_ms,
         window_end_ms=end_ms,
@@ -98,6 +99,7 @@ def test_adapter_emits_exact_raw_ear_schema_and_fastdiar_geometry():
     }
     assert batch["schema"] == SCHEMA
     assert batch["model_id"] == MODEL_ID
+    assert batch["model_revision"] == MODEL_REVISION
     assert batch["embedding_dim"] == EMBEDDING_DIM == 192
     assert batch["frame_step_ms"] == FRAME_STEP_MS == 80
     assert batch["lookback_frames"] == LOOKBACK_FRAMES == 10
@@ -106,6 +108,18 @@ def test_adapter_emits_exact_raw_ear_schema_and_fastdiar_geometry():
     assert len(batch["frames"]) == 12
     assert batch["frames"][0]["end_ms"] == 180
     assert batch["frames"][-1]["end_ms"] == 1060
+
+
+def test_actual_numpy_float16_matrix_is_accepted():
+    numpy = pytest.importorskip("numpy")
+    rows = numpy.asarray([vector_a() for _ in range(12)], dtype=numpy.float16)
+    batch = build_fastdiar_diagnostic_batch(
+        rows, source_id=SOURCE, generation_id="gen-a",
+        model_revision=MODEL_REVISION, model_sha256=MODEL_SHA,
+        window_start_ms=100, window_end_ms=1100, first_frame_end_ms=180,
+    )
+    assert len(batch["frames"]) == 12
+    assert len(batch["frames"][0]["vector"]) == 192
 
 
 def test_adapter_rejects_bad_dimensions_nonfinite_and_boolean_values():
@@ -121,7 +135,7 @@ def test_adapter_rejects_bad_dimensions_nonfinite_and_boolean_values():
         make_batch([invalid_bool], start_ms=100, end_ms=1100, first_end_ms=180)
 
 
-def test_adapter_rejects_unbounded_batches_bad_hash_and_timestamp_overflow():
+def test_adapter_rejects_unbounded_batches_bad_hash_revision_and_timestamp_overflow():
     with pytest.raises(ValueError, match="1..32"):
         make_batch([], start_ms=100, end_ms=1100, first_end_ms=180)
     with pytest.raises(ValueError, match="1..32"):
@@ -129,7 +143,13 @@ def test_adapter_rejects_unbounded_batches_bad_hash_and_timestamp_overflow():
     with pytest.raises(ValueError, match="SHA256"):
         build_fastdiar_diagnostic_batch(
             matrix([vector_a()]), source_id=SOURCE, generation_id="gen-a",
-            model_revision="v0.1.0", model_sha256="bad",
+            model_revision=MODEL_REVISION, model_sha256="bad",
+            window_start_ms=100, window_end_ms=1100, first_frame_end_ms=180,
+        )
+    with pytest.raises(ValueError, match="pinned"):
+        build_fastdiar_diagnostic_batch(
+            matrix([vector_a()]), source_id=SOURCE, generation_id="gen-a",
+            model_revision="main", model_sha256=MODEL_SHA,
             window_start_ms=100, window_end_ms=1100, first_frame_end_ms=180,
         )
     with pytest.raises(ValueError, match="exceed"):
