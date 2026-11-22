@@ -624,8 +624,10 @@ class SleepRuntime:
         if type(cursor) is not dict:
             cursor={}
         legacy=cursor.get('last_event_id')
+        last_recorded=cursor.get('last_recorded_event_id',legacy)
         last_learning=cursor.get('last_learning_event_id',legacy)
         last_planner=cursor.get('last_planner_event_id',legacy)
+        recording_error=cursor.get('last_recorded_error_event_id')
         learning_error=cursor.get('last_learning_error_event_id')
         planner_error=cursor.get('last_planner_error_event_id')
         gates=permission_state(self.r.store)
@@ -633,11 +635,16 @@ class SleepRuntime:
         active=(type(state) is dict and type(state.get('active')) is dict)
         learning_allowed=(gates['learning_enabled'] is True
                           and gates['optimizer_permission'] is True)
+        # T8 provenance is recorded even while the optimizer is OFF. The
+        # separate last_learning cursor lets a later explicit opt-in train
+        # from those already-persisted receipts without rescanning raw text.
+        need_recording=(last_recorded!=event_id
+                        and recording_error!=event_id)
         need_learning=(learning_allowed and last_learning!=event_id
                        and learning_error!=event_id)
         need_planner=(active and last_planner!=event_id
                       and planner_error!=event_id)
-        if not (need_learning or need_planner):
+        if not (need_recording or need_learning or need_planner):
             return None
         from .scheduler import ACTIONS
         ACTIONS.add('jepa_update')
@@ -735,9 +742,16 @@ class SleepRuntime:
             cursor.setdefault('last_learning_event_id',legacy)
             cursor.setdefault('last_planner_event_id',legacy)
             learning_status=learning.get('status')
+            neuromod=learning.get('neuromod') if type(learning.get('neuromod')) is dict else {}
+            record=neuromod.get('record') if type(neuromod.get('record')) is dict else {}
+            record_status=record.get('status')
             if learning_status=='ERROR':
                 cursor['last_learning_error_event_id']=event_id
-            elif learning_status not in {'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION','CANCELLED'} and learning.get('has_more') is not True:
+                cursor['last_recorded_error_event_id']=event_id
+            elif record_status in {'RECORDED','NO_NEW_OUTCOMES'} and record.get('has_more') is not True:
+                cursor['last_recorded_event_id']=event_id
+                cursor.pop('last_recorded_error_event_id',None)
+            if learning_status not in {'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION','CANCELLED','ERROR'} and learning.get('has_more') is not True:
                 cursor['last_learning_event_id']=event_id
                 cursor.pop('last_learning_error_event_id',None)
             planner_status=planner.get('status')
@@ -746,7 +760,8 @@ class SleepRuntime:
             else:
                 cursor['last_planner_event_id']=event_id
                 cursor.pop('last_planner_error_event_id',None)
-            if (cursor.get('last_learning_event_id')==event_id
+            if (cursor.get('last_recorded_event_id')==event_id
+                    or cursor.get('last_learning_event_id')==event_id
                     or cursor.get('last_planner_event_id')==event_id):
                 cursor['last_event_id']=event_id
             self.r.store.set_state(cursor_key,cursor,expected=version)
