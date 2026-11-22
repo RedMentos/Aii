@@ -29,8 +29,8 @@ from .world_jepa_store_authority import verify_committed_temporal_page
 
 
 STATE_KEY = "v14.world_jepa.temporal_consumer"
-REVISION = "v14-world-jepa-temporal-v2"
-SCHEMA = 2
+REVISION = "v14-world-jepa-temporal-v3"
+SCHEMA = 3
 MAX_ROWS = 2048
 MAX_PAGES = 4
 PAGE_SIZE = 64
@@ -204,11 +204,12 @@ def build_temporal_windows(store, rows, cancel_check=None):
         batch = session_ids[offset:offset + 400]
         placeholders = ",".join("?" for _ in batch)
         event_rows = store.rows(
-            "SELECT id,session_id,created FROM ("
-            "SELECT id,session_id,created,"
-            "ROW_NUMBER() OVER (PARTITION BY session_id ORDER BY created,id) AS rn "
-            "FROM events WHERE session_id IN (" + placeholders + ")) "
-            "WHERE rn<=? ORDER BY session_id,created,id",
+            "SELECT id,session_id,action_seq FROM ("
+            "SELECT a.event_id AS id,e.session_id,a.rowid AS action_seq,"
+            "ROW_NUMBER() OVER (PARTITION BY e.session_id ORDER BY a.rowid DESC) AS rn "
+            "FROM actions a JOIN events e ON e.id=a.event_id "
+            "WHERE e.session_id IN (" + placeholders + ")) "
+            "WHERE rn<=? ORDER BY session_id,action_seq",
             tuple(batch) + (MAX_SESSION_EVENTS + 1,),
         )
         for item in event_rows:
@@ -271,8 +272,8 @@ def build_temporal_windows(store, rows, cancel_check=None):
     return windows
 
 
-def _split_windows(windows):
-    """Split whole session/source-connected components, not overlapping rows."""
+def _split_windows(windows, prior=None):
+    """Split whole session/source components while preserving prior train/holdout folds."""
     if type(windows) is not list or len(windows) < MIN_WINDOWS:
         raise ValueError("insufficient temporal windows")
     sessions = sorted({window["session_id"] for window in windows})
@@ -293,36 +294,82 @@ def _split_windows(windows):
     for window in windows:
         session = window["session_id"]
         for source_key in window["source_ids"]:
-            previous = owner_by_source.get(source_key)
+            previous = owner_by_source.get(("id", source_key))
             if previous is None:
-                owner_by_source[source_key] = session
+                owner_by_source[("id", source_key)] = session
             else:
                 union(session, previous)
         for source_key in window["source_sha256s"]:
             _sha(source_key)
-            previous = owner_by_source.get(source_key)
+            previous = owner_by_source.get(("sha256", source_key))
             if previous is None:
-                owner_by_source[source_key] = session
+                owner_by_source[("sha256", source_key)] = session
             else:
                 union(session, previous)
+
+    window_by_id = {window["window_id"]: window for window in windows}
+    prior_train_ids = set(prior["train_window_ids"]) if prior else set()
+    prior_holdout_ids = set(prior["holdout_window_ids"]) if prior else set()
+    if prior is not None and (prior_train_ids | prior_holdout_ids) - set(window_by_id):
+        raise ValueError("temporal prior split window missing")
+    prior_fold_by_session = {}
+    for window_id in prior_train_ids:
+        session = window_by_id[window_id]["session_id"]
+        if prior_fold_by_session.get(session) == "holdout":
+            raise ValueError("temporal prior session crossed train/holdout folds")
+        prior_fold_by_session[session] = "train"
+    for window_id in prior_holdout_ids:
+        session = window_by_id[window_id]["session_id"]
+        if prior_fold_by_session.get(session) == "train":
+            raise ValueError("temporal prior session crossed train/holdout folds")
+        prior_fold_by_session[session] = "holdout"
 
     components = {}
     for session in sessions:
         components.setdefault(find(session), set()).add(session)
-    component_keys = []
+    component_info = []
     for members in components.values():
         sources = sorted({
             source_sha
             for window in windows if window["session_id"] in members
             for source_sha in window["source_sha256s"]
         })
-        component_keys.append((_json_hash({"sessions": sorted(members), "sources": sources}), members))
-    component_keys.sort(key=lambda item: item[0])
+        key = _json_hash({"sessions": sorted(members), "sources": sources})
+        prior_folds = {prior_fold_by_session[session] for session in members
+                       if session in prior_fold_by_session}
+        if len(prior_folds) > 1:
+            raise ValueError("temporal source component merged prior train and holdout folds")
+        count = sum(1 for window in windows if window["session_id"] in members)
+        component_info.append((key, members, count, next(iter(prior_folds)) if prior_folds else None))
+    component_info.sort(key=lambda item: item[0])
+
     fold_by_session = {}
-    for index, (_, members) in enumerate(component_keys):
-        fold = "train" if index % 2 == 0 else "holdout"
+    train_count = holdout_count = 0
+    for _key, members, count, fold in component_info:
+        if fold is None:
+            continue
         for session in members:
             fold_by_session[session] = fold
+        if fold == "train":
+            train_count += count
+        else:
+            holdout_count += count
+    for key, members, count, fold in component_info:
+        if fold is not None:
+            continue
+        if train_count < holdout_count:
+            assigned = "train"
+        elif holdout_count < train_count:
+            assigned = "holdout"
+        else:
+            assigned = "train" if int(key[:8], 16) % 2 == 0 else "holdout"
+        for session in members:
+            fold_by_session[session] = assigned
+        if assigned == "train":
+            train_count += count
+        else:
+            holdout_count += count
+
     train = [window for window in windows if fold_by_session[window["session_id"]] == "train"]
     holdout = [window for window in windows if fold_by_session[window["session_id"]] == "holdout"]
     if len(train) < MIN_PARTITION or len(holdout) < MIN_PARTITION:
@@ -341,8 +388,10 @@ def _split_windows(windows):
         "holdout_session_count": len(holdout_sessions),
         "train_source_count": len(train_sources),
         "holdout_source_count": len(holdout_sources),
+        "split_strategy": "PERSISTED_COMPONENT_ASSIGNMENT",
+        "prior_train_windows_preserved": len(prior_train_ids & {window["window_id"] for window in train}),
+        "prior_holdout_windows_preserved": len(prior_holdout_ids & {window["window_id"] for window in holdout}),
     }
-
 
 def _arrays(windows):
     X = np.asarray([window["X"] for window in windows], dtype=np.float64)
@@ -439,11 +488,13 @@ def _anchored_prediction_loss(model, X, A, target_latents):
 def _ordered_session_history(store, experience_rows, session_id):
     """Order T8 rows by canonical event order, not receipt timestamps or UUIDs."""
     event_order = store.rows(
-        "SELECT id FROM events WHERE session_id=? ORDER BY created DESC,id DESC LIMIT ?",
+        "SELECT a.id AS action_id,a.event_id AS event_id "
+        "FROM actions a JOIN events e ON e.id=a.event_id "
+        "WHERE e.session_id=? ORDER BY a.rowid DESC LIMIT ?",
         (session_id, MAX_SESSION_EVENTS + 1),
     )
     event_order = list(reversed(event_order))
-    positions = {_mapping(item)["id"]: index for index, item in enumerate(event_order)}
+    positions = {_mapping(item)["event_id"]: index for index, item in enumerate(event_order)}
     history = [
         row for row in experience_rows
         if row["session_id"] == session_id and row["event_id"] in positions
@@ -722,7 +773,7 @@ class TemporalWorldJEPAStoreConsumer:
                     "pending_rows": len(pending), "checkpoint_committed": False,
                     "native_body_weights_changed": False,
                 }
-            train, holdout, split = _split_windows(windows)
+            train, holdout, split = _split_windows(windows, active)
             if replay_mode == "none" and active is not None:
                 train = [
                     window for window in train
