@@ -216,7 +216,9 @@ def load_pair(cognition, pair_packet):
     if not gist_path.is_file() or file_hash(gist_path) != gist_binding["feature_sha256"]:
         raise ValueError("B3 Gist artifact hash mismatch")
     gist_artifact = json.loads(gist_path.read_text())
-    if (gist_artifact.get("body_pair_id") != pair_packet["body_pair_id"]
+    if (gist_binding.get("tap_packet_id") != pair_packet["tap_packet_ids"]["B2_GIST"]
+            or gist_binding["plan"].get("tap_id") != pair_packet["tap_ids"]["B2_GIST"]
+            or gist_artifact.get("body_pair_id") != pair_packet["body_pair_id"]
             or gist_artifact.get("tap_packet_id") != pair_packet["tap_packet_ids"]["B2_GIST"]
             or gist_artifact.get("source_ref") != source
             or gist_artifact.get("revision") != gist_binding["plan"].get("revision")):
