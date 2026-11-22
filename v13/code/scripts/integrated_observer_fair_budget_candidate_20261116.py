@@ -18,9 +18,13 @@ PINS = {
 
 
 def replace(raw, old, new, label):
-    if raw.count(old) != 1:
-        raise ValueError('observer fairness anchor changed: ' + label)
-    return raw.replace(old, new, 1)
+    old_count = raw.count(old)
+    new_count = raw.count(new)
+    if old_count == 1 and new_count == 0:
+        return raw.replace(old, new, 1)
+    if old_count == 0 and new_count == 1:
+        return raw
+    raise ValueError('observer fairness anchor changed: ' + label)
 
 
 def apply_sources(code_dir, sources):

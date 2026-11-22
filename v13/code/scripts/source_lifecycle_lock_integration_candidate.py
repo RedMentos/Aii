@@ -13,7 +13,7 @@ PINS = {
     'archive_stream_range_candidate.py': 'd2d021adcc844c1f321312cbfa60a4affb0a6b7fddc09e41a234cdf83f1eec98',
     'source_lifecycle_candidate.py': '3ace74b802d3e3e7340eabcccb03275d348deae2297fe8a1b4d2e1eab17d62b0',
 }
-GUARD_SCRIPT_SHA = '69a20b1c9e10882f80086c0620e8f87575c4559e7113ed19fd53002330be8747'
+GUARD_SCRIPT_SHA = '93000723a15220fc4eb007b074e92c2829ebd1a434f70b7051aade1740d97e79'
 OLD_ARCHIVE_INTEGRATED_SHA = '3f421423ce890b90033470e15150b1ba9830642e6b5e92e61b654801602e90b4'
 
 STORE_OLD = b'''        with self.mutex:
@@ -198,7 +198,7 @@ def build_sources(source_dir):
     guard = _replace_once(guard, PINS['store.py'].encode(), store_sha, 'guard store pin')
     raw['archive_reader_guard_candidate.py'] = guard
     raw['archive_stream_range_candidate.py'] = _replace_once(
-        raw['archive_stream_range_candidate.py'], PINS['store.py'].encode(), store_sha, 'stream store pin')
+        raw['archive_stream_range_candidate.py'], b'40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb', store_sha, 'stream store pin')
     return {name: raw[name] for name in ('archive.py', 'store.py', 'memory.py', 'vision.py',
                                          'archive_reader_guard_candidate.py', 'archive_stream_range_candidate.py',
                                          'source_lifecycle_candidate.py')}
