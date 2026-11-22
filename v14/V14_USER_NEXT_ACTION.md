@@ -1713,3 +1713,40 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 3. Continue whole-Canon QA; do not use the green release CI or updater receipt as evidence that the slow/incorrect native chat path is fixed.
 
 **Redmi status:** installed c4eb82 / updater up-to-date; native quality and Android companion acceptance remain UNVERIFIED. **User action: none.**
+
+
+## Research & Perception — verified run update (2026-11-22)
+
+**User action: NONE. Do not run Termux, send an UPDATE_REQUEST, change models/weights/permissions, or start a device probe.** No release candidate from this lane is ready to deploy.
+
+### Current release and authenticated Redmi receipt
+
+- Release-development branch `gpt6/v13-private-remote-bridge-20261111` still resolves to `aed1d2b826290c95c70356b5d8b864b5ef382be4`.
+- Private owner-read PIPELINE_STATUS [#619](https://github.com/RedMentos/Aiiii/issues/619) confirms that exact SHA installed, auto-update enabled, runtime/dashboard `UP_TO_DATE`, and `last_error=NONE`.
+- Private DIAGNOSTICS [#620](https://github.com/RedMentos/Aiiii/issues/620) repeats the stored FINAL turn: 57.739 s total, 41.627 s TTFT, 38.945 s C3 prefill, 751 admitted prompt tokens and 2 generated tokens. Correctness is UNKNOWN; no new user turn was sent.
+- B1_DETAIL and B2_GIST remain `TIME_BUDGET` at 53.2 s / 54.2 s. Native probe is `SMOKE_PARTIAL`. The instant native-process sample is 0 mapped processes / 0 MiB PSS/RSS with child readability UNKNOWN; this is not free-RAM or sustained-residency evidence.
+- Official Age 0; test selector 10 / implemented stage ceiling 5; physical feature execution unverified; learning commit authority still requires separate SHADOW. No device state changed.
+
+### Perception candidate #2375 — not released
+
+- PR [#2375](https://github.com/RedMentos/Aii/pull/2375), code/test head `6a4e919f176a7d1b96ab6669639c6fd1be4a7de4`, current branch head `81632fb64aa03fd0d0493ea7129ae4e612b9dcc2` (handoff-only commit after code).
+- Source review found two undefined helper references that would have raised `NameError` on first frame use. The helpers now enforce the fixed 8 MiB / 4 MP limits and best-effort mutable-buffer zeroization.
+- A mutable-buffer TOCTOU was closed by hashing and decoding the same bounded snapshot; both snapshot and caller buffer are zeroized. Regression tests cover post-verification buffer mutation, fixed limits and invalid hash dimensions.
+- LOCAL_LINUX CPython 3.13.5 isolated helper reproduction PASS for digest/snapshot/decode ordering and zeroization. Full Aii local pytest/compile remains BLOCKED because no complete checkout is mounted.
+- Exact code-head checks for `6a4e919`: Python 3.13/3.14, staged runtime, integrated regression, privacy and offline-bridge security QUEUED; additive validator SKIPPED by policy. No CI PASS is claimed.
+- Status remains WIRED_SYNTHETIC only. No Android MediaProjection provider, OS consent, normal Runtime/C3 dispatch, Termux capture or Redmi visual test exists. PR remains DRAFT / NOT_RELEASED.
+
+### Cross-model research #2380
+
+- PR [#2380](https://github.com/RedMentos/Aii/pull/2380) records R-091 and a Core/Perception/JEPA handoff. The reviewed cross-architecture steering preprint supports pair-specific testing, but its 1.7B threshold is not a scaling law and its 67M-per-direction bridges are not mobile candidates.
+- The current native receiver still measures input-embedding effect only; no mid-layer residual injection or task-level target generation is proven. Keep B3 OFF and `semantic_use_proven=false`.
+- No paper code, corpus, model weights or datasets were imported or downloaded.
+
+### Next internal actions
+
+1. Finish exact-head CI on #2375 and repair any failure.
+2. Core/QA implement the signed MediaProjection provider and connect the lease-bound packet to the normal Runtime/C3 consumer.
+3. Core proves same-model input-embedding parity and a separate target-generation/task-utility gate; do not treat embedding RMS as semantic communication.
+4. JEPA/Memory only then evaluates a compact adapter with source-disjoint holdout, OOD, old-session retention, restart and rollback.
+
+**Release:** NOT_RELEASED. **Redmi:** installed SHA aed1d2 / updater UP_TO_DATE, but the last recorded chat is slow and B1/B2 still time out; visual and latent acceptance REDMI_UNVERIFIED. **User action: NONE.**
