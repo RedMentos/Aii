@@ -2244,3 +2244,27 @@ Focused B3 paired-capture run 45040617156 remains PASS (52 tests, compile, CLI s
 - Runtime deployment 45040617193: plain UI recovery builder changed under Python 3.11 and 3.14.
 
 JEPA transactional update, combined online JEPA, JEPA receipt integrity, role-specific tap provenance, privacy scan and offline bridge checks passed; same-turn B1/B2/C4/C3 was still in progress and audio/arithmetic/native latent receiver queued. These are shared integrated builder/recovery composition failures, not the focused B3 capture/trainer test. Keep #2346 DRAFT / NOT_RELEASED.
+
+
+---
+
+## Current evidence overlay — Boss run 11 (2026-11-22)
+
+| Canon family | Current exact code / consumer evidence | Missing acceptance | Classification |
+|---|---|---|---|
+| A0–A5 perception / attention | Caller PCM16→staged A5/A4/C3 remains synthetic; #2375 adds a lease-bound RAW EYE adapter for an already-authorized frame (8 queued / 1 skipped). | Android MediaProjection provider, signed receipt verifier, foreground-service lifecycle, screen decoder, microphone provider, target-device measurements. | CODE_PRESENT / WIRED_SYNTHETIC / CI_PENDING / NOT_ANDROID_VERIFIED |
+| B1_DETAIL + B2_GIST | Distinct role models and synthetic OfferPacket→C4→C3 consumer remain; #2370 fair-budget candidate preserves both roles. | #2370 exact head has 27 queued / 3 skipped; valid native offers, both-body delivery, C4→C3 consumption, correct answers and 20-turn Redmi acceptance. | CODE_PRESENT / WIRED_SYNTHETIC / CI_PENDING / NOT_ACCEPTED |
+| B3 / Enlightened Space | Symbolic production exchange plus diagnostic native input receiver #2367 (26 success / 4 skipped). | #2377 actual GGUF-byte check is queued; path_for identity still requested. No paired native activation training, gradient, held-out utility, retention or semantic latent transfer. | DIAGNOSTIC_ONLY / B3_OFF / NOT_ANDROID_VERIFIED |
+| C1/JEF/C2/C3 | Runtime and output adapter present; #620 stored FINAL turn measured at 57.739 s, TTFT 41.627 s, prefill 38.945 s, 2 tokens. | Correctness unknown; no 20-turn acceptance; B1/B2 still TIME_BUDGET. | CODE_PRESENT / NATIVE_DEVICE_METADATA / NOT_ACCEPTED |
+| World / Self / Memory / JEPA / Sleep | Persistent numeric WorldJEPA SHADOW and temporal T8/B1/B2 readout candidate #2372 (9 checks queued). | SleepRuntime postcommit root-cause fix, source-forget/promotion lock interleavings, positive rollback/restart, per-session retention, held-out utility and actual GGUF weight diff. | SHADOW / CI_PENDING / WEIGHTS_UNVERIFIED |
+| Voice / audio / multimodal learning | Caller-supplied PCM16 and RAW EAR feature path; research-only libfvad comparator. | Android AudioRecord, ASR, trainable decoder/vocoder, full duplex, source-bound acoustic gradients and persistent weight/retention proof. | PARTIAL_FEATURES / NO_DEVICE_CAPTURE |
+| Android background agency | Companion prototype and Core action journal #2376 (7/7 CI). | QA base #2356 has one failed emulator process-restart job; no APK install, authenticated OS executor, app launch or Redmi action. | CODE_PRESENT / CI_PASS_STACKED / NO_OS_EXECUTOR |
+| Android UI agency | A5 metadata lease plus #2375 frame adapter. | No MediaProjection provider, signed frame receipt, AccessibilityService, screen capture, tap/type or navigation executor. | SHADOW_ADAPTER / PROVIDER_ABSENT |
+| Age / X10 / resource rights | Official Age 0; lab request 10, implemented ceiling 5; commit authority requires separate SHADOW. | Physical feature execution and learning rights proof; keep CPU/RAM/time in ResourceGuard, not Age. | CONFIGURED / PHYSICAL_EXECUTION_UNVERIFIED |
+| Tools / sandbox / behavior judge | Typed action/outcome and risk-head prototypes remain partial. | Independent OS-enforced boundary, full audit/stop/rollback, production judge and no authority leakage. | PARTIAL_CONTRACTS / NOT_ANDROID_VERIFIED |
+| Context OS / Memorilla | Context OS source-pointer infrastructure partial; #1983 additive SHADOW. | Production overflow consumer, source-pointer fidelity, forget/revoke/restart and reader/writer learning. | PARTIAL / SHADOW_ONLY |
+| Distinct sparse MoE bodies | Separate B1/B2 role models only. | Two independently trainable sparse MoE bodies, expert routing, load/quality/retention measurement. | NOT_PROVEN |
+| Updater / install / rollback / remote maintenance | #619 confirms aed1d2 installed, auto-update enabled and UP_TO_DATE; read-only owner relay works. | Candidate deployment, process-death/reboot, rollback, patch stage, local approved apply and restore. | CODE_INSTALL_VERIFIED / ROLLBACK_NOT_DEVICE_VERIFIED |
+| Cross-organ self-optimization / weight updates | WorldJEPA numeric SHADOW candidate. | Persistent B1/B2/C3 updates, cross-organ gradients, held-out utility, old-task retention and controlled self-edit. | SHADOW_ONLY / NO_WEIGHT_PROOF |
+
+**Device receipt boundary:** private #619/#620 are authenticated metadata only. No new chat turn, native receiver probe, screen/microphone capture, model/weight change or permission action was performed. 0 mapped native processes is one instantaneous sample with child readability UNKNOWN, not proof of zero total residency. The 1,255-heading historical inventory remains intact; semantic clause-level mapping is incomplete.
