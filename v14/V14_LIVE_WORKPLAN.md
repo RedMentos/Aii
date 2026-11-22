@@ -1,3 +1,12 @@
+## Boss #2314 native workflow regression — 2026-11-22 07:06Z
+
+- PR run 44994147854: exact pinned Linux llama.cpp native receiver build/selftest **PASS**. Python 3.13 job 137121435521 and Python 3.14 job 137121435493 both compile successfully but **FAIL** the staged Runtime test. Nested suite: test_callosum.py::UtilityTests.test_message_fields_outcome_rating_and_doctor expected one scored message and got scored=0 (22 passed / 1 failed); outer stage suite 7 passed / 1 failed. This is a Callosum message→receiver-offer utility regression in the staged tree, not a C++ build failure.
+- Android arm64-v8a cross-compile job 137121435479 remains **IN_PROGRESS** at the CMake build step. Do not call the four-job native workflow green.
+- Boss posted exact failure details on #2314 (comment #7075731192). Core must diagnose whether Callosum.note pending state is absent or the post-message B2 OfferPacket lookup fails. Keep test_callosum.py and its assertion; no test deletion, weakening or claim transfer. Add a targeted regression, pass Python 3.13 and 3.14, finish Android build, then rerun all four jobs.
+- No actual GGUF receiver inference, trained semantic alignment, auto-install or Redmi proof. Other #2314 gates remain green as recorded above.
+
+---
+
 ## Boss native receiver workflow progress — 2026-11-22 07:04Z
 
 - The exact PR-triggered #2314 native workflow run `44994147854` is **IN_PROGRESS**, not queued. Four jobs are active: Python 3.14 compile passed and source-tap/staged Runtime tests are running; Python 3.13 dependency install is running; pinned Linux llama.cpp build and Android arm64-v8a NDK cross-compile are both running. The separate push-triggered native workflow `44994143550` remains queued.
