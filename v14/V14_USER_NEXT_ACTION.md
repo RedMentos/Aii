@@ -1726,3 +1726,28 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 3. Continue whole-Canon QA; do not use the green release CI or updater receipt as evidence that the slow/incorrect native chat path is fixed.
 
 **Redmi status:** installed c4eb82 / updater up-to-date; native quality and Android companion acceptance remain UNVERIFIED. **User action: none.**
+
+
+## JEPA & Memory — Run 14 verified checkpoint (2026-11-22)
+
+**Code candidate:** [PR #2372](https://github.com/RedMentos/Aii/pull/2372), branch `jepa-memory/v14-temporal-exact-forget-retention-20261122-run14`, current head `9bca226bd9f43ccb5d2f520c8fbe7a3d68654bdd`, stacked on #2351 head `3f4277e303f19e442c3e9563c8322f0afca12f64`. DRAFT / NOT_RELEASED.
+
+- `memory.py`: packet cleanup now matches exact structured `source_id` / `source_ids` after JSON parsing; state keys use exact namespace segments rather than substring `LIKE`; malformed JSON aborts before source tombstoning; action-corollary packets remain protected.
+- `world_jepa_temporal.py`: emits separate encoder/predictor/EMA delta norms and parent checkpoint SHA.
+- Temporal tests: explicit unknown-outcome gaps remain hard boundaries; a retention veto must preserve the last accepted checkpoint and pending rows. A new fixture commit `9bca226` gives sessions and source IDs stable identities so the source-disjoint split is reproducible rather than dependent on random UUID ordering.
+
+**Exact CI evidence:**
+- Code head `cd8849bb060981ac6299ce8480ef9861131c43cf`: V14 Temporal WorldJEPA workflow run **45062206683**, Python 3.13 **10/10 PASS**, Python 3.14 **10/10 PASS**, including `py_compile`.
+- Later exact PR head `38f553d`: 3.14 temporal **10/10 PASS**, but 3.13 had two utility-gate failures on B-cohort fixtures because random source/session IDs changed the split; the deterministic fixture correction is now on `9bca226`, with exact-head CI pending.
+- The separate optimizer-resume/source-forget and staged-runtime workflows at `38f553d` failed on the expected QA-owned stale `source_lifecycle_lock_integration_candidate.py` pin: `unsupported lifecycle source: memory.py`. QA #2359 has been notified; its downstream pins must be rebound after this JEPA memory change. Do not edit QA-owned builder files in parallel.
+- LOCAL_LINUX isolated exact-reference helper reproduction: **9 assertions PASS**. Full local Aii checkout/pytest remains BLOCKED because no checkout is present and GitHub DNS resolution failed in the execution container.
+
+**Product boundary:** the T8→temporal WorldJEPA loop is still Store-backed synthetic NumPy learning. The B1/B2 temporal readout is SHADOW/API-only in this branch; no normal prompt-consumption, native GGUF body-weight update, trained cross-organ latent transfer, Android or Redmi proof is established.
+
+**Current integration/device facts:** Boss PR #2370 is current-base DRAFT at `524867218a3bcb82b7143d42b466d35e32f9a235` (8 success / 9 failures / 1 skipped / 1 cancelled); it is not a release. QA #2359 is 3 success / 5 failures; JEPA bodyview #2360 is 1 success / 1 failure and remains stacked on #2343. The installed documentation head is `aed1d2b826290c95c70356b5d8b864b5ef382be4`; last code release remains `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`. Authenticated receipts #602/#603 say updater enabled and UP_TO_DATE, but the repeated stored turn is ~57.74 s / 41.63 s TTFT / 38.95 s prefill / 751 tokens / 2 generated tokens; B1/B2 remain TIME_BUDGET. No new turn or update request was issued. REDMI_UNVERIFIED for this branch.
+
+**Research:** R-080 records the full-text LATER review (arXiv:2611.25671v1): immutable completed-transition memory plus action-conditioned readout is a testable future ablation. No public code repository or code license was verified; no code/weights/data were reused.
+
+**Next internal action:** finish exact CI on #2372 head `9bca226`; QA rebinds #2359 lifecycle pins; Boss reviews the current-base candidate; then rebase #2360's B1/B2 temporal receiver onto the current Boss base and verify actual prompt consumption in SHADOW. Keep learning promotion OFF until retention, restart, rollback and consumer utility all pass.
+
+**User action: none.** No manual Termux command, model download/swap, permission change or device action is needed.
