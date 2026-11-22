@@ -31,7 +31,6 @@ FRAME_STEP_MS = 80
 LOOKBACK_FRAMES = 10
 MAX_FRAMES = 32
 MAX_CHECKPOINT_BYTES = 1 << 30
-_SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 
 
 def _checkpoint_sha256(checkpoint_path, checkpoint_root):
