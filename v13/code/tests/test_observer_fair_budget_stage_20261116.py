@@ -27,6 +27,13 @@ class ObserverStageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'anchor changed'):
             module.apply_sources(CODE, result)
 
+    def test_existing_native_success_variant_is_recognized(self):
+        module = load(HELPER, 'observer_existing_success')
+        result = module.apply_sources(CODE, {})
+        budget = result['v13/native_turn_budget.py']
+        self.assertEqual(budget.count(b'data=row.get("metadata")'), 1)
+        self.assertIn(b'native["generated_tokens"] > 0', budget)
+
     def test_final_composed_runtime_and_native_success_contract(self):
         module = load(HELPER, 'observer_pins')
         before = {name: hashlib.sha256((CODE/name).read_bytes()).hexdigest() for name in module.PINS}
