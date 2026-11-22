@@ -416,10 +416,14 @@ class Operator:
             pairs=[json.loads(x['payload']) for x in rows]
             ids={p['body_pair_id'] for p in pairs}
             revisions={(p['model_revisions']['B1_DETAIL'],p['model_revisions']['B2_GIST']) for p in pairs}
+            current={'B1_DETAIL':r.models.revision('B1_DETAIL'),'B2_GIST':r.models.revision('B2_GIST')}
+            current_match=bool(pairs) and all(p['model_revisions']==current for p in pairs)
             return dumps({'paired_native_samples':len(ids),'required_for_l1_training':MIN_PAIRED,
                           'remaining':max(0,MIN_PAIRED-len(ids)),
                           'pinned_revision_pairs':[list(x) for x in sorted(revisions)],
+                          'current_model_revisions':current,'all_pairs_match_current_models':current_match,
                           'single_revision_set':len(revisions)==1,
+                          'pair_collection_threshold_met':len(ids)>=MIN_PAIRED and len(revisions)==1 and current_match,
                           'task_labels_and_L0_baselines_required':True,
                           'latent_injection_authority':0,'body_learning_authority':0})
         if cmd=='tap':
