@@ -88,9 +88,11 @@ class PairedNativeTapTests(unittest.TestCase):
         self.assertEqual(batch["receiver_feature_mode"], "B2_GIST_ADAPTIVE_SLOTS_FLATTENED")
         self.assertEqual(batch["y"].tolist(), [1])
         reverse = training_batch(self.r.cognition, [p], [1], direction="B2_TO_B1")
-        self.assertEqual(reverse["Xr"].shape, (1, 3))
+        self.assertEqual(reverse["Xr"].shape, (1, 64 * 3))
+        self.assertEqual(reverse["receiver_feature_mode"], "B1_DETAIL_FINE_NATIVE_SLOTS_FLATTENED")
+        self.assertEqual(reverse["receiver_slot_counts"], [len(source_text)])
         self.assertEqual(reverse["sender_role"], "B2_GIST")
-        self.assertIn("B1 mean-pool bootstrap only", reverse["claim_limit"])
+        self.assertIn("B1 native fine token slots", reverse["claim_limit"])
         gist_path = self.r.home / p["gist_readout"]["feature_path"]
         original = gist_path.read_text()
         gist_path.write_text(original + " ")
