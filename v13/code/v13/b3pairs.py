@@ -13,6 +13,7 @@ import json
 import math
 
 from .contracts import packet
+from .common import atomic_write, dumps, file_hash
 
 ROLES = ("B1_DETAIL", "B2_GIST")
 SCHEMA = "v13.b3-paired-native-taps/1"
@@ -82,6 +83,33 @@ def capture_pair(cognition, event, deadline):
         taps[role] = tap
         features[role] = rows
 
+    # B2's receiver representation must be its adaptive Gist readout, not a
+    # global mean over all native tokens. Verify pieces against this exact tap.
+    from .age import controller as age_controller
+    from .gist import resolve as resolve_gist
+    from .gist_readout import consume as consume_gist, DEFAULT_MODE
+    runtime = cognition.r
+    source_text = cognition.s.read_source(source)
+    runner = runtime.pool.get_tap("B2_GIST")
+    try:
+        runner.load(runtime.cancel_event, deadline)
+        token_rows = runner._json("POST", "/tokenize", {
+            "content": source_text, "add_special": True, "with_pieces": True
+        }, deadline)["tokens"]
+    finally:
+        runtime.pool.unload()
+    gist_ids = [row["id"] for row in token_rows]
+    if gist_ids != taps["B2_GIST"]["token_ids"]:
+        raise ValueError("B2 Gist tokenizer pieces do not belong to this native tap")
+    resolution = resolve_gist(age_controller(runtime), source_text)
+    gist_plan, gist_vectors = consume_gist(
+        source_text, source, gist_ids, [row["piece"] for row in token_rows],
+        features["B2_GIST"], size=resolution["tokens_per_group"],
+        slots=resolution["slots"], mode=DEFAULT_MODE,
+        tap_id=taps["B2_GIST"]["tap_id"])
+    if not gist_plan.get("lossless") or gist_plan.get("receiver_injection_authority") != 0:
+        raise ValueError("B2 Gist readout failed its lossless/read-only gate")
+
     # Each body keeps its own tokenizer and token sequence. Pairing is by the
     # exact source span, never by assuming token index equivalence.
     pair_key = hashlib.sha256(json.dumps(
@@ -91,6 +119,18 @@ def capture_pair(cognition, event, deadline):
         sort_keys=True, separators=(",", ":"), ensure_ascii=True
     ).encode()).hexdigest()
     body_pair_id = "B1_DETAIL<->B2_GIST:" + pair_key[:24]
+    gist_path = runtime.home / "data/blobs" / ("b3pair-" + pair_key + "-gist.json")
+    gist_artifact = {"body_pair_id": body_pair_id,
+                     "tap_packet_id": taps["B2_GIST"]["packet_id"],
+                     "source_ref": source, "revision": gist_plan["revision"],
+                     "vectors": gist_vectors.tolist()}
+    atomic_write(gist_path, dumps(gist_artifact))
+    gist_binding = {
+        "plan": gist_plan,
+        "feature_path": str(gist_path.relative_to(runtime.home)),
+        "feature_sha256": file_hash(gist_path),
+        "shape": [int(gist_vectors.shape[0]), int(gist_vectors.shape[1])],
+    }
     record = packet(
         "B3PairedTapPacket", "B3_CALLOSUM", event_id, generation, [source],
         packet_schema=SCHEMA, body_pair_id=body_pair_id, source_ref=source,
@@ -103,6 +143,7 @@ def capture_pair(cognition, event, deadline):
             "feature_sha256": taps[role]["feature_sha256"],
             "shape": taps[role]["shape"],
         } for role in ROLES},
+        gist_readout=gist_binding,
         token_counts={role: len(features[role]) for role in ROLES},
         dimensions={role: len(features[role][0]) for role in ROLES},
         token_alignment="NOT_ASSUMED_DIFFERENT_NATIVE_TOKENIZERS",
@@ -116,7 +157,7 @@ def capture_pair(cognition, event, deadline):
         "source_ref": source,
         "sender": {"role": "B1_DETAIL", "states": features["B1_DETAIL"]},
         "receiver": {"role": "B2_GIST", "states": features["B2_GIST"],
-                     "pooled": _mean_pool(features["B2_GIST"])},
+                     "gist_states": gist_vectors.tolist(), "gist_plan": gist_plan},
         "reverse_sender": {"role": "B2_GIST", "states": features["B2_GIST"]},
         "reverse_receiver": {"role": "B1_DETAIL", "states": features["B1_DETAIL"],
                              "pooled": _mean_pool(features["B1_DETAIL"])},
@@ -136,6 +177,9 @@ def load_pair(cognition, pair_packet):
     if pair_packet.get("packet_schema") != SCHEMA:
         raise ValueError("B3 pair schema mismatch")
     source = pair_packet["source_ref"]
+    gist_binding = pair_packet.get("gist_readout")
+    if not isinstance(gist_binding, dict) or not isinstance(gist_binding.get("plan"), dict):
+        raise ValueError("B3 pair has no persisted adaptive Gist readout")
     taps, features = {}, {}
     for role in ROLES:
         tap_id = pair_packet["tap_packet_ids"][role]
@@ -162,13 +206,28 @@ def load_pair(cognition, pair_packet):
         if tap["shape"] != [len(rows), width]:
             raise ValueError("B3 pair native feature shape changed: " + role)
         taps[role], features[role] = tap, rows
+    gist_path = cognition.r.home / gist_binding["feature_path"]
+    root = (cognition.r.home / "data/blobs").resolve()
+    if gist_path.is_symlink() or not gist_path.resolve().is_relative_to(root):
+        raise ValueError("B3 Gist artifact path escaped data/blobs")
+    if not gist_path.is_file() or file_hash(gist_path) != gist_binding["feature_sha256"]:
+        raise ValueError("B3 Gist artifact hash mismatch")
+    gist_artifact = json.loads(gist_path.read_text())
+    if (gist_artifact.get("body_pair_id") != pair_packet["body_pair_id"]
+            or gist_artifact.get("tap_packet_id") != pair_packet["tap_packet_ids"]["B2_GIST"]
+            or gist_artifact.get("source_ref") != source
+            or gist_artifact.get("revision") != gist_binding["plan"].get("revision")):
+        raise ValueError("B3 Gist artifact lineage mismatch")
+    gist_rows, gist_dim = _matrix(gist_artifact.get("vectors"), "B2_GIST_GIST")
+    if [len(gist_rows), gist_dim] != gist_binding["shape"] or gist_dim != pair_packet["dimensions"]["B2_GIST"]:
+        raise ValueError("B3 Gist artifact shape mismatch")
     return {
         "packet": pair_packet,
         "body_pair_id": pair_packet["body_pair_id"],
         "source_ref": source,
         "sender": {"role": "B1_DETAIL", "states": features["B1_DETAIL"]},
         "receiver": {"role": "B2_GIST", "states": features["B2_GIST"],
-                     "pooled": _mean_pool(features["B2_GIST"])},
+                     "gist_states": gist_rows, "gist_plan": gist_binding["plan"]},
         "reverse_sender": {"role": "B2_GIST", "states": features["B2_GIST"]},
         "reverse_receiver": {"role": "B1_DETAIL", "states": features["B1_DETAIL"],
                              "pooled": _mean_pool(features["B1_DETAIL"])},
@@ -197,11 +256,15 @@ def training_batch(cognition, pair_packets, labels, direction="B1_TO_B2"):
     sender_rev = pairs[0]["packet"]["model_revisions"][sender_role]
     receiver_rev = pairs[0]["packet"]["model_revisions"][receiver_role]
     sender_dim = pairs[0]["packet"]["dimensions"][sender_role]
-    receiver_dim = pairs[0]["packet"]["dimensions"][receiver_role]
+    receiver_dim = (pairs[0]["packet"]["gist_readout"]["shape"][1] *
+                    pairs[0]["packet"]["gist_readout"]["plan"]["max_slots"]
+                    if direction == "B1_TO_B2"
+                    else pairs[0]["packet"]["dimensions"][receiver_role])
     if any(p["packet"]["model_revisions"] != pairs[0]["packet"]["model_revisions"]
            or p["packet"]["dimensions"] != pairs[0]["packet"]["dimensions"]
+           or p["packet"]["gist_readout"]["plan"]["max_slots"] != pairs[0]["packet"]["gist_readout"]["plan"]["max_slots"]
            for p in pairs):
-        raise ValueError("B3 batch mixes body revisions or native dimensions")
+        raise ValueError("B3 batch mixes body revisions, native dimensions, or Gist slot budgets")
     if any(type(y) is not int or y < 0 for y in labels):
         raise ValueError("labels must be nonnegative integers supplied by the task")
     sender_key = "sender" if direction == "B1_TO_B2" else "reverse_sender"
@@ -218,7 +281,17 @@ def training_batch(cognition, pair_packets, labels, direction="B1_TO_B2"):
         rows = p[sender_key]["states"]
         H[i, :len(rows), :] = np.asarray(rows, dtype=np.float32)
         mask[i, :len(rows)] = 1.
-        Xr[i, :] = np.asarray(p[receiver_key]["pooled"], dtype=np.float32)
+        if direction == "B1_TO_B2":
+            slots = np.asarray(p[receiver_key]["gist_states"], dtype=np.float32)
+            max_slots = p["packet"]["gist_readout"]["plan"]["max_slots"]
+            slot_dim = p["packet"]["gist_readout"]["shape"][1]
+            if slots.shape[0] > max_slots or slots.shape[1] != slot_dim:
+                raise ValueError("B2 Gist slot geometry mismatch")
+            flat = np.zeros((max_slots, slot_dim), dtype=np.float32)
+            flat[:slots.shape[0], :] = slots
+            Xr[i, :] = flat.reshape(-1)
+        else:
+            Xr[i, :] = np.asarray(p[receiver_key]["pooled"], dtype=np.float32)
     y = np.asarray(labels, dtype=np.int64)
     return {"H": H, "mask": mask, "Xr": Xr, "y": y,
             "direction": direction, "sender_role": sender_role, "receiver_role": receiver_role,
