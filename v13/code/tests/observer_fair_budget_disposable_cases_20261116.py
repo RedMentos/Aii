@@ -348,5 +348,50 @@ class RuntimeObserverTests(unittest.TestCase):
                 r.close()
 
 
+class LongTurnBudgetTests(unittest.TestCase):
+    def test_ninety_second_composed_stage_splits_both_bodies_and_reserves_c3(self):
+        # This file is executed from the final staged tree by
+        # test_final_composed_runtime_and_native_success_contract, so these
+        # imports exercise the composed module, not the source-tree policy.
+        failed = {'status': 'DEADLINE', 'metadata': {'runner': {
+            'role': 'C3_LANGUAGE', 'generated_tokens': 0, 'last_phase': 'prefill'}}}
+        plan = native_budget.plan(
+            100.0, 190.0, 100.0, recent=[failed, failed],
+            background_enabled=True,
+        )
+        self.assertFalse(plan['recovery'])
+        self.assertEqual(plan['reason'], 'NORMAL_COGNITIVE_PREANSWER')
+        self.assertAlmostEqual(plan['preanswer_end_monotonic'], 140.5)
+        self.assertAlmostEqual(plan['preanswer_seconds_available'], 40.5)
+        self.assertAlmostEqual(plan['c3_reserved_seconds'], 49.5)
+        self.assertFalse(plan['postcommit_body_eligible'])
+        self.assertFalse(plan['age_changed'])
+        self.assertFalse(plan['memory_or_native_weights_changed'])
+
+        now = [100.0]
+        seen = []
+        schedule = obs.plan(obs.DEFAULT, ['B1_DETAIL', 'B2_GIST'], 'ninety-second-stage')
+
+        def ask(role, peer, role_end=None):
+            self.assertTrue(peer)
+            self.assertIsNotNone(role_end)
+            seconds = role_end - now[0]
+            seen.append((role, seconds, role_end))
+            now[0] = role_end
+            return role
+
+        offers = obs.run(
+            schedule, ask, plan['preanswer_end_monotonic'],
+            lambda role, exc: self.fail(f'{role} unexpectedly deferred: {exc}'),
+            clock=lambda: now[0], budgeted=True,
+        )
+        self.assertEqual(offers, ['B1_DETAIL', 'B2_GIST'])
+        self.assertEqual([item[0] for item in seen], ['B1_DETAIL', 'B2_GIST'])
+        self.assertAlmostEqual(seen[0][1], 20.25, places=2)
+        self.assertAlmostEqual(seen[1][1], 20.25, places=2)
+        self.assertAlmostEqual(seen[0][2], 120.25, places=2)
+        self.assertAlmostEqual(seen[1][2], 140.5, places=2)
+
+
 if __name__ == '__main__':
     unittest.main()
