@@ -234,6 +234,23 @@ def test_media_projection_frame_reaches_a5_a4_and_existing_ui_context(monkeypatc
         assert not any(frame)
 
 
+def test_bounded_frame_config_cannot_expand_capture_limits():
+    from v13.vision_ui_frame_ingress import (
+        MAX_FRAME_BYTES, MAX_FRAME_PIXELS, _bounded_vision_config,
+    )
+
+    cfg = _bounded_vision_config({
+        "hash_dim": 512,
+        "max_bytes": 64 * 1024 * 1024,
+        "max_pixels": 100_000_000,
+    })
+    assert cfg["hash_dim"] == 512
+    assert cfg["max_bytes"] == MAX_FRAME_BYTES == 8 * 1024 * 1024
+    assert cfg["max_pixels"] == MAX_FRAME_PIXELS == 4_000_000
+    with pytest.raises(ValueError, match="hash_dim"):
+        _bounded_vision_config({"hash_dim": True})
+
+
 def test_verified_frame_snapshot_prevents_post_receipt_buffer_swap(monkeypatch):
     from v13 import vision
     from v13.vision_ui_frame_ingress import _issue_provider_frame_verifier
