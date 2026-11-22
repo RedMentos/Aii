@@ -1,5 +1,8 @@
 import hashlib
 import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -76,6 +79,7 @@ def test_native_probe_requires_local_arm_and_consumes_it_once(tmp_path):
         assert armed["status"] == "ARMED"
         assert armed["source_bound"] is True
         assert armed["model_revisions_and_hashes_bound"] is True
+        assert armed["model_paths_and_file_identity_bound"] is True
         assert armed["runtime_instance_scoped"] is True
 
         result = json.loads(operator.run(command))
@@ -89,6 +93,200 @@ def test_native_probe_requires_local_arm_and_consumes_it_once(tmp_path):
         with pytest.raises(PermissionError):
             operator.run(command)
         assert len(calls) == 1
+    finally:
+        runtime.close()
+
+
+@pytest.mark.parametrize("model_name", ["sender", "receiver"])
+def test_actual_model_bytes_must_match_manifest_before_arm(tmp_path, model_name):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    calls = []
+    runtime.cognition.native_receive = lambda *args: calls.append(args)
+    operator = Operator(runtime)
+    model_path = sender_path if model_name == "sender" else receiver_path
+    try:
+        original = model_path.read_bytes()
+        model_path.write_bytes(b"X" * len(original))
+        with pytest.raises(PermissionError, match="hash"):
+            operator.run(":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+        assert calls == []
+    finally:
+        runtime.close()
+
+
+@pytest.mark.parametrize("model_name", ["sender", "receiver"])
+def test_same_size_model_tamper_after_arm_invalidates_approval(tmp_path, model_name):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    calls = []
+    runtime.cognition.native_receive = lambda *args: calls.append(args)
+    operator = Operator(runtime)
+    model_path = sender_path if model_name == "sender" else receiver_path
+    try:
+        operator.run(":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+        original = model_path.read_bytes()
+        model_path.write_bytes(b"Y" * len(original))
+        with pytest.raises(PermissionError, match="hash"):
+            operator.run(":callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+        assert calls == []
+    finally:
+        runtime.close()
+
+
+@pytest.mark.parametrize(
+    ("model_name", "role"),
+    [("sender", "B2_GIST"), ("receiver", "C3_LANGUAGE")],
+)
+def test_selected_model_path_must_match_manifest_path_before_arm(tmp_path, model_name, role):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    manifest_path = sender_path if model_name == "sender" else receiver_path
+    alternate = tmp_path / (model_name + "-same-bytes-different-path.gguf")
+    alternate.write_bytes(manifest_path.read_bytes())
+    runtime.models.router = lambda selected_role: alternate if selected_role == role else None
+    try:
+        with pytest.raises(PermissionError, match="selected model path"):
+            approval.arm(runtime, "B2_GIST", "C3_LANGUAGE", now=1000.0)
+    finally:
+        runtime.close()
+
+
+@pytest.mark.parametrize(
+    ("model_name", "role"),
+    [("sender", "B2_GIST"), ("receiver", "C3_LANGUAGE")],
+)
+def test_selected_model_route_change_after_arm_invalidates_approval(tmp_path, model_name, role):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    manifest_path = sender_path if model_name == "sender" else receiver_path
+    alternate = tmp_path / (model_name + "-same-bytes-rerouted.gguf")
+    alternate.write_bytes(manifest_path.read_bytes())
+    try:
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE", now=1000.0)
+        runtime.models.router = lambda selected_role: alternate if selected_role == role else None
+        with pytest.raises(PermissionError, match="selected model path"):
+            approval.consume(
+                runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], now=1001.0
+            )
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record["status"] == "PENDING"
+    finally:
+        runtime.close()
+
+
+@pytest.mark.parametrize(
+    ("model_name", "role"),
+    [("sender", "B2_GIST"), ("receiver", "C3_LANGUAGE")],
+)
+def test_joint_manifest_and_router_redirect_after_arm_invalidates_approval(
+    tmp_path, model_name, role,
+):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    manifest_path = sender_path if model_name == "sender" else receiver_path
+    key = model_key(role, runtime.models.b2_control)
+    entry = runtime.models.installed[key]["files"][manifest_path.name]
+    alternate = runtime.home / "models" / (model_name + "-same-bytes-copy.gguf")
+    alternate.write_bytes(manifest_path.read_bytes())
+    calls = []
+    runtime.cognition.native_receive = lambda *args: calls.append(args)
+    operator = Operator(runtime)
+    try:
+        armed = json.loads(operator.run(
+            ":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm"
+        ))
+        record, _ = runtime.store.state(approval.KEY, None)
+        original_binding = record["models"][role]
+        assert original_binding["canonical_path"] == str(manifest_path.resolve())
+        assert len(original_binding["file_identity"]) == 5
+
+        # Redirect both the installed manifest and the live router after arm.
+        # The bytes, size and revision stay identical; only path/inode change.
+        entry["path"] = str(alternate.relative_to(runtime.home))
+        runtime.models.router = lambda selected_role: alternate if selected_role == role else None
+        with pytest.raises(PermissionError, match="model revision/hash changed"):
+            operator.run(
+                ":callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm"
+            )
+        assert calls == []
+        pending, _ = runtime.store.state(approval.KEY, None)
+        assert pending["status"] == "PENDING"
+        assert pending["models"][role] == original_binding
+        assert armed["status"] == "ARMED"
+    finally:
+        runtime.close()
+
+
+@pytest.mark.parametrize(
+    ("model_name", "role"),
+    [("sender", "B2_GIST"), ("receiver", "C3_LANGUAGE")],
+)
+def test_joint_manifest_and_router_redirect_after_arm_invalidates_approval(
+    tmp_path, model_name, role,
+):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    manifest_path = sender_path if model_name == "sender" else receiver_path
+    key = model_key(role, runtime.models.b2_control)
+    entry = runtime.models.installed[key]["files"][manifest_path.name]
+    alternate = runtime.home / "models" / (model_name + "-same-bytes-copy.gguf")
+    alternate.write_bytes(manifest_path.read_bytes())
+    calls = []
+    runtime.cognition.native_receive = lambda *args: calls.append(args)
+    operator = Operator(runtime)
+    try:
+        armed = json.loads(operator.run(
+            ":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm"
+        ))
+        record, _ = runtime.store.state(approval.KEY, None)
+        original_binding = record["models"][role]
+        assert original_binding["canonical_path"] == str(manifest_path.resolve())
+        assert len(original_binding["file_identity"]) == 5
+
+        # Redirect both the installed manifest and the live router after arm.
+        # The bytes, size and revision stay identical; only path/inode change.
+        entry["path"] = str(alternate.relative_to(runtime.home))
+        runtime.models.router = lambda selected_role: alternate if selected_role == role else None
+        with pytest.raises(PermissionError, match="model revision/hash changed"):
+            operator.run(
+                ":callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm"
+            )
+        assert calls == []
+        pending, _ = runtime.store.state(approval.KEY, None)
+        assert pending["status"] == "PENDING"
+        assert pending["models"][role] == original_binding
+        assert armed["status"] == "ARMED"
+    finally:
+        runtime.close()
+
+
+def test_arm_ttl_starts_after_model_hash_verification(tmp_path, monkeypatch):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    clock = [1000.0]
+
+    def verify_model(runtime_arg, role):
+        clock[0] += 50.0
+        return {"model_key": role, "revision": role + "-r1", "sha256": "0" * 64}
+
+    monkeypatch.setattr(approval, "_clock", lambda value=None: clock[0])
+    monkeypatch.setattr(approval, "_model_binding", verify_model)
+    try:
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record["issued_at"] == 1100.0
+        assert record["expires_at"] == 1220
+    finally:
+        runtime.close()
+
+
+def test_consume_rechecks_expiry_after_model_hash_verification(tmp_path, monkeypatch):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    try:
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE", now=1000.0)
+        record, _ = runtime.store.state(approval.KEY, None)
+        model_bindings = record["models"]
+        monkeypatch.setattr(approval, "_model_binding", lambda runtime_arg, role: model_bindings[role])
+        times = iter([1000.0, 1121.0])
+        monkeypatch.setattr(approval, "_clock", lambda value=None: next(times))
+        with pytest.raises(PermissionError, match="expired"):
+            approval.consume(
+                runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"]
+            )
     finally:
         runtime.close()
 
@@ -120,6 +318,29 @@ def test_wrong_role_pair_cannot_use_pending_local_approval(tmp_path):
         assert len(calls) == 1
     finally:
         runtime.close()
+
+
+def test_fifo_model_path_is_rejected_without_blocking(tmp_path):
+    fifo = tmp_path / "model-fifo.gguf"
+    os.mkfifo(fifo)
+    script = (
+        "from pathlib import Path\n"
+        "import sys\n"
+        "from v13.native_probe_approval import _verify_model_file\n"
+        "try:\n"
+        "    _verify_model_file(Path(sys.argv[1]), 1, '0' * 64)\n"
+        "except PermissionError:\n"
+        "    print('REJECTED')\n"
+        "else:\n"
+        "    raise SystemExit(1)\n"
+    )
+    env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1]))
+    result = subprocess.run(
+        [sys.executable, "-c", script, str(fifo)],
+        capture_output=True, text=True, timeout=3, check=False, env=env,
+    )
+    assert result.returncode == 0
+    assert result.stdout.strip() == "REJECTED"
 
 
 def test_model_revision_drift_invalidates_local_approval(tmp_path):
