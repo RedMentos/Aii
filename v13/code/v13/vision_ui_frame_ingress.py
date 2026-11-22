@@ -74,6 +74,68 @@ def _overwrite_caller_buffer(buffer):
     return not any(buffer)
 
 
+def _feature_summary(region_id, box, features, salience):
+    """Render bounded, content-free RAW EYE numeric features for A5 context."""
+    valid_named = {"g", "hl", "hr", "ht", "hb", "qtl", "qtr", "qbl", "qbr"}
+    valid_grid = (
+        isinstance(region_id, str)
+        and len(region_id) == 3
+        and region_id[0] == "r"
+        and region_id[1] in "0123"
+        and region_id[2] in "0123"
+    )
+    if region_id not in valid_named and not valid_grid:
+        raise ValueError("invalid RAW EYE region id")
+    if (
+        type(box) not in (list, tuple)
+        or len(box) != 4
+        or any(type(value) is not int or value < 0 for value in box)
+        or box[0] >= box[2]
+        or box[1] >= box[3]
+    ):
+        raise ValueError("invalid RAW EYE region box")
+
+    try:
+        values = tuple(float(value) for value in features)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError("invalid RAW EYE feature vector") from exc
+    expected = 6 + vision.HUE_BINS + 3 + vision.ORI_BINS + 16
+    if len(values) != expected:
+        raise ValueError("RAW EYE feature vector has an unexpected dimension")
+    if any(not math.isfinite(value) or value < 0.0 or value > 2.0 for value in values):
+        raise ValueError("RAW EYE feature vector is outside its finite bounds")
+
+    if salience is None:
+        salience_text = "na"
+    else:
+        try:
+            salience_value = float(salience)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError("invalid RAW EYE salience") from exc
+        if not math.isfinite(salience_value) or not 0.0 <= salience_value <= 1.0:
+            raise ValueError("RAW EYE salience is outside [0,1]")
+        salience_text = f"{salience_value:.3f}"
+
+    def group(items):
+        return ",".join(f"{value:.3f}" for value in items)
+
+    hue_end = 6 + vision.HUE_BINS
+    sv_edge_end = hue_end + 3
+    orientation_end = sv_edge_end + vision.ORI_BINS
+    summary = (
+        f"raw_eye_v1 authority=RAW_FEATURE_MEASUREMENT region={region_id} "
+        f"box={box[0]},{box[1]},{box[2]},{box[3]} salience={salience_text} "
+        f"rgb={group(values[:3])} rgb_sd={group(values[3:6])} "
+        f"hue={group(values[6:hue_end])} "
+        f"sv_edge={group(values[hue_end:sv_edge_end])} "
+        f"orientation={group(values[sv_edge_end:orientation_end])} "
+        f"lum4x4={group(values[orientation_end:])}"
+    )
+    if len(summary) > MAX_SUMMARY_CHARS:
+        raise ValueError("RAW EYE feature summary exceeds its fixed bound")
+    return summary
+
+
 class ProviderFrameVerifier:
     """One-shot provider capability bound to one active UIObservationLease.
 
