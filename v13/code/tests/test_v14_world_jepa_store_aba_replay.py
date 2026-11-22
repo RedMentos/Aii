@@ -751,6 +751,12 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
         if replay_mode in {"session_contiguous", "on_demand_conflict"} and before is not None:
             assert metrics.get("replay_session_count", 0) > 0
             assert metrics.get("replay_window_count", 0) > 0
+        if replay_mode == "on_demand_conflict" and before is not None:
+            assert metrics.get("replay_conflict_probe_fold") == "prior_guard"
+            assert type(metrics.get("replay_conflict_probe_action_ids_sha256")) is str
+            assert metrics.get("replay_conflict_probe_action_ids_sha256") == metrics.get(
+                "prior_guard_action_ids_sha256"
+            )
         if replay_mode == "uniform_budget":
             assert metrics.get("replay_window_count", 0) == 0
     elif replay_mode == "on_demand_loss":
