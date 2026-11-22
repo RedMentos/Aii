@@ -1,6 +1,4 @@
-name: V14 Core same-turn B1 B2 C4 C3 consumer
-on:
-  push:
+push:
     branches:
       - core/v14-c4-c3-consumption-rebase-20261122
       - core/v14-c4-c3-consumption-rebase-20261122-run2
