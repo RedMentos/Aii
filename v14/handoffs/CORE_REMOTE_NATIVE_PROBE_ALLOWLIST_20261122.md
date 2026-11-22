@@ -4,8 +4,9 @@
 
 - Owner: Core & Harness
 - Branch: `core/v14-remote-native-probe-allowlist-20261122`
-- Rebased by a non-force merge commit onto current release-development HEAD `4af423e8f802918ae17cee4352d89dcb0df92e00`
-- Previous code commit: `33d3ef881ed07b3e0e719aa2e4043a25403f4a90`
+- Current release-development base: `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`
+- Rebased by a non-force merge commit; the intervening base commit changed only the JEPA Runtime-port test, not these Core files.
+- Previous code commit: `aa2d1b55f48012925d83435536009febe0de4ae2`
 - Scope: expose the already-staged, one-shot native receiver diagnostic through the existing private owner-read / CHAT_OPERATOR path. This change does not execute the probe.
 
 ## Runtime change
@@ -26,12 +27,12 @@ Existing owner identity, private-repository, `CHAT_OPERATOR` permission, remote-
 
 ## Test history and exact evidence
 
-- The first PR run exposed a malformed test fixture: the native receiver payload was accidentally nested in the preceding ordinary-chat test and the indentation caused collection failure at `test_remote_chat.py:118`.
-- Commit `33d3ef881ed07b3e0e719aa2e4043a25403f4a90` moved that payload into the native receiver test that consumes it and corrected the indentation. The remote bridge workflow then passed **80 tests + 28 subtests on Python 3.12** and **80 tests + 28 subtests on Python 3.14**.
-- The owner-read workflow passed its Python 3.11 compile and all focused unittest suites, plus staged runtime startup/SQLite source-ref checks.
-- Staged Runtime and integrated regression both passed on the prior PR merge base. The current release base `4af423e8f802918ae17cee4352d89dcb0df92e00` independently has **21/21 GitHub workflows SUCCESS**. Exact CI for the new two-parent merge commit is pending and must be checked before integration.
+- Initial PR CI exposed a malformed test fixture: the native receiver payload was accidentally nested in the preceding ordinary-chat test and indentation caused collection failure at `test_remote_chat.py:118`.
+- Commit `aa2d1b55f48012925d83435536009febe0de4ae2` moved the payload into the native receiver test that consumes it and corrected indentation.
+- The earlier exact test commit `33d3ef881ed07b3e0e719aa2e4043a25403f4a90` passed 80 tests + 28 subtests on Python 3.12 and the same on Python 3.14; owner-read focused suites and staged runtime startup/SQLite source-ref tests passed. Staged Runtime and integrated regression also passed on that prior merge base.
+- The current release base `c4eb82deec915f65894c20d6ebbaf0ebf58fa335` has its own exact CI history; this rebased PR's current-head CI must be checked before integration.
 - LOCAL_FULL_REPOSITORY: BLOCKED — no Aii checkout is present; container GitHub DNS resolution fails. No local full-repository pytest result is claimed.
-- TERMUX/REDMI: the latest authenticated private DIAGNOSTICS receipt reports the phone on `9c7a0ec2d58538be8b7fde9476db299f2a5dd7b8`, not this PR and not current release HEAD. It reports `native_probe=SMOKE_PARTIAL`, B1/B2 `TIME_BUDGET` at 53.2/54.2 s, and the last recorded turn at 63.22 s total / 42.48 s TTFT / 34.96 s prefill / 2 generated tokens. This is an old recorded turn, not a fresh post-update benchmark or proof that either body contributed to a correct answer. No native receiver probe was sent or executed.
+- TERMUX/REDMI: the latest authenticated private DIAGNOSTICS receipt reports the phone on `9c7a0ec2d58538be8b7fde9476db299f2a5dd7b8`, not this PR and not current release HEAD. It reports `native_probe=SMOKE_PARTIAL`, B1/B2 `TIME_BUDGET` at 53.2/54.2 s, and the last recorded turn at 63.22 s total / 42.48 s TTFT / 34.96 s prefill / 2 generated tokens. This is a prior recorded turn, not a fresh post-update benchmark or proof that either body contributed to a correct answer. No native receiver probe was sent or executed.
 
 ## User impact and Canon mapping
 
