@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T00:57:11.246Z",
+  "updated_at": "2026-11-22T01:10:24Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -337,18 +337,18 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "#2275 RAW EAR speaker-change candidate remains old-base failing; caller PCM16 audio is not microphone capture or a speaker model. No Android microphone or identity inference.",
-      "next_step": "Perception: rebase #2275 and repair frame-age/source pins; keep pre-batch history frozen and do not persist speaker embeddings or infer identity.",
+      "proof_environment": "GITHUB_CI_HOSTED_3.13_3.14_FOCUSED_PASS; GITHUB_CI_STAGED_FAIL_REPRODUCED_ON_BASE; LOCAL_LINUX_ISOLATED_ALGO_ONLY_PASS_ON_PRIOR_2996153a; FULL_LOCAL_AII_CHECKOUT_BLOCKED; REDMI_UNVERIFIED",
+      "next_step": "Core fixes local-error pre-rebind semantic binding mismatch on the Boss integration branch; Perception then rebases #2293 onto that verified head and reruns staged/integrated. Keep the draft unmerged until the exact current-head matrix is green.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T00:50:52.733Z",
+      "last_checkpoint": "2026-11-22T01:10:24Z",
       "latest_candidate_pr": {
-        "pr": 2275,
-        "head_sha": "b19ff77cc769e670a46b6467798fba94a6d19046",
-        "base_sha": "34eb645357d65bdd5ac69b9fb2c834d043086dac",
-        "ci": "FAIL_RAW_EAR_44958073016_STAGED_44958072992",
-        "tested_code_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c"
+        "pr": 2293,
+        "head_sha": "be17014546fa50ddd4513b7c42ec7159267344f4",
+        "base_sha": "f0d3c848dfb1d65e282f065233adbe3c9205e439",
+        "ci": "RAW_EAR_FASTPATH_44969991498_PASS_3.13_3.14; VAD_LIBFVAD_44969991513_PASS_3.13_3.14; DEPLOY_INTEGRITY_44969991505_PASS; STAGED_INTEGRATED_44969991457_FAIL_BASELINE_LOCAL_ERROR_SEMANTIC_PIN",
+        "tested_code_sha": "be17014546fa50ddd4513b7c42ec7159267344f4"
       },
-      "proof": "The pre-batch snapshot algorithm passed a local CPython 3.13.5 x86_64 algorithm-only reproduction, but current exact CI fails: reference_age_ms 920 vs expected 800; staged/integrated rejects the changed audio_voice_cues blob and migration becomes PARTIAL. No full Aii local test, microphone/model/Redmi test or identity inference."
+      "proof": "On #2293 head be170145, RAW EAR fastpath 44969991498 passed on Python 3.13/3.14 (compile, backend parity, A5→A4→C3 consumer, deterministic synthetic benchmark, privacy scan); VAD/libfvad comparison 44969991513 passed on 3.13/3.14; runtime deployment integrity 44969991505 passed. Staged/integrated run 44969991457 fails at termux_runtime_recovery_candidate_20261112.py:313, local-error pre-rebind semantic binding mismatch; the same failure is present on unmodified Boss base f0d3c848 (run 44969679441), so it is not introduced by the audio overlay. Prior LOCAL_LINUX CPython 3.13.5 algorithm-only reproduction passed on code/test head 2996153a; no full local checkout, no Redmi microphone/model/device proof."
     }
   ],
   "current_redmi_status": "REDMI_UNVERIFIED. Private PIPELINE_STATUS request #453 created 2026-11-22T00:47:59Z has zero authenticated comments at last poll. Installed SHA/updater consent UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, shell action or device mutation.",
@@ -877,6 +877,34 @@
       "status": "FULL_TEXT_PREPRINT_RESEARCH_ONLY",
       "primary": "arXiv:2608.01475",
       "next": "After JEPA per-session retention is stable, compare fixed/AGN/AEN small heads with old-session holdout, gradient, parameter diff, restart and rollback"
+    },
+    {
+      "id": "R-058",
+      "topic": "FASTDIAR frame-level streaming speaker encoder",
+      "status": "FULL_TEXT_REVIEWED_PREPRINT_MIT_CODE_CHECKPOINT_LICENSE_SCOPE_PENDING",
+      "primary": "arXiv:2610.02941; microsoft/fastdiar",
+      "next": "No weight reuse until checkpoint license is independently verified; compare bounded frame look-back with caller-supplied evidence only"
+    },
+    {
+      "id": "R-059",
+      "topic": "ReDimNet2 ONNX utterance-level speaker embeddings",
+      "status": "WRAPPER_MIT_WEIGHT_SCOPE_PER_CHECKPOINT_REVIEW",
+      "primary": "mediainbox/redimnet2-onnx 1da8337; PyPI 0.2.0; PalabraAI/redimnet2",
+      "next": "Not a frame-streaming replacement; no install/download; benchmark separately only if offline enrollment is required"
+    },
+    {
+      "id": "R-060",
+      "topic": "Android TTS effector / full-duplex boundary",
+      "status": "ANDROID_API_REVIEWED_NO_IMPLEMENTATION_NO_DEVICE_PROOF",
+      "primary": "Android TextToSpeech, AudioTrack, AcousticEchoCanceler, NoiseSuppressor API docs",
+      "next": "Core owns VoiceEffector; Perception owns RAW EAR input; QA validates interruption and consent"
+    },
+    {
+      "id": "R-061",
+      "topic": "eDIAR bounded-window open-speaker diarization",
+      "status": "FULL_18_PAGE_PREPRINT_REVIEWED_SERVER_ONLY_NOT_REDMI_FIT",
+      "primary": "arXiv:2611.18529; KyuDan1/eDIAR; Faiss contrib/e_means",
+      "next": "Research-only: bounded revision/slot anchors; do not reuse model weights or enable cross-recording identity linking"
     }
   ]
 }
