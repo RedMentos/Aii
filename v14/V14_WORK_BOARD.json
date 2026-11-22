@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T04:21:17.255Z",
+  "updated_at": "2026-11-22T04:46:39.292Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -190,8 +190,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "A5 UI metadata lease and shared Store source-read/revocation regression are included in Boss 483ef; exact A5 UI lease workflows and same-turn source-read/revocation workflow pass CI. Audio is caller-supplied PCM16 only. No Android microphone, screen capture, AccessibilityService or UI provider is active.",
-      "next_step": "Perception/QA: continue A0–A5 temporal provenance and source-revocation tests; rebase RAW EAR work onto current Boss and retain source-bound revocation/negative controls. No sensor or speaker model is enabled.",
+      "proof_environment": "Boss 483ef A5 UI metadata lease/source-read/revocation CI PASS; RAW EAR caller-supplied PCM16 now includes low-gain voiced-evidence correction in PR #2304; RAW EAR and VAD focused CI pass on Python 3.13/3.14. No Android microphone, MediaProjection, AccessibilityService or Redmi sensor proof.",
+      "next_step": "Core/QA: after #2304 exact staged/integrated review, implement the separate consent-gated Android AudioRecord provider using the Perception handoff; Perception retains timed source/finality and low-gain/noise controls. No sensor is active and no raw audio is persisted.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T03:55:43.537Z",
       "latest_candidate_pr": {
@@ -363,19 +363,19 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Caller-supplied mono PCM16 audio-only ingress into staged Runtime; source/generation-bound bounded speaker-similarity diagnostics; process-local vectors; A5 PerceptPacket → A4 decision → C3 scalar summary; NumPy pitch explicit opt-in; no identity labels or microphone capture.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "PR #2304 code-tested head 5010ba083f0480d4e2249a4246cb13d453827f93; Perception code commit cfccb91ac9a3ff49f8aae259f92ad8118eaf19c5; current Boss base 6e6f15322c9fa1931dcf733105d2a32d5372edeb (29 checks success, 0 fail, 1 expected skip). Exact PR code head: 15/15 check-runs SUCCESS. RAW EAR focused tests: 73 passed on Python 3.13 and 73 on 3.14; VAD comparison 8 passed on each; staged runtime 252 passed/10 skipped/47 subtests; staged context recall 15 passed; arithmetic/output policy 39 passed/17 subtests; integrated regression 424 passed/3 skipped/58 subtests; composed C4/C3 consumer suites 10 focused tests per Python 3.13/3.14. LOCAL_LINUX full suite BLOCKED (no checkout; github.com DNS unavailable). No Android microphone, native speaker encoder, native model, install or Redmi receipt. Private device status: last V13OBS issue #115 receipt is stale (2026-11-18; auto_enabled true but runtime ERROR / last_result PARTIAL); V13READ #461 has no device_status receipt: NO_LIVE_RECEIPT. NOT_RELEASED.",
-      "next_step": "Boss/QA review PR #2304 and integrate only after the current Boss base and exact-head checks remain green. Then implement an explicit-consent Android AudioRecord provider and prove source/revocation/lifecycle on the Redmi; keep mic OFF until user/OS consent. Keep speaker similarity diagnostic-only DEFER; no model download or swap.",
+      "proof_environment": "LOCAL_LINUX_SCRATCH: PASS (algorithm extraction only); CI: RAW EAR fastpath 2/2 Python jobs PASS, VAD comparison 2/2 PASS, runtime-deployer/Lab-Age/two-checkout migration/owner-read PASS; staged+integrated and Core consumer jobs still IN_PROGRESS at last readback. Full local repository suite BLOCKED (no checkout; GitHub DNS unavailable). REDMI_UNVERIFIED; no microphone capture.",
+      "next_step": "Wait for exact-head staged/integrated and Core 3.14 jobs; fix only reproduced failures. Then Boss/QA review #2304. Next audio milestone is the separate explicit-consent Android AudioRecord provider described in v14/handoffs/RESEARCH_PERCEPTION_ANDROID_AUDIO_CAPTURE_CONTRACT_20261122.md: Core owns companion/provider, QA owns OS permission/lifecycle tests, Perception owns the A-plane Termux consumer. Keep microphone OFF until the user approves the visible OS prompt; no model download/swap.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T04:21:17.255Z",
+      "last_checkpoint": "2026-11-22T04:46:39.292Z",
       "latest_candidate_pr": {
         "pr": 2304,
-        "head_sha": "5010ba083f0480d4e2249a4246cb13d453827f93",
-        "code_commit_sha": "cfccb91ac9a3ff49f8aae259f92ad8118eaf19c5",
+        "head_sha": "e28982337ca714fb4d14a3a972f3beafacc248c4",
+        "code_commit_sha": "e28982337ca714fb4d14a3a972f3beafacc248c4",
         "base_sha": "6e6f15322c9fa1931dcf733105d2a32d5372edeb",
-        "ci": "PASS_15_OF_15_ON_5010BA",
+        "ci": "RAW_EAR_AND_VAD_PASS_2PY; STAGED_CORE_PENDING",
         "status": "DRAFT_NOT_RELEASED"
       },
-      "proof": "Exact source pins read back: audio_voice_cues 596d14487b9f2b28609eea79fb8b1b39f8da009c; audio_speaker_evidence 37aa9c392bbb68d60ccff9749c75b41b8783c539; integrated audio builder f79f5c2e36b396fbea2d5d9177729f72c0250c3d; recovery SHA-256 0ad300e467ecaa0befca6749a1ad9995fe9a715dc49c3556dd0462212a28ca6e; stage SHA-256 c24fae1a4cb9b1bc36c3e6064afd15cff432e65833940b46796a41ad697d0623; deployer STAGER_SHA256 matches. CI is synthetic/Linux only: 73 RAW EAR tests per Python 3.13/3.14, 8 VAD tests per version, 252 staged tests/10 skips/47 subtests, 424 integrated tests/3 skips/58 subtests, 10 composed C4/C3 tests per Python version; all 15 check-runs success. Benchmark medians: Python autocorrelation ~115.5 ms (3.13) / 189.7 ms (3.14), NumPy ~5.4/9.0 ms, speaker evidence consumer ~0.62/1.04 ms on CI runner only. No Android/Redmi or local full-suite evidence."
+      "proof": "Low-gain defect reproduced: a 140 Hz PCM16 tone at 100-count amplitude had whole-window RMS 0.002144 (<0.003) but voiced_fraction=1.0 and confidence=0.992; old absolute gate returned SILENCE. New gate requires both low window RMS and voiced_fraction<0.25, so it returns VOICED. Seeded 50-count noise negative control RMS=0.000889, voiced_fraction=0, remains SILENCE. Runtime A4 regression added. Exact source pins read back: audio_voice_cues blob 4c5641adf6758762ce0fdf616a9b2a798e6de408; integrated audio builder blob fb59de5040081b1407ba5cbee8f9102e9921d149; recovery wrapper SHA-256 e9b32f4935652c7a3d0d322acf9358b2cf8dba256cecdf3e94f3655c36ff3034; stage builder SHA-256 79a5667adda7922e06dcc260e6696ed7f6c966cf2fa2b1f0c14438e663896bfa; runtime deployer STAGER_SHA256 and VAD workflow expected blob rebound/read back. CI: RAW EAR fastpath and VAD comparison pass on Python 3.13/3.14; staged/integrated and Core same-turn still pending. Private V13OBS #115 is stale (2026-11-18, LOCAL_METADATA_ONLY; B1/B2 valid offers 0); V13READ #463 PIPELINE_STATUS is pending with no device_status. No UPDATE_REQUEST, shell, LOG_PAGE, model change or device mutation."
     },
     {
       "id": "V14-019",
