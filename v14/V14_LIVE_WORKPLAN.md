@@ -1254,3 +1254,12 @@ Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, mi
 2. For #2343, require real same-turn offer delivery and C4/C3 consumption plus correct output before release; do not infer utility from scheduling fairness or post-commit observers.
 3. Continue the whole-Canon queue: JEPA source-forget/promotion/retention, B3 receiver utility, A5 vision call-site, Android companion operator path, real AudioRecord/voice, Context OS/Memorilla consumer, and permanent cross-organ learning remain separately OPEN.
 4. Keep B3 OFF/SYMBOLIC and learning promotion OFF until their original native/holdout/retention gates pass. No model swap, permission change or user action.
+
+
+## Post-merge status correction — 2026-11-22T17:55:17.015Z
+
+- QA evidence PR #2340 merged documentation-only as `aed1d2b826290c95c70356b5d8b864b5ef382be4`. The release-development branch now points to `aed1d2`; its exact push CI has **37 checks queued** at the latest poll. The phone still reports installed `c4eb82`; do not request or claim installation of `aed1d2` until exact push CI is green and a separate receipt confirms it.
+- Boss #2343 advanced to `8e5cabb661ba3bada4fa63af24935f2a7a0bf0b2`. The Lab-Age failure on old head `62fb219` was an obsolete postcommit source anchor; commit `8e5cabb` adds the exact current fair-budget anchor. Local isolated CPython 3.13.5 anchor simulation PASS; new push workflow run 45051950747 is QUEUED. No full CI or device test is claimed yet.
+- #2346 remains at `d2c459`: 2 paired-capture failures (the same wording assertion on two runs), 21 checks queued, 1 skipped. Boss comment records the exact mismatch. #2364 remains at `73b30a` with 12 checks queued.
+- This handoff PR #2365 is based on `aed1d2`; its 5 exact-head checks were queued at the latest poll. It is documentation-only.
+- Phone receipt and last stored turn remain unchanged from the preceding checkpoint: installed `c4eb82`, 57.739 s / 41.627 s TTFT / 38.945 s prefill / 751 prompt / 2 generated, correctness UNKNOWN; B1/B2 TIME_BUDGET. No update request or new chat turn was sent.
