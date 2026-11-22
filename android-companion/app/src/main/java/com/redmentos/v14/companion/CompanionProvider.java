@@ -307,7 +307,7 @@ public final class CompanionProvider extends ContentProvider {
         if (left.length() != right.length()) return false;
         for (java.util.Iterator<String> it = left.keys(); it.hasNext();) {
             String key = it.next();
-            if (!right.has(key) || !left.get(key).equals(right.get(key))) return false;
+            if (!right.has(key) || !left.get(key).toString().equals(right.get(key).toString())) return false;
         }
         return true;
     }
