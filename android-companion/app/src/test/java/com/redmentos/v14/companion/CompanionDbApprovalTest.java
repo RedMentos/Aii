@@ -145,6 +145,58 @@ public final class CompanionDbApprovalTest {
         assertFalse(hasApprovalNotification(manager, liveId));
     }
 
+    @Test public void cancellationWaitsForSubmitNotificationPublicationAndClearsIt() throws Exception {
+        NotificationManager manager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.createNotificationChannel(new NotificationChannel(
+                "v14-action-approval", "V14 action approvals", NotificationManager.IMPORTANCE_DEFAULT));
+        Notification notification = new Notification.Builder(context, "v14-action-approval")
+                .setSmallIcon(android.R.drawable.ic_menu_view).build();
+        CountDownLatch inserted = new CountDownLatch(1);
+        CountDownLatch publishNotification = new CountDownLatch(1);
+        CountDownLatch cancelStarted = new CountDownLatch(1);
+        CountDownLatch cancelFinished = new CountDownLatch(1);
+        AtomicBoolean cancelled = new AtomicBoolean(false);
+        ExecutorService pool = Executors.newFixedThreadPool(2);
+        try {
+            Future<?> submit = pool.submit(() -> {
+                synchronized (CompanionProvider.ACTION_GATE_LOCK) {
+                    insertPending(ACTION_ID, NOW + 10_000L);
+                    inserted.countDown();
+                    try {
+                        if (!publishNotification.await(5, TimeUnit.SECONDS)) {
+                            throw new AssertionError("notification publication release timed out");
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new IllegalStateException(e);
+                    }
+                    manager.notify(CompanionProvider.approvalNotificationTag(ACTION_ID),
+                            0, notification);
+                }
+            });
+            assertTrue(inserted.await(5, TimeUnit.SECONDS));
+            Future<?> cancel = pool.submit(() -> {
+                cancelStarted.countDown();
+                cancelled.set(CompanionProvider.cancelAction(context, first, ACTION_ID));
+                cancelFinished.countDown();
+            });
+            assertTrue(cancelStarted.await(5, TimeUnit.SECONDS));
+            assertFalse("cancel must wait until submit has published its notification",
+                    cancelFinished.await(100, TimeUnit.MILLISECONDS));
+            publishNotification.countDown();
+            submit.get(5, TimeUnit.SECONDS);
+            cancel.get(5, TimeUnit.SECONDS);
+            assertTrue(cancelled.get());
+            assertEquals("CANCELLED", first.get(ACTION_ID).status);
+            assertFalse("a cancelled action must not leave a stale approval notification",
+                    hasApprovalNotification(manager, ACTION_ID));
+        } finally {
+            publishNotification.countDown();
+            pool.shutdownNow();
+        }
+    }
+
     private boolean hasApprovalNotification(NotificationManager manager, String actionId) {
         for (StatusBarNotification notification : manager.getActiveNotifications()) {
             if (actionId.equals(notification.getTag()) && notification.getId() == 0) return true;
