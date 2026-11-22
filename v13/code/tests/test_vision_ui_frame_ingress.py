@@ -14,9 +14,9 @@ from PIL import Image, ImageDraw
 
 from v13.a5_ui_admission_bridge import A5UIRuntimeAdapter, ui_observation_lease
 from v13.vision_ui_frame_ingress import (
-    ProviderFrameVerifier, _issue_provider_frame_verifier,
-    _load_local_tile_projector, consume_projected_frame,
-    consume_projected_frame_scope,
+    ProviderFrameVerifier, _feature_summary, _issue_provider_frame_verifier,
+    _load_local_tile_projector, _summary, consume_projected_frame,
+    consume_projected_frame_from_provider, consume_projected_frame_scope,
 )
 
 
@@ -103,7 +103,7 @@ def image_buffer():
     return bytearray(output.getvalue())
 
 
-def provider_verifier(lease, obs, frame, *, result=True, failure=None):
+def provider_verify_fn(obs, frame, *, result=True, failure=None):
     expected_sha = hashlib.sha256(frame).hexdigest()
     expected_size = len(frame)
 
@@ -117,12 +117,26 @@ def provider_verifier(lease, obs, frame, *, result=True, failure=None):
             and frame_size == expected_size
         )
 
-    return _issue_provider_frame_verifier(lease, obs, verify)
+    return verify
 
 
-def consume_with_provider_verifier(runtime, obs, frame, *, consent_lease, frame_verifier=None, **kwargs):
+def provider_verifier(lease, obs, frame, *, result=True, failure=None):
+    return _issue_provider_frame_verifier(
+        lease, obs, provider_verify_fn(obs, frame, result=result, failure=failure),
+    )
+
+
+def consume_with_provider_verifier(
+    runtime, obs, frame, *, consent_lease, frame_verifier=None,
+    verify_fn=None, **kwargs,
+):
     if frame_verifier is None:
-        frame_verifier = provider_verifier(consent_lease, obs, frame)
+        if verify_fn is None:
+            verify_fn = provider_verify_fn(obs, frame)
+        return consume_projected_frame_from_provider(
+            runtime, obs, frame, consent_lease=consent_lease,
+            verify_fn=verify_fn, **kwargs,
+        )
     return consume_projected_frame(
         runtime, obs, frame, consent_lease=consent_lease,
         frame_verifier=frame_verifier, **kwargs,
@@ -202,6 +216,51 @@ def lease_for(runtime, obs, callbacks=None, lock=None):
         runtime, obs, runtime.turn_event["brain_generation_id"],
         check, guard, subscribe,
     )
+
+
+def test_ui_summary_is_content_free_metadata_only():
+    summary = _summary(observation())
+    assert summary == (
+        "ui event=SCREEN_FRAME_AVAILABLE method=MEDIA_PROJECTION "
+        "scope=FULL_DISPLAY api=34 clock=ELAPSED_REALTIME interval_ms=33"
+    )
+    assert len(summary) <= 512
+    assert "red panel" not in summary
+    assert "blue icon" not in summary
+
+
+def test_raw_eye_feature_summary_is_bounded_numeric_and_content_free():
+    summary = _feature_summary("r00", [0, 0, 16, 16], [0.125] * 37, 0.25)
+    assert summary.startswith(
+        "raw_eye_v1 authority=RAW_FEATURE_MEASUREMENT region=r00 "
+    )
+    assert "box=0,0,16,16 salience=0.250" in summary
+    assert "rgb=0.125,0.125,0.125" in summary
+    assert "hue=" in summary and "orientation=" in summary and "lum4x4=" in summary
+    assert len(summary) <= 512
+    assert "red panel" not in summary and "blue icon" not in summary
+
+    global_summary = _feature_summary("g", [0, 0, 64, 64], [0.0] * 37, None)
+    assert "region=g" in global_summary and "salience=na" in global_summary
+    assert len(global_summary) <= 512
+
+
+def test_raw_eye_feature_summary_rejects_malformed_or_nonfinite_inputs():
+    good = [0.1] * 37
+    invalid = (
+        ([], [0, 0, 16, 16], good, 0.2),
+        ("r99", [0, 0, 16, 16], good, 0.2),
+        ("r00", [0, 0, 0, 16], good, 0.2),
+        ("r00", [0, 0, 16, 16], [0.1] * 36, 0.2),
+        ("r00", [0, 0, 16, 16], [float("nan")] + good[1:], 0.2),
+        ("r00", [0, 0, 16, 16], [2.1] + good[1:], 0.2),
+        ("r00", [0, 0, 16, 16], [True] + good[1:], 0.2),
+        ("r00", [0, 0, 16, 16], good, 1.1),
+        ("r00", [0, 0, 16, 16], good, True),
+    )
+    for args in invalid:
+        with pytest.raises(ValueError):
+            _feature_summary(*args)
 
 
 def test_media_projection_frame_reaches_a5_a4_and_existing_ui_context(monkeypatch):
@@ -473,6 +532,21 @@ def test_frame_receipt_verifier_is_mandatory_and_oversized_buffer_is_rejected(mo
                 current_source="Describe this.",
             )
         assert not any(frame)
+
+
+def test_provider_verifier_factory_rejection_zeroizes_before_consumer_starts(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation()
+    frame = image_buffer()
+    with lease_for(runtime, obs) as lease:
+        with pytest.raises(PermissionError, match="exact active UI lease"):
+            consume_projected_frame_from_provider(
+                runtime, obs, frame, consent_lease=object(),
+                verify_fn=lambda *_args: True,
+                current_source="Describe this.",
+            )
+    assert not any(frame)
+    assert obs["source_id"] not in getattr(runtime, "_a5_ui_context_cache", {})
 
 
 def test_provider_verifier_exception_fails_closed_without_context_cache(monkeypatch):
