@@ -13,6 +13,7 @@ from v13.audio_capture_consumer import (
     RECEIPT_SCHEMA,
     RESULT_SCHEMA,
     SOURCE_ID,
+    SAMPLE_RATE,
     build_audio_capture_request,
     submit_verified_audio_capture,
     verifier_from_pinned_controller,
@@ -24,7 +25,7 @@ PUBLIC_KEY = bytes.fromhex(
     "4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5"
 )
 KEY_ID = "698bea63dc44a344663ff1429aea10842df27b6b991ef25866b2c6c02cdcc5be"
-SIGNATURE = "MEUCIE5PNStLmWWSvacP2XxtCMAfOpQ2lhPuIkA1DEYaoP+0AiEA2olpOGgwPLQUXFgVNa4SJzmXUSU3v8/4iYuE4kPlE4g="
+SIGNATURE = "MEYCIQCwdMS6664bv7iiLI0JUVBbNEPrDCNUlrlJzFB0T1VAqQIhANwyqrAXHmSn6Yu2qkQd6x4USn+vrSHnM0zz4NUPbx94"
 GENERATION = "gen_" + "b" * 32
 
 
@@ -39,7 +40,7 @@ class RuntimeStub:
 
 def make_pair():
     request = build_audio_capture_request(request_id="a" * 32, now=1000, ttl_s=20)
-    pcm = b"\x00\x00" * 16000
+    pcm = b"\x00\x00" * SAMPLE_RATE
     body = {
         "schema": RECEIPT_SCHEMA,
         "nonce": "c" * 32,
@@ -49,9 +50,9 @@ def make_pair():
         "generation_id": GENERATION,
         "start_monotonic_ns": 1_000_000_000,
         "end_monotonic_ns": 2_000_000_000,
-        "sample_rate": 16000,
+        "sample_rate": SAMPLE_RATE,
         "channels": 1,
-        "sample_count": 16000,
+        "sample_count": SAMPLE_RATE,
         "encoding": "pcm_s16le",
         "audio_source": "UNPROCESSED",
         "permission_granted": True,
@@ -126,7 +127,7 @@ def test_signed_one_shot_result_reaches_existing_raw_ear_runtime(tmp_path):
     text, window = runtime.calls[0]
     assert text == AUDIO_ONLY_SOURCE_TEXT
     assert window["pcm16"] == pcm
-    assert window["sample_rate"] == 16000
+    assert window["sample_rate"] == SAMPLE_RATE
     assert window["start_ms"] == 1000
     assert window["source_id"] == SOURCE_ID
     assert window["consent_receipt"] == ref
@@ -157,7 +158,7 @@ def test_pcm_digest_and_short_read_controls_are_rejected(tmp_path):
     request, result, _ = make_pair()
     verifier = make_verifier(tmp_path / "pcm.sqlite")
     bad_pcm = copy.deepcopy(result)
-    bad_pcm["pcm16_base64"] = base64.b64encode(b"\x01\x00" * 16000).decode("ascii")
+    bad_pcm["pcm16_base64"] = base64.b64encode(b"\x01\x00" * SAMPLE_RATE).decode("ascii")
     check = consent_callbacks(receipt_ref(result))[0]
     with pytest.raises(AudioCaptureDenied, match="digest"):
         verifier.verify(request, bad_pcm, expected_generation=GENERATION, consent_check=check)
