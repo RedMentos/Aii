@@ -62,7 +62,9 @@ def receiver_matrix(store, state, actions, home=None, *, nonblocking=False):
             or len(set(actions)) != len(actions)):
         raise ValueError("invalid receiver action list")
     root = Path(home if home is not None else store.home) / "world_jepa"
-    learner = WorldJEPAStoreConsumer(store, root, learning_enabled=False)
+    learner = WorldJEPAStoreConsumer(
+        store, root, learning_enabled=False, recover_pending=not nonblocking
+    )
     try:
         with learner._locked(False, blocking=not nonblocking):
             stored, _ = learner._read_state()
