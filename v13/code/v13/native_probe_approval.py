@@ -244,7 +244,18 @@ def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None)
     }
 
 
-def revoke(runtime, *, n
+def revoke(runtime, *, now=None):
+    """Revoke a pending local probe approval without invoking the native runner."""
+    _require_local_tty()
+    runtime.require_idle()
+    clock = _clock(now)
+    record, version = runtime.store.state(KEY, None)
+    if not isinstance(record, dict) or record.get("status") != "PENDING":
+        return {"status": "NO_PENDING_APPROVAL"}
+    revoked = dict(record)
+    revoked.update({"status": "REVOKED", "revoked_at": clock})
+    runtime.store.set_state(KEY, revoked, expected=version)
+    return {"status": "REVOKED", "approval_id": str(record.get("nonce", ""))[:12]}
 
 def require_consumed(runtime, sender_role, receiver_role, event, source_ref):
     """Require the one-shot local TTY approval at the actual native receiver boundary.
@@ -297,16 +308,3 @@ def require_consumed(runtime, sender_role, receiver_role, event, source_ref):
             raise PermissionError("native probe model binding changed after local approval")
         result[role] = dict(binding)
     return result
-
-ow=None):
-    """Revoke a pending local probe approval without invoking the native runner."""
-    _require_local_tty()
-    runtime.require_idle()
-    clock = _clock(now)
-    record, version = runtime.store.state(KEY, None)
-    if not isinstance(record, dict) or record.get("status") != "PENDING":
-        return {"status": "NO_PENDING_APPROVAL"}
-    revoked = dict(record)
-    revoked.update({"status": "REVOKED", "revoked_at": clock})
-    runtime.store.set_state(KEY, revoked, expected=version)
-    return {"status": "REVOKED", "approval_id": str(record.get("nonce", ""))[:12]}
