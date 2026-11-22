@@ -703,7 +703,33 @@ class SleepRuntime:
             metrics=learning.get('metrics') if type(learning) is dict else None
             metrics=metrics if type(metrics) is dict else {}
             learning_status=learning.get('status')
-            if learning_status=='UPDATED_EXPERIMENTAL_WORLD_JEPA':
+            checkpoint_sha=planner.get('checkpoint_sha256') or learning.get('checkpoint_sha256')
+            if learning_status=='NO_NEW_TRANSITIONS':
+                # An earlier Runtime worker may have committed the exact event
+                # before this idempotent SleepRuntime pass. Report the durable
+                # accepted checkpoint only when its source rows include this
+                # event and its own measured update/retention gates passed.
+                state,_=self.r.store.state('v14.world_jepa.store_consumer',None)
+                active=state.get('active') if type(state) is dict else None
+                rows=active.get('experience_rows') if type(active) is dict else None
+                includes_event=(type(rows) is list and any(
+                    type(row) is dict and row.get('event_id')==event_id for row in rows))
+                active_metrics=active.get('metrics') if type(active) is dict else None
+                if includes_event and type(active_metrics) is dict:
+                    metrics=active_metrics
+                    checkpoint_sha=active.get('checkpoint_sha256') or checkpoint_sha
+            accepted_metrics=(
+                float(metrics.get('parameter_delta_norm',0.0))>0.0
+                and float(metrics.get('ema_target_delta_norm',0.0))>0.0
+                and float(metrics.get('holdout_loss_after',float('inf')))
+                    < float(metrics.get('holdout_loss_before',float('-inf')))
+                and metrics.get('train_holdout_source_disjoint') is True
+                and metrics.get('negative_controls_separated') is True
+                and metrics.get('retention_gate_accepted') is True
+            )
+            if learning_status=='UPDATED_EXPERIMENTAL_WORLD_JEPA' or (
+                    learning_status=='NO_NEW_TRANSITIONS' and accepted_metrics
+                    and type(checkpoint_sha) is str and len(checkpoint_sha)==64):
                 telemetry_status='PASS'
             elif learning_status in {'UTILITY_GATE_REJECTED','RETENTION_GATE_REJECTED'}:
                 telemetry_status='REJECTED'
@@ -722,7 +748,7 @@ class SleepRuntime:
                 'status':telemetry_status,
                 'component':'world_predictor',
                 'mode':'shadow',
-                'sha256':planner.get('checkpoint_sha256') or learning.get('checkpoint_sha256'),
+                'sha256':checkpoint_sha,
                 'optimizer_steps':metrics.get('fit_steps_after',0),
                 'target_changed':float(metrics.get('ema_target_delta_norm',0.0))>0.0,
                 'loss_before':metrics.get('holdout_loss_before'),
