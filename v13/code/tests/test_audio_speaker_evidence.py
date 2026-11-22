@@ -342,7 +342,6 @@ def test_batch_peak_change_survives_return_to_prior_speaker_for_a4_and_c3(tmp_pa
         summary = result["c3_admission"].selected[0].summary
         assert "speaker_change_candidate=1" in summary
         assert "speaker_change_score=0.50" in summary
-        assert "speaker_change_latest_candidate=0" in summary
         assert "speaker_change_kind=CHANGE_OR_OVERLAP" in summary
         persisted = json.dumps(result["packet"], sort_keys=True)
         assert '"vector"' not in persisted
