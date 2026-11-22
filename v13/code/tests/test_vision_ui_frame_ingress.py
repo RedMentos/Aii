@@ -2,7 +2,9 @@
 from contextlib import contextmanager
 from io import BytesIO
 import hashlib
+import os
 import threading
+import time
 from types import SimpleNamespace
 
 import numpy as np
@@ -11,7 +13,10 @@ import pytest
 from PIL import Image, ImageDraw
 
 from v13.a5_ui_admission_bridge import A5UIRuntimeAdapter, ui_observation_lease
-from v13.vision_ui_frame_ingress import consume_projected_frame
+from v13.vision_ui_frame_ingress import (
+    ProviderFrameVerifier, _issue_provider_frame_verifier,
+    _load_local_tile_projector, consume_projected_frame,
+)
 
 
 class _Attention:
@@ -97,6 +102,31 @@ def image_buffer():
     return bytearray(output.getvalue())
 
 
+def provider_verifier(obs, frame, *, result=True, failure=None):
+    expected_sha = hashlib.sha256(frame).hexdigest()
+    expected_size = len(frame)
+
+    def verify(candidate, frame_sha256, frame_size):
+        if failure is not None:
+            raise failure
+        return (
+            result is True
+            and candidate == obs
+            and frame_sha256 == expected_sha
+            and frame_size == expected_size
+        )
+
+    return _issue_provider_frame_verifier(obs, verify)
+
+
+def consume_with_provider_verifier(runtime, obs, frame, *, consent_lease, frame_verifier=None, **kwargs):
+    if frame_verifier is None:
+        frame_verifier = provider_verifier(obs, frame)
+    return consume_projected_frame(
+        runtime, obs, frame, consent_lease=consent_lease,
+        frame_verifier=frame_verifier, **kwargs,
+    )
+
 
 
 def install_student_projector(runtime, tmp_path):
@@ -181,9 +211,8 @@ def test_media_projection_frame_reaches_a5_a4_and_existing_ui_context(monkeypatc
     prompt = "Describe only the visible UI state; preserve this exact request."
 
     with lease_for(runtime, obs) as lease:
-        result = consume_projected_frame(
+        result = consume_with_provider_verifier(
             runtime, obs, frame, consent_lease=lease,
-            frame_binding_check=lambda _obs, _sha, _size: True,
             current_source=prompt, goal="red panel", token_budget=512,
         )
         packets = A5UIRuntimeAdapter(runtime).context(runtime.turn_event["event_id"], lease)
@@ -212,9 +241,8 @@ def test_provisional_frame_is_never_admitted_to_c3_context(monkeypatch):
     prompt = "Keep the exact source."
 
     with lease_for(runtime, obs) as lease:
-        result = consume_projected_frame(
+        result = consume_with_provider_verifier(
             runtime, obs, frame, consent_lease=lease,
-            frame_binding_check=lambda _obs, _sha, _size: True,
             current_source=prompt, token_budget=512,
         )
         assert result["admission"].status == "EMPTY_OR_UNAUTHORIZED"
@@ -232,9 +260,8 @@ def test_wrong_receipt_and_non_projection_events_fail_closed(monkeypatch):
     with lease_for(runtime, obs) as lease:
         wrong = dict(obs, consent_receipt_ref="receipt-other")
         with pytest.raises(PermissionError, match="lease"):
-            consume_projected_frame(
+            consume_with_provider_verifier(
                 runtime, wrong, frame, consent_lease=lease,
-                frame_binding_check=lambda _obs, _sha, _size: True,
                 current_source="Describe this.",
             )
         assert not any(frame)
@@ -244,9 +271,8 @@ def test_wrong_receipt_and_non_projection_events_fail_closed(monkeypatch):
     frame = image_buffer()
     with lease_for(runtime, obs) as lease:
         with pytest.raises(PermissionError, match="MediaProjection"):
-            consume_projected_frame(
+            consume_with_provider_verifier(
                 runtime, obs, frame, consent_lease=lease,
-                frame_binding_check=lambda _obs, _sha, _size: True,
                 current_source="Describe this.",
             )
         assert not any(frame)
@@ -259,9 +285,8 @@ def test_cancelled_lease_cannot_cache_frame_and_overwrites_buffer(monkeypatch):
     with lease_for(runtime, obs) as lease:
         runtime.cancel_event.set()
         with pytest.raises(PermissionError, match="lease"):
-            consume_projected_frame(
+            consume_with_provider_verifier(
                 runtime, obs, frame, consent_lease=lease,
-                frame_binding_check=lambda _obs, _sha, _size: True,
                 current_source="Describe this.",
             )
         assert obs["source_id"] not in getattr(runtime, "_a5_ui_context_cache", {})
@@ -274,9 +299,8 @@ def test_revocation_clears_ephemeral_visual_packet_cache(monkeypatch):
     frame = image_buffer()
     callbacks = {}
     with lease_for(runtime, obs, callbacks=callbacks, lock=runtime.store.mutex) as lease:
-        result = consume_projected_frame(
+        result = consume_with_provider_verifier(
             runtime, obs, frame, consent_lease=lease,
-            frame_binding_check=lambda _obs, _sha, _size: True,
             current_source="Describe this.",
         )
         assert A5UIRuntimeAdapter(runtime).context(runtime.turn_event["event_id"], lease)
@@ -294,9 +318,8 @@ def test_zero_budget_preserves_current_source_and_bad_frames_are_overwritten(mon
     frame = image_buffer()
     prompt = "Never truncate this exact current user source."
     with lease_for(runtime, obs) as lease:
-        result = consume_projected_frame(
+        result = consume_with_provider_verifier(
             runtime, obs, frame, consent_lease=lease,
-            frame_binding_check=lambda _obs, _sha, _size: True,
             current_source=prompt, token_budget=0, context_budget_chars=0,
         )
         assert result["admission"].status == "EMPTY_OR_UNAUTHORIZED"
@@ -308,9 +331,8 @@ def test_zero_budget_preserves_current_source_and_bad_frames_are_overwritten(mon
     frame = bytearray(b"not an image")
     with lease_for(runtime, obs) as lease:
         with pytest.raises(ValueError):
-            consume_projected_frame(
+            consume_with_provider_verifier(
                 runtime, obs, frame, consent_lease=lease,
-                frame_binding_check=lambda _obs, _sha, _size: True,
                 current_source="Describe this.",
             )
         assert not any(frame)
@@ -322,9 +344,9 @@ def test_provider_frame_receipt_must_match_exact_frame_digest(monkeypatch):
     frame = image_buffer()
     with lease_for(runtime, obs) as lease:
         with pytest.raises(PermissionError, match="digest"):
-            consume_projected_frame(
+            consume_with_provider_verifier(
                 runtime, obs, frame, consent_lease=lease,
-                frame_binding_check=lambda _obs, _sha, _size: False,
+                frame_verifier=provider_verifier(obs, frame, result=False),
                 current_source="Describe this.",
             )
         assert not any(frame)
@@ -338,8 +360,7 @@ def test_frame_receipt_verifier_is_mandatory_and_oversized_buffer_is_rejected(mo
         with pytest.raises(PermissionError, match="verifier"):
             consume_projected_frame(
                 runtime, obs, frame, consent_lease=lease,
-                frame_binding_check=None,
-                current_source="Describe this.",
+                frame_verifier=None, current_source="Describe this.",
             )
         assert not any(frame)
 
@@ -348,9 +369,8 @@ def test_frame_receipt_verifier_is_mandatory_and_oversized_buffer_is_rejected(mo
     frame = bytearray(b"x" * (8 * 1024 * 1024 + 1))
     with lease_for(runtime, obs) as lease:
         with pytest.raises(ValueError, match="8 MiB"):
-            consume_projected_frame(
+            consume_with_provider_verifier(
                 runtime, obs, frame, consent_lease=lease,
-                frame_binding_check=lambda _obs, _sha, _size: True,
                 current_source="Describe this.",
             )
         assert not any(frame)
@@ -366,9 +386,9 @@ def test_provider_verifier_exception_fails_closed_without_context_cache(monkeypa
 
     with lease_for(runtime, obs) as lease:
         with pytest.raises(PermissionError, match="digest"):
-            consume_projected_frame(
+            consume_with_provider_verifier(
                 runtime, obs, frame, consent_lease=lease,
-                frame_binding_check=verifier_failure,
+                frame_verifier=_issue_provider_frame_verifier(obs, verifier_failure),
                 current_source="Describe this.",
             )
         assert obs["source_id"] not in getattr(runtime, "_a5_ui_context_cache", {})
@@ -382,9 +402,8 @@ def test_local_a3_student_projector_scores_heldout_ui_tiles_and_reaches_a5(monke
     frame = image_buffer()
 
     with lease_for(runtime, obs, lock=runtime.store.mutex) as lease:
-        result = consume_projected_frame(
+        result = consume_with_provider_verifier(
             runtime, obs, frame, consent_lease=lease,
-            frame_binding_check=lambda _obs, _sha, _size: True,
             current_source="What is on this screen?",
             goal="red panel", token_budget=8192, context_budget_chars=4096,
         )
@@ -414,9 +433,8 @@ def test_tampered_local_student_projector_hash_skips_a3_without_breaking_raw_eye
     frame = image_buffer()
 
     with lease_for(runtime, obs, lock=runtime.store.mutex) as lease:
-        result = consume_projected_frame(
+        result = consume_with_provider_verifier(
             runtime, obs, frame, consent_lease=lease,
-            frame_binding_check=lambda _obs, _sha, _size: True,
             current_source="Describe this screen.", goal="red panel",
         )
         assert result["student_projector_used"] is False
@@ -437,9 +455,8 @@ def test_symlinked_local_student_projector_is_rejected(monkeypatch, tmp_path):
     frame = image_buffer()
 
     with lease_for(runtime, obs, lock=runtime.store.mutex) as lease:
-        result = consume_projected_frame(
+        result = consume_with_provider_verifier(
             runtime, obs, frame, consent_lease=lease,
-            frame_binding_check=lambda _obs, _sha, _size: True,
             current_source="Describe this screen.", goal="red panel",
         )
         assert result["student_projector_used"] is False
@@ -447,3 +464,62 @@ def test_symlinked_local_student_projector_is_rejected(monkeypatch, tmp_path):
         assert result["packet"]["student_projector_used"] is False
         assert result["status"] == "WIRED_SYNTHETIC"
         assert result["caller_buffer_overwritten"] is True
+
+
+def test_untrusted_always_true_callback_cannot_cross_provider_capability_boundary(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation()
+    frame = image_buffer()
+    with pytest.raises(PermissionError, match="issued only"):
+        ProviderFrameVerifier(obs, lambda *_args: True)
+
+    with lease_for(runtime, obs) as lease:
+        with pytest.raises(PermissionError, match="provider-owned"):
+            consume_projected_frame(
+                runtime, obs, frame, consent_lease=lease,
+                frame_verifier=lambda *_args: True,
+                current_source="Describe this.",
+            )
+        assert not any(frame)
+
+
+def test_provider_verifier_is_bound_to_session_and_one_shot():
+    obs = observation()
+    frame = image_buffer()
+    verifier = provider_verifier(obs, frame)
+    frame_sha = hashlib.sha256(frame).hexdigest()
+    assert verifier.verify(obs, frame_sha, len(frame)) is True
+    assert verifier.verify(obs, frame_sha, len(frame)) is False
+
+    calls = []
+    verifier = _issue_provider_frame_verifier(
+        obs, lambda *_args: calls.append(True) or True,
+    )
+    wrong = dict(obs, capture_session_id="other-session")
+    assert verifier.verify(wrong, frame_sha, len(frame)) is False
+    assert calls == []
+
+
+def test_fifo_tile_projector_is_rejected_without_blocking(monkeypatch, tmp_path):
+    if not hasattr(os, "mkfifo"):
+        pytest.skip("POSIX FIFO support is unavailable")
+    runtime = make_runtime(monkeypatch, with_store=True)
+    path, _sha = install_student_projector(runtime, tmp_path)
+    path.unlink()
+    os.mkfifo(path)
+
+    def delayed_writer():
+        time.sleep(1.0)
+        try:
+            fd = os.open(path, os.O_WRONLY | os.O_NONBLOCK)
+            os.close(fd)
+        except OSError:
+            pass
+
+    threading.Thread(target=delayed_writer, daemon=True).start()
+    started = time.monotonic()
+    result = _load_local_tile_projector(runtime, {"hash_dim": 256}, "red panel")
+    elapsed = time.monotonic() - started
+    assert result["status"] == "INVALID_PROJECTOR_FILE"
+    assert elapsed < 0.5
+
