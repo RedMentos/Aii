@@ -923,3 +923,21 @@ This correction supersedes older branch-level status claims without deleting the
 **Next experiment:** use existing installed models only, with same-model parity, zero-input, shuffled-row, dimension, model-revision and source-tap controls. Measure receiver effect and task utility against SOURCE_EXACT and NO_MESSAGE, then train/evaluate an adapter with independent labels, holdout, OOD, retention and rollback. Production B3 stays OFF until all gates pass.
 
 **Status:** SOURCE_AND_LICENSE_VERIFIED / API_REVIEWED / DIAGNOSTIC_ONLY; no new model alternative selected.
+
+
+## R-079 — WebRTC/libfvad VAD comparison path and CLI verification (2026-11-22)
+
+**Primary upstream:** `dpirch/libfvad`, exact source revision `532ab666c20d3cfda38bca63abbb0f152706c369` (the revision pinned by the V14 comparison workflow). Repository license is BSD-3-Clause; the upstream README describes it as a standalone extraction of the WebRTC VAD engine and documents `make check`. No libfvad source was copied into V13/V14 and no runtime dependency was installed.
+
+**Secondary wrapper note:** upstream `wiseman/py-webrtcvad` declares an MIT wrapper license and includes the WebRTC BSD license for its bundled C code. The current workflow's test-only `webrtcvad-wheels==2.0.14.post1` distribution is a separate fork/package; its exact source revision/license was not established in this check, so it remains CI-only and is not selected for production.
+
+**Method:** `v14/experiments/raw_ear_vad_compare.py` loads the exact RAW EAR V3 extractor by AST and source hash, compares its activity hints with a 20-ms WebRTC/libfvad baseline, OR-aligns two VAD decisions into the same 40-ms/20-ms windows, then applies the same `TemporalVoiceEvidence` smoother to both. It reports precision/recall/FPR/FNR/F1, false positives per nonspeech minute, onset/offset delay, wall/CPU time, RTF and whole-process peak RSS. The OR-alignment is an evaluation adapter, not native WebRTC post-processing.
+
+**Concrete defect found:** the libfvad CLI path called `os.getenv("V14_LIBFVAD_VERSION", ...)` without importing `os`; direct `main(... --backend libfvad ...)` therefore raised `NameError`, although lower-level class tests passed. The Perception follow-up adds the missing import and a CLI regression that builds a temporary annotated WAV, invokes `main()` against the workflow-pinned shared library, and verifies the emitted backend revision. This makes the existing comparator entry point testable; it does not change RAW EAR or production inference.
+
+**Evidence limits:** the workflow builds the exact pinned libfvad revision, runs upstream `make check`, and tests a synthetic harmonic voice-like fixture plus a C-ABI stub. That is native Linux/CI comparator smoke, not real speech-corpus accuracy. Real annotated WAV evaluation is caller-supplied and must remain local; no private audio is uploaded or logged. No Android/ARM64/Termux/Redmi timing, microphone, battery, PSS or quality result is available.
+
+**Decision:** retain libfvad as a research comparator only. Do not replace the current RAW EAR path or add a production dependency until a permissively licensed real speech/noise corpus, independent annotations, negative music/noise controls, target ARM64 build and actual Redmi resource/quality measurements show a useful advantage. No model, weight, dependency, permission or device state was changed.
+
+
+**Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.

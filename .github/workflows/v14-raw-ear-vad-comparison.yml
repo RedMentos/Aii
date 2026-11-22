@@ -17,6 +17,7 @@ on:
       - "gpt6/v13-private-remote-bridge-20261111"
       - "qa/v14-jepa-checkpoint-publication-20261121"
       - "boss/v14-recall-store-pin-rebind-20261122"
+      - "boss/v14-audio-antialias-integration-20261122"
     paths:
       - "v13/code/v13/audio_voice_cues.py"
       - "v13/code/v13/audio_speaker_evidence.py"
