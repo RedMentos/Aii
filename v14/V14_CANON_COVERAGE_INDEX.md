@@ -2385,3 +2385,14 @@ Exact code head aae0330e24279ed2782451e7effe78ee005ac490 has three associated wo
 Exact-head CI for aae0330e: optimizer-resume run 45070863814 failed on Python 3.13 and 3.14 at source_lifecycle_lock_integration_candidate.py:172 with ValueError unsupported lifecycle source: memory.py. Its expected SHA-256 is 61e881ad8b3f8cb60a96339599a1627cd5af7b5a5bfd29fe5f371c17f5a29ebc; actual current memory.py is 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701 (Git blob 172417b49c0abb301db9367fd1c9947a91b3c458). Staged-runtime job in 45070863812 failed 19 / passed 231 / skipped 10 / errored 2, with the same pin mismatch; integrated-regression remains IN_PROGRESS. Temporal T8 run 45070863749 remains QUEUED. This is a QA-owned lifecycle dependency, not evidence of a JEPA numeric-model failure.
 
 This is an inherited QA-owned source-lifecycle composition failure; it blocks staged/runtime acceptance but does not by itself establish a temporal learner failure. The temporal-specific exact-head run remains QUEUED. Status: CODE_PRESENT / INTEGRATION_BLOCKED_BY_QA_PIN / NOT_ACCEPTED.
+
+
+### JEPA & Memory Run 20 — 2026-11-22 — temporal B1/B2 prompt-budget evidence
+
+- **Canon families:** trusted T8/ActionOutcome provenance; World/Self/Memory/JEPA/EMA; B1_DETAIL and B2_GIST consumers; bounded replay/retention; source audit and fail-closed authority.
+- **Code:** PR #2372, exact head `50e3c8dfe2e270c0e7f6024f2fec64a1970a1f9b`, DRAFT / NOT_RELEASED. Bodyview now uses compact prompt labels and a final-envelope budget counter; full target semantics and complete source hashes remain in the persisted audit.
+- **Consumer proof level:** the integration regression calls actual `Cognition.offer` for B1/B2 and captures the serialized prompt. On predecessor `71b68906`, both Python 3.13/3.14 runs reached prompt inclusion and <=700 assertions, then failed only on the stale note assertion (14 passed / 1 failed). Current `50e3c8d` CI is pending for temporal run `45072681648`; do not mark accepted until it passes.
+- **Other exact CI:** staged run `45072681696` failed 19/231/10 skipped/2 errors at QA memory.py pin; optimizer run `45072681698` failed on 3.13/3.14 at same pin; owner-read job `45072681647` passed but staged startup failed at same pin. QA owns the source rebind.
+- **LOCAL_LINUX:** isolated JSON prompt-budget fixture 8/8 PASS. Full Aii checkout/pytest BLOCKED (no checkout / DNS failure).
+- **ANDROID_TERMUX / REDMI:** REDMI_UNVERIFIED; installed base `aed1d2b` is up to date but #2372 is not installed. No device action.
+- **Not accepted:** no learned receiver utility claim from the test-only accepted fixture; no native B1/B2 GGUF update; no trained native cross-organ latent transfer; no native Dream consolidation.

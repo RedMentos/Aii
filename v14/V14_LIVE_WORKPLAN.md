@@ -1445,3 +1445,38 @@ For exact code head aae0330e24279ed2782451e7effe78ee005ac490, three workflows ar
 Exact-head CI for aae0330e: optimizer-resume run 45070863814 failed on Python 3.13 and 3.14 at source_lifecycle_lock_integration_candidate.py:172 with ValueError unsupported lifecycle source: memory.py. Its expected SHA-256 is 61e881ad8b3f8cb60a96339599a1627cd5af7b5a5bfd29fe5f371c17f5a29ebc; actual current memory.py is 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701 (Git blob 172417b49c0abb301db9367fd1c9947a91b3c458). Staged-runtime job in 45070863812 failed 19 / passed 231 / skipped 10 / errored 2, with the same pin mismatch; integrated-regression remains IN_PROGRESS. Temporal T8 run 45070863749 remains QUEUED. This is a QA-owned lifecycle dependency, not evidence of a JEPA numeric-model failure.
 
 Action: QA owner must rebind the lifecycle source pin bottom-up to the exact memory.py bytes; JEPA does not modify QA-owned pin files. The independent temporal WorldJEPA run 45070863749 remains QUEUED. The integrated-regression job in 45070863812 remains IN_PROGRESS. After the QA chain is corrected, rerun the exact staged/optimizer tests and require current-head PASS before any rebase or integration. LOCAL_LINUX remains BLOCKED / NOT_RUN; Redmi remains REDMI_UNVERIFIED.
+
+
+## JEPA & Memory — Run 20: compact temporal B1/B2 prompt readout (2026-11-22T21:24:00Z)
+
+**Code PR:** [#2372](https://github.com/RedMentos/Aii/pull/2372), branch `jepa-memory/v14-temporal-exact-forget-retention-20261122-run14`, exact current head `50e3c8dfe2e270c0e7f6024f2fec64a1970a1f9b` (DRAFT / NOT_RELEASED; still stacked on #2351).
+
+### Reproduced defect and implementation
+
+The actual `Cognition.offer` regression showed that a valid temporal receiver matrix was being omitted from the prompt because the verbose B1/B2 readout plus the surrounding body state exceeded the fixed 700-character budget. The old budget check counted only the inner view and did not count the final `STATE_NOT_FACT` authority and role fields.
+
+- Commit `71b68906bf64b5e3940eb320e89c01e16f889dbd` makes the prompt representation compact: concise role-target labels, 8-hex display fingerprints for history sources, per-action support counts, no redundant horizon/support constants, and a short `prediction; not fact/permission` note. Full target semantics and complete 64-hex source hashes remain in the persisted source-bound audit; native-body consumption and decision authority remain false/none.
+- B1 duration and uncertainty display precision are bounded to 2 and 3 decimals respectively; B2 uncertainty is 3 decimals. The underlying predictor/checkpoint is unchanged.
+- The final prompt-size function now counts the actual authority + role envelope. The regression asserts the real `Cognition.offer` capture payload contains the temporal readout and remains <=700 characters, while the stored audit retains full hashes and canonical target semantics.
+- Commit `50e3c8dfe2e270c0e7f6024f2fec64a1970a1f9b` updates the compact-note assertions.
+
+### Exact verification
+
+- Previous exact head `71b68906`: temporal CI on Python 3.13 and 3.14 reached the actual prompt-inclusion, <=700-character, target, source-fingerprint and checkpoint assertions, then failed only because the test still expected the old note wording: **14 passed / 1 failed** on each version. This is a test assertion mismatch, not a passing run.
+- Current exact head `50e3c8dfe2e270c0e7f6024f2fec64a1970a1f9b`: temporal workflow `45072681648` (Python 3.13/3.14) was **IN_PROGRESS** at last readback. Staged/integrated workflow `45072681696`: staged-runtime failed **19 failed / 231 passed / 10 skipped / 2 errors / 41 subtests**, all from the QA-owned lifecycle builder rejecting `memory.py`; integrated-regression remained IN_PROGRESS. Optimizer-resume `45072681698` failed on both Python versions at the same QA pin. Owner-read workflow `45072681647`: owner-read job PASS, staged startup FAIL at the same memory.py pin.
+- The pin mismatch is not JEPA-owned: expected SHA-256 `61e881ad8b3f8cb60a96339599a1627cd5af7b5a5bfd29fe5f371c17f5a29ebc`; actual `memory.py` SHA-256 `33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701` (blob SHA-1 `172417b49c0abb301db9367fd1c9947a91b3c458`). JEPA did not modify QA-owned lifecycle files.
+- LOCAL_LINUX: isolated Python JSON budget fixture **8/8 PASS** across B1/B2 and 1–4 supported actions, with final role/authority envelope and negative/unsupported-action shape. Full repository compile/pytest is **BLOCKED / NOT_RUN** because no Aii checkout is mounted and GitHub DNS resolution fails.
+
+### Product and device boundary
+
+The connected test path is temporal T8 → Store-backed numeric WorldJEPA/EMA → source-bound B1/B2 bodyview → actual `Cognition.offer` prompt capture under an explicitly test-only accepted utility-gate fixture. The readout remains SHADOW, prediction-only, `native_body_consumed=false`, `decision_authority=NONE`; no B1/B2 GGUF weights or cross-organ native latent weights changed. The separate measured learned-utility gate and negative control remain distinct.
+
+Release SHA: **NOT_RELEASED**. The installed release-development SHA remains `aed1d2b826290c95c70356b5d8b864b5ef382be4` per the latest authenticated read-only receipt; auto-update is enabled and reports UP_TO_DATE, but that is not deployment of #2372. Redmi acceptance for this change remains **REDMI_UNVERIFIED**. No CHAT_SEND, UPDATE_REQUEST, shell, model/weight/permission change or device mutation occurred.
+
+### Research-to-code: R-092
+
+The 2026 paper *To Retain or to Adapt? Generalizing Continual Learning* (arXiv:2607.05609) argues that full-history retention can become a liability under non-stationary drift; its Predictive Continual Learning framing chooses history according to an explicit model of future tasks. This complements R-089 dense replay and R-090 stratified retention, but does not establish a world-model or Android result. A V14 experiment is recorded in R-092: compare uniform, recency-window, predictive-window and stratified replay under matched optimizer/sample budgets, with stable/gradual/abrupt shifts and return-to-first-cohort; measure Average Lifelong Error, invariant regression, revision latency, B1/B2 holdout utility, retention, checkpoint/EMA deltas, restart/rollback and replay cost. No code, data or weights were reused; no official code/license was identified.
+
+### Next executable step
+
+Poll exact current-head temporal CI `45072681648`; fix any remaining temporal regression without weakening the utility gate. QA must rebind the lifecycle chain bottom-up to the exact current `memory.py` bytes, then rerun staged/optimizer/integrated checks. Do not rebase #2372 until QA and Boss current-base matrices are green. After that, run matched multi-shift replay/retention ablations. No user action or model/device decision is required.

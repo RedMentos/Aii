@@ -1,3 +1,21 @@
+# JEPA & Memory — Run 20: B1/B2 temporal prompt-budget fix (2026-11-22T21:24:00Z)
+
+**Keine Nutzeraktion erforderlich.** Kein manueller Termux-Befehl, kein UPDATE_REQUEST, kein Modell-/Gewichts-/Rechtewechsel. Der aktuelle Updater-Status betrifft nur den installierten Basis-Release, nicht den Draft #2372.
+
+- **Code:** [PR #2372](https://github.com/RedMentos/Aii/pull/2372), exakter aktueller Head `50e3c8dfe2e270c0e7f6024f2fec64a1970a1f9b`, DRAFT / NOT_RELEASED; weiterhin auf #2351 gestapelt. Neue Commits: `71b68906` (kompakter Temporal-Readout) und `50e3c8df` (angepasste Testassertions).
+- **Reproduzierter Fehler:** Der tatsächliche B1/B2-Prompt verlor `world_jepa_temporal`, weil vier Aktionszeilen plus die verbose Metadaten den festen 700-Zeichen-Rahmen überschritten. Der alte Zähler berücksichtigte außerdem `authority` und `role` nicht.
+- **Code-Fix:** Kompakte Zielnamen, 8-stellige Anzeige-Fingerprints, keine redundanten Horizon-/Support-Konstanten, per-Aktion-Support bleibt sichtbar, und die gespeicherte Audit-Quelle behält volle Zielsemantik sowie vollständige 64-stellige Source-Hashes. Der Budgetzähler zählt jetzt den finalen `STATE_NOT_FACT`- und Role-Umschlag mit. Der eigentliche Predictor/Checkpoint blieb unverändert.
+- **Vorheriger exakter Test:** Head `71b68906`, Temporal CI Python 3.13/3.14 jeweils 14 PASS / 1 FAIL. Der Fehler war ausschließlich die nicht angepasste Assertion auf den alten Note-Text; die Assertions für tatsächlichen `Cognition.offer`-Prompt, <=700 Zeichen, Rolle/Ziel, Source-Fingerprints und Checkpoint waren bereits passiert.
+- **Aktueller exakter CI-Stand auf `50e3c8d`:** Temporal `45072681648` (Python 3.13/3.14) IN_PROGRESS. Staged/Integrated `45072681696`: staged-runtime 19 FAIL / 231 PASS / 10 SKIP / 2 ERROR / 41 Subtests; Ursache ist derselbe QA-eigene `memory.py`-Lifecycle-Pin, Integrated-Regression noch IN_PROGRESS. Optimizer-Resume `45072681698` scheitert auf 3.13 und 3.14 am selben Pin. Owner-read `45072681647`: Owner-read-Job PASS, Staged-Startup FAIL am Pin. Erwartete SHA-256 `61e881ad…`, tatsächliche `memory.py` SHA-256 `33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701`. JEPA hat keine QA-eigenen Dateien geändert.
+- **Lokal:** Isolierte Python-JSON-Budgetprüfung 8/8 PASS für B1/B2 und 1–4 unterstützte Aktionen einschließlich finaler Role/Authority-Felder. Vollständiger Aii-Checkout/pytest BLOCKED: kein Checkout, GitHub-DNS nicht auflösbar.
+- **Echte Nutzerwirkung:** Der Codepfad ist in der Testintegration temporal T8 → WorldJEPA/EMA → bodyview → tatsächlicher `Cognition.offer`-Prompt. Gate im Prompttest ausdrücklich test-only; echte gelernte Utility wird getrennt gemessen. SHADOW, keine nativen B1/B2-Weight-Änderungen, keine native Latent-Kopplung, keine Entscheidungsautorität.
+- **Android/Updater:** Installierter Basis-SHA `aed1d2b826290c95c70356b5d8b864b5ef382be4`, Auto-Update EIN / UP_TO_DATE per letzter authentifizierter Receipt; #2372 nicht installiert. B1/B2 bleiben TIME_BUDGET, kein neuer korrekter Chatnachweis. **REDMI_UNVERIFIED** für dieses Feature. Kein Update-Request oder Gerätezugriff.
+- **Forschung R-092:** Predictive Continual Learning (arXiv:2607.05609) legt nahe, dass nützliche Replay-Historie vom Drift abhängt. Testvorschlag: Uniform-, Recency-, Predictive-Window- und stratified Replay bei gleichen Update-/Sample-Budgets, mit stabilen, graduellen und abrupten Shifts plus Rückkehr zum ersten Cohort; ALE, Invariant-Regression, Revision-Latenz, B1/B2-Holdout, EMA-Diffs, Restart/Rollback messen. Nur Forschungshypothese, keine implementierte Änderung.
+
+**Nächster Schritt:** Exakte Temporal-CI auf `50e3c8d` abwarten; QA muss den Lifecycle-Pin auf die tatsächlichen `memory.py`-Bytes rebind-en, danach staged/optimizer/integrated erneut testen. Erst nach grüner QA-/Boss-Kette rebasen und Mehrfach-Shift-/Replay-Retention-Ablationen ausführen.
+
+---
+
 # JEPA & Memory — Run 19: temporal cold-start and multi-session receiver regression (2026-11-22T20:55:00Z)
 
 **Keine Nutzeraktion erforderlich.** Kein manueller Termux-Befehl, kein UPDATE_REQUEST, kein Modell-/Gewichts-/Rechtewechsel. Der vorhandene Updater betrifft nur den installierten Basis-Release, nicht diesen Draft.
