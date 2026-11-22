@@ -15,15 +15,15 @@ The local dashboard gains an explicit **Organdurchlauf prüfen** action. It read
 - The HTTP route is loopback-only, random-token scoped, GET-only, no-store, no-referrer and nosniff. No public listener, remote relay or background upload is added.
 - The dashboard projection returns counts, allowlisted roles/status/model labels and timings only; no chat text, prompts, source IDs, source hashes, token IDs, raw audio or device paths.
 - Source-bound C3 context is not proof of semantic attention. `native_injection_proven` remains false. Synthetic fixtures remain `SYNTHETIC_FIXTURE`; runtime metadata is not device attestation.
-- Latest available private V13OBS snapshot was issue #115; the fresh read-only DIAGNOSTICS request #462 returned no receipt during this run. Therefore REDMI_UNVERIFIED.
+- No fresh owner-verified device receipt was available during this run. Therefore REDMI_UNVERIFIED.
 
 ## Tests and environment
 
 - LOCAL_LINUX: BLOCKED — no repository checkout; direct Git transport/DNS unavailable in this session.
-- CI: targeted Python/JavaScript workflow added for exact branch and Boss PR; pending after push.
+- CI: exact-head flow-audit workflow PASS on Python 3.13 and 3.14 (projection, terminal-turn filtering, read-only route, token/host/POST denial, Python compile and inline JavaScript syntax). V13 private-bridge offline security workflow PASS. The broader staged-runtime/integrated-regression workflow is still running.
 - TERMUX/REDMI: NOT RUN; no connected authorized handset receipt.
 - No model, weights, Age, permissions, installed runtime or device data changed.
 
 ## Next executable action
 
-Run exact-head Python 3.13 tests for flow audit, projection, route security and dashboard JS; fix failures. Then have Boss review the dashboard route/safe-additive policy gate, merge into the shared Boss candidate, and use the installed dashboard to measure actual B1/B2→C4→C3 delivery before changing native time budgets or model choices.
+Run exact-head Python 3.13 tests for flow audit, projection, route security and dashboard JS; fix failures. Then finish the broader staged-runtime/integrated-regression check, have Boss review the existing dashboard route and privacy boundary, integrate into the shared Boss candidate, and use the installed dashboard to measure actual B1/B2→C4→C3 delivery before changing native time budgets or model choices.
