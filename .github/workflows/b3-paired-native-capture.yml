@@ -1,4 +1,5 @@
 name: V13 B3 paired native tap regression
+          python scripts/b3_train_l1_shadow.py --help >/dev/null
 on:
   push:
     branches: ["gpt6/v13-b3-native-latent-repair-*"]
