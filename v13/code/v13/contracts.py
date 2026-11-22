@@ -112,6 +112,7 @@ def validate(kind,obj):
             if not isinstance(obj[field],dict) or set(obj[field])!=set(roles):raise ValueError("B3 pair "+field)
         if any(not isinstance(obj[field][role],str) or not obj[field][role] for field in ("tap_packet_ids","tap_ids","model_revisions") for role in roles):raise ValueError("B3 pair identity")
         if any(type(obj[field][role]) is not int or obj[field][role]<1 for field in ("token_counts","dimensions") for role in roles):raise ValueError("B3 pair geometry")
+        if any(obj["token_counts"][role]>64 for role in roles):raise ValueError("B3 pair native tap exceeds 64-token slot ceiling")
         plan=gr["plan"];shape=gr["shape"]
         if (type(plan.get("max_slots")) is not int or plan["max_slots"]<1
                 or shape[0]>plan["max_slots"] or shape[1]!=obj["dimensions"]["B2_GIST"]
