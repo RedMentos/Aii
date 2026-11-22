@@ -184,6 +184,25 @@ def collect_t8_outcome_labels(store, *, limit=MAX_PAIRS):
         )
         if type(raw_pairs) is not list:
             raise ValueError("paired packet query did not return a list")
+        if not raw_pairs:
+            return {
+                "status": "NO_PAIRED_TAPS",
+                "verified_transition_count": 0,
+                "rejected_transition_count": 0,
+                "pair_packet_count": 0,
+                "pair_count": 0,
+                "unmatched_pair_count": 0,
+                "ambiguous_pair_count": 0,
+                "invalid_pair_count": 0,
+                "conflicting_source_count": 0,
+                "label_counts": {"FINAL": 0, "NONFINAL_OBSERVED": 0},
+                "source_group_counts": {"FINAL": 0, "NONFINAL_OBSERVED": 0},
+                "cohort_sha256": None,
+                "model_revisions": None,
+                "pair_packets": [],
+                "labels": [],
+                "label_provenance": [],
+            }
         verified, rejected_t8 = verify_committed_transitions(
             store, limit=world_model.MAX_ROWS
         )
