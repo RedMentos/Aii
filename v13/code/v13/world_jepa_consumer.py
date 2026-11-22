@@ -305,9 +305,11 @@ class WorldJEPAStoreConsumer:
     """
 
     def __init__(self, store, checkpoint_dir=None, *, learning_enabled=False,
-                 seed=13, ensemble=2):
+                 seed=13, ensemble=2, recover_pending=True):
         if type(learning_enabled) is not bool:
             raise ValueError("learning_enabled must be bool")
+        if type(recover_pending) is not bool:
+            raise ValueError("recover_pending must be bool")
         if type(seed) is not int or not 0 <= seed <= 2**63 - 1:
             raise ValueError("seed")
         if type(ensemble) is not int or not 1 <= ensemble <= 16:
@@ -330,8 +332,11 @@ class WorldJEPAStoreConsumer:
         self.seed = seed
         self.ensemble = ensemble
         # Recover a prior process that stopped between publish and pending-name cleanup.
-        with self._locked(True):
-            world_jepa_shadow_checkpoint.cleanup_pending(self.home)
+        # Read-only foreground consumers may skip recovery and take a nonblocking
+        # shared lock instead; a pending/incomplete checkpoint then fails closed.
+        if recover_pending:
+            with self._locked(True):
+                world_jepa_shadow_checkpoint.cleanup_pending(self.home)
 
     @contextmanager
     def _locked(self, exclusive=True, blocking=True):
