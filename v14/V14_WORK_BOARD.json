@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T18:46:00Z",
+  "updated_at": "2026-11-22T18:47:45Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4 (documentation/handoff-only refresh; installed code remains c4eb82deec915f65894c20d6ebbaf0ebf58fa335 per the latest reported owner receipt). The phone updater is reported enabled/UP_TO_DATE, but the separate HEALTH receipt reports runtime UNAVAILABLE. P0 issue #1904 remains open; its latest stored diagnostic snapshot is not a new turn or correctness proof. PR #2366 exact Perception, staged/integrated and same-turn synthetic CI all pass but remains DRAFT and not normal-Runtime-wired. PR #2361 exact focused CI passes but its branch is one commit behind and mergeability is false. PR #2368 adds a synthetic-only A4 ablation; local 4/4 tests pass, exact CI retry is running after fixing the missing pytest dependency. Whole-Canon acceptance remains open; no Redmi acceptance.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -387,23 +387,24 @@
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
       "proof_environment": "LOCAL_LINUX CPython 3.13.5 isolated + exact GitHub CI synthetic consumer; no Android/Termux/Redmi timing",
-      "next_step": "R-081 full-text review and FASTDIAR adapter code review are complete. PR #2366 exact Perception fastpath 3.13/3.14 PASS, staged/integrated 2/2 PASS, same-turn B1/B2/C4/C3 consumer 3.13/3.14 PASS, privacy and deployment-integrity PASS; it remains DRAFT and the stored-image A5 adapter is not called by normal Runtime. PR #2361 focused 3.13/3.14 CI passes, but its branch is one commit behind current release-development HEAD aed1d2 and GitHub reports mergeable=false; rebase/reconcile before merge. PR #2368 synthetic cosine-prototype ablation has LOCAL_LINUX CPython 3.13.5 4/4 PASS, three source-disjoint seeds, and exact retry CI 45056272786 2/2 PASS on Python 3.13/3.14; privacy scan 45056272821 PASS. It remains research-only, with no Runtime consumer or real audio. Next: Core owns normal Runtime invocation for #2366; for audio, obtain separately consented labelled embeddings and build a model-bound calibration receipt before A4 may leave DEFER. No real audio or Redmi proof.",
+      "next_step": "R-081 full-text review and FASTDIAR adapter review are complete. PR #2366 exact Perception fastpath 3.13/3.14 PASS, staged/integrated 2/2 PASS, same-turn B1/B2/C4/C3 consumer 2/2 PASS, privacy/deployment PASS; still DRAFT and not normal-Runtime-wired. FASTDIAR adapter is now rebased in PR #2369 onto current base aed1d2 (0 behind, mergeable=true): exact consumer workflow 45056897981 passes 2/2 on Python 3.13/3.14 (7 tests each), privacy 45056897992 PASS, integration-same-repo 45057029362 PASS; staged/integrated run 45056898007 remains IN_PROGRESS. Old #2361 remains stale c4eb82-based draft/mergeable=false until #2369 integrated result completes. PR #2368 A4 synthetic ablation local 4/4 and exact CI 2/2 PASS. No model inference, real audio, calibration, normal Runtime or Redmi proof. Next: wait for #2369 staged/integrated exact result; Core owns normal Runtime invocation for #2366; A4 remains DEFER pending separately consented labelled embeddings and model-bound calibration.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T18:43:30Z",
+      "last_checkpoint": "2026-11-22T18:47:45Z",
       "latest_candidate_pr": {
-        "pr": 2368,
-        "head_sha": "bb85ddd893d59836bac905dfb7c78342d6c0e996",
+        "pr": 2369,
+        "head_sha": "560648b7f6e0b4a6acb19227c3cd22e8a514fc60",
         "base_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
-        "branch": "research-perception/v14-a4-novelty-ablation-20261122",
-        "status": "DRAFT_CI_PASS_2_OF_2",
-        "scope": "A4 source-disjoint synthetic cosine novelty-gate and prototype-retention ablation; no Runtime consumer",
-        "local_linux": "CP3135_PYCOMPILE_PASS_4_OF_4_PASS_3_SEED_HOLDOUT",
-        "exact_ci": "45056272786_PYTHON_3_13_AND_3_14_2_OF_2_SUCCESS; PRIVACY_SCAN_45056272821_SUCCESS",
-        "runtime": "NOT_CONNECTED_TO_RUNTIME",
-        "redmi": "NOT_RUN",
-        "tested_code_sha": "41025f3d9bf92870f9675173d4af00638a49c203"
+        "branch": "research-perception/v14-fastdiar-rebased-20261122",
+        "status": "DRAFT_FOCUSED_CI_PASS_2_OF_2_STAGED_INTEGRATED_PENDING",
+        "scope": "FASTDIAR diagnostic adapter with caller-supplied embeddings and actual RAW EAR A5→A4→C3 consumer regression; no inference",
+        "local_linux": "FULL_LOCAL_AII_CHECKOUT_BLOCKED_GITHUB_DNS; PRIOR_ISOLATED_HELPER_7_OF_7_RECORDED",
+        "exact_ci": "45056897981_PYTHON_3_13_AND_3_14_2_OF_2_SUCCESS_7_TESTS_EACH; PRIVACY_45056897992_SUCCESS; INTEGRATION_45057029362_SUCCESS; STAGED_INTEGRATED_45056898007_IN_PROGRESS",
+        "code_blob_sha": "5a451689e68742917bd5bc720b6af407b3e193e5",
+        "test_blob_sha": "07e857cde89be407a65da64fd5cba3360e6e2901",
+        "runtime": "NOT_NORMAL_RUNTIME_DISPATCHED",
+        "redmi": "NOT_RUN"
       },
-      "proof": "RAW EAR FIR anti-alias feature decimator is integrated in 9097d634 and the research-only libfvad comparator CLI regression #2329 exact 4/4 CI passes. PR #2366 adds stored IMAGE SourceRef→17 RAW EYE segments→A4/admission candidate with Store RLock serialization and two barrier races; exact Perception 2/2, staged/integrated 2/2, same-turn consumer 2/2, privacy and deployment-integrity checks PASS, but no normal Runtime hook. PR #2361 wraps caller-supplied FASTDIAR embeddings with checkpoint byte hashing and source/time bounds; focused Python 3.13/3.14 CI 2/2 PASS, no weight download, no calibrated decision, branch rebase still needed. PR #2368 tests gate/retention trade-offs on synthetic 192-D vectors only; local 4/4 PASS and three source-disjoint seeds; no real audio, PLDA/VBx, model inference, runtime integration or Android proof."
+      "proof": "RAW EAR FIR anti-alias feature decimator integrated in 9097d634; #2329 libfvad comparator CLI regression 4/4 CI. PR #2366 stored IMAGE SourceRef→17 RAW EYE segments→A4/admission candidate with Store RLock serialization and two barrier races; exact Perception/staged/integrated/same-turn/privacy/deployment CI all PASS, but no normal Runtime hook. FASTDIAR diagnostic adapter is rebased in #2369 on aed1d2; exact consumer CI 2/2 PASS (7 tests per Python 3.13/3.14), privacy and same-repo integration pass; staged/integrated still running. It wraps caller-supplied embeddings and hashes local checkpoint bytes, but producer is unattested; no inference, calibration, speaker identity or weight download. PR #2368 A4 ablation remains synthetic-only: LOCAL_LINUX 4/4 PASS, 3 source-disjoint seeds, exact CI 2/2 PASS. No real audio, normal Runtime integration, Android or Redmi proof."
     },
     {
       "id": "V14-019",
@@ -491,12 +492,12 @@
   "capability_snapshot": [
     {
       "capability": "A0-A5 perception and attention",
-      "code": "CALLER_PCM16_RAW_EAR_FIR_ANTIALIAS; A5_UI_METADATA_LEASE_SHADOW; STORE_SOURCE_READ_REVOCATION_LOCK; STORED_RAW_EYE_IMAGE_A5_SOURCE_LOCK_PR2366; FASTDIAR_DIAGNOSTIC_ADAPTER_PR2361; A4_NOVELTY_GATE_ABLATION_SYNTHETIC_PR2368",
-      "wired": "CALLER_PCM16→STAGED A5/A4/C3 CONSENT LEASE; A5 UI METADATA→A4 SHADOW; stored IMAGE SourceRef→ephemeral RAW EYE A5/A4/admission candidate with source lifecycle serialization; FASTDIAR matrix adapter→existing RAW EAR evidence contract only when caller supplies embeddings; no production calibration or speaker identity",
-      "tested_synthetic": "#2327 exact candidate 27 SUCCESS / 1 expected SKIPPED; #2329 exact CLI comparator 4/4 SUCCESS; #2366 exact Perception 2/2, staged/integrated 2/2 and same-turn consumer 2/2 SUCCESS; #2361 focused Python 3.13/3.14 2/2 SUCCESS; #2368 LOCAL_LINUX CPython 3.13.5 py_compile + 4/4 tests + three source-disjoint seeds; exact CI retry after pinned pytest install in progress",
+      "code": "CALLER_PCM16_RAW_EAR_FIR_ANTIALIAS; A5_UI_METADATA_LEASE_SHADOW; STORE_SOURCE_READ_REVOCATION_LOCK; STORED_RAW_EYE_IMAGE_A5_SOURCE_LOCK_PR2366; FASTDIAR_DIAGNOSTIC_ADAPTER_REBASED_PR2369; A4_NOVELTY_ABLATION_SYNTHETIC_PR2368",
+      "wired": "CALLER_PCM16→STAGED A5/A4/C3 CONSENT LEASE; A5 UI METADATA→A4 SHADOW; stored IMAGE SourceRef→ephemeral RAW EYE A5/A4/admission candidate with source lifecycle serialization; FASTDIAR caller-supplied frame matrix→existing RAW EAR evidence contract and A5/A4/C3 consumer regression; no production calibration, speaker identity or normal Runtime dispatch",
+      "tested_synthetic": "#2327 exact candidate 27 SUCCESS / 1 expected SKIPPED; #2329 exact CLI comparator 4/4 SUCCESS; #2366 exact Perception 2/2, staged/integrated 2/2, same-turn 2/2 SUCCESS; #2369 exact adapter consumer 2/2 SUCCESS (7 tests each on Python 3.13/3.14), privacy and same-repo integration PASS; #2368 LOCAL_LINUX CPython 3.13.5 py_compile + 4/4 tests + three source-disjoint seeds, exact CI 2/2 SUCCESS; #2369 staged/integrated still IN_PROGRESS",
       "tested_android": "NOT_VERIFIED",
       "active": "MERGED_INTEGRATION / SHADOW_ONLY",
-      "evidence": "No Android AudioRecord/microphone, camera/screen capture, AccessibilityService, tap/type provider or calibrated speaker model. #2366 image adapter is not called by normal Runtime. #2361 does not run FASTDIAR or download weights; checkpoint-weight license unresolved. #2368 is synthetic-only. No Redmi proof."
+      "evidence": "No Android AudioRecord/microphone, camera/screen capture, AccessibilityService, tap/type provider or calibrated speaker model. #2366 image adapter is not called by normal Runtime. #2369 FASTDIAR adapter does not run inference and its embedding producer is not attested; weight license unresolved. #2368 synthetic only. No Redmi proof."
     },
     {
       "capability": "B1_DETAIL and B2_GIST bodies",
@@ -1016,7 +1017,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T18:44:30Z",
+    "timestamp": "2026-11-22T18:47:45Z",
     "release_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "code_candidate_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "candidate_ci": "EXACT_SHA_ALL_30_OBSERVED_ACTIONS_WORKFLOW_RUNS_SUCCESS",
@@ -1082,10 +1083,13 @@
     },
     "pr2361": {
       "head_sha": "bfac3a87a6f308d6b7583df9d72c81ab53f898aa",
-      "status": "DRAFT_NOT_RELEASED_MERGEABLE_FALSE_BEHIND_1_COMMIT",
-      "focused_ci": "45048321233_PYTHON_3_13_3_14_2_OF_2_SUCCESS",
-      "weights": "NOT_DOWNLOADED_WEIGHT_LICENSE_UNRESOLVED",
-      "redmi": "NOT_RUN"
+      "status": "STALE_DRAFT_SUPERSEDED_PENDING_PR2369_INTEGRATION",
+      "base_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
+      "ahead_by": 25,
+      "behind_by": 1,
+      "mergeable": false,
+      "focused_ci": "45048321233_PYTHON_3_13_3_14_PASS",
+      "comment": "7083867758 points to rebased #2369; close after #2369 integrated result."
     },
     "pr2368": {
       "head_sha": "ccc2483b8e1eb1c3dca440d15697649256d673b9",
@@ -1096,6 +1100,19 @@
       "exact_ci": "45056272786_PYTHON_3_13_AND_3_14_2_OF_2_SUCCESS",
       "privacy_scan": "45056272821_SUCCESS",
       "runtime": "NOT_CONNECTED",
+      "redmi": "NOT_RUN"
+    },
+    "pr2369": {
+      "head_sha": "560648b7f6e0b4a6acb19227c3cd22e8a514fc60",
+      "base_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
+      "status": "DRAFT_MERGEABLE_TRUE",
+      "exact_ci": "45056897981_PYTHON_3_13_AND_3_14_2_OF_2_SUCCESS_7_TESTS_EACH",
+      "privacy_scan": "45056897992_SUCCESS",
+      "integration_same_repo": "45057029362_SUCCESS",
+      "staged_integrated": "45056898007_IN_PROGRESS",
+      "producer_attestation": "NOT_ESTABLISHED",
+      "weights": "NOT_DOWNLOADED_WEIGHT_LICENSE_UNRESOLVED",
+      "runtime": "NOT_NORMAL_RUNTIME_DISPATCHED",
       "redmi": "NOT_RUN"
     }
   },
