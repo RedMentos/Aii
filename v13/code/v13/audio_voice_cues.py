@@ -19,6 +19,7 @@ from statistics import median
 from . import attention as attctl
 from .audio_temporal_evidence import TemporalVoiceEvidence, TemporalVoiceEvidenceRegistry
 from .audio_speaker_evidence import SpeakerChangeEvidenceRegistry, SpeakerEvidenceError
+from .audio_speaker_calibration import SpeakerCalibrationError, load_approved_calibration
 from .audio_silero_vad import SileroVADStream, validate_vad_evidence
 from .a5_audio_admission_bridge import audio_to_admission
 from .audio_ear import observe_pcm16
@@ -34,8 +35,9 @@ _ACTIVITY_HINTS = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAI
 def _speaker_change_decision(evidence, cues):
     """Return a conservative A4 three-regime decision without assigning identity.
 
-    Low similarity is only a candidate after a verified, model-bound calibration
-    artifact is supplied. Caller labels and numeric thresholds are not calibration.
+    Low similarity is only a candidate after a locally allowlisted, model-bound
+    held-out report is supplied. Its hash is integrity, not a digital signature.
+    Caller labels and numeric thresholds are not calibration.
     Silence, noise, short windows, missing calibration, rejected embeddings and
     warm-up remain DEFER rather than false continuity.
     """
@@ -52,10 +54,9 @@ def _speaker_change_decision(evidence, cues):
         return "DEFER"
     if type(evidence) is not dict or evidence.get("status") != "MEASURED":
         return "DEFER"
-    # The current RAW EAR registry only accepts caller-asserted thresholds.
-    # Until a separately reviewed calibration artifact is verified and pinned,
-    # similarity remains diagnostic and cannot support continuity/change.
-    if evidence.get("threshold_status") != "CALIBRATED_VERIFIED":
+    # A local allowlist entry plus exact artifact/model hashes is required.
+    # This is a non-identifying A4 hint, not an identity or action authority.
+    if evidence.get("threshold_status") != "LOCAL_APPROVED_REPORT_HASH_MATCH":
         return "DEFER"
     receipt_sha = evidence.get("calibration_receipt_sha256")
     if (type(receipt_sha) is not str or len(receipt_sha) != 64
@@ -687,12 +688,38 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                vad_stream: SileroVADStream | None = None,
                                consent_lease: AudioConsentLease | None = None,
                                voice_backend: str = "python",
-                                speaker_embeddings: dict | None = None):
+                               speaker_embeddings: dict | None = None,
+                               speaker_calibration_id: str | None = None):
     """Persist source-bound acoustic cues under an owned or caller-held consent lease."""
     if type(voice_backend) is not str or voice_backend not in {"python", "numpy"}:
         raise ValueError("voice_backend must be 'python' or 'numpy'")
     if vad_stream is not None and not isinstance(vad_stream, SileroVADStream):
         raise ValueError("vad_stream must be a SileroVADStream instance")
+    if speaker_calibration_id is not None and speaker_embeddings is None:
+        raise ValueError("speaker_calibration_id requires speaker_embeddings")
+    calibration_artifact = None
+    if speaker_calibration_id is not None:
+        if type(speaker_embeddings) is dict:
+            try:
+                calibration_artifact = load_approved_calibration(
+                    runtime.home, speaker_calibration_id,
+                    model_id=speaker_embeddings.get("model_id"),
+                    model_revision=speaker_embeddings.get("model_revision"),
+                    model_sha256=speaker_embeddings.get("model_sha256"),
+                    embedding_dim=speaker_embeddings.get("embedding_dim"),
+                    frame_step_ms=speaker_embeddings.get("frame_step_ms"),
+                    lookback_frames=speaker_embeddings.get("lookback_frames"),
+                )
+            except (SpeakerCalibrationError, OSError) as exc:
+                runtime.store.log(
+                    "speaker_calibration_rejected", event_id,
+                    {"error": type(exc).__name__},
+                )
+        else:
+            runtime.store.log(
+                "speaker_calibration_rejected", event_id,
+                {"error": "SpeakerEvidenceError"},
+            )
     # A Runtime-wide caller may already hold the same provider lease through
     # C3 generation. Reuse its bound handle without callback re-entry.
     with _audio_consent_scope(
@@ -733,6 +760,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                     source_id=source_id, generation_id=generation_id,
                     start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
                     activity_hint=cues["activity_hint"], embeddings=speaker_embeddings,
+                    calibration_artifact=calibration_artifact,
                 )
             except SpeakerEvidenceError as exc:
                 runtime.store.log("speaker_embedding_rejected", event_id, {"error": type(exc).__name__})
@@ -872,11 +900,12 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                     summary += " speaker_change_kind=CHANGE_OR_OVERLAP"
             else:
                 summary += f" speaker_similarity_delta={speaker_evidence['change_score']:.2f}"
-                summary += (
-                    " spk_cal=UNVERIFIED"
-                    if speaker_evidence.get("threshold_status") == "CALLER_ASSERTED_UNVERIFIED"
-                    else " spk_cal=UNAVAILABLE"
-                )
+                if speaker_evidence.get("threshold_status") == "CALLER_ASSERTED_UNVERIFIED":
+                    summary += " spk_cal=UNVERIFIED"
+                elif speaker_evidence.get("threshold_status") == "LOCAL_APPROVED_REPORT_HASH_MATCH":
+                    summary += " spk_cal=LOCAL_APPROVED"
+                else:
+                    summary += " spk_cal=UNAVAILABLE"
         # The structured packet retains every cue; reserve the bounded C3
         # summary tail for the speaker score/kind and explicit three-state decision.
         decision_suffix = f" spk_dec={speaker_change_decision}"
