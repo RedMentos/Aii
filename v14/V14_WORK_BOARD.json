@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T21:11:36.118Z",
+  "updated_at": "2026-11-22T21:12:27.964Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; exact SHA readback 30/30 observed check-runs SUCCESS. Authenticated private PIPELINE_STATUS #619 confirms the same SHA installed, auto-update enabled, runtime/dashboard UP_TO_DATE and last_error NONE. DIAGNOSTICS #620 still shows a slow 2-token stored turn and B1/B2 TIME_BUDGET. Current candidates remain DRAFT / CI pending; functional and whole-Canon acceptance remain open.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -415,13 +415,13 @@
       "proof": "The exact runtime code SHA c4eb82deec915f65894c20d6ebbaf0ebf58fa335 is installed, but the receipt proves installation only. No Android process-death, service restart, reboot, marker recovery or runtime-only rollback receipt exists. User models, SQLite and chats were not modified."
     }
   ],
-  "current_redmi_status": "PIPELINE_STATUS #619: installed aed1d2b826290c95c70356b5d8b864b5ef382be4; auto-update=true; runtime/dashboard=UP_TO_DATE; last_error=NONE. Authenticated private owner-read #620: service/runtime/dashboard RUNNING; last stored turn FINAL, 57.7388 s total, 41.6269 s TTFT, 38.9453 s prefill, 751 prompt tokens, 2 generated tokens; B1_DETAIL TIME_BUDGET 53.2 s, B2_GIST TIME_BUDGET 54.2 s, C3 3.1 s. Instant sample: 0 mapped native processes, 0 MiB PSS/RSS, child readability UNKNOWN. This is not sustained residency or free-RAM evidence. Config: 90 s deadline, 35 s observer window, 6 threads, 2048 context, 2400 MiB body-residency setting. No new chat was sent; correctness UNKNOWN. Official Age 0; lab stage requested 10 / implemented ceiling 5; physical feature execution unverified; learning commit authority requires separate SHADOW. Console error/log access is USER_NOT_OPTED_IN; no LOG_PAGE.",
+  "current_redmi_status": "Latest private V13OBS #115 (updated 2026-11-22T21:11:21Z) repeats installed SHA aed1d2b826290c95c70356b5d8b864b5ef382be4; auto-update=true; runtime/dashboard=UP_TO_DATE; last_error=NONE. Latest stored FINAL turn remains 57.7388 s total, 41.6269 s TTFT, 38.9453 s prefill, 751 prompt tokens, 2 generated tokens. Across the observed turns: B1_DETAIL 4 native attempts / 4 failures / 0 valid offers; B2_GIST 2 attempts / 2 failures / 0 valid offers; no B1/B2 delivery to final C3 report. C3 prompt inclusion and semantic use are unproven; native latent exchange is false. Instant native sample: 0 mapped processes / 0 MiB PSS/RSS with child readability UNKNOWN; not free-RAM or sustained residency. Official Age 0; lab stage 10 / implemented ceiling 5; physical feature execution unverified; learning commit authority requires separate SHADOW. No new chat, LOG_PAGE, UPDATE_REQUEST or device action.",
   "last_code_release_head": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
   "latest_integrated_head": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
   "latest_integrated_head_verified_at": "2026-11-22T20:49:21.304Z",
   "release_gate_status": "Exact SHA aed1d2b826290c95c70356b5d8b864b5ef382be4: 30/30 observed check-runs SUCCESS. Private PIPELINE_STATUS #619 confirms exact installed SHA and UP_TO_DATE. This proves code installation only. Last stored turn remains 57.74 s / 41.63 s TTFT / 38.95 s prefill / 2 tokens; B1/B2 TIME_BUDGET. No 20-turn correctness acceptance.",
   "phone_receipt": {
-    "state": "AUTHENTICATED_INSTALLED_AED1D2_FUNCTIONAL_ACCEPTANCE_OPEN",
+    "state": "AUTHENTICATED_OWNER_READ_619_620_PLUS_LATEST_V13OBS_115; FUNCTIONAL_ACCEPTANCE_OPEN",
     "pipeline_status_issue": 619,
     "diagnostics_issue": 620,
     "installed_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
@@ -467,8 +467,33 @@
       "physical_feature_execution_verified": false,
       "learning_commit_authority": "REQUIRES_SEPARATE_SHADOW_MODE"
     },
-    "redmi_status": "AED1D2_INSTALLED; CHAT_QUALITY_AND_MULTI_ORGAN_ACCEPTANCE_OPEN",
-    "note": "Fresh authenticated read-only receipts #619/#620. No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, remote shell, model/weight/permission change or device mutation was performed. No user action required."
+    "redmi_status": "AED1D2_INSTALLED; UPDATER_UP_TO_DATE; P0_CHAT_AND_B1_B2_ACCEPTANCE_OPEN; NO_C3_SEMANTIC_OR_NATIVE_LATENT_PROOF",
+    "note": "Owner-read receipts #619/#620 remain the authenticated pipeline/diagnostics commands; newer private V13OBS #115 (21:11:21Z) repeats the same installed SHA and adds five-turn body-delivery evidence. No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, remote shell, model/weight/permission change or device mutation was performed. No user action required.",
+    "latest_observation": {
+      "issue": 115,
+      "updated_at": "2026-11-22T21:11:21Z",
+      "type": "PRIVATE_LOCAL_METADATA_ONLY_OBSERVATION_NOT_OWNER_READ_COMMAND_RECEIPT",
+      "installed_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
+      "auto_update": true,
+      "runtime": "UP_TO_DATE",
+      "dashboard": "UP_TO_DATE",
+      "last_error": "NONE",
+      "turns_observed": 5,
+      "b1_native_attempts": 4,
+      "b1_native_failures": 4,
+      "b1_valid_offers": 0,
+      "b2_native_attempts": 2,
+      "b2_native_failures": 2,
+      "b2_valid_offers": 0,
+      "c3_prompt_inclusion_proven": false,
+      "c3_semantic_use_proven": false,
+      "native_latent_exchange_proven": false,
+      "latest_turn_total_s": 57.73882742600108,
+      "latest_turn_ttft_s": 41.626904203003505,
+      "latest_turn_prefill_s": 38.945270141004585,
+      "latest_turn_prompt_tokens": 751,
+      "latest_turn_generated_tokens": 2
+    }
   },
   "capability_snapshot": [
     {
