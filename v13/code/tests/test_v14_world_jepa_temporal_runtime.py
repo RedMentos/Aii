@@ -18,6 +18,7 @@ from v13.world_jepa_store_authority import verify_committed_temporal_page
 from v13.world_jepa_temporal import (
     STATE_KEY,
     TemporalWorldJEPAStoreConsumer,
+    _split_windows,
     build_temporal_windows,
 )
 
@@ -29,55 +30,15 @@ def _make_store(home):
     return store
 
 
-def _replace_source_id(value, old_source_id, new_source_id):
-    if type(value) is dict:
-        for key, item in value.items():
-            if key == "source_id" and item == old_source_id:
-                value[key] = new_source_id
-            elif key == "source_ids" and type(item) is list:
-                value[key] = [
-                    new_source_id if source_id == old_source_id else source_id
-                    for source_id in item
-                ]
-            else:
-                _replace_source_id(item, old_source_id, new_source_id)
-    elif type(value) is list:
-        for item in value:
-            _replace_source_id(item, old_source_id, new_source_id)
-
-
 def _add_session(store, label, session_index, *, status_overrides=None):
     status_overrides = status_overrides or {}
-    generated_session = store.new_session(label)
-    session = f"session-test-{label}-{session_index:03d}"
-    with store.tx() as conn:
-        conn.execute("UPDATE sessions SET id=? WHERE id=?", (session, generated_session))
-    store.set_meta("last_session", session)
+    session = store.new_session(label)
     event_ids = []
     for offset in range(4):
         text = f"{label}-session-{session_index:03d}-event-{offset:02d}-" + ("x" * ((session_index + offset) % 31))
         event = store.event(session, text)
         event_id = event["event_id"]
         generation = event["brain_generation_id"]
-        old_source_id = event["source_ref"]["source_id"]
-        stable_source_id = f"src-test-{label}-{session_index:03d}-{offset:02d}"
-        event = json.loads(json.dumps(event))
-        _replace_source_id(event, old_source_id, stable_source_id)
-        with store.tx() as conn:
-            conn.execute("UPDATE sources SET id=? WHERE id=?", (stable_source_id, old_source_id))
-            conn.execute(
-                "UPDATE events SET source_id=?,packet=? WHERE id=?",
-                (stable_source_id, json.dumps(event, sort_keys=True, separators=(",", ":")), event_id),
-            )
-            message = conn.execute(
-                "SELECT metadata FROM messages WHERE event_id=?", (event_id,)
-            ).fetchone()
-            metadata = json.loads(message["metadata"])
-            _replace_source_id(metadata, old_source_id, stable_source_id)
-            conn.execute(
-                "UPDATE messages SET metadata=? WHERE event_id=?",
-                (json.dumps(metadata, sort_keys=True, separators=(",", ":")), event_id),
-            )
         action_index = (session_index + offset) % len(world_model.ACTIONS)
         route = world_model.ACTIONS[action_index]
         selection = contracts.packet(
@@ -106,7 +67,6 @@ def _add_session(store, label, session_index, *, status_overrides=None):
         )
         event_ids.append(event_id)
     return session, event_ids
-
 
 def _permissions(store, *, replay_mode="uniform", steps=80):
     store.set_state(PERMISSION_KEY, {
@@ -709,3 +669,36 @@ def test_source_forget_fails_closed_on_opaque_packet_without_partial_tombstone(t
         ) is not None
     finally:
         store.close()
+
+
+def test_source_disjoint_partition_is_stable_across_random_runtime_ids(tmp_path):
+    stores = [
+        _make_store(tmp_path / "split-stability-a"),
+        _make_store(tmp_path / "split-stability-b"),
+    ]
+    partitions = []
+    try:
+        for store in stores:
+            _make_dataset(store, "split-stability", 16)
+            receipts, rejected, _cursor, scanned, _censored, has_more = verify_committed_temporal_page(
+                store, after_seq=0, limit=64
+            )
+            assert rejected == 0
+            assert scanned == 64
+            assert has_more is False
+            rows = []
+            from v13.world_jepa_temporal import _receipt_row
+            for receipt in receipts:
+                if receipt.status != "OUTCOME_UNKNOWN":
+                    rows.append(_receipt_row(store, receipt))
+            windows = build_temporal_windows(store, rows)
+            train, holdout, metrics = _split_windows(windows)
+            assert metrics["source_disjoint"] is True
+            train_sources = {source for window in train for source in window["source_sha256s"]}
+            holdout_sources = {source for window in holdout for source in window["source_sha256s"]}
+            assert train_sources.isdisjoint(holdout_sources)
+            partitions.append((train_sources, holdout_sources))
+        assert partitions[0] == partitions[1]
+    finally:
+        for store in stores:
+            store.close()
