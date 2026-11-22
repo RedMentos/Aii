@@ -1,4 +1,4 @@
-name: V14 JEPA training-resume Python 3.14
+name: V14 JEPA training-resume and source-forget Python 3.13/3.14
 
 on:
   pull_request:
@@ -7,6 +7,8 @@ on:
       - "v13/code/v13/world_jepa_training_state.py"
       - "v13/code/v13/world_jepa_shadow_checkpoint.py"
       - "v13/code/v13/world_jepa_consumer.py"
+      - "v13/code/v13/memory.py"
+      - "v13/code/tests/test_v14_world_jepa_runtime_port.py"
       - "v13/code/v13/world_jepa_receiver_matrix.py"
       - "v13/code/v13/world_jepa_planner.py"
       - "v13/code/tests/test_world_jepa_training_resume_stage_20261111.py"
@@ -21,13 +23,17 @@ permissions:
 jobs:
   optimizer-resume:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.14"
+          python-version: "${{ matrix.python-version }}"
       - name: Install pinned test dependencies
         run: python -m pip install --disable-pip-version-check numpy==2.3.5 pytest==9.2.0
-      - name: Run staged optimizer-resume and postcommit regression on Python 3.14
-        run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_world_jepa_training_resume_stage_20261111.py
+      - name: Run staged optimizer-resume, persistent JEPA and source-forget regressions
+        run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_world_jepa_training_resume_stage_20261111.py v13/code/tests/test_v14_world_jepa_runtime_port.py
