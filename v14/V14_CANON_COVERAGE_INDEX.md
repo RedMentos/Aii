@@ -2077,3 +2077,31 @@ This overlay updates only the A-plane audio/voice evidence; it does not mark the
 **Current release/device boundary:** integration head `39b175521f50048f13ca14372b316de47527f531`; post-merge push CI not independently certified. Authenticated private PIPELINE_STATUS #480 reports auto-update enabled but `CI_WAIT` on installed SHA `89333289b8cd50da92cbf7074c9ef689a2972dbf`; no UPDATE_REQUEST was sent. REDMI_UNVERIFIED_NOT_INSTALLED.
 
 **Coordination note:** the older overlay above still contains unrelated stale Age-rights and B3 rows. They are not changed by this Perception update; Boss/Integrator should reconcile them against current board/PR evidence without rewriting historical Canon headings.
+
+---
+
+## Boss whole-Canon evidence overlay — 2026-11-22 2026-11-22T07:54:34.985Z
+
+This is an additive evidence overlay only. The historical 1,255-heading inventory and all V13 source appendices remain unchanged.
+
+| Canon family | Current executable path / evidence | Current failure or limit | Classification |
+| --- | --- | --- | --- |
+| A0–A5 perception | Signed caller-supplied PCM16 ingress is wired to a synthetic Runtime consumer; A5 UI metadata lease exists in CI | No Android AudioRecord provider, microphone permission/capture, screen capture or real multimodal learning | WIRED_SYNTHETIC / NOT_ANDROID_VERIFIED |
+| B1_DETAIL + B2_GIST | Prior exact CI proved synthetic same-turn OfferPacket→C4→C3 selection on staged Runtime | Latest phone probe: B1 53.2 s TIME_BUDGET, B2 54.2 s TIME_BUDGET; only B1 process present in instant snapshot; no accepted useful native offers | CI_SYNTHETIC / REDMI_FUNCTIONAL_FAIL |
+| B3 / Enlightened Space | Source-exact/symbolic Callosum remains available; native llama.cpp input-embedding probe is a diagnostic-only candidate | #2314 Python 3.13/3.14 staged jobs fail with NameError from lost `c=controller(r)`; native build/cross-compile alone do not prove semantic alignment | SYMBOLIC_ACTIVE / NATIVE_PROBE_FAIL / PRODUCTION_OFF |
+| C3 language/output | Last Redmi turn is FINAL | 63.22 s total, 42.48 s TTFT, 2 generated tokens; input redacted so accuracy unverified | DEVICE_OBSERVED / QUALITY_NOT_ACCEPTED |
+| World/Self/Memory/JEPA | Store-backed numeric WorldJEPA and replay candidate code exists | #2311 exact staged chain fails on feedback/bootstrap source pin; no accepted permanent native body-weight update, cross-organ gradient or per-session retention | CODE_PRESENT / STAGED_FAIL |
+| Sleep/Dream/Replay | Postcommit worker and replay candidates exist | JEPA staged chain/retention gate incomplete; no accepted consolidation or rollback proof | PARTIAL / SHADOW |
+| Context OS + Memorilla | Existing source pointers and additive overflow-companion research/code remain | No accepted production overflow consumer, role-specific reader/writer learning or complete forget/revoke/restart path | PARTIAL / SHADOW |
+| Voice/audio | Signed one-shot caller-supplied PCM consumer #2312 | 4/5 checks pass, staged-runtime fails; no AudioRecord, ASR, trainable decoder/vocoder or full-duplex | CALLER_SUPPLIED_ONLY / NOT_ANDROID_VERIFIED |
+| Android background/UI agency | Companion #2271/#2273/#2286 drafts exist | Exact checks failing/pending; no installed APK, OS executor, app launch, UI action, screen observation or Redmi proof | DEFAULT_OFF / NOT_ANDROID_VERIFIED |
+| Age/X10 | Official Age 0 and separate lab selector are reported by phone | Requested stage 10, effective stage 5, physical feature execution false; do not infer X10 runtime rights from selector | AGE0_OFFICIAL / LAB_STAGE_PARTIAL |
+| Cross-organ self-optimization | Experimental numeric WorldJEPA code path exists | JEPA source pins fail; no accepted body-weight diff, cross-organ gradient, consumer utility, retention, restart or rollback | EXPERIMENTAL / NOT_PROMOTED |
+| Technical OS sandbox + adaptive behavior judge | Existing contracts/prototypes remain in the repository | Independent Android-enforced sandbox and trainable, calibrated judge not accepted as complete | PARTIAL / OPEN |
+| Release/updater/rollback | Phone auto-update enabled; installed code SHA f210999, pipeline/runtime/dashboard UP_TO_DATE | Current docs-only release SHA c03ff0 has 34/38 push checks complete; no new code deployment or phone rollback receipt | DEVICE_CODE_UP_TO_DATE / DOCS_CI_PENDING |
+
+**Device snapshot detail:** mapped native process PSS is 85.8 MiB (B1 57.9, C2 0.2, C3 27.7; B2 absent). This is process PSS, not total available RAM. Lab selector: official stage 0; requested stage 10; effective implemented stage 5; physical feature execution not verified; learning commit authority requires separate SHADOW mode.
+
+**Source-level scheduling risk to test, not yet a proven device cause:** the current 90-second deadline yields a 40.5-second pre-answer observer window; with default sequential A_THEN_B and a 35-second per-body cap, the first body can consume 35 seconds and leave at most ~5.5 seconds for the second. Add role-specific elapsed-time telemetry and fair scheduling tests; do not drop either body or call postcommit work a same-turn contribution.
+
+**Release evidence:** docs-only PR #2316 merged at `c03ff0aa9e18b5ffebd1109f3c078105f53c6afe`; exact push CI 34 success / 0 failure / 4 in progress at the time of this overlay. Phone code SHA remains `f210999cf556be4d4514427cc9b5cf6d3cf3e984`, the code-bearing parent. No UPDATE_REQUEST, model/weight mutation, permission change, microphone capture or device action occurred.
