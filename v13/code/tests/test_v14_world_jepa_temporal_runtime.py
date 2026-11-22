@@ -797,7 +797,28 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts(tmp_path
             assert "body_state" in payload
             state = payload["body_state"]
             assert state["authority"] == "STATE_NOT_FACT"
-            assert "world_jepa_temporal" in state
+            if "world_jepa_temporal" not in state:
+                active = store.state(STATE_KEY, None)[0]["active"]
+                matrix = learner.receiver_matrix(
+                    sessions[0], tuple(world_model.ACTIONS),
+                    history_length=2 if role == "B1_DETAIL" else 3,
+                )
+                action_statuses = {
+                    action: matrix.get("matrix", {}).get(action, {}).get(role, {}).get("status")
+                    for action in world_model.ACTIONS
+                }
+                role_metrics = {
+                    key: value for key, value in active["receiver_metrics"].items()
+                    if key.startswith(role.lower() + "_")
+                }
+                raise AssertionError({
+                    "role": role,
+                    "matrix_status": matrix.get("status"),
+                    "action_statuses": action_statuses,
+                    "receiver_metrics": role_metrics,
+                    "action_support": active["action_support"],
+                    "history_action_ids": matrix.get("history_action_ids"),
+                })
             prior = state["world_jepa_temporal"]
             assert prior["status"] == "SHADOW_READOUT_ONLY"
             assert prior["native_body_consumed"] is False
