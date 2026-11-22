@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -15,12 +16,28 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 33)
 public final class CapabilityRegistryTest {
+    private static final String FINGERPRINT =
+            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+
+    @Before public void resetPairingTrust() {
+        assertEquals(PairingPersistence.Result.PERSISTED,
+                PairingPersistence.persistWithStatus("com.termux", FINGERPRINT,
+                        (pkg, digest) -> true, () -> false));
+    }
+
+    private static void storePair(Context context, String packageName, String digest) {
+        SharedPreferences prefs = context.getSharedPreferences(
+                CompanionProvider.PREFS, Context.MODE_PRIVATE);
+        assertTrue(prefs.edit().putString("paired_package", packageName)
+                .putString("paired_cert_sha256", digest).commit());
+    }
     @Test public void launchAppRequiresPairingAndTheCompanionEnableSwitch() {
         assertEquals("OFF_TERMUX_NOT_PAIRED", CapabilityRegistry.launchStatus(false, false));
         assertEquals("OFF_TERMUX_NOT_PAIRED", CapabilityRegistry.launchStatus(false, true));
@@ -89,16 +106,74 @@ public final class CapabilityRegistryTest {
         assertTrue(prefs.edit()
                 .putBoolean("enabled", true)
                 .putString("paired_package", "com.termux")
-                .putString("paired_cert_sha256", "test-certificate-fingerprint")
+                .putString("paired_cert_sha256", FINGERPRINT)
                 .commit());
 
         assertTrue(CompanionProvider.resetProcessStateForProviderStartup(context));
         assertFalse(CompanionProvider.isEnabled(context));
 
-        JSONObject snapshot = CapabilityRegistry.snapshot(context);
+        JSONObject snapshot = CapabilityRegistry.snapshot(context,
+                (ctx, packageName) -> FINGERPRINT);
         assertFalse(snapshot.getBoolean("enabled"));
+        assertTrue(snapshot.getBoolean("termux_paired"));
         JSONArray capabilities = snapshot.getJSONArray("capabilities");
         assertEquals("OFF_STOP_SWITCH", capabilities.getJSONObject(0).getString("status"));
+    }
+
+    @Test public void currentInstalledSignerMustMatchStoredPairBeforeLaunchIsAdvertised() throws Exception {
+        Context context = RuntimeEnvironment.getApplication();
+        storePair(context, "com.termux", FINGERPRINT);
+        assertTrue(CompanionProvider.resetProcessStateForProviderStartup(context));
+        assertTrue(CompanionProvider.toggleEnabled(context));
+
+        JSONObject matching = CapabilityRegistry.snapshot(context,
+                (ctx, packageName) -> {
+                    assertEquals("com.termux", packageName);
+                    return FINGERPRINT;
+                });
+        assertTrue(matching.getBoolean("termux_paired"));
+        assertEquals("READY_WITH_PER_ACTION_CONSENT",
+                matching.getJSONArray("capabilities").getJSONObject(0).getString("status"));
+
+        JSONObject changedSigner = CapabilityRegistry.snapshot(context,
+                (ctx, packageName) -> "f".repeat(64));
+        assertFalse(changedSigner.getBoolean("termux_paired"));
+        assertEquals("OFF_TERMUX_NOT_PAIRED",
+                changedSigner.getJSONArray("capabilities").getJSONObject(0).getString("status"));
+    }
+
+    @Test public void missingPackageAndMalformedStoredDigestFailClosed() throws Exception {
+        Context context = RuntimeEnvironment.getApplication();
+        storePair(context, "com.termux", "not-a-digest");
+        assertFalse(CapabilityRegistry.isCurrentTermuxTrusted(context,
+                (ctx, packageName) -> { throw new IllegalStateException("package missing"); }));
+
+        storePair(context, "com.termux", FINGERPRINT);
+        assertFalse(CapabilityRegistry.isCurrentTermuxTrusted(context,
+                (ctx, packageName) -> { throw new IllegalStateException("package missing"); }));
+    }
+
+    @Test public void revokedPairingTrustLatchCannotBeOverriddenByMatchingPreferences() {
+        Context context = RuntimeEnvironment.getApplication();
+        storePair(context, "com.termux", FINGERPRINT);
+        assertEquals(PairingPersistence.Result.UNTRUSTED,
+                PairingPersistence.persistWithStatus("com.termux", FINGERPRINT,
+                        (pkg, digest) -> false, () -> false));
+        assertFalse(CapabilityRegistry.isCurrentTermuxTrusted(context,
+                (ctx, packageName) -> FINGERPRINT));
+    }
+
+    @Test public void snapshotDoesNotAdvertiseStalePairingWhenInstalledSignerChanges() throws Exception {
+        Context context = RuntimeEnvironment.getApplication();
+        storePair(context, "com.termux", FINGERPRINT);
+        assertTrue(CompanionProvider.resetProcessStateForProviderStartup(context));
+        assertTrue(CompanionProvider.toggleEnabled(context));
+
+        JSONObject snapshot = CapabilityRegistry.snapshot(context,
+                (ctx, packageName) -> "f".repeat(64));
+        assertFalse(snapshot.getBoolean("termux_paired"));
+        assertEquals("OFF_TERMUX_NOT_PAIRED",
+                snapshot.getJSONArray("capabilities").getJSONObject(0).getString("status"));
     }
 
     @Test public void providerBindsExactCallingPackageToThePairedUidAndCertificate() {

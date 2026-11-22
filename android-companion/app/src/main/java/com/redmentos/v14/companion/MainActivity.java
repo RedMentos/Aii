@@ -56,16 +56,21 @@ public final class MainActivity extends Activity {
         try {
             boolean enabled = CompanionProvider.isEnabled(this);
             SharedPreferences prefs = getSharedPreferences(CompanionProvider.PREFS, MODE_PRIVATE);
-            String paired = prefs.getString("paired_package", "not paired");
-            String fingerprint = prefs.getString("paired_cert_sha256", "—");
             JSONObject key = signer.publicKeyInfo();
             JSONObject capabilities = CapabilityRegistry.snapshot(this);
+            boolean termuxPaired = capabilities.getBoolean("termux_paired");
+            String paired = termuxPaired
+                    ? "com.termux (current installed signer verified)"
+                    : "not paired (stored identity/current installed signer not verified)";
+            String fingerprint = termuxPaired
+                    ? prefs.getString("paired_cert_sha256", "—") : "—";
             status.setText("V14 Android Companion 0.1.0\n"
                     + "State: " + (enabled ? "ENABLED FOR THIS PROCESS — per-action consent still required"
                             : "STOPPED (restart requires explicit re-enable)") + "\n"
                     + "Paired caller: " + paired + "\n"
-                    + "Pairing trust: " + (PairingPersistence.isTrustAvailable()
-                            ? "AVAILABLE" : "BLOCKED — pairing rollback was not verified") + "\n"
+                    + "Pairing trust: " + (termuxPaired
+                            ? "AVAILABLE — current package and signer verified"
+                            : "BLOCKED — no verified current pairing") + "\n"
                     + "Termux signing certificate SHA-256: " + fingerprint + "\n"
                     + "Companion key ID: " + key.getString("key_id") + "\n"
                     + "Key storage: " + key.getString("key_storage_status") + "\n\n"
