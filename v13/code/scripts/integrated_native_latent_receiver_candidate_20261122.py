@@ -26,6 +26,7 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
         from .models import model_key
         from .common import file_hash
         from .native_latent_receiver import POSITION_MODE, probe as native_probe, register_packet_contract, validate_packet
+        from .native_probe_approval import require_consumed as require_native_approval
         register_packet_contract()
         if sender_role not in {"B1_DETAIL","B2_GIST"} or receiver_role not in {"B1_DETAIL","B2_GIST","C3_LANGUAGE"} or sender_role==receiver_role:
             raise ValueError("Native receiver roles must be distinct B1/B2 -> B1/B2/C3")
@@ -33,6 +34,9 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
                 or not isinstance(e.get("source_ref"),dict)
                 or source_ref.get("source_id")!=e["source_ref"].get("source_id")):
             raise ValueError("Native receiver source must belong to this event")
+        # The receiver boundary independently enforces the already-consumed
+        # local TTY arm; direct Python calls cannot bypass the operator gate.
+        approved_models=require_native_approval(self.r,sender_role,receiver_role,e,source_ref)
 
         tap=self.tap(sender_role,e,source_ref,deadline)
         if (tap.get("role")!=sender_role or tap.get("event_id")!=e.get("event_id")
@@ -70,6 +74,9 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
         if (not isinstance(sender_model_sha256,str) or len(sender_model_sha256)!=64
                 or any(ch not in "0123456789abcdef" for ch in sender_model_sha256)):
             raise ValueError("Sender model manifest hash is invalid")
+        if (sender_model_sha256!=approved_models[sender_role]["sha256"]
+                or tap.get("model_revision")!=approved_models[sender_role]["revision"]):
+            raise ValueError("Sender model differs from consumed local approval")
         sender_model_path=self.r.models.path_for(sender_role)
         if sender_model_path.is_symlink():
             raise ValueError("Sender model symlink refused")
@@ -89,6 +96,9 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
         main=installed.get("files",{}).get(installed.get("main_file"))
         if not isinstance(main,dict) or not isinstance(main.get("sha256"),str):
             raise ValueError("Receiver model manifest hash is missing")
+        if (installed.get("exact_revision")!=approved_models[receiver_role]["revision"]
+                or main["sha256"]!=approved_models[receiver_role]["sha256"]):
+            raise ValueError("Receiver model differs from consumed local approval")
         receipt=native_probe(
             home=self.r.home,model_path=model_path,expected_model_sha256=main["sha256"],
             sender_role=sender_role,receiver_role=receiver_role,
