@@ -1378,3 +1378,15 @@ The release source has a plausible B1/B2 suppression path: default observer mode
 - Boss & Integration: keep #2258 unmerged until the Age-rights composition, exact CI and protected-file review are complete; continue whole-Canon dependency/consumer mapping.
 
 Private owner-read request #443 has no authenticated reply. Installed SHA and updater consent are UNKNOWN; REDMI_UNVERIFIED. No LOG_PAGE, UPDATE_REQUEST, remote shell, or device mutation was attempted.
+
+## Core & Harness checkpoint — 2026-11-22 (append-only)
+
+- **Current implementation PR:** #2296, branch `core/v14-c4-c3-consumption-rebase-20261122-run2`, code SHA `92b7601defb9fa457cc72e28ea93dbcca9e08155` at this checkpoint; subsequent handoff-only commit will preserve these source changes.
+- **New connected path:** same-turn B1_DETAIL/B2_GIST OfferPackets → C4 FocalLoop receipt → C3 prompt context. The read-only `:brain status` view exposes last persisted C3 role/model, prompt/generated tokens, TTFT, duration, PSS and offer receipt matching, without returning prompt, quote or chat text.
+- **Same-causal C3 path:** native offer inclusion is reported only when the exact prompt hash, token IDs, context-source hash, native handle, PID and feature hash agree with the paused native prefill binding. Stream completion is tracked separately. No semantic/attention use or learned latent coupling is claimed.
+- **LOCAL_LINUX:** isolated `:brain status` helper copy, 3 tests PASS (matching C4 IDs, mismatched-ID negative control, missing-receipt negative control). This is not an exact repository checkout or native-model test.
+- **CI:** exact V14 Core same-turn workflow run 44972793432 is QUEUED for Python 3.13 and 3.14. The separate Core native-stream-integrity run 44972793404 is PASS. Source-contract run 44972793449 is FAIL: 150 passed, 10 failed, 2 errors, 1 skipped; all stage failures converge on the pre-existing `local-error pre-rebind semantic binding mismatch` at `termux_runtime_recovery_candidate_20261112.py:313`. Core supplied a source-order diagnosis on Boss PR #2288; no Boss-owned file was changed.
+- **LOCAL checkout:** exact Aii checkout unavailable because github.com DNS failed in this container. **REDMI_UNVERIFIED**; no authorized handset receipt or deployment.
+- **Release:** NOT_RELEASED. GitHub push is not deployment. No model/weights/Age/permissions/updater/device data changed.
+- **Next executable step:** finish exact-head V14 Core CI, fix any new focused regression, then implement a narrow foreground-app-transition observation capability using UsageStatsManager only after explicit Android Usage Access and per-action companion consent. It must produce a signed typed ActionOutcome while keeping T8/world-learning authority OFF. No screen text, screenshots or notifications in that first observation step.
+- **Nutzeraktion:** keine Aktion nötig; keine Gerätefreigabe oder Modelländerung angefordert.
