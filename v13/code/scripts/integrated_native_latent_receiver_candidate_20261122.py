@@ -24,6 +24,7 @@ NATIVE_FILES = {
 NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,source_ref,deadline):
         """Opt-in native llama_batch.embd receiver probe; never production B3 or learning."""
         from .models import model_key
+        from .common import file_hash
         from .native_latent_receiver import POSITION_MODE, probe as native_probe, register_packet_contract, validate_packet
         register_packet_contract()
         if sender_role not in {"B1_DETAIL","B2_GIST"} or receiver_role not in {"B1_DETAIL","B2_GIST","C3_LANGUAGE"} or sender_role==receiver_role:
@@ -57,6 +58,22 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
         # prefill with pooling=none. Its positions are therefore 0..N-1; derive
         # them only after checking the persisted token/vector count and runner receipt.
         position_ids=list(range(len(token_ids)))
+        sender_key=model_key(sender_role,self.r.models.b2_control)
+        sender_installed=self.r.models.installed.get(sender_key)
+        if (not sender_installed or sender_installed.get("download_complete") is not True
+                or tap.get("model_revision")!=sender_installed.get("exact_revision")):
+            raise ValueError("Sender model revision is not the installed pinned tap model")
+        sender_main=sender_installed.get("files",{}).get(sender_installed.get("main_file"))
+        if not isinstance(sender_main,dict):
+            raise ValueError("Sender model manifest hash is missing")
+        sender_model_sha256=sender_main.get("sha256")
+        if (not isinstance(sender_model_sha256,str) or len(sender_model_sha256)!=64
+                or any(ch not in "0123456789abcdef" for ch in sender_model_sha256)):
+            raise ValueError("Sender model manifest hash is invalid")
+        sender_model_path=self.r.models.path_for(sender_role)
+        if (sender_model_path.is_symlink() or not sender_model_path.is_file()
+                or file_hash(sender_model_path)!=sender_model_sha256):
+            raise ValueError("Sender model hash differs from the pinned tap model")
         key=model_key(receiver_role,self.r.models.b2_control)
         installed=self.r.models.installed.get(key)
         if not installed or installed.get("download_complete") is not True:
@@ -71,7 +88,7 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
             home=self.r.home,model_path=model_path,expected_model_sha256=main["sha256"],
             sender_role=sender_role,receiver_role=receiver_role,
             sender_tap_id=tap["tap_id"],sender_model_revision=tap["model_revision"],
-            sender_model_sha256=tap["sender_model_sha256"],tokenizer_revision=tap.get("tokenizer_revision"),
+            sender_model_sha256=sender_model_sha256,tokenizer_revision=tap.get("tokenizer_revision"),
             receiver_model_revision=installed["exact_revision"],
             source_id=source_ref["source_id"],generation_id=e["brain_generation_id"],
             vectors=vectors,position_ids=position_ids,position_mode=POSITION_MODE,
