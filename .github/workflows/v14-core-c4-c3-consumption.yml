@@ -37,6 +37,7 @@ on:
     branches:
       - boss/v14-recall-store-pin-rebind-20261122
       - gpt6/v13-private-remote-bridge-20261111
+    paths:
       - 'v13/code/scripts/integrated_c4_c3_receipt_candidate_20261122.py'
       - 'v13/code/scripts/run_c4_c3_current_candidate_test_20261122.py'
       - 'v13/code/scripts/termux_runtime_recovery_candidate_20261121.py'
@@ -48,7 +49,6 @@ on:
       - 'v13/code/v13/runners.py'
       - 'v13/code/tests/test_v14_causal_stream_offer_receipt.py'
       - 'v14/V14_USER_NEXT_ACTION.md'
-      - 'v13/code/scripts/run_c4_c3_current_candidate_test_20261122.py'
       - 'v13/code/tests/test_termux_runtime_recovery_stage.py'
       - 'v14/V14_WORK_BOARD.json'
       - 'v14/V14_LIVE_WORKPLAN.md'
@@ -95,8 +95,8 @@ jobs:
             v13/code/scripts/integrated_feedback_bootstrap_candidate_20261111.py \
             v13/code/scripts/integrated_memory_world_candidate_20261111.py \
             v13/code/scripts/integrated_world_training_resume_candidate_20261111.py \
-            v13/code/tests/test_v14_store_source_blob_serialization.py \
-      - name: Exercise final staged fair-budget and C4 composition
+            v13/code/tests/test_v14_store_source_blob_serialization.py
+      - name: Exercise final staged fair-budget composition
         env:
           PYTHONPATH: v13/code
           PYTHONDONTWRITEBYTECODE: '1'
@@ -104,8 +104,7 @@ jobs:
           python -m pytest -q \
             v13/code/tests/test_termux_runtime_recovery_stage.py \
             v13/code/tests/test_observer_fair_budget_stage_20261116.py \
-            v13/code/tests/test_v14_store_source_blob_serialization.py \
-            v13/code/tests/test_v14_same_turn_c4_c3_consumption.py
+            v13/code/tests/test_v14_store_source_blob_serialization.py
       # The script below stages the observer and C4 receipt overlays before running the same-turn test.
       - name: Exercise source-pinned composed Runtime and negative control
         env:
