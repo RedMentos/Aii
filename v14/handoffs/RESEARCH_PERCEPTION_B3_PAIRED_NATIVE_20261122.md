@@ -124,3 +124,44 @@ No immediate phone or user-visible behavior changes. No user action is required 
 
 No user action required. No model, weight, dependency, device setting or production route changed.
 
+
+
+---
+
+## Checkpoint — source-disjoint receiver-input projector candidate (2026-11-22 23:00 CET)
+
+### New executable path
+- Added `v13/code/v13/b3projector.py`: a factorized low-rank B1↔B2 sender-state → receiver-input-row projector. It consumes the persisted B3 paired-tap /4 records through `b3pairs.load_pair`, recomputes the exact character-interval overlap map, and never equates token indices across tokenizers.
+- The receiver target is the exact row from the receiver model's input embedding table for each aligned receiver token ID. The adapter is not trained against the receiver's final-layer tap and does not pretend that equal hidden dimensions imply compatible semantics.
+- The trainer uses trainable A/B matrices with Adam gradients, a deterministic source-SHA-disjoint holdout, and no-message / shuffled-input controls. It reports held-out MSE, cosine, pairwise-cosine Spearman and mutual-kNN edge Jaccard. Checkpoints bind sender/receiver roles, revisions, actual model SHA-256 values, the pinned llama.cpp revision and the receiver-row export hash.
+- Adapter checkpoints are unique/no-overwrite, mode 0600, integrity-hashed and explicitly zero-authority. A loaded candidate must pass its shadow-alignment gate and exact model/role binding. Foundation weights are never edited.
+- Added `v13/code/scripts/b3_train_receiver_projector.py`. It requires `--confirm-shadow-training`, reads only selected receiver rows, hashes the actual installed sender and receiver model files, reads persisted B3 packet IDs from Runtime storage, and writes a private SHADOW checkpoint under the Runtime home. It does not inject the adapter or alter production routing.
+
+### Required Core row-export seam
+The Core native receiver still does **not** export receiver input rows. This Perception consumer expects the following bounded read-only contract from Core:
+- manifest schema `v14.llama.receiver-input-rows/1`;
+- `receiver_role`, exact `model_revision`, actual model `model_sha256`, pinned `runner_revision`, `embedding_dim`;
+- sorted `token_ids`, `row_count`, `rows_sha256`;
+- `data_file`, `data_sha256`, `dtype=float32-le`, `layout=row-major`;
+- binary file contains only the requested rows, row-major little-endian float32; no full vocabulary matrix. The row digest is SHA-256 over sorted little-endian int64 token IDs followed by the little-endian float32 matrix.
+- Current code caps training examples at 1,024 rows and 4,194,304 feature elements. The native exporter must reject bad token IDs, quantization block/row offsets, overflow, wrong model bytes and unsupported tensor layouts before writing.
+
+### Local test evidence
+- **LOCAL_LINUX_ISOLATED / CPython 3.13.5 / NumPy 2.3.5:** 10/10 synthetic unit tests PASS. They cover exact row-manifest/data hashes, model/role/revision negatives, forward and reverse character-span alignment, persisted-pair consumer wiring (with only the store loader mocked), nonzero gradients and parameter changes, source-disjoint holdout, shuffled/no-message controls, checkpoint round-trip, no-overwrite and authority-escalation rejection.
+- **LOCAL_LINUX_ISOLATED:** `py_compile` PASS for projector module, CLI and tests; CLI `--help` PASS. Single-thread BLAS environment used. These are isolated algorithm/contract tests, not a full Aii checkout, real GGUF tap or native receiver run.
+- **LOCAL_FULL_REPOSITORY:** BLOCKED — no Aii checkout is mounted in this execution environment. No full-repository unittest/compile is claimed.
+- **CI:** pending on the exact updated PR head.
+- **TERMUX/REDMI:** REDMI_UNVERIFIED. No phone, model, microphone, updater, native receiver or installed app was accessed.
+
+### Research note ready for central ledger (R-088; Boss append pending)
+- **StateBridge**, Peng et al., arXiv:2608.13317 (2026-08-13), COLM 2026 release; official repository revision `3f6bf5442c6e8848555a6132516e6d36f35444fb`, Apache-2.0 code. It uses whitening + orthogonal Procrustes + norm calibration + vocabulary anchoring and reports best/tied-best on 22/26 model-task pairs. Crucial boundary: the released method explicitly targets homogeneous agents sharing the same pretrained weights; its repository depends on PyTorch/Transformers and reports A100-80G runs. It is a geometry-preserving baseline, not a drop-in for independently trained B1/B2 on Android.
+- **XBridge**, Yang et al., arXiv:2608.11676 (2026-08-12), preprint. It combines discrete receiver-vocabulary/entity anchors with a continuous latent-enrichment bridge; reports 264M trainable parameters and 7 benchmarks across Llama/Qwen/Mistral. It is direction-specific and evaluates one exchange, not multi-turn latent dialogue. No official code/license link was found on the primary arXiv page; no reuse is selected.
+- **Architecture-Dependent Causal Transfer**, Piepereit, arXiv:2608.16347v2 (2026-11-09), preprint. With 0.5B–7B models and 30 causal trials per pair, projected-state retrieval reached 45–50% vs 5% chance for decoder-only pairs, but generation-level causal transfer was positive for only one pair (Qwen2-0.5B→Phi-3-mini: 23.3% vs 0% negative control; FDR-corrected p=0.047); both Mistral-targeting pairs failed despite similar retrieval alignment. The paper explicitly warns that representational similarity is not semantic-use proof and identifies monitoring risk from opaque activation channels. No code/license reuse is claimed.
+- **V14 adaptation:** keep a small source-disjoint adapter as one candidate only; measure geometry as well as reconstruction; require actual receiver-generation task utility, same-model parity, zero/shuffle/source-exact controls, OOD, retention, restart and rollback. A passing embedding-alignment metric must never be renamed “semantic latent communication”.
+
+### Integration / deployment
+- This is a Perception-owned continuation of PR #2346 and remains DRAFT. The PR base is still release SHA `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; the shared branch has a later documentation HEAD, so Boss must reconcile/rebase the candidate after the exact combined matrix is green. No force-push.
+- Core PR #2350 currently verifies local probe approval and actual model-byte hashes; it does not implement the row-only extractor. Core owns that native ABI seam. Perception owns this consumer/trainer.
+- Production B3 remains OFF/SYMBOLIC; `semantic_use_proven=false`, `production_route=false`, receiver-injection authority 0, body-learning authority 0. No release/deployment or updater request.
+- **Next concrete step:** Core supplies the pinned row-only extractor and exact manifest; then Perception runs the projector against real paired B1/B2 taps and compares source-exact, projected, zero, shuffled and no-message receiver outputs. Boss updates the shared board, research ledger and user-next-action after reviewing this handoff.
+- **User action:** none. No model download/swap, weight change, permission change or manual Termux command.
