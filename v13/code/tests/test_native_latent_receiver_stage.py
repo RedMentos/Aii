@@ -1,0 +1,37 @@
+"""Verify the native receiver overlay is present in the exact final staged runtime."""
+import importlib.util
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+CODE = Path(__file__).resolve().parents[1]
+
+
+def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
+    builder_path = CODE / "scripts/stage_integrated_candidate.py"
+    spec = importlib.util.spec_from_file_location("v14_native_receiver_stage", builder_path)
+    builder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(builder)
+    destination = tmp_path / "stage"
+    manifest = builder.stage(CODE, destination)
+    assert manifest["status"] == "SHADOW_REVIEW_ONLY"
+    assert "v13/native_latent_receiver.py" in manifest["files_sha256"]
+    assert "v13/native/latent_receiver/native_latent_receiver.cpp" in manifest["files_sha256"]
+    cognition = (destination / "v13/cognition.py").read_text(encoding="utf-8")
+    callosum = (destination / "v13/callosum.py").read_text(encoding="utf-8")
+    assert "def native_receive(" in cognition
+    assert "native-probe" in callosum
+    assert "production_route=False" in cognition
+    assert "semantic_use_proven=False" in cognition
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(destination)
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    run = subprocess.run(
+        [sys.executable, "-m", "pytest", "-q",
+         str(CODE / "tests/test_native_latent_receiver.py"),
+         str(CODE / "tests/test_native_latent_receiver_runtime.py"),
+         str(CODE / "tests/test_callosum.py")],
+        cwd=tmp_path, env=env, capture_output=True, text=True, timeout=150,
+    )
+    assert run.returncode == 0, run.stdout + run.stderr
