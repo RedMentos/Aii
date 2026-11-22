@@ -1,4 +1,4 @@
-# Perception checkpoint — 2026-11-22 06:08Z
+# Perception checkpoint — 2026-11-22 06:17Z
 
 **No user action is needed.** Do not run a Termux command, request an update, change models/weights/permissions, or enable microphone capture on the basis of this checkpoint.
 
