@@ -51,6 +51,8 @@ public final class MediaProjectionCaptureService extends Service {
     private volatile boolean captureComplete;
     private int captureWidth;
     private int captureHeight;
+    private int sourceWidth;
+    private int sourceHeight;
     private long captureStartElapsed;
 
     @Override public void onCreate() {
@@ -75,7 +77,8 @@ public final class MediaProjectionCaptureService extends Service {
             return START_NOT_STICKY;
         }
         if (!CompanionProvider.isEnabled(this)
-                || !CapabilityRegistry.isCurrentTermuxTrusted(this)) {
+                || !CapabilityRegistry.isCurrentTermuxTrusted(this)
+                || ProjectionFrameStore.hasFrame(SystemClock.elapsedRealtime())) {
             stopSelf(startId);
             return START_NOT_STICKY;
         }
@@ -121,11 +124,12 @@ public final class MediaProjectionCaptureService extends Service {
         Display display = windowManager == null ? null : windowManager.getDefaultDisplay();
         if (display == null) throw new IllegalStateException("default display unavailable");
         display.getRealMetrics(metrics);
-        int width = Math.max(1, metrics.widthPixels);
-        int height = Math.max(1, metrics.heightPixels);
-        double scale = Math.min(1.0, Math.sqrt((double) MAX_PIXELS / ((double) width * height)));
-        captureWidth = Math.max(1, (int) Math.floor(width * scale));
-        captureHeight = Math.max(1, (int) Math.floor(height * scale));
+        sourceWidth = Math.max(1, metrics.widthPixels);
+        sourceHeight = Math.max(1, metrics.heightPixels);
+        double scale = Math.min(1.0,
+                Math.sqrt((double) MAX_PIXELS / ((double) sourceWidth * sourceHeight)));
+        captureWidth = Math.max(1, (int) Math.floor(sourceWidth * scale));
+        captureHeight = Math.max(1, (int) Math.floor(sourceHeight * scale));
         captureStartElapsed = SystemClock.elapsedRealtime();
 
         imageReader = ImageReader.newInstance(captureWidth, captureHeight, PixelFormat.RGBA_8888, 2);
@@ -138,7 +142,7 @@ public final class MediaProjectionCaptureService extends Service {
             @Override public void onCapturedContentResize(int width, int height) {
                 // This is a one-frame snapshot. Abort on rotation/resize instead of
                 // reusing a stale surface or creating a second virtual display.
-                if (!captureComplete && (width != captureWidth || height != captureHeight)) {
+                if (!captureComplete && (width != sourceWidth || height != sourceHeight)) {
                     failCapture("display resized during one-shot capture");
                 }
             }
@@ -169,6 +173,7 @@ public final class MediaProjectionCaptureService extends Service {
                 frameClaimed.set(false);
                 return;
             }
+            long frameEndElapsed = SystemClock.elapsedRealtime();
             int width = image.getWidth();
             int height = image.getHeight();
             if (width != captureWidth || height != captureHeight
@@ -216,11 +221,10 @@ public final class MediaProjectionCaptureService extends Service {
                     || bytes.length > ProjectionFrameStore.MAX_FRAME_BYTES) {
                 throw new IllegalStateException("compressed frame exceeds byte limit");
             }
-            long endElapsed = SystemClock.elapsedRealtime();
             org.json.JSONObject receipt = UIFrameReceiptFactory.create(
                     bytes, source.getWidth(), source.getHeight(),
-                    captureStartElapsed, endElapsed, new ReceiptSigner());
-            ProjectionFrameStore.publish(bytes, receipt, endElapsed);
+                    captureStartElapsed, frameEndElapsed, new ReceiptSigner());
+            ProjectionFrameStore.publish(bytes, receipt, frameEndElapsed);
             bytes = null; // ownership transferred to the one-shot in-memory store
             captureComplete = true;
             releaseProjection();
