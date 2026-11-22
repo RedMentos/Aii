@@ -713,7 +713,7 @@ def _persist_audio_packet_under_consent_lease(runtime, audio_packet, *, lease_ac
         )
 
 
-def _consume_pcm16_voice_window_impl(runtime, pcm, *, sample_rate, start_ms, event_id,
+def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                generation_id, source_id, consent_receipt,
                                consent_check, finality, consent_guard=None, token_budget=512,
                                temporal_state: TemporalVoiceEvidence | None = None,
@@ -729,217 +729,216 @@ def _consume_pcm16_voice_window_impl(runtime, pcm, *, sample_rate, start_ms, eve
     # A Runtime-wide caller may already hold the same provider lease through
     # C3 generation. Reuse its bound handle without callback re-entry.
     try:
-            with _audio_consent_scope(
-                runtime, source_id, generation_id, consent_receipt,
-                consent_check, consent_guard, consent_lease, temporal_state, vad_stream,
-            ) as lease_active:
+        with _audio_consent_scope(
+            runtime, source_id, generation_id, consent_receipt,
+            consent_check, consent_guard, consent_lease, temporal_state, vad_stream,
+        ) as lease_active:
             try:
-                        raw = observe_pcm16(
-                            pcm, sample_rate, start_ms, consent=True, source_id=source_id, max_seconds=1
+                raw = observe_pcm16(
+                    pcm, sample_rate, start_ms, consent=True, source_id=source_id, max_seconds=1
+                )
+                segment = raw["segments"][0]
+                cues = extract_voice_cues(pcm, sample_rate, backend=voice_backend)
+                vad_evidence = None
+                if vad_stream is not None:
+                    vad_evidence = vad_stream.push_pcm16(
+                        pcm, sample_rate=sample_rate,
+                        stream_id=f"{source_id}:{generation_id}", start_ms=start_ms,
+                    )
+                    cues["vad"] = validate_vad_evidence(vad_evidence)
+                    cues = validate_voice_cues(cues)
+                audio_packet = audio_percept_packet(
+                    event_id=event_id,
+                    generation_id=generation_id,
+                    source_id=source_id,
+                    source_sha256=raw["source_ref"]["sha256"],
+                    start_ms=segment["start_ms"],
+                    end_ms=segment["end_ms"],
+                    rms=segment["acoustic"]["rms"],
+                    zcr=segment["acoustic"]["zero_crossing_rate"],
+                    finality=finality,
+                    consent_receipt=consent_receipt,
+                )
+                audio_segment = audio_packet["segments"][0]
+                audio_segment["acoustic"]["voice_cues"] = cues
+                speaker_evidence = None
+                if speaker_embeddings is not None:
+                    try:
+                        speaker_evidence = _runtime_speaker_evidence_registry(runtime).update(
+                            source_id=source_id, generation_id=generation_id,
+                            start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
+                            activity_hint=cues["activity_hint"], embeddings=speaker_embeddings,
                         )
-                        segment = raw["segments"][0]
-                        cues = extract_voice_cues(pcm, sample_rate, backend=voice_backend)
-                        vad_evidence = None
-                        if vad_stream is not None:
-                            vad_evidence = vad_stream.push_pcm16(
-                                pcm, sample_rate=sample_rate,
-                                stream_id=f"{source_id}:{generation_id}", start_ms=start_ms,
-                            )
-                            cues["vad"] = validate_vad_evidence(vad_evidence)
-                            cues = validate_voice_cues(cues)
-                        audio_packet = audio_percept_packet(
-                            event_id=event_id,
-                            generation_id=generation_id,
-                            source_id=source_id,
-                            source_sha256=raw["source_ref"]["sha256"],
-                            start_ms=segment["start_ms"],
-                            end_ms=segment["end_ms"],
-                            rms=segment["acoustic"]["rms"],
-                            zcr=segment["acoustic"]["zero_crossing_rate"],
-                            finality=finality,
-                            consent_receipt=consent_receipt,
-                        )
-                        audio_segment = audio_packet["segments"][0]
-                        audio_segment["acoustic"]["voice_cues"] = cues
-                        speaker_evidence = None
-                        if speaker_embeddings is not None:
-                            try:
-                                speaker_evidence = _runtime_speaker_evidence_registry(runtime).update(
-                                    source_id=source_id, generation_id=generation_id,
-                                    start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
-                                    activity_hint=cues["activity_hint"], embeddings=speaker_embeddings,
-                                )
-                            except SpeakerEvidenceError as exc:
-                                runtime.store.log("speaker_embedding_rejected", event_id, {"error": type(exc).__name__})
-                                speaker_evidence = {
-                                    "method": "COSINE_LOOKBACK_DIAGNOSTIC_V1",
-                                    "status": "REJECTED",
-                                    "error": type(exc).__name__,
-                                    "speaker_label": None,
-                                    "identity_authority": False,
-                                    "learning_authority": False,
-                                    "action_authority": False,
-                                }
-                        speaker_change_decision = _speaker_change_decision(speaker_evidence, cues)
-                        if speaker_evidence is not None:
-                            speaker_evidence["decision"] = speaker_change_decision
-                            audio_segment["acoustic"]["speaker_change_evidence"] = speaker_evidence
-                        audio_segment["acoustic"]["speaker_change_decision"] = speaker_change_decision
-                        audio_segment["unmeasured"] = [
-                            "speaker_identity", "speaker_timbre", "calibrated_speech_probability", "ASR"
-                        ]
-                        if (speaker_evidence is None or speaker_evidence.get("status") != "MEASURED"
-                                or speaker_change_decision == "DEFER"):
-                            audio_segment["unmeasured"].append("speaker_change")
-                        # Do not claim pitch/prosody were measured when the window had no usable
-                        # voiced frames. A single voiced frame estimates pitch, but not dynamics.
-                        if cues["f0_median_hz"] is None:
-                            audio_segment["unmeasured"].append("pitch")
-                        if round(cues["voiced_fraction"] * cues["frame_count"]) < 2:
-                            audio_segment["unmeasured"].append("prosody")
-
-                        expected_source_id, expected_receipt = source_id, consent_receipt
-                        source_id, receipt, rms, zcr, audio_segment = _validate_runtime_binding(
-                            runtime, event_id, audio_packet
-                        )
-                        if source_id != expected_source_id or receipt != expected_receipt:
-                            _reset_audio_temporal_state(
-                                runtime, expected_source_id, generation_id, temporal_state, vad_stream,
-                            )
-                            raise PermissionError("audio packet binding does not match active consent lease")
-
-                        _persist_audio_packet_under_consent_lease(
-                            runtime, audio_packet, lease_active=lease_active,
-                        )
-
-                        if temporal_state is None:
-                            temporal_voice = _runtime_temporal_voice_registry(runtime).update(
-                                source_id=source_id,
-                                generation_id=generation_id,
-                                start_ms=audio_segment["start_ms"],
-                                end_ms=audio_segment["end_ms"],
-                                cues=cues,
-                            )
-                        else:
-                            if not isinstance(temporal_state, TemporalVoiceEvidence):
-                                raise ValueError("temporal_state must be a TemporalVoiceEvidence instance")
-                            temporal_voice = temporal_state.update(
-                                source_id=source_id,
-                                generation_id=generation_id,
-                                start_ms=audio_segment["start_ms"],
-                                end_ms=audio_segment["end_ms"],
-                                cues=cues,
-                            )
-                        speaker_change_score = 0.0
-                        speaker_change_candidate = None
-                        if speaker_evidence is not None:
-                            speaker_change_candidate = speaker_evidence.get("peak_speaker_change_candidate")
-                            if speaker_change_candidate is None:
-                                speaker_change_candidate = speaker_evidence.get("speaker_change_candidate")
-                            if speaker_change_candidate is True:
-                                speaker_change_score = float(
-                                    speaker_evidence.get("peak_candidate_change_score")
-                                    or speaker_evidence.get("change_score")
-                                    or 0.0
-                                )
-                        voice_novelty = max(
-                            0.35 * temporal_voice["voice_evidence"],
-                            0.9 * cues["prosody_change_score"] if temporal_voice["voice_active"] else 0.0,
-                            0.35 * speaker_change_score,
-                        )
-                        prosody_interrupt = (0.25 * cues["prosody_change_score"]
-                                             if temporal_voice["voice_active"] else 0.0)
-                        speaker_interrupt = 0.25 * speaker_change_score
-                        onset_interrupt = 0.5 if temporal_voice["voice_onset"] else 0.0
-                        vad_speech_fraction = 0.0 if vad_evidence is None else vad_evidence["speech_fraction"]
-                        vad_interrupt = 0.25 * vad_speech_fraction
-                        voice_novelty = max(voice_novelty, 0.35 * vad_speech_fraction)
-                        if cues["activity_hint"] in {"UNVOICED_NOISE", "IMPULSIVE"}:
-                            # Preserve non-speech events as their own salience channel.
-                            voice_novelty = max(voice_novelty, 0.35 * cues["activity_score"])
-                        attention = attctl.controller(runtime)
-                        attention_result = attention.modulate(event_id, sal={
-                            "novelty": min(1.0, max(zcr, voice_novelty)),
-                            "external_interrupt": min(1.0, max(rms * 0.5, prosody_interrupt, onset_interrupt, vad_interrupt, speaker_interrupt)),
-                        })
-                        a4 = {
-                            "packet_id": audio_packet["packet_id"],
-                            "source_id": source_id,
-                            "finality": audio_segment["finality"],
-                            "voice_activity_hint": cues["activity_hint"],
-                            "voice_cues": cues,
-                            "prosody_change_score": cues["prosody_change_score"],
-                            "temporal_voice": temporal_voice,
-                            "speaker_change_evidence": speaker_evidence,
-                            "speaker_change_decision": speaker_change_decision,
-                            "attention": attention_result,
+                    except SpeakerEvidenceError as exc:
+                        runtime.store.log("speaker_embedding_rejected", event_id, {"error": type(exc).__name__})
+                        speaker_evidence = {
+                            "method": "COSINE_LOOKBACK_DIAGNOSTIC_V1",
+                            "status": "REJECTED",
+                            "error": type(exc).__name__,
+                            "speaker_label": None,
+                            "identity_authority": False,
                             "learning_authority": False,
                             "action_authority": False,
                         }
-                        if vad_evidence is not None:
-                            a4["vad_evidence"] = vad_evidence
+                speaker_change_decision = _speaker_change_decision(speaker_evidence, cues)
+                if speaker_evidence is not None:
+                    speaker_evidence["decision"] = speaker_change_decision
+                    audio_segment["acoustic"]["speaker_change_evidence"] = speaker_evidence
+                audio_segment["acoustic"]["speaker_change_decision"] = speaker_change_decision
+                audio_segment["unmeasured"] = [
+                    "speaker_identity", "speaker_timbre", "calibrated_speech_probability", "ASR"
+                ]
+                if (speaker_evidence is None or speaker_evidence.get("status") != "MEASURED"
+                        or speaker_change_decision == "DEFER"):
+                    audio_segment["unmeasured"].append("speaker_change")
+                # Do not claim pitch/prosody were measured when the window had no usable
+                # voiced frames. A single voiced frame estimates pitch, but not dynamics.
+                if cues["f0_median_hz"] is None:
+                    audio_segment["unmeasured"].append("pitch")
+                if round(cues["voiced_fraction"] * cues["frame_count"]) < 2:
+                    audio_segment["unmeasured"].append("prosody")
 
-                        # The provider lease remains authoritative through A4 and C3 admission.
-                        # Do not reacquire its lock through consent_check here.
-                        candidate = audio_to_admission(audio_packet, consent_active=True)
-                        # Packet start/end already carry the interval; drop the duplicate text
-                        # field to preserve room for source-bound acoustic evidence below.
-                        base_summary = " ".join(
-                            token for token in candidate.summary.split()
-                            if not token.startswith(("zcr=", "interval_ms="))
+                expected_source_id, expected_receipt = source_id, consent_receipt
+                source_id, receipt, rms, zcr, audio_segment = _validate_runtime_binding(
+                    runtime, event_id, audio_packet
+                )
+                if source_id != expected_source_id or receipt != expected_receipt:
+                    _reset_audio_temporal_state(
+                        runtime, expected_source_id, generation_id, temporal_state, vad_stream,
+                    )
+                    raise PermissionError("audio packet binding does not match active consent lease")
+
+                _persist_audio_packet_under_consent_lease(
+                    runtime, audio_packet, lease_active=lease_active,
+                )
+
+                if temporal_state is None:
+                    temporal_voice = _runtime_temporal_voice_registry(runtime).update(
+                        source_id=source_id,
+                        generation_id=generation_id,
+                        start_ms=audio_segment["start_ms"],
+                        end_ms=audio_segment["end_ms"],
+                        cues=cues,
+                    )
+                else:
+                    if not isinstance(temporal_state, TemporalVoiceEvidence):
+                        raise ValueError("temporal_state must be a TemporalVoiceEvidence instance")
+                    temporal_voice = temporal_state.update(
+                        source_id=source_id,
+                        generation_id=generation_id,
+                        start_ms=audio_segment["start_ms"],
+                        end_ms=audio_segment["end_ms"],
+                        cues=cues,
+                    )
+                speaker_change_score = 0.0
+                speaker_change_candidate = None
+                if speaker_evidence is not None:
+                    speaker_change_candidate = speaker_evidence.get("peak_speaker_change_candidate")
+                    if speaker_change_candidate is None:
+                        speaker_change_candidate = speaker_evidence.get("speaker_change_candidate")
+                    if speaker_change_candidate is True:
+                        speaker_change_score = float(
+                            speaker_evidence.get("peak_candidate_change_score")
+                            or speaker_evidence.get("change_score")
+                            or 0.0
                         )
-                        summary = base_summary + (
-                            f" activity={cues['activity_hint']} v={cues['voiced_fraction']:.2f}"
+                voice_novelty = max(
+                    0.35 * temporal_voice["voice_evidence"],
+                    0.9 * cues["prosody_change_score"] if temporal_voice["voice_active"] else 0.0,
+                    0.35 * speaker_change_score,
+                )
+                prosody_interrupt = (0.25 * cues["prosody_change_score"]
+                                     if temporal_voice["voice_active"] else 0.0)
+                speaker_interrupt = 0.25 * speaker_change_score
+                onset_interrupt = 0.5 if temporal_voice["voice_onset"] else 0.0
+                vad_speech_fraction = 0.0 if vad_evidence is None else vad_evidence["speech_fraction"]
+                vad_interrupt = 0.25 * vad_speech_fraction
+                voice_novelty = max(voice_novelty, 0.35 * vad_speech_fraction)
+                if cues["activity_hint"] in {"UNVOICED_NOISE", "IMPULSIVE"}:
+                    # Preserve non-speech events as their own salience channel.
+                    voice_novelty = max(voice_novelty, 0.35 * cues["activity_score"])
+                attention = attctl.controller(runtime)
+                attention_result = attention.modulate(event_id, sal={
+                    "novelty": min(1.0, max(zcr, voice_novelty)),
+                    "external_interrupt": min(1.0, max(rms * 0.5, prosody_interrupt, onset_interrupt, vad_interrupt, speaker_interrupt)),
+                })
+                a4 = {
+                    "packet_id": audio_packet["packet_id"],
+                    "source_id": source_id,
+                    "finality": audio_segment["finality"],
+                    "voice_activity_hint": cues["activity_hint"],
+                    "voice_cues": cues,
+                    "prosody_change_score": cues["prosody_change_score"],
+                    "temporal_voice": temporal_voice,
+                    "speaker_change_evidence": speaker_evidence,
+                    "speaker_change_decision": speaker_change_decision,
+                    "attention": attention_result,
+                    "learning_authority": False,
+                    "action_authority": False,
+                }
+                if vad_evidence is not None:
+                    a4["vad_evidence"] = vad_evidence
+
+                # The provider lease remains authoritative through A4 and C3 admission.
+                # Do not reacquire its lock through consent_check here.
+                candidate = audio_to_admission(audio_packet, consent_active=True)
+                # Packet start/end already carry the interval; drop the duplicate text
+                # field to preserve room for source-bound acoustic evidence below.
+                base_summary = " ".join(
+                    token for token in candidate.summary.split()
+                    if not token.startswith(("zcr=", "interval_ms="))
+                )
+                summary = base_summary + (
+                    f" activity={cues['activity_hint']} v={cues['voiced_fraction']:.2f}"
+                )
+                if cues["f0_median_hz"] is not None:
+                    summary += f" f0_med_hz={cues['f0_median_hz']:.0f}"
+                summary += f" energy_range_db={cues['energy_range_db']:.1f}"
+                if cues["voiced_energy_range_db"] is not None:
+                    summary += f" voiced_energy_range_db={cues['voiced_energy_range_db']:.1f}"
+                summary += f" prosody_change={cues['prosody_change_score']:.2f}"
+                if vad_evidence is not None:
+                    summary += f" vad_speech_fraction={vad_speech_fraction:.2f}"
+                if speaker_evidence is not None and speaker_evidence.get("status") == "MEASURED":
+                    if speaker_change_candidate is not None:
+                        summary += f" speaker_change_candidate={int(speaker_change_candidate)}"
+                        summary += f" speaker_change_score={speaker_change_score:.2f}"
+                        if speaker_change_candidate:
+                            summary += " speaker_change_kind=CHANGE_OR_OVERLAP"
+                    else:
+                        summary += f" speaker_similarity_delta={speaker_evidence['change_score']:.2f}"
+                        summary += (
+                            " spk_cal=UNVERIFIED"
+                            if speaker_evidence.get("threshold_status") == "CALLER_ASSERTED_UNVERIFIED"
+                            else " spk_cal=UNAVAILABLE"
                         )
-                        if cues["f0_median_hz"] is not None:
-                            summary += f" f0_med_hz={cues['f0_median_hz']:.0f}"
-                        summary += f" energy_range_db={cues['energy_range_db']:.1f}"
-                        if cues["voiced_energy_range_db"] is not None:
-                            summary += f" voiced_energy_range_db={cues['voiced_energy_range_db']:.1f}"
-                        summary += f" prosody_change={cues['prosody_change_score']:.2f}"
-                        if vad_evidence is not None:
-                            summary += f" vad_speech_fraction={vad_speech_fraction:.2f}"
-                        if speaker_evidence is not None and speaker_evidence.get("status") == "MEASURED":
-                            if speaker_change_candidate is not None:
-                                summary += f" speaker_change_candidate={int(speaker_change_candidate)}"
-                                summary += f" speaker_change_score={speaker_change_score:.2f}"
-                                if speaker_change_candidate:
-                                    summary += " speaker_change_kind=CHANGE_OR_OVERLAP"
-                            else:
-                                summary += f" speaker_similarity_delta={speaker_evidence['change_score']:.2f}"
-                                summary += (
-                                    " spk_cal=UNVERIFIED"
-                                    if speaker_evidence.get("threshold_status") == "CALLER_ASSERTED_UNVERIFIED"
-                                    else " spk_cal=UNAVAILABLE"
-                                )
-                        # The structured packet retains every cue; reserve the bounded C3
-                        # summary tail for the speaker score/kind and explicit three-state decision.
-                        decision_suffix = f" spk_dec={speaker_change_decision}"
-                        summary = summary[:256-len(decision_suffix)] + decision_suffix
-                        candidate = Percept(
-                            candidate.source_id, candidate.modality, candidate.start_ms, candidate.end_ms,
-                            summary, candidate.consent, candidate.final, candidate.priority,
-                        )
-                        c3 = admit((candidate,), token_budget)
-                        result = {
-                            "status": "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION",
-                            "packet": audio_packet,
-                            "a4": a4,
-                            "c3_admission": c3,
-                            "temporal_voice": temporal_voice,
-                            "speaker_change_evidence": speaker_evidence,
-                            "capture_authority": "CALLER_SUPPLIED_PCM16",
-                            "learning_authority": False,
-                            "action_authority": False,
-                        }
-                        if vad_evidence is not None:
-                            result["vad_evidence"] = vad_evidence
-                        return result
+                # The structured packet retains every cue; reserve the bounded C3
+                # summary tail for the speaker score/kind and explicit three-state decision.
+                decision_suffix = f" spk_dec={speaker_change_decision}"
+                summary = summary[:256-len(decision_suffix)] + decision_suffix
+                candidate = Percept(
+                    candidate.source_id, candidate.modality, candidate.start_ms, candidate.end_ms,
+                    summary, candidate.consent, candidate.final, candidate.priority,
+                )
+                c3 = admit((candidate,), token_budget)
+                result = {
+                    "status": "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION",
+                    "packet": audio_packet,
+                    "a4": a4,
+                    "c3_admission": c3,
+                    "temporal_voice": temporal_voice,
+                    "speaker_change_evidence": speaker_evidence,
+                    "capture_authority": "CALLER_SUPPLIED_PCM16",
+                    "learning_authority": False,
+                    "action_authority": False,
+                }
+                if vad_evidence is not None:
+                    result["vad_evidence"] = vad_evidence
+                return result
             finally:
                 zeroize_pcm16_buffer(pcm)
     finally:
         zeroize_pcm16_buffer(pcm)
-
 
 def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                generation_id, source_id, consent_receipt,
