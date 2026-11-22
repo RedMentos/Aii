@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T00:50:00Z",
+  "updated_at": "2026-11-22T03:48:43Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -76,17 +76,19 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "JEPA PR #2247 code SHA 58942cfb9141f7915ee5d85c925c551553f2416d; branch head 5914902543162740daebcf02fec392d4fc5954c7 (handoff-only commits after tested code). Exact push run 44968103405 and PR run 44968107084 SUCCESS on Python 3.13/3.14. Each interpreter ran 54 A→B→A reports; all source-disjoint holdout manifests, rollback readbacks and negative-control separation passed. Full-encoder A2 accepted 22/27 (3.13), 20/27 (3.14); predictor-only 25/27 and 27/27; on-demand-loss full 5/6 and predictor-only 6/6 on both. Receiver remains weak: planner ready 3/54 (3.13), 0/54 (3.14); B1_DETAIL/SELF_MODEL mostly rejected; B2_GIST readout-only 29/54 and 24/54. This is synthetic SQLite/T8 numeric WorldJEPA/EMA, not native body weights or trained B3. Full LOCAL_LINUX repository tests BLOCKED (no checkout, GitHub DNS unavailable); REDMI_UNVERIFIED.",
-      "next_step": "Implement a model-revision/source-bound trainable B1/B2 adapter from actual B1/B2 outputs, supervised targets or explicit user corrections—not synthetic transition y labels. Persist adapter parameters and optimizer; bind updates to trusted T8 source/outcome provenance; use disjoint sessions, zero/shuffled/OOD/wrong-action controls, retention, restart and rollback; require stable receiver utility on both Python versions before B3 promotion. Coordinate with Core PR #2266 (native embedding ingress only, not trained semantic alignment).",
+      "proof_environment": "PR #2247 branch head 9b1f319; tested code tree c599cb9; world_jepa.py SHA-256 b6dd3534. Python 3.13.13/3.14.10 py_compile and A→B→A test 18/18 PASS each (54 seed/arm reports per runtime). Twelve projected on-demand conflict/loss cases used source/content-disjoint prior_guard GEM references; 11 accepted, 1 safely rejected per runtime. Accepted updates had parameter/checkpoint diffs and persisted optimizer moments; rejected candidates left checkpoint unchanged; all split manifests source/content-disjoint and rollback readback exact. Current exact workflow still fails after A→B→A at staged training-resume pin: expected WORLD_SHA 3e952..., actual b6dd.... memory.py also changed (blob 07fcb) while source-lifecycle pin remains 391668.... Incremental/combined online JEPA, runtime deploy integrity and privacy pass; staged, owner-read, Lab-Age and migration fail downstream of the pin; safe-additive fails by policy. Full local Aii suite BLOCKED (no checkout); REDMI_UNVERIFIED.",
+      "next_step": "Wait for Boss #2288 current head 483ef6 exact CI to settle, then recompose/rebase this JEPA branch on that integration tree and recompute the entire WorldJEPA → source lifecycle/memory → integrated memory/world → recovery → stage → deployer pin chain. Do not transplant one hash in isolation: Boss base currently pins a different WorldJEPA SHA 06afa.... Rerun exact Python 3.13/3.14 staged, owner-read, Lab-Age, migration and integrated tests. After green integration, connect the learner to real source-bound B1/B2 outputs or explicit corrections; no synthetic transition labels as semantic learning evidence.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T00:50:00Z",
+      "last_checkpoint": "2026-11-22T03:48:43Z",
       "latest_candidate_pr": {
         "pr": 2247,
-        "head_sha": "5914902543162740daebcf02fec392d4fc5954c7",
-        "tested_sha": "58942cfb9141f7915ee5d85c925c551553f2416d",
-        "ci": "PASS_PY313_PY314_RUN_44968103405_44968107084",
+        "branch": "jepa-memory/v14-per-session-retention-current-20261121-run12",
+        "head_sha": "9b1f319af750e42f47aa399089abe16df8afce85",
+        "tested_sha": "c599cb9926973b70235c38c3747e5d7ad5020cb8",
+        "world_jepa_sha256": "b6dd353497bd08b756a491381ea4484419b0299e6263f5c4bac0ded112c9016a",
+        "ci": "A_B_A_18_PASS_PY313_PY314; INCREMENTAL_AND_COMBINED_ONLINE_JEPA_PASS; RUNTIME_DEPLOY_INTEGRITY_PASS; PRIVACY_PASS; STAGED_WORLD_SHA_PIN_FAIL; OWNER_READ_LAB_AGE_MIGRATION_FAIL; SAFE_ADDITIVE_FAIL_BY_POLICY",
         "status": "DRAFT_NOT_RELEASED",
-        "scope": "Store-backed WorldJEPA/EMA persistent numeric predictor/encoder updates, per-session A→B→A retention, replay, optimizer-state recovery and B1/B2/SELF SHADOW receiver; receiver utility still weak, no native body weight update."
+        "scope": "Persistent Store/T8 WorldJEPA/EMA learner with prior-guard per-session GEM constraints for on-demand conflict/loss; no B1/B2/C3 body-weight update or trained B3 latent transfer."
       },
       "latest_followup_pr": {
         "pr": 2148,
@@ -117,13 +119,13 @@
         "scope": "Deployable direct V13 module port of #2151/#2152; full SourceRef; dual-gated postcommit API; B1/B2/SELF numeric SHADOW readouts and memory recall; no normal Runtime wiring/native body updates"
       },
       "latest_receiver_pr": {
-        "pr": 2164,
-        "branch": "jepa-memory/v14-world-jepa-planner-receiver-20261121",
-        "head_sha": "14a647c04b28e9cd5bbd5a19ae14d6cbb77d29a1",
-        "base_pr": 2160,
-        "status": "OPEN_READY_FOR_REVIEW",
-        "ci": "PASS_44872134464_STAGED_241_PY311_10_SKIPPED_47_SUBTESTS; PASS_INTEGRATED_415_PY311_3_SKIPPED_58_SUBTESTS",
-        "scope": "Source-bound numeric B1/B2/SELF World/Planner SHADOW receiver; batched readout; ActionOutcome/SourceRef verification; persisted idempotent readback; no normal Runtime hook/native body"
+        "pr": 2300,
+        "branch": "core/v14-native-receiver-stage-20261122",
+        "head_sha": "767a8006760498c63f7a1f81bd9e4c5e003fd57c",
+        "base_sha": "91227b171f3e6c2251767f20cd494f34d6ec24fa",
+        "status": "DRAFT_STALE_BASE_REBASE_REQUIRED",
+        "ci": "7_OF_18_CHECKS_PASS_11_FAIL; LINUX_PINNED_API_BUILD_AND_ANDROID_ARM64_CROSS_COMPILE_PASS; STAGED_PYTHON_FAILS_BUILDER_HASH",
+        "scope": "Diagnostic native input-embedding ingress only; not semantic alignment, trained latent coupling, production B3 or Redmi proof."
       },
       "pr": {
         "pr": 2213,
@@ -132,7 +134,7 @@
         "ci": "PR_HEAD_STAGED_249_10SKIP_47_INTEGRATED_424_3SKIP_58_PY313_314_64_EACH; MERGED_PUSH_30_OF_30_SUCCESS",
         "scope": "production Runtime/SleepRuntime Store-backed WorldJEPA numeric consumer with persistent Adam/inverse/RNG optimizer state, gated legacy optimizer bootstrap, per-role held-out-vs-mean/zero/shuffled Planner receiver gate, Android no-clobber renameat2 checkpoint publication"
       },
-      "proof": "Exact Python 3.13/3.14 A→B→A: 54 reports each; all 54 holdouts source-disjoint, all 54 rollback readbacks exact, all 54 negative controls separated. Full-encoder A2 accepted 22/27 and 20/27; predictor-only 25/27 and 27/27. On-demand-loss full 5/6 and predictor-only 6/6 in both. Seed-43 full-encoder projected on-demand-loss is rejected while its matched unprojected arm passes. Receiver is a ridge-fitted SHADOW readout over synthetic transition targets, not actual B1/B2 weights: planner ready 3/54 (3.13), 0/54 (3.14); B1_DETAIL/SELF_MODEL mostly rejected; B2_GIST readout-only 29/54 and 24/54. Do not loosen receiver gate. No native GGUF, cross-organ gradients, Redmi proof or release."
+      "proof": "Verified numeric WorldJEPA predictor/encoder/EMA updates and replay/retention in synthetic SQLite/T8 CI. The new projected conflict/loss GEM constraints use source/content-disjoint prior guard microbatches. A→B→A passed 18 tests on both Python versions; 11/12 projected on-demand cases accepted and 1/12 safely rejected per runtime, with exact parameter/checkpoint and rollback evidence. Staged integration is not complete because the generated training-resume source pin is stale. No actual B1/B2/C3 target adapter, cross-organ gradient, GGUF body-weight edit, native B3 or Android proof."
     },
     {
       "id": "V14-005",
@@ -232,11 +234,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Selected trainable adapters/heads and later cross-organ weights; meta update predictor; sandboxed code/structure proposals; independent OS capability boundary; approval, holdout, retention and rollback",
       "acceptance": "Prove a real numeric parameter diff on an approved target, measurable heldout utility and retention, checkpoint/restart/rollback, and cross-organ consumer benefit. Code/structure self-edit remains sandboxed and human-approved; no self-issued permissions.",
-      "proof_environment": "WorldJEPA predictor/encoder/EMA now has accepted numeric updates in the synthetic Store/T8 path with persistent optimizer/checkpoint, disjoint holdouts, per-session retention and exact rollback in Python 3.13/3.14. However the B1/B2/SELF receiver is still a ridge SHADOW readout over synthetic targets; utility is weak and no actual target-organ adapter, master-weight edit or cross-organ gradient is implemented. No Android proof.",
-      "next_step": "After a source-bound B1/B2 adapter is trained from real organ outputs or explicit corrections and passes disjoint utility/retention/restart/rollback, implement LearningIntent→target-organ optimizer with explicit per-organ permission, adapter/base delta audit, EMA/anchors and rollback. Keep production weight edits and structural self-edit OFF until actual target-organ consumer benefit is proven.",
+      "proof_environment": "WorldJEPA predictor/encoder/EMA numeric updates remain verified only in the synthetic Store/T8 path. The new guard-fold GEM constraints pass A→B→A tests on Python 3.13/3.14 with parameter diffs, optimizer-state persistence, source/content-disjoint splits and exact rollback. No actual B1/B2/C3 target-organ adapter, cross-organ gradient or master-weight edit exists; staged source-pin mismatch blocks integrated acceptance. REDMI_UNVERIFIED.",
+      "next_step": "After Boss/Core rebinds the full source pin chain and staged E2E passes, implement a source/model-revision-bound B1/B2 adapter from real body outputs or explicit human corrections. Then add LearningIntent→target-organ optimizer with per-organ rights, numeric delta audit, EMA/anchors, heldout utility, retention, restart and rollback. Keep production body-weight edits and structural self-edit OFF until the real target consumer benefits.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T00:50:00Z",
-      "proof": "PR #2247 exact code SHA 58942cf passed the Python 3.13/3.14 JEPA optimizer-resume matrix. A2 accepted 22/27 and 20/27 full-encoder; 25/27 and 27/27 predictor-only. This is WorldJEPA/EMA shadow numeric learning only. B1/B2 receiver utility is not robust; no actual B1/B2/C3 weight change, cross-organ gradient, LearningIntent target optimizer or self-edit proof. Gates remain OFF; REDMI_UNVERIFIED."
+      "last_checkpoint": "2026-11-22T03:48:43Z",
+      "proof": "WorldJEPA local predictor/encoder/EMA updates are real numeric changes in the synthetic SQLite/T8 harness, not GGUF body-weight changes. The new held-out guard GEM path passed 18/18 A→B→A tests per Python version. No target-organ B1/B2 adapter, cross-organ gradients, LearningIntent optimizer, master-weight swap or self-edit proof. All production weight-edit gates remain OFF."
     },
     {
       "id": "V14-011",
@@ -247,11 +249,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Fast episodic memory, replay selection, semantic consolidation, dream/counterfactual samples, slow EMA, cleanup and provenance",
       "acceptance": "Source-linked replay survives restart; observed events remain distinct from generated dream samples; consolidation has measured retention/ablation and rollback; synthetic dream data never gains truth or tool authority.",
-      "proof_environment": "SleepRuntime postcommit JEPA/EMA/replay/rollback integration and optimizer resume passed the exact Python 3.13/3.14 workflow on code SHA 58942cf. A→B→A reports include source-disjoint replay and exact rollback. Dream-generated consolidation and Android background lifecycle remain unimplemented/unverified; promotion remains SHADOW/OFF.",
-      "next_step": "Add source-bound Dream/Sleep consolidation only after the trainable B1/B2 adapter target is grounded. Keep observed T8 outcomes distinct from generated dream/counterfactual samples; test bounded replay, delayed outcomes, event-memory consolidation, disjoint retention, restart, rollback, memory capacity and CPU/RSS. No synthetic dream sample gains truth or tool authority.",
+      "proof_environment": "Store-backed SleepRuntime/WorldJEPA replay now uses source/content-disjoint prior guard microbatches for projected on-demand conflict/loss GEM constraints. A→B→A tests passed 18/18 on Python 3.13/3.14, with exact checkpoint/optimizer persistence and rollback readback. Staged integration remains blocked by the WorldJEPA/memory source-pin chain. Dream-generated consolidation and Android background lifecycle remain unimplemented/unverified.",
+      "next_step": "After integrated source pins and real B1/B2 receiver utility are stable, add source-bound Sleep/Dream consolidation with observed T8 outcomes distinct from generated counterfactuals. Measure replay-on/off, delayed outcomes, disjoint retention, checkpoint/restart, rollback, memory capacity and CPU/RSS; no synthetic dream sample gains truth or tool authority.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T00:50:00Z",
-      "proof": "Python 3.13/3.14 JEPA optimizer-resume and idle postcommit Runtime workflows passed on code SHA 58942cf; 54/54 source-disjoint manifests and exact rollback readbacks per interpreter. This verifies the Store-backed SHADOW replay/retention path, not full Dream consolidation or Android lifecycle. Sleep/Dream promotion remains OFF; REDMI_UNVERIFIED."
+      "last_checkpoint": "2026-11-22T03:48:43Z",
+      "proof": "Prior-guard per-session GEM constraints and persistent WorldJEPA/EMA updates are verified in synthetic CI; 18 A→B→A tests passed per Python version, all split manifests source/content-disjoint, rollback readback exact. This is not full Dream consolidation or Android lifecycle proof. Promotion remains SHADOW/OFF; REDMI_UNVERIFIED."
     },
     {
       "id": "V14-012",
@@ -754,28 +756,28 @@
       "capability": "SELF_OPTIMIZATION",
       "code": "SHADOW_WORLDJEPA_ENCODER_PREDICTOR_EMA",
       "wired": "PARTIAL_STORE_CONSUMER; NO_TRAINABLE_B1_B2_TARGET_ADAPTER",
-      "tested_synthetic": "PY313_PY314_PASS; 54_A2_REPORTS; RECEIVER_UTILITY_WEAK",
+      "tested_synthetic": "PY313_PY314_A_B_A_18_PASS; 54_CASES_EACH; 12_GUARD_GEM_PROJECTED; 11_ACCEPTED_1_SAFE_REJECTED; STAGED_PIN_FAIL",
       "tested_android": "UNVERIFIED",
       "active": "OFF",
-      "evidence": "Persistent WorldJEPA numeric updates are verified in synthetic CI; no actual target-organ weight update or cross-organ gradient. Gates OFF."
+      "evidence": "Store/T8 WorldJEPA/EMA updates now use source/content-disjoint prior guard microbatches for projected on_demand_conflict/loss GEM constraints. Exact A→B→A 18/18 PASS per Python version, parameter/checkpoint deltas, optimizer persistence, negative invalid-reference atomicity and exact rollback. No actual B1/B2 target adapter, cross-organ gradient or GGUF body-weight edit; staged pin chain remains blocked."
     },
     {
       "capability": "B3_LATENT_COUPLING",
       "code": "SYMBOLIC_PLUS_RESEARCH_AND_NATIVE_PROBE",
       "wired": "NOT_PRODUCTION",
-      "tested_synthetic": "ISOLATED_PROBE_PASS_CI_PENDING",
+      "tested_synthetic": "DIAGNOSTIC_NATIVE_INGRESS_ONLY; 7_OF_18_CHECKS_PASS_11_FAIL; STALE_BASE",
       "tested_android": "UNVERIFIED",
       "active": "OFF",
-      "evidence": "#2243 tiny K/V experiment is research-only; #2266 is input-embedding ingress probe, not trained cross-model latent alignment"
+      "evidence": "PR #2300 is a dimension-compatible native input-embedding ingress probe; Linux pinned-API build and Android arm64 cross-compile pass, but staged Runtime tests fail on stale builder pins. No PACT-Check evidence, trained semantic alignment, native model execution on Redmi or production B3."
     },
     {
       "capability": "B1_DETAIL_B2_GIST",
       "code": "CODE_PRESENT_DISTINCT_ROLES",
       "wired": "PARTIAL_SYNTHETIC",
-      "tested_synthetic": "PARTIAL_CI",
+      "tested_synthetic": "PARTIAL_CI; NO_ACCEPTED_NATIVE_OFFERS; RECEIVER_INGRESS_DIAGNOSTIC_ONLY",
       "tested_android": "UNVERIFIED",
       "active": "NO_ACCEPTED_NATIVE_OFFERS",
-      "evidence": "No measured useful source-bound B1/B2 offers, mutual re-entry and C4 consumption on Redmi"
+      "evidence": "No robust source-bound B1/B2 receiver utility or actual target-organ adapter. PR #2300 only proves a diagnostic input-embedding ingress path and is stale-base/CI-red; no learned semantic transfer or Redmi proof."
     },
     {
       "capability": "C3_CORRECTNESS_AND_LATENCY",
@@ -790,10 +792,10 @@
       "capability": "WORLD_SELF_MEMORY_JEPA_SLEEP",
       "code": "PARTIAL_PERSISTENT_STORE_AND_SHADOW_JEPA_REPLAY",
       "wired": "POSTCOMMIT_SLEEP_RUNTIME; SOURCE_BOUND_REPLAY_RETENTION",
-      "tested_synthetic": "PY313_PY314_PASS; 54_REPORTS; ROLLBACK_54/54; RECEIVER_UTILITY_WEAK",
+      "tested_synthetic": "PY313_PY314_A_B_A_18_PASS; 54_REPORTS_EACH; GUARD_GEM_12_CASES; ROLLBACK_EXACT; STAGE_PIN_FAIL",
       "tested_android": "UNVERIFIED",
       "active": "SLEEP_AND_LEARNING_PROMOTION_OFF",
-      "evidence": "JEPA/EMA/replay/rollback CI passes; B1/B2 receiver utility remains weak; no full Dream consolidation or Android lifecycle proof."
+      "evidence": "Source/content-disjoint prior guard rows now provide per-session GEM constraints in projected on-demand conflict/loss paths; exact A→B→A tests pass on Python 3.13/3.14. Persistent optimizer/checkpoint and rollback are verified in synthetic Store/T8 CI. Dream consolidation and Android lifecycle remain unimplemented; integrated source pins are stale."
     },
     {
       "capability": "MULTIMODAL_LEARNING",
@@ -895,5 +897,78 @@
       "primary": "arXiv:2608.01475",
       "next": "After JEPA per-session retention is stable, compare fixed/AGN/AEN small heads with old-session holdout, gradient, parameter diff, restart and rollback"
     }
-  ]
+  ],
+  "jePa_lane_latest_checkpoint": {
+    "timestamp": "2026-11-22T03:48:43Z",
+    "branch": "jepa-memory/v14-per-session-retention-current-20261121-run12",
+    "branch_head": "9b1f319af750e42f47aa399089abe16df8afce85",
+    "code_tested_head": "c599cb9926973b70235c38c3747e5d7ad5020cb8",
+    "pr": 2247,
+    "status": "DRAFT_NOT_RELEASED",
+    "world_jepa_sha256": "b6dd353497bd08b756a491381ea4484419b0299e6263f5c4bac0ded112c9016a",
+    "a_b_a": {
+      "python_3_13": {
+        "tests": "18 passed",
+        "runtime_cases": 54,
+        "projected_on_demand_guard_cases": 12,
+        "accepted": 11,
+        "rejected": 1,
+        "rollback_readback_exact": true,
+        "source_and_content_disjoint": true
+      },
+      "python_3_14": {
+        "tests": "18 passed",
+        "runtime_cases": 54,
+        "projected_on_demand_guard_cases": 12,
+        "accepted": 11,
+        "rejected": 1,
+        "rollback_readback_exact": true,
+        "source_and_content_disjoint": true
+      }
+    },
+    "ci": {
+      "incremental_world_jepa": "PASS",
+      "combined_online_jepa": "PASS",
+      "runtime_deploy_integrity": "PASS",
+      "privacy_scan": "PASS",
+      "staged_context": "FAIL_WORLD_JEPA_TRAINING_RESUME_SOURCE_PIN",
+      "owner_read": "FAIL_DOWNSTREAM_STAGED_SOURCE_PIN",
+      "lab_age": "FAIL_DOWNSTREAM_STAGED_SOURCE_PIN",
+      "updater_migration": "FAIL_PARTIAL_BECAUSE_STAGE_DID_NOT_COMPLETE",
+      "safe_additive": "FAIL_BY_POLICY_NOT_ADDITIVE_ONLY"
+    },
+    "integration_blocker": {
+      "expected_world_sha": "3e952f21c60e53defff64b69886a04c6d770ed0860bf856e62a95ba5576494e2",
+      "actual_world_sha": "b6dd353497bd08b756a491381ea4484419b0299e6263f5c4bac0ded112c9016a",
+      "boss_base_world_sha": "06afa58b5f75f6f6e4d72c5ea333b628752d2a6987a95e3c23becb1e4854121f",
+      "memory_blob_sha": "07fcb24038079184b2a4c663204ae070f1da4217",
+      "expected_memory_sha": "391668fff0b4ad3d7c36d5d7a9823055ff74821c10f71b945e87edaa62597484",
+      "required_chain": "WorldJEPA → source lifecycle/memory → integrated memory/world → recovery → stage → runtime deployer",
+      "owner": "Boss/Core"
+    },
+    "boss_branch": {
+      "pr": 2288,
+      "head": "483ef6ddc7140bf76f197d538ec973df42dd95e0",
+      "checks_at_read": "13 success; 5 in progress; 1 skipped; 0 failures",
+      "status": "DRAFT_NOT_MERGED"
+    },
+    "core_receiver": {
+      "pr": 2300,
+      "head": "767a8006760498c63f7a1f81bd9e4c5e003fd57c",
+      "base_sha": "91227b171f3e6c2251767f20cd494f34d6ec24fa",
+      "checks": "7/18 pass; 11 fail; stale base",
+      "scope": "diagnostic input-embedding ingress only"
+    },
+    "research": {
+      "id": "R-056",
+      "paper": "arXiv:2607.09202",
+      "handoff": "v14/handoffs/JEPA_IGFA_INTERFERENCE_RESEARCH_20261122.md",
+      "reuse": "no code imported; author repo declares MIT/NumPy"
+    },
+    "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT",
+    "redmi": "REDMI_UNVERIFIED",
+    "release_sha": "NOT_RELEASED",
+    "user_action_required": false,
+    "next_step": "Boss/Core recompose the JEPA and memory changes on the latest integration head and rebind the full nested source-pin chain; then rerun staged/owner-read/Lab-Age/migration. After green integration, implement a source-bound B1/B2 target adapter from real outputs or explicit corrections."
+  }
 }
