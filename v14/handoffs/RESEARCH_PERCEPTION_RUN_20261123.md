@@ -20,3 +20,10 @@
 2. Core #2379 should rebase on the corrected Perception/QA chain and route its signed `UIFrameGrant` through the public provider entrypoint while the lease is active; this still needs a normal Runtime/C3 call site.
 3. Boss should fold this ledger branch into the current docs branch and reconcile R-096..R-099 without changing the V14 master or historical V13 Canon.
 4. After the provider path is green, the highest-value follow-up is a real Runtime dispatch hook and a same-turn source-bound UI frame → A5/A4 → C3 consumer test; Android capture remains a separate device acceptance gate.
+
+## Sparse-gate prototype checkpoint
+
+- Added `v14/experiments/engram_gate_probe.py`, focused tests and a JSON result record to this research branch.
+- Exact isolated test command: `python -m pytest -q v14/experiments/test_engram_gate_probe.py` — PASS, 3 tests, Python 3.13.5 / PyTorch 2.10.0+cpu.
+- Experiment: 10 seeds, two sequential synthetic context-conditioned tasks, dense vs static top-8 vs learned top-8. Learned gate gradient L2 0.1977 ± 0.0267; gate parameter L1 delta 84.7361 ± 4.0899; majority-mask Jaccard 0; flipped-context accuracy 0.4967 ± 0.0258. New-task accuracy 0.9688 ± 0.0071, but old-task final accuracy 0.7473 ± 0.0295 was essentially the same as dense/static; **no retention improvement is claimed**.
+- This is a local synthetic architecture probe only. It is not a BNN reproduction, not a sparse-expert kernel benchmark, not a V14 runtime consumer and not Android evidence. Do not promote it to product code without real source-bound tasks, OOD, retention/restart and target measurements.
