@@ -168,6 +168,7 @@ class RuntimeObserverTests(unittest.TestCase):
                 r.close()
 
 
+    # Include Runtime routing/budget telemetry in failures; this protects the same-turn B1/B2 gate.
     def test_two_recent_c3_prefill_failures_keep_b1_and_b2_in_same_turn_c4_to_c3(self):
         with tempfile.TemporaryDirectory() as folder:
             r = Runtime(Path(folder))
