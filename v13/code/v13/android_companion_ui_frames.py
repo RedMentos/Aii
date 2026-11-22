@@ -470,12 +470,12 @@ def _open_current_turn(provider, runtime):
     event = getattr(runtime, "turn_event", None)
     if (type(event) is not dict or type(event.get("brain_generation_id")) is not str
             or getattr(runtime, "current", None) != "turn"):
-        bundle["frame_buffer"][:] = b"\\x00" * len(bundle["frame_buffer"])
+        bundle["frame_buffer"][:] = b"\x00" * len(bundle["frame_buffer"])
         raise FrameReceiptDenied("screen frames can only be consumed inside an active Runtime turn")
     try:
         from .a5_ui_admission_bridge import A5UIRuntimeAdapter
     except Exception as exc:
-        bundle["frame_buffer"][:] = b"\\x00" * len(bundle["frame_buffer"])
+        bundle["frame_buffer"][:] = b"\x00" * len(bundle["frame_buffer"])
         raise FrameReceiptDenied("the V14 A5 UI lease consumer is not installed in this checkout") from exc
 
     state = _UIFrameGrantState(
@@ -493,5 +493,5 @@ def _open_current_turn(provider, runtime):
         # If decoding did not already overwrite the mutable caller buffer, erase it now.
         frame = bundle.get("frame_buffer")
         if type(frame) is bytearray and frame:
-            frame[:] = b"\\x00" * len(frame)
+            frame[:] = b"\x00" * len(frame)
 
