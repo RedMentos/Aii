@@ -13,6 +13,8 @@ on:
       - 'v13/code/tests/test_v14_same_turn_c4_c3_consumption.py'
       - 'v13/code/v13/brain_panel.py'
       - 'v13/code/v13/native_offer_prompt_receipt.py'
+      - 'v13/code/v13/runners.py'
+      - 'v13/code/tests/test_v14_causal_stream_offer_receipt.py'
       - '.github/workflows/v14-core-c4-c3-consumption.yml'
   pull_request:
     branches:
@@ -26,6 +28,8 @@ on:
       - 'v13/code/tests/test_v14_same_turn_c4_c3_consumption.py'
       - 'v13/code/v13/brain_panel.py'
       - 'v13/code/v13/native_offer_prompt_receipt.py'
+      - 'v13/code/v13/runners.py'
+      - 'v13/code/tests/test_v14_causal_stream_offer_receipt.py'
       - '.github/workflows/v14-core-c4-c3-consumption.yml'
 
 jobs:
@@ -55,6 +59,8 @@ jobs:
             v13/code/v13/focal.py \
             v13/code/v13/brain_panel.py \
             v13/code/v13/native_offer_prompt_receipt.py \
+            v13/code/v13/runners.py \
+            v13/code/tests/test_v14_causal_stream_offer_receipt.py \
             v13/code/scripts/integrated_c4_c3_receipt_candidate_20261122.py \
             v13/code/scripts/run_c4_c3_current_candidate_test_20261122.py \
             v13/code/scripts/termux_runtime_recovery_candidate_20261121.py \
@@ -66,3 +72,8 @@ jobs:
           PYTHONPATH: v13/code
           PYTHONDONTWRITEBYTECODE: '1'
         run: python v13/code/scripts/run_c4_c3_current_candidate_test_20261122.py
+      - name: Verify same-causal native C3 offer prefill receipt
+        env:
+          PYTHONPATH: v13/code
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python -m pytest -q v13/code/tests/test_v14_causal_stream_offer_receipt.py
