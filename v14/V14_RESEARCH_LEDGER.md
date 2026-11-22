@@ -716,3 +716,28 @@ Core must provide an authenticated Android observe_ui receipt provider and retai
 - Proposed SHADOW experiment: at a task/episode boundary, compare the same trusted training-fold ActionOutcome under its pre-update and post-update receiver checkpoints. For eligible examples, compute a bounded contrastive score from success-probability/logit gain and failure-probability/logit suppression; retain top-K source/session-keyed records; replay them later under a bounded budget. Do not use final holdouts for scoring, selection or replay.
 - Compare uniform replay, current loss-demand replay, success-only gain, failure-only suppression, full contrastive score, shuffled scores and zero-score controls. Require new-task utility, per-session holdout retention, source/content disjointness, checkpoint/optimizer readback, restart and rollback. Keep the experiment separate from continuous latent JEPA until an appropriate probabilistic outcome head exists.
 - No production behavior, optimizer permission, model, weight, memory contents or device state is changed by this research note.
+
+
+## R-055 — JEPA-TTT persistent predictor adaptation and dense replay (2026-11-22)
+
+### Primary source and method
+
+- Zheyuan Zhang et al., **“JEPA-TTT: Persistent Test-Time Training of Latent World Models for Planning under Dynamics Shifts,”** arXiv:2610.00722, submitted 2026-09-30; accepted to the NeurIPS 2026 Workshop on World Models in Physical AI. Full paper and authors' project page reviewed: https://arxiv.org/abs/2610.00722 and https://jepa-ttt.github.io/.
+- The method adapts an action-conditioned latent dynamics predictor from executed actions and observed transitions. It keeps the visual encoder and offline reward head fixed during deployment, retains predictor parameters, AdamW state and replay buffer across episodes, and performs at most one update when a full minibatch is available.
+- Dense replay creates a valid prediction window at every temporal offset, stores windows across episodes and samples uniformly. The paper separately compares sparse stream, compute-matched sparse stream, dense stream and dense replay, separating extra optimization, temporal coverage and replay.
+
+### Reported evidence and limits
+
+- Across eight single persistent dynamics shifts in four continuous-control environments, with three deployment runs per shift and 500 test-time episodes, the authors report mean best held-out score 0.678 versus 0.267 for frozen JEPA, mean AUC 0.571 versus 0.267, and 83% lower five-block autoregressive latent prediction MSE.
+- In a matched-update persistence control, retaining predictor and optimizer state raises mean best score 0.289 to 0.729 and AUC 0.273 to 0.637 versus resetting each episode. Dense replay's incremental advantage over a dense single-use stream is smaller: mean AUC 0.571 versus 0.548.
+- Important gap: the paper does **not** test returning to old dynamics (A→B→A), multiple successive shifts, catastrophic forgetting, cross-organ learning or mobile CPU operation. Its frozen encoder is an experimental separation of representation and dynamics adaptation, not evidence that V14 should freeze all organs.
+- The authors' project page links the paper and results but no official implementation repository. An independent reproduction was inspected at https://github.com/ZhengQingJing/jepa-ttt-reproduction (MIT at inspected HEAD `30002a766ecfc133245d3260d059fea2d768f486`). It uses PyTorch 2.8/CUDA 12.6, robotics dependencies and an RTX A6000; it is an algorithm/evaluation reference, not a Redmi dependency. No code, weights, data or dependencies were imported.
+
+### Concrete V14 experiment
+
+- Keep the existing full-encoder/EMA path. Add predictor-only persistent adaptation as a comparison arm, not as the final architecture.
+- Only form dense temporal windows when T8 rows have an authenticated predecessor/successor relation and exact source/outcome digests; timestamps alone do not prove adjacency. Compare sparse single-use transitions, dense valid-window stream and dense replay under matched optimizer-update and row/compute budgets.
+- Require disjoint session/source holdouts, A→B→A return, reset-predictor and reset-optimizer controls, no-update, shuffled-window and wrong-action controls, per-session retention, predictor/encoder/EMA/optimizer diffs, checkpoint/restart/rollback and CPU/RSS measurements.
+- Current V14 Store-backed WorldJEPA persists numeric predictor/optimizer state and has source-disjoint replay/retention experiments, but it is not equivalent to JEPA-TTT: the current transition model is a small numeric action-outcome predictor, not a pretrained visual latent world model, and verified temporal windows are not yet implemented. No paper result is claimed for V14.
+
+**Status:** FULLTEXT_AND_PROJECT_PAGE_REVIEWED / WORKSHOP_PAPER / INDEPENDENT_MIT_REPRODUCTION_INSPECTED / NO_CODE_IMPORTED / NO_WEIGHT_OR_DATA_CHANGE / NO_REDMI_PROOF / RESEARCH_HYPOTHESIS_ONLY.
