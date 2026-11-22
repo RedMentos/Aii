@@ -43,3 +43,13 @@ Current candidate: PR #2293 (DRAFT, NOT_RELEASED)
 - `RELEASE_SHA=NOT_RELEASED`; GitHub deployment-integrity PASS is not phone deployment.
 - Next owner: Core fixes the baseline `local-error pre-rebind semantic binding mismatch` on the Boss integration branch. Then Perception rebases #2293 onto the verified Core head and reruns exact staged/integrated tests. QA reviews consent, revocation and no-vector-persistence behavior.
 - User decision: none; no action required.
+
+
+## Final CI checkpoint — 2026-11-22 01:17 UTC
+
+- Current code/test SHA: `d7f3842d3c0b6f5129f5945eacd770115c7af78e`; PR #2293 remains DRAFT on Boss base `f0d3c848dfb1d65e282f065233adbe3c9205e439`.
+- PASS: #44970593770 RAW EAR 3.13/3.14 (57 tests on 3.13, exact frame-age derivation); #44970593769 VAD/libfvad 3.13/3.14; #44970593754 deployer integrity.
+- FAIL / baseline: #44970593815 staged/integrated, same `local-error pre-rebind semantic binding mismatch` on unmodified base #44969679441. #44970593848 updater migration PARTIAL; #44970593805 owner-read bootstrap stage failure; #44970593878 Lab Age/WebView stage failure.
+- Benchmark #44970593770: synthetic x86_64 only; NumPy 9.0642 ms median vs Python 191.6681 ms, speaker evidence 0.8955 ms; no model inference. Not Redmi proof.
+- Last private device snapshot #115 is dated 2026-11-18 and reports auto_enabled=true; new PIPELINE_STATUS request #454 got no receipt. No release/deployment; `NOT_RELEASED`, `REDMI_UNVERIFIED`.
+- Next owner: Core resolves the baseline semantic pre-rebind pin mismatch; Perception rebases and reruns; QA reviews privacy/consent and revocation. No user action required.

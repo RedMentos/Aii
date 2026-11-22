@@ -1103,3 +1103,13 @@ Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, mi
 - **Research:** R-058/R-059 are retained; R-061 records full-paper review of eDIAR arXiv:2611.18529. Its 90s bounded re-clustering/10s provisional revision is conceptually useful, but 99.2M+6.6M parameters, CUDA path, ~1.9 GiB CPU RSS and 850 MiB GPU make it unsuitable for Redmi. Code Apache-2.0; e-means MIT; Nemotron OpenMDW-1.1; WeSpeaker model CC-BY-4.0. No weights downloaded.
 - **Deployment:** no release or phone update. `RELEASE_SHA=NOT_RELEASED`; CI deployer PASS is not deployment. No user action required.
 - **Next:** Core repairs the baseline semantic pre-rebind pin mismatch; Perception rebases #2293 onto the verified Core head and reruns staged/integrated. QA reviews consent, revocation and no-vector-persistence behavior.
+
+
+## Research/Perception final CI checkpoint — 2026-11-22 01:17 UTC
+
+- Candidate PR #2293 is DRAFT, code/test SHA `d7f3842d3c0b6f5129f5945eacd770115c7af78e`, based on Boss head `f0d3c848dfb1d65e282f065233adbe3c9205e439`. #2275 and #2292 are superseded/closed.
+- Exact-head PASS: RAW EAR fastpath #44970593770 (CPython 3.13/3.14, 57 tests on 3.13); VAD/libfvad #44970593769 (3.13/3.14); runtime deploy integrity #44970593754. The frame-age test derives 920 ms from fixture timestamps and the actual lookback frame count.
+- Synthetic GitHub x86_64 benchmark only: NumPy median 9.0642 ms vs Python 191.6681 ms (~21.15×); speaker evidence median 0.8955 ms; model inference excluded. No Redmi extrapolation.
+- Staged/integrated #44970593815 still FAILs at the baseline Core `local-error pre-rebind semantic binding mismatch`; identical failure on unmodified base #44969679441. Migration #44970593848 returns PARTIAL, owner-read bootstrap #44970593805 and Lab Age/WebView #44970593878 fail during stage at the same Core pin.
+- Private device state: last snapshot #115 (2026-11-18) reported auto-update enabled but is stale; read-only PIPELINE_STATUS issue #454 has no receipt. `NO_LIVE_RECEIPT`, `REDMI_UNVERIFIED`, `RELEASE_SHA=NOT_RELEASED`.
+- Next: Core fixes the semantic pre-rebind pin; Perception rebases #2293 and reruns staged/integrated; QA rechecks consent, revocation and no-vector persistence. No user action.
