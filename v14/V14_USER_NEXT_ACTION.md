@@ -1,6 +1,23 @@
 # V14 — nächste Nutzeraktion
 
-## Aktueller Stand — Boss-Integration, Run 12 (2026-11-22T22:24:48.002Z)
+## Aktueller Stand — Boss-Integration, Run 12 (2026-11-22T22:33:13.116Z)
+
+**Nutzeraktion: Keine erforderlich.**
+
+- Release/Redmi: PIPELINE_STATUS #634 bestätigt aed1d2b826290c95c70356b5d8b864b5ef382be4 installiert, Auto-Update an, Runtime/Dashboard UP_TO_DATE, last_error NONE. DIAGNOSTICS #635 meldet RUNNING; HEALTH #636 meldet Runtime UNAVAILABLE (Widerspruch); LEARNING_STATUS #637 unavailable.
+- Letzter gespeicherter FINAL-Turn: 57,74 s / TTFT 41,63 s / Prefill 38,95 s / 751 Prompt-Tokens / 2 generierte Tokens. B1/B2 bleiben TIME_BUDGET 53,2/54,2 s; 0 gemappte Native-Prozesse in einer Momentaufnahme, Child-Lesbarkeit unbekannt.
+- Lab-Age: mode ACTIVE, requested stage 10, effective implemented stage 5, official stage 0, physical feature execution false, learning commit authority REQUIRES_SEPARATE_SHADOW_MODE. Das ist der Testselector, kein Beweis für physische Stage-10-Ausführung oder freigegebene Gewichtsänderungen.
+- Boss-PR #2370, exakter Head bae7d03196d98ac6dfebc0a2649faf257ba8308f: **0 SUCCESS / 16 QUEUED / 0 IN_PROGRESS / 5 CANCELLED / 5 SKIPPED / 0 beobachtete Fehler**. Der vorherige Head 03909f0 hatte 8 erfolgreiche Workflows, aber Audio/Arithmetic scheiterte auf Python 3.13 und 3.14 jeweils an derselben gespeicherten Source-Assertion; der neue Head korrigiert sie, ist aber noch nicht verifiziert.
+- #2377 f64e994 enthält jetzt persistierte kanonische Pfad-/File-Identity-Bindung, aber zwei Workflows sind queued und eine Testdefinition doppelt. #2384 5cd8ffae hat direkte RAW-EYE-Feature-Summary-Tests, aber doppelte Testdefinitionen und queued Workflows. #2356 27aaa29 hat den sicheren einmaligen System-UI-Wait/Logcat-Harness, aber vier Workflows queued und keine Prozess-Tod-Akzeptanz.
+- #2381 bleibt gegenüber #2377 veraltet; #2379/#2376 gegenüber #2356; #2383 hat fünf Workflow-Fehler, #2372 drei Fehler/einen Erfolg. Keine Gewichtsdiff-, native Latent-, Android-Prozess-Tod- oder Redmi-Funktionsakzeptanz.
+- Keine LOG_PAGE-Abfrage: console_errors ist USER_NOT_OPTED_IN. Kein CHAT_SEND, UPDATE_REQUEST, Remote-Shell, Modell-/Weight-Swap oder Geräte-Mutation.
+
+**Nächste interne Schritte:** #2370s 16 queued Workflows vollständig abwarten und Fehler exakt beheben; danach die gestapelten PRs auf aktuelle Eltern rebasen, Duplikat-Tests entfernen und vollständige Integrationsbelege verlangen. Release bleibt aed1d2b; kein Kandidat installiert. **Keine Nutzeraktion.**
+
+---
+
+
+## Vorheriger Run-12-Checkpoint — 2026-11-22T22:24:48Z (historisch)
 
 **Nutzeraktion: Keine erforderlich.** Kein manueller Termux-Befehl, keine Update-Anfrage, kein Modell-/Weight-Swap und keine Berechtigungsänderung.
 
