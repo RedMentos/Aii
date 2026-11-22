@@ -114,6 +114,14 @@ class _Stream:
         self.frames = deque(maxlen=max_frames)
         self.last_end_ms = None
 
+    def clear(self):
+        """Overwrite retained in-memory embedding vectors before releasing them."""
+        for _, vector in self.frames:
+            if isinstance(vector, array):
+                vector[:] = array(vector.typecode, [0]) * len(vector)
+        self.frames.clear()
+        self.last_end_ms = None
+
 
 class SpeakerChangeEvidenceRegistry:
     """Bounded per-source/generation cosine look-back state; vectors remain RAM-only."""
@@ -151,15 +159,18 @@ class SpeakerChangeEvidenceRegistry:
         with self._lock:
             for old_key in list(self._states):
                 if old_key[0] == source_id and old_key[1] != generation_id:
-                    del self._states[old_key]
+                    old_state = self._states.pop(old_key)
+                    old_state.clear()
             state = self._states.get(key)
             reset_reason = None
             if state is None:
                 state = _Stream(metadata, self.max_frames)
             elif state.metadata != metadata:
+                state.clear()
                 state = _Stream(metadata, self.max_frames)
                 reset_reason = "MODEL_OR_CALIBRATION_CHANGED"
             elif state.last_end_ms is not None and start_ms - state.last_end_ms > self.reset_gap_ms:
+                state.clear()
                 state = _Stream(metadata, self.max_frames)
                 reset_reason = "STREAM_GAP"
 
@@ -235,7 +246,8 @@ class SpeakerChangeEvidenceRegistry:
             self._states.pop(key, None)
             self._states[key] = state
             while len(self._states) > self.max_streams:
-                self._states.popitem(last=False)
+                _, evicted = self._states.popitem(last=False)
+                evicted.clear()
             if latest is None:
                 latest = {
                     "status": "WARMUP",
@@ -300,7 +312,8 @@ class SpeakerChangeEvidenceRegistry:
                 )
             ]
             for key in keys:
-                del self._states[key]
+                state = self._states.pop(key)
+                state.clear()
             return len(keys)
 
     def __len__(self):
