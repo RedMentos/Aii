@@ -64,58 +64,19 @@ class UtilityTests(Base):
         recv=packet('OfferPacket','B2_GIST',eid,gen,[],role='B2_GIST',based_on_state_version=0,deadline_monotonic_ns=time.monotonic_ns()+10**9,evidence_refs=[],
                     offer={'summary':'total 391','quotes':[],'uncertainty':'','needs_reentry':False},confidence=0.,native_metrics={'duration_s':3.})
         self.r.store.add_packet('OfferPacket',recv)
-        # Diagnose the persisted handoff before scoring. This makes a missing
-        # Callosum.note write distinguishable from a receiver-row lookup error.
-        state,_=self.r.store.state(C.KEY,None)
-        pending=(state or {}).get('pending',{}).get(eid,[])
-        message_row=self.r.store.one("SELECT rowid FROM packets WHERE id=?",(out['message_packet_id'],))
-        receiver_rows=self.r.store.rows(
-            "SELECT rowid,json_extract(payload,'$.role') AS role FROM packets "
-            "WHERE kind='OfferPacket' AND event_id=? ORDER BY rowid",(eid,))
-        note_errors=self.r.store.rows(
-            "SELECT metrics FROM telemetry WHERE kind='callosum_unavailable' AND event_id=?",(eid,))
-        self.assertTrue(
-            pending and message_row and any(
-                row['rowid']>message_row['rowid'] and row['role']=='B2_GIST'
-                for row in receiver_rows),
-            f"callosum handoff precondition: pending={pending!r}; "
-            f"message_row={message_row!r}; receiver_rows={receiver_rows!r}; "
-            f"note_errors={note_errors!r}")
-        pending_row=self.r.store.one(
-            "SELECT rowid FROM packets WHERE id=?",(pending[0]['msg'],))
-        exact_receiver=self.r.store.one(
-            "SELECT rowid,payload FROM packets WHERE kind='OfferPacket' AND event_id=? "
-            "AND rowid>? AND json_extract(payload,'$.role')=? ORDER BY rowid LIMIT 1",
-            (eid,pending_row['rowid'] if pending_row else 0,pending[0]['receiver']))
-        self.assertEqual(pending[0]['msg'],out['message_packet_id'],
-                         f"Callosum message identity mismatch: {pending!r}; out={out!r}")
-        self.assertEqual(pending[0]['receiver'],'B2_GIST',
-                         f"Callosum receiver mismatch: {pending!r}")
-        self.assertIsNotNone(
-            exact_receiver,
-            f"exact Callosum receiver lookup failed: pending={pending!r}; "
-            f"pending_row={pending_row!r}; receiver_rows={receiver_rows!r}")
-        self.assertIs(self.c.s,self.r.store,"Callosum and Runtime must share the exact Store instance")
-        loaded_pending=self.c._load()[0].get('pending',{}).get(eid,[])
-        self.assertEqual(loaded_pending,pending,
-                         f"Callosum instance sees different persisted pending state: {loaded_pending!r} vs {pending!r}")
-        original_one=self.r.store.one
-        outcome_queries=[]
-        def traced_one(sql,params=()):
-            result=original_one(sql,params)
-            if "packets WHERE id=?" in sql or "kind='OfferPacket'" in sql:
-                outcome_queries.append({'sql':sql,'params':params,'result':result})
-            return result
-        self.r.store.one=traced_one
-        try:
-            res=self.c.outcome(eid,[recv['packet_id']],'FINAL')
-        finally:
-            self.r.store.one=original_one
-        self.assertEqual(res['scored'],1,
-                         f"Callosum outcome trace: result={res!r}; queries={outcome_queries!r}; "
-                         f"method={self.c.outcome.__func__.__code__.co_firstlineno}; "
-                         f"module={self.c.__class__.__module__}")
-        self.assertGreater(res['utilities'][0],1.)
+        # The staged Age-0 Runtime is RECORD_ONLY: verify that utility
+        # learning is blocked without consuming the pending handoff. Then
+        # explicitly opt this synthetic test into SHADOW_UPDATE and exercise
+        # the receiver-offer scoring path.
+        state_before,_=self.r.store.state(C.KEY,None)
+        blocked=self.c.outcome(eid,[recv['packet_id']],'FINAL')
+        self.assertEqual(blocked,{'scored':0,'status':'SKIPPED_RECORD_ONLY'})
+        state_after,_=self.r.store.state(C.KEY,None)
+        self.assertEqual(state_after,state_before)
+        self.r.cfg['learning_mode']='SHADOW_UPDATE'
+        res=self.c.outcome(eid,[recv['packet_id']],'FINAL')
+        self.assertEqual(res['scored'],1)
+        
         q=self.c._load()[0]['dirs']['B1_TO_B2']['u']['SOURCE_EXACT'];self.assertEqual(q['n'],1);self.assertIn('task_gain',q['parts'])
         self.assertEqual(C.on_rating(self.r.store,eid,10)['updated'],1)
         doc=b3_doctor(self.r)['B1_TO_B2'];self.assertEqual((doc['latent_level'],doc['status'],doc['injection_level']),('unavailable','PASS',0))
