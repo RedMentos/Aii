@@ -231,13 +231,20 @@ def test_bidirectional_shadow_trainer_uses_verified_labels_and_is_idempotent(
         def __init__(self, d, K, r, h, classes, seed, direction, aux=0):
             self.d, self.K, self.r, self.h = d, K, r, h
             self.classes, self.aux = classes, aux
+            self.direction = direction
+            self.in_mu = np.zeros(d, dtype=np.float32)
+            self.in_sd = np.ones(d, dtype=np.float32)
+            self.head = None
+            self.manifest = {}
             self.p = {"Q": np.asarray([float(seed)], dtype=np.float32)}
 
         @classmethod
         def load(cls, prefix, sender_revision, receiver_revision):
             seed = int(Path(prefix).name.split("-")[-1])
-            bridge = cls(8, 4, 8, 16, 2, seed, "B1_TO_B2")
+            manifest = json.loads(Path(prefix).with_suffix(".json").read_text())
+            bridge = cls(8, 4, 8, 16, 2, seed, manifest["direction"])
             bridge.p = {"Q": np.asarray([float(seed + 1)], dtype=np.float32)}
+            bridge.manifest = manifest
             return bridge
 
     def train_l1_shadow(cognition_arg, pair_packets, labels, label_provenance,
@@ -250,7 +257,31 @@ def test_bidirectional_shadow_trainer_uses_verified_labels_and_is_idempotent(
             "label_source": label_source,
             "direction": kwargs["direction"],
         })
-        return {
+        root = cognition_arg.r.home
+        direction = kwargs["direction"]
+        seed_reports = []
+        for seed in kwargs["seeds"]:
+            weight_rel = f"b3/shadow/{direction}/seed-{seed}.npz"
+            weight_path = root / weight_rel
+            weight_path.parent.mkdir(parents=True, exist_ok=True)
+            weight_path.write_bytes(b"stub weights")
+            manifest_sha = f"{seed:064x}"
+            manifest = {
+                "sha256": manifest_sha,
+                "direction": direction,
+                "latent_authority": 0,
+                "receiver_injection_authority": 0,
+                "body_learning_authority": 0,
+                "status": "L1_SHADOW_CANDIDATES_SAVED_NOT_PROMOTED",
+            }
+            weight_path.with_suffix(".json").write_text(json.dumps(manifest))
+            seed_reports.append({
+                "seed": seed,
+                "candidate_weights": weight_rel,
+                "manifest_sha256": manifest_sha,
+                "reload_identical": True,
+            })
+        report = {
             "status": "L1_SHADOW_CANDIDATES_SAVED_NOT_PROMOTED",
             "l1_utility_gate": "NOT_RUN_MISSING_L0_CHANNEL_BASELINES_AND_ROLE_RETENTION",
             "latent_authority": 0,
@@ -258,17 +289,13 @@ def test_bidirectional_shadow_trainer_uses_verified_labels_and_is_idempotent(
             "body_learning_authority": 0,
             "sender_revision": "b1-rev-1",
             "receiver_revision": "b2-rev-1",
-            "report_path": f"b3/shadow/{kwargs['direction']}/report.json",
-            "seed_reports": [
-                {
-                    "seed": seed,
-                    "candidate_weights": f"b3/shadow/{kwargs['direction']}/seed-{seed}.npz",
-                    "manifest_sha256": f"{seed:064x}",
-                    "reload_identical": True,
-                }
-                for seed in kwargs["seeds"]
-            ],
+            "report_path": f"b3/shadow/{direction}/report.json",
+            "seed_reports": seed_reports,
         }
+        report_path = root / report["report_path"]
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report_path.write_text(json.dumps(report))
+        return report
 
     b3pairs_module = types.ModuleType("v13.b3pairs")
     b3train_module = types.ModuleType("v13.b3train")
