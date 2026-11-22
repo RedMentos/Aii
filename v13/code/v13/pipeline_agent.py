@@ -155,9 +155,10 @@ def snapshot():
         result["last_success_utc"] = 0
     allowed = {
         "last_result": {"NOT_YET_RUN", "AUTO_OFF", "UP_TO_DATE", "UPDATED", "CI_WAIT",
-                        "BUSY", "BLOCKED_RUNNING", "PARTIAL", "ERROR", "CHECKING"},
+                        "BUSY", "BLOCKED_RUNNING", "PARTIAL", "ERROR", "CHECKING",
+                        "ROLLED_BACK_RUNTIME_ONLY"},
         "runtime": {"NOT_YET_CHECKED", "UP_TO_DATE", "UPDATED", "CI_WAIT", "AUTO_OFF",
-                    "BLOCKED_RUNNING", "NOT_INSTALLED", "ERROR"},
+                    "BLOCKED_RUNNING", "NOT_INSTALLED", "ERROR", "ROLLED_BACK"},
         "dashboard": {"NOT_YET_CHECKED", "UP_TO_DATE", "UPDATED", "CI_WAIT", "AUTO_OFF",
                       "BLOCKED_RUNNING", "NOT_INSTALLED", "ERROR"},
         "last_error": {"NONE", "GITHUB", "CI", "GIT", "RUNNING", "UPDATE", "STATE"}
@@ -489,6 +490,78 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
         os.close(fd)
 
 
+
+def rollback_runtime():
+    """Disable auto-update, stop only a managed V13 chat, then restore the runtime pair."""
+    _private()
+    if LOCK.is_symlink():
+        raise RuntimeError("unsafe pipeline lock")
+    fd = os.open(LOCK, os.O_CREAT | os.O_RDWR | getattr(os, "O_NOFOLLOW", 0), 0o600)
+    was_running = False
+    try:
+        os.fchmod(fd, 0o600)
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return {"status": "BUSY", "auto_enabled": enabled()}
+        # A rollback is an explicit owner action. Disable future automatic
+        # mutation before asking the lifecycle to stop the current managed chat.
+        set_enabled(False)
+        try:
+            if updates._runtime_active():
+                was_running = lifecycle.request_stop(
+                    timeout=35, runtime_active=updates._runtime_active)
+            if updates._runtime_active():
+                raise RuntimeError("V13 chat is still active; runtime rollback deferred")
+            receipt = runtime_deploy.rollback()
+            if receipt.get("status") not in ("ROLLED_BACK", "ROLLED_BACK_LEGACY"):
+                raise RuntimeError("runtime rollback was not confirmed")
+            state = _state_raw()
+            state.update({
+                "last_result": "ROLLED_BACK_RUNTIME_ONLY",
+                "runtime": "ROLLED_BACK",
+                "last_error": "NONE",
+                "last_error_detail": "",
+                "updated_commit": receipt.get("restored_commit") or "",
+                "last_success_utc": int(time.time()),
+            })
+            _atomic(STATE, state)
+        except Exception as exc:
+            # Keep the chat stopped and auto-update disabled if the transaction
+            # cannot prove a complete launcher/marker pair.
+            state = _state_raw()
+            state.update({
+                "last_result": "ERROR", "runtime": "ERROR",
+                "last_error": "UPDATE", "last_error_detail": type(exc).__name__,
+            })
+            _atomic(STATE, state)
+            raise
+
+        resume = "NOT_NEEDED"
+        resume_confirmation = "NOT_REQUIRED"
+        if was_running:
+            try:
+                lifecycle.request_resume(reason="RESTORE")
+                resume = "REQUESTED"
+                resume_confirmation = "PENDING_UI_CONSUMPTION"
+            except (OSError, ValueError, lifecycle.LifecycleError) as exc:
+                resume = "FAILED"
+                resume_confirmation = type(exc).__name__
+        return {
+            "status": "ROLLED_BACK_RUNTIME_ONLY",
+            "runtime": receipt["status"],
+            "restored_commit": receipt.get("restored_commit"),
+            "dashboard": "UNCHANGED",
+            "auto_enabled": False,
+            "resume": resume,
+            "resume_confirmation": resume_confirmation,
+            "models_untouched": True,
+            "sqlite_untouched": True,
+        }
+    finally:
+        os.close(fd)
+
+
 def schedule_update(request_id):
     """Owner-triggered source update, queued for the existing pipeline worker.
 
@@ -563,11 +636,13 @@ def main(argv=None):
             report = pending_updates(fetch=True)
             ok = report["status"] in ("UP_TO_DATE", "UPDATE_AVAILABLE")
         elif args.action == "rollback":
-            # The legacy rollback restored a Git tree only, not the installed
-            # launcher. Never falsely report a runtime rollback as complete.
-            report = {"status": "REFUSED",
-                      "reason": "A launcher-safe runtime rollback is not yet implemented"}
-            ok = False
+            if args.target not in ("all", "runtime"):
+                report = {"status": "REFUSED",
+                          "reason": "Dashboard source rollback is not yet implemented"}
+                ok = False
+            else:
+                report = rollback_runtime()
+                ok = report.get("status") == "ROLLED_BACK_RUNTIME_ONLY"
         elif args.action == "auto" and not enabled():
             report = {"status": "AUTO_OFF", "auto_enabled": False}
             ok = False

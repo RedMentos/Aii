@@ -1,5 +1,6 @@
 """Offline CI-gated pipeline tests; no external GitHub calls or phone writes."""
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -530,6 +531,61 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(report["runtime"], "CI_WAIT")
         self.assertEqual(report["dashboard"], "UPDATED")
         self.assertEqual(report["last_result"], "PARTIAL")
+
+
+    def test_runtime_rollback_disables_auto_update_and_requests_managed_chat_resume(self):
+        self.turn_on()
+        with mock.patch.object(u, "_runtime_active", side_effect=[True, False]), \
+             mock.patch.object(p.lifecycle, "request_stop", return_value=True) as stop, \
+             mock.patch.object(p.lifecycle, "request_resume") as resume, \
+             mock.patch.object(p.runtime_deploy, "rollback",
+                               return_value={"status": "ROLLED_BACK", "restored_commit": "d" * 40}) as rollback:
+            result = p.rollback_runtime()
+        self.assertEqual(result["status"], "ROLLED_BACK_RUNTIME_ONLY")
+        self.assertEqual(result["dashboard"], "UNCHANGED")
+        self.assertEqual(result["resume"], "REQUESTED")
+        self.assertEqual(result["resume_confirmation"], "PENDING_UI_CONSUMPTION")
+        self.assertFalse(result["auto_enabled"])
+        self.assertFalse(p.enabled())
+        stop.assert_called_once()
+        resume.assert_called_once_with(reason="RESTORE")
+        rollback.assert_called_once()
+        self.assertEqual(p.snapshot()["runtime"], "ROLLED_BACK")
+        self.assertEqual(p.snapshot()["last_result"], "ROLLED_BACK_RUNTIME_ONLY")
+
+    def test_runtime_rollback_refuses_when_update_pipeline_is_busy(self):
+        self.turn_on()
+        fd = os.open(p.LOCK, os.O_CREAT | os.O_RDWR, 0o600)
+        try:
+            import fcntl
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            result = p.rollback_runtime()
+        finally:
+            os.close(fd)
+        self.assertEqual(result["status"], "BUSY")
+        self.assertTrue(p.enabled())
+
+    def test_runtime_rollback_failure_keeps_chat_stopped_and_auto_update_off(self):
+        self.turn_on()
+        with mock.patch.object(u, "_runtime_active", side_effect=[True, False]), \
+             mock.patch.object(p.lifecycle, "request_stop", return_value=True), \
+             mock.patch.object(p.lifecycle, "request_resume") as resume, \
+             mock.patch.object(p.runtime_deploy, "rollback",
+                               side_effect=p.runtime_deploy.RuntimeDeployError("simulated")):
+            with self.assertRaises(p.runtime_deploy.RuntimeDeployError):
+                p.rollback_runtime()
+        resume.assert_not_called()
+        self.assertFalse(p.enabled())
+        self.assertEqual(p.snapshot()["last_result"], "ERROR")
+        self.assertEqual(p.snapshot()["runtime"], "ERROR")
+
+    def test_rollback_cli_uses_launcher_safe_runtime_rollback(self):
+        with mock.patch.object(p, "rollback_runtime",
+                               return_value={"status": "ROLLED_BACK_RUNTIME_ONLY"}):
+            with mock.patch("sys.stdout") as output:
+                code = p.main(["rollback"])
+        self.assertEqual(code, 0)
+        self.assertTrue(output.write.called)
 
 
 class GitHubCIProofTests(unittest.TestCase):
