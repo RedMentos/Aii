@@ -127,6 +127,7 @@ def capture_pair(cognition, event, deadline):
     atomic_write(gist_path, dumps(gist_artifact))
     gist_binding = {
         "plan": gist_plan,
+        "tap_packet_id": taps["B2_GIST"]["packet_id"],
         "feature_path": str(gist_path.relative_to(runtime.home)),
         "feature_sha256": file_hash(gist_path),
         "shape": [int(gist_vectors.shape[0]), int(gist_vectors.shape[1])],
