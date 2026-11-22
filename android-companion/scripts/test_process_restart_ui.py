@@ -80,5 +80,31 @@ class ProcessRestartUiTests(unittest.TestCase):
         self.assertIsNone(button_center(root, "Wait"))
 
 
+class ProcessRestartLogcatTests(unittest.TestCase):
+    def test_failure_logcat_filters_string_output_from_adb(self) -> None:
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        raw = (
+            "I/ActivityTaskManager: Start proc com.example\n"
+            "D/Other: unrelated private line\n"
+            "E/AndroidRuntime: FATAL EXCEPTION: main\n"
+        )
+        with patch.object(harness, "adb", return_value=raw):
+            selected = harness.failure_logcat()
+        self.assertIn("ActivityTaskManager", selected)
+        self.assertIn("FATAL EXCEPTION", selected)
+        self.assertNotIn("unrelated private line", selected)
+
+    def test_failure_logcat_handles_empty_string_output(self) -> None:
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        with patch.object(harness, "adb", return_value=""):
+            self.assertEqual(
+                harness.failure_logcat(), "(no matching logcat lines)"
+            )
+
+
 if __name__ == "__main__":
     unittest.main()
