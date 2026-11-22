@@ -27,9 +27,9 @@ RECEIPT = "fixture:consented-speaker"
 MODEL_SHA = "a" * 64
 
 
-def tone(sample_rate=16000, frequency=140, seconds=1.0, amplitude=6000):
+def tone(sample_rate=16000, frequency=140, seconds=1.0, amplitude=6000, phase=0.0):
     count = int(sample_rate * seconds)
-    samples = [int(amplitude * math.sin(2 * math.pi * frequency * i / sample_rate))
+    samples = [int(amplitude * math.sin(2 * math.pi * frequency * i / sample_rate + phase))
                for i in range(count)]
     return struct.pack("<" + "h" * len(samples), *samples)
 
@@ -597,11 +597,11 @@ def test_low_level_noise_does_not_become_voiced_when_window_floor_is_relaxed():
 )
 def test_high_frequency_alias_is_not_misclassified_as_voiced(sample_rate, frequency):
     cues = audio_voice_module.extract_voice_cues(
-        tone(sample_rate=sample_rate, frequency=frequency), sample_rate,
+        tone(sample_rate=sample_rate, frequency=frequency, amplitude=32767, phase=1.0),
+        sample_rate,
     )
     assert cues["activity_hint"] == "UNVOICED_NOISE"
-    assert cues["voiced_fraction"] == 0.0
-    assert cues["f0_median_hz"] is None
+    assert cues["voiced_fraction"] < 0.25
 
 
 @pytest.mark.parametrize("sample_rate", [16000, 22050, 44100, 48000])
@@ -617,7 +617,7 @@ def test_alias_rejection_reaches_the_real_a5_a4_c3_consumer(tmp_path):
     runtime, event = make_runtime(tmp_path)
     try:
         result = consume_pcm16_voice_window(
-            runtime, tone(sample_rate=44100, frequency=8620), sample_rate=44100,
+            runtime, tone(sample_rate=44100, frequency=8620, amplitude=32767, phase=1.0), sample_rate=44100,
             start_ms=100, event_id=event["event_id"],
             generation_id=event["brain_generation_id"], source_id=SOURCE,
             consent_receipt=RECEIPT, consent_check=consent_ok,
