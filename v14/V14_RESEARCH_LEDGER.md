@@ -1020,3 +1020,9 @@ Primary sources:
 - FAIR Noncommercial Research License: https://huggingface.co/facebook/MobileMoE-S-QAT/blob/main/LICENSE
 - ExecuTorch framework (BSD): https://github.com/pytorch/executorch
 
+### R-086 security-review addendum (2026-11-22)
+
+QA review identified two pre-provider issues: the consumer accepted an arbitrary always-true frame callback, and opening a metadata-selected FIFO with O_RDONLY could block before fstat. The callback parameter has been removed. The consumer now requires a one-shot ProviderFrameVerifier bound to the exact active UIObservationLease object/generation and source/session/receipt; it rejects raw callables, reused capabilities, different leases/sessions, false results and exceptions. The internal provider factory is intended to be called only after the Android companion cryptographically verifies the signed frame receipt and exact digest/length. This typed Python capability is not the OS security boundary; the real companion provider and Android grant remain mandatory and are still absent.
+
+The final-component projector open now includes O_NONBLOCK before fstat, preserving the directory-FD/O_NOFOLLOW chain. A POSIX FIFO regression uses a delayed writer to prove the loader returns before the writer arrives. The focused test file now contains 15 tests, including raw-callable/constructor negatives, one-shot and lease/session binding, hash/symlink negatives, FIFO nonblocking, and the synthetic A3 held-out receiver. LOCAL_LINUX isolated capability/FIFO harness PASS; exact repository workflow for head 98cedec1d5ddbb6a365803fbf19bb66cffb73d1a is pending/queued. No Android provider, real signed receipt, Runtime dispatch or Redmi proof is claimed.
+
