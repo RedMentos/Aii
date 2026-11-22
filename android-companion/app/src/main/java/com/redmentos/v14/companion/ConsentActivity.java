@@ -131,7 +131,7 @@ public final class ConsentActivity extends Activity {
             body.put("digest", request.getString("digest"));
             long nowSeconds = System.currentTimeMillis() / 1000L;
             body.put("issued_at", nowSeconds);
-            body.put("expires_at", Math.min(action.expiresAt / 1000L, nowSeconds + 60L));
+            body.put("expires_at", receiptExpiresAt(nowSeconds));
             body.put("status", status);
             body.put("local_consent", localConsent);
             body.put("observed", false);
@@ -149,6 +149,12 @@ public final class ConsentActivity extends Activity {
             CompanionProvider.cancelApprovalNotification(this, action.actionId);
             finish();
         }
+    }
+
+    static long receiptExpiresAt(long issuedAtSeconds) {
+        // The request expiry gates the one-shot decision claim. Once claimed
+        // while live, the signed outcome gets its own short verification window.
+        return issuedAtSeconds + 60L;
     }
 
     private String randomHex(int bytes) {
