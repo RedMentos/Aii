@@ -91,3 +91,10 @@ QA PR #2390 supersedes the older #2383 attempt. Its branch `qa/v14-jepa-source-l
 Boss PR #2370 current branch `boss/v14-fair-budget-current-base-20261122-run14` is at `119ff42a2d1b7412fe21821137cd5d355aaadafb`. Controller guard, runtime deployment integrity, two-checkout migration and owner-read have PASS, but Core same-turn, audio/arithmetic, JEPA transactional update and staged/integrated remain IN_PROGRESS; further functional workflows are QUEUED. It is NOT_GREEN / NOT_RELEASED. QA #2389's test-only same-turn correction was reported 3/3 PASS, but still needs integration into the Boss branch and an exact full-matrix rerun.
 
 The next step remains QA rebase/rebind, Boss completion, then a reviewed combined exact-head test. No JEPA rebase or deployment is authorized while either dependency is red or pending.
+
+
+## 8. Boss current-head poll — 2026-11-22T23:42:21.522Z
+
+Boss #2370 branch `boss/v14-fair-budget-current-base-20261122-run14` is at `119ff42a2d1b7412fe21821137cd5d355aaadafb` with 12 PASS / 3 IN_PROGRESS / 1 SKIPPED. Passing: controller guard, runtime deployment integrity, two-checkout migration, owner-read, role-specific native tap provenance, combined online JEPA, Lab-Age control/WebView truth, native-latent receiver staged runtime, receipt integrity, A5 UI lease, JEPA training-resume/source-forget, JEPA Runtime transactional update. Still in progress: Core same-turn B1/B2/C4/C3, Core audio/exact arithmetic, staged/integrated regression. This is NOT_GREEN / NOT_RELEASED.
+
+The Boss branch is DIVERGED from the JEPA temporal branch (72 ahead / 83 behind, merge base c4eb82de) and does not contain `v13/code/v13/world_jepa_temporal.py`. The green Boss JEPA training-resume workflow therefore does not validate or integrate this temporal T8 learner. Do not merge the branches directly; wait for QA #2390 to rebase/rebind and for Boss's exact current matrix to finish, then ask the Boss/Integrator for a reviewed current-release stack.
