@@ -1,3 +1,20 @@
+# Research & Perception — verified handoff 2026-11-22 15:02 CET
+
+**Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein UPDATE_REQUEST, kein Modell-/Gewichts-/Rechtewechsel und keine Mikrofonfreigabe.
+
+- Release-development HEAD bleibt `gpt6/v13-private-remote-bridge-20261111` = `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`. Private QA receipts #567–#569 bestätigen weiterhin genau diesen installierten SHA, Auto-Update EIN und Runtime/Dashboard UP_TO_DATE. Das ist Installationsstatus, kein Funktionsnachweis.
+- Mein B3-Kandidat [PR #2346](https://github.com/RedMentos/Aii/pull/2346) steht auf `1db8fd5fc2e18c115c632cf60577200d68db2c0b`. Die QA-Symlink-Escape-Lücke im L1-Shadow-Artefaktpfad ist mit dir-fd/`O_NOFOLLOW`, Ownership-/Permission-Prüfungen, exklusivem 0700-Run-Verzeichnis und descriptor-anchored Writes behoben. Neue negative Tests decken sowohl `home/b3 -> outside` als auch `home/b3/shadow -> outside` ab.
+- **CI:** Exakter B3-Workflow [45031525111](https://github.com/RedMentos/Aii/actions/runs/45031525111) PASS: 52 Tests, geänderte Module `py_compile`, L1-CLI-Import/Help-Smoke PASS. Andere exakte PR-Workflows sind nicht vollständig grün: Python-3.14-Offline-Deployment scheitert an `Pinned plain UI recovery builder changed`; Python-3.13-Consumer an integriertem Builder-/`cognition.py`-Pin-Mismatch. Diese fremden Source-Pin-Ketten bleiben Boss/Integrator-Ownership.
+- **LOCAL_LINUX:** CPython 3.13.5 x86_64 isolierter Test PASS: descriptor-anchored NPZ/JSON/atomic-report writes, 0700-Rechte und Top-Level-/Nested-Symlink-Negativkontrollen ohne Outside-Write. Vollständiger Aii-Checkout/pytest BLOCKED (kein Checkout, GitHub-DNS nicht erreichbar).
+- **TERMUX/REDMI:** REDMI_UNVERIFIED für PR #2346. Kein Handytest, keine echten Modell-Taps, kein nativer B3-Trainingslauf. Neueste QA-Diagnose #568 bleibt 57,74 s Gesamtzeit / 41,63 s TTFT / 38,95 s Prefill / 751 Prompt-Tokens / 2 generierte Tokens; B1/B2 TIME_BUDGET 53,2/54,2 s. Keine neue CHAT_SEND-/Korrektheitsmessung.
+- B3 bleibt produktiv OFF/SYMBOLIC; PR #2346 ist DRAFT / NOT_RELEASED. Keine trainierte native Latent-Kopplung, Receiver-Injection oder Foundation-Weight-Änderung behauptet.
+- **Forschung:** XBridge (arXiv:2608.11676v2, 28.09.2026; NeurIPS 2026) wurde vollständig gelesen. Duale Lexical Anchors + Receiver-query Hidden-State Enrichment sind ein relevantes Designprinzip, aber 264M Bridge-Parameter und Llama/Qwen/Mistral-7B/H200-Evaluation sind nicht Redmi-tauglich. Offizielles Repo Apache-2.0, jedoch PyTorch/Transformers/HF-Datasets-Stack ohne ARM/Termux-Rezept: RESEARCH_ONLY / NO_REUSE. XKV (arXiv:2608.20617) bislang nur Abstract/Overview; 4,55M Translator-Claim, aber kein verifizierter Code/Lizenzstand. Der revidierte kausale Transferbericht v2 vom 09.11.2026 zeigt einen signifikanten Generationseffekt nur für 1 von 3 Decoder-only-Paaren; Alignment allein ist kein Nutzennachweis.
+- Nach Integration von JEPA PR #2345 wird die Ledger-Sequenz koordiniert: Hypnos auf R-081, Latent-Communication-Review auf R-082, danach R-083; aktuell keine konkurrierenden R-080-Nummern in der gemeinsamen Ledger-Datei überschreiben.
+
+**Nächster interner Schritt:** QA soll den behobenen Symlink-Thread auf PR #2346 erneut prüfen; Boss/Integrator repariert die separaten Runtime-/Builder-Pins. Nach #2345-Integration die Ledger-Einträge R-081/R-082 sauber einfügen. Erst nach unabhängiger Review und allen relevanten exakten Checks um Integration bitten. Kein Gerätupdate und keine Nutzeraktion nötig.
+
+---
+
 # Research & Perception checkpoint — 2026-11-22 13:00 CET
 
 **Keine Nutzeraktion nötig.** Kein Termux-Befehl, keine Mikrofon-/Gerätefreigabe, kein Modell-/Gewichtswechsel und kein Update-Request.
