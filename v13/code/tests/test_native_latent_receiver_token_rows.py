@@ -157,8 +157,15 @@ def test_extract_token_rows_requires_explicit_local_confirmation(tmp_path):
         )
 
 
-def test_extract_token_rows_requires_interactive_local_tty(tmp_path):
+def test_extract_token_rows_requires_interactive_local_tty(tmp_path, monkeypatch):
     home, model, binary = _fixture(tmp_path)
+
+    class _NotTTY:
+        def isatty(self):
+            return False
+
+    monkeypatch.setattr(sys, "stdin", _NotTTY())
+    monkeypatch.setattr(sys, "stdout", _NotTTY())
     with pytest.raises(PermissionError, match="interactive local TTY"):
         extract_token_rows(
             home=home,
