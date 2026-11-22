@@ -2353,3 +2353,8 @@ The historical 1,255-heading Canon inventory above is unchanged. This overlay re
 | Canon family | Current implementation / consumer | Exact evidence | Remaining gap | Status |
 |---|---|---|---|---|
 | SleepRuntime temporal paging | Scheduler records temporal_status and requeues when either base or temporal JEPA consumer reports has_more. | PR #2372 commits ebd58266 and dbb7b143; regression covers base caught up / temporal page remaining. No exact-head workflow or status is visible yet. | Exact staged/integrated and Python 3.13/3.14 tests; real long-stream Android continuation. | CODE_PRESENT / CI_NOT_VISIBLE / REDMI_UNVERIFIED |
+
+
+### Run 19 exact-CI readback (2026-11-22T21:08:00Z)
+
+Exact dbb7b143 head workflows: 45070190046 (staged/integrated), 45070190084 (temporal 3.13/3.14), 45070190269 (optimizer-resume 3.13/3.14), 45070190180 (owner-read / staged startup). All jobs QUEUED; no PASS/FAIL evidence yet. The newer SleepRuntime temporal-only continuation change is therefore CODE_PRESENT / CI_PENDING, not tested or deployed.
