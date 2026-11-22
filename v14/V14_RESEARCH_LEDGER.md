@@ -941,3 +941,16 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
+
+
+## R-094 — Provider-agnostic local teacher-ear path and sherpa-onnx candidate audit (2026-11-22)
+
+**OSS source:** `k2-fsa/sherpa-onnx`, release v2.0.3, exact upstream commit `38016c6e0622e90bf417c35e8b47e0eb805af417` (2026-11-22). Repository code is Apache-2.0. The upstream README advertises Android arm64 and streaming/non-streaming ASR; the Android build script uses the Android NDK, JNI and ONNX Runtime 1.28.2. This is an Android NDK/JNI route, not proof of a Termux-native binary or ABI compatibility.
+
+**Small model candidate:** `csukuangfj/sherpa-onnx-streaming-zipformer-en-20M-2023-02-17`, model-card revision `d42f2d9f7ca24806fb667456a18a9f1b60f70d16`, declares Apache-2.0. It is an English-only 20M online Zipformer transducer trained from LibriSpeech. Its int8 encoder is 42.8 MB, decoder 539 KB and joiner 260 KB; the fp32 encoder is 88.8 MB. The README also lists simulated-streaming for some offline models; do not confuse that with the actual online transducer. These are artifact sizes, not runtime RSS, latency or accuracy measurements.
+
+**V14 fit and limitations:** a small local online ASR teacher could emit timestamped word hypotheses while RAW EAR continues to carry prosody, voice activity, silence/noise/impulsive events and temporal evidence. The teacher must remain an additive, source-bound hypothesis, never replace RAW EAR or become truth/speaker/learning/action authority. The 20M English-only model is not a German conversational candidate; a German/multilingual model needs separate weight-license, memory and quality review. The Android NDK/JNI build may be useful in the companion, but the Termux app needs its own ABI/linkage test. No model, dependency or weights were downloaded.
+
+**Code translation in this PR:** `audio_teacher_ear.py` defines a provider-agnostic timed result contract (exact PCM SHA/source/generation/window/finality, model provenance fields, 64-word and 512-character bounds). `consume_pcm16_voice_window` accepts it only with both the local-teacher opt-in and separate transcript-consent flag while the current audio consent lease is held. Only FINAL hypotheses become a separate ephemeral C3 Percept; PROVISIONAL stays out of C3. Transcript text is not added to the persisted RAW EAR PerceptPacket, and model/network provenance remains caller-asserted rather than attested.
+
+**Proof boundary:** local isolated CPython tests exercise the contract; the full Aii checkout and Android provider are not available in this runner. This does not run sherpa-onnx, perform ASR, prove Android microphone capture, or establish Redmi TTFT/RSS/quality. The current release Runtime still needs Core's audio-window dispatch hook and QA's visible signed AudioRecord provider. No model download or product swap is requested.
