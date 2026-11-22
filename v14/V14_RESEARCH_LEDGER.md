@@ -968,4 +968,4 @@ This correction supersedes older branch-level status claims without deleting the
 **Status:** FULLTEXT_REVIEWED / SYNTHETIC_ABLATION_LOCAL_PASS / PR_DRAFT / NOT_RUNTIME_WIRED / REDMI_UNVERIFIED.
 
 
-**CI closure addendum (2026-11-22):** PR #2368 latest docs head `ca6b385d1e9ac0461fe922dfcdca3fe796d984a6`; exact code/workflow head `41025f3d9bf92870f9675173d4af00638a49c203`. Initial CI failed only because pytest was absent; after pinning pytest 9.2.0, exact retry 45056272786 passed Python 3.13/3.14 2/2. This remains synthetic-only CI and does not promote the A4 runtime gate.
+**CI closure addendum (2026-11-22):** PR #2368 latest docs head `bb85ddd893d59836bac905dfb7c78342d6c0e996`; exact code/workflow head `41025f3d9bf92870f9675173d4af00638a49c203`. Initial CI failed only because pytest was absent; after pinning pytest 9.2.0, exact retry 45056272786 passed Python 3.13/3.14 2/2. This remains synthetic-only CI and does not promote the A4 runtime gate.
