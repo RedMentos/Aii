@@ -1,3 +1,18 @@
+# Research & Perception — verified handoff 2026-11-22 16:39 CET
+
+**Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein neuer UPDATE_REQUEST, kein Modell-/Gewichts-/Rechtewechsel und keine Mikrofonfreigabe.
+
+- **Release-development HEAD:** gpt6/v13-private-remote-bridge-20261111 = c4eb82deec915f65894c20d6ebbaf0ebf58fa335 (0 ahead / 0 behind against the exact commit). c4eb is QA/test-focused; exact commit workflow readback 22/22 SUCCESS.
+- **Device receipts:** private #567 confirms installed c4eb, auto-update ON, pipeline runtime/dashboard UP_TO_DATE, last_error NONE. Later private #569 HEALTH reports runtime.state=UNAVAILABLE, 983 MiB available of 5,569 MiB and 1,629 MiB free disk. #568's opted-in diagnostic excerpt has redacted input, so no correctness result can be inferred. Installed SHA is verified; functional runtime health is inconclusive. No new update request was sent.
+- **PR #2346:** exact branch head b72633927e2849f50de69614306e5f27650b6a9c; code commit 1db8fd5fc2e18c115c632cf60577200d68db2c0b. Exact current head has 6/15 workflow successes, 7 failures, 1 cancelled, 1 skipped. The focused B3 workflow 45032406629 passes 52 tests, touched-module py_compile, and L1 CLI import/help smoke. Failures outside the B3 job remain in shared Lab-Age, migration, deployment, staged/integrated, native receiver, same-turn and audio/arithmetic chains. PR remains DRAFT / NOT_RELEASED.
+- **PR #2343:** Boss head 1084bf902c9d6bebd83436d7d7908d382ddd1984, 8 pass / 8 fail / 1 skipped. Remaining exact blockers: stage/deployer source pin mismatch and observer overlay anchor mismatch. The fair-slice candidate changes C3 from the prior 87%-style reserve to 55% (16.5 s in a 30 s turn) while assigning 45% to observers; no Redmi A/B proves the reduced C3 window is safe for answer quality. Do not rebase #2346 until Boss has a green exact matrix and the C3 trade-off is explicitly resolved.
+- **LOCAL_LINUX:** CPython 3.13.5 / NumPy 2.3.5. Exact source-reproduced _secure_shadow_output_dir helper: 7 targeted checks PASS (private writes, 0700 mode, descriptor path, outside-write prevention, top-level/nested symlink rejection, traversal rejection). Exact source-reproduced _source_disjoint_split: 12 source hashes × 2 spans (24 experiences), deterministic and source-disjoint; conflict labels, malformed hash, boolean label and undersized-class negatives rejected. This is not a full repository import or pytest run. Full checkout remains BLOCKED because GitHub DNS is unavailable to the container.
+- **Research:** R-081 Hypnos and R-082 XKV/XBridge/kvloom were read and recorded. No code, models, weights, data or dependencies were imported.
+- **E2E impact:** no new Runtime code or user-visible behavior changed in this run. B3 remains OFF/SYMBOLIC; no real paired native taps, L1 training, receiver injection, permanent weight change, microphone capture or Redmi B3 proof.
+- **Next:** Boss repairs #2343; then rebase #2346 and preserve R-080 → R-081 → R-082 → R-083. After accepted release plus a separate device receipt, collect source-bound native B1/B2 pairs with explicit labels and the full L0/same-model/no-message/zero/shuffled/OOD and held-out/retention controls. No user action required.
+
+---
+
 # Research & Perception — B3 paired native tap handoff
 
 Date: 2026-11-22 13:00 CET
