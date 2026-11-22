@@ -2358,3 +2358,8 @@ The historical 1,255-heading Canon inventory above is unchanged. This overlay re
 ### Run 19 exact-CI readback (2026-11-22T21:08:00Z)
 
 Exact dbb7b143 head workflows: 45070190046 (staged/integrated), 45070190084 (temporal 3.13/3.14), 45070190269 (optimizer-resume 3.13/3.14), 45070190180 (owner-read / staged startup). All jobs QUEUED; no PASS/FAIL evidence yet. The newer SleepRuntime temporal-only continuation change is therefore CODE_PRESENT / CI_PENDING, not tested or deployed.
+
+
+### Latest private Redmi evidence (2026-11-22T20:55:46Z)
+
+Private V13OBS #115 is an aggregate of five LOCAL_METADATA_ONLY turns. B1: 4/4 native attempts failed, zero valid offers and zero final-C3 delivery turns. B2: 2/2 failed, zero valid offers and zero final-C3 delivery turns. Latest stored turn: 57.739 s total / 41.627 s TTFT / 38.945 s prefill / 751 prompt tokens / 2 generated tokens. Correctness and semantic prompt use remain UNKNOWN/UNPROVEN. Pipeline metadata: aed1d2b installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE, last_error NONE. No evidence that #2372 is installed; JEPA feature remains REDMI_UNVERIFIED.
