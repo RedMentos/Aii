@@ -93,3 +93,20 @@ LOCAL_LINUX isolated harness PASS: exact active-lease capability accepted once, 
 
 The remaining blocker is the absent Android companion provider: it must enforce the OS grant, verify the signed receipt, issue the capability, own resize/stop/revocation lifecycle, and call the adapter under the same lease. No real signed receipt, Runtime/C3 dispatch, Termux capture or Redmi test has occurred. Keep PR #2375 DRAFT / NOT_RELEASED.
 
+
+
+## Run 7 follow-up — exact frame snapshot and fail-closed config (2026-11-22)
+
+**Verified code head:** `6a4e919f176a7d1b96ab6669639c6fd1be4a7de4` on the same Perception branch; PR #2375 remains DRAFT / NOT_RELEASED.
+
+A source review found that `consume_projected_frame` called `_bounded_vision_config` and `_overwrite_caller_buffer` but neither helper existed in the module. This would raise `NameError` on the first actual frame. Both helpers are now implemented: the config is copied from the existing vision defaults, the caller may select only a bounded hash dimension, and the adapter forcibly fixes the 8 MiB / 4 MP / 4×4 tile limits. Mutable compressed buffers are best-effort zeroized.
+
+The same review identified a time-of-check/time-of-use gap: a caller-owned `bytearray` could be modified by another thread after the provider verifier accepted its digest but before Pillow decoded it. The adapter now copies one bounded snapshot, hashes and decodes that exact snapshot, then zeroizes both the snapshot and the caller buffer on success and failure. The provider receipt and emitted `frame_sha256` therefore refer to the pixels actually decoded.
+
+**New regression coverage:** config overrides cannot expand the fixed capture limits; boolean/invalid hash dimensions are rejected; a verifier callback that mutates the caller buffer after digest acceptance cannot change the decoded image; both mutable buffers are zeroized.
+
+**LOCAL_LINUX:** CPython 3.13.5 x86_64 isolated helper reproduction PASS for snapshot/hash/decode ordering and zeroization of both buffers. This is not the full repository module/test suite. Full Aii checkout remains unavailable in the worker; full local pytest/compile is BLOCKED.
+
+**Exact GitHub CI:** head `6a4e919f176a7d1b96ab6669639c6fd1be4a7de4` has three exact-head checks queued: MediaProjection frame-ingress Python 3.13, Python 3.14, and offline-bridge security. No PASS is claimed yet. Earlier run `45068534234` was for the older `e1eec838` head and does not certify this update.
+
+**E2E boundary:** no Android companion MediaProjection provider, OS consent, normal Runtime/C3 dispatch, Termux capture, or Redmi test exists. The new adapter code is still only a Perception-side consumer candidate; `REDMI_UNVERIFIED`. No model, weight, permission, installed data or device state was changed. Next step: wait for exact-head CI, fix any failure, then coordinate Core/QA provider and Runtime wiring.
