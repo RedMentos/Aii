@@ -40,6 +40,8 @@ public final class MainActivity extends Activity {
         addButton("Pair installed Termux", v -> pairTermux());
         addButton("Enable / Stop companion", v -> toggleEnabled());
         addButton("Review pending action", v -> reviewPending());
+        addButton("Capture one screen frame (OS consent each time)", v -> captureOneFrame());
+        addButton("Discard captured frame", v -> MediaProjectionCaptureService.discard(this));
         addButton("Enable approval notifications", v -> requestNotifications());
         addButton("Refresh capability status", v -> refresh());
         refresh();
@@ -75,7 +77,7 @@ public final class MainActivity extends Activity {
                     + "Companion key ID: " + key.getString("key_id") + "\n"
                     + "Key storage: " + key.getString("key_storage_status") + "\n\n"
                     + capabilities.toString(2) + "\n\n"
-                    + "A successful app launch is DISPATCHED_UNVERIFIED; this app does not observe foreground state.");
+                    + "Screen capture is one frame per Android OS consent; no continuous recording or disk persistence.");
         } catch (Exception e) {
             status.setText("Companion status unavailable: " + e.getClass().getSimpleName());
         }
@@ -169,6 +171,21 @@ public final class MainActivity extends Activity {
                     intent.putExtra("action_id", pending.get(which).actionId);
                     startActivity(intent);
                 }).setNegativeButton("Close", null).show();
+    }
+
+    private void captureOneFrame() {
+        if (!CompanionProvider.isEnabled(this)
+                || !CapabilityRegistry.isCurrentTermuxTrusted(this)) {
+            Toast.makeText(this, "Pair and enable the companion first", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= 33
+                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestNotifications();
+            Toast.makeText(this, "Enable notifications, then retry the one-frame capture", Toast.LENGTH_LONG).show();
+            return;
+        }
+        startActivity(new Intent(this, ScreenCaptureActivity.class));
     }
 
     private void requestNotifications() {
