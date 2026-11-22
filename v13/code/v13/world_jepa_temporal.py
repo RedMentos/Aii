@@ -10,6 +10,7 @@ import hashlib
 import json
 import math
 import os
+import re
 from pathlib import Path
 import uuid
 
@@ -33,7 +34,7 @@ MAX_ROWS = 2048
 MAX_PAGES = 4
 PAGE_SIZE = 64
 MAX_WINDOWS = 4096
-MAX_SESSION_EVENTS = 4096
+MAX_SESSION_EVENTS = 256
 MIN_WINDOWS = 16
 MIN_PARTITION = 8
 HISTORY_LENGTHS = (2, 3)
@@ -202,9 +203,12 @@ def build_temporal_windows(store, rows, cancel_check=None):
         batch = session_ids[offset:offset + 400]
         placeholders = ",".join("?" for _ in batch)
         event_rows = store.rows(
-            "SELECT id,session_id,created FROM events WHERE session_id IN ("
-            + placeholders + ") ORDER BY session_id,created,id",
-            tuple(batch),
+            "SELECT id,session_id,created FROM ("
+            "SELECT id,session_id,created,"
+            "ROW_NUMBER() OVER (PARTITION BY session_id ORDER BY created,id) AS rn "
+            "FROM events WHERE session_id IN (" + placeholders + ")) "
+            "WHERE rn<=? ORDER BY session_id,created,id",
+            tuple(batch) + (MAX_SESSION_EVENTS + 1,),
         )
         for item in event_rows:
             row = _mapping(item)
@@ -417,7 +421,7 @@ def _record_valid(record):
     if type(record) is not dict or set(record) != required:
         raise ValueError("invalid temporal checkpoint record")
     name = record["checkpoint"]
-    if type(name) is not str or not name.startswith("jepa-") or not name.endswith(".npz"):
+    if type(name) is not str or re.fullmatch(r"jepa-[0-9a-f]{32}\.npz", name) is None:
         raise ValueError("invalid temporal checkpoint name")
     _sha(record["checkpoint_sha256"])
     _sha(record["source_sha256"])
@@ -464,8 +468,11 @@ def _record_valid(record):
         raise ValueError("temporal retention cohort budget")
     for holdout in record["retention_holdouts"]:
         _unpack_holdout(holdout)
-        if type(holdout["source_ids"]) is not list or type(holdout["source_sha256s"]) is not list:
+        if (type(holdout["source_ids"]) is not list or type(holdout["source_sha256s"]) is not list
+                or any(type(source) is not str or not source for source in holdout["source_ids"])):
             raise ValueError("temporal retention provenance")
+        for source_sha in holdout["source_sha256s"]:
+            _sha(source_sha)
     if type(record["metrics"]) is not dict:
         raise ValueError("temporal metrics")
     return True
@@ -891,10 +898,11 @@ class TemporalWorldJEPAStoreConsumer:
                 return {"status": "GENERATION_GAP", "role": role,
                         "decision_authority": "NONE", "native_body_consumed": False}
             event_order = self.store.rows(
-                "SELECT id FROM events WHERE session_id=? ORDER BY created,id LIMIT ?",
+                "SELECT id FROM events WHERE session_id=? ORDER BY created DESC,id DESC LIMIT ?",
                 (session_id, MAX_SESSION_EVENTS + 1),
             )
-            positions = { _mapping(item)["id"]: index for index, item in enumerate(event_order) }
+            event_order = list(reversed(event_order))
+            positions = {_mapping(item)["id"]: index for index, item in enumerate(event_order)}
             history_rows = history[-history_length:]
             if len(history_rows) < history_length:
                 return {"status": "INSUFFICIENT_HISTORY", "role": role,
