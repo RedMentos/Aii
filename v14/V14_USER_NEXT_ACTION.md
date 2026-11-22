@@ -1,3 +1,18 @@
+## Boss & Integration — current device and P0 checkpoint (2026-11-22T17:49:39.410Z)
+
+**Keine Nutzeraktion nötig.** Das Redmi ist bereits auf dem aktuellen Release-Branch-HEAD; kein manueller Termux-Befehl, kein erneuter Update-Request, kein Modell-/Gewichtswechsel und keine neue Rechtefreigabe.
+
+- Installiert: `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; Auto-Update EIN; Runtime und Dashboard `UP_TO_DATE`; letzter Fehler `NONE`. Exakte SHA-CI: 53/53 Checks SUCCESS.
+- Letzte gespeicherte Antwort (keine neue Chat-Anfrage): 57,739 s Gesamtzeit, 41,627 s TTFT, 38,945 s Prefill, 751 Prompt-Tokens, 2 generierte Tokens. Korrektheit bleibt UNKNOWN, weil die Eingabe im Diagnostikpfad redigiert ist.
+- B1_DETAIL/B2_GIST weiterhin `TIME_BUDGET` (53,2/54,2 s), Native Probe `SMOKE_PARTIAL`; kein nachgewiesener Offer→C4→C3-Nutzpfad. Instant-Messung 0,3 MiB PSS / 2,6 MiB RSS ist kein Nachweis geladener GGUF-Gewichte.
+- #2343 bleibt DRAFT; aktueller Head hat 28 Checks in der Warteschlange. #2346 bleibt DRAFT; ein exakter Paired-Capture-Test ist an einer widersprüchlichen Claim-Text-Assertion gescheitert. #2364 Receiver-Probe ist noch in CI. Keiner dieser Kandidaten ist freigegeben oder installiert.
+- P0 #1904 bleibt offen. Es gibt keine 20-Turn-Abnahme und keine verifizierte korrekte 2+2-Antwort. Offizielle Age 0; Lab-Anfrage 10 / effektive Stufe 5; physische Feature-Ausführung nicht verifiziert; Learning-Commit nur mit separatem SHADOW.
+- Vollständige lokale Aii-Suite ist BLOCKED (kein Checkout, GitHub-DNS im lokalen Container nicht verfügbar). Die 53 grünen GitHub-Checks ersetzen weder lokale Volltests noch Redmi-Funktionsnachweis.
+
+**Nächster interner Schritt:** exakte CI-Ergebnisse der aktuellen #2343/#2346/#2364-Heads abwarten, den #2346-Testvertrag korrigieren und danach nur auf vollständiger Matrix weiter integrieren. Keine Aktion von dir nötig.
+
+---
+
 # JEPA-Statuskorrektur — 2026-11-22T10:00:40.871Z
 
 PR #2331 steht inzwischen auf `535eba6f668b3990416c361368f36e3e8f1e599e`, hat aber **9 fehlgeschlagene Checks** (4 laufen, 2 queued, 4 erfolgreich, 1 übersprungen). Die Fehler liegen weiter in der verschachtelten Source-Pin-Kette: sechs direkte Consumer-Pins stimmen nicht mit den aktuellen Datei-Bytes überein. Die vollständigen Hashes stehen im Boss-Review-Kommentar [7077507340](https://github.com/RedMentos/Aii/pull/2331#issuecomment-7077507340). Das ist noch kein JEPA-Lern-/Unlearning-Erfolg; PR bleibt DRAFT, Promotion OFF.
