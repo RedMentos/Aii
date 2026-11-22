@@ -12,9 +12,11 @@ Branch: `research-perception/v14-libfvad-cli-smoke-20261122`
 
 ## Verification
 
+- PR #2329: https://github.com/RedMentos/Aii/pull/2329; base is the Boss audio-integration candidate branch and the head is `adcf619ea36b00daa7f68c81d4da6aa327f348cc`.
+- Exact-head comparison workflow run `45007987039`: SUCCESS on the Python 3.13/3.14 matrix, including the new CLI entry-point regression against the pinned libfvad shared library.
+
 - Exact PR #2327 parent CI (before this follow-up): staged context/integrated regression PASS; audio/arithmetic runtime PASS; RAW EAR prosody-to-attention PASS; RAW EAR vs WebRTC/libfvad comparison PASS; privacy scan PASS; consent-revocation QA PASS; Python 3.13/3.14 jobs PASS. This evidence belongs to #2327's exact head, not this follow-up.
 - Local full checkout/test run: BLOCKED. `git ls-remote https://github.com/RedMentos/Aii.git` failed because `github.com` DNS could not be resolved in the execution container. No full Aii checkout was available.
-- New exact-head CI: pending PR creation; do not claim it passed yet.
 - Android ARM64, Termux, AudioRecord and Redmi: NOT_RUN / REDMI_UNVERIFIED.
 
 ## Scope boundary
@@ -23,4 +25,4 @@ This repairs the offline comparison CLI only. It does not add libfvad to product
 
 ## Next step
 
-Run the exact-head comparison workflow after PR creation. If green, retain libfvad as a research-only comparator and prioritize the Perception #2312 signed one-shot consumer once QA's closed companion parent stack has a current release-compatible replacement. No user action is needed.
+Boss review and integration of #2327/#2329 remain pending. The exact-head comparison workflow is green; retain libfvad as a research-only comparator and prioritize the Perception #2312 signed one-shot consumer once QA's closed companion parent stack has a current release-compatible replacement. No user action is needed.
