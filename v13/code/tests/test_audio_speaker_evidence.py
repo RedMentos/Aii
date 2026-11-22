@@ -13,6 +13,7 @@ from v13.audio_speaker_evidence import (
 from v13 import audio_voice_cues as audio_voice_module
 from v13.audio_voice_cues import (
     _runtime_speaker_evidence_registry,
+    _speaker_change_decision,
     consume_pcm16_voice_window,
     reset_runtime_temporal_voice_states,
 )
@@ -376,5 +377,115 @@ def test_invalid_speaker_embedding_does_not_break_base_audio_path(tmp_path):
         assert result["speaker_change_evidence"]["status"] == "REJECTED"
         assert result["c3_admission"].status == "ADMITTED"
         assert "speaker_change" in result["packet"]["segments"][0]["unmeasured"]
+    finally:
+        runtime.store.close()
+
+
+def _decision_cues(activity="VOICED", frame_count=50, voiced_fraction=0.8):
+    return {
+        "activity_hint": activity,
+        "frame_count": frame_count,
+        "voiced_fraction": voiced_fraction,
+    }
+
+
+def _decision_evidence(*, candidate=False, gate=True, calibration="fixture-cal-v1", status="MEASURED"):
+    return {
+        "status": status,
+        "calibration_id": calibration,
+        "peak_speaker_change_candidate": candidate,
+        "speaker_change_candidate": candidate,
+        "confidence_gate_passed": gate,
+    }
+
+
+def test_three_regime_gate_supports_continuity_only_with_calibrated_voiced_evidence():
+    assert _speaker_change_decision(
+        _decision_evidence(), _decision_cues()
+    ) == "CONTINUITY_SUPPORTED"
+
+
+def test_three_regime_gate_keeps_change_or_overlap_as_candidate_only():
+    assert _speaker_change_decision(
+        _decision_evidence(candidate=True, gate=False), _decision_cues()
+    ) == "CHANGE_OR_OVERLAP_CANDIDATE"
+
+
+@pytest.mark.parametrize("activity", ["SILENCE", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"])
+def test_three_regime_gate_defers_nonvoiced_low_similarity(activity):
+    evidence = _decision_evidence(candidate=False, gate=False)
+    assert _speaker_change_decision(
+        evidence, _decision_cues(activity=activity)
+    ) == "DEFER"
+
+
+def test_three_regime_gate_defers_missing_rejected_or_uncalibrated_evidence():
+    cues = _decision_cues()
+    assert _speaker_change_decision(None, cues) == "DEFER"
+    assert _speaker_change_decision(
+        _decision_evidence(status="REJECTED"), cues
+    ) == "DEFER"
+    assert _speaker_change_decision(
+        _decision_evidence(calibration=None), cues
+    ) == "DEFER"
+
+
+def test_three_regime_gate_defers_short_or_insufficient_voiced_windows():
+    evidence = _decision_evidence()
+    assert _speaker_change_decision(
+        evidence, _decision_cues(frame_count=1, voiced_fraction=1.0)
+    ) == "DEFER"
+    assert _speaker_change_decision(
+        evidence, _decision_cues(frame_count=50, voiced_fraction=0.02)
+    ) == "DEFER"
+
+
+def test_a4_and_c3_receive_explicit_defer_instead_of_false_stability_on_silence(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    try:
+        first = speaker_batch(
+            SOURCE, event["brain_generation_id"], 100, 1100,
+            lambda _: (1.0, 0.0, 0.0),
+        )
+        warmup = consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL", speaker_embeddings=first,
+        )
+        assert warmup["a4"]["speaker_change_decision"] == "DEFER"
+
+        stable = speaker_batch(
+            SOURCE, event["brain_generation_id"], 1100, 2100,
+            lambda _: (1.0, 0.0, 0.0),
+        )
+        supported = consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=1100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL", speaker_embeddings=stable,
+        )
+        assert supported["a4"]["speaker_change_decision"] == "CONTINUITY_SUPPORTED"
+        assert supported["packet"]["segments"][0]["acoustic"]["speaker_change_decision"] == "CONTINUITY_SUPPORTED"
+        assert supported["speaker_change_evidence"]["decision"] == "CONTINUITY_SUPPORTED"
+
+        changed = speaker_batch(
+            SOURCE, event["brain_generation_id"], 2100, 3100,
+            lambda _: (0.0, 1.0, 0.0),
+        )
+        silent = consume_pcm16_voice_window(
+            runtime, b"\\x00\\x00" * 16000, sample_rate=16000, start_ms=2100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL", speaker_embeddings=changed,
+        )
+        assert silent["a4"]["voice_activity_hint"] == "SILENCE"
+        assert silent["speaker_change_evidence"]["confidence_gate_passed"] is False
+        assert silent["speaker_change_evidence"]["speaker_change_candidate"] is False
+        assert silent["a4"]["speaker_change_decision"] == "DEFER"
+        assert silent["packet"]["segments"][0]["acoustic"]["speaker_change_decision"] == "DEFER"
     finally:
         runtime.store.close()
