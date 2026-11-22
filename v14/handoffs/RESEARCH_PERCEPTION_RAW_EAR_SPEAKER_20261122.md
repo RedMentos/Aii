@@ -53,3 +53,14 @@ Current candidate: PR #2293 (DRAFT, NOT_RELEASED)
 - Benchmark #44970593770: synthetic x86_64 only; NumPy 9.0642 ms median vs Python 191.6681 ms, speaker evidence 0.8955 ms; no model inference. Not Redmi proof.
 - Last private device snapshot #115 (updated 2026-11-18T11:30:53Z) reports auto_enabled=true, last_result=PARTIAL, last_success_utc=2026-11-18T07:54:05Z and updated_commit=89333289b8cd50da92cbf7074c9ef689a2972dbf; it is stale. New PIPELINE_STATUS request #454 remains open with no receipt. No release/deployment; `NOT_RELEASED`, `REDMI_UNVERIFIED`.
 - Next owner: Core resolves the baseline semantic pre-rebind pin mismatch; Perception rebases and reruns; QA reviews privacy/consent and revocation. No user action required.
+
+
+## Audio-only ingress addition — 2026-11-22 02:35 CET
+
+- New file: v13/code/v13/audio_input.py; public entrypoint submit_audio_only(runtime, audio_window).
+- The adapter submits a fixed no-transcript marker and caller-supplied PCM16 to the existing staged Runtime audio_window path. It rejects absent/failed consent preflight, missing linearizable guard, missing two-phase revocation subscription, invalid/oversized PCM, invalid timestamps/source IDs and incompatible text-only Runtime. It preserves PROVISIONAL/FINAL and does not invoke ASR, open a microphone, store PCM or download a model.
+- Exact GitHub blobs read back: module 1e9daddcb5dfd8bfb7911090218b4eaf1f103d41, tests b6b1202904efbc417971db6c0d9e3ba0664eef84. LOCAL_LINUX isolated py_compile PASS; pytest 7/7 PASS. This is not a full Runtime E2E.
+- Workflow changes are in PR #2293 current head e85b7398b1fce84423583abf01e1389507612818; focused workflow #44972070097 was pending at checkpoint. Earlier speaker-evidence head d7f3842 passed 57 tests on Python 3.13/3.14; current staged/integrated still fails at Core's pre-rebind semantic pin mismatch on unmodified Boss base f0d3c848.
+- Full local checkout unavailable: git ls-remote https://github.com/RedMentos/Aii.git HEAD returned Could not resolve host: github.com. No local full Runtime test was run.
+- R-063 added: FASTDIAR full paper read; MIT code, checkpoint license not verified; speech-core Apache-2.0 C++17/Android reviewed as a possible low-level VAD/AEC/cancel layer only. No model or dependency downloaded.
+- No microphone, Android AudioRecord, TTS effector, barge-in, Redmi or native model proof. No release or updater action. Next: Core fixes the pin blocker; Perception rebases and adds staged audio-only Runtime proof, then coordinates Android caller wiring.
