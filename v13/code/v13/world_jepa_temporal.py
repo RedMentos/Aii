@@ -6,6 +6,7 @@ It is a numeric SHADOW predictor with EMA/optimizer/checkpoint/replay/rollback;
 it does not edit native B1/B2 GGUF weights or grant action authority.
 """
 from contextlib import contextmanager
+import fcntl
 import hashlib
 import json
 import math
@@ -527,8 +528,19 @@ class TemporalWorldJEPAStoreConsumer:
 
     @contextmanager
     def _locked(self, exclusive=True, blocking=True):
-        with self.lock._locked(exclusive, blocking=blocking):
-            yield
+        if blocking:
+            with self.lock._locked(exclusive):
+                yield
+            return
+        if self.lock.lock_path.is_symlink():
+            raise ValueError("unsafe consumer lock")
+        with open(self.lock.lock_path, "a+b") as lock:
+            operation = fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH
+            fcntl.flock(lock.fileno(), operation | fcntl.LOCK_NB)
+            try:
+                yield
+            finally:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
 
     def _read_state(self):
         value, version = self.store.state(STATE_KEY, None)

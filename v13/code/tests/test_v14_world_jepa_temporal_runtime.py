@@ -407,6 +407,14 @@ def test_temporal_receiver_matrix_batches_bodyview_contract_with_single_readout_
         )
         assert missing["status"] == "INSUFFICIENT_HISTORY"
         assert missing["matrix"] == {}
+
+        # Foreground nonblocking reads must fail closed when the shared JEPA
+        # lock is held exclusively by a checkpoint writer.
+        with learner._locked(True):
+            with pytest.raises(BlockingIOError):
+                learner.receiver_matrix(
+                    sessions[0], world_model.ACTIONS, history_length=2, nonblocking=True
+                )
     finally:
         store.close()
 
