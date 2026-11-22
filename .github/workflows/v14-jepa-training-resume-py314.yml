@@ -60,6 +60,14 @@ jobs:
         run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_world_jepa_optimizer_resume_store.py
       - name: Verify production Store A-B-A replay / retention / B1-B2-SELF receiver loop
         run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_v14_world_jepa_store_aba_replay.py
+      - name: Upload per-seed A-B-A diagnostics (including failed runs)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jepa-aba-diagnostics-py${{ matrix.python-version }}
+          path: v14-jepa-aba-diagnostics.json
+          if-no-files-found: ignore
+          retention-days: 3
       - name: Verify staged optimizer-resume regression
         run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_world_jepa_training_resume_stage_20261111.py
       - name: Verify selective predictor plasticity and per-parameter Adam resume

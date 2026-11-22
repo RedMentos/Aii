@@ -10,6 +10,8 @@ import copy
 import hashlib
 import json
 import math
+import os
+from pathlib import Path
 import shutil
 
 import numpy as np
@@ -1128,6 +1130,21 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
             arm["store"].close()
 
     assert len(reports) == len(DATA_SEEDS) * len(ARMS)
+    # Persist synthetic per-seed/per-arm metrics even when a strict assertion fails.
+    # CI uploads this small report on both success and failure so algorithmic
+    # rejection can be diagnosed without weakening the retention/utility gates.
+    diagnostic_path = Path(os.environ.get(
+        "V14_JEPA_DIAGNOSTIC_PATH", "v14-jepa-aba-diagnostics.json"
+    ))
+    diagnostic_path.write_text(
+        json.dumps({
+            "schema": "v14.world_jepa.aba-diagnostic/1",
+            "data_seeds": list(DATA_SEEDS),
+            "arms": [list(arm) for arm in ARMS],
+            "reports": reports,
+        }, sort_keys=True, allow_nan=False),
+        encoding="utf-8",
+    )
     report_by_arm = {
         (item["data_seed"], item["encoder_mode"], item["replay_mode"],
          item["stable_drift_control"], item["replay_projection"]): item
