@@ -1987,3 +1987,8 @@ The new adapter is an API candidate, not a production release or Android accepta
 | Redmi / Android | No live microphone, AudioRecord, TTS, barge-in or device receipt | REDMI_UNVERIFIED / NOT_RELEASED |
 
 Perception supplied a fail-closed repair proposal in #2288 comment 7072323336; no Core source was modified. Audio-only adapter remains a candidate API, not production acceptance.
+
+
+## Core pin-generation correction — 2026-11-22
+
+Boss comment #7072186155 clarified that Record-Only control_guard.apply_sources() rewrites both world_semantic_evidence_candidate.py and the local-error consumer pin. The correct expected value for the later Store rebind is therefore the GUARD-OUTPUT local-error pin, not the original base pin. Sequence: capture guard_semantic_sha and guard_local_error_pin immediately after the guard; assert equality; after Store rebind, rebind from guard_local_error_pin to final_semantic_sha; keep the final exact-pin check. Perception corrected its follow-up comment #7072323336 accordingly. No Core-owned file was changed.
