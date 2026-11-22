@@ -170,7 +170,7 @@ def _temporal_features(history, target, history_length):
     return x, x2
 
 
-def build_temporal_windows(store, rows):
+def build_temporal_windows(store, rows, cancel_check=None):
     """Build every valid contiguous offset; missing/unknown/revoked rows break a window."""
     by_session = {}
     for row in rows:
@@ -178,15 +178,30 @@ def build_temporal_windows(store, rows):
         if row["status"] in UNKNOWN:
             continue
         by_session.setdefault(row["session_id"], []).append(row)
+    event_orders = {}
+    session_ids = sorted(by_session)
+    # Batch the event-order lookup. Per-session SQL round-trips are too expensive
+    # on the Android SQLite store once the bounded replay grows.
+    for offset in range(0, len(session_ids), 400):
+        if cancel_check is not None and cancel_check():
+            raise InterruptedError("temporal window build cancelled")
+        batch = session_ids[offset:offset + 400]
+        placeholders = ",".join("?" for _ in batch)
+        event_rows = store.rows(
+            "SELECT id,session_id,created FROM events WHERE session_id IN ("
+            + placeholders + ") ORDER BY session_id,created,id",
+            tuple(batch),
+        )
+        for item in event_rows:
+            row = _mapping(item)
+            event_orders.setdefault(row["session_id"], []).append(row["id"])
     windows = []
     for session_id, session_rows in by_session.items():
-        events = store.rows(
-            "SELECT id,created FROM events WHERE session_id=? ORDER BY created,id LIMIT ?",
-            (session_id, MAX_SESSION_EVENTS + 1),
-        )
-        if type(events) is not list or len(events) > MAX_SESSION_EVENTS:
+        if cancel_check is not None and cancel_check():
+            raise InterruptedError("temporal window build cancelled")
+        event_ids = event_orders.get(session_id, [])
+        if len(event_ids) > MAX_SESSION_EVENTS:
             continue
-        event_ids = [_mapping(item)["id"] for item in events]
         positions = {event_id: index for index, event_id in enumerate(event_ids)}
         by_event = {}
         for row in session_rows:
@@ -196,6 +211,8 @@ def build_temporal_windows(store, rows):
             continue
         ordered = [by_event.get(event_id, [None])[0] for event_id in event_ids]
         for start in range(len(ordered)):
+            if cancel_check is not None and cancel_check():
+                raise InterruptedError("temporal window build cancelled")
             for history_length in HISTORY_LENGTHS:
                 target_index = start + history_length
                 if target_index >= len(ordered):
@@ -256,9 +273,14 @@ def _split_windows(windows):
     owner_by_source = {}
     for window in windows:
         session = window["session_id"]
-        for source_key in (window["source_ids"] + window["source_sha256s"]):
-            if source_key in window["source_sha256s"]:
-                _sha(source_key)
+        for source_key in window["source_ids"]:
+            previous = owner_by_source.get(source_key)
+            if previous is None:
+                owner_by_source[source_key] = session
+            else:
+                union(session, previous)
+        for source_key in window["source_sha256s"]:
+            _sha(source_key)
             previous = owner_by_source.get(source_key)
             if previous is None:
                 owner_by_source[source_key] = session
@@ -575,7 +597,7 @@ class TemporalWorldJEPAStoreConsumer:
             all_rows = sorted(by_id.values(), key=lambda item: (item["created"], item["action_id"]))
             if len(all_rows) > MAX_ROWS:
                 raise OverflowError("temporal T8 retention budget exhausted; no rows pruned")
-            windows = build_temporal_windows(self.store, all_rows)
+            windows = build_temporal_windows(self.store, all_rows, cancel_check=cancel_check)
             if len(windows) < MIN_WINDOWS:
                 next_state = dict(state)
                 next_state["scan_cursor"] = cursor
@@ -833,12 +855,15 @@ class TemporalWorldJEPAStoreConsumer:
                 (session_id, MAX_SESSION_EVENTS + 1),
             )
             positions = { _mapping(item)["id"]: index for index, item in enumerate(event_order) }
-            if positions.get(latest["event_id"], -2) != positions.get(previous["event_id"], -1) + 1:
-                return {"status": "NONCONTIGUOUS_HISTORY", "role": role,
-                        "decision_authority": "NONE", "native_body_consumed": False}
             history_rows = history[-history_length:]
             if len(history_rows) < history_length:
                 return {"status": "INSUFFICIENT_HISTORY", "role": role,
+                        "decision_authority": "NONE", "native_body_consumed": False}
+            if any(
+                positions.get(right["event_id"], -99) != positions.get(left["event_id"], -100) + 1
+                for left, right in zip(history_rows, history_rows[1:])
+            ):
+                return {"status": "NONCONTIGUOUS_HISTORY", "role": role,
                         "decision_authority": "NONE", "native_body_consumed": False}
             x = (
                 list(latest["s"])
