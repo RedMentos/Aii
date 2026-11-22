@@ -13,7 +13,7 @@ FIELDS={
  "WorldTransition":{"action_id":str,"source_ref":dict,"outcome_source_ref":dict,"action_role":str,"corollary_packet_id":str,"teacher_truth_authority":bool},
  "StudentEvaluation":{"percept_packet_id":str,"source_ref":dict,"student_route":str,"teacher_route":str,"agreement":bool,"routing_authority":int},
  "LatentTapPacket":{"role":str,"source_ref":dict,"tap_id":str,"model_revision":str,"token_ids":list,"feature_path":str,"feature_sha256":str,"shape":list},
- "B3PairedTapPacket":{"packet_schema":str,"body_pair_id":str,"source_ref":dict,"sender_roles":list,"tap_packet_ids":dict,"tap_ids":dict,"model_revisions":dict,"feature_bindings":dict,"gist_readout":dict,"fine_readout":dict,"token_counts":dict,"dimensions":dict,"token_alignment":str,"receiver_pooling":str,"injection_authority":int,"learning_authority":int},
+ "B3PairedTapPacket":{"packet_schema":str,"body_pair_id":str,"source_ref":dict,"sender_roles":list,"tap_packet_ids":dict,"tap_ids":dict,"model_revisions":dict,"feature_bindings":dict,"gist_readout":dict,"fine_readout":dict,"native_token_readout":dict,"token_counts":dict,"dimensions":dict,"token_alignment":str,"receiver_pooling":str,"injection_authority":int,"learning_authority":int},
  "ExecutiveDecision":{"component":str,"context_ref":dict,"baseline":str,"action":str,"learned":bool,"context_revision":str,"trajectory_offer_ids":list},
  "ActionPrediction":{"action_type":str,"profile_id":str,"prediction":dict},
  "PredictionOutcome":{"action_id":str,"observation":dict},
@@ -97,7 +97,7 @@ def validate(kind,obj):
             if name in obj and not isinstance(obj[name],types):raise ValueError('ExecState.'+name+': falscher Typ')
     if kind=="B3PairedTapPacket":
         roles=("B1_DETAIL","B2_GIST")
-        if obj["packet_schema"]!="v13.b3-paired-native-taps/3" or obj["sender_roles"]!=list(roles):raise ValueError("B3 pair schema/roles")
+        if obj["packet_schema"]!="v13.b3-paired-native-taps/4" or obj["sender_roles"]!=list(roles):raise ValueError("B3 pair schema/roles")
         if obj["source_ref"] not in obj["provenance"]:raise ValueError("B3 pair source provenance")
         gr=obj["gist_readout"]
         if (not isinstance(gr,dict) or not isinstance(gr.get("plan"),dict)
@@ -139,6 +139,36 @@ def validate(kind,obj):
                 raise ValueError("B3 pair B1 fine slot source coverage")
             cursor=sr["char_end"]
         if cursor!=obj["source_ref"]["char_end"]:raise ValueError("B3 pair B1 fine slots are not lossless")
+        nr=obj["native_token_readout"]
+        if (not isinstance(nr,dict) or nr.get("revision")!="b2-native-token-spans-v1"
+                or nr.get("tap_id")!=obj["tap_ids"]["B2_GIST"]
+                or nr.get("source_ref")!=obj["source_ref"]
+                or nr.get("native_tokens")!=obj["token_counts"]["B2_GIST"]
+                or nr.get("dim")!=obj["dimensions"]["B2_GIST"]
+                or nr.get("max_slots")!=64 or nr.get("lossless") is not True
+                or nr.get("receiver_injection_authority")!=0
+                or nr.get("body_learning_authority")!=0
+                or not isinstance(nr.get("token_ids"),list)
+                or len(nr["token_ids"])!=obj["token_counts"]["B2_GIST"]
+                or any(type(token_id) is not int or token_id<0 for token_id in nr["token_ids"])
+                or not isinstance(nr.get("slots"),list)
+                or len(nr["slots"])!=obj["token_counts"]["B2_GIST"]):
+            raise ValueError("B3 pair B2 native token-span readout binding")
+        cursor=obj["source_ref"]["char_start"]
+        for index,slot in enumerate(nr["slots"]):
+            sr=slot.get("source_ref") if isinstance(slot,dict) else None
+            if (not isinstance(sr,dict) or slot.get("slot")!=index
+                    or slot.get("token_id")!=nr["token_ids"][index]
+                    or sr.get("source_id")!=obj["source_ref"].get("source_id")
+                    or sr.get("sha256")!=obj["source_ref"].get("sha256")
+                    or sr.get("modality")!=obj["source_ref"].get("modality")
+                    or sr.get("char_start")!=cursor
+                    or type(sr.get("char_end")) is not int or sr["char_end"]<cursor
+                    or sr["char_end"]>obj["source_ref"]["char_end"]):
+                raise ValueError("B3 pair B2 native token source coverage")
+            cursor=sr["char_end"]
+        if cursor!=obj["source_ref"]["char_end"]:
+            raise ValueError("B3 pair B2 native token spans are not lossless")
         plan=gr["plan"];shape=gr["shape"]
         if (type(plan.get("max_slots")) is not int or plan["max_slots"]<1
                 or shape[0]>plan["max_slots"] or shape[1]!=obj["dimensions"]["B2_GIST"]
@@ -159,7 +189,7 @@ def validate(kind,obj):
                 raise ValueError("B3 pair B2 Gist slot source coverage")
             cursor=sr["char_end"]
         if cursor!=obj["source_ref"]["char_end"]:raise ValueError("B3 pair B2 Gist slots are not lossless")
-        if obj["token_alignment"]!="NOT_ASSUMED_DIFFERENT_NATIVE_TOKENIZERS" or obj["receiver_pooling"]!="B2_ADAPTIVE_GIST_SLOTS;B1_SOURCE_ALIGNED_FINE_NATIVE_SLOTS" or obj["injection_authority"]!=0 or obj["learning_authority"]!=0:raise ValueError("B3 pair authority/semantics")
+        if obj["token_alignment"]!="SOURCE_CHAR_SPAN_OVERLAP_ONLY;TOKEN_INDEX_EQUIVALENCE_NOT_ASSUMED" or obj["receiver_pooling"]!="B2_ADAPTIVE_GIST_SLOTS;B1_FINE_NATIVE_TOKENS;B2_FINE_NATIVE_TOKENS" or obj["injection_authority"]!=0 or obj["learning_authority"]!=0:raise ValueError("B3 pair authority/semantics")
     if kind=="SourceRef" and not 0<=obj["char_start"]<=obj["char_end"]:raise ValueError("SourceRef-Bereich")
     if kind=="OfferPacket" and (obj["role"] not in {"B1_DETAIL","B2_GIST"} or not 0<=obj["confidence"]<=1):raise ValueError("Offer role/confidence")
     if kind=="BodySourceIdSelection":
