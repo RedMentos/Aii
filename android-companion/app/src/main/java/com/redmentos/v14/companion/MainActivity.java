@@ -85,10 +85,19 @@ public final class MainActivity extends Activity {
                             + "\n\nRequests from this package still require a separate approval for every action.")
                     .setNegativeButton("Cancel", null)
                     .setPositiveButton("Pair", (dialog, which) -> {
-                        getSharedPreferences(CompanionProvider.PREFS, MODE_PRIVATE).edit()
-                                .putString("paired_package", packageName)
-                                .putString("paired_cert_sha256", digest)
-                                .apply();
+                        boolean saved = PairingPersistence.persist(packageName, digest,
+                                (pairedPackage, certificateSha256) ->
+                                        getSharedPreferences(CompanionProvider.PREFS, MODE_PRIVATE).edit()
+                                                .putString("paired_package", pairedPackage)
+                                                .putString("paired_cert_sha256", certificateSha256)
+                                                .commit());
+                        if (!saved) {
+                            Toast.makeText(this,
+                                    "Could not durably save Termux pairing; no success recorded",
+                                    Toast.LENGTH_LONG).show();
+                            refresh();
+                            return;
+                        }
                         Toast.makeText(this, "Termux paired", Toast.LENGTH_SHORT).show();
                         refresh();
                     }).show();
