@@ -85,7 +85,6 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
 
     Htr, Mtr, Xtr, ytr = H[train_indices], mask[train_indices], Xr[train_indices], y[train_indices]
     Hte, Mte, Xte, yte = H[test_indices], mask[test_indices], Xr[test_indices], y[test_indices]
-    output_dir = cognition.r.home / "b3" / "shadow" / direction / task_id
     l0_acc = l0_bytes = role_drop = None
     l0_evidence_sha256 = None
     if l0_evidence is not None:
@@ -124,6 +123,17 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
             raise ValueError("L0 evidence requires a finite role_drop fraction")
         l0_evidence_sha256 = hashlib.sha256(dumps(l0_evidence).encode("utf-8")).hexdigest()
 
+    run_identity = {
+        "task_id": task_id, "direction": direction,
+        "body_pair_ids": list(batch["body_pair_ids"]),
+        "labels": list(labels), "label_provenance": list(label_provenance),
+        "sender_revision": batch["sender_revision"],
+        "receiver_revision": batch["receiver_revision"],
+        "seeds": list(seeds), "epochs": epochs, "head_steps": head_steps,
+        "l0_evidence_sha256": l0_evidence_sha256,
+    }
+    run_key = hashlib.sha256(dumps(run_identity).encode("utf-8")).hexdigest()[:12]
+    output_dir = cognition.r.home / "b3" / "shadow" / direction / task_id / run_key
     output_dir.mkdir(parents=True, exist_ok=True)
     seed_reports = []
     trained_bridges = []
@@ -157,7 +167,7 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
             receiver_revision=batch["receiver_revision"],
             extra={
                 "status": "L1_SHADOW_CANDIDATE_NOT_PROMOTED",
-                "task_id": task_id, "label_source": label_source,
+                "task_id": task_id, "run_key": run_key, "label_source": label_source,
                 "label_provenance": list(label_provenance),
                 "body_pair_ids": list(batch["body_pair_ids"]),
                 "source_refs": list(batch["source_refs"]),
@@ -231,7 +241,7 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
             prefix, sender_revision=batch["sender_revision"],
             receiver_revision=batch["receiver_revision"],
             extra={
-                "status": overall_status, "task_id": task_id,
+                "status": overall_status, "task_id": task_id, "run_key": run_key,
                 "label_source": label_source, "label_provenance": list(label_provenance),
                 "body_pair_ids": list(batch["body_pair_ids"]),
                 "source_refs": list(batch["source_refs"]),
@@ -251,7 +261,7 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
     report = {
         "schema": "v13.b3-l1-shadow-training/1",
         "status": overall_status,
-        "task_id": task_id, "direction": direction, "label_source": label_source,
+        "task_id": task_id, "run_key": run_key, "direction": direction, "label_source": label_source,
         "samples": len(pair_packets), "train_samples": len(train_indices),
         "test_samples": len(test_indices), "label_values": label_values,
         "label_provenance": list(label_provenance),
