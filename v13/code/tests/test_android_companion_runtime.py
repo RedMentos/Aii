@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from v13 import android_control
+from v13 import android_control, android_outcomes
 from v13.contracts import packet
 from v13.android_companion_runtime import AndroidCompanionController
 from v13.store import Store
@@ -478,3 +478,114 @@ def test_android_action_history_rejects_unbounded_or_non_integer_limits(tmp_path
     controller.broker.close()
     runtime.store.close()
 
+
+
+def _signed_receipt_for_request(transport, action_id, nonce):
+    request = transport.submitted[-1]
+    body = {
+        **BODY,
+        "action_id": action_id,
+        "digest": request["digest"],
+        "nonce": nonce,
+    }
+    return {
+        "body": body,
+        "key_id": KEY_ID,
+        "signature": _sign_test_body(body),
+    }
+
+
+def test_claimed_receipt_retries_after_restart_without_redispatch(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "2" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+    pending = json.loads(controller.launch("com.example.app", True))
+    action_id = pending["action_id"]
+    transport.receipt = _signed_receipt_for_request(transport, action_id, "7" * 32)
+    outcome_calls = []
+    original_outcome = transport.outcome
+
+    def counted_outcome(selected_action_id):
+        outcome_calls.append(selected_action_id)
+        return original_outcome(selected_action_id)
+
+    transport.outcome = counted_outcome
+    original_persist = android_outcomes.persist_companion_outcome
+
+    def crash_before_store_commit(*args, **kwargs):
+        raise OSError("simulated process death after receipt claim")
+
+    monkeypatch.setattr(android_outcomes, "persist_companion_outcome", crash_before_store_commit)
+    with pytest.raises(OSError, match="simulated process death"):
+        controller.poll(action_id)
+    assert controller.broker.action_state(action_id) == "RECEIPT_CONSUMED"
+    assert runtime.store.one(
+        "SELECT 1 FROM packets WHERE kind='ActionOutcome' AND json_extract(payload,'$.action_id')=?",
+        (action_id,),
+    ) is None
+    assert len(outcome_calls) == 1
+    controller.broker.close()
+
+    monkeypatch.setattr(android_outcomes, "persist_companion_outcome", original_persist)
+    restarted = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    recovered = json.loads(restarted.poll(action_id))
+    assert recovered["status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert recovered["observed"] is False
+    assert recovered["t8_authoritative"] is False
+    assert recovered["world_learning_eligible"] is False
+    assert len(outcome_calls) == 2
+    assert len(transport.submitted) == 1
+    assert restarted.broker.action_state(action_id) == "RECEIPT_VERIFIED"
+    restarted.broker.close()
+    runtime.store.close()
+
+
+def test_committed_receipt_recovers_locally_after_broker_finalize_crash(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "3" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+    pending = json.loads(controller.launch("com.example.app", True))
+    action_id = pending["action_id"]
+    transport.receipt = _signed_receipt_for_request(transport, action_id, "8" * 32)
+    outcome_calls = []
+    original_outcome = transport.outcome
+
+    def counted_outcome(selected_action_id):
+        outcome_calls.append(selected_action_id)
+        return original_outcome(selected_action_id)
+
+    transport.outcome = counted_outcome
+    original_record = controller.broker.record_companion_receipt
+
+    def crash_after_store_commit(selected_action_id, digest, *, verified):
+        if verified:
+            raise OSError("simulated process death after Store commit")
+        return original_record(selected_action_id, digest, verified=verified)
+
+    monkeypatch.setattr(controller.broker, "record_companion_receipt", crash_after_store_commit)
+    with pytest.raises(OSError, match="after Store commit"):
+        controller.poll(action_id)
+    assert controller.broker.action_state(action_id) == "RECEIPT_CONSUMED"
+    assert runtime.store.one(
+        "SELECT 1 FROM packets WHERE kind='ActionOutcome' AND json_extract(payload,'$.action_id')=?",
+        (action_id,),
+    ) is not None
+    assert len(outcome_calls) == 1
+    controller.broker.close()
+
+    restarted = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    recovered = json.loads(restarted.poll(action_id))
+    assert recovered["status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert recovered["recovered_from_store"] is True
+    assert recovered["observed"] is False
+    assert recovered["t8_authoritative"] is False
+    assert recovered["world_learning_eligible"] is False
+    assert len(outcome_calls) == 1
+    assert len(transport.submitted) == 1
+    assert restarted.broker.action_state(action_id) == "RECEIPT_VERIFIED"
+    restarted.broker.close()
+    runtime.store.close()
