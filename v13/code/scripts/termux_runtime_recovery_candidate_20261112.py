@@ -220,7 +220,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             raise ValueError('LateWatch output changed')
         result['v13/latewatch.py'] = late
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
-                             'bfcf25e8ffb4996aaae97f000c9d7086ac5530b064ed9979ee952c8250852004')
+                             '5062cced46dcf22fbb4c86a5863900fa3c4894c93ba5b044f5ac336ed6b24f15')
         result = control_guard.apply_sources(code_dir, result)
         # The guard rewrites the semantic module and its local-error consumer as
         # one reviewed generation. Snapshot that exact pair before Store overlays.
