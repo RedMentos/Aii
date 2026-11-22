@@ -1369,3 +1369,8 @@ The native receiver QA stack advanced to f64e994 and now persists canonical path
 RAW EYE #2384 advanced to 5cd8ffae with direct numeric feature-summary tests, but two test functions are duplicated and its two workflows are queued. Companion QA #2356 advanced to 27aaa29 with a single safe System-UI Wait attempt and filtered logcat; all four workflows are queued and process-death remains unaccepted. Core #2379/#2376 remain 11/14 commits behind the current companion QA parent. JEPA #2383 has five workflow failures; #2372 remains three failures / one success. No model/weight or device change.
 
 The only newly fixed issue in this update is the arithmetic test's persisted-source expectation; no production code changed. The installed release remains aed1d2b826290c95c70356b5d8b864b5ef382be4; no user action.
+
+
+## Final run 12 device/queue snapshot — 2026-11-22T22:33:13.116Z
+
+Private diagnostics report Lab-Age mode ACTIVE, requested stage 10, effective implemented stage 5, official stage 0, physical feature execution false, and learning commit authority REQUIRES_SEPARATE_SHADOW_MODE. This confirms the separate lab selector but not physical feature execution or learning authority. The last stored turn remains 57.74 s / 41.63 s TTFT / 38.95 s prefill / 2 tokens; B1/B2 remain TIME_BUDGET 53.2/54.2 s. Boss PR #2370 exact head bae7d031 has 0 SUCCESS / 16 QUEUED / 5 CANCELLED / 5 SKIPPED; previous head 03909f0 had two Python source-assertion failures, corrected in the new commit but not yet retested. Release aed1d2 remains installed; HEALTH runtime conflicts with DIAGNOSTICS; LEARNING_STATUS unavailable. No device mutation or user action.
