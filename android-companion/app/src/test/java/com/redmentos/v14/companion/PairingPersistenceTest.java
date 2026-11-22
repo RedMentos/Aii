@@ -3,6 +3,8 @@ package com.redmentos.v14.companion;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -106,5 +108,51 @@ public final class PairingPersistenceTest {
         assertFalse(called.get());
         assertFalse(rolledBack.get());
         assertTrue(PairingPersistence.isTrustAvailable());
+    }
+
+    @Test public void providerAdmissionWaitsForPairingWriteAndSeesFailedLatch() throws Exception {
+        CountDownLatch writerEntered = new CountDownLatch(1);
+        CountDownLatch releaseWriter = new CountDownLatch(1);
+        AtomicReference<PairingPersistence.Result> result = new AtomicReference<>();
+        Thread pairing = new Thread(() -> result.set(PairingPersistence.persistWithStatus(
+                "com.termux", FINGERPRINT,
+                (pkg, digest) -> {
+                    writerEntered.countDown();
+                    try {
+                        if (!releaseWriter.await(2, TimeUnit.SECONDS)) {
+                            throw new IllegalStateException("test writer timed out");
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new IllegalStateException(e);
+                    }
+                    return false;
+                }, () -> false)));
+        pairing.start();
+        assertTrue(writerEntered.await(2, TimeUnit.SECONDS));
+
+        AtomicBoolean admitted = new AtomicBoolean(true);
+        CountDownLatch providerStarted = new CountDownLatch(1);
+        Thread provider = new Thread(() -> {
+            providerStarted.countDown();
+            admitted.set(PairingPersistence.withTrustedPairing(() -> true));
+        });
+        provider.start();
+        assertTrue(providerStarted.await(2, TimeUnit.SECONDS));
+
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(2);
+        while (provider.getState() != Thread.State.BLOCKED && System.nanoTime() < deadline) {
+            Thread.yield();
+        }
+        assertEquals("provider check must wait behind the in-flight pairing write",
+                Thread.State.BLOCKED, provider.getState());
+
+        releaseWriter.countDown();
+        pairing.join(2000);
+        provider.join(2000);
+        assertFalse("pairing worker must finish", pairing.isAlive());
+        assertFalse("provider check must finish", provider.isAlive());
+        assertEquals(PairingPersistence.Result.UNTRUSTED, result.get());
+        assertFalse("provider must observe the revoked trust latch", admitted.get());
     }
 }
