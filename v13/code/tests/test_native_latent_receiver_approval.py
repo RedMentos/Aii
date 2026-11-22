@@ -1,5 +1,8 @@
 import hashlib
 import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -230,6 +233,25 @@ def test_wrong_role_pair_cannot_use_pending_local_approval(tmp_path):
         assert len(calls) == 1
     finally:
         runtime.close()
+
+
+def test_fifo_model_path_is_rejected_without_blocking(tmp_path):
+    fifo = tmp_path / "model-fifo.gguf"
+    os.mkfifo(fifo)
+    script = (
+        "from pathlib import Path; import sys; "
+        "from v13.native_probe_approval import _verify_model_file; "
+        "try:\n _verify_model_file(Path(sys.argv[1]), 1, '0' * 64)\n"
+        "except PermissionError:\n print('REJECTED')\n"
+        "else:\n raise SystemExit(1)"
+    )
+    env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1]))
+    result = subprocess.run(
+        [sys.executable, "-c", script, str(fifo)],
+        capture_output=True, text=True, timeout=2, check=False, env=env,
+    )
+    assert result.returncode == 0
+    assert result.stdout.strip() == "REJECTED"
 
 
 def test_model_revision_drift_invalidates_local_approval(tmp_path):
