@@ -924,6 +924,8 @@ This correction supersedes older branch-level status claims without deleting the
 
 **Status:** SOURCE_AND_LICENSE_VERIFIED / API_REVIEWED / DIAGNOSTIC_ONLY; no new model alternative selected.
 
+**Follow-up — exact pinned source inspection (2026-11-22).** At the same b29c606e revision, public include/llama.h exposes llama_set_embeddings() for injected batch inputs and llama_get_embeddings_ith() for output embeddings; it does not expose a getter for the input token-embedding table. However, src/llama-model.cpp contains an internal llama_model_get_tok_embd() implementation (around line 3282) that reads model->tok_embd and dequantizes F32/F16/BF16/quantized tensors; the internal llama_model struct in src/llama-model.h exposes tok_embd. That helper copies the entire matrix and is not declared in the public header, so calling it wholesale would be unsafe for a phone. A pinned native extension could instead extract only the receiver token IDs' rows using ggml_backend_tensor_get at validated tensor->nb[1] offsets and ggml_type_traits::to_float, with shape/quantization/overflow checks. This is a promising source for the true receiver-input target space of a low-rank B1/B2 projector, but it is an internal-ABI dependency and needs its own C++ tests and Android ARM64 measurement. Do not substitute final-layer tap states for input embeddings, and do not claim this extractor exists in the current receiver. No code or model change was made.
+
 
 ## R-079 — WebRTC/libfvad VAD comparison path and CLI verification (2026-11-22)
 
