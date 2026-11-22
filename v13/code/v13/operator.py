@@ -45,6 +45,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :import causal-output <dataset.json> <offline-trained-directory>
 :channel NO_MESSAGE|SOURCE_EXACT|CONTROL|SYMBOLIC
 :tap B1_DETAIL|B2_GIST [Start:Ende] (max. 64 native Tokens, read-only)
+:tap pair (same-source native B1/B2 read-only capture)
 :b3 pairs (native paired capture count, revisions and L1 threshold)
 :feedback output <gewünschter Referenztext> [--learn] (erster nativer Token)
 :budget [Name Wert] / :learning record|shadow|commit / :learn [route|wake|halt|b1_predictor|b2_predictor|a3_student|world_predictor|control_calibration|memory_retrieval|output_adapter]
