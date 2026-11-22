@@ -1324,3 +1324,41 @@ The 8db1952 exact-head workflows are `45066934953` (staged/integrated), `4506693
 **Next executable steps:** (1) poll exact 8db1952 and 9829b19 CI; (2) fix the actual receiver gate/consumer failure and temporal SleepRuntime ValueError using the newly exposed diagnostics; (3) wait for QA's exact lifecycle rebind; (4) wait for Boss #2370's full current-head matrix; (5) compose only after both chains are green; (6) run disjoint correct/omitted/shuffled/hypothetical-history and replay/retention ablations. Keep all learning and receiver paths SHADOW-only; no native B1/B2 weights or cross-organ latent transfer are proven.
 
 **User action:** none. Existing installed release is already up to date; no manual Termux command, model download/swap, permission change or device action is needed.
+
+
+## JEPA & Memory — Run 17: receiver omission telemetry and honest gate isolation (2026-11-22T20:45:02.401Z)
+
+**Code branch:** PR #2372, exact head `6da129ef1cd09edd119491e5ff7740005792063c`, DRAFT / NOT_RELEASED.
+
+### Implemented changes
+
+- `e638b221dec561fee9bd1864abfc3fb54e9f73fa` changes the B1/B2 temporal body adapter so every fail-closed omission can be recorded in the source-bound body-state audit (matrix unavailable, invalid provenance, receiver utility rejected, insufficient support, invalid prediction, lock busy or readout error). The diagnostic remains in the stored audit source and is not inserted into the B1/B2 prompt. Successful readouts preserve the previous checkpoint/source/history binding and STATE_NOT_FACT behavior.
+- `0c5ef854765dfdb349dd910a2146bdaa3e9f920e` separates the real Cognition.offer prompt-consumer test from the learned-utility gate. The predictor/receiver weights remain trained; only the test's gate metrics are replaced with an explicit accepted fixture. A separate negative-control test forces B1 utility rejection and verifies the audit says OMITTED / RECEIVER_UTILITY_REJECTED while the prompt view contains no temporal prediction.
+- `6da129ef1cd09edd119491e5ff7740005792063c` tightens the omitted-audit assertions (role, event ID, history length, no raw prompt text).
+
+**Interpretation:** this proves source-bound prompt wiring under a test-only accepted gate and proves fail-closed omission telemetry under a negative gate. It does **not** prove that the actual learned B1/B2 receiver utility passes its disjoint holdout; that remains an independent acceptance test. No production gate was weakened, and no body model weights were changed.
+
+### Exact verification
+
+- Current exact-head workflows: `45068109547` optimizer-resume Python 3.13/3.14, `45068109554` staged/integrated, `45068109526` temporal T8. All QUEUED at last read; no exact-head PASS.
+- Previous fbe4 temporal tests failed 11/12 on both Python 3.13 and 3.14 because the B1 prompt lacked `world_jepa_temporal`. The current test now uses an explicit test-only accepted gate fixture; the negative-control audit test checks rejection separately.
+- Previous staged/integrated tests failed at the QA-owned memory.py source pin and reported a temporal SleepRuntime `ValueError`; the test trace now captures its message, but the root cause is still OPEN.
+- Previous optimizer-resume tests stopped at the same stale memory.py lifecycle pin. QA owns the rebind.
+- LOCAL_LINUX full repository compile/pytest remains BLOCKED / NOT_RUN: CPython 3.13.5, NumPy 2.3.5 and pytest 9.0.2 exist, but no checkout is mounted and git remote DNS fails.
+
+### Integration and device boundary
+
+- QA #2359 still needs to rebind its lifecycle chain to JEPA `memory.py` SHA-256 `33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701`; inherited JEPA and QA pins remain stale. Request is recorded in #2359 comment 7085390248.
+- Boss #2370's former audio Runtime pin mismatch is corrected on branch head 7fc6d7e: current Runtime blob and audio overlay agree on `6e61af07326c5bb11406ee72361a710d5facc9a5`. The full 18-workflow matrix remains queued. Do not rebase until Boss matrix and QA lifecycle chain are green.
+- Private V13OBS #115 (20:24:26Z) still reports base `aed1d2b` installed and auto-update enabled, but B1 4/4 and B2 2/2 native attempts failed, zero valid offers, C3 prefill ~38.945 s / 2 tokens. This is metadata-only, not a new turn. #2372 is not installed; REDMI_UNVERIFIED.
+- No update request, chat send, log page, shell, model/weight/permission change or device mutation.
+
+### Next
+
+1. Poll exact 6da129ef workflows and inspect the source-bound omission audit if the consumer test fails.
+2. Obtain the actual temporal exception message from SleepRuntime staged CI and fix the root cause.
+3. Obtain QA lifecycle rebind and green Boss matrix; only then compose/rebase.
+4. Measure real receiver utility on disjoint holdouts separately from the test fixture; add correct/omitted/shuffled/hypothetical-history controls, then matched replay/retention shifts and return-to-first-cohort.
+5. Keep all receiver and learning paths SHADOW-only until real utility, restart, rollback and Android evidence exist.
+
+**User action:** none. The installed release is already up to date; no manual Termux command or model/device action is needed.
