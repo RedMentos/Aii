@@ -1261,3 +1261,26 @@ Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, mi
 6. Whole Canon: preserve all V13 functions and the 1,255-heading inventory; semantic clause→consumer→test→platform→rollback mapping remains incomplete.
 
 **User action:** none. No manual Termux command, update request, model/weight swap, permission change, APK install or microphone grant was performed.
+
+
+## Boss integration checkpoint — 2026-11-22T17:20:29Z
+
+### Verified device and release state
+- Release branch `gpt6/v13-private-remote-bridge-20261111` remains `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; exact release CI 21/21 workflows SUCCESS. Private #591 confirms this exact SHA installed, auto-update enabled, runtime/dashboard UP_TO_DATE and no pipeline error.
+- Private #592 confirms the AI service is RUNNING and four native processes are mapped. Reported process PSS is 0.3 MiB and RSS 2.6 MiB; this is not a measurement of free RAM or total model memory.
+- The last recorded turn remains 57.74 s total, 41.63 s TTFT, 38.95 s prefill, 751 prompt tokens and 2 generated tokens. B1_DETAIL/B2_GIST probes time out at 53.2 s/54.2 s with zero valid offers. No new turn was sent.
+- Lab stage 10 is persisted/active, official Age remains 0, implemented feature stage is 5, and physical feature execution is unverified. Learning commit authority still requires separate SHADOW mode.
+
+### Boss candidate and exact blocker
+- PR #2343 latest branch head is `fc5fa22d41a678b34492b2a0519689ff62c13571`, DRAFT/NOT_RELEASED. The last executed head `853433f3ae809b0268b925fdf8c8c5bf705faa8c` had 10 success / 5 failures / 12 pending / 1 skipped. Staged consumers fail at `postcommit observer anchor mismatch: replacement 4`; QA additionally reported 13 nested source-pin mismatches on that head.
+- Added a diagnostic workflow step in `6c36d07` and a pre-postcommit Runtime hash/anchor regression diagnostic in `fc5fa22`. No exact-head CI runs/checks were returned for `fc5fa22`; these additions are not verified. Do not infer success from the earlier green checks.
+- Full local checkout/test remains BLOCKED: container `git ls-remote` failed DNS. Do not call CI LOCAL_LINUX or Android proof.
+
+### Next execution order
+1. Obtain the exact pre-postcommit Runtime line and old/new anchor counts from the new diagnostic on a genuinely executed CI head; if no run can be triggered, use a verified GitHub-runner path rather than guessing.
+2. Repair replacement 4 with a narrowly source-bound, idempotent transformation; independently reconcile every nested Store/Memory/archive/World/C3/JEPA/recovery/stage/deployer pin from the final bytes.
+3. Run the exact Python 3.13/3.14 staged, optimizer-resume, consumer, Lab-Age, migration, deployment and integrated-regression chain. Keep PR #2343 DRAFT until all required checks pass.
+4. Only after CI is green, request a same-prompt Redmi A/B with explicit consent. Measure valid B1/B2 offers, C4 consumption, correct C3 FINAL, TTFT, prefill, total latency and memory. Do not send an UPDATE_REQUEST before that gate.
+5. Continue the whole-Canon work in parallel lanes: JEPA source-forget/Store race; B3 receiver-side utility; Android companion/background and UI control; RAW EAR/AudioRecord plus decoder/vocoder; real bounded weight updates; Memorilla overflow consumer. Preserve official Age 0 and production B3/weight-promotion OFF.
+
+**User action: NONE.** No device update, chat send, shell command, model/weight swap, permission change, APK install or microphone grant was performed.
