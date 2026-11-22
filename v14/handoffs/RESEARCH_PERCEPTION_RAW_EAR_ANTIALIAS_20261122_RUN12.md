@@ -57,3 +57,16 @@ SciPy's official `signal.decimate` reference explicitly defines downsampling aft
 ## Next action
 
 Wait for exact-head `v14-raw-ear-fastpath` CI on this branch. If green, request Boss review and merge only onto the current release-development head. Keep microphone capture OFF until the companion's permission, route/silence, cancellation, zeroization and revocation contracts pass. Only then collect consented Redmi latency/RSS and acoustic fixtures.
+
+
+## Follow-up — comparator integration correction (2026-11-22)
+
+The first push-triggered RAW EAR VAD comparison run (Python 3.13 and 3.14) exposed an existing AST-isolation consumer that selected `extract_voice_cues` but did not include its newly required FIR helper or `lru_cache` dependency. This was a real downstream consumer failure, not a filter numerical failure.
+
+Fixed on this branch:
+- `v14/experiments/raw_ear_vad_compare.py` now includes `_voice_decimator_coefficients` and `_anti_alias_decimate` in the isolated AST selection and supplies `lru_cache` in its namespace.
+- `.github/workflows/v14-raw-ear-vad-comparison.yml` now pins the exact new `audio_voice_cues.py` Git blob `34dfd39728161b4659afc21298476cd732d08792` rather than the pre-change blob.
+
+Additional LOCAL_LINUX CPython 3.13.5 check: isolated AST-loader smoke PASS; the helper and cache dependency resolve when the comparator loads the producer in isolation.
+
+Initial push evidence at code commit `44aadc4`: RAW EAR fastpath Python 3.13/3.14 PASS (run `45001440422`), prosody/attention Python 3.11/3.13 PASS (run `45001440362`), pre-lease revocation QA PASS (run `45001440342`), privacy scan PASS (run `45001440401`); VAD comparison failed in both Python versions because of the AST dependency omission (run `45001440340`). The omission and source pin were corrected in subsequent commits. Exact PR-head reruns on the updated branch were queued at last read: fastpath `45001598137`, comparator `45001695523`, prosody `45001695396`, pre-lease QA `45001695463`, staged/integrated `45001695356`, privacy `45001695367`, model-lab `45001695513`. Do not inherit the earlier push PASS as exact PR-head acceptance; wait for these updated-head results.
