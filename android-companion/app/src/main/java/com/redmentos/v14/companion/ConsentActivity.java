@@ -153,10 +153,3 @@ public final class ConsentActivity extends Activity {
         return ReceiptFactory.receiptExpiresAt(issuedAtSeconds);
     }
 }
-
-    private String randomHex(int bytes) {
-        byte[] value = new byte[bytes];
-        new SecureRandom().nextBytes(value);
-        return Canonical.hex(value);
-    }
-}
