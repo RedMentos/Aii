@@ -1,8 +1,10 @@
-"""QA: same-turn body admission, 30 s C3-recovery reserve, fair 90 s slices.
+"""QA: same-turn body admission in source and staged budget profiles.
 
-Short recovery keeps the established 26 s C3 reserve and gives B1/B2 sequential
-2 s slices; deep turns split the 45% pre-answer window fairly. Synthetic clock,
-Store and model boundaries are not native model or Redmi performance evidence.
+The source recovery policy keeps its 26 s C3 reserve. The integrated staged
+candidate deliberately uses the 45% pre-answer window (16.5 s on a 30 s turn)
+and a 1 s minimum role slice. The same test runs against both compositions.
+Synthetic clock, Store and model boundaries are not native model or Redmi
+performance evidence.
 """
 import json
 import threading
@@ -13,6 +15,17 @@ from unittest.mock import patch
 from v13 import observer_schedule as obs
 from v13.cognition import Cognition
 from v13.common import Limits
+
+
+def _expected_c3_reserve_seconds():
+    """Select the explicit source or staged contract; reject unknown profiles."""
+    from v13 import native_turn_budget
+
+    if hasattr(native_turn_budget, "NATIVE_FIRST_RESERVE_FRACTION"):
+        return 26.0
+    if hasattr(native_turn_budget, "MIN_ROLE_SLICE_S"):
+        return 16.5
+    raise AssertionError("unrecognized native turn-budget profile")
 
 
 class BodyAttemptReached(Exception):
@@ -125,7 +138,8 @@ class SameTurnAdmissionTests(unittest.TestCase):
         self.assertGreater(by_role["B2_GIST"]["preanswer_seconds_available"], 1.9)
         self.assertLessEqual(by_role["B2_GIST"]["preanswer_seconds_available"], 2.0)
         self.assertTrue(all(row["status"] == "PREANSWER_BUDGETED" for row in budget_rows))
-        self.assertTrue(all(abs(row["c3_reserved_seconds"] - 26.0) < 0.01
+        expected_reserve = _expected_c3_reserve_seconds()
+        self.assertTrue(all(abs(row["c3_reserved_seconds"] - expected_reserve) < 0.01
                             for row in budget_rows))
         self.assertTrue(all(row["recent_real_prefill_failures"] == 2
                             for row in budget_rows))
@@ -163,7 +177,9 @@ class SameTurnAdmissionTests(unittest.TestCase):
         self.assertEqual(deferred[0]["role"], "B1_DETAIL")
         self.assertEqual(deferred[0]["status"], "POSTCOMMIT_ELIGIBLE")
         self.assertLess(deferred[0]["preanswer_seconds_available"], 1.0)
-        self.assertAlmostEqual(deferred[0]["c3_reserved_seconds"], 26.0, places=2)
+        self.assertAlmostEqual(
+            deferred[0]["c3_reserved_seconds"], _expected_c3_reserve_seconds(), places=2,
+        )
         self.assertEqual(deferred[0]["recent_real_prefill_failures"], 2)
         self.assertEqual(len(budgeted), 1)
         self.assertEqual(budgeted[0]["role"], "B2_GIST")
