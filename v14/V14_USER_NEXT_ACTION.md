@@ -1,3 +1,17 @@
+## Boss & Integration — Release-HEAD correction (2026-11-22T17:55:17.015Z)
+
+**Keine Nutzeraktion nötig.** Der Release-Branch wurde durch einen dokumentations-only Merge weitergeschoben; das Handy ist davon noch nicht aktualisiert.
+
+- Aktueller Release-Branch-HEAD: `aed1d2b826290c95c70356b5d8b864b5ef382be4`; exakt 37 Push-Checks waren noch QUEUED. Nicht als freigegeben oder installiert behandeln.
+- Redmi bleibt auf `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; Auto-Update EIN, Runtime/Dashboard UP_TO_DATE, letzter Fehler NONE. Keine Update-Anfrage senden, bis die exakte Push-CI grün ist; danach getrennte Installationsbestätigung abwarten.
+- Boss #2343 neuer Head `8e5cabb661ba3bada4fa63af24935f2a7a0bf0b2`: der alte Lab-Age-Fehler durch einen veralteten Postcommit-Anchor wurde adressiert; lokale isolierte Anchor-Simulation PASS, neuer Push-Workflow QUEUED.
+- #2346 bleibt wegen einer exakten Claim-Text-Assertion rot; #2364 Receiver-Probe und der Dokumentations-Handoff #2365 haben noch queued CI.
+- P0 bleibt unverändert: letzter gespeicherter Turn 57,739 s / 41,627 s TTFT / 38,945 s Prefill / 751 Prompt-Tokens / 2 generierte Tokens; Korrektheit UNKNOWN; B1/B2 TIME_BUDGET. Keine 20-Turn-Abnahme.
+
+Kein Termux-Befehl, kein erneuter Update-Request, kein Modell-/Gewichtswechsel und keine Rechtefreigabe nötig.
+
+---
+
 ## Boss & Integration — aktueller Geräte-/P0-Checkpoint (2026-11-22T17:51:17.837Z)
 
 **Keine Nutzeraktion nötig.** Das Redmi ist bereits auf dem aktuellen Release-HEAD. Kein manueller Termux-Befehl, kein erneuter Update-Request, kein Modell-/Gewichtswechsel und keine neue Rechtefreigabe.
