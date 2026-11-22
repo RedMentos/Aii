@@ -473,7 +473,7 @@ class Runtime:
                 except Exception as exc:self.store.log('jef_observer_unavailable',eid,{'error':type(exc).__name__})
                 _,channel_head=fastpol.head(self,'channel',e,self.cfg['channel'])  # WP-T1 channel head (applies only when approved)
                 def ask(role,focus=None,use_peer=True):
-                    p=self.cognition.offer(role,e,version,min(observer_end,time.monotonic()+observer_seconds),peers.get(role) if use_peer else None,valid_until=deadline,**({'focus':focus} if focus and 'focus' in inspect.signature(self.cognition.offer).parameters else {}))  # replaced/older offers take no focus
+                    p=self.cognition.offer(role,e,version,min(observer_end,time.monotonic()+observer_seconds),peers.get(role) if use_peer else None,valid_until=deadline,user_forced_deep=effort_mode in {'high','max','detail','gist'},**({'focus':focus} if focus and 'focus' in inspect.signature(self.cognition.offer).parameters else {}))  # replaced/older offers take no focus
                     other='B2_GIST' if role=='B1_DETAIL' else 'B1_DETAIL';peers[other]=self.cognition.communicate(p,other,**({'fast':channel_head} if channel_head and channel_head.get('learned') else {}));return p
                 sched=obsched.plan(self.cfg.get('observer_schedule',obsched.DEFAULT),roles,eid,self.cfg.get('observer_sample_rate',.5),parallel_ok=rpol['max_observer_bodies']>1 and bool(getattr(getattr(self.pool,'fabric',None),'enabled',False)))  # §22.2.4 deployment knob
                 meta['observer_schedule']={k:sched[k] for k in ('schedule','pre','parallel','post','reason')}
