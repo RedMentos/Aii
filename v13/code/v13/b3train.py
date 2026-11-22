@@ -16,7 +16,7 @@ from .common import atomic_write, dumps
 
 def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
                     label_source, direction="B1_TO_B2", seeds=(11, 17),
-                    epochs=30, head_steps=100, split_seed=20261122):
+                    epochs=10, head_steps=25, split_seed=20261122):
     """Fit persistent, non-promoted L1 candidates from real paired native taps.
 
     Labels and their provenance are caller-supplied; this function never
