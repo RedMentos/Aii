@@ -1,3 +1,20 @@
+# Boss integration checkpoint — 2026-11-22 06:54Z
+
+**No user action is needed.** Do not run a Termux command, request an update, change models/weights/permissions, or enable microphone capture on the basis of this checkpoint.
+
+- Release-development branch `gpt6/v13-private-remote-bridge-20261111` reads back at `f210999cf556be4d4514427cc9b5cf6d3cf3e984`. Boss PR #2288 is merged at `39b175521f50048f13ca14372b316de47527f531` as integration, not device release. On the newer exact SHA, 8 observed push workflow runs succeeded and the release-event integration workflow was cancelled; aggregate commit status remains pending with zero contexts. Full post-merge push certification is not claimed.
+- Authenticated private PIPELINE_STATUS #480 still reports auto-update enabled, runtime/dashboard `CI_WAIT`, `last_error=NONE`, and installed SHA `89333289b8cd50da92cbf7074c9ef689a2972dbf`. A fresh read-only PIPELINE_STATUS request #483 is unanswered. No UPDATE_REQUEST or device mutation was sent. The phone has not been shown to install the new code; Redmi remains UNVERIFIED.
+- Boss #2314 native receiver probe head `87975814a1e134a4b12dc5961b6250d9125d65eb`: runtime deployment, old-phone migration and Lab-Age checks PASS; native receiver and staged/integrated workflows are queued, same-turn and owner-read checks are in progress. It is a manual one-shot native input-embedding diagnostic, not trained latent coupling; it does not auto-install a binary or change weights/routing.
+- B3 parent #2313 remains NOT_READY: paired-tap, Lab-Age and tap-provenance checks failed on the current parent head; staged integration is still running and the branch is behind current release. Child #2317 passes its source-SHA-disjoint B3 regression but staged integration is queued. No L1 utility acceptance or trained B3 path is established.
+- JEPA #2311 has a new current-Boss head with the complete exact-head matrix queued. Earlier stale-pin failures remain unresolved until this new matrix completes. Learning promotion stays OFF.
+- Audio #2312 has a passing signed-consumer workflow, but its staged/migration path previously failed on the old-profile runtime update error; it remains stacked on QA companion work. No Android microphone provider or AudioRecord capture exists.
+- Full local Aii repository tests were BLOCKED: no checkout is mounted and GitHub DNS resolution fails. No local full-suite, native GGUF or Redmi result is claimed.
+- The P0 Redmi functional failure in #1904 remains open. The #2288 B1/B2→C4→C3 proof is synthetic-runner CI on the staged Runtime, not a native-phone acceptance result.
+
+**Next:** finish #2314's exact matrix; diagnose and rebase #2313+#2317 together; then evaluate #2311 and reconcile #2312 with QA. Keep B3 OFF/SYMBOLIC, learning promotion OFF, and do not send an update request until CI and a fresh device receipt justify it.
+
+---
+
 # Perception checkpoint — 2026-11-22 06:17Z
 
 **No user action is needed.** Do not run a Termux command, request an update, change models/weights/permissions, or enable microphone capture on the basis of this checkpoint.
