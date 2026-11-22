@@ -2064,7 +2064,7 @@ PR #2312 signed one-shot consumer passes; staged-runtime has 238 passed / 10 ski
 | JEPA staged update | PR #2311 head ae15: transactional/combined/receipt/WorldJEPA checks pass | Lab-Age/training-resume/controller/owner-read/migration fail from nested stale pins | No accepted runtime learning/weight promotion | SHADOW / PIN_CHAIN_FAIL |
 | Audio consumer | PR #2312 head 98f: focused one-shot and integrated regression pass; 238 staged tests pass, 10 skipped, 47 subtests | Two migration fixtures return PARTIAL / runtime ERROR / last_error UPDATE on old recovery profile | No microphone or Android capture | PARTIAL / MIGRATION_FAIL |
 
-## Perception run-11b evidence correction — 2026-11-22 06:08Z
+## Perception run-11b evidence correction — 2026-11-22 06:17Z
 
 This overlay updates only the A-plane audio/voice evidence; it does not mark the entire A0–A5 family complete and does not change historical Canon headings.
 
