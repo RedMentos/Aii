@@ -5,7 +5,7 @@ Owner: Core & Harness
 Package: V14-009 / Android screen-observation provider  
 PR: #2379 (draft; stacked on QA PR #2356)  
 Branch: core/v14-media-projection-frame-provider-20261122  
-Checkpoint SHA: 19f53e9baa16446d5fc167ce3715765579a1298a
+Code checkpoint SHA: 19f53e9baa16446d5fc167ce3715765579a1298a\nHandoff commit: b1bdfef7e0d88e330f3f0cc829563d30bd429bba
 
 ## Verified scope in this branch
 
