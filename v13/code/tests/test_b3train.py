@@ -66,8 +66,31 @@ class L1ShadowTrainingTests(unittest.TestCase):
         self.assertEqual(report["receiver_injection_authority"], 0)
         self.assertEqual(report["body_learning_authority"], 0)
         self.assertIn("NOT_RUN_MISSING_L0_CHANNEL_BASELINES", report["l1_utility_gate"])
+        self.assertTrue(report["weight_evidence"]["numeric_updates_verified_all_seeds"])
+        self.assertTrue(report["weight_evidence"]["nonzero_gradient_norm_all_seeds"])
+        self.assertEqual(report["weight_evidence"]["role_retention_status"],
+                         "NOT_MEASURED_NO_OLD_TASK_ROLE_HOLDOUT")
+        self.assertTrue(report["weight_evidence"]["master_weights_untouched"])
         for seed in report["seed_reports"]:
             self.assertTrue(seed["reload_identical"])
+            self.assertTrue(seed["numeric_weight_update_verified"])
+            self.assertGreater(seed["bridge_parameter_delta_l2"], 0.0)
+            self.assertGreater(seed["gradient_norm_last"], 0.0)
+            self.assertNotEqual(seed["initial_bridge_parameter_sha256"],
+                                seed["final_bridge_parameter_sha256"])
+            self.assertTrue(seed["no_message_identity"])
+            self.assertEqual(seed["role_retention_status"],
+                             "NOT_MEASURED_NO_OLD_TASK_ROLE_HOLDOUT")
+            self.assertTrue(seed["master_weights_untouched"])
+            self.assertGreater(seed["bridge_parameter_delta_by_tensor_l2"]["Wu"], 0.0)
+            manifest = json.loads((self.r.home / seed["candidate_manifest"]).read_text())
+            evidence = manifest["bridge_parameter_evidence"]
+            self.assertGreater(evidence["delta_l2"], 0.0)
+            self.assertGreater(evidence["gradient_norm_last"], 0.0)
+            self.assertTrue(evidence["numeric_update_verified"])
+            self.assertEqual(manifest["latent_authority"], 0)
+            self.assertEqual(manifest["receiver_injection_authority"], 0)
+            self.assertEqual(manifest["body_learning_authority"], 0)
             self.assertTrue((self.r.home / seed["candidate_manifest"]).is_file())
             self.assertTrue((self.r.home / seed["candidate_weights"]).is_file())
         self.assertTrue((self.r.home / report["report_path"]).is_file())
