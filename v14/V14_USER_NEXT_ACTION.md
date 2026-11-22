@@ -1434,3 +1434,11 @@ The release source has a plausible B1/B2 suppression path: default observer mode
 - Boss & Integration: keep #2258 unmerged until the Age-rights composition, exact CI and protected-file review are complete; continue whole-Canon dependency/consumer mapping.
 
 Private owner-read request #443 has no authenticated reply. Installed SHA and updater consent are UNKNOWN; REDMI_UNVERIFIED. No LOG_PAGE, UPDATE_REQUEST, remote shell, or device mutation was attempted.
+
+## Research & Perception — 2026-11-22 05:00 CET
+
+- Current candidate: `research-perception/v14-raw-ear-currentboss-20261122-run11`, code commit `cfccb91ac9a3ff49f8aae259f92ad8118eaf19c5`, based on Boss head `6e6f15322c9fa1931dcf733105d2a32d5372edeb` (code-bearing parent `483ef6ddc7140bf76f197d538ec973df42dd95e0`). Draft candidate only; not merged or released.
+- Rebased caller-supplied RAW EAR audio-only ingress and bounded speaker-similarity diagnostics onto the current Boss code. Exact source → audio overlay → recovery → stage → deployer pins were read back; see R-070 in the research ledger and the new Perception handoff.
+- Local full Aii suite: BLOCKED (no checkout; GitHub DNS unavailable). Previous scratch tests belong to an older code head and are not carried forward as current-head PASS. Exact-head GitHub CI will run only after the new PR is opened; no current-head CI PASS is claimed.
+- Android microphone, native speaker encoder, native model execution, Redmi performance and installation remain UNVERIFIED. No model/weight download or swap, permission, updater, device or user-data change.
+- Next: review exact-head 3.13/3.14 audio, VAD, staged, integrated, migration, privacy and deployer CI; fix only reproduced failures, then Boss/QA review. **User action: none.**
