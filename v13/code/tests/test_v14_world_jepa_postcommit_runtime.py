@@ -18,6 +18,30 @@ from v13.world_jepa_planner import consume_world_planner_shadow, read_world_plan
 from v13.world_jepa_runtime import PERMISSION_KEY
 
 
+def _trace_world_jepa_consumer_calls(monkeypatch, trace):
+    from v13 import world_jepa_planner, world_jepa_runtime, world_jepa_temporal
+
+    for module, name, label in (
+        (world_jepa_runtime, "consume_after_commit", "base"),
+        (world_jepa_temporal, "consume_temporal_after_commit", "temporal"),
+        (world_jepa_planner, "consume_world_planner_shadow", "planner"),
+    ):
+        original = getattr(module, name)
+
+        def wrapped(*args, _original=original, _label=label, **kwargs):
+            trace.append(_label + ":START")
+            try:
+                result = _original(*args, **kwargs)
+            except Exception as exc:
+                trace.append(_label + ":RAISED:" + type(exc).__name__)
+                raise
+            status = result.get("status") if isinstance(result, dict) else type(result).__name__
+            trace.append(_label + ":" + str(status))
+            return result
+
+        monkeypatch.setattr(module, name, wrapped)
+
+
 def _make_store(home):
     (home / "data" / "db").mkdir(parents=True)
     (home / "data" / "blobs").mkdir(parents=True)
@@ -216,7 +240,7 @@ def test_sleep_jepa_job_requeues_one_bounded_continuation_when_more_t8_rows_exis
         store.close()
 
 
-def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with_restart_rollback(tmp_path):
+def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with_restart_rollback(tmp_path, monkeypatch):
     home = tmp_path / "brain-runtime-jepa"
     store, session = _make_store(home)
     try:
@@ -226,8 +250,15 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
             "steps": 120, "replay_mode": "uniform",
         })
         sleep = _sleep(store, home)
+        trace = []
+        _trace_world_jepa_consumer_calls(monkeypatch, trace)
         first = sleep._run_world_jepa(first_events[-1], limit=256)
-        assert first["status"] == "POSTCOMMIT_PROCESSED", first
+        assert first["status"] == "POSTCOMMIT_PROCESSED", {
+            "error": first.get("error"), "trace": trace,
+            "learning": first.get("learning", {}).get("status"),
+            "temporal": first.get("temporal", {}).get("status"),
+            "planner": first.get("planner", {}).get("status"),
+        }
         assert "learning" in first, first
         assert first["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA", first
         first_metrics = first["learning"]["metrics"]
@@ -383,7 +414,7 @@ def test_sleep_jepa_cancelled_by_user_preemption_requeues_without_checkpoint_com
         store.close()
 
 
-def test_planner_only_checkpoint_readout_does_not_consume_future_learning_opt_in(tmp_path):
+def test_planner_only_checkpoint_readout_does_not_consume_future_learning_opt_in(tmp_path, monkeypatch):
     home = tmp_path / "brain-jepa-gate-resume"
     store, session = _make_store(home)
     try:
@@ -393,8 +424,15 @@ def test_planner_only_checkpoint_readout_does_not_consume_future_learning_opt_in
             "steps": 120, "replay_mode": "uniform",
         })
         sleep = _sleep(store, home)
+        trace = []
+        _trace_world_jepa_consumer_calls(monkeypatch, trace)
         first = sleep._run_world_jepa(first_events[-1], limit=256)
-        assert "learning" in first, first
+        assert "learning" in first, {
+            "error": first.get("error"), "trace": trace,
+            "learning": first.get("learning", {}).get("status"),
+            "temporal": first.get("temporal", {}).get("status"),
+            "planner": first.get("planner", {}).get("status"),
+        }
         assert first["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA", first
         first_planner_status = _planner_expected_status(first["learning"]["metrics"])
         assert first["planner"]["status"] == first_planner_status
