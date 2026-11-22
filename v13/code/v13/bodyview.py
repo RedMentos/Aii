@@ -176,9 +176,9 @@ def _temporal_world_jepa_body_readout(r, e, role):
                     return omitted("INVALID_PREDICTION", action=action)
                 row = [
                     action,
-                    round(min(86400.0, max(0.0, float(duration))), 3),
+                    round(min(86400.0, max(0.0, float(duration))), 2),
                     int(round(min(1000000.0, max(0.0, float(output_chars))))),
-                    round(float(uncertainty), 4),
+                    round(float(uncertainty), 3),
                     support,
                 ]
             else:
@@ -188,7 +188,7 @@ def _temporal_world_jepa_body_readout(r, e, role):
                     return omitted("INVALID_PREDICTION", action=action)
                 row = [
                     action, round(min(1.0, max(0.0, float(success))), 3),
-                    round(float(uncertainty), 4), support,
+                    round(float(uncertainty), 3), support,
                 ]
             rows.append(row)
         if not rows:
@@ -198,18 +198,23 @@ def _temporal_world_jepa_body_readout(r, e, role):
             "B1_DURATION_OUTPUT_SIZE" if role == "B1_DETAIL"
             else "B2_P_FINAL_NOT_ANSWER_CORRECTNESS"
         )
+        prompt_target = (
+            "DURATION+OUTPUT_CHARS" if role == "B1_DETAIL"
+            else "P_FINAL_NOT_CORRECTNESS"
+        )
+        # Keep the foreground view within its 700-character budget. The full
+        # target semantics and complete source hashes remain in the stored audit;
+        # the prompt gets compact labels and 8-hex source fingerprints only.
         context = {
             "status": "SHADOW_READOUT_ONLY",
-            "horizon": "NEXT_ACTION_AFTER_HISTORY",
             "history_length": history_length,
-            "target": target,
+            "target": prompt_target,
             "checkpoint": checkpoint_sha[:12],
-            "history_sources": [value[:10] for value in history_sources],
+            "history_sources": [value[:8] for value in history_sources],
             "rows": rows,
-            "support": "TRAIN>=8",
             "native_body_consumed": False,
             "decision_authority": "NONE",
-            "note": "prediction only; not fact/source/permission",
+            "note": "prediction; not fact/permission",
         }
         if unsupported:
             context["unsupported_actions"] = unsupported
@@ -265,7 +270,9 @@ def body_state(r,e,role,text):
         from .agi import hub
         view['skills']=hub(r).skills.select(text)[:3]
     except Exception:view['skills']=[]
-    def prompt_chars():return len(dumps(view))
+    def prompt_chars():
+        # Count the exact final prompt envelope, not just the inner view.
+        return len(dumps(view|{'authority':'STATE_NOT_FACT','role':role}))
     if prompt_chars()>STATE_CHARS:view['world']['recent']=[]
     if prompt_chars()>STATE_CHARS and temporal_context is not None:
         skills=view.get('skills')

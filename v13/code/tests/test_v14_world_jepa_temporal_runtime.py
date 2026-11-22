@@ -901,8 +901,10 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_acc
         detail, gist = prompts["B1_DETAIL"], prompts["B2_GIST"]
         assert detail["history_length"] == 2
         assert gist["history_length"] == 3
-        assert detail["target"] == "B1_DURATION_OUTPUT_SIZE"
-        assert gist["target"] == "B2_P_FINAL_NOT_ANSWER_CORRECTNESS"
+        assert detail["target"] == "DURATION+OUTPUT_CHARS"
+        assert gist["target"] == "P_FINAL_NOT_CORRECTNESS"
+        assert all(len(value) == 8 for value in detail["history_sources"])
+        assert all(len(value) == 8 for value in gist["history_sources"])
         assert detail["checkpoint"] == gist["checkpoint"] == trained["checkpoint_sha256"][:12]
         assert "prediction only" in detail["note"]
         assert "not fact/source/permission" in gist["note"]
@@ -927,8 +929,13 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_acc
             assert audit["checkpoint_sha256"] == trained["checkpoint_sha256"]
             assert audit["role"] == role
             assert audit["history_length"] == (2 if role == "B1_DETAIL" else 3)
+            assert audit["target_semantics"] == (
+                "B1_DURATION_OUTPUT_SIZE" if role == "B1_DETAIL"
+                else "B2_P_FINAL_NOT_ANSWER_CORRECTNESS"
+            )
             assert len(audit["history_action_ids"]) == audit["history_length"]
             assert len(audit["history_source_sha256s"]) == audit["history_length"]
+            assert all(len(value) == 64 for value in audit["history_source_sha256s"])
             assert audit["native_body_consumed"] is False
             assert audit["native_body_weights_changed"] is False
             assert audit["decision_authority"] == "NONE"
