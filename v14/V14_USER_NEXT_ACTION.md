@@ -1,3 +1,87 @@
+# Current next action — 2026-11-22 01:39 CET (full staged CI readback)
+
+Current Boss HEAD remains `f586a92392b521c073e7a72340bf7adb72f87198`. The common pin-ordering defect now reaches every major staged consumer:
+
+- PASS: runtime-deploy integrity `44969265127`; A5 UI lease `44969265049`; privacy scan `44969265111`; combined JEPA `44969265077`.
+- FAIL: Lab-Age `44969265116`; controller guard `44969265012`; private owner-read/Python 3.14 staged startup `44969265009`; two-checkout migration `44969265114`; staged/integrated regression `44969264997`; audio/arithmetic Python 3.13 `44969265142`.
+- The staged-runtime suite reports **19 failed, 231 passed, 10 skipped, 2 errors, 41 subtests**; integrated-regression reports one failed test. Audio/arithmetic Python 3.13 reports **8 failed, 44 passed, 26 subtests**. Each failure is the same `local-error pre-rebind semantic binding mismatch`, not independent arithmetic/audio defects.
+- Audio/arithmetic Python 3.14 `44969265142` was still running at the latest poll. The exact-head gate is NOT GREEN.
+- Private owner-read and migration failures are downstream of the same staging failure; migration returns PARTIAL rather than UPDATED. Do not treat them as separate device failures.
+
+The required fix remains: capture the semantic SHA and matching local-error pin immediately after the Record-Only guard output, then rebind that saved pin to the final semantic SHA after the Store pin update. The current implementation captures too late. QA has posted this exact ordering on #2288 and recorded it on #1984.
+
+---
+
+# Current next action — 2026-11-22 01:39 CET (private relay receipt check)
+
+Private owner-read verification was attempted through the connected private repository only. The newest V13READ issues **#453 through #440** in `RedMentos/Aiiii` are all still open with **zero comments**. No authenticated phone receipt exists in that range. No new relay request, LOG_PAGE query, UPDATE_REQUEST, replay or remote action was issued. Installed SHA, running service state and current updater consent remain UNKNOWN. **REDMI_UNVERIFIED.**
+
+The current Boss code candidate remains `f586a92392b521c073e7a72340bf7adb72f87198`; exact CI failures and the Record-Only guard→final-semantic pin mismatch are recorded below. No user action is needed.
+
+---
+
+# Current next action — 2026-11-22 01:39 CET (exact-head CI failure confirmed)
+
+**User action: none.** Do not run Termux or change installed models, weights, permissions, Age, updater settings or phone data.
+
+## Current Boss exact HEAD: `f586a92392b521c073e7a72340bf7adb72f87198`
+
+- Current `stage_integrated_candidate.py` SHA-256 is `68aea2862d378779d10dce191548b2dcb9de2902519de07a3283fd5214cb0ada`, and it exactly matches `runtime_deploy.py:STAGER_SHA256`. Byte-pin check only; no runtime/device test.
+- Exact-head CI PASS: runtime-deploy integrity `44969265127`, A5 UI lease `44969265049`, privacy scan `44969265111`, combined JEPA `44969265077`.
+- Exact-head CI FAIL: Lab-Age `44969265116` and controller record-only guard `44969265012` both raise `ValueError: local-error pre-rebind semantic binding mismatch` at `termux_runtime_recovery_candidate_20261112.py:313`. Private owner-read/Python 3.14 staged startup `44969265009` wraps the same failure as `RuntimeDeployError: Integrated runtime staging failed: ValueError`. Two-checkout migration `44969265114` reaches the new worker but returns `PARTIAL` instead of `UPDATED`, downstream of that staging failure.
+- Staged/integrated regression `44969264997` and audio/arithmetic `44969265142` were still running at the latest poll. Exact-head gate is not green.
+
+## Reproduced pin-chain root cause
+
+The pinned Record-Only guard deliberately updates `local_error_route_shadow_candidate.py` to reference the semantic candidate SHA *after the guard's own ActionLearn pin rewrite*. The later Store rebind changes the semantic candidate bytes again. Current code captures `pre_rebind_semantic_sha` only after that later Store rebind, so the local-error pin still points to the guard-output generation and the equality check at line 313 fails. QA posted the exact fix on #2288: capture the guard-output semantic SHA and local-error pin immediately after `control_guard.apply_sources()`; assert they match; after the final Store rebind, replace that captured guard-output pin with the final semantic SHA. Do not weaken the source-pin validation.
+
+## Other open QA findings
+
+- #2282 reader/revocation remains uncomposed and needs strict 64-lowercase-hex digest validation before any blob-relative `os.open`; `O_NOFOLLOW` does not reject `../`.
+- #2283 rollback still has a two-file crash window between launcher and runtime-marker replacement; a durable journal/recovery path and subprocess crash-injection tests are required.
+- #2273 companion approval/denial is one-shot under the DB CAS tests, but notification IDs still use `actionId.hashCode()` and can collide, replacing another pending notification.
+- #2280 C4→C3 receipt/tampered-offer negative control is synthetic evidence on a stale stack and must be rebased onto the current candidate. Native B1/B2 and Redmi chat are not proven.
+
+## Evidence boundary
+
+No full local Aii checkout or local repository suite was available. No authenticated private owner-read, installed-SHA confirmation, Redmi/Termux deploy, native model generation, microphone capture, Android app launch, PSS/TTFT benchmark or 20-turn acceptance run occurred. **REDMI_UNVERIFIED / NOT_RELEASED.** The historical 1,255-heading Canon remains preserved; trained B3 latent coupling, accepted JEPA weight updates/retention, full voice learning, distinct sparse MoE, Android background/UI control, OS sandbox, adaptive behavior judge, production Memorilla consumer, Sleep/Dream and cross-organ self-edit remain open.
+
+**Next internal action:** fix the guard-output→final-semantic pin ordering, then rerun the exact full CI set and rebase the Store reader/revocation, rollback, C4→C3, Age-rights, companion and RAW EAR follow-ups. User action remains none.
+
+---
+
+# Current next action — 2026-11-22 01:39 CET (QA/Android current-base follow-up)
+
+**User action: none.** No Termux command, update request, model/weight swap, permission change, Age change or phone-data action is required.
+
+## Current Boss candidate
+
+- Boss branch `boss/v14-recall-store-pin-rebind-20261122` is at `f586a92392b521c073e7a72340bf7adb72f87198`, DRAFT / NOT_RELEASED.
+- Exact byte readback: `stage_integrated_candidate.py` SHA-256 `68aea2862d378779d10dce191548b2dcb9de2902519de07a3283fd5214cb0ada` matches `runtime_deploy.py:STAGER_SHA256`. This is a source-pin check, not a staged runtime or phone test.
+- Exact-head workflows for `f586a923` were queued/pending at the latest poll: runtime-deploy integrity, controller guard, staged/integrated regression, private owner-read/Python 3.14, two-checkout migration, Lab-Age, audio/arithmetic, JEPA, privacy and A5 UI lease. Additive-only validation is skipped; release-queue jobs are cancelled. No current-head green claim is available.
+
+## Current blocker: Record-Only guard → final semantic pin
+
+- The prior NameError from an undefined pin snapshot is gone.
+- The pinned `record_only_controller_guard_20261116.py` intentionally rewrites both `world_semantic_evidence_candidate.py` and the `local_error_route_shadow_candidate.py` pin to the guard-output semantic SHA.
+- The base composer later rebinds the semantic module's Store pin, changing that module's final SHA. Current code captures `pre_rebind_semantic_sha` only after this later Store rebind, so it no longer has the guard-output SHA required to rebind the local-error consumer. The current equality check at lines 312–313 compares different generations; the subsequent pre/final values are also computed without a change between them.
+- QA posted the exact correction on #2288: immediately after `control_guard.apply_sources()`, capture the guard-output semantic SHA and local-error pin and assert they match. After the final Store rebind, rebind the local-error pin from that captured guard-output SHA to the final semantic SHA. This preserves provenance and rejects unrelated mutations.
+
+## Remaining QA findings
+
+- #2282 reader/revocation is not composed. Its old branch had a stale stream pin and a path-confinement gap: validate the stored digest as exactly 64 lowercase hex before opening a blob-relative name; `O_NOFOLLOW` does not reject `../`.
+- #2283 rollback swaps launcher and runtime marker as two separate atomic files. Process death between replacements can leave a mismatched pair; deploy's exception path also does not restore the marker if its replacement succeeded before a later fsync error. A durable journal/recovery path and subprocess crash-injection tests remain required.
+- #2273 companion one-shot approval/denial has focused CI evidence, but `NotificationManager.notify(actionId.hashCode(), ...)` can replace a different pending notification on a Java hash collision even though PendingIntent data URIs are distinct.
+- #2280 C4→C3 receipt and tampered OfferPacket negative control remain synthetic evidence on a stale stack; rebase onto the current Boss candidate before claiming integration. Native B1/B2 generation and Redmi chat remain unproven.
+
+## Device and whole-system boundary
+
+No full local Aii checkout or local repository test was available. No authenticated private owner-read, installed-SHA confirmation, Redmi/Termux deploy, native generation, audio capture, Android app launch, PSS/TTFT measurement or 20-turn acceptance run occurred. **REDMI_UNVERIFIED / NOT_RELEASED.** The 1,255-heading Canon remains preserved, but trained B3 latent coupling, accepted JEPA weight updates/retention, full voice learning, distinct sparse MoE, Android background/UI control, OS sandbox, adaptive behavior judge, production Memorilla consumer, Sleep/Dream and cross-organ self-edit remain open.
+
+**Next internal step:** finish exact-head CI after correcting the guard-output→final-semantic pin ordering, then compose the reader/revocation, rollback, C4→C3, Age-rights, companion and RAW EAR follow-ups onto the same candidate. User action remains none.
+
+---
+
 # Current next action — 2026-11-22 00:57 UTC
 
 **No user action is required. Do not run Termux commands or change models, weights, Age, permissions, updater settings or phone data.**
