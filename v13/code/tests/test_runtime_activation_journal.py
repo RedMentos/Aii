@@ -218,5 +218,123 @@ d._activation_transaction(
         self.assertEqual(self.launcher.read_bytes(), self.old_launcher)
 
 
+
+
+class RuntimeRollbackIntegrationTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.checkout = self.root / "checkout"
+        self.code = self.checkout / "v13" / "code"
+        for rel in d.REQUIRED:
+            path = self.code / rel
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(("fixture " + rel).encode("utf-8"))
+        for rel in d.COPY_SUBTREES:
+            (self.code / rel).mkdir(parents=True, exist_ok=True)
+        actual_code = Path(d.__file__).resolve().parents[1]
+        for rel in (d.UI_SOURCE, "v13/operator.py", d.UI_BUILDER):
+            target = self.code / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((actual_code / rel).read_bytes())
+        self.home = self.root / "phone-home"
+        (self.home / "bin").mkdir(parents=True)
+        (self.home / "models").mkdir()
+        (self.home / "data" / "db").mkdir(parents=True)
+        self.launcher = self.home / "bin" / "v13"
+        self.old_launcher = b"#!/bin/sh\necho original\n"
+        self.launcher.write_bytes(self.old_launcher)
+        (self.home / "models" / "model.gguf").write_bytes(b"GGUF_DO_NOT_TOUCH")
+        (self.home / "data" / "db" / "brain.sqlite3").write_bytes(b"SQLITE_DO_NOT_TOUCH")
+        self.private = self.root / "private"
+        self.builds = self.root / "builds"
+        self.commit = "d" * 40
+        self.source_mock = mock.patch.object(
+            d, "_source", return_value=(self.checkout, self.code, self.commit)).start()
+        self.addCleanup(mock.patch.stopall)
+        self.stop_patch = mock.patch.object(d, "_check_stopped")
+        self.selftest_patch = mock.patch.object(d, "_selftest")
+        self.stop_patch.start()
+        self.selftest_patch.start()
+        self.addCleanup(self.stop_patch.stop)
+        self.addCleanup(self.selftest_patch.stop)
+
+        def fake_stage(source, target, *, expected_commit=None):
+            target.mkdir(mode=0o700)
+            d._copy(source, target)
+            d._apply_plain_ui_recovery(source, target)
+            hashes = {
+                p.relative_to(target).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in target.rglob("*") if p.is_file()
+            }
+            manifest = {"status": "SHADOW_REVIEW_ONLY", "files_sha256": hashes}
+            (target / d.STAGE_MANIFEST).write_text(json.dumps(manifest), encoding="utf-8")
+            return d._verify_stage(target)
+
+        self.stage_patch = mock.patch.object(
+            d, "_stage_integrated_runtime", side_effect=fake_stage)
+        self.stage_patch.start()
+        self.addCleanup(self.stage_patch.stop)
+
+    def deploy(self, commit=None):
+        if commit is not None:
+            self.source_mock.return_value = (self.checkout, self.code, commit)
+        return d.deploy(self.checkout, home=self.home, private=self.private,
+                        builds=self.builds, ci_verified=True)
+
+    def test_second_deploy_rollback_restores_previous_launcher_and_marker(self):
+        first = self.deploy()
+        first_launcher = self.launcher.read_bytes()
+        first_marker = (self.private / d.MARKER_NAME).read_bytes()
+        self.assertEqual(first["status"], "DEPLOYED")
+        second = self.deploy("e" * 40)
+        self.assertEqual(second["status"], "DEPLOYED")
+        self.assertNotEqual(self.launcher.read_bytes(), first_launcher)
+        current_marker = json.loads((self.private / d.MARKER_NAME).read_text())
+        self.assertEqual(Path(current_marker["backup_launcher"]).read_bytes(), first_launcher)
+        self.assertEqual(Path(current_marker["backup_marker"]).read_bytes(), first_marker)
+        receipt = d.rollback(home=self.home, private=self.private, builds=self.builds)
+        self.assertEqual(receipt["status"], "ROLLED_BACK")
+        self.assertEqual(self.launcher.read_bytes(), first_launcher)
+        self.assertEqual((self.private / d.MARKER_NAME).read_bytes(), first_marker)
+        self.assertEqual((self.home / "models" / "model.gguf").read_bytes(), b"GGUF_DO_NOT_TOUCH")
+        self.assertEqual((self.home / "data" / "db" / "brain.sqlite3").read_bytes(), b"SQLITE_DO_NOT_TOUCH")
+
+    def test_first_install_rollback_restores_original_launcher_and_removes_marker(self):
+        self.assertEqual(self.deploy()["status"], "DEPLOYED")
+        receipt = d.rollback(home=self.home, private=self.private, builds=self.builds)
+        self.assertEqual(receipt["status"], "ROLLED_BACK_LEGACY")
+        self.assertEqual(self.launcher.read_bytes(), self.old_launcher)
+        self.assertEqual(self.launcher.stat().st_mode & 0o777, 0o700)
+        self.assertFalse((self.private / d.MARKER_NAME).exists())
+        self.assertEqual((self.home / "models" / "model.gguf").read_bytes(), b"GGUF_DO_NOT_TOUCH")
+        self.assertEqual((self.home / "data" / "db" / "brain.sqlite3").read_bytes(), b"SQLITE_DO_NOT_TOUCH")
+
+    def test_tampered_previous_launcher_backup_fails_closed(self):
+        self.deploy()
+        self.deploy("e" * 40)
+        current_launcher = self.launcher.read_bytes()
+        current_marker = (self.private / d.MARKER_NAME).read_bytes()
+        record = json.loads(current_marker)
+        Path(record["backup_launcher"]).write_bytes(b"tampered launcher")
+        with self.assertRaisesRegex(d.RuntimeDeployError, "launcher backup integrity"):
+            d.rollback(home=self.home, private=self.private, builds=self.builds)
+        self.assertEqual(self.launcher.read_bytes(), current_launcher)
+        self.assertEqual((self.private / d.MARKER_NAME).read_bytes(), current_marker)
+
+    def test_active_runtime_refuses_rollback_before_mutation(self):
+        self.deploy()
+        self.deploy("e" * 40)
+        current_launcher = self.launcher.read_bytes()
+        current_marker = (self.private / d.MARKER_NAME).read_bytes()
+        with mock.patch.object(d, "_check_stopped",
+                               side_effect=d.RuntimeDeployError("running")):
+            with self.assertRaisesRegex(d.RuntimeDeployError, "running"):
+                d.rollback(home=self.home, private=self.private, builds=self.builds)
+        self.assertEqual(self.launcher.read_bytes(), current_launcher)
+        self.assertEqual((self.private / d.MARKER_NAME).read_bytes(), current_marker)
+
+
 if __name__ == "__main__":
     unittest.main()
