@@ -1,3 +1,13 @@
+## QA security checkpoint — native probe model-byte integrity (2026-11-22T20:32:00Z)
+
+QA found a concrete integrity gap in Core #2367: `native_probe_approval._model_binding()` trusted the manifest SHA-256 string but did not hash the actual on-disk model. `ModelManager.path_for()` checks only existence and size. Same-size sender/receiver tampering could therefore preserve manifest/revision fields and pass the local approval gate.
+
+Draft QA PR #2377 (`qa/v14-native-probe-model-hash-20261122`, current head `335d5017434d7deec9516e167d0403bd588410e3`) streams SHA-256 over both actual model files during arm and consume, uses O_NOFOLLOW, checks regular-file identity and stable metadata, starts the 120-second TTL after arm hashing and rechecks expiry after consume hashing, and adds four same-size tamper negatives (sender/receiver before/after arm). Local isolated helper: original bytes PASS; same-size tamper and symlink REJECTED. Exact native receiver run 45066641859 and staged/integrated run 45066641897 are QUEUED; full Runtime tests have not run. The PR also extends the existing native receiver workflow path/branch triggers. Keep B3 OFF; no model was loaded or changed, no probe or Redmi action occurred.
+
+Next: poll #2377 exact CI and review hash cost on large Android GGUFs. Do not merge without exact tests and Core review.
+
+---
+
 ## QA & Android — exact #2356 CI poll (2026-11-22T20:30:00Z)
 
 On exact head `3829465e5180ce237ef98b36181bda6caea601a5`: Android outcome contract `45065638347` PASS; Core companion outcome adapter `45065638341` PASS; staged/integrated `45065638335` IN_PROGRESS; Android Gradle/emulator `45065638333` QUEUED. The emulator job has not yet run on this head. The predecessor's System UI ANR remains a harness issue; no current emulator PASS or Redmi proof.
