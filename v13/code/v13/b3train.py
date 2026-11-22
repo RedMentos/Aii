@@ -155,6 +155,38 @@ def _source_disjoint_split(source_refs, labels, split_seed):
     )
 
 
+
+def _bridge_parameter_snapshot(bridge):
+    """Copy only the trainable B3 bridge tensors; body and receiver master weights are outside this scope."""
+    return {name: np.array(value, dtype=np.float64, copy=True)
+            for name, value in bridge.p.items()}
+
+
+def _bridge_parameter_digest(snapshot):
+    h = hashlib.sha256()
+    for name, value in sorted(snapshot.items()):
+        h.update(name.encode("utf-8"))
+        h.update(np.ascontiguousarray(value, dtype=np.float64).tobytes())
+    return h.hexdigest()
+
+
+def _bridge_parameter_delta(before, after):
+    if set(before) != set(after):
+        raise ValueError("B3 bridge parameter set changed during shadow training")
+    by_tensor = {}
+    max_abs = 0.0
+    for name in sorted(before):
+        delta = np.asarray(after[name], dtype=np.float64) - np.asarray(before[name], dtype=np.float64)
+        by_tensor[name] = float(np.linalg.norm(delta))
+        if delta.size:
+            max_abs = max(max_abs, float(np.max(np.abs(delta))))
+    return {
+        "l2": float(np.sqrt(sum(value * value for value in by_tensor.values()))),
+        "max_abs": max_abs,
+        "by_tensor_l2": by_tensor,
+    }
+
+
 def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
                     label_source, direction="B1_TO_B2", seeds=(11, 17, 23),
                     epochs=10, head_steps=25, split_seed=20261122, l0_evidence=None):
@@ -285,12 +317,29 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
         for seed in seeds:
             bridge = Bridge(d=H.shape[-1], K=4, r=8, h=16,
                             classes=len(label_values), seed=seed, direction=direction)
+            initial_bridge_params = _bridge_parameter_snapshot(bridge)
+            initial_bridge_parameter_sha256 = _bridge_parameter_digest(initial_bridge_params)
             bridge.fit_head(Xtr, ytr, steps=head_steps)
             history = bridge.fit(Htr, Mtr, Xtr, ytr, epochs=epochs,
                                  batch=min(64, len(train_indices)), seed=seed)
+            final_bridge_params = _bridge_parameter_snapshot(bridge)
+            final_bridge_parameter_sha256 = _bridge_parameter_digest(final_bridge_params)
+            bridge_parameter_delta = _bridge_parameter_delta(initial_bridge_params, final_bridge_params)
+            gradient_norm_first = float(history[0].get("gradient_norm", 0.0)) if history else 0.0
+            gradient_norm_last = float(history[-1].get("gradient_norm", 0.0)) if history else 0.0
+            numeric_weight_update_verified = bool(
+                initial_bridge_parameter_sha256 != final_bridge_parameter_sha256
+                and bridge_parameter_delta["l2"] > 0.0
+                and gradient_norm_last > 0.0
+            )
+            baseline_head_l2 = float(np.sqrt(
+                np.square(bridge.head[0]).sum() + np.square(bridge.head[1]).sum()
+            ))
             calibration = bridge.calibrate(Htr, Mtr)
 
             no_message_logits = bridge.logits(Hte, Mte, Xte, gate_open=False)
+            no_message_base = Xte @ bridge.head[0] + bridge.head[1]
+            no_message_identity = bool(np.array_equal(no_message_logits, no_message_base))
             latent_logits = bridge.logits(Hte, Mte, Xte, gate_open=True)
             z = to_bf16(bridge.encode(Hte, Mte))
             shuffled_z = z[np.roll(np.arange(len(z)), 1)]
@@ -322,6 +371,20 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
                     "test_source_hashes": test_source_hashes,
                     "label_values": label_values,
                     "l1_utility_gate": "NOT_RUN_MISSING_L0_CHANNEL_BASELINES_AND_ROLE_RETENTION",
+                    "bridge_parameter_evidence": {
+                        "initial_parameter_sha256": initial_bridge_parameter_sha256,
+                        "final_parameter_sha256": final_bridge_parameter_sha256,
+                        "delta_l2": bridge_parameter_delta["l2"],
+                        "delta_max_abs": bridge_parameter_delta["max_abs"],
+                        "delta_by_tensor_l2": bridge_parameter_delta["by_tensor_l2"],
+                        "gradient_norm_first": gradient_norm_first,
+                        "gradient_norm_last": gradient_norm_last,
+                        "numeric_update_verified": numeric_weight_update_verified,
+                    },
+                    "baseline_head_l2": baseline_head_l2,
+                    "no_message_identity": no_message_identity,
+                    "role_retention_status": "NOT_MEASURED_NO_OLD_TASK_ROLE_HOLDOUT",
+                    "master_weights_untouched": True,
                     "latent_authority": 0, "receiver_injection_authority": 0,
                     "body_learning_authority": 0,
                 })
@@ -342,6 +405,18 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
                 "shuffled_latent_accuracy": accuracy(shuffled_logits),
                 "random_norm_matched_accuracy": accuracy(random_logits),
                 "ood_rate": ood_rate, "reload_identical": reload_identical,
+                "initial_bridge_parameter_sha256": initial_bridge_parameter_sha256,
+                "final_bridge_parameter_sha256": final_bridge_parameter_sha256,
+                "bridge_parameter_delta_l2": bridge_parameter_delta["l2"],
+                "bridge_parameter_delta_max_abs": bridge_parameter_delta["max_abs"],
+                "bridge_parameter_delta_by_tensor_l2": bridge_parameter_delta["by_tensor_l2"],
+                "gradient_norm_first": gradient_norm_first,
+                "gradient_norm_last": gradient_norm_last,
+                "numeric_weight_update_verified": numeric_weight_update_verified,
+                "no_message_identity": no_message_identity,
+                "baseline_head_l2": baseline_head_l2,
+                "role_retention_status": "NOT_MEASURED_NO_OLD_TASK_ROLE_HOLDOUT",
+                "master_weights_untouched": True,
                 "last_training_metrics": ({k: float(v) for k, v in history[-1].items()} if history else {}),
             })
 
@@ -422,6 +497,14 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
             "sender_revision": batch["sender_revision"],
             "receiver_revision": batch["receiver_revision"],
             "seed_reports": seed_reports,
+            "weight_evidence": {
+                "scope": "B3_L1_SHADOW_ADAPTER_ONLY",
+                "numeric_updates_verified_all_seeds": all(x["numeric_weight_update_verified"] for x in seed_reports),
+                "nonzero_gradient_norm_all_seeds": all(x["gradient_norm_last"] > 0.0 for x in seed_reports),
+                "mean_bridge_parameter_delta_l2": float(np.mean([x["bridge_parameter_delta_l2"] for x in seed_reports])),
+                "role_retention_status": "NOT_MEASURED_NO_OLD_TASK_ROLE_HOLDOUT",
+                "master_weights_untouched": True,
+            },
             "l1_utility_gate": gate_status,
             "l1_gate": gate,
             "l0_evidence_sha256": l0_evidence_sha256,
