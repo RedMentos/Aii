@@ -69,6 +69,39 @@ A1_STEPS = 120
 SHIFT_STEPS = 120
 
 
+def test_prior_guard_reference_batch_validation_is_fail_closed_and_atomic():
+    rng = np.random.default_rng(73)
+    x = rng.normal(size=(8, 4))
+    actions = np.eye(2, dtype=np.float64)[np.arange(8) % 2]
+    x2 = 0.7 * x + 0.1 * rng.normal(size=(8, 4))
+    model = world_jepa.WorldJEPA(seed=73, ensemble=1)
+    model.fit(x, actions, x2, steps=2, log_every=1)
+    before = world_jepa_consumer._parameter_snapshot(model)
+    training_state = model._training_state
+    fit_steps = model._fit_steps
+
+    with pytest.raises(ValueError, match="Replay reference batch shape"):
+        model.partial_fit(
+            x, actions, x2, steps=1, log_every=1,
+            allow_optimizer_bootstrap=True, train_encoder=True,
+            replay_start=4, replay_cohort_ranges=((4, 6), (6, 8)),
+            replay_reference_batches=(
+                (x[:1], actions[:1], x2[:1]),
+                (x[:2], actions[:2], x2[:2]),
+            ),
+        )
+
+    after = world_jepa_consumer._parameter_snapshot(model)
+    for group in ("enc", "tgt"):
+        for key in before[group]:
+            assert np.array_equal(before[group][key], after[group][key])
+    for index, predictor in enumerate(before["preds"]):
+        for key in predictor:
+            assert np.array_equal(predictor[key], after["preds"][index][key])
+    assert model._training_state is training_state
+    assert model._fit_steps == fit_steps
+
+
 def test_parameter_interpolation_scales_all_worldjepa_groups_without_resetting_optimizer():
     rng = np.random.default_rng(71)
     x = rng.normal(size=(64, 4))
@@ -756,6 +789,18 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
             assert type(metrics.get("replay_conflict_probe_action_ids_sha256")) is str
             assert metrics.get("replay_conflict_probe_action_ids_sha256") == metrics.get(
                 "prior_guard_action_ids_sha256"
+            )
+        if (replay_mode in {"on_demand_conflict", "on_demand_loss"}
+                and before is not None
+                and metrics.get("replay_projection_requested") is True):
+            assert metrics.get("replay_projection_reference_fold") == "prior_guard"
+            assert type(metrics.get("replay_projection_reference_action_ids_sha256")) is str
+            assert metrics.get("replay_projection_constraint_source") == "prior_guard"
+            assert metrics.get("replay_projection_reference_batch_count") == metrics.get(
+                "replay_constraint_session_count"
+            )
+            assert metrics.get("replay_projection_reference_rows_total", 0) >= (
+                2 * metrics.get("replay_projection_reference_batch_count", 0)
             )
         if replay_mode == "uniform_budget":
             assert metrics.get("replay_window_count", 0) == 0
