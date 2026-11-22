@@ -94,6 +94,33 @@ class GateTests(Base):
         self.events(10);self.assertFalse(self.n.gate('route')['veto'])  # 0.93^10 < VETO_BLOCK
         self.n.signal(self.ev(),path='route',rule_violation=1.)
         self.assertTrue(self.n.gate('route')['veto']);self.n.clear_veto('route');self.assertFalse(self.n.gate('route')['veto'])
+    def test_step_scale_keeps_shadow_modulation_off_but_hard_veto_blocks(self):
+        event = self.ev()
+        self.n.touch('world_predictor', event)
+        self.n.signal(event, path='world_predictor', safety_veto=True)
+        report = self.n.step_scale_report('world_predictor')
+        self.assertEqual(report['mode'], 'SHADOW')
+        self.assertTrue(report['gate']['veto'])
+        self.assertEqual(report['scale'], 0.)
+
+        self.events(10)
+        report = self.n.step_scale_report('world_predictor')
+        self.assertFalse(report['gate']['veto'])
+        self.assertEqual(report['scale'], 1.)
+
+        self.n.set_local_mode('ACTIVE', authority='EXPLICIT_HUMAN')
+        event = self.ev('active')
+        self.n.touch('world_predictor', event, authority='EXPLICIT_HUMAN_LEARN')
+        self.n.signal(
+            event, path='world_predictor',
+            source_class='real_deterministic_outcome',
+            evidence_gain=1., task_success=1.,
+        )
+        report = self.n.step_scale_report('world_predictor')
+        self.assertEqual(report['mode'], 'ACTIVE')
+        self.assertEqual(report['scale'], report['gate']['factor'])
+        self.assertGreater(report['scale'], 0.)
+
     def test_budget_scales_by_gain_times_factor_and_observe_validates_it(self):
         r=self.r;cfg=self.shadow_cfg();e=self.ev();self.n.touch('route',e,authority='EXPLICIT_HUMAN_LEARN');g=self.n.gate('route')
         id_=uid('upd');manifest={'component':'route','base_generation':r.store.generation_id,'metrics':{'retention_pass':True,'commit_eligible':True,'max_applied_step_norm':.001}}
