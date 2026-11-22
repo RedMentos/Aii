@@ -46,6 +46,6 @@ The adapter feeds the existing `consume_pcm16_voice_window` A5→A4→C3 consume
 
 - PR: https://github.com/RedMentos/Aii/pull/2361 (DRAFT / NOT_RELEASED), directly based on release HEAD c4eb82.
 - Code SHA: `21962aba86dbf9a502ed4a6b567d761293ca2c17`; test SHA: `3d698fed4259df7795b64041787baa30c2bfbfa4`.
-- PR head before the final handoff-only updates: `8a3c6617f215d44789a3872fc9c5b28979c9492c`; final handoff checkpoint commit: `7f4247d3b16dec5d6502f31cf6b04fa29e52930e`. The tested adapter/test SHAs remain unchanged; later board/next-action edits are documentation-only.
+- The PR branch has advanced through documentation-only board/ledger/next-action/handoff commits after the code/test commits. The exact tested adapter SHA (`21962aba...`) and test SHA (`3d698fed...`) remain unchanged; inspect the live PR for its current branch head.
 - LOCAL_LINUX isolated adapter tests 4/4 PASS. Exact PR CI is still pending; do not treat the adapter as fully integrated or deployed.
 - Release c4eb82 has 21/21 listed Actions workflow runs SUCCESS and private V13OBS #115 confirms c4eb82 installed, but the latest device metadata still shows the existing B1/B2/C3 functional failures. No new audio or model test was run on the phone.
