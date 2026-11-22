@@ -217,7 +217,7 @@ class Runtime:
                     try:
                         pair=self.cognition.tap_pair(payload,time.monotonic()+self.cfg['observer_seconds'])
                         p=pair['packet']
-                        self.notice(dumps({'status':'PAIRED_NATIVE_TAPS_SAVED','body_pair_id':p['body_pair_id'],'source_ref':p['source_ref'],'tap_ids':p['tap_ids'],'model_revisions':p['model_revisions'],'dimensions':p['dimensions'],'token_counts':p['token_counts'],'authority':pair['authority']}))
+                        self.notice(dumps({'status':'PAIRED_NATIVE_TAPS_SAVED','body_pair_id':p['body_pair_id'],'source_ref':p['source_ref'],'tap_ids':p['tap_ids'],'model_revisions':p['model_revisions'],'dimensions':p['dimensions'],'token_counts':p['token_counts'],'gist_readout':{'revision':p['gist_readout']['plan']['revision'],'mode':p['gist_readout']['plan']['mode'],'slots':p['gist_readout']['shape'][0],'slot_budget':p['gist_readout']['plan']['max_slots'],'lossless':p['gist_readout']['plan']['lossless']},'authority':pair['authority']}))
                     finally:self.pool.unload()
                 elif kind=='probe':
                     if payload=='sustained':
