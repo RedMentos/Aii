@@ -91,3 +91,13 @@ These are GitHub Linux CI results, not local repository execution or Android evi
 - Boss/JEPA coordination reserves R-080 for the JEPA receiver, R-081 for Hypnos, R-082 for receiver-aware latent communication and R-083 for JEPA-TTT. This branch's audio entries were renumbered to R-084 (speaker calibration/CAM++), R-085 (S2SND-v2) and R-086 (streaming diarizer adaptation/retention). R-078 now includes the exact llama.cpp input-embedding extraction finding. Do not reuse R-080–R-083.
 - Exact llama.cpp revision b29c606e28a01b1bc8c1351026a0fa6e616bf6c4 exposes input injection and output embeddings publicly, but not the input token-embedding table. An internal helper in src/llama-model.cpp reads model->tok_embd and dequantizes it; a row-only extractor using ggml_backend_tensor_get plus ggml_type_traits could provide the receiver input target space, but this is an internal ABI and not yet implemented or Android-tested. Core was notified on PR #2350 comment 7081998715.
 - The current native receiver still consumes raw sender final-state taps and measures only input-effect/hidden-output metrics. The B3 Bridge remains a task-logit head, not a receiver-input projector. No semantic latent communication or native Redmi acceptance is claimed. The next true latent step requires a pinned row-only receiver input-embedding extractor, source-span-aligned paired training, source-disjoint holdout, then a receiver task-output comparison against zero/shuffle/no-message/symbolic controls.
+
+
+## Final staged-integration result — 2026-11-22
+
+Run 45042292782 has now completed with **FAIL** in both staged jobs:
+
+- integrated-regression job 137269202505: 1 failed, at tests/test_staged_integrated_regression_20261111.py::test_single_staged_tree_runs_selected_integrated_regressions, exact error: ValueError: audio source blob changed: v13/audio_voice_cues.py.
+- staged-runtime job 137269202708: 16 failed, 234 passed, 10 skipped, 2 errors, 47 subtests passed. All reported failures cascade from the same exact source-pin mismatch in Core's integrated_audio_context_candidate_20261121.py. Two migration tests report PARTIAL instead of UPDATED because staging cannot complete.
+- This is the previously reported cross-owner pin mismatch, not a failure in the Perception RAW EAR/calibration tests. The exact composer still expects blob b18e450162b062b09368a12b1ca18924ed8c5025, while the Perception branch audio_voice_cues.py blob is 80bd30a129e26131d55f8de0202aa0d62f7c100d.
+- Keep PR #2349 DRAFT and NOT_RELEASED. Do not rebase or edit Core-owned composer/recovery/stage/deployer files without the Core/Integrator owner. The targeted Perception CI is green; staged integration is not.
