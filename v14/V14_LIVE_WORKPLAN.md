@@ -1,3 +1,49 @@
+## Newer authenticated phone receipt and PR-head correction — 2026-11-22 06:01Z
+
+Private owner-read PIPELINE_STATUS #480 is an authenticated POST-MERGE receipt. It reports auto_update=true, runtime=CI_WAIT, dashboard=CI_WAIT, last_result=CI_WAIT, last_error=NONE, updated_commit=89333289b8cd50da92cbf7074c9ef689a2972dbf. The phone has not installed release merge 39b175521f50048f13ca14372b316de47527f531; its existing updater is waiting for CI. No UPDATE_REQUEST or manual Termux command was sent. Exact post-merge push CI remains not independently verified.
+
+PR #2313 current head is now 8a9cecb54fa16fce5c65f0f0ac177e4fe3881a40 (92 ahead / 282 behind release). It adds a real NumPy/Adam L1 shadow-adapter trainer with explicit labels/provenance, 64-pair minimum, paired holdout, two seeds, no-message/latent/shuffle/random controls and bit-identical save/reload. Its test patches training_batch with synthetic random tensors; the current paired-tap workflow is pending. This is not actual native activation training, L1 utility acceptance or receiver injection.
+
+PR #2314 exact failure is a raw-string escaping bug: raw triple-quoted anchor constants preserve literal backslash-n bytes, while Callosum source has actual newline bytes. Core was given the exact fix; keep count==1 and fail-closed matching.
+
+PR #2311 failures converge on nested source pins, not yet the JEPA optimizer: integrated WorldJEPA training candidate → recovery wrapper → stage builder → runtime deployer hashes are stale. JEPA/QA were given exact failure chain; do not patch optimizer behavior until stage integrity passes.
+
+PR #2312 signed one-shot consumer passes; staged-runtime has 238 passed / 10 skipped / 47 subtests and integrated-regression passes, but two-checkout migration returns PARTIAL with runtime ERROR / last_error UPDATE on the old raw-runtime-plain-ui-history-recovery-v1 profile. Perception/QA were notified; no microphone provider.
+
+---
+# CURRENT BOSS INTEGRATION CHECKPOINT — 2026-11-22 (supersedes older status snapshots)
+
+Release-development branch gpt6/v13-private-remote-bridge-20261111 is now exactly 39b175521f50048f13ca14372b316de47527f531 (verified by branch-vs-commit comparison). Boss PR #2288 merged from candidate 1105ab56dae6604d927fc4ea868121000010fb93 against base bdcad466ffea75a2b41f7d23be168f53c7197d20. Candidate-head CI: 20 SUCCESS / 0 FAILURE / 1 expected SKIPPED / 1 CANCELLED / 0 pending. Passing checks included same-turn B1/B2→C4→C3 and source-revocation on Python 3.13/3.14, staged/integrated regression, audio/arithmetic, Lab-Age, two-checkout migration, owner-read bootstrap, runtime deployment integrity, source contracts, native tap provenance and privacy scan.
+
+Release boundary: MERGED_INTEGRATION, not RELEASED. The available connector returned no post-merge push-run records and no commit statuses for 39b175521f50048f13ca14372b316de47527f531; exact post-merge PUSH-CI is therefore NOT VERIFIED. Keep last_code_release_head at the previous accepted release until exact push CI is confirmed. No update request was sent.
+
+Latest private phone evidence: authenticated PIPELINE_STATUS #477 reports auto_enabled=true, runtime/dashboard UP_TO_DATE, last_error=NONE, but its snapshot has old updated_commit 89333289b8cd50da92cbf7074c9ef689a2972dbf and last_check_utc=1795325709, before the merge. It does not prove installation of 39b175521f50048f13ca14372b316de47527f531; post-merge device state is unknown. Prior #466 still reports B1/B2 TIME_BUDGET, 84.37s total / 77.51s TTFT, one B2 process only and about 884 MB available RAM. REDMI_UNVERIFIED.
+
+Newly integrated executable paths: source-bound synthetic B1/B2 OfferPacket selection through C4 into C3 on the actual staged Runtime; privacy-safe receipt and negative control; caller-supplied PCM16 RAW EAR ingress with a two-phase consent lease spanning A5/A4, B1/B2 and full C3 generation; source-read/revocation locking; exact arithmetic/date guard; Age rights separated from compute budgets; activation-journal/deployer chain. These are CI/synthetic proofs, not native GGUF or Redmi proofs. Audio is caller-supplied only: no microphone provider, Android permission or capture Activity; explicit in-memory PCM zeroization remains open before real capture.
+
+Next blockers: #2314 native receiver probe passes Linux pinned API and Android ARM64 cross-compile, but Python 3.13/3.14 staged composition fails at Callosum report probe count=0; integrated/migration failures are downstream. #2313 paired B1/B2 tap PR has a focused regression PASS but is 73 ahead / 282 behind release and requires rebase. #2311 JEPA has transactional update, combined JEPA, receipt integrity and incremental WorldJEPA PASS; Lab-Age, migration, training-resume, controller and owner-read FAIL; staged/integrated pending. #2312 signed one-shot audio consumer focused test PASS but staged/integrated FAIL; no AudioRecord provider. Keep B3 OFF/SYMBOLIC and JEPA promotion OFF.
+
+Environment: no local Aii checkout was available; no LOCAL_LINUX full-repository tests ran. No native GGUF model run, numeric permanent weight update, Android AudioRecord/UI executor, Redmi install or rollback receipt is claimed. User action: NONE.
+
+## Next cross-lane execution queue
+
+1. **Core / B3 receiver:** repair the exact Callosum report probe count=0 anchor in PR #2314 without weakening fail-closed source matching; recompute recovery-wrapper → stage → deployer pins; rerun Python 3.13/3.14, staged/integrated, owner-read and migration. Keep native receiver OFF.
+2. **Core / paired B1-B2 taps:** rebase PR #2313 from its 282-commit-behind base onto release 39b175521f50048f13ca14372b316de47527f531; preserve independent B1/B2 tokenizer-piece validation, source provenance and no-message/zero/shuffle controls. A paired output tap is not receiver injection.
+3. **JEPA & Memory:** fix PR #2311 exact-head Lab-Age, migration, training-resume, controller and owner-read failures; keep per-session A→B→A retention, numeric checkpoint diffs, restart and rollback gates. No production promotion.
+4. **Research & Perception / audio:** rebase #2312 and its signed one-shot consumer after the current staged source chain is stable. No Android AudioRecord provider or microphone permission until in-memory PCM zeroization and complete consent/revocation lifecycle are proven.
+5. **QA & Android:** inspect exact post-merge push CI. Only after it is green, use the existing consented updater path, then obtain a separate owner-authenticated PIPELINE_STATUS confirming exact installed SHA and rollback state. Do not change models, weights, permissions, Age or user data.
+6. **Boss / whole Canon:** keep the 1,255-heading historical inventory unchanged; continue clause→code→consumer→test→environment→rollback mapping across all organs, memory, voice, Android agency, safety, self-optimization and resources.
+
+## Evidence and environment boundaries
+
+- PR-head CI is not post-merge push CI. 39b1755 is merged integration, not a certified phone release.
+- No local Aii checkout was available; LOCAL_LINUX full-suite execution is BLOCKED.
+- Private #477 is an authenticated but pre-merge pipeline snapshot; post-merge installed SHA is unknown.
+- Synthetic runners prove the staged C4/C3 data path, not native semantic use. C++ cross-compile proves build compatibility, not model execution. No permanent weight update or trained latent receiver is accepted.
+- User action: NONE.
+
+---
+
 # V14 / Inquisition-JEPA — LEBENDER ARBEITSPLAN
 
 **Fassung:** 2026-11-22 (live Boss integration checkpoint) · **Rolle:** operativer Einstiegspunkt für ALLE V14-Agenten.  
