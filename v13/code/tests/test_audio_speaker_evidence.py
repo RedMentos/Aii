@@ -59,7 +59,8 @@ def consent_guard(check):
 
 
 def speaker_batch(source_id, generation_id, start_ms, end_ms, vector_at,
-                  *, revision="fixture-embedding-v1", threshold=0.8):
+                  *, revision="fixture-embedding-v1", threshold=0.8,
+                  current_chunk_sha256=CURRENT_CHUNK_SHA256):
     frames = [
         {"end_ms": end, "vector": list(vector_at(end))}
         for end in range(start_ms + 80, end_ms + 1, 80)
@@ -71,7 +72,7 @@ def speaker_batch(source_id, generation_id, start_ms, end_ms, vector_at,
         "model_id": "fixture/three-dim-encoder",
         "model_revision": revision,
         "model_sha256": MODEL_SHA,
-        "current_chunk_sha256": CURRENT_CHUNK_SHA256,
+        "current_chunk_sha256": current_chunk_sha256,
         "embedding_dim": 3,
         "frame_step_ms": 80,
         "lookback_frames": 10,
@@ -535,12 +536,14 @@ def test_a4_and_c3_receive_explicit_defer_instead_of_false_stability_on_silence(
         assert supported["packet"]["segments"][0]["acoustic"]["speaker_change_decision"] == "DEFER"
         assert supported["speaker_change_evidence"]["decision"] == "DEFER"
 
+        silent_pcm = b"\x00\x00" * 16000
         changed = speaker_batch(
             SOURCE, event["brain_generation_id"], 2100, 3100,
             lambda _: (0.0, 1.0, 0.0),
+            current_chunk_sha256=hashlib.sha256(silent_pcm).hexdigest(),
         )
         silent = consume_pcm16_voice_window(
-            runtime, b"\x00\x00" * 16000, sample_rate=16000, start_ms=2100,
+            runtime, silent_pcm, sample_rate=16000, start_ms=2100,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE, consent_receipt=RECEIPT,
             consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
