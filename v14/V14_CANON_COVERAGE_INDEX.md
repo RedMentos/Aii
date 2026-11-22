@@ -1896,3 +1896,38 @@ Primary papers: https://arxiv.org/abs/2608.20617, https://arxiv.org/abs/2609.322
 ### Final exact-head and research poll — 2026-11-21T22:29:39.614Z
 
 Boss pre-final-handoff head `ce7ca26a08e9bf0d8dea79835035a4281b53bba1`: 16 checks, 15 queued and 1 expected additive-validator skip. The branch has 62 changed paths, including the reviewed research ledger R-047–R-051 and Perception handoff. Research PR #2260 was closed draft, not merged; its reviewed research content is integrated on this branch. No new-head PASS or Android proof is claimed.
+
+
+---
+
+## JEPA whole-system coverage correction — 2026-11-22T03:48:43Z
+
+This dated correction supersedes earlier statements that all per-session JEPA updates were rejected or that no A→B→A numeric update was accepted. It does **not** promote the feature to integrated/released/native status.
+
+### World / Self / Memory / JEPA
+
+- PR #2247 branch head: `9b1f319af750e42f47aa399089abe16df8afce85`; tested code tree: `c599cb9926973b70235c38c3747e5d7ad5020cb8`.
+- `world_jepa.py` exact SHA-256: `b6dd353497bd08b756a491381ea4484419b0299e6263f5c4bac0ded112c9016a`.
+- The projected `on_demand_conflict` and `on_demand_loss` paths now use source/content-disjoint prior-guard microbatches for per-session GEM constraints. The final promotion holdout remains separate. Invalid reference batches fail before fitting, with a negative test for unchanged parameters, optimizer-state identity and fit-step count.
+- Exact Python 3.13.13 and 3.14.10 A→B→A tests: **18/18 passed each**; 54 seed/arm reports each. Twelve projected on-demand cases per interpreter used `constraint_source=prior_guard`; 11 accepted and 1 correctly rejected. Accepted cases had numeric parameter/checkpoint changes and persisted optimizer moments. Every split manifest was source/content-disjoint and every rollback readback restored the prior checkpoint exactly.
+- This proves a small persistent WorldJEPA/EMA predictor/encoder update in the synthetic Store/T8 CI path. It does not prove B1/B2/C3 GGUF body-weight training, cross-organ gradients, trained B3 semantic alignment or Android learning.
+
+### Integration remains blocked
+
+- The same exact-head workflow fails after the A→B→A tests at `test_world_jepa_training_state_in_real_staged_runtime`: `ValueError: production WorldJEPA training-resume input changed`.
+- PR #2247's integration builder expects `WORLD_SHA=3e952f21c60e53defff64b69886a04c6d770ed0860bf856e62a95ba5576494e2`; actual source is `b6dd353497bd08b756a491381ea4484419b0299e6263f5c4bac0ded112c9016a`.
+- #2247 also changes `memory.py` (blob `07fcb24038079184b2a4c663204ae070f1da4217`), while the source-lifecycle builder still pins old SHA-256 `391668fff0b4ad3d7c36d5d7a9823055ff74821c10f71b945e87edaa62597484`.
+- Incremental WorldJEPA, combined online JEPA, runtime deploy integrity and privacy CI pass. Staged context, owner-read staged startup, Lab-Age and two-checkout migration fail downstream of the source-pin mismatch. The safe-additive validator fails by policy because #2247 is not additive-only. PR remains DRAFT / NOT_RELEASED.
+- Current Boss integration PR #2288 head is `483ef6ddc7140bf76f197d538ec973df42dd95e0`; at the last poll it had 13 SUCCESS, 5 IN_PROGRESS, 1 SKIPPED, 0 failures. It is not merged. Its WorldJEPA pin is a different tree (`06afa58b...`); rebase/compose and recompute the entire nested chain rather than transplanting one hash.
+- Core #2300 is still a diagnostic native input-embedding receiver, head `767a8006760498c63f7a1f81bd9e4c5e003fd57c`, based on stale `91227b...`. Boss review reports 7/18 checks passing and 11 failing; Linux pinned-API build and Android arm64 cross-compile do not prove semantic transfer or Redmi execution.
+
+### Other Canon families remain open
+
+- B1/B2: no accepted useful native offers or trained target-organ adapter; #2300 is diagnostic ingress only.
+- B3 / Enlightened Space: no trained cross-model latent alignment; symbolic/text exchange and a dimension-compatible native probe are not the target.
+- Sleep/Dream: replay and rollback are present in the synthetic JEPA path; general Dream consolidation and Android background lifecycle remain unimplemented/unverified.
+- Self-optimization: no LearningIntent→B1/B2/C3 target optimizer, cross-organ weight delta, GGUF training/export or structural self-edit.
+- Voice/audio, multimodal learning, sparse MoE bodies, Android UI/background control, OS sandbox, adaptive judge and production Memorilla remain separate OPEN scope.
+- P0 issue #1904 remains open; no authenticated Redmi receipt, release or deployment. `REDMI_UNVERIFIED`.
+
+Research handoff: `v14/handoffs/JEPA_IGFA_INTERFERENCE_RESEARCH_20261122.md` (proposed R-056, pending Boss/Integrator ledger review). No external code or model was imported.
