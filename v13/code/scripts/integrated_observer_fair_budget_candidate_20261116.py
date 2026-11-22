@@ -81,10 +81,18 @@ def apply_sources(code_dir, sources):
         b'def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=False):\n',
         b'def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=False, observer_deadline=None):\n',
         'observer deadline argument')
-    budget = replace(budget,
-        b'    for number in (start,deadline,now):\n        if type(number) not in (int, float) or not math.isfinite(number):\n            raise ValueError("invalid monotonic budget")\n    if deadline < start or now < start-1:\n',
-        b'    for number in (start,deadline,now):\n        if type(number) not in (int, float) or not math.isfinite(number):\n            raise ValueError("invalid monotonic budget")\n    if observer_deadline is not None and (type(observer_deadline) not in (int,float) or not math.isfinite(observer_deadline)):\n        raise ValueError("invalid observer deadline")\n    if deadline < start or now < start-1:\n',
-        'observer deadline validation')
+    current_observer_validation = (
+        b'    if observer_deadline is not None and (\n'
+        b'            type(observer_deadline) not in (int, float) or not math.isfinite(observer_deadline)):\n'
+        b'        raise ValueError("invalid observer deadline")\n'
+    )
+    if budget.count(current_observer_validation) == 1:
+        pass
+    else:
+        budget = replace(budget,
+            b'    for number in (start,deadline,now):\n        if type(number) not in (int, float) or not math.isfinite(number):\n            raise ValueError("invalid monotonic budget")\n    if deadline < start or now < start-1:\n',
+            b'    for number in (start,deadline,now):\n        if type(number) not in (int, float) or not math.isfinite(number):\n            raise ValueError("invalid monotonic budget")\n    if observer_deadline is not None and (type(observer_deadline) not in (int,float) or not math.isfinite(observer_deadline)):\n        raise ValueError("invalid observer deadline")\n    if deadline < start or now < start-1:\n',
+            'observer deadline validation')
     budget = replace(budget,
         b'            and native.get("generated_tokens") == 0\n',
         b'            and type(native.get("generated_tokens")) is int\n            and native.get("generated_tokens") == 0\n',
