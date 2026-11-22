@@ -44,8 +44,12 @@ def screen_size() -> tuple[int, int]:
 
 
 def hierarchy_xml() -> str:
-    adb("shell", "uiautomator", "dump", "/sdcard/v14-window.xml", timeout=20)
-    return adb("exec-out", "cat", "/sdcard/v14-window.xml", timeout=10)
+    # /sdcard is app-scoped on Android 13 and is not reliably readable by the
+    # shell after uiautomator writes it. Keep this host-only probe artifact in
+    # the shell-owned temporary directory instead of touching app storage.
+    path = "/data/local/tmp/v14-window.xml"
+    adb("shell", "uiautomator", "dump", path, timeout=20)
+    return adb("exec-out", "cat", path, timeout=10)
 
 
 def hierarchy() -> ET.Element:
