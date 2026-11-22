@@ -49,7 +49,7 @@ jobs:
             v13/code/v13/callosum.py \\
             v13/code/v13/native_probe_approval.py \\
             v13/code/v13/native_latent_receiver.py \\
-            v13/code/cognition.py
+            v13/code/v13/cognition.py
       - name: Test approval, route identity, and staged Runtime consumer
         env:
           PYTHONPATH: v13/code
