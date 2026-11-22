@@ -1,3 +1,39 @@
+# Current next action — 2026-11-22 00:51 UTC
+
+**No user action is required. Do not run Termux commands or change models, weights, Age, permissions, updater settings or phone data.**
+
+## Current verified state
+
+- Release-development base remains `bdcad466ffea75a2b41f7d23be168f53c7197d20`; last accepted code release remains `f279286a4453248004c670fcaabecd85da6ab299`.
+- Boss integration candidate is [PR #2288](https://github.com/RedMentos/Aii/pull/2288), current head `679f3667c5c98b867f85ae960824489da0d8fd3a`, DRAFT / NOT_RELEASED. It contains the current Core staged observer fairness overlay and #2258 composed runtime/audio/GoalWake path, plus a root-cause fix for the source-recall Store pin mismatch.
+- The failure was reproducible: later staged overlays changed the final Store bytes while Context-source recall still carried its exact base-composer pin. The recovery builder now verifies the base pin, rebinds only Store/archive-stream pins after all overlays, verifies the final bytes, and refreshes the wrapper→stage→deployer hash chain. Exact GitHub readback of the nested pins passed.
+- The first #2288 attempt `021b1d3c` still retained the old pre-rebind comparison and failed three workflows. The current head `679f3667` fixes that comparison. Its exact CI is not finished yet.
+
+## Latest exact-head CI snapshot
+
+On `679f3667`, the last poll showed 8 PASS, 3 IN_PROGRESS, 1 expected SKIPPED (strict additive-only validator not applicable to this broad integration), and 1 cancelled release-queue run. PASS included runtime-deploy integrity, combined JEPA integration, Lab-Age/WebView truth, controller record-only guard, A5 UI lease, privacy scan and bridge/push tests. Old-phone migration's job passed while the workflow was still finishing; private owner-read, staged/integrated regression and Python 3.13/3.14 audio/arithmetic remained in progress. The full exact-head suite is not yet accepted.
+
+No local Aii checkout exists in the execution container, so no LOCAL_LINUX repository suite ran. GitHub CI is not local proof and not Android proof.
+
+## Integration decisions already taken
+
+- #2279 was closed unmerged because it inherited closed #2278, which edited frozen `native_turn_budget.py` directly. Its isolated deadline-test correction is not promoted.
+- #2287 was closed as superseded after the source-recall Store pin failure.
+- #2280's unique C4→C3 receipt and tampered-OfferPacket negative control remain valuable, but its branch is based on the closed #2278/#2279 stack. Core was asked to rebase it onto #2288 and rerun the exact tests.
+- QA was asked to rebase Age/X10 rights #2281 and rollback #2283; old-base green CI is not current-base acceptance.
+- QA/Perception was asked to rebase the shared-blob reader/revocation fix #2282; the current #2288 branch does not include that fix and #2250 still demonstrates the race.
+- Perception was asked to rebase #2275 and repair the frame-age expectation and exact audio pin chain. NumPy/speaker model remain OFF.
+
+## Device status
+
+Private read-only PIPELINE_STATUS request [RedMentos/Aiiii #453](https://github.com/RedMentos/Aiiii/issues/453) had no authenticated reply at 00:49:49 UTC. Installed SHA and updater consent remain UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, remote shell, model/weight change, permission change or device mutation occurred. **REDMI_UNVERIFIED.**
+
+P0 issue [#1904](https://github.com/RedMentos/Aii/issues/1904) remains open: correct Redmi 2+2, useful native B1/B2 delivery, C3 quality/TTFT/RSS, trained latent coupling and real phone acceptance are not proven. The 1,255-heading historical Canon is preserved, but whole-system clause→consumer→test→environment→rollback coverage remains incomplete. Voice learning, Android background/UI agency, distinct sparse MoE, JEPA weight updates, Sleep/Dream, OS sandbox, adaptive behavior judge, Memorilla production consumer and cross-organ self-edit remain open scope.
+
+**Next internal step:** finish exact #2288 current-head CI; repair measured failures only; then compose #2280's C4 receipt and the QA/Perception follow-ups on the same base. **User action: none.**
+
+---
+
 # Current next action — 2026-11-21T22:22Z (Boss exact-head refresh)
 
 **No user action is required. Do not run Termux commands or change models, weights, Age, permissions, updater settings or phone data.**
