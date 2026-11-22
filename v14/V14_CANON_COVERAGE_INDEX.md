@@ -2139,3 +2139,24 @@ Negative boundary: no real native B1/B2 useful offers, correct 2+2, 20-turn Redm
 ## Boss exact-head follow-up — 2026-11-22T10:00:40.871Z
 
 PR #2331 current head 535eba6f668b3990416c361368f36e3e8f1e599e is DRAFT/NOT_RELEASED. Its exact matrix is 9 failures, 4 in progress, 2 queued, 4 success, 1 skipped. Six source-composition pins are inconsistent: memory-world→feedback, feedback→context-recall, lifecycle composer→memory-world, memory.py→lifecycle composer, recovery21→stage, stage→runtime deployer. See Boss review comment 7077507340 for full byte-derived hashes. No source-forget or numeric learning acceptance is established. The current b3b92 release branch has 40/40 push check-runs and 29/29 workflow runs SUCCESS; private #520 still reports the phone on 283ac1c9 / CI_WAIT and #519 queued. This overlay changes no Canon requirement and no master bytes.
+
+
+## Boss evidence overlay — 2026-11-22T16:02:01Z (run 11; append-only)
+
+| Canon family | Current code / consumer | Exact evidence | Environment | Current classification |
+| --- | --- | --- | --- | --- |
+| A0–A5 / RAW EAR / speaker change | #2327 PCM16 FIR feature decimator; #2329 libfvad comparator; #2349 source-disjoint speaker calibration candidate | #2349 reports 12 isolated synthetic tests; exact integrated CI pending; no real corpus/model or AudioRecord | Isolated Linux + CI pending; no Redmi mic | CODE_PRESENT / WIRED_SYNTHETIC / ANDROID_UNVERIFIED |
+| B1_DETAIL + B2_GIST | #2343 fair-slice scheduler candidate and source-bound offer/C4 path | Five nested source pins readback-match; exact matrix 15 queued / 0 success / 0 failure / 2 skipped / 2 cancelled. #580 still reports B1/B2 TIME_BUDGET. | GitHub readback + private phone metadata only | DRAFT / NOT_RELEASED / NATIVE_OFFERS_UNVERIFIED |
+| C3 correctness and latency | Existing native C3 plus fair-scheduler candidate | #580 last recorded turn 57.74s / 41.63s TTFT / 38.95s prefill / 2 tokens; no correct 2+2 or 20-turn test | Private read-only diagnostic; no new turn | P0_OPEN / NOT_ACCEPTED |
+| B3 / Enlightened Space | #2323 diagnostic receiver; #2346 paired native-tap/L1 shadow | Focused paired-tap regression PASS; #2346 matrix 6 SUCCESS / 5 FAILURE / 2 QUEUED; no trained receiver utility | CI/synthetic only; no Redmi activation | DIAGNOSTIC_ONLY / PRODUCTION_OFF |
+| World/Self/Memory/JEPA | #2351 temporal T8 windows, EMA/optimizer/checkpoint and SleepRuntime post-commit candidate | Exact head has 4 queued workflows. Boss review found source-forget vs generic Store promotion race; fix and adversarial tests required. | GitHub PR only; no local full suite or Redmi learning | DRAFT / SHADOW_ONLY / PROMOTION_OFF |
+| Sleep/Dream/Replay | #2351 temporal post-commit path | Wired candidate; restart/retention/fork-utility and source revocation unaccepted | Synthetic CI pending | PARTIAL_CODE / NOT_ACCEPTED |
+| Android background/UI control | #2271 companion, #2342 durable pairing, #2347 receipt-only recovery, #2344 action journal, #2348 read-only status | #2347 exact head 4/4 workflows SUCCESS; stack remains unmerged; no APK install or device action | GitHub CI; no Android device | STACKED_CODE / OFF / REDMI_UNVERIFIED |
+| Voice/audio | RAW EAR feature path; #2349 speaker calibration | No AudioRecord provider, ASR, trainable decoder/vocoder, nonverbal learning or full-duplex | No microphone/device test | PARTIAL_FEATURE_ONLY / ANDROID_OPEN |
+| Self-optimization / weights | WorldJEPA temporal shadow; B3 L1 shadow | No accepted permanent B1/B2/C3 weight updates, cross-organ gradients, sparse expert updates or self-edit | No native model-weight or Redmi proof | SHADOW_ONLY / NO_WEIGHT_PROOF |
+| Age rights / X10 | Existing merged rights separation | No Age or ResourceGuard change this run; official Age 0 remains distinct from experimental test rights | Code/CI only | MERGED_INTEGRATION / ANDROID_UNVERIFIED |
+| Update / recovery | Release c4eb82 | Exact release workflow matrix 21/21 SUCCESS; private #579 confirms c4eb82 installed; #581 Health runtime UNAVAILABLE; no physical rollback | GitHub CI + private owner-read | CODE_INSTALLED / ROLLBACK_UNVERIFIED |
+| Remote maintenance | Existing owner-read/updater bridge | #579 PIPELINE_STATUS, #580 DIAGNOSTICS and #581 HEALTH authenticated; auto-update enabled; no UPDATE_REQUEST issued | Private read-only relay | READ_ONLY_VERIFIED / NO_PATCH_APPLY |
+| Whole Canon | V14 master + historical V13 appendix | 1,255-heading inventory preserved; no master/Canon source bytes changed; semantic clause→consumer→test→platform→rollback map incomplete | GitHub readback | PRESERVED / MAPPING_INCOMPLETE |
+
+**Negative boundary:** no new correct native answer, native B1/B2 offers, trained B3 latent transfer, permanent body-weight update, Android microphone/UI/background action, full voice learning, sparse MoE, production Memorilla consumer or AGI claim is established. No model, weight, Age, permission, updater setting or user data changed.

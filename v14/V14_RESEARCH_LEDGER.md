@@ -977,3 +977,32 @@ This correction supersedes older branch-level status claims without deleting the
 **OSS / license readback:** the paper does not expose an official JEPA-TTT code release in the checked primary source. Its underlying [official LeWorldModel repository](https://github.com/lucas-maes/le-wm/tree/8edfeb336732b5f3ce7b8b210d0ba370a09e2cac) was inspected at commit `8edfeb336732b5f3ce7b8b210d0ba370a09e2cac`; its exact `LICENSE` blob `9a0803f84d34cc1a436408b7fab6c02fd87937b4` is MIT, copyright Lucas Maes 2026. The README requires Python 3.10 and installs `stable-worldmodel[train,env]`; training uses PyTorch/Lightning/Hydra and HDF5 datasets. That stack is not a drop-in Termux/Redmi dependency. Code license does not grant dataset/checkpoint rights, and the dependent repositories' exact licenses/ABI still need separate review.
 
 **Decision:** RESEARCH_ONLY / NO_DEPENDENCY / NO_CHECKPOINT_DOWNLOAD / NO_MODEL_SWAP. Preserve the current trainable predictor and EMA path. Adopt dense temporal-window construction only as a measured additive experiment after the source-bound T8 sequence contract and multi-shift retention tests are implemented. Do not describe the current numeric state-vector predictor as a visual latent world model.
+
+
+## R-084 — Do-JEPA paired intervention and causal-effect limits (2026-11-22)
+
+**Primary paper:** Hossein Resani and Javen Qinfeng Shi, *Do-JEPA: From Masking to Intervention in Latent World Models*, arXiv:2609.37378 (2026-09-29): https://arxiv.org/abs/2609.37378 . The method saves one simulator state, then runs a factual action and a reference/no-op action with the same state, context and random noise. It trains effect, action-support, propagation and invariance losses from paired latent futures. The authors explicitly say this is not causal-mechanism identification and requires exact simulator restoration; real trials do not share noise and their differences can be noisy or biased. Support/propagation supervision assumes object-aligned slots, known action/reference and sufficient temporal resolution. Some from-scratch settings trade factual accuracy for effect prediction; fine-tuning a pretrained model is safer in the reported experiments.
+
+**V14 mapping:** future deterministic-lab method for B3/World/Self action-effect learning, not a basis for inferring causal effects from ordinary Android action logs. A future simulator experiment should compare action vs reference from identical saved state/RNG, measure effect/support/propagation/invariance, and preserve factual prediction. A real phone cannot provide exact same-state/shared-noise counterfactuals. The checked primary paper exposes no author-linked GitHub code; no code, dependency, checkpoint or weight was imported.
+
+**Decision:** RESEARCH_ONLY / NO_RUNTIME_CHANGE / NO_CODE_REUSE.
+
+
+## R-085 — differential retention: invariant knowledge versus obsolete world facts (2026-11-22)
+
+**Primary paper:** Nishit Anand, Ramani Duraiswami and Dinesh Manocha, *What Should World Models Forget? Stratified Retention for Continual Adaptation*, arXiv:2610.03713 (2026-10-02; accepted to the NeurIPS 2026 Continual World Models Workshop): https://arxiv.org/abs/2610.03713 . It distinguishes catastrophic forgetting (losing still-true knowledge) from obsolescence (retaining a fact that has become false). It proposes stratifying by invariance timescale and reporting invariant-regression tests separately from revision latency. The authors note that physical probes exist, while comparable geometric and causal probes are missing; this is not a demonstrated online adaptation algorithm.
+
+**V14 mapping:** do not score every changed old prediction as forgetting. Maintain separate probes for invariants (e.g. arithmetic consistency, provenance/permission rules, stable causal/physical constraints) and transient instance state (e.g. current app/screen/object configuration). After each candidate update, rerun invariant probes and measure how quickly changed transient facts are revised. Keep unknown strata explicit. No code/weights were imported.
+
+**Decision:** RESEARCH_ONLY / ADDITIVE_EVALUATION_REQUIREMENT.
+
+
+## R-086 — fork-ledger counterfactual utility for each candidate update (2026-11-22)
+
+**Primary paper:** Anqi Peter Li and Kaden Kim, *Measuring the Value of World-Model Updates: A Counterfactual Utility Protocol for Continual Adaptation*, arXiv:2609.10954 (2026-09-10): https://arxiv.org/abs/2609.10954 . The fork ledger branches a deployment checkpoint into matched update and hold continuations, evaluates both on the same episodes under common random numbers, and records ΔR. Divergence is counted among all attempted forks, not excluded. In the paper's specific no-rehearsal fixed-update mechanism, mean return fell on all three simulator tasks; this is task- and mechanism-bounded, not a universal result.
+
+**V14 mapping:** for each proposed JEPA/adapter update, preserve a checkpoint+optimizer fork and compare update-vs-hold on the same source-disjoint replay/evaluation sequences. Record action/answer utility, invariant retention, revision latency, TTFT, PSS, gradient/parameter/EMA diffs and rollback; include crashes/divergence as negative outcomes. On a real phone, replay forks are offline matched evaluations, not live causal counterfactuals. No update becomes active solely because prediction loss improved.
+
+**OSS/license:** no author-linked code repository or code license was verified in the checked primary arXiv page. No external code, dataset, model or weight was imported.
+
+**Decision:** RESEARCH_ONLY / ADDITIVE_UPDATE_ACCEPTANCE_GATE / NO_RUNTIME_CHANGE.

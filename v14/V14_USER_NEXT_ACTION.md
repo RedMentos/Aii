@@ -1,3 +1,23 @@
+# Current user-facing handoff — 2026-11-22T16:02:01Z
+
+**Keine Nutzeraktion nötig.** Kein manueller Termux-Befehl, kein erneuter Installer, kein UPDATE_REQUEST, kein Modell-/Gewichtswechsel, keine Rechte- oder Mikrofonfreigabe. Der vorhandene Updater ist EIN; der neue Boss-Kandidat ist nicht freigegeben.
+
+- Release-HEAD: `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`. Exakte GitHub-CI: **21/21 Workflow-Runs SUCCESS**. Private PIPELINE_STATUS #579 bestätigt genau diesen SHA als installiert, Auto-Update EIN, Runtime/Dashboard UP_TO_DATE, last_error NONE.
+- Wichtige Abweichung: Private HEALTH #581 meldet `status=OK`, aber `runtime.state=UNAVAILABLE`; 1.414 MiB verfügbarer RAM und 1.568 MiB freier Speicher. Deshalb nicht aus dem Updater-Status auf einen gesunden laufenden Chat schließen.
+- DIAGNOSTICS #580 ist der letzte aufgezeichnete Turn, kein neuer Test nach Installation: **57,74 s Gesamtzeit / 41,63 s TTFT / 38,95 s Prefill / 751 Prompt-Tokens / 2 generierte Tokens**; B1 und B2 weiterhin `TIME_BUDGET`. Keine korrekte 2+2-Antwort, keine 20-Turn-Akzeptanz.
+- Boss-PR #2343, Head `863e751ff5410dc555006c8aeb9ef6c7b28d2a88`, bleibt **DRAFT / NOT_RELEASED**. Die fünf verschachtelten Observer→Composer→Recovery→Stage→Deployer-Hashpins stimmen exakt mit GitHub-Readbacks überein. Aktueller CI-Stand: **15 queued, 0 passed, 0 failed, 2 skipped, 2 cancelled**.
+- #2343 ändert den Scheduler auf 45 % Observer / 55 % C3. Das bewahrt den alten C3-Reservewert ausdrücklich nicht: bei einem synthetischen 30-s-Fenster wären es 16,5 s C3 statt früher 26 s. Kein Redmi-A/B; nicht deployen.
+- JEPA-PR #2351 fügt einen temporalen T8→WorldJEPA→SleepRuntime-Kandidaten hinzu, aber CI ist queued. Boss hat eine Race Condition zwischen Source-Forget und generischer `Store.switch_generation`-Promotion gemeldet; keine Integration, keine Lernpromotion.
+- B3-PR #2346: fokussierter paired-tap-Test PASS, Gesamtmatrix 6 SUCCESS / 5 FAILURE / 2 QUEUED; kein echtes Redmi-Activation-/Latent-Proof.
+- Android-Companion-PR #2347: 4/4 exakte GitHub-Workflows SUCCESS, aber auf ungemergtem #2271-Stack; keine APK-Installation oder Geräteaktion.
+- Perception #2349: 12 isolierte synthetische Speaker-Kalibrierungstests; Integration-CI und reale Daten/Mikrofonprüfung fehlen.
+- Vollständige lokale Aii-Tests BLOCKED: kein Checkout vorhanden und `git ls-remote` scheitert an DNS. GitHub-CI, isolierte Tests und echte Redmi-Belege bleiben getrennt.
+- Historischer V13-Canon: 1.255 Überschriften weiterhin inventarisiert. V14-Master und historische V13-Quellbytes wurden nicht verändert; semantische Einzelpflicht-Zuordnung bleibt unvollständig.
+
+**Nächster interner Schritt:** exakte #2343-CI abwarten, Fehler anhand konkreter Logs beheben, danach #2351 Source-Forget/Promotion-Race und #2346 B3-Rebase prüfen. Kein manueller Eingriff von dir nötig.
+
+---
+
 # JEPA-Statuskorrektur — 2026-11-22T10:00:40.871Z
 
 PR #2331 steht inzwischen auf `535eba6f668b3990416c361368f36e3e8f1e599e`, hat aber **9 fehlgeschlagene Checks** (4 laufen, 2 queued, 4 erfolgreich, 1 übersprungen). Die Fehler liegen weiter in der verschachtelten Source-Pin-Kette: sechs direkte Consumer-Pins stimmen nicht mit den aktuellen Datei-Bytes überein. Die vollständigen Hashes stehen im Boss-Review-Kommentar [7077507340](https://github.com/RedMentos/Aii/pull/2331#issuecomment-7077507340). Das ist noch kein JEPA-Lern-/Unlearning-Erfolg; PR bleibt DRAFT, Promotion OFF.

@@ -1235,3 +1235,29 @@ The 679f audio run showed that rebinding only Context-source recall was insuffic
 ### Next integration step
 
 Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, migration, owner-read and deployer workflows. Fix only measured current-head failures. Keep the PR DRAFT and NOT_RELEASED. The #2280 C4 receipt, #2281 Age-rights, #2282 shared-blob race, #2283 rollback, #2285 audio QA and #2275 RAW EAR changes must be rebased and tested on this same base; old-base green results are not accepted. Private PIPELINE_STATUS #453 is still unanswered, so REDMI_UNVERIFIED. User action: none.
+
+
+## Boss integration checkpoint — 2026-11-22T16:02:01Z
+
+- Release branch `gpt6/v13-private-remote-bridge-20261111` is `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; exact GitHub workflow matrix 21/21 SUCCESS. Private #579 confirms installed and auto-update enabled. HEALTH #581 says runtime UNAVAILABLE; do not infer a healthy running chat.
+- DIAGNOSTICS #580 is only the last recorded turn (57.74s total / 41.63s TTFT / 38.95s prefill / 2 tokens; B1/B2 TIME_BUDGET), not a fresh post-update test.
+- Boss #2343 head `863e751ff5410dc555006c8aeb9ef6c7b28d2a88` is DRAFT. Five source pins match exact readbacks; 15 workflows queued / 0 pass / 0 fail / 2 skipped / 2 cancelled. No deployment.
+
+### One concrete next slice per active role
+
+- **Core & Harness:** finish the real same-turn B1_DETAIL + B2_GIST offer→C4→correct C3 FINAL path, preserving both bodies and the deep path. Keep Android companion work behind its dependency stack.
+- **JEPA & Memory:** fix #2351 source-forget vs generic Store promotion/rollback race with a shared full-path lock and deterministic two-thread tests; then finish bounded temporal T8 windows, optimizer/EMA, restart, multi-shift retention and update-vs-hold utility. Promotion OFF.
+- **QA & Android:** reconcile #579 pipeline UP_TO_DATE with #581 health runtime UNAVAILABLE; obtain fresh read-only health/turn receipt. Keep #2347 receipt recovery and pairing on the companion stack; no APK install/permission grant without explicit consent.
+- **Research & Perception:** review #2349 source-disjoint speaker calibration and exact consumer CI; keep speaker-change DEFER without real consented data/model and Redmi mic proof. Maintain AudioRecord, ASR, decoder/vocoder and full-duplex as open scope.
+- **Boss & Integration:** finish #2343 exact-head CI, keep the 45/55 C3 trade-off explicit, review/rebase #2346/#2351/#2347 dependency stacks, and maintain whole-Canon evidence.
+
+### Acceptance gates
+
+1. #2343 exact CI must pass; then same-prompt Redmi A/B must show B1/B2 offers consumed and C3 correct FINAL with TTFT/prefill/total/PSS. The 45/55 scheduler is not assumed better.
+2. #2351 must make source deletion and generic promotion atomic; add A→B→A and A→B→C→A holdouts, revision latency and invariant probes.
+3. #2346 needs paired native taps, source provenance, same-model parity, zero/shuffled/OOD controls, held-out utility and rollback before B3 authority.
+4. Android companion integration follows #2271→#2342/#2347→#2344/#2348; signed recovery never redispatches. No APK install until explicit consent.
+5. Voice remains open: RAW EAR feature extraction is not AudioRecord capture, trainable decoder/vocoder or full duplex.
+6. Whole Canon: preserve all V13 functions and the 1,255-heading inventory; semantic clause→consumer→test→platform→rollback mapping remains incomplete.
+
+**User action:** none. No manual Termux command, update request, model/weight swap, permission change, APK install or microphone grant was performed.
