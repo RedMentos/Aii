@@ -74,7 +74,7 @@ bool parse_token_ids(const std::string & raw, std::vector<int> & ids) {
         if (token.empty() || ids.size() >= static_cast<std::size_t>(kMaxTokenRows)) return false;
         char * end = nullptr;
         const long value = std::strtol(token.c_str(), &end, 10);
-        if (end == token.c_str() || *end != '\\0' || value < 0 ||
+        if (end == token.c_str() || *end != '\0' || value < 0 ||
             value > std::numeric_limits<int>::max()) return false;
         const int token_id = static_cast<int>(value);
         if (std::find(ids.begin(), ids.end(), token_id) != ids.end()) return false;
@@ -307,7 +307,7 @@ bool decode_token_row(const ggml_tensor * tensor, int token_id,
 int run_token_rows(const std::string & model_path, const std::vector<int> & token_ids) {
     if (std::string(V14_LLAMA_REVISION) != "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4" ||
         token_ids.empty() || token_ids.size() > static_cast<std::size_t>(v14::kMaxTokenRows)) {
-        std::cerr << "unsupported pinned revision or token row count\\n";
+        std::cerr << "unsupported pinned revision or token row count" << std::endl;
         return 2;
     }
     BackendGuard backend;
@@ -317,7 +317,7 @@ int run_token_rows(const std::string & model_path, const std::vector<int> & toke
     model_params.load_mode = LLAMA_LOAD_MODE_MMAP;
     model.value = llama_model_load_from_file(model_path.c_str(), model_params);
     if (!model.value) {
-        std::cerr << "model load failed\\n";
+        std::cerr << "model load failed" << std::endl;
         return 3;
     }
     const llama_model * loaded = model.value;
@@ -327,12 +327,12 @@ int run_token_rows(const std::string & model_path, const std::vector<int> & toke
     if (!tensor || vocab < 1 || tensor->ne[1] != vocab || dim < 1 ||
         dim > v14::kMaxDim ||
         static_cast<std::size_t>(dim) * token_ids.size() > v14::kMaxTokenRowElements) {
-        std::cerr << "receiver input token embedding tensor shape is unsupported\\n";
+        std::cerr << "receiver input token embedding tensor shape is unsupported" << std::endl;
         return 4;
     }
     const std::size_t row_bytes = ggml_row_size(tensor->type, dim);
     if (row_bytes == 0 || tensor->nb[1] < row_bytes) {
-        std::cerr << "receiver input token embedding row layout is unsupported\\n";
+        std::cerr << "receiver input token embedding row layout is unsupported" << std::endl;
         return 4;
     }
     std::vector<std::vector<float>> rows;
@@ -342,42 +342,41 @@ int run_token_rows(const std::string & model_path, const std::vector<int> & toke
         std::size_t actual_row_bytes = 0, offset = 0;
         if (!decode_token_row(tensor, token_id, values, actual_row_bytes, offset) ||
             actual_row_bytes != row_bytes) {
-            std::cerr << "requested receiver token row could not be read safely\\n";
+            std::cerr << "requested receiver token row could not be read safely" << std::endl;
             return 5;
         }
         rows.push_back(std::move(values));
     }
 
     const char * type_name = ggml_type_name(tensor->type);
-    std::cout << "{\\\"schema\\\":\\\"v14.native-token-rows/1\\\",\\\"runner_revision\\\":\\\""
-              << V14_LLAMA_REVISION << "\\\",\\\"llama_version\\\":\\\""
+    std::cout << R"({"schema":"v14.native-token-rows/1","runner_revision":")"
+              << V14_LLAMA_REVISION
+              << R"(","llama_version":")"
               << v14::json_escape(llama_version() ? llama_version() : "unknown")
-              << "\\\",\\\"status\\\":\\\"ROWS_READ\\\","
-              << "\\\"source\\\":\\\"RECEIVER_INPUT_TOKEN_EMBEDDING_TABLE\\\","
-              << "\\\"model_vocab\\\":" << vocab << ",\\\"embedding_dim\\\":" << dim
-              << ",\\\"tensor_type\\\":\\\"" << v14::json_escape(type_name ? type_name : "unknown")
-              << "\\\",\\\"row_bytes\\\":" << row_bytes
-              << ",\\\"tensor_row_stride_bytes\\\":" << tensor->nb[1]
-              << ",\\\"requested_token_ids\\\":[";
+              << R"(","status":"ROWS_READ","source":"RECEIVER_INPUT_TOKEN_EMBEDDING_TABLE","model_vocab":)"
+              << vocab << R"(,"embedding_dim":)" << dim
+              << R"(,"tensor_type":")" << v14::json_escape(type_name ? type_name : "unknown")
+              << R"(","row_bytes":)" << row_bytes
+              << R"(,"tensor_row_stride_bytes":)" << tensor->nb[1]
+              << R"(,"requested_token_ids":[)";
     for (std::size_t i = 0; i < token_ids.size(); ++i) {
         if (i) std::cout << ",";
         std::cout << token_ids[i];
     }
-    std::cout << "],\\\"rows\\\":[";
+    std::cout << R"(],"rows":[)";
     for (std::size_t i = 0; i < rows.size(); ++i) {
         if (i) std::cout << ",";
-        std::cout << "{\\\"token_id\\\":" << token_ids[i] << ",\\\"values\\\":[";
+        std::cout << R"({"token_id":)" << token_ids[i] << R"(,"values":[)";
         for (std::size_t j = 0; j < rows[i].size(); ++j) {
             if (j) std::cout << ",";
             std::cout << v14::number(rows[i][j]);
         }
         std::cout << "]}";
     }
-    std::cout << "],\\\"full_table_copied\\\":false,\\\"read_only\\\":true,\\\"max_rows\\\":"
-              << v14::kMaxTokenRows << "}\\n";
+    std::cout << R"(],"full_table_copied":false,"read_only":true,"max_rows":)"
+              << v14::kMaxTokenRows << "}" << std::endl;
     return 0;
 }
-
 bool decode_embeddings(llama_context * ctx, int rows, int input_dim, int output_dim,
                        const std::vector<int> & positions, const std::vector<float> & input,
                        std::vector<float> & output, int & decode_status) {
@@ -531,13 +530,13 @@ int main(int argc, char ** argv) {
             if (arg == "--model" && i + 1 < argc) model_path = argv[++i];
             else if (arg == "--token-ids" && i + 1 < argc) token_ids_text = argv[++i];
             else {
-                std::cerr << "unknown or incomplete token-row argument\\n";
+                std::cerr << "unknown or incomplete token-row argument" << std::endl;
                 return 64;
             }
         }
         std::vector<int> token_ids;
         if (model_path.empty() || !v14::parse_token_ids(token_ids_text, token_ids)) {
-            std::cerr << "usage: native_latent_receiver --token-rows --model PATH --token-ids CSV\\n";
+            std::cerr << "usage: native_latent_receiver --token-rows --model PATH --token-ids CSV" << std::endl;
             return 64;
         }
         return run_token_rows(model_path, token_ids);
