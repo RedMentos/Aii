@@ -133,7 +133,8 @@ REPORT_GATE_OLD = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT bloc
 REPORT_GATE_NEW = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked for production; native probe is separate-context and non-authoritative','claim_limit':'Native input effect is not trained cross-model alignment, semantic utility or production latent exchange'}\n"""
 OPERATOR_HELP_OLD = '''    """:callosum [status|shadow|active|degrade|promote <direction>]"""\n'''
 OPERATOR_HELP_NEW = '''    """:callosum [status|shadow|active|degrade|promote <direction>|native-probe <B1_DETAIL|B2_GIST> <B1_DETAIL|B2_GIST|C3_LANGUAGE> --last-source --confirm]"""\n'''
-OPERATOR_PREFIX_NEW = r"""    c=controller(r)\n    if len(args)==5 and args[0]=='native-probe' and args[3]=='--last-source' and args[4]=='--confirm':
+OPERATOR_PREFIX_NEW = r"""    c=controller(r)
+    if len(args)==5 and args[0]=='native-probe' and args[3]=='--last-source' and args[4]=='--confirm':
         sender,receiver=args[1],args[2]
         if sender not in {'B1_DETAIL','B2_GIST'} or receiver not in {'B1_DETAIL','B2_GIST','C3_LANGUAGE'} or sender==receiver:
             raise ValueError('Native probe requires distinct B1/B2 sender and B1/B2/C3 receiver')
