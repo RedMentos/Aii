@@ -1,0 +1,49 @@
+name: V14 Temporal WorldJEPA T8 Windows
+
+on:
+  push:
+    paths:
+      - "v13/code/v13/world_jepa_temporal.py"
+      - "v13/code/v13/sleep.py"
+      - "v13/code/v13/memory.py"
+      - "v13/code/tests/test_v14_world_jepa_temporal_runtime.py"
+      - ".github/workflows/v14-temporal-world-jepa.yml"
+  pull_request:
+    paths:
+      - "v13/code/v13/world_jepa_temporal.py"
+      - "v13/code/v13/sleep.py"
+      - "v13/code/v13/memory.py"
+      - "v13/code/tests/test_v14_world_jepa_temporal_runtime.py"
+      - ".github/workflows/v14-temporal-world-jepa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  temporal-jepa:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "\${{ matrix.python-version }}"
+      - name: Install minimal test dependencies
+        run: python -m pip install --disable-pip-version-check numpy pytest
+      - name: Compile changed Python paths
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m py_compile \
+            v13/code/v13/world_jepa_temporal.py \
+            v13/code/v13/sleep.py \
+            v13/code/v13/memory.py \
+            v13/code/tests/test_v14_world_jepa_temporal_runtime.py
+      - name: Run temporal T8 / JEPA / source-forget regressions
+        env:
+          PYTHONPATH: v13/code
+        run: python -m pytest -q v13/code/tests/test_v14_world_jepa_temporal_runtime.py
