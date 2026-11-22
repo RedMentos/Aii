@@ -70,3 +70,19 @@ Fixed on this branch:
 Additional LOCAL_LINUX CPython 3.13.5 check: isolated AST-loader smoke PASS; the helper and cache dependency resolve when the comparator loads the producer in isolation.
 
 Initial push evidence at code commit `44aadc4`: RAW EAR fastpath Python 3.13/3.14 PASS (run `45001440422`), prosody/attention Python 3.11/3.13 PASS (run `45001440362`), pre-lease revocation QA PASS (run `45001440342`), privacy scan PASS (run `45001440401`); VAD comparison failed in both Python versions because of the AST dependency omission (run `45001440340`). The omission and source pin were corrected in subsequent commits. Exact PR-head reruns on the updated branch were queued at last read: fastpath `45001598137`, comparator `45001695523`, prosody `45001695396`, pre-lease QA `45001695463`, staged/integrated `45001695356`, privacy `45001695367`, model-lab `45001695513`. Do not inherit the earlier push PASS as exact PR-head acceptance; wait for these updated-head results.
+
+
+## Cross-lane staged-runtime blocker (2026-11-22)
+
+Exact PR-head staged runtime run `45001775878`, job `137144683517`, failed on a stale Core-owned source pin. `v13/code/scripts/integrated_audio_context_candidate_20261121.py` still expects old `audio_voice_cues.py` Git blob `4c5641adf6758762ce0fdf616a9b2a798e6de408`; the new producer blob is `34dfd39728161b4659afc21298476cd732d08792`. The stage builder correctly rejects the changed source with `ValueError: audio source blob changed: v13/audio_voice_cues.py`. The staged job reported 16 failed, 234 passed, 10 skipped and 2 errors; the two migration tests fail downstream because stage creation aborts.
+
+This is not a filter-test failure and not Redmi evidence. Core owns the integrated candidate script/source manifest, so Perception did not edit it. Exact blocker and required pin refresh were posted to Boss PR #2321 and whole-Canon issue #1984. PR #2322 remains DRAFT / NOT_MERGEABLE pending Core's pin/manifest update and a rerun of the staged suite.
+
+At current PR head `297e2c5d24d90cbbc3ac651e3b7c634b060184b2`, targeted workflows observed:
+- RAW EAR fastpath: Python 3.13 — 84 passed; Python 3.14 still running at last read.
+- RAW EAR prosody/attention: Python 3.11 — 66 passed; Python 3.13 — 66 passed.
+- RAW EAR pre-lease revocation: 42 passed.
+- RAW EAR VAD comparator: Python 3.13 — 9 tests passed, including the new isolated-loader alias regression; Python 3.14 still running at last read.
+- Perception privacy scan: CLEAN.
+- Model-lab workflow: both jobs completed successfully.
+- V13 staged context/integrated regression: staged-runtime failed on the stale pin; integrated-regression was still running at last read.
