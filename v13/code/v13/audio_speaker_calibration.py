@@ -330,11 +330,33 @@ def validate_calibration_artifact(artifact, *, model_id, model_revision, model_s
     return dict(artifact)
 
 
-def _read_regular_file(path, max_bytes):
+def _open_directory(path, *, dir_fd=None):
+    """Open and pin one directory component without following a symlink."""
+    if not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "O_DIRECTORY"):
+        raise SpeakerCalibrationError("safe no-follow directory open is unavailable")
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | getattr(os, "O_CLOEXEC", 0)
+    try:
+        descriptor = os.open(path, flags, dir_fd=dir_fd)
+    except (OSError, TypeError):
+        raise SpeakerCalibrationError("calibration directory is unavailable or unsafe") from None
+    try:
+        if not stat.S_ISDIR(os.fstat(descriptor).st_mode):
+            raise SpeakerCalibrationError("calibration path is not a directory")
+        return descriptor
+    except Exception:
+        os.close(descriptor)
+        raise
+
+
+def _read_regular_file_at(directory_fd, name, max_bytes):
+    """Read a bounded regular file relative to a pinned directory descriptor."""
+    if (type(name) is not str or not name or name in {".", ".."}
+            or "/" in name or "\\" in name):
+        raise SpeakerCalibrationError("calibration filename is invalid")
     flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
     try:
-        descriptor = os.open(path, flags)
-    except OSError:
+        descriptor = os.open(name, flags, dir_fd=directory_fd)
+    except (OSError, TypeError):
         raise SpeakerCalibrationError("calibration file is unavailable or unsafe") from None
     try:
         info = os.fstat(descriptor)
@@ -351,63 +373,69 @@ def _read_regular_file(path, max_bytes):
 
 def load_approved_calibration(home, calibration_id, *, model_id, model_revision, model_sha256,
                               embedding_dim, frame_step_ms, lookback_frames):
-    """Read a locally allowlisted artifact; no network, writes, or implicit model download.
+    """Read an owner-allowlisted artifact through pinned directory descriptors.
 
-    The local manifest is an owner-controlled opt-in, not a cryptographic signature.
-    File hashes detect corruption/replacement; they do not authenticate the owner.
+    Directory-relative openat-style reads prevent a concurrent replacement of
+    models/speaker_calibration from redirecting the manifest or artifact lookup.
+    The local manifest is an owner-controlled opt-in, not a cryptographic
+    signature. File hashes detect corruption/replacement; they do not authenticate
+    the owner or prove dataset rights.
     """
     if type(calibration_id) is not str or not _CALIBRATION_ID.fullmatch(calibration_id):
         raise SpeakerCalibrationError("calibration_id is invalid")
-    home_path = Path(home).resolve(strict=True)
-    models_path = home_path / "models"
-    root = models_path / "speaker_calibration"
-    if (models_path.is_symlink() or not models_path.is_dir()
-            or root.is_symlink() or not root.is_dir()):
-        raise SpeakerCalibrationError("speaker calibration directory is unavailable or unsafe")
     try:
-        models_real = models_path.resolve(strict=True)
-        root_real = root.resolve(strict=True)
-        if root_real.parent != models_real:
-            raise SpeakerCalibrationError("speaker calibration directory escapes the model root")
+        home_path = Path(home).expanduser().resolve(strict=True)
     except OSError:
-        raise SpeakerCalibrationError("speaker calibration directory cannot be resolved") from None
+        raise SpeakerCalibrationError("calibration home is unavailable") from None
 
-    manifest_path = root / "approved.json"
-    raw_manifest = _read_regular_file(manifest_path, _MAX_ARTIFACT_BYTES)
+    home_fd = models_fd = root_fd = None
     try:
-        manifest = json.loads(raw_manifest.decode("utf-8"))
-    except (UnicodeDecodeError, ValueError):
-        raise SpeakerCalibrationError("speaker calibration approval manifest is unreadable") from None
-    if (type(manifest) is not dict or set(manifest) != {"schema", "entries"}
-            or manifest.get("schema") != MANIFEST_SCHEMA or type(manifest.get("entries")) is not list
-            or len(manifest["entries"]) > 64):
-        raise SpeakerCalibrationError("speaker calibration approval manifest schema mismatch")
-    seen_ids = set()
-    for item in manifest["entries"]:
-        if (type(item) is not dict or set(item) != {"calibration_id", "artifact_sha256", "enabled"}
-                or type(item["calibration_id"]) is not str
-                or not _CALIBRATION_ID.fullmatch(item["calibration_id"])
-                or type(item["artifact_sha256"]) is not str
-                or not _SHA256.fullmatch(item["artifact_sha256"])
-                or type(item["enabled"]) is not bool
-                or item["calibration_id"] in seen_ids):
-            raise SpeakerCalibrationError("speaker calibration manifest entry is invalid or duplicated")
-        seen_ids.add(item["calibration_id"])
-    matches = [entry for entry in manifest["entries"] if entry["calibration_id"] == calibration_id]
-    if len(matches) != 1:
-        raise SpeakerCalibrationError("calibration is not uniquely allowlisted")
-    entry = matches[0]
-    if entry["enabled"] is not True:
-        raise SpeakerCalibrationError("calibration is disabled")
-    artifact_path = root / (calibration_id + ".json")
-    raw = _read_regular_file(artifact_path, _MAX_ARTIFACT_BYTES)
-    if hashlib.sha256(raw).hexdigest() != entry["artifact_sha256"]:
-        raise SpeakerCalibrationError("allowlisted calibration file hash mismatch")
-    try:
-        artifact = json.loads(raw.decode("utf-8"))
-    except (UnicodeDecodeError, ValueError):
-        raise SpeakerCalibrationError("calibration artifact is unreadable") from None
-    return validate_calibration_artifact(
-        artifact, model_id=model_id, model_revision=model_revision, model_sha256=model_sha256,
-        embedding_dim=embedding_dim, frame_step_ms=frame_step_ms, lookback_frames=lookback_frames,
-    )
+        home_fd = _open_directory(home_path)
+        models_fd = _open_directory("models", dir_fd=home_fd)
+        root_fd = _open_directory("speaker_calibration", dir_fd=models_fd)
+
+        raw_manifest = _read_regular_file_at(root_fd, "approved.json", _MAX_ARTIFACT_BYTES)
+        try:
+            manifest = json.loads(raw_manifest.decode("utf-8"))
+        except (UnicodeDecodeError, ValueError):
+            raise SpeakerCalibrationError("speaker calibration approval manifest is unreadable") from None
+        if (type(manifest) is not dict or set(manifest) != {"schema", "entries"}
+                or manifest.get("schema") != MANIFEST_SCHEMA or type(manifest.get("entries")) is not list
+                or len(manifest["entries"]) > 64):
+            raise SpeakerCalibrationError("speaker calibration approval manifest schema mismatch")
+        seen_ids = set()
+        for item in manifest["entries"]:
+            if (type(item) is not dict or set(item) != {"calibration_id", "artifact_sha256", "enabled"}
+                    or type(item["calibration_id"]) is not str
+                    or not _CALIBRATION_ID.fullmatch(item["calibration_id"])
+                    or type(item["artifact_sha256"]) is not str
+                    or not _SHA256.fullmatch(item["artifact_sha256"])
+                    or type(item["enabled"]) is not bool
+                    or item["calibration_id"] in seen_ids):
+                raise SpeakerCalibrationError("speaker calibration manifest entry is invalid or duplicated")
+            seen_ids.add(item["calibration_id"])
+        matches = [entry for entry in manifest["entries"] if entry["calibration_id"] == calibration_id]
+        if len(matches) != 1:
+            raise SpeakerCalibrationError("calibration is not uniquely allowlisted")
+        entry = matches[0]
+        if entry["enabled"] is not True:
+            raise SpeakerCalibrationError("calibration is disabled")
+
+        raw = _read_regular_file_at(root_fd, calibration_id + ".json", _MAX_ARTIFACT_BYTES)
+        if hashlib.sha256(raw).hexdigest() != entry["artifact_sha256"]:
+            raise SpeakerCalibrationError("allowlisted calibration file hash mismatch")
+        try:
+            artifact = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, ValueError):
+            raise SpeakerCalibrationError("calibration artifact is unreadable") from None
+        return validate_calibration_artifact(
+            artifact, model_id=model_id, model_revision=model_revision, model_sha256=model_sha256,
+            embedding_dim=embedding_dim, frame_step_ms=frame_step_ms, lookback_frames=lookback_frames,
+        )
+    finally:
+        for descriptor in (root_fd, models_fd, home_fd):
+            if descriptor is not None:
+                try:
+                    os.close(descriptor)
+                except OSError:
+                    pass
