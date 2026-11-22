@@ -137,7 +137,7 @@ Coordinate with Boss/Core to recompose #2271 → #2273 → #2286 on current Boss
 1. Capture is OFF by default. A visible, foreground Activity must show an explicit one-shot action; no background service or implicit model-triggered capture.
 2. Check the OS RECORD_AUDIO grant and a separate live, source-bound user-consent lease before constructing AudioRecord. Denial, revocation, disabled stop switch, expired lease or non-visible Activity must not construct/start the recorder.
 3. Consume a unique lease/nonce atomically before capture. Duplicate, replayed, expired or already-consumed requests must fail closed.
-4. Bound each mono PCM16 window to the existing Runtime contract (8–48 kHz, at most one second per window); reject empty, odd-byte, short or failed reads rather than fabricating finality.
+4. Runtime ingress accepts 8–48 kHz, but signed-consumer PR #2310 currently requires mono PCM16 at exactly 16 kHz, at most one second. Android AudioRecord documents 44.1 kHz as the only rate guaranteed across devices; 16 kHz may work only on some. The provider must check getState()/getSampleRate() and fail closed on mismatch, or use an explicit tested resampler whose source/target rates are receipt-bound. Never silently relabel or resample.
 5. On cancel, timeout, onStop, permission revocation, exception or process death: stop/release the recorder, wipe the mutable capture buffer in finally, and never auto-resume after restart.
 6. Pass only source ID, consent receipt, sample rate, start time, PCM16 and PROVISIONAL/FINAL through the in-memory bridge. No raw PCM file, SQLite blob, log, backup or crash-report payload. The Runtime must not claim Python immutable-byte zeroization until a mutable-buffer lifecycle is implemented and measured.
 7. Bind a signed receipt to lease nonce, source ID, PCM digest, sample rate, frame count, timestamps and finality. Revalidate the live source/consent lease before Store admission and again before C3 dispatch; revocation must cancel C3 and tombstone derived context.
@@ -166,3 +166,11 @@ Coordinate with Boss/Core to recompose #2271 → #2273 → #2286 on current Boss
 - The inherited two-checkout old-phone migration failure remains; this stack is not merge-ready. No Redmi install or AudioRecord permission/capture test occurred.
 
 **Status:** DEFAULT_OFF_GUARDS_ADDED / CI_PENDING_QUEUE / MIGRATION_BLOCKED / REDMI_UNVERIFIED. User action: none.
+
+
+## Cross-lane signed-consumer readback — 2026-11-22
+
+Perception PR #2310 head 923c4b32bb3f63d6224251b00b6b1f9941db5079 is stacked on #2304 at 8a8970c64b66b77bb1bb6a5460d0e4be38a6490c. Its signed-audio-consumer workflow 44988548283 FAILS on both Python 3.13 and 3.14 during test collection with ModuleNotFoundError: v13.android_companion_ecdsa. The staged/integrated workflow 44988548352 passes, but no signed-consumer assertions ran. The base lacks the companion verifier/nonce DB dependency carried by the #2271/#2273/#2286 stack. This is a cross-lane composition failure, not a Redmi or AudioRecord result. Perception was notified to rebase/compose the consumer with the exact verifier dependency.
+
+The consumer PR currently expects 16 kHz mono PCM16 for at most one second. Android's official AudioRecord reference says 44.1 kHz is the only sample rate guaranteed on all devices; 16 kHz may work on some. It also requires checking AudioRecord.getState() after construction and exposes getSampleRate() for the actual configured rate: https://developer.android.com/reference/android/media/AudioRecord. Therefore a future provider must not assume 16 kHz works on Redmi. It must measure the configured rate and fail closed if the signed consumer cannot accept it, or use a tested resampler with both rates bound into the signed receipt. No silent rate substitution.
+

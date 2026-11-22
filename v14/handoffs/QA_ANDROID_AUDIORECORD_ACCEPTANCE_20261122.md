@@ -30,7 +30,7 @@ The current companion has no microphone provider or AudioRecord read loop. This 
 - Capture remains OFF by default and can start only after a visible foreground Activity action plus a separate live source-bound consent lease and OS permission grant.
 - No background capture, no implicit model-triggered capture, and no auto-resume after process death.
 - Atomically consume a unique nonce before starting; reject duplicate, replayed and expired requests.
-- Use bounded mono PCM16 windows matching the Runtime ingress contract (8–48 kHz, maximum one second per window); reject empty, odd-byte, short or failed reads.
+- Runtime ingress accepts 8–48 kHz, but signed-consumer PR #2310 currently expects mono PCM16 at exactly 16 kHz, maximum one second. Android guarantees 44.1 kHz only; 16 kHz may work on some devices. Check AudioRecord.getState()/getSampleRate() and fail closed on mismatch, or use a tested resampler with source/target rates bound into the signed receipt. Never silently relabel or resample.
 - Always stop/release AudioRecord and wipe the mutable capture buffer in finally on cancel, timeout, backgrounding, permission revocation, exception or process death.
 - Do not persist raw PCM in files, SQLite, logs, backups or crash reports. Python immutable-byte zeroization remains an explicit open requirement; do not claim it is solved by garbage collection.
 - Sign the receipt over nonce, source ID, PCM digest, sample rate, frame count, timestamps and finality. Revalidate source and consent before Store admission and again before C3 dispatch; revoke must cancel C3 and tombstone derived context.
@@ -39,3 +39,11 @@ The current companion has no microphone provider or AudioRecord read loop. This 
 ## Evidence boundary
 
 The default-off tests are Robolectric/CI contract guards, not actual microphone tests. Runtime lease tests use synthetic PCM and fake providers/runners. No local Android SDK, APK install, microphone permission, AudioRecord instance or Redmi hardware test occurred. The matrix must be upgraded only when Core supplies the provider and the user separately authorizes the device permission test.
+
+
+## Cross-lane dependency and Android sample-rate constraint
+
+- Perception signed-consumer PR #2310 head 923c4b32bb3f63d6224251b00b6b1f9941db5079 is based on #2304, not on the companion verifier stack. Exact workflow 44988548283 fails on Python 3.13 and 3.14 during collection with ModuleNotFoundError: v13.android_companion_ecdsa. Staged/integrated run 44988548352 passes, but no consumer assertions ran. This consumer is NOT CI-green; it needs a base containing the verifier and durable nonce DB.
+- The consumer currently requires 16 kHz mono PCM16, at most one second. Android's official AudioRecord reference says 44.1 kHz is the only rate guaranteed on all devices, while 16 kHz may work on some; check getState()/getSampleRate() and fail closed or use an explicit tested resampler with both rates in the signed receipt: https://developer.android.com/reference/android/media/AudioRecord.
+- This reinforces the no-provider boundary: no Android capture has occurred, and no 16 kHz support has been measured on Redmi.
+
