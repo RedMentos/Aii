@@ -145,7 +145,16 @@ def _model_binding(runtime, role):
             or selected_resolved != resolved
             or selected_identity != verified_identity):
         raise PermissionError("native probe selected model path differs from verified manifest file")
-    return {"model_key": key, "revision": revision, "sha256": digest}
+    return {
+        "model_key": key,
+        "revision": revision,
+        "sha256": digest,
+        # Persist both the canonical route and the identity of the exact inode
+        # whose bytes were hashed. Recomputing only at consume would miss a
+        # coordinated manifest+router redirect to a byte-identical copy.
+        "canonical_path": str(resolved),
+        "file_identity": list(verified_identity),
+    }
 
 
 def _current_event(runtime):
