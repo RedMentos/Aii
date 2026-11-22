@@ -127,7 +127,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             ):
         raise ValueError('base-composer downstream source pins are inconsistent')
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
-                     '0beea45e7caabbc918ac69007c5ee0abb62bf801a0b07c9b3ca22478f22a6fbd')
+                     'c450501fb98104b3359578c144e04c86f9a5e01591c7b61cc9ca53b35a3799e6')
     result = observers.apply_sources(code_dir, result)
     # Apply only the reviewed ContextOS input and the exact checked builder.
     # The dependent recall module pins ContextOS, so rebind that one pin.
@@ -173,7 +173,7 @@ def build_sources(code_dir, *, include_postcommit=True):
         if path.is_symlink() or not path.is_file():
             raise ValueError('Postcommit observer builder missing or unsafe')
         raw_candidate = path.read_bytes()
-        if hashlib.sha256(raw_candidate).hexdigest() != 'b7991b805da400da158480d358092d271123fffab7c07f995e500c77c3fba1ab':
+        if hashlib.sha256(raw_candidate).hexdigest() != '2f56d5194cab14127b5ccd8ae9e15c7b7f8bc899bc03939c6bc9611e0f79f6e1':
             raise ValueError('Postcommit observer builder source changed')
         namespace = {'__name__': 'v13_checked_postcommit', '__file__': str(path)}
         exec(compile(raw_candidate, str(path), 'exec'), namespace)
