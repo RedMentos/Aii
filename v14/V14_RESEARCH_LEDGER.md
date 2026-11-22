@@ -971,3 +971,10 @@ This correction supersedes older branch-level status claims without deleting the
 **V14 mapping / experiment:** treat novelty as a candidate A4 attention/modulator input and a *write gate* for a short-lived, source-bound audio episode store; do not copy the frozen-backbone architecture or use its result to replace JEPA/EMA/real weight learning. On existing caller-supplied PCM/FASTDIAR-compatible fixtures only, compare (a) current fixed speaker-change evidence, (b) calibrated assign/defer/create gate, and (c) no-gate baseline. Measure source-disjoint known-vs-novel AUROC, false-new rate, re-identification after silence, overlap/short-speech deferral, latency and bounded memory. Ablate full-history replay vs sliding-window replay vs no replay. Keep causal labels provisional until identity-stability is measured; do not import delayed final labels into live C3. Require session TTL, explicit consent, source revocation, and zero traces after session end. No Android provider or model download is authorized by this research note.
 
 **Status:** RESEARCH_ONLY / NO_CODE_REUSE / NO_MODEL_DOWNLOAD / NO_WEIGHT_CHANGE. The next practical step is a tiny calibrated novelty-gate ablation over existing synthetic speaker evidence after current RAW EYE source-lock CI and FASTDIAR review are complete.
+
+
+### R-080 / PR #2366 exact-head update — 2026-11-22T18:11Z
+
+- Current branch head: `9a19b8c0af01912f40d92fecac4e6ab9a82bb128`; tested code/test commit: `f8a9faf66b64352f8e1703e634b79f03ec3c0984`.
+- GitHub run 45053429482 is pending with no jobs created at last read; do not claim CI pass. The old visual-only PR #2363 was closed as superseded.
+- Local evidence remains the isolated CPython 3.13.5 fake-Store concurrency harness, 2/2 PASS; full local Aii Store/A5 suite and Redmi remain unverified.
