@@ -45,7 +45,7 @@ EVENT_NEW = b'''        path=self.home/'data/blobs'/h
 '''
 READ_SOURCE_OLD = b'''    def read_source(self,ref):
         r=self.one("SELECT * FROM sources WHERE id=?",(ref.get("source_id"),))
-        if not r or r["deleted"] or r["hash"]!=ref.get("sha256"):raise ValueError("Dangling/gelöschter SourceRef")
+        if not r or r["deleted"] or r["hash"]!=ref.get("sha256"):raise ValueError("Dangling/gel\\xc3\\xb6schter SourceRef")
         b=self.blob_bytes(r["hash"])
         if digest(b)!=r["hash"]:raise ValueError("Source-Hash falsch")
         txt=b.decode()
@@ -58,7 +58,7 @@ READ_SOURCE_NEW = b'''    def read_source(self,ref):
         # The potentially large read/decompression then happens outside the lock.
         with self.mutex:
             r=self.one("SELECT * FROM sources WHERE id=?",(ref.get("source_id"),))
-            if not r or r["deleted"] or r["hash"]!=ref.get("sha256"):raise ValueError("Dangling/gelöschter SourceRef")
+            if not r or r["deleted"] or r["hash"]!=ref.get("sha256"):raise ValueError("Dangling/deleted SourceRef")
             if not all(hasattr(os,name) for name in ("O_DIRECTORY","O_NOFOLLOW","O_NONBLOCK")):
                 raise OSError("safe source read primitives unavailable")
             directory=self.home/"data/blobs"
