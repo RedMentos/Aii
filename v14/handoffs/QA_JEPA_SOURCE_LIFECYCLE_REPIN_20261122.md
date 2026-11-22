@@ -2,7 +2,7 @@
 
 ## State
 
-The QA branch includes the latest JEPA Run 14 base commit 50e3c8dfe2e270c0e7f6024f2fec64a1970a1f9b via a two-parent merge commit. Current code/test head: 49940d072e0b21afd9b39719c7472d6b41b97d6f. PR #2383 remains DRAFT / NOT_RELEASED.
+The QA branch includes the latest JEPA Run 14 base commit 50e3c8dfe2e270c0e7f6024f2fec64a1970a1f9b via a two-parent merge commit. Current code/test head: 4fc02a69b7ca4cb1d4686da0c8622d2ef2e236b9. PR #2383 remains DRAFT / NOT_RELEASED.
 
 ## Reproduced exact-head failures
 
@@ -40,7 +40,7 @@ The QA branch includes the latest JEPA Run 14 base commit 50e3c8dfe2e270c0e7f602
 
 - Exact prior CI head 71df3dc: FAIL on two stale downstream pins.
 - Exact prior CI head ff8ecf3: FAIL on the now-fixed missing MEMORY_OLD anchor in Python 3.14 staged startup and Lab Age E2E.
-- Current exact code/test head 49940d0: all 11 required checks were QUEUED at last poll; no green result is claimed.
+- Exact code/test head 49940d0 failed the old-phone-to-new-runtime job with the stage-builder mismatch; the 4fc02a6 head adds the exact exported-digest diagnostic. All 11 required checks on 4fc02a6 were QUEUED at last poll; no green result is claimed.
 - LOCAL_LINUX full Aii suite: BLOCKED / NOT_RUN because this execution environment has no Aii checkout and GitHub DNS/network is unavailable.
 - Termux/Redmi: REDMI_UNVERIFIED. No device command, chat, native probe, update request or device mutation was issued.
 - No model, weight, SQLite, chat, permission or installed-app state was changed.
@@ -59,7 +59,7 @@ This is a timestamped failure snapshot, not a current live claim and not accepta
 
 ## Other QA findings / independent blockers
 
-- The two-checkout migration test had separately returned PARTIAL/ERROR at the earlier failing composer. The new diagnostic will identify whether another staged or startup edge remains after this repair.
+- After the composer repair, the two-checkout migration test still returned PARTIAL/ERROR on exact head 49940d0. The bounded diagnostic identified the next failure as RuntimeDeployError: “Integrated stage builder changed”. The exact-head 4fc02a6 test now exports the commit’s Git blobs independently and prints the expected STAGER_SHA256, actual exported SHA-256, Git blob ID and deployer module name before the stage attempt; this will distinguish a stale pin from an export/path mismatch.
 - PR #2379 (Core one-shot MediaProjection provider) has a separate concrete integration mismatch: it calls Perception’s _issue_provider_frame_verifier with two arguments, while the current Perception API requires (lease, observation, verify_fn). QA posted the exact compatible call and required active-lease regression on #2379.
 - PR #2379 also retains the previously reported P1 unbounded ContentProvider writer / stop-vs-openFile race; keep provider OFF until a cancellable pipe/read-lease and zeroization test passes.
 - PR #2356’s Android process-restart emulator job failed in its failure-report path because failure_logcat() treated the string returned by run_adb() as a CompletedProcess and accessed .stdout. The actual STOPPED UI text was not observed before timeout, so the underlying stop/restart behavior remains unverified; fix the diagnostic crash first, then rerun the emulator test.
@@ -68,4 +68,4 @@ This is a timestamped failure snapshot, not a current live claim and not accepta
 
 ## Next action
 
-Poll exact current-head CI. If staged startup passes but old-phone-to-new-runtime still fails, read the new bounded stage diagnostic and fix the next real edge. Keep PR DRAFT until all required exact-head checks and independent review pass. Do not update or claim a Redmi release from this branch.
+Poll exact current-head CI. Poll exact 4fc02a6 CI and read V13_STAGE_PIN_DIAGNOSTIC. If expected and actual differ, correct the real pin or export path; if they match, trace why runtime_deploy loaded a different stager. Then rerun staged Python 3.14, optimizer resume and two-checkout migration. Keep PR DRAFT until all required exact-head checks and independent review pass. Do not update or claim a Redmi release from this branch.
