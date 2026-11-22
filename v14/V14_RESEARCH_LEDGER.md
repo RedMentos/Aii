@@ -913,3 +913,6 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **Exact comparator pin follow-up (2026-11-22):** after the producer changed to blob `b18e450162b062b09368a12b1ca18924ed8c5025`, the VAD comparison workflow was repinned to that exact Git blob (workflow blob `5d90cfcab210b051a2b53b43d1ba77253839f5f2`, commit `a98a79ec7aae62abf679f59f3db6a01a02fc9b63`). Branch readback confirms the producer and comparator pin agree. Exact-head CI is running; no pass is claimed yet.
+
+
+**Exact-head CI readback (2026-11-22 08:40 UTC, branch `a5494d48ce26fa570245fd0e5b24733a20ce304d`):** RAW EAR fastpath Python 3.13/3.14 PASS; RAW EAR→A4→C3 prosody 3.11/3.13 PASS (66 tests each); comparator 3.13/3.14 PASS; consent revocation, A5 UI lease 3.13/3.14, privacy, offline bridge security, same-repo integration, model-lab and latent-cache-tiny PASS. Staged-runtime and integrated-regression FAIL only at the Core-owned `integrated_audio_context_candidate_20261121.py:50` producer blob pin (`audio source blob changed`). The migration fixture's `PARTIAL/ERROR` is downstream of that staging failure, not a Redmi/updater result. Perception's comparator pin matches the current producer. Android AudioRecord, ARM ABI and Redmi remain NOT_RUN / REDMI_UNVERIFIED; PR remains DRAFT / NOT_RELEASED.
