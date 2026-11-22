@@ -13,6 +13,8 @@ import math
 import re
 import threading
 
+from .audio_speaker_calibration import SpeakerCalibrationError, validate_calibration_artifact
+
 SCHEMA = "v14.raw-ear-speaker-embeddings/1"
 METHOD = "COSINE_LOOKBACK_DIAGNOSTIC_V1"
 _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
@@ -132,7 +134,7 @@ class SpeakerChangeEvidenceRegistry:
         self._lock = threading.RLock()
 
     def update(self, *, source_id, generation_id, start_ms, end_ms,
-               activity_hint, embeddings):
+               activity_hint, embeddings, calibration_artifact=None):
         if type(source_id) is not str or not source_id.strip() or len(source_id) > 128:
             raise SpeakerEvidenceError("speaker source id is invalid")
         if type(generation_id) is not str or not generation_id.strip() or len(generation_id) > 128:
@@ -142,11 +144,45 @@ class SpeakerChangeEvidenceRegistry:
         if activity_hint not in _ACTIVITY:
             raise SpeakerEvidenceError("speaker activity hint is invalid")
         batch = _validate_batch(embeddings, source_id, generation_id, start_ms, end_ms)
-        metadata = {k: batch[k] for k in (
-            "model_id", "model_revision", "model_sha256", "embedding_dim",
-            "frame_step_ms", "lookback_frames", "lookback_ms",
-            "confidence_threshold", "calibration_id",
-        )}
+        calibration = None
+        if calibration_artifact is not None:
+            try:
+                calibration = validate_calibration_artifact(
+                    calibration_artifact,
+                    model_id=batch["model_id"],
+                    model_revision=batch["model_revision"],
+                    model_sha256=batch["model_sha256"],
+                    embedding_dim=batch["embedding_dim"],
+                    frame_step_ms=batch["frame_step_ms"],
+                    lookback_frames=batch["lookback_frames"],
+                )
+            except SpeakerCalibrationError as exc:
+                raise SpeakerEvidenceError("speaker calibration artifact is invalid") from exc
+            if (batch["confidence_threshold"] is not None
+                    and not math.isclose(
+                        batch["confidence_threshold"], calibration["threshold"],
+                        rel_tol=0.0, abs_tol=1e-8,
+                    )):
+                raise SpeakerEvidenceError("speaker threshold differs from the approved calibration")
+            if (batch["calibration_id"] is not None
+                    and batch["calibration_id"] != calibration["calibration_id"]):
+                raise SpeakerEvidenceError("speaker calibration id differs from the approved artifact")
+
+        effective_threshold = calibration["threshold"] if calibration is not None else batch["confidence_threshold"]
+        effective_calibration_id = calibration["calibration_id"] if calibration is not None else batch["calibration_id"]
+        calibration_receipt_sha256 = calibration["artifact_sha256"] if calibration is not None else None
+        metadata = {
+            "model_id": batch["model_id"],
+            "model_revision": batch["model_revision"],
+            "model_sha256": batch["model_sha256"],
+            "embedding_dim": batch["embedding_dim"],
+            "frame_step_ms": batch["frame_step_ms"],
+            "lookback_frames": batch["lookback_frames"],
+            "lookback_ms": batch["lookback_ms"],
+            "confidence_threshold": effective_threshold,
+            "calibration_id": effective_calibration_id,
+            "calibration_receipt_sha256": calibration_receipt_sha256,
+        }
         key = (source_id, generation_id)
         with self._lock:
             for old_key in list(self._states):
@@ -179,8 +215,11 @@ class SpeakerChangeEvidenceRegistry:
             last_seen_end_ms = state.last_end_ms
             tolerance = max(40, int(batch["frame_step_ms"] * 1.5))
             threshold_status = (
-                "CALLER_ASSERTED_UNVERIFIED"
-                if batch["confidence_threshold"] is not None else "NOT_CONFIGURED"
+                "LOCAL_APPROVED_REPORT_HASH_MATCH"
+                if calibration is not None else (
+                    "CALLER_ASSERTED_UNVERIFIED"
+                    if batch["confidence_threshold"] is not None else "NOT_CONFIGURED"
+                )
             )
             for frame_end, vector in batch["frames"]:
                 if last_seen_end_ms is not None and frame_end <= last_seen_end_ms:
@@ -194,12 +233,26 @@ class SpeakerChangeEvidenceRegistry:
                 if candidates:
                     _, reference_end, reference_vector = min(candidates, key=lambda item: item[0])
                     similarity = max(-1.0, min(1.0, sum(a * b for a, b in zip(vector, reference_vector))))
-                    threshold = batch["confidence_threshold"]
-                    # A caller-supplied threshold/calibration label is not a
-                    # validated calibration artifact. Preserve the measured
-                    # similarity, but never promote it to a speaker decision.
-                    gate_passed = None
-                    candidate = None
+                    threshold = effective_threshold
+                    # Only a locally allowlisted, source/session/speaker-disjoint
+                    # held-out report can gate a non-identifying A4 hint. The
+                    # report hash is integrity, not a digital signature.
+                    if calibration is None:
+                        gate_passed = None
+                        candidate = None
+                        candidate_kind = None
+                        interpretation = (
+                            "SIMILARITY_ONLY_UNCALIBRATED"
+                            if threshold is not None else "SIMILARITY_ONLY_NO_THRESHOLD"
+                        )
+                    else:
+                        gate_passed = similarity >= threshold
+                        candidate = not gate_passed
+                        candidate_kind = "CHANGE_OR_OVERLAP" if candidate else "CONTINUITY"
+                        interpretation = (
+                            "LOCAL_CALIBRATION_CHANGE_OR_OVERLAP_HINT"
+                            if candidate else "LOCAL_CALIBRATION_CONTINUITY_HINT"
+                        )
                     change_score = round(max(0.0, min(1.0, (1.0 - similarity) * 0.5)), 6)
                     frame_record = {
                         "status": "MEASURED",
@@ -211,11 +264,8 @@ class SpeakerChangeEvidenceRegistry:
                         "threshold_status": threshold_status,
                         "confidence_gate_passed": gate_passed,
                         "speaker_change_candidate": candidate,
-                        "candidate_kind": None,
-                        "interpretation": (
-                            "SIMILARITY_ONLY_UNCALIBRATED"
-                            if threshold is not None else "SIMILARITY_ONLY_NO_THRESHOLD"
-                        ),
+                        "candidate_kind": candidate_kind,
+                        "interpretation": interpretation,
                     }
                     frame_evidence.append(frame_record)
                     latest = frame_record
@@ -243,15 +293,14 @@ class SpeakerChangeEvidenceRegistry:
                     "reference_age_ms": None,
                     "cosine_similarity": None,
                     "change_score": None,
-                    "confidence_threshold": batch["confidence_threshold"],
+                    "confidence_threshold": effective_threshold,
+                    "threshold_status": threshold_status,
                     "confidence_gate_passed": None,
                     "speaker_change_candidate": None,
                     "candidate_kind": None,
                     "interpretation": "LOOKBACK_NOT_YET_AVAILABLE",
                 }
-            # No verified calibration artifact is accepted by this producer yet.
-            # A boolean peak here would falsely imply a calibrated decision.
-            peak_candidate = None
+            peak_candidate = None if calibration is None else candidate_count > 0
             return {
                 "method": METHOD,
                 "source_id": source_id,
@@ -265,7 +314,9 @@ class SpeakerChangeEvidenceRegistry:
                 "lookback_ms": batch["lookback_ms"],
                 "frame_count": len(batch["frames"]),
                 "threshold_status": threshold_status,
-                "calibration_id": batch["calibration_id"],
+                "calibration_id": effective_calibration_id,
+                "calibration_receipt_sha256": calibration_receipt_sha256,
+                "confidence_threshold": effective_threshold,
                 "reset_reason": reset_reason,
                 **latest,
                 "frame_evidence": frame_evidence,
