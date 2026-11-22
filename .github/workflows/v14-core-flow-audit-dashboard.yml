@@ -1,0 +1,53 @@
+name: V14 Core flow audit dashboard consumer
+
+on:
+  push:
+    branches: [core/v14-flow-audit-boss-20261122]
+    paths:
+      - "v13/code/v13/flow_audit.py"
+      - "v13/code/v13/flow_audit_dashboard.py"
+      - "v13/code/v13/mobile_dashboard.py"
+      - "v13/code/v13/mobile_dashboard.html"
+      - "v13/code/tests/test_flow_audit.py"
+      - "v13/code/tests/test_flow_audit_dashboard.py"
+      - "v13/code/tests/test_flow_audit_dashboard_route.py"
+      - ".github/workflows/v14-core-flow-audit-dashboard.yml"
+  pull_request:
+    branches: [boss/v14-recall-store-pin-rebind-20261122, gpt6/v13-private-remote-bridge-20261111]
+    paths:
+      - "v13/code/v13/flow_audit.py"
+      - "v13/code/v13/flow_audit_dashboard.py"
+      - "v13/code/v13/mobile_dashboard.py"
+      - "v13/code/v13/mobile_dashboard.html"
+      - "v13/code/tests/test_flow_audit.py"
+      - "v13/code/tests/test_flow_audit_dashboard.py"
+      - "v13/code/tests/test_flow_audit_dashboard_route.py"
+      - ".github/workflows/v14-core-flow-audit-dashboard.yml"
+
+jobs:
+  dashboard-flow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install --upgrade pip pytest
+      - name: Test flow audit projection and dashboard target
+        run: |
+          cd v13/code
+          python -m pytest -q tests/test_flow_audit.py tests/test_flow_audit_dashboard.py tests/test_flow_audit_dashboard_route.py
+          python -m pytest -q tests/test_mobile_dashboard.py
+      - name: Compile Python
+        run: |
+          python -m py_compile v13/code/v13/flow_audit.py v13/code/v13/flow_audit_dashboard.py v13/code/v13/mobile_dashboard.py
+      - name: Validate inline dashboard JavaScript syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          html = Path("v13/code/v13/mobile_dashboard.html").read_text(encoding="utf-8")
+          script = html.split("<script>", 1)[1].split("</script>", 1)[0]
+          Path("/tmp/v13-dashboard.js").write_text(script, encoding="utf-8")
+          PY
+          node --check /tmp/v13-dashboard.js
