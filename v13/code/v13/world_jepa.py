@@ -12,6 +12,7 @@ Only the latent of the next observation is predicted, never the observation itse
 frozen; their spread plus the training count of the action and the state's distance to training states give the
 counterfactual confidence (same shape as world_model.py §7.2.2). Below CF_MIN a counterfactual is SIMULATION_UNCERTAIN.
 """
+import math
 import threading
 import weakref
 from functools import wraps
@@ -48,12 +49,15 @@ class Adam:
         self.p = params; self.lr = lr; self.t = 0
         self.m = {k: np.zeros_like(v) for k, v in params.items()}; self.v = {k: np.zeros_like(v) for k, v in params.items()}
 
-    def step(self, grads):
+    def step(self, grads, scale=1.0):
+        if (type(scale) not in (int, float) or not math.isfinite(scale)
+                or not 0.0 <= scale <= 1.0):
+            raise ValueError('Invalid WorldJEPA optimizer scale')
         self.t += 1
         for k, g in grads.items():
             self.m[k] = .9*self.m[k]+.1*g; self.v[k] = .999*self.v[k]+.001*g*g
             mh = self.m[k]/(1-.9**self.t); vh = self.v[k]/(1-.999**self.t)
-            self.p[k] -= self.lr*mh/(np.sqrt(vh)+1e-8)
+            self.p[k] -= self.lr*float(scale)*mh/(np.sqrt(vh)+1e-8)
 
 
 def _init(rng, d, a):
@@ -116,7 +120,7 @@ class WorldJEPA:
         self.seed = seed; self.ensemble = ensemble
 
     def fit(self, X, A, X2, steps=3000, log_every=500, warm_start=False, cancel_check=None,
-            allow_optimizer_bootstrap=False):
+            allow_optimizer_bootstrap=False, learning_rate_scale=1.0):
         # Invalid transitions cannot establish learned SHADOW inference evidence.
         # The covariance objective divides by n-1; never fit a single row.
         from . import world_jepa_training_state as training_state
@@ -126,7 +130,10 @@ class WorldJEPA:
                 or type(log_every) is not int or log_every < 1
                 or type(warm_start) is not bool
                 or type(allow_optimizer_bootstrap) is not bool
-                or (cancel_check is not None and not callable(cancel_check))):
+                or type(learning_rate_scale) not in (int, float)
+                or not math.isfinite(learning_rate_scale)
+                or not 0.0 <= learning_rate_scale <= 1.0
+                or (cancel_check is not None and not callable(cancel_check)):
             raise ValueError('Invalid WorldJEPA fit configuration')
         if cancel_check is not None and cancel_check():
             raise InterruptedError('WorldJEPA fit cancelled')
@@ -194,7 +201,7 @@ class WorldJEPA:
             zt = encode(tgt, x2[b])[0]
             out = loss_grads(enc, pred, x[b], A[b], zt, VAR_W, COV_W, inv=inv, x2=x2[b], inv_w=INV_W)
             loss, parts, gp, ge = out[:4]; gi = out[4] if len(out) > 4 else {}
-            opt.step({**{'e'+k: v for k, v in ge.items()}, **{'p'+k: v for k, v in gp.items()}, **{'i'+k: v for k, v in gi.items()}})
+            opt.step({**{'e'+k: v for k, v in ge.items()}, **{'p'+k: v for k, v in gp.items()}, **{'i'+k: v for k, v in gi.items()}}, scale=learning_rate_scale)
             for k in enc: tgt[k] = TAU*tgt[k]+(1-TAU)*enc[k]
             if s % log_every == 0 or s == steps-1: history.append(dict(step=s, loss=round(loss, 5), **{k: round(v, 5) for k, v in parts.items()}))
         preds = [pred]
@@ -220,7 +227,7 @@ class WorldJEPA:
                     raise InterruptedError('WorldJEPA fit cancelled')
                 b = idx[r2.integers(0, len(idx), min(BATCH, len(idx)))]
                 _, _, gp, _ = loss_grads(enc, p, x[b], A[b], zt_all[b], train_enc=False)
-                o.step(gp)
+                o.step(gp, scale=learning_rate_scale)
             preds.append(p)
             bootstrap_training.append({'adam':training_state.snapshot(o),'rng':r2.bit_generator.state})
         ztrain = z_all
@@ -250,14 +257,16 @@ class WorldJEPA:
                                  zsd=zsd, _ztrain=ztrain, _nn_med=nn_med)
         return self
 
-    def partial_fit(self,X,A,X2,steps=100,log_every=50,cancel_check=None,allow_optimizer_bootstrap=False):
+    def partial_fit(self,X,A,X2,steps=100,log_every=50,cancel_check=None,allow_optimizer_bootstrap=False,
+                    learning_rate_scale=1.0):
         """Continue JEPA weights and EMA target instead of reinitializing.
 
         Callers should mix replay transitions with new ones to reduce forgetting.
         This experimental path does not itself establish durable retention.
         """
         return self.fit(X,A,X2,steps=steps,log_every=log_every,warm_start=True,cancel_check=cancel_check,
-                        allow_optimizer_bootstrap=allow_optimizer_bootstrap)
+                        allow_optimizer_bootstrap=allow_optimizer_bootstrap,
+                        learning_rate_scale=learning_rate_scale)
 
     # -- inference -------------------------------------------------------------------------------------------------
     @_read_locked
