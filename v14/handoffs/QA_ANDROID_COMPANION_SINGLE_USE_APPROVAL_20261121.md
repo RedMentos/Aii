@@ -174,3 +174,18 @@ Perception PR #2310 head 923c4b32bb3f63d6224251b00b6b1f9941db5079 is stacked on 
 
 The consumer PR currently expects 16 kHz mono PCM16 for at most one second. Android's official AudioRecord reference says 44.1 kHz is the only sample rate guaranteed on all devices; 16 kHz may work on some. It also requires checking AudioRecord.getState() after construction and exposes getSampleRate() for the actual configured rate: https://developer.android.com/reference/android/media/AudioRecord. Therefore a future provider must not assume 16 kHz works on Redmi. It must measure the configured rate and fail closed if the signed consumer cannot accept it, or use a tested resampler with both rates bound into the signed receipt. No silent rate substitution.
 
+
+
+## Latest CI correction — 2026-11-22 06:45 CET
+
+**Current QA branch head:** 96fa906a563e8faa720c49a0f37b735931ebec1b.  
+**AudioRecord matrix and code/test commit:** 34176854f001927874c7e6c9d4c46ba3dc65483d.  
+**Handoff + cross-lane rate/dependency note:** 28c8436a2ccc9378fdb4908f1f6e467ff2a7589c.
+
+The first Android Gradle run on code head 34176854 (run 44990159377) compiled the production app and tests until the new SQLite schema guard failed compilation because android.database.Cursor was not imported. Added the missing import in 96fa906. Exact-head Android run 44990576359 and companion/broker/outcome runs 44990573473–44990576580 are QUEUED; the import fix and new AudioCaptureDefaultOffTest have no PASS yet. Do not promote the earlier c9d78d Android PASS to this newer test set.
+
+Perception signed-audio-consumer PR #2310 head 923c4b32 is separately blocked: exact workflow 44988548283 fails on Python 3.13 and 3.14 during test collection with ModuleNotFoundError for v13.android_companion_ecdsa; staged/integrated run 44988548352 passes, but no consumer assertions ran. Perception was notified of the missing companion-verifier dependency and the need to compose on a base carrying the verifier/nonce DB.
+
+The signed consumer expects 16 kHz mono PCM16, at most one second. Android AudioRecord guarantees 44.1 kHz only across all devices; 16 kHz may work on some. The provider must inspect getState()/getSampleRate() and fail closed or use a tested receipt-bound resampler; no silent rate substitution. See the acceptance matrix for the exact official API reference and contract.
+
+**Current status:** DEFAULT_OFF_GUARDS_COMMITTED / ANDROID_CI_PENDING / SIGNED_CONSUMER_BLOCKED / OLD_PHONE_MIGRATION_BLOCKED / REDMI_UNVERIFIED. No microphone permission or device action was requested.
