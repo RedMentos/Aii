@@ -33,15 +33,15 @@ _ACTIVITY_HINTS = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAI
 def _speaker_change_decision(evidence, cues):
     """Return a conservative A4 three-regime decision without assigning identity.
 
-    Low similarity is only a candidate when calibrated evidence is measured
-    during voiced activity. Silence, noise, short windows, missing calibration,
+    Low similarity is only a candidate when explicitly calibration-bound evidence
+    is measured during voiced activity. Silence, noise, short windows, missing calibration,
     rejected embeddings and warm-up remain DEFER rather than false continuity.
     """
     if type(cues) is not dict or cues.get("activity_hint") != "VOICED":
         return "DEFER"
     frame_count = cues.get("frame_count")
     voiced_fraction = cues.get("voiced_fraction")
-    if (type(frame_count) is not int or not 2 <= frame_count <= 50
+    if (type(frame_count) is not int or frame_count < 2
             or type(voiced_fraction) not in (int, float)
             or not math.isfinite(float(voiced_fraction))
             or not 0.0 <= float(voiced_fraction) <= 1.0
@@ -50,7 +50,11 @@ def _speaker_change_decision(evidence, cues):
     if type(evidence) is not dict or evidence.get("status") != "MEASURED":
         return "DEFER"
     calibration_id = evidence.get("calibration_id")
-    if type(calibration_id) is not str or not calibration_id.strip():
+    confidence_threshold = evidence.get("confidence_threshold")
+    if (type(calibration_id) is not str or not calibration_id.strip()
+            or type(confidence_threshold) not in (int, float)
+            or not math.isfinite(float(confidence_threshold))
+            or not -1.0 <= float(confidence_threshold) <= 1.0):
         return "DEFER"
     candidate = evidence.get("peak_speaker_change_candidate")
     if candidate is None:
