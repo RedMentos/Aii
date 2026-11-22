@@ -91,7 +91,6 @@ def wait_for_text(needle: str, timeout: float = 20.0) -> str:
     last = ""
     while time.monotonic() < deadline:
         try:
-            swipe_to_top()
             last = visible_text()
         except (RuntimeError, ET.ParseError, subprocess.TimeoutExpired):
             time.sleep(.35)
@@ -99,9 +98,7 @@ def wait_for_text(needle: str, timeout: float = 20.0) -> str:
         if needle in last:
             return last
         try:
-            adb("shell", "input", "swipe", str(screen_size()[0] // 2),
-                str(int(screen_size()[1] * .86)),
-                str(screen_size()[0] // 2), str(int(screen_size()[1] * .24)), "350")
+            swipe_to_top()
         except RuntimeError:
             pass
         time.sleep(.35)
