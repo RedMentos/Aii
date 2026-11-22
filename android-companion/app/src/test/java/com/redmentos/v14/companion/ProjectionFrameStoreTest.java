@@ -73,13 +73,15 @@ public final class ProjectionFrameStoreTest {
 
     @Test public void oversizedAndAuthorityBearingFramesAreRejected() throws Exception {
         byte[] frame = new byte[]{1, 2};
-        JSONObject bad = receipt(frame, "e".repeat(32));
-        bad.getJSONObject("body").put("learning_authority", true);
-        try {
-            ProjectionFrameStore.publish(frame, bad, 400L);
-            fail("learning authority must be rejected");
-        } catch (SecurityException expected) {
-            assertTrue(expected.getMessage().contains("authority"));
+        for (String flag : new String[]{"learning_authority", "action_authority", "raw_capture_persisted"}) {
+            JSONObject bad = receipt(frame, "e".repeat(32));
+            bad.getJSONObject("body").put(flag, true);
+            try {
+                ProjectionFrameStore.publish(frame, bad, 400L);
+                fail(flag + " must be rejected");
+            } catch (SecurityException expected) {
+                assertTrue(expected.getMessage().contains("authority"));
+            }
         }
         byte[] oversized = new byte[ProjectionFrameStore.MAX_FRAME_BYTES + 1];
         try {
