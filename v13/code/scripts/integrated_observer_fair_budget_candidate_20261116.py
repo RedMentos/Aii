@@ -1,9 +1,9 @@
 """Keep both pre-answer bodies eligible under measured C3 recovery in the isolated stage.
 
-Frozen sources stay unchanged. Sequential B1/B2 receive fair native slices inside
-the existing 45% pre-answer window; the remaining turn budget is reserved for C3.
-A body moves post-commit only when its own slice has expired. This is scheduling
-correctness, not a Redmi latency or native-model proof.
+Frozen sources stay unchanged. Short C3 recovery keeps its measured 26 s reserve;
+long turns retain the ordinary 45% pre-answer window. Sequential B1/B2 share the
+remaining observer budget fairly, and no organ receives extra authority. This is
+scheduling correctness, not a Redmi latency or native-model proof.
 """
 import hashlib
 from pathlib import Path
@@ -69,19 +69,12 @@ def apply_sources(code_dir, sources):
         b'                else:\n'
         b'                    offers.append(ask(role,True))\n', 'sequential slice')
     budget = result.get('v13/native_turn_budget.py', originals['v13/native_turn_budget.py'])
-    # Some current-base candidates already introduced MIN_ROLE_SLICE_S
-    # while retaining the old 87% reserve. Remove only that stale reserve
-    # constant; preserve the one canonical pre-answer fraction and minimum.
-    reserve_line = b'NATIVE_FIRST_RESERVE_FRACTION = .87\n'
-    if (budget.count(reserve_line) == 1
-            and budget.count(b'DEFAULT_PREANSWER_FRACTION = .45\n') == 1
-            and budget.count(b'MIN_ROLE_SLICE_S = 1.0\n') == 1):
-        budget = budget.replace(reserve_line, b'', 1)
-    else:
-        budget = replace(budget,
-            b'NATIVE_FIRST_RESERVE_FRACTION = .87\nDEFAULT_PREANSWER_FRACTION = .45\n',
-            b'DEFAULT_PREANSWER_FRACTION = .45\nMIN_ROLE_SLICE_S = 1.0\n',
-            'fair recovery slice')
+    # The source policy owns the short-turn recovery reserve. Do not flatten
+    # it to the ordinary 45% pre-answer window: after two measured C3
+    # prefill failures, a 30 s turn reserves 26 s for C3.
+    if (b'NATIVE_FIRST_RESERVE_FRACTION = .87\n' not in budget
+            or b'max(26.0,total*.80)' not in budget):
+        raise ValueError('native C3 recovery reserve policy missing')
     budget = replace(budget,
         b'def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=False):\n',
         b'def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=False, observer_deadline=None):\n',
@@ -141,10 +134,11 @@ def apply_sources(code_dir, sources):
         if recent_good == 2:
             break
 ''', 'native success evidence')
-    budget = replace(budget,
-        b'    if recover:\n        reserve = min(total*NATIVE_FIRST_RESERVE_FRACTION,\n                      max(26.0,total*.80))\n        allotted = min(ordinary_end,deadline-reserve)\n        reason="RECENT_C3_ZERO_TOKEN_PREFILL_TIMEOUTS"\n    else:\n        reserve=deadline-ordinary_end\n        allotted=ordinary_end\n        reason="NORMAL_COGNITIVE_PREANSWER"\n',
-        b'    observer_end = ordinary_end if observer_deadline is None else min(ordinary_end, observer_deadline)\n    reserve = deadline-ordinary_end\n    if recover:\n        allotted=observer_end\n        reason="RECENT_C3_ZERO_TOKEN_PREFILL_TIMEOUTS"\n    else:\n        allotted=observer_end\n        reason="NORMAL_COGNITIVE_PREANSWER"\n',
-        'retain fair preanswer window')
+    # Keep the original recovery branch intact; the final observer_deadline
+    # clamp below already bounds each role's sequential slice.
+    if (b'    if recover:\n        reserve = min(total*NATIVE_FIRST_RESERVE_FRACTION,' not in budget
+            or b'max(26.0,total*.80)' not in budget):
+        raise ValueError('native C3 recovery branch missing after observer composition')
     budget = replace(budget,
         b'        "c3_reserved_seconds": round(reserve,3),\n',
         b'        "c3_reserved_seconds": round(reserve,3),\n        "minimum_role_slice_s": MIN_ROLE_SLICE_S,\n',

@@ -340,7 +340,7 @@ class RuntimeObserverTests(unittest.TestCase):
                 budgets = [json.loads(row['metrics']) for row in budget_rows]
                 self.assertEqual({item['role'] for item in budgets}, {'B1_DETAIL', 'B2_GIST'})
                 self.assertTrue(all(item['status'] == 'PREANSWER_BUDGETED' for item in budgets))
-                self.assertTrue(all(abs(item['c3_reserved_seconds'] - 16.5) < .01 for item in budgets))
+                self.assertTrue(all(abs(item['c3_reserved_seconds'] - 26.0) < .01 for item in budgets))
                 self.assertTrue(all(item['recent_real_prefill_failures'] == 2 for item in budgets))
                 self.assertEqual(r.cfg['learning_mode'], 'RECORD_ONLY')
                 self.assertFalse(r.pool.pids())
