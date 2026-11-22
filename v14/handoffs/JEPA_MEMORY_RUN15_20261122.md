@@ -137,3 +137,40 @@ R-089 is appended to `v14/V14_RESEARCH_LEDGER.md`. JEPA-TTT (arXiv:2610.00722) r
 5. Keep learning/receiver paths SHADOW-only. No native B1/B2 weight update, trained cross-organ latent transfer, or Redmi acceptance is proven.
 
 **User action: NONE.** Installed release is already up to date; no manual Termux command, model download/swap, permission change or device action is required.
+
+
+## Run 17 — source-bound omission telemetry and explicit receiver-gate isolation (2026-11-22T20:45:42.107Z)
+
+### Code checkpoint
+
+- PR #2372 exact branch head: `6da129ef1cd09edd119491e5ff7740005792063c`, DRAFT / NOT_RELEASED.
+- `e638b221dec561fee9bd1864abfc3fb54e9f73fa` adds a source-bound omission audit to the temporal body adapter. It records why the optional B1/B2 readout is omitted (matrix unavailable, invalid provenance, utility rejection, insufficient support, invalid prediction, lock busy or readout error) without putting diagnostic data into the prompt.
+- `0c5ef854765dfdb349dd910a2146bdaa3e9f920e` separates prompt-consumer wiring from learned utility: the trained predictor/receiver weights remain unchanged, while a clearly marked test-only accepted utility gate is used to exercise the actual `Cognition.offer` consumer. A negative control forces B1 gate rejection and verifies that the audit records `OMITTED / RECEIVER_UTILITY_REJECTED` while the prompt receives no temporal prediction.
+- `6da129ef1cd09edd119491e5ff7740005792063c` tightens the negative-control audit assertions.
+
+**Evidence meaning:** this is a real source-bound prompt consumer plus a test-only accepted-gate fixture and a rejected-gate negative control. It does not demonstrate that the trained B1/B2 receiver metrics pass their disjoint holdout, and it does not change native B1/B2 weights. The actual learned utility remains OPEN.
+
+### Exact verification
+
+- Current exact-head CI: `45068109547` (optimizer-resume Python 3.13/3.14), `45068109554` (staged/integrated), `45068109526` (temporal T8). All QUEUED at last read; no exact-head PASS.
+- Prior fbe4 temporal jobs failed 11/12 on both Python 3.13 and 3.14 because the B1 prompt lacked `world_jepa_temporal`. The consumer regression now separates the test-only gate from the actual trained utility and the negative control checks that rejection remains fail-closed.
+- Prior staged/integrated job failed at the QA-owned `memory.py` source pin and showed a temporal SleepRuntime `ValueError`; the trace now captures exception text, but the root cause is still OPEN.
+- Prior optimizer-resume jobs stopped at the same stale QA lifecycle pin.
+- LOCAL_LINUX full Aii suite remains BLOCKED / NOT_RUN: CPython 3.13.5, NumPy 2.3.5 and pytest 9.0.2 exist, but no checkout is mounted and GitHub DNS fails.
+
+### Dependencies and device
+
+- QA #2359 must rebind its lifecycle chain to JEPA `memory.py` SHA-256 `33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701`; inherited JEPA pin `61e881ad…` and QA pin `b2059016…` remain stale. Request: #2359 comment 7085390248.
+- Boss #2370's former audio Runtime pin mismatch is corrected on branch head 7fc6d7e; Runtime and audio overlay now agree on blob SHA-1 `6e61af07326c5bb11406ee72361a710d5facc9a5`. The full 18-workflow Boss matrix remains queued. No JEPA rebase until Boss and QA chains are green.
+- Private V13OBS #115 (20:24:26Z) reports base release `aed1d2b` installed, updater enabled, Runtime/Dashboard UP_TO_DATE, but B1 4/4 and B2 2/2 native attempts failed, zero valid offers, C3 prefill ~38.945 s / 2 tokens. This is metadata-only and not a new chat. #2372 is not installed; REDMI_UNVERIFIED.
+- No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, model/weight/permission change or device mutation.
+
+### Next steps
+
+1. Poll 45068109547 / 45068109554 / 45068109526; read the source-bound omission audit if the prompt regression fails.
+2. Read the exact temporal ValueError message from SleepRuntime staged CI and fix the root cause.
+3. Obtain QA's lifecycle rebind and Boss's green exact-head matrix before composition/rebase.
+4. Measure actual B1/B2 receiver utility on disjoint sources separately from the test fixture; add correct/omitted/shuffled/hypothetical-history controls and matched replay/retention multi-shift ablations.
+5. Keep all learning and receiver paths SHADOW-only until utility, restart, rollback and Android evidence pass.
+
+**User action: NONE.** The installed release is already up to date; no manual Termux command, model download/swap, permission change or device action is needed.
