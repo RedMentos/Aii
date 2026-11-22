@@ -41,6 +41,7 @@ public final class CompanionProvider extends ContentProvider {
         db = new CompanionDb(context);
         signer = new ReceiptSigner();
         ensureChannel(context);
+        recoverClaimedActions(context, db, signer, System.currentTimeMillis());
         return true;
     }
 
@@ -74,6 +75,70 @@ public final class CompanionProvider extends ContentProvider {
 
     interface EnabledWriter {
         boolean commit(Context context, boolean enabled);
+    }
+
+    interface ReceiptIssuer {
+        String issue(CompanionDb.Action action, String status, boolean localConsent,
+                     long nowMillis) throws Exception;
+    }
+
+    private static ReceiptIssuer signerReceiptIssuer(ReceiptSigner signer) {
+        return (action, status, localConsent, nowMillis) ->
+                ReceiptFactory.create(action, signer, status, localConsent, nowMillis).toString();
+    }
+
+    static boolean recoverClaimedAction(Context context, CompanionDb db, ReceiptSigner signer,
+                                        String actionId, long nowMillis) {
+        return recoverClaimedAction(context, db, actionId, nowMillis, signerReceiptIssuer(signer));
+    }
+
+    static boolean recoverClaimedAction(Context context, CompanionDb db, String actionId,
+                                        long nowMillis, ReceiptIssuer issuer) {
+        synchronized (ACTION_GATE_LOCK) {
+            try {
+                CompanionDb.Action action = db.get(actionId);
+                if (action == null) return false;
+                if (action.receiptJson != null) {
+                    if (context != null) cancelApprovalNotification(context, actionId);
+                    return true;
+                }
+                final String terminalStatus;
+                final String expectedStatus;
+                final boolean localConsent;
+                if ("EXECUTING".equals(action.status)) {
+                    expectedStatus = "EXECUTING"; terminalStatus = "OUTCOME_UNKNOWN"; localConsent = true;
+                } else if ("DENYING".equals(action.status)) {
+                    expectedStatus = "DENYING"; terminalStatus = "USER_DENIED"; localConsent = false;
+                } else return false;
+                String receipt = issuer.issue(action, terminalStatus, localConsent, nowMillis);
+                if (receipt == null || receipt.isEmpty()) return false;
+                db.finishClaimed(actionId, expectedStatus, terminalStatus, receipt);
+                CompanionDb.Action completed = db.get(actionId);
+                if (completed == null || completed.receiptJson == null) return false;
+                if (context != null) cancelApprovalNotification(context, actionId);
+                return true;
+            } catch (Exception ignored) {
+                // Retry only receipt finalization; never repeat the external action.
+                return false;
+            }
+        }
+    }
+
+    static int recoverClaimedActions(Context context, CompanionDb db, ReceiptSigner signer,
+                                     long nowMillis) {
+        return recoverClaimedActions(context, db, nowMillis, signerReceiptIssuer(signer));
+    }
+
+    static int recoverClaimedActions(Context context, CompanionDb db, long nowMillis,
+                                     ReceiptIssuer issuer) {
+        final List<CompanionDb.Action> claimed;
+        try { claimed = db.claimedWithoutReceipt(); }
+        catch (RuntimeException ignored) { return 0; }
+        int recovered = 0;
+        for (CompanionDb.Action action : claimed) {
+            if (recoverClaimedAction(context, db, action.actionId, nowMillis, issuer)) recovered++;
+        }
+        return recovered;
     }
 
     static boolean resetProcessStateForProviderStartup(Context context) {
@@ -228,6 +293,7 @@ public final class CompanionProvider extends ContentProvider {
 
     private JSONObject outcome(String actionId) throws Exception {
         if (!isHex(actionId, 32)) return error("INVALID_ACTION_ID");
+        recoverClaimedAction(getContext(), db, signer, actionId, System.currentTimeMillis());
         CompanionDb.Action action = db.get(actionId);
         JSONObject out = new JSONObject();
         if (action == null) {
@@ -280,6 +346,7 @@ public final class CompanionProvider extends ContentProvider {
     }
 
     private JSONObject pending(Context context) throws Exception {
+        recoverClaimedActions(context, db, signer, System.currentTimeMillis());
         org.json.JSONArray values = new org.json.JSONArray();
         for (CompanionDb.Action action : pendingActions(context, db, System.currentTimeMillis())) {
             JSONObject item = new JSONObject();

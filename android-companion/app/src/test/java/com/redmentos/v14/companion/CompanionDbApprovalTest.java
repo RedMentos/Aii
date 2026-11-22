@@ -25,6 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.*;
@@ -373,6 +374,105 @@ public final class CompanionDbApprovalTest {
         first.finish(ACTION_ID, "EXECUTING", "DISPATCHED_UNVERIFIED", "{\"signed\":true}");
         assertEquals("DISPATCHED_UNVERIFIED", first.get(ACTION_ID).status);
         assertEquals("{\"signed\":true}", first.receipt(ACTION_ID));
+    }
+
+    @Test public void executingRecoveryWritesUnknownReceiptOnceAndNeverRedispatches() {
+        insertPending(NOW + 10_000L);
+        assertTrue(first.claimForExecution(ACTION_ID, NOW));
+        AtomicInteger issued = new AtomicInteger();
+        CompanionProvider.ReceiptIssuer issuer = (action, status, consent, now) -> {
+            issued.incrementAndGet();
+            assertEquals("EXECUTING", action.status);
+            assertEquals("OUTCOME_UNKNOWN", status);
+            assertTrue(consent);
+            return "{\"status\":\"OUTCOME_UNKNOWN\",\"local_consent\":true}";
+        };
+        assertTrue(CompanionProvider.recoverClaimedAction(context, first, ACTION_ID, NOW, issuer));
+        CompanionDb.Action recovered = first.get(ACTION_ID);
+        assertEquals("OUTCOME_UNKNOWN", recovered.status);
+        assertTrue(recovered.receiptJson.contains("OUTCOME_UNKNOWN"));
+        assertFalse(first.claimForExecution(ACTION_ID, NOW));
+        assertTrue(CompanionProvider.recoverClaimedAction(context, first, ACTION_ID, NOW, issuer));
+        assertEquals(1, issued.get());
+    }
+
+    @Test public void denialRecoveryWritesSignedDenialShapeWithoutConsent() {
+        insertPending(NOW + 10_000L);
+        assertTrue(first.claimForDenial(ACTION_ID, NOW));
+        AtomicInteger issued = new AtomicInteger();
+        CompanionProvider.ReceiptIssuer issuer = (action, status, consent, now) -> {
+            issued.incrementAndGet();
+            assertEquals("DENYING", action.status);
+            assertEquals("USER_DENIED", status);
+            assertFalse(consent);
+            return "{\"status\":\"USER_DENIED\",\"local_consent\":false}";
+        };
+        assertTrue(CompanionProvider.recoverClaimedAction(context, first, ACTION_ID, NOW, issuer));
+        assertEquals("USER_DENIED", first.get(ACTION_ID).status);
+        assertEquals(1, issued.get());
+    }
+
+    @Test public void failedReceiptRecoveryKeepsClaimAndNotificationForRetry() {
+        insertPending(NOW + 10_000L);
+        assertTrue(first.claimForExecution(ACTION_ID, NOW));
+        NotificationManager manager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.createNotificationChannel(new NotificationChannel(
+                "v14-action-approval", "V14 action approvals", NotificationManager.IMPORTANCE_DEFAULT));
+        Notification notification = new Notification.Builder(context, "v14-action-approval")
+                .setSmallIcon(android.R.drawable.ic_menu_view).build();
+        manager.notify(CompanionProvider.approvalNotificationTag(ACTION_ID), 0, notification);
+        CompanionProvider.ReceiptIssuer broken = (action, status, consent, now) -> {
+            throw new IllegalStateException("simulated Keystore failure");
+        };
+        assertFalse(CompanionProvider.recoverClaimedAction(context, first, ACTION_ID, NOW, broken));
+        assertEquals("EXECUTING", first.get(ACTION_ID).status);
+        assertNull(first.get(ACTION_ID).receiptJson);
+        assertTrue(hasApprovalNotification(manager, ACTION_ID));
+        CompanionProvider.ReceiptIssuer repaired = (action, status, consent, now) ->
+                "{\"status\":\"OUTCOME_UNKNOWN\",\"local_consent\":true}";
+        assertTrue(CompanionProvider.recoverClaimedAction(context, first, ACTION_ID, NOW, repaired));
+        assertEquals("OUTCOME_UNKNOWN", first.get(ACTION_ID).status);
+        assertFalse(hasApprovalNotification(manager, ACTION_ID));
+    }
+
+    @Test public void claimedReceiptRecoverySurvivesDatabaseReopen() {
+        insertPending(NOW + 10_000L);
+        assertTrue(first.claimForDenial(ACTION_ID, NOW));
+        first.close();
+        first = new CompanionDb(context);
+        AtomicInteger issued = new AtomicInteger();
+        CompanionProvider.ReceiptIssuer issuer = (action, status, consent, now) -> {
+            issued.incrementAndGet();
+            return "{\"status\":\"USER_DENIED\",\"local_consent\":false}";
+        };
+        assertEquals(1, CompanionProvider.recoverClaimedActions(context, first, NOW, issuer));
+        assertEquals("USER_DENIED", first.get(ACTION_ID).status);
+        assertEquals(1, issued.get());
+    }
+
+    @Test public void concurrentReceiptRecoveryHasOneDurableWinner() throws Exception {
+        insertPending(NOW + 10_000L);
+        assertTrue(first.claimForExecution(ACTION_ID, NOW));
+        AtomicInteger issued = new AtomicInteger();
+        CompanionProvider.ReceiptIssuer issuer = (action, status, consent, now) -> {
+            issued.incrementAndGet();
+            return "{\"status\":\"OUTCOME_UNKNOWN\",\"local_consent\":true}";
+        };
+        ExecutorService pool = Executors.newFixedThreadPool(2);
+        try {
+            Future<Boolean> left = pool.submit(() ->
+                    CompanionProvider.recoverClaimedAction(context, first, ACTION_ID, NOW, issuer));
+            Future<Boolean> right = pool.submit(() ->
+                    CompanionProvider.recoverClaimedAction(context, second, ACTION_ID, NOW, issuer));
+            assertTrue(left.get(5, TimeUnit.SECONDS));
+            assertTrue(right.get(5, TimeUnit.SECONDS));
+            assertEquals(1, issued.get());
+            assertEquals("OUTCOME_UNKNOWN", first.get(ACTION_ID).status);
+            assertNotNull(first.get(ACTION_ID).receiptJson);
+        } finally {
+            pool.shutdownNow();
+        }
     }
 
     @Test public void terminalDenialCanOnlyFinishItsOwnClaim() {

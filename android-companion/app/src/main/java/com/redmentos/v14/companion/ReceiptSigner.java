@@ -18,10 +18,10 @@ import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.util.Arrays;
 
-final class ReceiptSigner {
+final class ReceiptSigner implements ReceiptFactory.Signer {
     private static final String ALIAS = "v14-companion-receipt-p256-v1";
 
-    synchronized JSONObject publicKeyInfo() throws Exception {
+    @Override public synchronized JSONObject publicKeyInfo() throws Exception {
         ensureKey();
         KeyStore ks = KeyStore.getInstance("AndroidKeyStore");
         ks.load(null);
@@ -36,7 +36,7 @@ final class ReceiptSigner {
         return out;
     }
 
-    synchronized JSONObject sign(JSONObject body) throws Exception {
+    @Override public synchronized JSONObject sign(JSONObject body) throws Exception {
         ensureKey();
         KeyStore ks = KeyStore.getInstance("AndroidKeyStore");
         ks.load(null);
