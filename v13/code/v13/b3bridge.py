@@ -363,7 +363,7 @@ def completion_gate(home,direction,row,messages=0,app=None):
     crit=gate.get('criteria') if isinstance(gate.get('criteria'),dict) else {};bridge=row.get('bridge') or {}
     stale=bool(bridge.get('stale_receiver_revision'))
     c={'CODE':(app/'v13/b3bridge.py').exists(),
-       'PAIRED_NATIVE_CAPTURE_API':(app/'v13/b3pairs.py').exists() and 'def tap_pair(' in (app/'v13/cognition.py').read_text(),
+       'PAIRED_NATIVE_CAPTURE_API':(app/'v13/b3pairs.py').exists() and 'def tap_pair(' in (app/'v13/cognition.py').read_text() and ':tap pair' in (app/'v13/operator.py').read_text() and "elif kind=='tap_pair'" in (app/'v13/runtime.py').read_text(),
        'PAIR_RESTART_VALIDATION_TESTS':(app/'tests/test_b3pairs.py').exists(),
        'REAL_SENDER_STATE_PATH':bool(row.get('native_taps')),
        'REAL_RECEIVER_EFFECT':bool(row.get('receiver_tap_ids')) and bool(row.get('latent_gain')),
