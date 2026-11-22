@@ -1951,3 +1951,16 @@ At the latest poll for #2288 head `679f3667`: 8 workflows PASS, 3 IN_PROGRESS, 1
 Private read-only PIPELINE_STATUS request RedMentos/Aiiii **#453** had no authenticated reply at 00:49:49 UTC. Installed SHA and updater consent remain UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, shell, model/weight/Age/permission change or device mutation occurred. Local full Aii tests are BLOCKED because the execution container has no repository checkout. Therefore `REDMI_UNVERIFIED`, `NOT_RELEASED`.
 
 The 1,255-heading historical Canon inventory remains preserved. Semantic clause→implementation→consumer→test→environment→rollback mapping is still incomplete. No synthetic harness, isolated Linux result or GitHub CI run is relabelled as native Redmi learning, Android control, or AGI acceptance.
+
+
+## Boss current-head correction — 2026-11-22 00:57 UTC
+
+Current Boss candidate is PR #2288 head `c372b4e3210d04f95f092013893d4078817e855d`, base `bdcad466ffea75a2b41f7d23be168f53c7197d20`, DRAFT / NOT_RELEASED. This supersedes the 679f366/32491b snapshots in the prior section.
+
+The source-pin failure is broader than Context-source recall alone. The current recovery composer captures exact base pins for the Store-dependent generated consumer set before later overlays. After all overlays it rebinds and final-checks: World-JEPA runtime guard `store.py`, World-Semantic evidence `store.py`, Archive reader allowed Store hashes, Archive stream `STORE_SHA256`, Context-source recall Store and archive-stream pins, and Local-error's semantic-evidence module hash. It rejects malformed/ambiguous pins or any unexpected pre-overlay value. Recovery-wrapper blob SHA-1, integrated stage SHA-256 and runtime deployer stage pin were refreshed and read back.
+
+The 32491b attempt still failed controller guard with `NameError: recall_base_pins is not defined`; current c372b4e uses the captured `dependent_base_pins` structure instead. Its exact-head CI restarted. At the 00:56:40 UTC poll: bridge push queued; Lab-Age in progress; staged/integrated, A5, controller, audio/arithmetic, JEPA, deployer, migration, privacy and owner-read queued; additive-only validator SKIPPED and release-queue workflow CANCELLED. No current-head PASS should be inferred from previous SHAs.
+
+Updated family status: B1/B2 fair budget and source-bound OfferPacket→C4/C3 synthetic path remain candidate-only; #2280's unique C4 receipt still requires rebase. B3 remains symbolic/diagnostic. World/Self/Memory and JEPA integration tests do not constitute accepted numeric weight updates or per-session retention. Voice remains caller-supplied PCM16/TTS fallback, not microphone/ASR/vocoder/full duplex. Android background/UI control remains OFF. Age-rights, source-reader race, rollback, audio QA and RAW EAR branches remain old-base follow-ups requiring rebase. Distinct sparse MoE, OS sandbox, adaptive judge, Memorilla production consumer, Sleep/Dream and cross-organ self-edit remain OPEN.
+
+Private PIPELINE_STATUS #453 remains unanswered; installed SHA/updater consent UNKNOWN. No device action, LOG_PAGE, UPDATE_REQUEST or shell occurred. Local Aii checkout unavailable; no LOCAL_LINUX suite. `REDMI_UNVERIFIED`, `NOT_RELEASED`.
