@@ -11,6 +11,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <utility>
 
 #ifndef V14_LLAMA_REVISION
 #define V14_LLAMA_REVISION "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4"
@@ -67,11 +68,12 @@ bool checked_row_slice(int token_id, std::int64_t vocab, std::size_t stride,
 }
 
 bool parse_token_ids(const std::string & raw, std::vector<int> & ids) {
-    if (raw.empty()) return false;
+    if (raw.empty() || raw.front() == ',' || raw.back() == ',') return false;
     std::stringstream stream(raw);
     std::string token;
     while (std::getline(stream, token, ',')) {
         if (token.empty() || ids.size() >= static_cast<std::size_t>(kMaxTokenRows)) return false;
+        if (!std::all_of(token.begin(), token.end(), [](char ch) { return ch >= '0' && ch <= '9'; })) return false;
         char * end = nullptr;
         const long value = std::strtol(token.c_str(), &end, 10);
         if (end == token.c_str() || *end != '\0' || value < 0 ||
