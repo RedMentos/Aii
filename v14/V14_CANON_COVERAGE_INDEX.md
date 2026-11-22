@@ -2306,3 +2306,11 @@ No exact-head emulator result exists yet. Previous-head System UI ANR is not a p
 | Source/model-bound local native receiver approval | Core #2367 `_model_binding()` previously trusted the manifest SHA-256 without hashing the actual GGUF; `ModelManager.path_for()` checked only file existence/size. QA #2377 head 335d501 streams actual sender/receiver SHA-256 during arm and consume, O_NOFOLLOW + regular-file/identity stability checks, TTL revalidation, and four same-size tamper negatives. Local helper reproduction: original PASS; tamper/symlink REJECTED. | Exact native receiver + staged/integrated CI 45066641859/45066641897; full Runtime tests; Android large-model hash cost; Core review; no native probe/Redmi proof | CODE_PRESENT / LOCAL_HELPER_PASS / CI_QUEUED / NOT_RELEASED |
 
 Keep production B3 OFF and do not treat manifest metadata alone as proof of installed model bytes.
+
+## Boss audio pin rebind — 2026-11-22
+
+| Candidate | Exact change | Current evidence |
+|---|---|---|
+| Boss #2370 head 7fc6d7e4 | Integrated audio overlay `SOURCE_BLOBS['v13/runtime.py']` now equals current runtime Git blob `6e61af07326c5bb11406ee72361a710d5facc9a5`; prior mismatch on head 4d771ed is resolved on this new head | 15 exact-head workflows queued; no PASS claim; NOT_RELEASED |
+
+QA must poll the new exact head; the previous red audio source-pin failure is historical, not current.
