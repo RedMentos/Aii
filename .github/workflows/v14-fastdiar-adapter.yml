@@ -1,0 +1,50 @@
+name: V14 FASTDIAR diagnostic adapter
+
+on:
+  push:
+    branches:
+      - "research-perception/**"
+    paths:
+      - "v13/code/v13/audio_fastdiar_adapter.py"
+      - "v13/code/tests/test_audio_fastdiar_adapter.py"
+      - ".github/workflows/v14-fastdiar-adapter.yml"
+  pull_request:
+    paths:
+      - "v13/code/v13/audio_fastdiar_adapter.py"
+      - "v13/code/tests/test_audio_fastdiar_adapter.py"
+      - ".github/workflows/v14-fastdiar-adapter.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v14-fastdiar-adapter-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  adapter-consumer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install bounded test dependencies
+        run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.3.5
+      - name: Compile adapter and consumer regression
+        run: python -m py_compile v13/code/v13/audio_fastdiar_adapter.py v13/code/tests/test_audio_fastdiar_adapter.py
+      - name: Run adapter and real A5-A4-C3 consumer regression
+        working-directory: v13/code
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python -m pytest -q -s tests/test_audio_fastdiar_adapter.py
+      - name: Scan changed public content
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/gpt6/v13-private-remote-bridge-20261111 --head HEAD --no-worktree
