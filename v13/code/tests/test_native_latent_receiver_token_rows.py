@@ -118,7 +118,8 @@ def test_extract_token_rows_verifies_model_bytes_and_preserves_revision_metadata
     assert result["training_authority"] == 0
     assert result["production_route"] is False
     assert result["semantic_use_proven"] is False
-    assert result["local_tty_gate_passed"] is True\n    assert result["caller_confirmation_flag"] is True
+    assert result["local_tty_gate_passed"] is True
+    assert result["caller_confirmation_flag"] is True
 
 
 @pytest.mark.parametrize("token_ids", [
