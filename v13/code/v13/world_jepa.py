@@ -133,7 +133,7 @@ class WorldJEPA:
                 or type(learning_rate_scale) not in (int, float)
                 or not math.isfinite(learning_rate_scale)
                 or not 0.0 <= learning_rate_scale <= 1.0
-                or (cancel_check is not None and not callable(cancel_check)):
+                or (cancel_check is not None and not callable(cancel_check))):
             raise ValueError('Invalid WorldJEPA fit configuration')
         if cancel_check is not None and cancel_check():
             raise InterruptedError('WorldJEPA fit cancelled')
