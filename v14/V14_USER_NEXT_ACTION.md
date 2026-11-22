@@ -1614,6 +1614,12 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - The first Android unit run exposed a test-harness issue, not a production JSON defect: `ReceiptFactoryTest` lacked the Robolectric runner, so Android `org.json` SDK stubs returned defaults under `returnDefaultValues`. Adding `@RunWith(RobolectricTestRunner.class)` and SDK 33 made the exact Android Gradle job pass.
 - The execution container has JDK 21 but no Aii checkout, Gradle or Android SDK. No LOCAL_LINUX repository suite, APK install, Android Keystore device test or Redmi companion action was run.
 
+### Termux pairing durability candidate
+
+- QA PR [#2342](https://github.com/RedMentos/Aii/pull/2342), exact head `24b8f9760939eccea6e877536027101204fe04f8`, has **2/2 exact-head CI SUCCESS** (Android Gradle/Robolectric and offline-bridge-security). A local JDK 21 harness also passed the pure-Java pairing helper cases.
+- The additional failure mode was that Android `SharedPreferences.Editor.commit()` can update its in-memory map even when the disk write returns false. The dialog now snapshots the previous Termux package/certificate pair and restores/removes both keys via `apply()` if the checked commit fails or throws. The helper requires a rollback callback; success is displayed only on a true durable commit.
+- #2342 is a separate, non-overlapping QA stack on draft #2271's companion branch (MainActivity/PairingPersistence); #2347 covers provider/consent receipt recovery. Both remain NOT_RELEASED and have no APK, Android Keystore or Redmi proof. No pairing was attempted.
+
 ### Other blocking QA findings
 
 - B3 paired-tap/L1-shadow PR #2346 remains draft and has multiple failed exact-head checks. QA identified an output-path escape: `b3train.py` creates `home/b3/shadow/... ` and writes via `atomic_write` without rejecting symlinked ancestors or proving containment. A blocking comment requests a fail-closed no-follow/dirfd output helper and a symlink regression test. No L1 artifact or native B3 training is accepted.
