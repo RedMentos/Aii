@@ -672,8 +672,17 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                 cues=cues,
             )
         speaker_change_score = 0.0
-        if speaker_evidence is not None and speaker_evidence.get("speaker_change_candidate") is True:
-            speaker_change_score = float(speaker_evidence.get("change_score") or 0.0)
+        speaker_change_candidate = None
+        if speaker_evidence is not None:
+            speaker_change_candidate = speaker_evidence.get("peak_speaker_change_candidate")
+            if speaker_change_candidate is None:
+                speaker_change_candidate = speaker_evidence.get("speaker_change_candidate")
+            if speaker_change_candidate is True:
+                speaker_change_score = float(
+                    speaker_evidence.get("peak_candidate_change_score")
+                    or speaker_evidence.get("change_score")
+                    or 0.0
+                )
         voice_novelty = max(
             0.35 * temporal_voice["voice_evidence"],
             0.9 * cues["prosody_change_score"] if temporal_voice["voice_active"] else 0.0,
@@ -725,11 +734,18 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             summary += f" voiced_energy_range_db={cues['voiced_energy_range_db']:.1f}"
         summary += f" prosody_change={cues['prosody_change_score']:.2f}"
         if speaker_evidence is not None and speaker_evidence.get("status") == "MEASURED":
-            summary += f" speaker_change_score={speaker_evidence['change_score']:.2f}"
-            if speaker_evidence.get("speaker_change_candidate") is not None:
-                summary += f" speaker_change_candidate={int(speaker_evidence['speaker_change_candidate'])}"
-                if speaker_evidence.get("candidate_kind"):
+            latest_candidate = speaker_evidence.get("speaker_change_candidate")
+            if speaker_change_candidate is not None:
+                summary += f" speaker_change_candidate={int(speaker_change_candidate)}"
+                summary += f" speaker_change_score={speaker_change_score:.2f}"
+                if latest_candidate is not None and latest_candidate != speaker_change_candidate:
+                    summary += f" speaker_change_latest_candidate={int(latest_candidate)}"
+                if speaker_evidence.get("candidate_count", 0) > 1:
+                    summary += f" speaker_change_candidate_frames={speaker_evidence['candidate_count']}"
+                if speaker_change_candidate and speaker_evidence.get("candidate_kind"):
                     summary += " speaker_change_kind=CHANGE_OR_OVERLAP"
+            else:
+                summary += f" speaker_change_score={speaker_evidence['change_score']:.2f}"
         if vad_evidence is not None:
             summary += f" vad_speech_fraction={vad_speech_fraction:.2f}"
         candidate = Percept(
