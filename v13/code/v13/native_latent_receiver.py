@@ -12,6 +12,7 @@ import math
 import os
 import struct
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -219,8 +220,8 @@ def _run_cancelable(command, payload, deadline, cancel_event):
 
 
 def extract_token_rows(*, home, model_path, expected_model_sha256, model_revision,
-                       tokenizer_revision, token_ids, deadline, binary_path=None,
-                       cancel_event=None):
+                       tokenizer_revision, token_ids, deadline, local_confirmed=False,
+                       binary_path=None, cancel_event=None):
     """Read a bounded set of receiver input-embedding rows from an installed model.
 
     This is a local, read-only diagnostic. It is not a production B3 route,
@@ -228,8 +229,17 @@ def extract_token_rows(*, home, model_path, expected_model_sha256, model_revisio
     executable uses a pinned internal llama.cpp header and copies only the
     requested rows. This wrapper verifies exact model bytes; the caller must
     source model/tokenizer revision identifiers from the installed manifest,
-    and those identifiers remain explicitly caller-supplied metadata.
+    and those identifiers remain explicitly caller-supplied metadata. An
+    explicit confirmation flag plus an interactive local TTY is mandatory.
     """
+    if local_confirmed is not True:
+        raise PermissionError("receiver token row extraction requires explicit local confirmation")
+    try:
+        local_tty = bool(sys.stdin.isatty() and sys.stdout.isatty())
+    except (AttributeError, OSError, ValueError):
+        local_tty = False
+    if not local_tty:
+        raise PermissionError("receiver token row extraction requires an interactive local TTY")
     if not isinstance(model_revision, str) or not model_revision:
         raise NativeReceiverError("receiver model revision is missing")
     if not isinstance(tokenizer_revision, str) or not tokenizer_revision:
@@ -358,6 +368,7 @@ def extract_token_rows(*, home, model_path, expected_model_sha256, model_revisio
         "training_authority": 0,
         "production_route": False,
         "semantic_use_proven": False,
+        "local_tty_confirmation": True,
     }
 
 
