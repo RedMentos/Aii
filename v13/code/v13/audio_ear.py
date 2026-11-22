@@ -11,8 +11,8 @@ from hashlib import sha256
 def observe_pcm16(pcm, sample_rate, start_ms, *, consent, source_id, max_seconds=5):
     if consent is not True:
         raise PermissionError('audio observation requires explicit consent')
-    if not isinstance(pcm, bytes) or len(pcm) % 2:
-        raise ValueError('expected complete little-endian mono PCM16 bytes')
+    if not isinstance(pcm, (bytes, bytearray)) or len(pcm) % 2:
+        raise ValueError('expected complete little-endian mono PCM16 bytes or mutable buffer')
     if not isinstance(sample_rate, int) or not 8000 <= sample_rate <= 48000:
         raise ValueError('sample_rate must be 8000..48000')
     if not isinstance(start_ms, int) or start_ms < 0 or not isinstance(source_id, str) or not source_id:
