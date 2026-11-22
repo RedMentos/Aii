@@ -14,7 +14,7 @@ This is an additive JEPA/Memory lane. It does not edit the Boss-owned integrated
 - The consumer records parameter and EMA deltas, optimizer steps, checkpoint/source SHA, holdout loss, shuffled-target/action and no-history controls, collapse metrics, replay mode and up to three old holdout cohorts. It enforces a bounded retention gate before publishing a candidate.
 - It reuses the existing role-specific ridge receiver contract for B1_DETAIL, B2_GIST and SELF_MODEL. receiver_readout is SHADOW-only and source/checkpoint-bound. It does not claim that this temporal readout is already appended to the native B1/B2 prompt or that native GGUF weights changed.
 - SleepRuntime._run_world_jepa now invokes the temporal consumer after the existing one-step learner. The existing scheduler still wakes on an observed terminal outcome; once woken, the temporal page scans all intervening committed T8 rows, including known censored outcomes. A cancellation is therefore ingested at the next observed-outcome wake rather than scheduling a separate job.
-- Memory._forget_source now uses a combined guard: it holds the existing JEPA file lock through deletion and refuses to delete a source retained by either the temporal active or rollback checkpoint. Pending-only rows are removed. Safe temporal parameter unlearning is not claimed.
+- Memory._forget_source now uses a combined guard: it holds the existing JEPA file lock through deletion and refuses to delete a source retained by either the temporal active or rollback checkpoint. Pending-only rows are removed. The non-JEPA updates-table and active-generation checks were also moved inside the same BEGIN IMMEDIATE SQLite transaction as the source tombstone, closing the previously documented precheck-to-delete race. Safe temporal parameter unlearning is not claimed.
 
 ## Canon and research mapping
 
@@ -29,7 +29,7 @@ New test: v13/code/tests/test_v14_world_jepa_temporal_runtime.py.
 
 - Real V13 SQLite Store, source blobs, EventEnvelope, committed ActionSelection and ActionOutcome producer path; all content is synthetic test data.
 - Known cancellation/interruption enters temporal windows; unknown outcome is skipped and breaks the sequence.
-- Source-disjoint overlapping windows; numeric encoder/predictor and EMA changes; persisted optimizer/checkpoint readback; B1/B2 shadow receiver API; source-forget refusal; default-off SleepRuntime wiring; rollback absence is not fabricated.
+- Source-disjoint overlapping windows; numeric encoder/predictor and EMA changes; persisted optimizer/checkpoint readback; B1/B2 shadow receiver API; actual Memory._forget_source refusal for a retained temporal source; default-off SleepRuntime wiring; rollback absence is not fabricated.
 - Workflow: .github/workflows/v14-temporal-world-jepa.yml, Python 3.13 and 3.14, py_compile plus focused pytest.
 
 Local execution boundary: the full Aii checkout is not mounted and git ls-remote fails because GitHub DNS is unavailable in this execution container. Therefore no local full-suite or local integrated-runtime PASS is claimed. Exact branch CI must be read after PR creation; CI is not Redmi proof.
