@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T11:30:28.369Z",
+  "updated_at": "2026-11-22T11:37:04.338Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; all 30 observed exact-SHA Actions runs completed SUCCESS; authenticated private PIPELINE_STATUS confirms the same SHA installed. Functional/whole-Canon acceptance remains open; V14 master and historical V13 appendix preserved.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -17,8 +17,8 @@
       "proof_environment": "CI + authenticated ANDROID_DEVICE metadata; no correct-answer/native-organ acceptance",
       "next_step": "Core/Boss: repair the exact runtime.py and store.py source-builder pins and the native_turn_budget test fixture's missing source_ref on the coordinated descendant; rerun Python 3.13/3.14, staged, integrated, A5 UI lease and migration gates. QA will not edit the shared pin chain in parallel. Then measure native B1/B2 source-bound offers consumed by C4/C3 on Redmi across 20 mixed turns.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T11:28:06.923Z",
-      "proof": "Private PIPELINE_STATUS #531 confirms c4eb82deec915f65894c20d6ebbaf0ebf58fa335 installed. DIAGNOSTICS #539: latest FINAL turn 56.43 s / TTFT 40.82 s / prefill 39.09 s / 701 prompt tokens / 2 generated tokens; correctness UNKNOWN. Native probe SMOKE_PARTIAL; B1/B2 TIME_BUDGET 53.2/54.2 s. Core #2338 exact head 6664c3e has staged/integrated and A5 UI lease CI failures from stale runtime.py/store.py builder pins. The exact PR #2338 review also records a focused native_turn_budget test seam failure (`KeyError: source_ref`); Boss owns the combined rebind/test-seam repair on a separate descendant branch.",
+      "last_checkpoint": "2026-11-22T11:37:04.338Z",
+      "proof": "Private PIPELINE_STATUS #544 confirms c4eb82deec915f65894c20d6ebbaf0ebf58fa335 remains installed and UP_TO_DATE. DIAGNOSTICS #545 repeats the same last turn: 56.43 s / TTFT 40.82 s / prefill 39.09 s / 701 prompt tokens / 2 generated tokens; correctness UNKNOWN. Native probe SMOKE_PARTIAL; B1/B2 TIME_BUDGET 53.2/54.2 s. Core #2338 remains blocked by runtime.py/store.py builder pins and a KeyError source_ref test seam; Boss owns that repair.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -250,10 +250,10 @@
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
       "proof_environment": "CI + Android source review; no APK or Redmi OS execution",
-      "next_step": "Core/QA: integrate the complete companion stack on current release ancestry, then build/install only with explicit user approval; add real Termux operator/CLI and OS-visible launch receipt. Keep screen/UI, accessibility, audio and background providers OFF until each has its own permission/lifecycle tests and device receipt.",
+      "next_step": "Core/QA: complete #2342 exact Android Gradle/Robolectric tests, integrate the small durability leaf, then separately integrate/install the companion with explicit user approval. Implement UI observation, Accessibility, audio and background providers only behind their own OS permissions, lifecycle tests and device receipts.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T11:28:06.923Z",
-      "proof": "QA companion PR #2286 head c74dc3072e863118a74e37defc5683ff19f97200 has 9/9 observed workflow runs SUCCESS on its own stacked QA branch. Static capability registry exposes only consent-gated launch_app; observe_ui, screen_capture, tap, swipe, type_text, back and audio_capture remain OFF_NOT_IMPLEMENTED. No APK install, Android OS action, UI observation or Redmi proof."
+      "last_checkpoint": "2026-11-22T11:37:04.338Z",
+      "proof": "The QA companion parent stack is merged into Core branch 24e059d1. QA follow-up #2342 (head ab99ad94) fixes durable Termux pairing persistence only; private bridge CI PASS, Android Gradle/Robolectric IN_PROGRESS, isolated JDK21 javac helper smoke PASS (7 controls). No APK install, Android OS action, UI observation, tap/type or Redmi proof."
     },
     {
       "id": "V14-010",
@@ -372,10 +372,10 @@
       "owner": "Core & Harness + QA & Android",
       "priority": "P0",
       "status": "BLOCKED_REVIEW",
-      "last_checkpoint": "2026-11-22T11:28:06.923Z",
+      "last_checkpoint": "2026-11-22T11:37:04.338Z",
       "proof_environment": "CI only; no Android APK/device proof",
-      "proof": "QA companion PR #2286 exact head c74dc307 has 9/9 observed CI workflows SUCCESS on a stacked branch only. It remains a default-OFF consent-gated app-launch prototype; no APK install, Termux pairing on the phone, app launch, screen observation, tap/type or background executor is verified.",
-      "next_step": "Core/QA: reconcile the parent single-use approval stack and rebase Perception #2312 onto the latest QA companion head after the provider/verifier contracts are stable. Keep all capabilities default-OFF and require an installed APK plus owner-authorized Android receipt before claiming app launch."
+      "proof": "Core parent companion branch is at 24e059d1. QA #2342 adds checked durable Termux pairing; exact Android Gradle/Robolectric CI is still running, local JDK21 helper smoke passes 7 controls. No APK or Redmi action. Research #2312 remains stacked on stale QA base SHA 58666dd and must rebase after #2342 integration.",
+      "next_step": "QA/Core: finish exact #2342 Gradle/Robolectric CI and review; after integration, ask Research/Perception to rebase #2312 on the updated Core companion head. Keep audio/UI/tap/background providers OFF until separately implemented and device-verified."
     },
     {
       "id": "V14-018",
@@ -415,22 +415,22 @@
       "proof": "The exact runtime code SHA c4eb82deec915f65894c20d6ebbaf0ebf58fa335 is installed, but the receipt proves installation only. No Android process-death, service restart, reboot, marker recovery or runtime-only rollback receipt exists. User models, SQLite and chats were not modified."
     }
   ],
-  "current_redmi_status": "AUTHENTICATED PRIVATE PIPELINE_STATUS #531: installed SHA c4eb82deec915f65894c20d6ebbaf0ebf58fa335; auto-update=true; runtime=UPDATED; dashboard=UP_TO_DATE; last_result=UPDATED; last_error=NONE. Fresh DIAGNOSTICS #539: latest turn FINAL, 56.43 s total / 40.82 s TTFT / 39.09 s prefill / 701 prompt tokens / 2 generated tokens; native probe SMOKE_PARTIAL with B1/B2 TIME_BUDGET 53.2/54.2 s. Instant sample 3 native processes / 289.4 MiB PSS (B1 59.1, B2 148.9, C2 81.4; C3 0); PSS is not free RAM. No 20-turn correctness acceptance.",
+  "current_redmi_status": "AUTHENTICATED PRIVATE PIPELINE_STATUS #544: installed SHA c4eb82deec915f65894c20d6ebbaf0ebf58fa335; auto-update=true; runtime=UP_TO_DATE; dashboard=UP_TO_DATE; last_result=UP_TO_DATE; last_error=NONE. DIAGNOSTICS #545 repeats the same last turn: FINAL, 56.43 s total / 40.82 s TTFT / 39.09 s prefill / 701 prompt tokens / 2 generated tokens. Native probe remains SMOKE_PARTIAL with B1/B2 TIME_BUDGET 53.2/54.2 s. Instant sample 3 native processes / 285.8 MiB PSS (B1 58.8, B2 145.7, C2 81.3; C3 0); PSS is not free RAM. No new turn or 20-turn correctness acceptance.",
   "last_code_release_head": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
   "latest_integrated_head": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
   "latest_integrated_head_verified_at": "2026-11-22T11:28:06.923Z",
-  "release_gate_status": "Exact SHA c4eb82deec915f65894c20d6ebbaf0ebf58fa335: all 30 observed Actions workflow runs completed SUCCESS, including staged/integrated regression and runtime/owner-read checks. Private PIPELINE_STATUS #531 confirms this SHA installed (runtime UPDATED, dashboard UP_TO_DATE, last_error NONE). This is CI + code-install evidence only; the latest turn remains slow/low-token and native B1/B2 acceptance is still OPEN.",
+  "release_gate_status": "Exact SHA c4eb82deec915f65894c20d6ebbaf0ebf58fa335: all 30 observed Actions workflow runs completed SUCCESS. Newer private PIPELINE_STATUS #544 confirms this SHA remains installed and UP_TO_DATE (runtime/dashboard UP_TO_DATE, last_error NONE). DIAGNOSTICS #545 repeats the same slow 2-token last turn; functional acceptance remains OPEN.",
   "phone_receipt": {
     "state": "AUTHENTICATED_INSTALLED_C4EB82_FUNCTIONAL_ACCEPTANCE_OPEN",
-    "pipeline_status_issue": 531,
-    "diagnostics_issue": 539,
+    "pipeline_status_issue": 544,
+    "diagnostics_issue": 545,
     "chat_send_issue": 533,
     "chat_result_issue": 535,
     "installed_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "auto_update": "ENABLED",
-    "runtime": "UPDATED",
+    "runtime": "UP_TO_DATE",
     "dashboard": "UP_TO_DATE",
-    "last_result": "UPDATED",
+    "last_result": "UP_TO_DATE",
     "last_error": "NONE",
     "latest_turn": {
       "status": "FINAL",
@@ -451,11 +451,11 @@
     "instant_residency": {
       "sample_kind": "INSTANT_NATIVE_PROCESSES",
       "mapped_processes": 3,
-      "mapped_pss_mib": 289.4,
+      "mapped_pss_mib": 285.8,
       "roles": {
-        "B1_DETAIL": 59.1,
-        "B2_GIST": 148.9,
-        "C2_CONTROL": 81.4,
+        "B1_DETAIL": 58.8,
+        "B2_GIST": 145.7,
+        "C2_CONTROL": 81.3,
         "C3_LANGUAGE": 0
       },
       "memory_accounting": "PSS_NOT_FREE_RAM"
@@ -468,7 +468,9 @@
       "learning_commit_authority": "REQUIRES_SEPARATE_SHADOW_MODE"
     },
     "redmi_status": "C4EB82_INSTALLED; CORRECT_CHAT_AND_MULTI_ORGAN_ACCEPTANCE_OPEN",
-    "note": "Read-only owner-authenticated receipts. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, model/weight/permission change or device mutation was performed by this QA check."
+    "note": "Newest read-only owner-authenticated receipts #544/#545. They repeat the previous last-turn metrics; no fresh turn, CHAT_SEND, LOG_PAGE, shell, model/weight/permission change or device mutation was performed by QA.",
+    "previous_pipeline_status_issue": 531,
+    "previous_diagnostics_issue": 539
   },
   "capability_snapshot": [
     {
@@ -998,13 +1000,13 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T11:30:28.369Z",
+    "timestamp": "2026-11-22T11:37:04.338Z",
     "release_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "code_candidate_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "candidate_ci": "EXACT_SHA_ALL_30_OBSERVED_ACTIONS_WORKFLOW_RUNS_SUCCESS",
     "post_merge_push_ci": "CI_GREEN; DEVICE_CODE_INSTALL_CONFIRMED",
-    "device_receipt": "PRIVATE_PIPELINE_STATUS_531_AUTHENTICATED_INSTALLED_C4EB82; RUNTIME_UPDATED; DASHBOARD_UP_TO_DATE; AUTO_UPDATE_ENABLED; LAST_ERROR_NONE",
-    "device_acceptance": "C4EB82_INSTALLED; LAST_TURN_FINAL_BUT_56.43S_TOTAL_40.82S_TTFT_2_TOKENS; B1_B2_SMOKE_PARTIAL_TIME_BUDGET; 20_TURN_ACCEPTANCE_OPEN",
+    "device_receipt": "PRIVATE_PIPELINE_STATUS_544_AUTHENTICATED_INSTALLED_C4EB82; RUNTIME_UP_TO_DATE; DASHBOARD_UP_TO_DATE; AUTO_UPDATE_ENABLED; LAST_ERROR_NONE",
+    "device_acceptance": "C4EB82_INSTALLED; DIAGNOSTICS_545_REPEATS_56.43S_TOTAL_40.82S_TTFT_2_TOKENS; B1_B2_SMOKE_PARTIAL_TIME_BUDGET; 20_TURN_ACCEPTANCE_OPEN",
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_OR_NETWORK; git ls-remote failed DNS; no local full pytest/native suite",
     "pr2338_ci": "HEAD_6664C3: staged/integrated fails integrated_online_world_candidate runtime.py pin; native_turn_budget focused seam fails KeyError source_ref; A5 UI lease Python 3.13/3.14 fails source_lifecycle_lock_integration_candidate store.py pin; DRAFT_NOT_RELEASED. Boss owns the shared source-pin rebind on a separate descendant; QA must not edit that chain in parallel.",
     "pr2332_ci": "HEAD_198A49: private bridge, owner-read and staged/integrated pass; additive-only workflow skipped by policy; release-event workflow cancelled on PR event; bounded native receiver probe NOT_RUN",
@@ -1018,7 +1020,8 @@
       "P0_ANDROID_AUDIORECORD_VOICE_CAPTURE_AND_DECODER",
       "P0_20_TURN_REDMI_CORRECTNESS_TTFT_PSS_AND_RESIDENCY_ACCEPTANCE",
       "P0_CANON_CLAUSE_TO_CONSUMER_TEST_PLATFORM_ROLLBACK_TRACEABILITY",
-      "P0_CORE_PR2338_NATIVE_TURN_BUDGET_TEST_SEAM_KEYERROR_SOURCE_REF"
+      "P0_CORE_PR2338_NATIVE_TURN_BUDGET_TEST_SEAM_KEYERROR_SOURCE_REF",
+      "P0_ANDROID_COMPANION_PAIRING_DURABILITY_PR2342_CI_PENDING"
     ],
     "user_action_required": "NONE; no manual Termux command, update request, model/weight swap or permission change",
     "previous_overlay": {
@@ -1041,22 +1044,24 @@
         "P0_JEPA_SIX_SOURCE_PIN_MISMATCHES_PR2331"
       ],
       "pr2331_ci": "HEAD_535EBA: 9_FAILURE_4_IN_PROGRESS_2_QUEUED_4_SUCCESS_1_SKIPPED; six nested source-pin mismatches; NOT_RELEASED"
-    }
+    },
+    "pr2342_ci": "HEAD_AB99AD: private bridge PASS; Android companion Gradle/Robolectric IN_PROGRESS; local JDK21 javac helper smoke PASS (7 controls); DRAFT_NOT_RELEASED"
   },
   "qa_latest_checkpoint": {
-    "timestamp": "2026-11-22T11:30:28.369Z",
+    "timestamp": "2026-11-22T11:37:04.338Z",
     "owner": "QA & Android",
     "base_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "branch": "qa/v14-redmi-c4eb82-evidence-20261122-run11",
     "code_commit": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "evidence": {
       "release_ci": "30/30 observed exact-SHA workflow runs SUCCESS",
-      "phone_install": "AUTHENTICATED_PIPELINE_STATUS_531",
-      "phone_diagnostics": "AUTHENTICATED_DIAGNOSTICS_539",
+      "phone_install": "PRIVATE_PIPELINE_STATUS_544_UP_TO_DATE",
+      "phone_diagnostics": "PRIVATE_DIAGNOSTICS_545_SAME_LAST_TURN_NO_NEW_RUN",
       "local_full_suite": "BLOCKED_NO_CHECKOUT_DNS_FAILURE",
       "pr2338": "BLOCKED: runtime.py pin + store.py lifecycle pin + test seam KeyError source_ref; Boss is integrating/rebinding on a separate descendant branch; no parallel pin edits",
       "pr2332": "ALLOWLIST_TESTS_PASS_PROBE_NOT_RUN",
-      "pr2286": "STACKED_COMPANION_CI_PASS_NO_DEVICE_PROOF"
+      "pr2286": "STACKED_COMPANION_CI_PASS_NO_DEVICE_PROOF",
+      "pr2342": "DRAFT_HEAD_AB99AD; private bridge PASS; Android Gradle/Robolectric IN_PROGRESS; local javac 7 controls PASS"
     },
     "user_action_required": false
   }
