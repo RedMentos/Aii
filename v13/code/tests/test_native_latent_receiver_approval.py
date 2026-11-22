@@ -136,7 +136,7 @@ def test_arm_ttl_starts_after_model_hash_verification(tmp_path, monkeypatch):
         clock[0] += 50.0
         return {"model_key": role, "revision": role + "-r1", "sha256": "0" * 64}
 
-    monkeypatch.setattr(approval.time, "time", lambda: clock[0])
+    monkeypatch.setattr(approval, "_clock", lambda value=None: clock[0])
     monkeypatch.setattr(approval, "_model_binding", verify_model)
     try:
         approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
@@ -155,7 +155,7 @@ def test_consume_rechecks_expiry_after_model_hash_verification(tmp_path, monkeyp
         model_bindings = record["models"]
         monkeypatch.setattr(approval, "_model_binding", lambda runtime_arg, role: model_bindings[role])
         times = iter([1000.0, 1121.0])
-        monkeypatch.setattr(approval.time, "time", lambda: next(times))
+        monkeypatch.setattr(approval, "_clock", lambda value=None: next(times))
         with pytest.raises(PermissionError, match="expired"):
             approval.consume(
                 runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"]
