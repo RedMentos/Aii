@@ -1,4 +1,5 @@
 """Exercise optimizer-bound World-JEPA through the single current stager."""
+import hashlib
 import importlib.util
 import os
 from pathlib import Path
@@ -7,6 +8,28 @@ import subprocess
 import sys
 
 CODE = Path(__file__).resolve().parents[1]
+
+
+def test_prepostcommit_runtime_hash_and_replacement_four_diagnostic():
+    builder_path = CODE / 'scripts/termux_runtime_recovery_candidate_20261112.py'
+    spec = importlib.util.spec_from_file_location('prepostcommit_builder', builder_path)
+    builder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(builder)
+    result = builder.build_sources(CODE, include_postcommit=False)
+    runtime = result['v13/runtime.py']
+    assert hashlib.sha256(runtime).hexdigest() == '85a2f94e642a787173fcc973270516a39bef4cb2145c3a19a638cb71975f9235'
+
+    post_path = CODE / 'scripts/postcommit_observer_candidate_20261116.py'
+    post_spec = importlib.util.spec_from_file_location('postcommit_diagnostic', post_path)
+    post = importlib.util.module_from_spec(post_spec)
+    post_spec.loader.exec_module(post)
+    before, after = post.REPLACEMENTS[4]
+    old_count = runtime.count(before.encode('utf-8'))
+    new_count = runtime.count(after.encode('utf-8'))
+    print('POSTCOMMIT_REPLACEMENT_4_COUNTS', old_count, new_count)
+    for number, line in enumerate(runtime.decode('utf-8', 'replace').splitlines(), 1):
+        if "if status=='FINAL'" in line:
+            print('PRE_POSTCOMMIT_FINAL_CONDITION', number, line[:1400])
 
 
 def test_world_jepa_training_state_in_real_staged_runtime(tmp_path):
