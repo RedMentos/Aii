@@ -24,6 +24,9 @@ RECEIVER_ROLES = frozenset({"B1_DETAIL", "B2_GIST", "C3_LANGUAGE"})
 MAX_ROWS = 64
 MAX_DIM = 8192
 MAX_ELEMENTS = 262144
+TOKEN_ROW_SCHEMA = "v14.native-token-rows/1"
+MAX_TOKEN_ROWS = 32
+MAX_TOKEN_ROW_ELEMENTS = 262144
 EFFECT_EPSILON = 1.0e-7
 
 
@@ -178,12 +181,12 @@ def _vector_payload(vectors):
     return rows, dim, payload, hashlib.sha256(payload).hexdigest()
 
 
-def _json_output(raw: bytes, stage: str) -> dict:
+def _json_output(raw: bytes, stage: str, *, schema: str = SCHEMA) -> dict:
     try:
         value = json.loads(raw.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise NativeReceiverError("native receiver returned invalid " + stage + " JSON") from exc
-    if not isinstance(value, dict) or value.get("schema") != SCHEMA:
+    if not isinstance(value, dict) or value.get("schema") != schema:
         raise NativeReceiverError("native receiver schema mismatch")
     if value.get("runner_revision") != PINNED_LLAMA_REVISION:
         raise NativeReceiverError("native receiver is not built from the pinned llama.cpp revision")
@@ -212,6 +215,148 @@ def _run_cancelable(command, payload, deadline, cancel_event):
             return process.returncode, stdout, stderr
         except subprocess.TimeoutExpired:
             first = False
+
+
+
+def extract_token_rows(*, home, model_path, expected_model_sha256, model_revision,
+                       tokenizer_revision, token_ids, deadline, binary_path=None,
+                       cancel_event=None):
+    """Read a bounded set of receiver input-embedding rows from an installed model.
+
+    This is a local, read-only diagnostic. It is not a production B3 route,
+    semantic-use proof, trained adapter, or learning permission. The native
+    executable uses a pinned internal llama.cpp header and copies only the
+    requested rows; this wrapper binds the result to exact model bytes and
+    tokenizer/model revisions.
+    """
+    if not isinstance(model_revision, str) or not model_revision:
+        raise NativeReceiverError("receiver model revision is missing")
+    if not isinstance(tokenizer_revision, str) or not tokenizer_revision:
+        raise NativeReceiverError("receiver tokenizer revision is missing")
+    if not isinstance(expected_model_sha256, str) or len(expected_model_sha256) != 64:
+        raise NativeReceiverError("receiver model hash missing")
+    if any(ch not in "0123456789abcdef" for ch in expected_model_sha256.lower()):
+        raise NativeReceiverError("receiver model hash malformed")
+    if not isinstance(token_ids, (list, tuple)) or not 1 <= len(token_ids) <= MAX_TOKEN_ROWS:
+        raise NativeReceiverError("token row request must contain 1..32 token IDs")
+    ids = []
+    for token_id in token_ids:
+        if type(token_id) is not int or token_id < 0 or token_id > 2147483647:
+            raise NativeReceiverError("token IDs must be bounded nonnegative integers")
+        if token_id in ids:
+            raise NativeReceiverError("duplicate token IDs are not allowed")
+        ids.append(token_id)
+    if not _finite_number(deadline) or float(deadline) <= time.monotonic():
+        raise TimeoutError("native token row deadline expired")
+    expected_model_sha256 = expected_model_sha256.lower()
+
+    root = Path(home).resolve()
+    model = Path(model_path)
+    if model.is_symlink():
+        raise NativeReceiverError("receiver model symlink refused")
+    model = model.resolve(strict=True)
+    models_root = (root / "models").resolve()
+    if not model.is_relative_to(models_root) or not model.is_file():
+        raise NativeReceiverError("receiver model must be an installed file under home/models")
+    if _sha256_file(model) != expected_model_sha256:
+        raise NativeReceiverError("receiver model hash differs from installed manifest")
+
+    injected_binary = binary_path is not None
+    binary = Path(binary_path) if injected_binary else root / "bin" / "native_latent_receiver"
+    if binary.is_symlink() or not binary.is_file() or not os.access(binary, os.X_OK):
+        raise NativeReceiverUnavailable("pinned native_latent_receiver executable is not installed")
+    binary = binary.resolve(strict=True)
+    if not injected_binary and not binary.is_relative_to((root / "bin").resolve()):
+        raise NativeReceiverError("native receiver executable escaped home/bin")
+
+    remaining = float(deadline) - time.monotonic()
+    if not math.isfinite(remaining) or remaining <= 0:
+        raise TimeoutError("native token row deadline expired")
+    if cancel_event is not None and cancel_event.is_set():
+        raise InterruptedError("native token row extraction cancelled")
+    try:
+        version = subprocess.run(
+            [str(binary), "--version"], stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            timeout=min(5.0, remaining), check=False,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise TimeoutError("native receiver version check timed out") from exc
+    if version.returncode != 0:
+        raise NativeReceiverUnavailable("native receiver version check failed")
+    version_data = _json_output(version.stdout, "version")
+
+    remaining = float(deadline) - time.monotonic()
+    if not math.isfinite(remaining) or remaining <= 0:
+        raise TimeoutError("native token row deadline expired")
+    returncode, stdout, stderr = _run_cancelable(
+        [str(binary), "--token-rows", "--model", str(model),
+         "--token-ids", ",".join(str(value) for value in ids)],
+        b"", deadline, cancel_event,
+    )
+    if returncode != 0:
+        raise NativeReceiverError("native receiver token row read failed")
+    raw = _json_output(stdout, "token rows", schema=TOKEN_ROW_SCHEMA)
+    if raw.get("llama_version") != version_data.get("llama_version"):
+        raise NativeReceiverError("native receiver version changed between invocations")
+    if raw.get("status") != "ROWS_READ" or raw.get("source") != "RECEIVER_INPUT_TOKEN_EMBEDDING_TABLE":
+        raise NativeReceiverError("native receiver did not return input token embedding rows")
+    if raw.get("full_table_copied") is not False or raw.get("read_only") is not True:
+        raise NativeReceiverError("native receiver did not attest to bounded read-only extraction")
+    if raw.get("max_rows") != MAX_TOKEN_ROWS or raw.get("requested_token_ids") != ids:
+        raise NativeReceiverError("native receiver token row request differs from caller")
+
+    vocab = raw.get("model_vocab")
+    dim = raw.get("embedding_dim")
+    row_bytes = raw.get("row_bytes")
+    stride = raw.get("tensor_row_stride_bytes")
+    tensor_type = raw.get("tensor_type")
+    if (type(vocab) is not int or vocab < 1 or type(dim) is not int or
+            not 1 <= dim <= MAX_DIM or dim * len(ids) > MAX_TOKEN_ROW_ELEMENTS or
+            type(row_bytes) is not int or row_bytes < 1 or
+            type(stride) is not int or stride < row_bytes or
+            not isinstance(tensor_type, str) or not tensor_type):
+        raise NativeReceiverError("native receiver token row dimensions or layout are invalid")
+    if any(value >= vocab for value in ids):
+        raise NativeReceiverError("requested token ID is outside the receiver vocabulary")
+
+    rows = raw.get("rows")
+    if not isinstance(rows, list) or len(rows) != len(ids):
+        raise NativeReceiverError("native receiver token row count differs from request")
+    checked_rows = []
+    for expected_id, row in zip(ids, rows):
+        if not isinstance(row, dict) or row.get("token_id") != expected_id:
+            raise NativeReceiverError("native receiver token row identity differs from request")
+        values = row.get("values")
+        if (not isinstance(values, list) or len(values) != dim or
+                any(not _finite_number(value) for value in values)):
+            raise NativeReceiverError("native receiver token row contains invalid values")
+        checked_rows.append({"token_id": expected_id, "values": [float(value) for value in values]})
+
+    if _sha256_file(model) != expected_model_sha256:
+        raise NativeReceiverError("receiver model changed during token row extraction")
+    return {
+        "schema": TOKEN_ROW_SCHEMA,
+        "status": "NATIVE_TOKEN_ROWS_READ_ONLY",
+        "source": "RECEIVER_INPUT_TOKEN_EMBEDDING_TABLE",
+        "model_revision": model_revision,
+        "tokenizer_revision": tokenizer_revision,
+        "model_sha256": expected_model_sha256,
+        "runner_revision": PINNED_LLAMA_REVISION,
+        "llama_version": str(raw.get("llama_version", ""))[:80],
+        "model_vocab": vocab,
+        "embedding_dim": dim,
+        "tensor_type": tensor_type,
+        "row_bytes": row_bytes,
+        "tensor_row_stride_bytes": stride,
+        "requested_token_ids": ids,
+        "rows": checked_rows,
+        "full_table_copied": False,
+        "read_only": True,
+        "training_authority": 0,
+        "production_route": False,
+        "semantic_use_proven": False,
+    }
 
 
 def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role,
