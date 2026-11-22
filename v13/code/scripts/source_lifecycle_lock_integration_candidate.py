@@ -100,13 +100,13 @@ READ_SOURCE_NEW = b'''    def read_source(self,ref):
 MEMORY_OLD = b'''            src=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
             if not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(src['hash'],)):(self.s.home/'data/blobs'/src['hash']).unlink(missing_ok=True);(self.s.home/'data/blobs'/(src['hash']+'.z')).unlink(missing_ok=True)
 '''
-MEMORY_NEW = b'''            from .source_lifecycle_candidate import cleanup_unreferenced
-            cleanup_unreferenced(self.s,sid)
+MEMORY_NEW = b'''                from .source_lifecycle_candidate import cleanup_unreferenced
+                cleanup_unreferenced(self.s,sid)
 '''
-MEMORY_CURRENT_OLD = b'''            source=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
-            if source and not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(source['hash'],)):
-                (self.s.home/'data/blobs'/source['hash']).unlink(missing_ok=True)
-                (self.s.home/'data/blobs'/(source['hash']+'.z')).unlink(missing_ok=True)
+MEMORY_CURRENT_OLD = b'''                source=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
+                if source and not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(source['hash'],)):
+                    (self.s.home/'data/blobs'/source['hash']).unlink(missing_ok=True)
+                    (self.s.home/'data/blobs'/(source['hash']+'.z')).unlink(missing_ok=True)
 '''
 VISION_OLD = b'''def ingest(store,data,cfg=DEFAULTS,label=None):
     """Store image bytes as an IMAGE source (dedup by hash) and register its regions. Returns the image record."""
