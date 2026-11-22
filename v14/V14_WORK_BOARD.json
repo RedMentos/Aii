@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T12:02:49.539Z",
-  "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; all 30 observed exact-SHA Actions workflow runs completed SUCCESS. Fresh owner-authenticated private PIPELINE_STATUS #550 confirms the same SHA installed and UP_TO_DATE. Functional/whole-Canon acceptance remains open; V14 master and historical V13 appendix preserved.",
+  "updated_at": "2026-11-22T17:57:23Z",
+  "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; all 30 observed exact-SHA Actions workflow runs completed SUCCESS. Fresh owner-authenticated private PIPELINE_STATUS #550 confirms the same SHA installed and UP_TO_DATE. Functional/whole-Canon acceptance remains open; V14 master and historical V13 appendix preserved. Perception PR #2366 is a draft candidate only; local isolated source-lifecycle race harness 2/2 PASS, exact CI pending, no Runtime or Redmi acceptance.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -197,18 +197,21 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Perception: preserve the #2327 RAW EAR FIR anti-alias feature path and its staged A5/A4/C3 regression; do not equate caller-supplied PCM with Android microphone capture. Next, reconcile the signed one-shot consumer with QA's companion provider and measure Android lifecycle/route/silence/revocation only after explicit device permission.",
+      "next_step": "Research/Perception PR #2366 adds a stored-IMAGE RAW EYE A5/A4 candidate with Store-RLock serialization across ingest/read/forget and full ephemeral context construction. Local isolated concurrency harness 2/2 PASS; exact Python 3.13/3.14 and staged/integrated CI pending. After exact CI, Core must wire the adapter into normal Runtime; QA must retain the source-forget/re-ingest barrier tests. No Android camera/screen provider or Redmi proof.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-22T17:57:23Z",
       "latest_candidate_pr": {
-        "pr": 2312,
-        "head_sha": "5221314d3c01ab6d874ecc0a8b8ff72c34e504a2",
-        "base": "qa/v14-companion-os-permission-contract-20261122",
-        "state": "OPEN_DRAFT_PARTIAL_CI_PENDING",
-        "scope": "signed one-shot RAW EAR consumer; Android-guaranteed 44.1 kHz mono PCM16; 88,200-byte / 117,600-character one-second cap; exact source/generation/signature/consent/replay checks; no microphone provider or learning/action authority",
-        "ci": "RUN_44992975596_PENDING; RUN_44992975599_QUEUED"
+        "pr": 2366,
+        "head_sha": "ce5b07da720c4d8751bc4fa09042337996a1081d",
+        "branch": "research-perception/v14-vision-source-revocation-atomic-20261122",
+        "status": "DRAFT_CI_PENDING",
+        "scope": "stored IMAGE SourceRef → RAW EYE A5/A4/C3 candidate; atomic ingest/read/forget; two barrier regressions",
+        "local_linux": "ISOLATED_CP3135_2_OF_2_PASS_FAKE_STORE",
+        "exact_ci": "QUEUED_AT_LAST_READ",
+        "runtime": "NOT_NORMAL_RUNTIME_WIRED",
+        "redmi": "NOT_RUN"
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture."
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. PR #2366: source-bound stored IMAGE→17 RAW EYE segments→A4/admission candidate; image ingest/read/forget and the full A5 consumer share Store RLock. Local isolated CPython 3.13.5 two-interleaving harness 2/2 PASS; exact PR CI pending; normal Runtime hook and Redmi remain unverified."
     },
     {
       "id": "V14-007",
@@ -485,12 +488,12 @@
   "capability_snapshot": [
     {
       "capability": "A0-A5 perception and attention",
-      "code": "CALLER_PCM16_RAW_EAR_FIR_ANTIALIAS; A5_UI_METADATA_LEASE_SHADOW; STORE_SOURCE_READ_REVOCATION_LOCK",
-      "wired": "CALLER_PCM16→STAGED A5/A4/C3 CONSENT LEASE; A5 UI METADATA→A4 SHADOW; shared Store source-read/revocation lock",
-      "tested_synthetic": "#2327 exact candidate 27 SUCCESS / 1 expected SKIPPED and #2329 exact CLI comparator 4/4 SUCCESS; #2327 composes FIR producer through staged A5/A4/C3 and rebinds exact composer→recovery→stage→deployer pins",
+      "code": "CALLER_PCM16_RAW_EAR_FIR_ANTIALIAS; A5_UI_METADATA_LEASE_SHADOW; STORE_SOURCE_READ_REVOCATION_LOCK; STORED_RAW_EYE_IMAGE_A5_SOURCE_LOCK_PR2366",
+      "wired": "CALLER_PCM16→STAGED A5/A4/C3 CONSENT LEASE; A5 UI METADATA→A4 SHADOW; shared Store source-read/revocation lock; stored IMAGE SourceRef → ephemeral RAW EYE A5/A4/C3 candidate, source lifecycle serialized",
+      "tested_synthetic": "#2327 exact candidate 27 SUCCESS / 1 expected SKIPPED and #2329 exact CLI comparator 4/4 SUCCESS; #2327 composes FIR producer through staged A5/A4/C3 and rebinds exact composer→recovery→stage→deployer pins; local isolated CPython 3.13.5 source-forget/reingest harness 2/2 PASS; exact PR CI pending",
       "tested_android": "NOT_VERIFIED",
       "active": "MERGED_INTEGRATION / SHADOW_ONLY",
-      "evidence": "No Android AudioRecord/microphone, screen capture, AccessibilityService, tap/type provider or calibrated speaker model; libfvad remains research-only."
+      "evidence": "No Android AudioRecord/microphone, screen capture, AccessibilityService, tap/type provider or calibrated speaker model; libfvad remains research-only. The visual adapter is not called by normal Runtime; no Android camera/screen capture or Redmi proof."
     },
     {
       "capability": "B1_DETAIL and B2_GIST bodies",
@@ -1007,6 +1010,13 @@
       "status": "PRIMARY_PAPERS_REVIEWED; QVAC MIT AND HEXATRAIN APACHE-2.0 REPOSITORIES LICENSE-CHECKED; TARGET_HARDWARE_UNVERIFIED",
       "primary": "arXiv:2604.22783v2 (2026-10-16); arXiv:2610.24816v2 (2026-10-26); QVAC Fabric tag v10549.5.1; HexaTrain repository",
       "next": "After JEPA retention is stable, run a small isolated CPU-adapter baseline and measure peak RSS/PSS, sequence scaling, power/latency, old-session retention and restart; do not import or swap production models."
+    },
+    {
+      "id": "R-080",
+      "topic": "RAW EYE IMAGE source lifecycle and revocation atomicity",
+      "status": "CODE_CANDIDATE_LOCAL_ISOLATED_2_OF_2_CI_PENDING",
+      "primary": "Source-derived concurrency review of vision.ingest/read_image/forget and consume_visual_source; PR #2366",
+      "next": "Finish exact PR CI; Core wires the adapter to normal Runtime; QA retains both barrier interleavings and checks restart/source-forget on integrated runtime."
     }
   ],
   "current_evidence_overlay": {
@@ -1062,7 +1072,16 @@
     "pr2288": "MERGED at 39b175521f50048f13ca14372b316de47527f531; 20 SUCCESS / 0 FAILURE / 1 expected SKIPPED / 1 cancelled; current release c4eb82 supersedes it.",
     "device_health": "HEALTH_549: 1,293 MiB MemAvailable / 5,569 MiB total / 1,537 MiB free disk; health runtime UNAVAILABLE while diagnostics reports RUNNING",
     "learning_status": "LEARNING_STATUS_552_UNAVAILABLE",
-    "boss_pr2343": "CURRENT_HEAD_023E56D_29_AHEAD_0_BEHIND; substantive exact CI queued. Recovery12 and some Store/Runtime pins corrected; stage/deployer, recovery21, archive stream preimage, record-only Runtime pin and fair-observer ask anchor still mismatch. Previous 70c6a5 migration failed; not current-head result."
+    "boss_pr2343": "CURRENT_HEAD_023E56D_29_AHEAD_0_BEHIND; substantive exact CI queued. Recovery12 and some Store/Runtime pins corrected; stage/deployer, recovery21, archive stream preimage, record-only Runtime pin and fair-observer ask anchor still mismatch. Previous 70c6a5 migration failed; not current-head result.",
+    "pr2366": {
+      "timestamp": "2026-11-22T17:57:23Z",
+      "head_sha": "ce5b07da720c4d8751bc4fa09042337996a1081d",
+      "local_linux": "ISOLATED_CP3135_2_OF_2_PASS_FAKE_STORE",
+      "exact_ci": "QUEUED_AT_LAST_READ",
+      "runtime_consumer": "NOT_NORMAL_RUNTIME_WIRED",
+      "redmi": "NOT_RUN",
+      "release_sha": "NOT_RELEASED"
+    }
   },
   "qa_latest_checkpoint": {
     "timestamp": "2026-11-22T12:02:49.539Z",
