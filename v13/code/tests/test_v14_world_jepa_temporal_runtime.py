@@ -178,15 +178,23 @@ def test_temporal_world_jepa_updates_ema_checkpoint_and_b1_b2_shadow_receivers(t
         active, _ = store.state(STATE_KEY, None)
         assert active["active"]["checkpoint_sha256"] == first["checkpoint_sha256"]
         action = max(active["active"]["action_support"], key=active["active"]["action_support"].get)
-        readout = restarted.receiver_readout("B1_DETAIL", sessions[0], action, history_length=2)
-        assert readout["status"] in {"SHADOW_READOUT_ONLY", "RECEIVER_UTILITY_REJECTED"}
-        assert readout["decision_authority"] == "NONE"
-        assert readout["native_body_consumed"] is False
-        assert readout["native_body_weights_changed"] is False
-        if readout["status"] == "SHADOW_READOUT_ONLY":
-            assert np.isfinite(readout["uncertainty"])
-            assert readout["support_samples"] >= 8
-            assert readout["checkpoint_sha256"] == first["checkpoint_sha256"]
+        from v13.world_jepa_consumer import receiver_utility_gate
+        for role, history_length in (("B1_DETAIL", 2), ("B2_GIST", 3)):
+            gate = receiver_utility_gate(active["active"]["receiver_metrics"], role)
+            assert gate["accepted"] is (gate["reason"] == "HELDOUT_BEATS_MEAN_AND_NEGATIVE_CONTROLS")
+            readout = restarted.receiver_readout(
+                role, sessions[0], action, history_length=history_length,
+            )
+            expected_status = "SHADOW_READOUT_ONLY" if gate["accepted"] else "RECEIVER_UTILITY_REJECTED"
+            assert readout["status"] == expected_status
+            assert readout["receiver_utility"] == gate
+            assert readout["decision_authority"] == "NONE"
+            assert readout["native_body_consumed"] is False
+            assert readout["native_body_weights_changed"] is False
+            if readout["status"] == "SHADOW_READOUT_ONLY":
+                assert np.isfinite(readout["uncertainty"])
+                assert readout["support_samples"] >= 8
+                assert readout["checkpoint_sha256"] == first["checkpoint_sha256"]
 
         # A learned source is protected while either active or rollback state retains it.
         source_row = active["active"]["experience_rows"][0]
