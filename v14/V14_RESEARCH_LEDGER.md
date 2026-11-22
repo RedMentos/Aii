@@ -1089,3 +1089,24 @@ Primary source: https://arxiv.org/abs/2611.20819.
 - Keep speaker IDs session-local and ephemeral. No cross-recording linking, identity labels, persistent voiceprints or speaker-driven attention/interrupt authority without a separate explicit consent and privacy design.
 - FASTDIAR Small is the only plausible size candidate among these three, but its checkpoint license is unresolved and its desktop CPU results do not predict Android. Nemotron/eDIAR are research-teacher/algorithm references only.
 
+
+
+## R-072 — Low-gain RAW EAR voicing and device-mismatch research (2026-11-22)
+
+**Observed defect / measured hypothesis**
+- The previous RAW EAR activity gate classified any whole-window RMS below 0.003 as SILENCE before considering strong frame-level periodicity. A 140 Hz PCM16 tone at amplitude 100 counts has whole-window RMS 0.002144, yet the extracted 40-ms frames have voiced_fraction 1.0 and median voicing confidence 0.992. The old gate therefore discarded strong low-gain voicing evidence.
+- The gate now returns SILENCE only when whole-window RMS is below 0.003 and voiced-frame fraction is below 0.25. A seeded 50-count noise control (RMS 0.000889, voiced_fraction 0) remains SILENCE. This is an acoustic heuristic, not a speech-probability claim; a tonal sound may still be classified VOICED.
+- Local evidence is a CPython scratch extraction of the algorithm, not a full repository test run and not microphone data. The A4 runtime-consumer regression is included in PR #2304; RAW EAR/VAD CI is green on Python 3.13/3.14, while staged/integrated/Core exact-head checks were still running at this ledger update.
+
+**Device-mismatch paper and implementation review**
+- Schmid et al., Low-Complexity Acoustic Scene Classification with Device Information in the DCASE 2025 Challenge, arXiv:2505.01747 (2025-05-03, preprint). Only the arXiv abstract and official DCASE task/results pages were reviewed here; the full paper was not read. The abstract reports 50.72% development-test accuracy for a device-general baseline and 51.89% with device information. The official evaluation table reports the DCASE baseline at 53.24% and the top submission at 61.47%; these are different splits and must not be conflated.
+- The task covers ten urban scene classes, a 25% training subset, device mismatch and low-complexity constraints. The top MALACH25_4 entry is listed as a 61,148-parameter RF-regularized CNN with about 29.42M MACs, 32-kHz log-mel input and device-specific fine-tuning. This is environmental scene classification, not voice/prosody recognition and not a drop-in RAW EAR model.
+- The official CPJKU baseline repository is PyTorch/PyTorch Lightning/W&B and reports 61,148 parameters, 29.42M MACs and 122,296 bytes FP16. The inspected repository root has no LICENSE file; no model-weight license was verified. Do not reuse code or download weights until licensing/provenance is resolved.
+- Practical consequence: keep source/device metadata and real mic calibration as an open research question; do not transfer the DCASE classifier or its thresholds into the speech path. The low-gain gate correction is justified by the RAW EAR signal evidence itself, not by the DCASE score.
+
+**Android capture constraints**
+- The current companion branch inspected for this handoff targets SDK 33 and its manifest has no RECORD_AUDIO permission or audio provider. The next milestone is a visible, one-shot AudioRecord Activity with explicit local approval, Android runtime permission, bounded in-memory PCM16, signed receipt and a Termux consumer; no persistent raw audio.
+- Android 14+ requires the microphone foreground-service type/permission if a microphone FGS is used, and while-in-use restrictions prevent starting such a service from the background. For a one-second sample, prefer capture inside the visible Activity rather than a background service. See the official Android docs linked below.
+- References: https://arxiv.org/abs/2505.01747 ; https://dcase.community/challenge2025/task-low-complexity-acoustic-scene-classification-with-device-information-results ; https://github.com/CPJKU/dcase2025_task1_baseline ; https://developer.android.com/about/versions/14/changes/fgs-types-required ; https://developer.android.com/develop/background-work/services/fgs/restrictions-bg-start ; https://developer.android.com/training/permissions/requesting .
+
+**Decision:** no model, weight, dependency, permission, Android app or device data changed. Speaker similarity remains diagnostic-only DEFER. Microphone remains OFF. Next: finish exact-head staged/integrated CI, Boss/QA review PR #2304, then Core/QA implement the consent-gated AudioRecord provider under the handoff.
