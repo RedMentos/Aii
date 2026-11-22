@@ -29,15 +29,55 @@ def _make_store(home):
     return store
 
 
+def _replace_source_id(value, old_source_id, new_source_id):
+    if type(value) is dict:
+        for key, item in value.items():
+            if key == "source_id" and item == old_source_id:
+                value[key] = new_source_id
+            elif key == "source_ids" and type(item) is list:
+                value[key] = [
+                    new_source_id if source_id == old_source_id else source_id
+                    for source_id in item
+                ]
+            else:
+                _replace_source_id(item, old_source_id, new_source_id)
+    elif type(value) is list:
+        for item in value:
+            _replace_source_id(item, old_source_id, new_source_id)
+
+
 def _add_session(store, label, session_index, *, status_overrides=None):
     status_overrides = status_overrides or {}
-    session = store.new_session(label)
+    generated_session = store.new_session(label)
+    session = f"session-test-{label}-{session_index:03d}"
+    with store.tx() as conn:
+        conn.execute("UPDATE sessions SET id=? WHERE id=?", (session, generated_session))
+    store.set_meta("last_session", session)
     event_ids = []
     for offset in range(4):
         text = f"{label}-session-{session_index:03d}-event-{offset:02d}-" + ("x" * ((session_index + offset) % 31))
         event = store.event(session, text)
         event_id = event["event_id"]
         generation = event["brain_generation_id"]
+        old_source_id = event["source_ref"]["source_id"]
+        stable_source_id = f"src-test-{label}-{session_index:03d}-{offset:02d}"
+        event = json.loads(json.dumps(event))
+        _replace_source_id(event, old_source_id, stable_source_id)
+        with store.tx() as conn:
+            conn.execute("UPDATE sources SET id=? WHERE id=?", (stable_source_id, old_source_id))
+            conn.execute(
+                "UPDATE events SET source_id=?,packet=? WHERE id=?",
+                (stable_source_id, json.dumps(event, sort_keys=True, separators=(",", ":")), event_id),
+            )
+            message = conn.execute(
+                "SELECT metadata FROM messages WHERE event_id=?", (event_id,)
+            ).fetchone()
+            metadata = json.loads(message["metadata"])
+            _replace_source_id(metadata, old_source_id, stable_source_id)
+            conn.execute(
+                "UPDATE messages SET metadata=? WHERE event_id=?",
+                (json.dumps(metadata, sort_keys=True, separators=(",", ":")), event_id),
+            )
         action_index = (session_index + offset) % len(world_model.ACTIONS)
         route = world_model.ACTIONS[action_index]
         selection = contracts.packet(
