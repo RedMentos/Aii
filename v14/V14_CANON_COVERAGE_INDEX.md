@@ -2431,3 +2431,4 @@ This is an inherited QA-owned source-lifecycle composition failure; it blocks st
 
 **Environment boundary:** LOCAL_LINUX full repository test is BLOCKED / NOT_RUN because no Aii checkout is mounted and GitHub DNS resolution fails. GitHub Actions are CI only; current-head workflows are QUEUED. No native GGUF body-weight update, trained cross-organ latent transfer, Dream consolidation, or Redmi JEPA proof is claimed. Historical V13 Canon inventory remains unchanged.
 
+**Replay research follow-up R-095:** per-example spaced review is a candidate scheduling layer, but V14 regression JEPA lacks a validated recall-quality mapping. No SRT code is released; no scheduler is implemented or enabled. Uniform replay remains baseline pending matched-step, repeated-seed ablations.
