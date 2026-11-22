@@ -19,4 +19,4 @@
 - Forschung R-093/R-094: Full replay can still forget under noise; Replay on Demand adds a loss-difference top-k allocation idea and an Apache-2.0 repo, but its NeMo-RL/Megatron/12B/GPU stack is not suitable for Redmi. Signal-aware/demand replay remains research-only; uniform replay stays baseline.
 
 **Nächster Team-Schritt:** neue exakte CI-Ergebnisse abwarten, echte Fehler reparieren, danach bei grüner QA-/Boss-Kette die mehrphasigen Replay-/Retention-Ablationen ausführen. Keine Geräteaktion wurde ausgelöst.
-
+- Forschung R-095: Per-example spaced review (SM-2-like) improved retention in an English LLM CPT study and reports only +3.5% overhead vs uniform replay, but its code/benchmark artifacts are proprietary. For V14 regression-JEPA, any residual/uncertainty-to-recall mapping needs calibration; no scheduler or thresholds are enabled.
