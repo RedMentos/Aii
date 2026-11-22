@@ -1609,3 +1609,8 @@ Other open candidate stacks are not merge-ready:
 - **#2350 native probe byte integrity:** 18/18 green but stacked on #2332 and diagnostic-only; it is not a trained latent channel.
 
 No candidate was merged or deployed. Private #593 HEALTH and #594 LEARNING_STATUS are UNAVAILABLE despite #591 pipeline metadata being UP_TO_DATE. User action remains NONE.
+
+
+## Android companion integration boundary — 2026-11-22T17:34:00Z
+
+The companion stack (#2271/#2342/#2344/#2347/#2348) has green branch-local CI (16/16, 2/2, 11/11, 8/8 and 7/7 respectively), but it is based on an old divergent branch: base commit `b931e94` is 106 commits ahead and 787 behind the current release from common ancestor `d3ac638`; companion head `24e059d` is 129 ahead / 787 behind. It changes the existing `android_control.py` and `android_outcomes.py` APIs and adds companion runtime/transport plus a Kotlin app. Direct merge or base-change would import a large divergent history. The safe next step is a targeted port onto c4eb82, preserving the current owner-read/update bridge and OS consent boundaries. No APK install or Android permission action occurred; user action remains NONE.
