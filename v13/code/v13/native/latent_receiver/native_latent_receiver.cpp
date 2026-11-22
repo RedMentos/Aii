@@ -241,6 +241,10 @@ int selftest() {
     if (parse_token_ids("1,1", token_ids)) return 25;
     token_ids.clear();
     if (parse_token_ids("-1", token_ids)) return 26;
+    token_ids.clear();
+    if (parse_token_ids("1,", token_ids)) return 27;
+    token_ids.clear();
+    if (parse_token_ids(" 1", token_ids)) return 28;
     std::cout << "PASS\n";
     return 0;
 }
