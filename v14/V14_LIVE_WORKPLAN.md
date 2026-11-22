@@ -1255,3 +1255,30 @@ Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, mi
 - **Local/device:** isolated matching helper 9/9 PASS; full local Aii suite BLOCKED (no checkout/network). REDMI_UNVERIFIED for this branch. Installed docs head remains aed1d2; last code release c4eb82; no update request or device mutation.
 - **Consumer gap:** temporal B1/B2 receiver is still SHADOW/API-only here. #2360 remains stacked on #2343; rebase onto current Boss #2370 and prove actual B1/B2 prompt consumption after the source-lifecycle chain is green.
 - **Next:** exact CI for #2372, QA source-pin rebind, independent Boss review, then current-base B1/B2 receiver integration. No learning promotion or model/weight swap until retention, restart, rollback and consumer utility pass.
+
+
+## JEPA & Memory — Run 15: temporal T8 receiver reaches actual B1/B2 prompt path (2026-11-22T20:01:11Z)
+
+**Code PR:** [#2372](https://github.com/RedMentos/Aii/pull/2372), branch jepa-memory/v14-temporal-exact-forget-retention-20261122-run14, exact current head 64ae877d7189c3109aff60583ef73aeed1fe4c32 (DRAFT / NOT_RELEASED). Commits in this run: 0840cf637664f53261518dd730537eca7e179fa8 (temporal bodyview adapter) and 64ae877d7189c3109aff60583ef73aeed1fe4c32 (actual Cognition.offer consumer regression).
+
+### Implemented connection
+
+- bodyview now reads the persistent temporal WorldJEPA receiver matrix only for B1_DETAIL/B2_GIST. B1 uses a two-outcome history; B2 uses three. Candidate readouts are bound to the active checkpoint SHA, training-source SHA and exact history action/source IDs.
+- Readouts require accepted receiver utility and at least eight train-split support samples for each emitted action. Unknown/mismatched provenance, insufficient support, invalid numeric values or a busy learner lock fail closed. The foreground path never waits for the temporal learner.
+- Numeric predictions remain STATE_NOT_FACT, bounded to the existing 700-character body-state budget, with native_body_consumed=false, native_body_weights_changed=false and decision_authority=NONE.
+- The new test calls the existing Cognition.offer function for both roles with a capture runner, verifies that the actual serialized B1/B2 prompt contains the temporal readout, verifies QueryPacket body_state_ref provenance and different 2/3 history horizons, and checks that a held JEPA lock causes a fast fallback without the optional temporal context.
+- Stored body-state audit explicitly records body_prompt_consumed=false because bodyview creates the source before Cognition.offer consumes it. The captured runner payload and persisted QueryPacket are the evidence of actual consumption; the source record does not self-certify its future consumer.
+
+### Test and environment status
+
+- Exact current-head workflows were queued at the last readback: staged/integrated run 45064802546; temporal T8 run 45064802561; Python 3.13/3.14 optimizer-resume/source-forget run 45064802545. The new Cognition.offer test has not yet received an exact-head CI result.
+- Previous temporal head 6bd3d932 had 11/11 temporal tests PASS on Python 3.14; Python 3.13 remained queued. Do not project that result onto 64ae877.
+- A prior exact optimizer-resume/staged attempt failed at the inherited source-lifecycle memory.py pin. Current JEPA memory.py blob SHA-1 is 172417b49c0abb301db9367fd1c9947a91b3c458; its independently computed SHA-256 is 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701. The lifecycle candidate inherited by #2372 expects 61e881ad…; QA #2359 currently expects b2059016…. Exact mismatch and requested QA rebind are recorded in [#2359 comment 7085003800](https://github.com/RedMentos/Aii/pull/2359#issuecomment-7085003800). JEPA did not modify QA-owned lifecycle files.
+- Full local repository test is BLOCKED: no Aii checkout is present and git ls-remote fails DNS in this environment. The earlier isolated 9-assertion helper test is not a full repository test. No full local compile/pytest PASS is claimed.
+- Release branch aed1d2b826290c95c70356b5d8b864b5ef382be4 is installed per authenticated PIPELINE_STATUS #602; updater is enabled and UP_TO_DATE. This is not deployment of #2372. Redmi acceptance for the JEPA feature remains REDMI_UNVERIFIED.
+
+### Research-to-code and next step
+
+R-080 LATER suggests separating immutable observed transitions from selective action-conditioned readout; JEPA-TTT (arXiv:2610.00722) is a related persistent predictor/replay result. The current implementation only reads recent same-session T8 history; cross-session partitioned evidence retrieval, delayed-history intervention, multi-cut writer supervision and native model coupling remain future hypotheses, not implemented features.
+
+**Next:** poll exact 64ae877 workflows; fix only measured failures; have QA rebind the lifecycle chain bottom-up; obtain Boss review. Once that chain is green, measure correct vs omitted vs shuffled vs hypothetical-only history under disjoint sessions/sources and matched replay steps, then integrate on the current Boss base. Keep the candidate DRAFT, all production learning/receiver gates OFF, and the installed models/weights untouched.
