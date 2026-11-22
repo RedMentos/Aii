@@ -4,12 +4,11 @@ Per region (task family, domain, skill) the tracker keeps a window of prediction
 Learning progress LP = mean(older half) - mean(newer half): positive when V13 is getting
 better there. Intrinsic value = max(0, LP) + novelty bonus for little-visited regions, so
 it is drawn to where it learns, not to noise (unlearnable regions have LP≈0) and not to
-what it already knows (error≈0, LP≈0). choose() picks a practice target; the Age budget
-exploration_rate (0 at Age 0) and the right active_info_search bound what it may do on
-its own. Blocked regions (user/hard rules) are never chosen.
+what it already knows (error≈0, LP≈0). choose() picks a practice target; the developmental active_info_search right and
+its graded exploration allowance bound self-directed practice, not physical compute. Blocked regions (user/hard rules) are never chosen.
 """
 import random
-from .base import StateBox,age_allows,budget,clamp01
+from .base import StateBox,age_allows,learning_limit,clamp01
 
 KEY='G5_CURIOSITY';REVISION='g5-curiosity-v1'
 WINDOW=32;NOVELTY=.2;MAX_REGIONS=256
@@ -51,7 +50,7 @@ class Curiosity:
         if not vals:return None
         if origin!='USER':
             if not age_allows(self.age,'active_info_search',origin):return None
-            if self.rng.random()>=budget(self.age,'exploration_rate',0.):return None
+            if self.rng.random()>=learning_limit(self.age,'exploration_rate',0.,capability='tool'):return None
         return max(vals,key=lambda k:(vals[k]['intrinsic'],k))
     def modulators(self,region):
         """Typed Layer-6 signals for the learning fabric; never a global reward."""
@@ -62,4 +61,4 @@ class Curiosity:
         vals=self.values()
         top=sorted(vals.items(),key=lambda kv:-kv[1]['intrinsic'])[:8]
         return {'revision':REVISION,'regions':len(vals),'top':dict(top),'blocked':self.box.load()[0]['blocked'],
-                'autonomous':age_allows(self.age,'active_info_search','SELF') and budget(self.age,'exploration_rate',0.)>0}
+                'autonomous':age_allows(self.age,'active_info_search','SELF') and learning_limit(self.age,'exploration_rate',0.,capability='tool')>0}
