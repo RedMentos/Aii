@@ -55,6 +55,7 @@ public final class MainActivity extends Activity {
     private void refresh() {
         try {
             boolean enabled = CompanionProvider.isEnabled(this);
+            SharedPreferences prefs = getSharedPreferences(CompanionProvider.PREFS, MODE_PRIVATE);
             String paired = prefs.getString("paired_package", "not paired");
             String fingerprint = prefs.getString("paired_cert_sha256", "—");
             JSONObject key = signer.publicKeyInfo();
