@@ -340,10 +340,10 @@
       "proof_environment": "LOCAL_LINUX_ISOLATED_MODULE_7_PASS_EXACT_GIT_BLOBS; GITHUB_CI_RAW_EAR_64_PASS_PY3.13_3.14; GITHUB_CI_LIBFVAD_8_PLUS_13_NATIVE_PASS; DEPLOY_INTEGRITY_PASS; STAGED_INTEGRATED_FAIL_CORE_PIN; FULL_LOCAL_AII_CHECKOUT_BLOCKED_DNS; REDMI_UNVERIFIED_NO_LIVE_RECEIPT",
       "next_step": "Core applies the guard-generation fix clarified in #2288 comments 7072186155 and corrected Perception follow-up 7072323336: capture guard_semantic_sha and guard_local_error_pin immediately after control_guard.apply_sources(), validate they match, then after the later Store rebind rebind from guard_local_error_pin to final_semantic_sha. Rerun exact staged/integrated and dependent workflows. Perception then rebases #2293 onto the verified head and adds a real staged Runtime audio-only E2E; coordinate Android caller wiring with Core/QA.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T02:37:05+01:00",
+      "last_checkpoint": "2026-11-22T02:40:15+01:00",
       "latest_candidate_pr": {
         "pr": 2293,
-        "head_sha": "6444c2196b5350d25175d048859942a01760f8e0",
+        "head_sha": "4f3d28982b376445b7846509248097b11c90593b",
         "base_sha": "f0d3c848dfb1d65e282f065233adbe3c9205e439",
         "ci": "CODE_TEST_HEAD_e85b7398; RAW_EAR_FASTPATH_44972070097_PASS_3.13_3.14_64_TESTS; VAD_LIBFVAD_44972070081_PASS_3.13_3.14_8_TESTS_AND_13_NATIVE; DEPLOY_INTEGRITY_44972070113_PASS; STAGED_INTEGRATED_44972070090_FAIL_LOCAL_ERROR_PRE_REBIND; MIGRATION_44972070092_FAIL_PARTIAL; LAB_AGE_WEBVIEW_44972070087_FAIL; OWNER_READ_44972070168_FAIL",
         "tested_code_sha": "e85b7398b1fce84423583abf01e1389507612818"
