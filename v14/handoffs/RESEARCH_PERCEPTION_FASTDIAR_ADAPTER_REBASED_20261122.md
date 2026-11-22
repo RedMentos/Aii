@@ -125,3 +125,10 @@ LOCAL_LINUX CPython 3.13.5 isolated hash-binding helper: 5/5 PASS (matching dige
 - Core candidate PR #2370 run `45077837234` fails on both Python 3.13 and 3.14: `test_arithmetic_world_source_transition_survives_restart` reads `calculate 8/4` after restart instead of the exact original `What is 8/4?`. This breaks exact source restoration.
 - Core candidate run `45077837776`: integrated-regression subjob PASS, staged-runtime FAIL. `test_same_turn_body_delivery_qa.py` reports missing `v13.native_turn_budget.time` and C3 reserve 16.5 s instead of expected 26.0 s.
 - Same-turn consumer run `45077837118` reproduces the same two scheduler failures on Python 3.13 and 3.14. These are Core-owned blockers independent of Teacher Ear; they were reported on #2370 and #1984. No release or device acceptance can be inferred from the passing integrated-regression subjob.
+
+
+## Final code/test checkpoint for this run — 2026-11-22
+
+- Added a finality-mismatch regression test after the earlier handoff. The exact code/test checkpoint is commit `90781ed7f8f200eccaafbcf5ad1dcb0526c56be4`; eight new Teacher Ear repository tests now cover source/finality/consent, C3 admission, transcript non-persistence and bounded summaries.
+- Local isolated helper suite remains 8/8 PASS on CPython 3.13.5 / pytest 9.0.2. The repository integration tests have not been run locally because the full checkout is unavailable. The GitHub API shows no completed workflow run on this exact code/test commit; earlier Perception workflow attempts were cancelled when later documentation commits superseded them. Therefore the PR must remain DRAFT until exact-head CI is run and green.
+- The PR branch is not merged or released. Installed Redmi SHA remains `aed1d2b826290c95c70356b5d8b864b5ef382be4`; no deployment/update request was sent. The latest private owner-read receipts show updater transport is UP_TO_DATE but the product still has ~41.6 s TTFT, 2 generated tokens, B1/B2 TIME_BUDGET and the HEALTH/DIAGNOSTICS Runtime-state disagreement. The new Teacher Ear path remains `REDMI_UNVERIFIED`.
