@@ -713,7 +713,7 @@ def _persist_audio_packet_under_consent_lease(runtime, audio_packet, *, lease_ac
         )
 
 
-def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
+def _consume_pcm16_voice_window_impl(runtime, pcm, *, sample_rate, start_ms, event_id,
                                generation_id, source_id, consent_receipt,
                                consent_check, finality, consent_guard=None, token_budget=512,
                                temporal_state: TemporalVoiceEvidence | None = None,
