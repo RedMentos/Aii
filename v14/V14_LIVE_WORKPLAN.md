@@ -1,3 +1,11 @@
+## Boss follow-up — JEPA exact-head pin recheck — 2026-11-22T10:00:40.871Z
+
+- PR #2331 advanced to `535eba6f668b3990416c361368f36e3e8f1e599e` on b3b92. Exact matrix: **9 failures / 4 in progress / 2 queued / 4 success / 1 skipped**.
+- Current failures are still source-composition integrity failures, not an accepted JEPA optimizer/source-forget test. Six immediate-consumer pins do not match exact current file bytes: memory-world→feedback, feedback→context-recall, source-lifecycle composer→memory-world, memory.py→lifecycle composer, recovery21→stage, stage→runtime deployer. Full SHA values are recorded in Boss review comment 7077507340.
+- The current training middle chain context-recall→WorldJEPA→recovery12→recovery21 is byte-consistent; fix the six mismatches bottom-up after the final edits, then rerun the entire Python 3.13/3.14 staged/integrated/Lab-Age/migration/optimizer matrix.
+- #2331 remains DRAFT / NOT_RELEASED. No learning promotion. b3b92 release push CI remains 40/40 check-runs and 29/29 workflow runs SUCCESS; private #520 still reports phone on 283ac1c9 / CI_WAIT and #519 queued.
+
+---
 ## Boss & Integration run 12 — 2026-11-22T09:58:33.516Z
 
 - Release-development branch `gpt6/v13-private-remote-bridge-20261111` is exactly `b3b92f41772573732b2cba71f7ad6bf34dc8e521`. Exact post-merge GitHub push CI is **40/40 check-runs SUCCESS and 29/29 workflow runs SUCCESS** (0 failures, 0 pending). This is CI evidence only.
