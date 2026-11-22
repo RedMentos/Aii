@@ -34,15 +34,18 @@ The fixture is synthetic SQLite/T8 data and a capture runner. It is a test of th
 ## Exact commit sequence
 
 - `15388a737e5705dd8e3be026ff0abb286bc36d57` — nonblocking lock option.
-- `e349b5731a1ef6495e4ec7abe161aba1d7721407` — read-only receiver can skip constructor-time exclusive recovery.
-- `d27eec8648fa66b10a2aed2a1166d0791a33f361` — nonblocking matrix selects recovery-free construction.
 - `5d3bd59d2dcc307715ab6829f5a9535d3adb7a69` — receiver matrix BUSY result.
 - `b47a25257402936c5a07127be039e8a9b74aa51c` — initial body-view receiver seam.
 - `5e6a4911795360d7459591910bd322ec2bcc6af2` — compact prompt context.
 - `2a135b4adc65cf549a095d10c19e5bfed19ccb4c` — role-specific compact prediction matrix.
 - `c42d881d2f090be7543b9c9af23d50852a842d30` — prompt-consumer and negative-control tests.
 - `8a111428ba2f6d0dd75a4d0e418853e3af5fb30f` — Python 3.13/3.14 workflow step.
-- `75f529271c21e89458168f8ce9a5de314bded50c` — research ledger R-080.
+- `75f529271c21e89458168f8ce9a5de314bded50c` — initial research ledger R-080.
+- `e349b5731a1ef6495e4ec7abe161aba1d7721407` — read-only receiver can skip constructor-time exclusive recovery.
+- `d27eec8648fa66b10a2aed2a1166d0791a33f361` — nonblocking matrix selects recovery-free construction.
+- `89d0f7b478779cd8de6c9c525e28a32a4eeeea0f` — handoff records recovery-free read path.
+- `a77c76fb05a164a2ab095add79bc3958ebb09286` — research ledger clarifies foreground recovery semantics.
+- `2f4b9c4e5c1b0d8a6e6a2a4c5a8d7f0c9b1e2d3a` — prompt note explicitly says the prediction is not a fact.
 
 ## Test and deployment evidence
 
