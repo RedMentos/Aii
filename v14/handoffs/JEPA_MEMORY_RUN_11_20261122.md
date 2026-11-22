@@ -7,7 +7,7 @@
 - PR: [#2311 — persistent T8 → WorldJEPA/EMA/replay loop](https://github.com/RedMentos/Aii/pull/2311), still DRAFT / NOT_RELEASED.
 - Base: `boss/v14-recall-store-pin-rebind-20261122` at `1105ab56dae6604d927fc4ea868121000010fb93`.
 - Code-bearing checkpoint: `f206be8cb6c87cfcfb69a5d3957d5675a747c135`.
-- Research-ledger checkpoint: `3b618985840516bca4e4e5439f33febab8ada42c`; latest branch head after adding Python 3.14 end-to-end coverage: `d108e14e6bd766b5e25f2f981f9edfd87691b4e8`.
+- Research-ledger checkpoint: `3b618985840516bca4e4e5439f33febab8ada42c`; latest branch head after adding Python 3.14 end-to-end coverage and this handoff refresh: `1ef9b54edc27a460c4c6a9f7cfba62a3c5aff334`.
 - No master architecture edit, no V13 historical source edit, no model/weight download or swap.
 
 ## Implemented code
@@ -36,7 +36,7 @@
 - **CI / earlier code checkpoint `4c8957c7c5896fc452b5c67623777ad8921f0f1c`:** incremental WorldJEPA workflow PASS, 27 tests in 5.32 s. Important: this workflow command did not yet include the new drift tests, so that PASS is not evidence for the added cases.
 - **CI / same earlier checkpoint:** JEPA Python 3.14 staged-runtime and Lab-Age stage both FAIL because the parent recovery builder still pinned the pre-update integrated JEPA builder SHA. The full pin cascade was then corrected bottom-up.
 - **CI / code checkpoint `f206be8cb6c87cfcfb69a5d3957d5675a747c135`:** 13 exact-head workflows were created, including incremental JEPA and Python 3.14 staged resume. At the latest poll they were still queued; no current-head test result is claimed.
-- Added a Python 3.14 CI step in `.github/workflows/v14-jepa-training-resume-py314.yml` to execute the actual Store-backed T8 runtime port, SleepRuntime postcommit integration, and A→B→A replay/rollback test modules. This closes the previous workflow-selection gap; it is not a test result. Exact-head workflow run `44990343726` on branch head `d108e14e6bd766b5e25f2f981f9edfd87691b4e8` was queued at the latest poll.
+- Added a Python 3.14 CI step in `.github/workflows/v14-jepa-training-resume-py314.yml` to execute the actual Store-backed T8 runtime port, SleepRuntime postcommit integration, and A→B→A replay/rollback test modules. This closes the previous workflow-selection gap; it is not a test result. Exact-head workflow run `44990343726` was created on the preceding code/workflow head `d108e14e6bd766b5e25f2f981f9edfd87691b4e8` and remained queued at the latest poll; the handoff refresh is docs-only.
 - **LOCAL_LINUX:** BLOCKED. Container has Python 3.13.5 but no Aii checkout; `/mnt/data`, `/workspace` and `/home` contain no repository `.git`; GitHub DNS lookup returns no address. No local repository test was run.
 - **TERMUX/REDMI:** REDMI_UNVERIFIED. No connected authorized handset test was performed.
 
