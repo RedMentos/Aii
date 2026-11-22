@@ -1,0 +1,139 @@
+name: V13 pinned real-master Body-JEPA adapter gradient compatibility
+on:
+  push:
+    branches: [codex/v13-bodyjepa-350m-gradient-native-20261030-auto11o]
+    paths:
+      - '.github/workflows/v13-bodyjepa-350m-gradient-native-20261030.yml'
+      - 'v13/code/scripts/bodyjepa_real_master_gradient_20261030.py'
+      - 'v13/code/tests/test_bodyjepa_real_master_gradient_20261030.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bodyjepa-350m-gradient-native-serial-20261030
+  cancel-in-progress: false
+jobs:
+  real-master-gradient:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      PYTHONNOUSERSITE: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Run source-bound synthetic preflight and one serial real-master gradient step
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-bodyjepa-350m-gradient"
+          w="$RUNNER_TEMP/v13-bodyjepa-350m-work"
+          mkdir -p "$e" "$w"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md > "$e/CANON_BLOB.txt"
+          git hash-object v13/code/v13/body_jepa.py > "$e/BODYJEPA_BLOB.txt"
+          git hash-object v13/code/v13/lora_trainer.py > "$e/LORA_BLOB.txt"
+          test "$(cat "$e/CANON_BLOB.txt")" = 218464b12a2d27d92524c751922fa8e1c3fb0ea7 &&
+          test "$(cat "$e/BODYJEPA_BLOB.txt")" = be022258cd46cc11e460dd7438563c0d0cc4a0eb &&
+          test "$(cat "$e/LORA_BLOB.txt")" = 49a752879ae5d19391963742a0f042e740edb2cc
+          echo "$?" > "$e/SOURCE_EXIT.txt"
+          python3 -m venv "$w/venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$w/venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2               'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$e/TORCH_RAW.log" 2>&1
+            echo "$?" > "$e/TORCH_EXIT.txt"
+          else echo SKIPPED > "$e/TORCH_EXIT.txt"; fi
+          if [ "$(cat "$e/TORCH_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --no-input --disable-pip-version-check --timeout 90 --retries 2               'numpy==2.2.6' 'transformers==5.20.2' 'tokenizers==0.23.1'               'safetensors==0.8.0' 'peft==0.21.2' 'huggingface_hub>=1.31.0,<2.0'               > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+            "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+            "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          else echo SKIPPED > "$e/DEPS_EXIT.txt"; echo SKIPPED > "$e/PIP_CHECK_EXIT.txt"; fi
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$e/PIP_CHECK_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v               tests.test_bodyjepa_real_master_gradient_20261030               tests.test_body_jepa tests.test_bodyjepa_integer_permutation_20261030)               > "$e/SOFTWARE_RAW.log" 2>&1
+            echo "$?" > "$e/SOFTWARE_EXIT.txt"
+            "$py" -m py_compile v13/code/scripts/bodyjepa_real_master_gradient_20261030.py               > "$e/COMPILE_RAW.log" 2>&1
+            echo "$?" > "$e/COMPILE_EXIT.txt"
+          else
+            echo SKIPPED > "$e/SOFTWARE_EXIT.txt"
+            echo SKIPPED > "$e/COMPILE_EXIT.txt"
+          fi
+          if [ "$(cat "$e/SOURCE_EXIT.txt")" = 0 ] && [ "$(cat "$e/SOFTWARE_EXIT.txt")" = 0 ]; then
+            MASTER="$w/master" "$py" - <<'PY' > "$e/DOWNLOAD_RAW.log" 2>&1
+          import os
+          from huggingface_hub import snapshot_download
+          snapshot_download(repo_id='LiquidAI/LFM2.5-350M',
+              revision='120bf032c36dd1273de754669da040dba7ad4982',
+              local_dir=os.environ['MASTER'],
+              allow_patterns=['*.json','*.jinja','*.safetensors','LICENSE','README.md'])
+          PY
+            echo "$?" > "$e/DOWNLOAD_EXIT.txt"
+          else echo SKIPPED > "$e/DOWNLOAD_EXIT.txt"; fi
+          if [ "$(cat "$e/DOWNLOAD_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:scripts "$py" - "$w/master" <<'PY'
+          import sys
+          from scripts.lp3_real_master_smoke import verify_master
+          print("MASTER_SHA256", verify_master(sys.argv[1]))
+          PY
+            ) > "$e/MASTER_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/MASTER_SHA_EXIT.txt"
+            if [ -f "$w/master/LICENSE" ]; then
+              sha256sum "$w/master/LICENSE" > "$e/LICENSE_SHA_RAW.log"
+              echo 0 > "$e/LICENSE_EXIT.txt"
+            else
+              echo "License file absent; do not export a derivative" > "$e/LICENSE_SHA_RAW.log"
+              echo 1 > "$e/LICENSE_EXIT.txt"
+            fi
+          else echo SKIPPED > "$e/MASTER_SHA_EXIT.txt"; echo SKIPPED > "$e/LICENSE_EXIT.txt"; fi
+          if [ "$(cat "$e/MASTER_SHA_EXIT.txt")" = 0 ] && [ "$(cat "$e/LICENSE_EXIT.txt")" = 0 ]; then
+            (cd v13/code && HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=.:scripts               timeout --signal=TERM --kill-after=15s 1200s "$py"               scripts/bodyjepa_real_master_gradient_20261030.py               --master "$w/master" --out "$e/RESULT.json" --execute-native)               > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else echo SKIPPED > "$e/NATIVE_EXIT.txt"; fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py             --base d1898d18b3006f999b38060dd1353c6aac966376 --head HEAD --no-worktree             > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check d1898d18b3006f999b38060dd1353c6aac966376 HEAD             > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Retain original raw evidence including every failed exit
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-bodyjepa-350m-gradient-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-bodyjepa-350m-gradient/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce narrow mechanism verdict; never promote gates
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-bodyjepa-350m-gradient"
+          for stage in SOURCE VENV TORCH DEPS PIP_CHECK SOFTWARE COMPILE DOWNLOAD MASTER_SHA LICENSE NATIVE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "${stage} RED; original raw retained; no gate promotion"
+              tail -50 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          "$RUNNER_TEMP/v13-bodyjepa-350m-work/venv/bin/python" - "$e/RESULT.json" <<'PY'
+          import json,math,sys
+          d=json.load(open(sys.argv[1]))
+          assert d["status"]=="NATIVE_GRADIENT_COMPAT_ONLY"
+          assert d["evidence_class"]=="LINUX_NATIVE_MECHANISM_ONLY"
+          assert d["jepa_weight_runtime"]==0 and d["age_authority"]==0
+          assert d["body_jepa_utility_proven"] is False
+          assert d["redmi_measured"] is False and d["whole_system_complete"] is False
+          m=d["measurements"]
+          assert m["ema_updates"]==1 and m["adapter_step_delta_l2"]>0
+          assert m["own_adapter_gradient_l2"]>0 and m["own_predictor_gradient_l2"]>0
+          assert m["frozen_before_sha256"]==m["frozen_after_sha256"]
+          print("NATIVE_JEPA_GRADIENT_COMPAT_ONLY_NO_UTILITY_OR_AGE_PROMOTION")
+          PY

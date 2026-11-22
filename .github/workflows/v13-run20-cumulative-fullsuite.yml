@@ -1,0 +1,117 @@
+name: V13 Run20 cumulative ContextOS Sleep resource sensor unfiltered full suite
+on:
+  push:
+    branches: [assistant/v13-run20-resource-sensor-finite-20261030-hourly11]
+    paths:
+      - '.github/workflows/v13-run20-cumulative-fullsuite.yml'
+permissions:
+  contents: read
+jobs:
+  unfiltered:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Install isolated pinned dependencies and record entire unfiltered raw
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run20-fullsuite"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          021391e21e6cd9aeafca8ce819be514032ae0e1e v13/code/docs/RUN14W_CROSSORGAN_PREREG_20261030.md
+          597d6ca7528a496c34d1178a6f6156993b457ebb v13/code/tests/test_run14w_context_world_effort_integration.py
+          e2abb957edce797a235febfcf287b947b3621087 v13/code/v13/context_os.py
+          03c87501862eb773f80b3704f1e2b8f81b5cfc75 v13/code/v13/world.py
+          563a6db17c1331f5eaa9f6549502f8afc460ad57 v13/code/v13/effort.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          3a7dfe70007114379929ba5c60ec63660de57191 v13/code/docs/WORLD_MODEL_FIT_ADMISSION_PREREG_RUN14Z_20261030.md
+          697d9ac16bcb532784f6ad1645e57955925325b7 v13/code/tests/test_world_model_fit_admission_run14z.py
+          f5236f201ee90e16dae994d981e5d0ef67357722 v13/code/v13/world_model.py
+          4238cd406cc630ee46b6720bec53da219bc2dece v13/code/docs/CONTEXTOS_CAPABILITY_TYPED_PREREG_RUN16_20261030.md
+          2921b4be177ba213dd8dfdf3ca251be809511635 v13/code/tests/test_contextos_capability_typed_run16.py
+          e052a36d919c4141e20c1303ec74426313e83b35 v13/code/docs/SLEEP_REPLAY_TTL_SELECTION_PREREG_RUN17_20261030.md
+          04e4b8dd7d0f51da1fefba02f70b635918331ae8 v13/code/tests/test_sleep_replay_ttl_run17.py
+          4a3518a50a6f26a0d77ee04928e02ab4b5c048ba v13/code/docs/SLEEP_BATCH_BUDGET_PREREG_RUN18_20261030.md
+          7c2daeaaac8e4da33561f2b44d1df99fd8ee88bc v13/code/tests/test_sleep_batch_budget_run18.py
+          cff2a44d0111fda6d74789ccc3aceac88e77fbbb v13/code/v13/sleep.py
+          748478be2db25f46c6d1438a8bbfd71d62ab767d v13/code/docs/RESOURCE_FINITE_CALIBRATION_PREREG_RUN19_20261030.md
+          da9507c96857fb17c3b85994c81503026c4e8c88 v13/code/tests/test_resource_finite_calibration_run19.py
+          7bd80ab472483183bb04eb2dc83ef59fe5919901 v13/code/v13/resource_modes.py
+          44f7cd3d727b1b9cfdf4d8089bdad0ddb80e88f3 v13/code/docs/RESOURCE_SENSOR_FINITE_PREREG_RUN20_20261030.md
+          1b6f7e59af0c8c0f8579e0561f7bdeec91e4cd06 v13/code/tests/test_resource_sensor_finite_run20.py
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then bad=1; fi
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run20-fullsuite-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run20-fullsuite-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+            "$py" -m pip install --disable-pip-version-check --no-input -q --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1+cpu' > "$e/TORCH_RAW.log" 2>&1
+            echo "$?" > "$e/TORCH_EXIT.txt"
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'transformers==4.44.2' > "$e/TRANSFORMERS_RAW.log" 2>&1
+            echo "$?" > "$e/TRANSFORMERS_EXIT.txt"
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'peft==0.13.2' > "$e/PEFT_RAW.log" 2>&1
+            echo "$?" > "$e/PEFT_EXIT.txt"
+            "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+            "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+          else
+            for stage in DEPS TORCH TRANSFORMERS PEFT PIP_CHECK; do
+              echo 99 > "$e/${stage}_EXIT.txt";echo VENV_RED > "$e/${stage}_RAW.log"
+            done
+          fi
+          if [ "$(cat "$e/PINS_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$e/TORCH_EXIT.txt")" = 0 ] && [ "$(cat "$e/TRANSFORMERS_EXIT.txt")" = 0 ] && [ "$(cat "$e/PEFT_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 20m env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p 'test_*.py') > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else echo SKIPPED_DEPS_RED > "$e/FULL_RAW.log";echo 99 > "$e/FULL_EXIT.txt";fi
+          "$py" -m compileall -q v13/code/v13 v13/code/scripts > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base a35813a2cbf051d9bed004bca5be06fb8c81a079 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check a35813a2cbf051d9bed004bca5be06fb8c81a079 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve complete unfiltered raw including historical failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run20-fullsuite-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run20-fullsuite/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce setup integrity and exact full-suite exit without waiver
+        if: always()
+        run: |
+          set -eu
+          e="$RUNNER_TEMP/v13-run20-fullsuite"
+          for stage in PINS VENV DEPS TORCH TRANSFORMERS PEFT PIP_CHECK COMPILE PRIVACY DIFF; do
+            echo "$stage $(cat "$e/${stage}_EXIT.txt")"
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              tail -80 "$e/${stage}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo "UNFILTERED_FULL_EXIT=$(cat "$e/FULL_EXIT.txt")"
+          if [ "$(cat "$e/FULL_EXIT.txt")" != 0 ]; then
+            tail -80 "$e/FULL_RAW.log" || true
+            exit 1
+          fi
+          echo 'FULL_SOFTWARE_PASS_ONLY; NO_NATIVE_OR_AGE_PROMOTION'

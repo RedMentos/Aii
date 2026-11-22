@@ -1,0 +1,13 @@
+..........................................................s..........................s......................s...........................................................uuu.uuu................uuuuuuuuuu......................................................................................................................uuuuu...............uuuuu..uu..uuuuuuu......................................................JEPA_HOLDOUT {"after": 0.9072268538084269, "before": 0.9568309267662847, "delta": -0.04960407295785774, "first": 0.9568309267662847, "holdout_rows": 13, "train_rows": 51}
+single staged integrated regression: 415 passed, 3 skipped, 7 warnings, 58 subtests passed in 87.35s (0:01:27)
+.
+=============================== warnings summary ===============================
+../../../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
+  The CallSpec2 alias will be removed in pytest 10.
+  Update imports to use CallSpec instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed
+    from _pytest.python import CallSpec2
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 1 warning in 89.12s (0:01:29)

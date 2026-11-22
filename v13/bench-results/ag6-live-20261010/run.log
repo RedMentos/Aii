@@ -1,0 +1,4 @@
+trainer {"choice": "lora", "active": "lora", "requirements": {"master": "/tmp/v13-master/C3_350M", "master_ok": true, "arch_match": true, "torch": true, "torch_sparse": true, "c3_gguf": "/tmp/v13-bench/home/models/language/LFM2.5-350M-QAD-Q4_0.gguf", "runner": "/tmp/v13-bench/home/bin/llama-server", "runner_ok": true}, "served_live": true}
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+{"status": "GATE_FAIL", "checks": {"drift": false, "forgetting": false, "general_retention": false, "learned": true, "unseen_retention": true}, "seconds": 256.9}

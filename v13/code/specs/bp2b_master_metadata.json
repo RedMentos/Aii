@@ -1,0 +1,47 @@
+{
+  "schema": "v13-bp2b-master-pin-v1",
+  "model_id": "LiquidAI/LFM2.5-1.2B-Instruct",
+  "revision": "8c1348a4aac046a3a5d7698e7fcaaa8a3b7d9cdf",
+  "license_id": "LFM Open License 1.0",
+  "model_safetensors_sha256": "1ba63d9adb03ae43581db0e136e4416febe0441aff7296397bd455fb6017f73a",
+  "model_weights_sha256_verified_locally": false,
+  "metadata": {
+    "config.json": {
+      "sha256": "15d6157fb6df3f8272e2fe90e18f57727ccf02a125c94469198b0f3281510185",
+      "size": 1224
+    },
+    "generation_config.json": {
+      "sha256": "5ffd97da1dec4308543894569662d96e923ed01f7a9d8c7ff5aea7f800738cbd",
+      "size": 132
+    },
+    "tokenizer.json": {
+      "sha256": "df1d8d5ec5d091b460562ffd545e4a5e91d17d4a0db7ebe733be34ed374377bd",
+      "size": 4733389
+    },
+    "tokenizer_config.json": {
+      "sha256": "2a52ec012d3df831ba434b081bef3726a6ee22501f062ad8353c557a0cfa0d01",
+      "size": 92225
+    },
+    "special_tokens_map.json": {
+      "sha256": "742aefe2b7dec496e8caffdba03a75d0c1a9925d53bd3f3e0d388c96b591b6f4",
+      "size": 434
+    },
+    "chat_template.jinja": {
+      "sha256": "f05bf4b967dc993bdc7a2fe6e43759ee218eb0eb340d68b063e1c4f8ad148176",
+      "size": 1783
+    },
+    "LICENSE": {
+      "sha256": "5188f2b355da20647257a3156db5834c794e5fb5e6d8dc4d4cdbb3180e75b85b",
+      "size": 10596
+    }
+  },
+  "evidence": {
+    "github_actions_run": 40502634640,
+    "head": "aeea42a2a6caccd56ddd6522dc0e8b70fad8857e",
+    "raw_artifact_id": 12732574521,
+    "raw_zip_sha256": "b735e8c7718b97a275aec1eb44a74b23c9d71d5edffea65edd7fce2ec0116820",
+    "seven_files_sha_verified": true,
+    "weights_not_downloaded": true,
+    "private_backup": "/V13-Checkpoints/2026-10-27/BP2b-HF-Metadata/bp2b-hf-metadata-40502634640.zip"
+  }
+}

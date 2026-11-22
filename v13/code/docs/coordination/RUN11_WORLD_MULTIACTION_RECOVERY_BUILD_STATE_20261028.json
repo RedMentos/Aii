@@ -1,0 +1,66 @@
+{
+  "schema": "v13.review_scoped_build_state.v1",
+  "date": "2026-10-28",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run11-world-multiaction-recovery-20261028",
+  "pr": 863,
+  "parent_pr": 861,
+  "parent_head": "1f8519716444e2c5121a6c3be9adc0eb7bc87346",
+  "prereg_commit": "3688f1eadc51aafd34cf378bdce35f093918cf7b",
+  "source_blob": "7f9b266828deace320adce86304aa22fdb55de18",
+  "test_blob": "d5dfef220145a85392861868b2ad97d4f659c8a8",
+  "red": {
+    "run": 40644968809,
+    "source_sha": "189187c5c91cb849f4028340515aec68e7c06c97",
+    "focused_total": 13,
+    "focused_failed": 3,
+    "zip_sha256": "f35395f8bdd2e21476cc22171e1fed04b8b00c8e62aa613c1d8bcd3f5c2deea9",
+    "private_library_readback": true
+  },
+  "intermediate_pin_mismatch": {
+    "run": 40645130808,
+    "zip_sha256": "d927cce0fdbaa0c16a76e448be74a667ae85f2db7a5b39ecf39849fda6d78ea6",
+    "cause": "workflow expected original world blob while code patch already committed",
+    "retained": true
+  },
+  "green": {
+    "run": 40645139501,
+    "source_sha": "e7c99eb95c90ac6538c94a7d2611fc5d1b72cae5",
+    "focused_pass": 13,
+    "full_pass": 2223,
+    "full_skipped": 1,
+    "artifact_id": 12797440631,
+    "zip_sha256": "b843e8aa4b846a378e47aa094201dbcd699931b9f6a80a51ad7daa9b1291dde2",
+    "internal_hashes": 16,
+    "private_library_readback": true,
+    "stage_exits": {
+      "BLOBS": 0,
+      "INSTALL": 0,
+      "FOCUSED": 0,
+      "FULL": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    }
+  },
+  "evidence_kind": "LINUX_SOFTWARE_SYNTHETIC_ONLY",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3_heldout": "FAIL",
+    "jepa_weight": 0,
+    "age0": "RECORD_ONLY",
+    "phone_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Reconcile historical unmerged PR #422 receipt identity and atomic packet transaction semantics with current #861 chain before production integration.",
+    "Separate F3 SelfState session-local unfinished action candidate #864 pending CI.",
+    "No Redmi or native model execution in this package."
+  ],
+  "next_command": "git fetch origin assistant/v13-run11-world-multiaction-recovery-20261028 && cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_world_multiaction_recovery_20261028 tests.test_world_state tests.test_world_timing_invalid_sample_20261028",
+  "prerequisites": "Independent review and merged-chain full-suite/privacy proof; preserve prior RED and frozen native gates.",
+  "platform_remaining_budget": "UNKNOWN"
+}

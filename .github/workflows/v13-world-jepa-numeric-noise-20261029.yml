@@ -1,0 +1,53 @@
+name: V13 World-JEPA finite numeric noise software evidence
+on:
+  push:
+    branches: [codex/v13-worldjepa-numeric-noise-20261029-auto10p]
+    paths: ['.github/workflows/v13-world-jepa-numeric-noise-20261029.yml', 'v13/code/v13/world_jepa.py', 'v13/code/tests/test_world_jepa_collapse_rank_20261029.py', 'v13/code/tests/test_world_jepa_numeric_noise_20261029.py']
+permissions:
+  contents: read
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Run preregistered NumPy collapse controls with closed raw
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/world-jepa-numeric-noise"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/v13/world_jepa.py v13/code/tests/test_world_jepa_collapse_rank_20261029.py v13/code/tests/test_world_jepa_numeric_noise_20261029.py > "$e/SOURCE_BLOBS.txt"
+          python3 -m venv "$RUNNER_TEMP/venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          "$RUNNER_TEMP/venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          (cd v13/code && PYTHONPATH=.:tests:scripts "$RUNNER_TEMP/venv/bin/python" -m unittest -v tests.test_world_jepa_collapse_rank_20261029 tests.test_world_jepa_numeric_noise_20261029 tests.test_world_jepa_fit_input_guard tests.test_world_jepa_coverage_integrity tests.test_world_jepa_stale_fit_order tests.test_world_jepa_atomic_fit tests.test_run46_world_jepa_zero_step_evidence) > "$e/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$e/FOCUSED_EXIT.txt"
+          "$RUNNER_TEMP/venv/bin/python" -m compileall -q v13/code/v13/world_jepa.py v13/code/tests/test_world_jepa_collapse_rank_20261029.py v13/code/tests/test_world_jepa_numeric_noise_20261029.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base ec7f4e42c1af8bc081e839a03588661678eb0a12 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check ec7f4e42c1af8bc081e839a03588661678eb0a12 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve RED and GREEN raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: world-jepa-numeric-noise-${{ github.sha }}
+          path: ${{ runner.temp }}/world-jepa-numeric-noise/
+          if-no-files-found: error
+      - name: Enforce checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/world-jepa-numeric-noise"
+          for n in VENV DEPS FOCUSED COMPILE PRIVACY DIFF; do
+            test "$(cat "$e/${n}_EXIT.txt")" = 0 || { echo "$n failed"; exit 1; }
+          done

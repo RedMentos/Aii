@@ -1,0 +1,182 @@
+[
+  {
+    "text": "Items: a -5, b 2. Give the correct total.",
+    "values": [
+      {
+        "name": "a",
+        "number": 5
+      },
+      {
+        "name": "b",
+        "number": 2
+      }
+    ],
+    "baseline": {
+      "tokens": [
+        "5",
+        "2"
+      ],
+      "compute": [
+        7,
+        "a 5 + b 2"
+      ]
+    },
+    "candidate": {
+      "tokens": [
+        "-5",
+        "2"
+      ],
+      "error": "number not in the user text"
+    }
+  },
+  {
+    "text": "Items: a -5, b 2. Give the correct total.",
+    "values": [
+      {
+        "name": "a",
+        "number": -5
+      },
+      {
+        "name": "b",
+        "number": 2
+      }
+    ],
+    "baseline": {
+      "tokens": [
+        "5",
+        "2"
+      ],
+      "error": "number not in the user text"
+    },
+    "candidate": {
+      "tokens": [
+        "-5",
+        "2"
+      ],
+      "compute": [
+        -3,
+        "a -5 + b 2"
+      ]
+    }
+  },
+  {
+    "text": "Items: a −5, b 2. Give the correct total.",
+    "values": [
+      {
+        "name": "a",
+        "number": 5
+      },
+      {
+        "name": "b",
+        "number": 2
+      }
+    ],
+    "baseline": {
+      "tokens": [
+        "5",
+        "2"
+      ],
+      "compute": [
+        7,
+        "a 5 + b 2"
+      ]
+    },
+    "candidate": {
+      "tokens": [
+        "−5",
+        "2"
+      ],
+      "error": "number not in the user text"
+    }
+  },
+  {
+    "text": "Items: a −5, b 2. Give the correct total.",
+    "values": [
+      {
+        "name": "a",
+        "number": -5
+      },
+      {
+        "name": "b",
+        "number": 2
+      }
+    ],
+    "baseline": {
+      "tokens": [
+        "5",
+        "2"
+      ],
+      "error": "number not in the user text"
+    },
+    "candidate": {
+      "tokens": [
+        "−5",
+        "2"
+      ],
+      "compute": [
+        -3,
+        "a -5 + b 2"
+      ]
+    }
+  },
+  {
+    "text": "Items: a +5, b 2. Give the correct total.",
+    "values": [
+      {
+        "name": "a",
+        "number": 5
+      },
+      {
+        "name": "b",
+        "number": 2
+      }
+    ],
+    "baseline": {
+      "tokens": [
+        "5",
+        "2"
+      ],
+      "compute": [
+        7,
+        "a 5 + b 2"
+      ]
+    },
+    "candidate": {
+      "tokens": [
+        "+5",
+        "2"
+      ],
+      "compute": [
+        7,
+        "a 5 + b 2"
+      ]
+    }
+  },
+  {
+    "text": "Items: a +5, b 2. Give the correct total.",
+    "values": [
+      {
+        "name": "a",
+        "number": -5
+      },
+      {
+        "name": "b",
+        "number": 2
+      }
+    ],
+    "baseline": {
+      "tokens": [
+        "5",
+        "2"
+      ],
+      "error": "number not in the user text"
+    },
+    "candidate": {
+      "tokens": [
+        "+5",
+        "2"
+      ],
+      "error": "number not in the user text"
+    }
+  }
+]

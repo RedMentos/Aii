@@ -1,0 +1,2252 @@
+{
+"Cook the pasta according to the recipe.": {
+"translate_de": "Kochen Sie die Pasta nach der Anleitung.",
+"question": "Does the recipe say to cook the pasta?",
+"negate": "Cook pasta without the recipe.",
+"summarize": "Cook pasta"
+},
+"Add salt, pepper, and herbs to the sauce.": {
+"translate_de": "Salz, Pfeffer und Kräuter in die Sauce geben.",
+"question": "Do you add salt, pepper, and herbs to the sauce?",
+"negate": "Remove salt, pepper, and herbs from the sauce.",
+"summarize": "Add salt, pepper, herbs."
+},
+"Toss the pasta into the sauce for a balanced flavor.": {
+"translate_de": "Tasse Pasta in die Sauce geben, um einen ausgewogenen Geschmack zu erzielen.",
+"question": "Does the pasta taste balanced?",
+"negate": "Toss pasta out of the sauce for a less balanced flavor.",
+"summarize": "Toss pasta in sauce."
+},
+"Let the pasta cook until it's al dente.": {
+"translate_de": "Lassen Sie die Pasta kochen, bis sie al dente ist.",
+"question": "Is the pasta al dente?",
+"negate": "Let pasta not be al dente.",
+"summarize": "Let it cook until al dente."
+},
+"Add marinara sauce to the pasta for extra richness.": {
+"translate_de": "Die Marinara-Sauce in die Pasta geben, um den Geschmack zu verstärken.",
+"question": "Does marinara sauce go into the pasta?",
+"negate": "Avoid marinara sauce on pasta.",
+"summarize": "Add marinara to pasta."
+},
+"Use a sharp knife to slice the pasta thinly.": {
+"translate_de": "Ein scharfer Messer schneidet die Pasta dünn.",
+"question": "Can you slice the pasta thinly with a sharp knife?",
+"negate": "Use a dull knife to slice the pasta thinly.",
+"summarize": "Use sharp knife thinly."
+},
+"Season with garlic powder and lemon slices.": {
+"translate_de": "Zeit mit Garlicpaprika und Zitronenscheiben.",
+"question": "Does it have garlic powder and lemon slices?",
+"negate": "Season without garlic powder and lemon slices.",
+"summarize": "Garlic powder + lemon slices"
+},
+"Make the sauce ahead and reheat in the oven.": {
+"translate_de": "Die Sauce sollte vorher gemacht und im Ofen erhitzt werden.",
+"question": "Do you make the sauce ahead and reheat in the oven?",
+"negate": "Do not make the sauce ahead and reheat in the oven.",
+"summarize": "Make ahead, reheat in oven"
+},
+"Serve with fresh vegetables for a complete meal.": {
+"translate_de": "Serviere mit frischen Gemüse für ein vollständiges Essen.",
+"question": "Does serving fresh vegetables make a complete meal?",
+"negate": "Not serve fresh vegetables for a complete meal.",
+"summarize": "Fresh veggies make a meal."
+},
+"Stir in a dash of grated Parmesan before serving.": {
+"translate_de": "Stir in einen Schuss grünes Parmesan vor dem Servieren.",
+"question": "Does it taste good with grated Parmesan?",
+"negate": "Stir in a dash of bland Parmesan before serving.",
+"summarize": "Grated Parmesan before serving."
+},
+"Use fresh pasta for a delicious meal.": {
+"translate_de": "Frische Pasta für ein leckeres Essen.",
+"question": "Does fresh pasta make a delicious meal?",
+"negate": "Not fresh pasta for a meal.",
+"summarize": "Fresh pasta tastes great."
+},
+"Stir a bowl of pasta for creamy texture.": {
+"translate_de": "Stir einen Topf mit Pasta für eine cremigste Textur.",
+"question": "Does it have a creamy texture?",
+"negate": "Stir a bowl of pasta without creamy texture.",
+"summarize": "Creamy pasta bowl"
+},
+"Cook the pasta in a large pot.": {
+"translate_de": "Kochen Sie die Pasta in einem großen Topf.",
+"question": "Does it need to be cooked in a large pot?",
+"negate": "Cook pasta in a small pot.",
+"summarize": "Cook pasta."
+},
+"Add garlic and herbs to a bowl of pasta.": {
+"translate_de": "Garen und Kräuter in einen Topf geben.",
+"question": "Does garlic and herbs go well with pasta?",
+"negate": "Avoid garlic and herbs in a bowl of pasta.",
+"summarize": "Garlic and herbs in pasta bowl"
+},
+"Mix all ingredients together for a simple pasta recipe.": {
+"translate_de": "Mischen Sie alle Zutaten zusammen für eine einfache Pasta-Rezept.",
+"question": "Does it mix all ingredients together for a simple pasta recipe?",
+"negate": "Not all ingredients together make a simple pasta recipe.",
+"summarize": "Mix ingredients for pasta."
+},
+"Follow a recipe for authentic pasta.": {
+"translate_de": "Folge eine Rezeptur für authentische Pasta.",
+"question": "Does it follow a recipe for authentic pasta?",
+"negate": "Avoid authentic pasta.",
+"summarize": "Authentic pasta"
+},
+"Savor the pasta while it's cooked and warm.": {
+"translate_de": "Genießen Sie die Pasta, während sie gekocht und warm ist.",
+"question": "Does it taste good?",
+"negate": "Don't savor the pasta while it's cold.",
+"summarize": "Savor pasta."
+},
+"Use a sauce for a creamy pasta sauce.": {
+"translate_de": "Eine Sauce für cremige Pasta verwenden.",
+"question": "Does a sauce make a creamy pasta sauce?",
+"negate": "Use a non-creamy pasta sauce.",
+"summarize": "Sauce cream"
+},
+"Add a sprinkle of cheese to the pasta for flavor.": {
+"translate_de": "Süßes Käse auf die Pasta geben!",
+"question": "Does the pasta with cheese have a nice flavor?",
+"negate": "Add a sprinkle of cheese to the pasta for a different flavor.",
+"summarize": "Add cheese to pasta!"
+},
+"Prepare a hearty pasta dish with a personal touch.": {
+"translate_de": "Ein herzhafter Pasta-Dish mit einem persönlichen Touch.",
+"question": "Does it have a personal touch?",
+"negate": "Avoid a hearty pasta dish with a personal touch.",
+"summarize": "Hearty pasta with a personal touch."
+},
+"Cook pasta in a large pot.": {
+"translate_de": "Kochen Sie Pasta in einem großen Topf.",
+"question": "Does it need a lot of water?",
+"negate": "Cook pasta without a large pot.",
+"summarize": "Cook pasta."
+},
+"Add garlic and chicken broth.": {
+"translate_de": "Garlic und Hühnerbrühe hinzufügen.",
+"question": "Do you add garlic and chicken broth?",
+"negate": "Not garlic and chicken broth.",
+"summarize": "Garlic and chicken broth"
+},
+"Season with salt, pepper, and herbs.": {
+"translate_de": "Saison mit Salz, Pfeffer und Kräutern.",
+"question": "Does it have salt, pepper, and herbs?",
+"negate": "Season without salt, pepper, and herbs.",
+"summarize": "Salt, pepper, herbs"
+},
+"Make a sauce with pasta sauce.": {
+"translate_de": "Eine Sauce mit Pasta-Sauce machen.",
+"question": "Does it have pasta sauce?",
+"negate": "Make a dish without pasta sauce.",
+"summarize": "Pasta sauce"
+},
+"The train arrived at the station just in time for the morning rush.": {
+"translate_de": "Der Zug arrived am Bahnhof gerade im Frühstückszeiten.",
+"question": "Does the train arrive at the station just in time for the morning rush?",
+"negate": "The train did not arrive at the station just in time for the morning rush.",
+"summarize": "Arrived on time"
+},
+"Passengers gathered at the departure platform as the train left the city.": {
+"translate_de": "Passagiere haben sich am Bahnsteig versammelt, als der Zug die Stadt verlassen hatte.",
+"question": "Do passengers gather at the departure platform?",
+"negate": "Passengers did not gather at the departure platform as the train left the city.",
+"summarize": "Passengers at departure platform"
+},
+"The conductor announced the route and departure time.": {
+"translate_de": "Der Kapitän hat die Route und den Abfahrtszeit angekündigt.",
+"question": "Does the conductor announce the route and departure time?",
+"negate": "The conductor did not announce the route or departure time.",
+"summarize": "The conductor announced route and time."
+},
+"The station was busy, with luggage and seats being checked in.": {
+"translate_de": "Der Bahnhof war voll, mit Gepäck und Sitzen auf der Straße.",
+"question": "Is the station busy?",
+"negate": "The station was quiet, with luggage and seats unchecked.",
+"summarize": "Busy station"
+},
+"The train’s doors opened, revealing the sleek interior of the carriage.": {
+"translate_de": "Die Türen des Zuges öffneten sich, und das schlanke Innere der Wagen enthüllte sich.",
+"question": "Does the train’s doors open?",
+"negate": "The carriage’s doors closed, revealing the sleek interior.",
+"summarize": "The doors opened."
+},
+"A friendly conductor greeted the travelers, offering assistance.": {
+"translate_de": "Ein freundlicher conductor begrüßte die Reisenden und bot Hilfe an.",
+"question": "Does the conductor offer assistance?",
+"negate": "A helpful conductor offered assistance.",
+"summarize": "Friendly conductor greets."
+},
+"The platform was filled with empty seats as the train approached the station.": {
+"translate_de": "Die Plattform war mit leeren Sitzen gefüllt, als der Zug zur Station kam.",
+"question": "Is the platform full?",
+"negate": "The platform had filled with occupied seats as the train approached the station.",
+"summarize": "Empty seats at station"
+},
+"The station lights dimmed as the train boarded the platform for the day.": {
+"translate_de": "Die Lichter des Bahnhofs wurden gedämpft, als der Zug die Plattform für den Tag betrat.",
+"question": "Does the station lights dim?",
+"negate": "The train boarded the platform without the lights dimmed.",
+"summarize": "Lights dimmed."
+},
+"The train passed through a busy downtown area, with colorful station signs visible.": {
+"translate_de": "Der Zug durchquerte einen belebteten Innenstadtbereich, bei dem farbenfrohe Bahnsignale sichtbar waren.",
+"question": "Does the train pass through a busy downtown area with colorful station signs?",
+"negate": "The train did not pass through a busy downtown area.",
+"summarize": "Busy downtown with colorful signs."
+},
+"The train arrived at the arrival terminal, leaving the station just in front of the gate.": {
+"translate_de": "Der Zug arrived am Eingang, bevor die Station vor der Tür lag.",
+"question": "Does the train arrive at the arrival terminal?",
+"negate": "The station was just ahead of the gate.",
+"summarize": "Arrival terminal, gate"
+},
+"A train leaves the station at 9 AM.": {
+"translate_de": "Ein Zug leaves die Station um 9 Uhr.",
+"question": "Does the train leave at 9 AM?",
+"negate": "A train does not leave the station at 9 AM.",
+"summarize": "9 AM"
+},
+"The train arrives at its destination at 10 AM.": {
+"translate_de": "Der Zug kommt zu seinem Ziel um 10 Uhr.",
+"question": "Does the train arrive at its destination at 10 AM?",
+"negate": "The train does not arrive at its destination at 10 AM.",
+"summarize": "10 AM arrives"
+},
+"The conductor stops at the platform.": {
+"translate_de": "Der Kapitän hält die Plattform ab.",
+"question": "Does the conductor stop at the platform?",
+"negate": "The conductor does not stop at the platform.",
+"summarize": "The conductor stops at the platform."
+},
+"A passenger boards the train.": {
+"translate_de": "Ein Passagier steigt auf den Zug.",
+"question": "Does a passenger board the train?",
+"negate": "A train does not board a passenger.",
+"summarize": "Board"
+},
+"The train runs along a scenic route.": {
+"translate_de": "Der Zug läuft entlang einer malerischen Route.",
+"question": "Does the train run along a scenic route?",
+"negate": "The train does not run along a scenic route.",
+"summarize": "Scenic route"
+},
+"The station doors are opened.": {
+"translate_de": "Die Türen des Bahnhofs öffnen sich.",
+"question": "Is the station door open?",
+"negate": "The station doors are closed.",
+"summarize": "The doors open."
+},
+"The train departs for a new destination.": {
+"translate_de": "Der Zug verlässt für ein neues Ziel.",
+"question": "Does the train depart for a new destination?",
+"negate": "The train does not depart for a new destination.",
+"summarize": "Departs for new destination"
+},
+"The train arrives at the airport.": {
+"translate_de": "Der Zug arrives am Flughafen.",
+"question": "Does the train arrive at the airport?",
+"negate": "The train does not arrive at the airport.",
+"summarize": "Arrives at airport"
+},
+"The first passengers board the train.": {
+"translate_de": "Die ersten Passagiere betreten den Zug.",
+"question": "Does the first passengers board the train?",
+"negate": "The first passengers do not board the train.",
+"summarize": "Board"
+},
+"The train slows down as it nears the coast.": {
+"translate_de": "Der Zug verlangsamt sich, als er sich der Küste nähert.",
+"question": "Does the train slow down as it nears the coast?",
+"negate": "The train speeds up as it approaches the coast.",
+"summarize": "The train slows near the coast."
+},
+"The train arrived at the station with a friendly greeting.": {
+"translate_de": "Der Zug arrived am Bahnhof mit einem freundlichen Gruß.",
+"question": "Did the train arrive at the station?",
+"negate": "The train did not arrive at the station with a friendly greeting.",
+"summarize": "Friendly train"
+},
+"Passengers boarded the train, feeling nervous about the journey.": {
+"translate_de": "Passagiere belegten den Zug, sich vor der Reise unsicher zu fühlend.",
+"question": "Do passengers board the train?",
+"negate": "Passengers did not board the train, feeling calm about the journey.",
+"summarize": "Nervous"
+},
+"The conductor explained the route and schedules to all onboard.": {
+"translate_de": "Der Kapitän hat die Route und die Termine allen Passagieren mitgeteilt.",
+"question": "Does the conductor explain the route and schedules to all onboard?",
+"negate": "The conductor did not explain the route and schedules to all onboard.",
+"summarize": "Conductor explained route/schedules"
+},
+"The train arrived at the destination with a friendly greeting from the driver.": {
+"translate_de": "Der Zug arrived am Zielort mit einem freundlichen Gruß vom Fahrer.",
+"question": "Does the train arrive at the destination with a friendly greeting?",
+"negate": "The train did not arrive at the destination with a friendly greeting from the driver.",
+"summarize": "Driver greets"
+},
+"The field is pitching.": {
+"translate_de": "Der Platz wird geworfen.",
+"question": "Is the field pitching?",
+"negate": "The field is not pitching.",
+"summarize": "The field is pitching."
+},
+"The goalposts stand tall.": {
+"translate_de": "Die Zielhöfe stehen hoch.",
+"question": "Do the goalposts stand tall?",
+"negate": "The goalposts are low.",
+"summarize": "The goalposts stand."
+},
+"A player dribbles across the goal.": {
+"translate_de": "Ein Spieler dribbelt über den Torhüter.",
+"question": "Does the player dribble across the goal?",
+"negate": "A player does not dribble across the goal.",
+"summarize": "Dribble"
+},
+"The whistle blows, signaling the kick.": {
+"translate_de": "Der Pfeifenschlag signalisiert den Schuss.",
+"question": "Does the whistle blow?",
+"negate": "The sound does not signal the kick.",
+"summarize": "The whistle blows."
+},
+"The ball is carried to the end.": {
+"translate_de": "Der Ball wird zum Ende gebracht.",
+"question": "Is the ball carried to the end?",
+"negate": "The ball is not carried to the end.",
+"summarize": "The ball goes."
+},
+"The coach gives a play.": {
+"translate_de": "Der Trainer gibt eine Spiel.",
+"question": "Does the coach give a play?",
+"negate": "The coach does not give a play.",
+"summarize": "Play"
+},
+"A fan cheers for a goal.": {
+"translate_de": "Ein Fan schaut für ein Tor.",
+"question": "Does a fan cheer for a goal?",
+"negate": "A fan does not cheer for a goal.",
+"summarize": "Cheers"
+},
+"The stadium lights illuminate the match.": {
+"translate_de": "Die Stadionleuchten beleuchten den Spiel.",
+"question": "Does the stadium lights illuminate the match?",
+"negate": "The match is not illuminated by the stadium lights.",
+"summarize": "Lights illuminate"
+},
+"A player receives the ball.": {
+"translate_de": "Ein Spieler erhält die Balls.",
+"question": "Does the player receive the ball?",
+"negate": "The ball does not come to the player.",
+"summarize": "A ball"
+},
+"The goalkeeper tracks the shot.": {
+"translate_de": "Der Schützen verfolgt den Schuss.",
+"question": "Does the goalkeeper track the shot?",
+"negate": "The goalkeeper does not track the shot.",
+"summarize": "Tracks shot"
+},
+"Football is played on a field.": {
+"translate_de": "Fußball wird auf einem Feld gespielt.",
+"question": "Is football played on a field?",
+"negate": "Football is not played on a field.",
+"summarize": "Football"
+},
+"The goalposts are elevated for scoring points.": {
+"translate_de": "Die Zielhöhe sind für den Punktestand erhoben.",
+"question": "Do you want to score points?",
+"negate": "The goalposts are lowered for scoring points.",
+"summarize": "Elevated goals."
+},
+"A player scores a touchdown after a kickoff.": {
+"translate_de": "Ein Spieler erzielt einen Touchdown nach einem Kickoff.",
+"question": "Does a player score a touchdown after a kickoff?",
+"negate": "A player does not score a touchdown after a kickoff.",
+"summarize": "T"
+},
+"The league has introduced a new player contract.": {
+"translate_de": "Die Liga hat einen neuen Spielervertrag eingeführt.",
+"question": "Does the league have introduced a new player contract?",
+"negate": "The league has not introduced a new player contract.",
+"summarize": "New contract"
+},
+"The referee stops play at a specific time.": {
+"translate_de": "Der Schiedsrichter beendet das Spiel an einer bestimmten Zeit.",
+"question": "Does the referee stop play at a specific time?",
+"negate": "The referee does not stop play at a specific time.",
+"summarize": "Referee pauses at time."
+},
+"The goalkeeper's vision includes the entire field.": {
+"translate_de": "Der Schützenkönig's Sicht umfasst das gesamte Feld.",
+"question": "Does the goalkeeper's vision include the entire field?",
+"negate": "The goalkeeper's vision does not include the entire field.",
+"summarize": "The goalkeeper sees the whole field."
+},
+"The kickoff is initiated by the goalkeeper.": {
+"translate_de": "Der Start wird von der Verteidigerin gestartet.",
+"question": "Is the kickoff initiated by the goalkeeper?",
+"negate": "The goalkeeper does not initiate the kickoff.",
+"summarize": "Goalkeeper initiates kickoff"
+},
+"A fan celebrates with a handheld game broadcast.": {
+"translate_de": "Ein Fan feiert mit einem Handheld-Game, das über das Fernsehen ausgestrahlt wird.",
+"question": "Does a fan celebrate with a handheld game broadcast?",
+"negate": "A fan does not celebrate with a handheld game broadcast.",
+"summarize": "Handheld game"
+},
+"The match ends after a dramatic penalty shootout.": {
+"translate_de": "Der Spielstand endet nach einem dramatischen Strafverstoß-Schiebelfinale.",
+"question": "Does the match end after a dramatic penalty shootout?",
+"negate": "The match does not end after a dramatic penalty shootout.",
+"summarize": "Penalty shootout ends"
+},
+"The goal line is a moving target that changes every match.": {
+"translate_de": "Die Ziellinie ist ein bewegliches Ziel, das jede Spieländerung ändert.",
+"question": "Is the goal line a moving target?",
+"negate": "The goal line does not change every match.",
+"summarize": "Moving target"
+},
+"The quarterback was praised for his leadership.": {
+"translate_de": "Der Quarterback wurde für seine Führung gelobt.",
+"question": "Does the quarterback have praised him?",
+"negate": "The quarterback was not praised for his leadership.",
+"summarize": "Leadership praised"
+},
+"The team won the championship due to their strategy.": {
+"translate_de": "Der Team gewann den Titel durch ihre Strategie.",
+"question": "Does the team's strategy lead to the championship win?",
+"negate": "The team did not win the championship due to their strategy.",
+"summarize": "Strategy won"
+},
+"The player scored a touchdown in the final minutes.": {
+"translate_de": "Der Spieler erzielte einen Touchdown in den letzten Minuten.",
+"question": "Did the player score a touchdown in the final minutes?",
+"negate": "The player did not score a touchdown in the final minutes.",
+"summarize": "TD"
+},
+"The referee called a stop during the game.": {
+"translate_de": "Der Schiedsrichter hat eine Pause während des Spiels ausgeübt.",
+"question": "Does the referee call a stop during the game?",
+"negate": "The referee did not call a stop during the game.",
+"summarize": "Stop called"
+},
+"Plant sunflowers for a sunny front yard.": {
+"translate_de": "Sonnenblumen für einen sonnigen Hinterhof platzieren.",
+"question": "Do you plant sunflowers for a sunny front yard?",
+"negate": "Plant not sunflowers for a sunny front yard.",
+"summarize": "Sunflowers for sunny yard"
+},
+"Water lettuce regularly to maintain moist soil.": {
+"translate_de": "Wasserlettwasser regelmäßig zur Aufrechterhaltung des Feuchtigkeitsgehalts im Boden.",
+"question": "Does water lettuce need to be kept moist?",
+"negate": "Water lettuce should not be kept in moist soil.",
+"summarize": "Keep soil moist."
+},
+"Prune roses to encourage better blooms.": {
+"translate_de": "Bäume pflanzen, um bessere Blüten zu fördern.",
+"question": "Can you prune roses?",
+"negate": "Prune roses to prevent better blooms.",
+"summarize": "Prune to boost blooms."
+},
+"Choose native plants for a resilient garden.": {
+"translate_de": "Natürliche Pflanzen für ein widerstandsfähiges Gärtnern.",
+"question": "Do native plants suit your garden?",
+"negate": "Avoid native plants for a less resilient garden.",
+"summarize": "Native plants."
+},
+"Fertilize with organic compost to boost nutrients.": {
+"translate_de": "Fertilize mit organischem Kompost, um die Nährstoffe zu steigern.",
+"question": "Does it help?",
+"negate": "Do not fertilize with organic compost.",
+"summarize": "Organic compost boosts nutrients."
+},
+"Install rain barrels to collect rainwater.": {
+"translate_de": "Installiere Regenrinnen, um Regenwasser zu sammeln.",
+"question": "Do you install rain barrels?",
+"negate": "Do not install rain barrels.",
+"summarize": "Rain barrels"
+},
+"Create a compost bin to recycle kitchen scraps.": {
+"translate_de": "Ein Kompostbehälter zum Recycling von Küchenabfällen.",
+"question": "Can you create a compost bin?",
+"negate": "Not recycle kitchen scraps.",
+"summarize": "Compost kitchen scraps."
+},
+"Plant ferns in shaded areas for a lush green wall.": {
+"translate_de": "Die Farnen in den Schatten für eine blühende grüne Wand.",
+"question": "Does it look lush green?",
+"negate": "Plant ferns in sunny areas for a sparse green wall.",
+"summarize": "Ferns in shade"
+},
+"Sow seeds for vegetables to start a growing season.": {
+"translate_de": "Sow Sie Samen für Gemüse, um eine Wachstumsperiode zu beginnen.",
+"question": "Do you sow seeds for vegetables?",
+"negate": "Sow no seeds for vegetables to start a non-growing season.",
+"summarize": "Sow seeds."
+},
+"Water plants deeply to ensure root health.": {
+"translate_de": "Wasserpflanzen tief in den Boden bringen, um die Wurzeln zu erhalten.",
+"question": "Does water plants deeply?",
+"negate": "Water plants shallowly to ensure root health.",
+"summarize": "Deep water"
+},
+"Growing herbs in a sunny spot boosts freshness.": {
+"translate_de": "Die Anpflanzung von Kräutern in einem sonnigen Ort steigert die Frische.",
+"question": "Does growing herbs in a sunny spot boost freshness?",
+"negate": "Growing herbs in a cold spot reduces freshness.",
+"summarize": "Sunny herbs freshen up."
+},
+"Watering plants during dry spells ensures healthy growth.": {
+"translate_de": "Wasserpflanzen während trockener Perioden gewährleistet gesunde Entwicklung.",
+"question": "Does watering plants during dry spells ensure healthy growth?",
+"negate": "Watering plants during wet spells does not ensure healthy growth.",
+"summarize": "Healthy growth"
+},
+"Planting seeds in pots adds a touch of creativity to gardens.": {
+"translate_de": "Das Pflanzen von Samen in Behältern fügt einen Touch von Kreativität in Gärten hinzu.",
+"question": "Does planting seeds in pots add a touch of creativity to gardens?",
+"negate": "Not planting seeds in pots means the garden lacks creativity.",
+"summarize": "Creative pots add seeds to gardens."
+},
+"Designing a garden layout improves visibility for visitors.": {
+"translate_de": "Ein Gartenlayout verbessert die Sichtbarkeit für Besucher.",
+"question": "Does designing a garden layout improve visibility for visitors?",
+"negate": "Designing a garden layout does not improve visibility for visitors.",
+"summarize": "Visibility improves."
+},
+"Organic compost enriches soil, supporting plant development.": {
+"translate_de": "Organische Komposten bereichert den Boden, unterstützt das Pflanzenwachstum.",
+"question": "Does organic compost enrich soil?",
+"negate": "Organic waste does not enrich soil.",
+"summarize": "Organic compost boosts soil health."
+},
+"Pruning roses encourages strong, vibrant blooms.": {
+"translate_de": "Die Pflege von Rosen fördert starke, lebendige Blüten.",
+"question": "Does pruning roses encourage strong, vibrant blooms?",
+"negate": "Pruning roses does not encourage strong, vibrant blooms.",
+"summarize": "Prune for strong blooms."
+},
+"Adding shade with trees to a backyard garden benefits plant life.": {
+"translate_de": "Das Hinzufügen von Bäumen zu einem Gartenboden verbessert die Pflanzenwelt.",
+"question": "Does adding shade with trees benefit plant life in a backyard garden?",
+"negate": "Not adding shade with trees to a backyard garden.",
+"summarize": "Shade trees boost plant life."
+},
+"Starting seeds indoors allows for year-round gardening adventures.": {
+"translate_de": "Starten Sie Samen im Garten im Winter.",
+"question": "Does starting seeds indoors allow for year-round gardening adventures?",
+"negate": "Starting seeds outdoors allows for year-round gardening adventures.",
+"summarize": "Indoor seeds grow year-round."
+},
+"Sowing seeds in soil with good drainage prevents root rot.": {
+"translate_de": "Die Aussaat von Samen in Boden mit gute Drainage verhindert Wurzelfäule.",
+"question": "Does sowing seeds in soil with good drainage prevent root rot?",
+"negate": "Sowing seeds in soil without good drainage does not prevent root rot.",
+"summarize": "Good drainage prevents root rot."
+},
+"Creating a rainwater catchment system conserves water for gardening needs.": {
+"translate_de": "Erstellen Sie ein Regenwasserzulaufsystem, um Wasser für die Gartenbedürfnisse zu sparen.",
+"question": "Does creating a rainwater catchment system conserve water for gardening?",
+"negate": "Creating a rainwater catchment system does not conserve water for gardening needs.",
+"summarize": "Catchwater saves water for gardens."
+},
+"Planting seeds in a sunny garden": {
+"translate_de": "Das Pflanzen von Samen in einem sonnigen Garten",
+"question": "Does planting seeds in a sunny garden mean?",
+"negate": "Not planting seeds in a sunny garden",
+"summarize": "Sunny garden seeds"
+},
+"Watering plants daily for healthy growth": {
+"translate_de": "Wasserpflanzen täglich pflegen für gesundes Wachstum",
+"question": "Do you water plants daily?",
+"negate": "Not watering plants daily for healthy growth",
+"summarize": "Water daily"
+},
+"Choosing the best soil for specific plants": {
+"translate_de": "Wählen Sie das beste Boden für spezifische Pflanzen",
+"question": "Does the best soil for specific plants have a pH level?",
+"negate": "Choosing the worst soil for specific plants",
+"summarize": "Best soil for specific plants"
+},
+"Pruning dead branches to encourage new growth": {
+"translate_de": "Das Entfernen von abgestorbenen Ästen, um neue Wachstum zu fördern,",
+"question": "Does pruning dead branches encourage new growth?",
+"negate": "Prune healthy branches to avoid new growth",
+"summarize": "Prune to grow"
+},
+"Programming in Python enhances data analysis.": {
+"translate_de": "Programmierung in Python verbessert die Datenanalyse.",
+"question": "Does programming in Python enhance data analysis?",
+"negate": "Programming in Python does not enhance data analysis.",
+"summarize": "Python data analysis"
+},
+"Debugging errors in software requires practice and patience.": {
+"translate_de": "Die Fehlerbehebung in Software erfordert Übung und Geduld.",
+"question": "Does practicing and patience help with debugging errors in software?",
+"negate": "Debugging errors in software means not practicing or being patient.",
+"summarize": "Practice patience."
+},
+"Algorithms can be optimized to improve system performance.": {
+"translate_de": "Algorithmen können optimiert werden, um die Systemleistung zu verbessern.",
+"question": "Can algorithms be optimized?",
+"negate": "Algorithms cannot be optimized to improve system performance.",
+"summarize": "Optimize algorithms."
+},
+"Error handling is crucial for robust software development.": {
+"translate_de": "Kritische Fehlerbehandlung ist für robuste Softwareentwicklung entscheidend.",
+"question": "Is error handling crucial for robust software development?",
+"negate": "Error handling is not crucial for robust software development.",
+"summarize": "Error handling is key."
+},
+"Data structures like arrays and lists are fundamental for efficient code.": {
+"translate_de": "Datastrukturen wie Arrays und Listen sind grundlegend für effiziente Code.",
+"question": "Do data structures like arrays and lists are fundamental for efficient code?",
+"negate": "Data structures such as dictionaries and sets are not fundamental for efficient code.",
+"summarize": "Arrays and lists"
+},
+"Machine learning models benefit from large datasets and advanced techniques.": {
+"translate_de": "Maschinelles Lernen profitiert von großen Datensätzen und fortschrittlichen Techniken.",
+"question": "Does a large dataset and advanced techniques benefit machine learning models?",
+"negate": "Machine learning models do not benefit from large datasets or advanced techniques.",
+"summarize": "Large data and advanced techniques help."
+},
+"Version control systems like Git are essential for collaborative projects.": {
+"translate_de": "Versionierungssysteme wie Git sind für kooperative Projekte von entscheidender Bedeutung.",
+"question": "Is version control systems like Git essential for collaborative projects?",
+"negate": "Version control systems like Git are not essential for collaborative projects.",
+"summarize": "Git"
+},
+"Debugging tools can simplify troubleshooting in complex applications.": {
+"translate_de": "Debugging-Tools können die Fehlersuche in komplexen Anwendungen erleichtern.",
+"question": "Can debugging tools simplify troubleshooting in complex applications?",
+"negate": "Debugging tools do not simplify troubleshooting.",
+"summarize": "Simplify troubleshooting."
+},
+"Versioning and tracking changes in source code are key for maintainability.": {
+"translate_de": "Versioning und Nachverfolgung von Änderungen im Quellcode sind für die Wartbarkeit entscheidend.",
+"question": "Is versioning and tracking changes in source code key for maintainability?",
+"negate": "Versioning and tracking changes in source code are not important for maintainability.",
+"summarize": "Versioning and tracking changes."
+},
+"Cloud computing offers scalable solutions for handling large volumes of data.": {
+"translate_de": "Kuellencomputing bietet skalierbare Lösungen für die Verarbeitung großer Datenmengen.",
+"question": "Does cloud computing offer scalable solutions for handling large volumes of data?",
+"negate": "Cloud computing does not offer scalable solutions for handling large volumes of data.",
+"summarize": "Scalable data solutions"
+},
+"The programmer wrote a new algorithm for data sorting.": {
+"translate_de": "Der Programmierer hat einen neuen Algorithmus für die Datensortierung geschrieben.",
+"question": "Does the programmer have written a new algorithm for data sorting?",
+"negate": "The programmer did not write a new algorithm for data sorting.",
+"summarize": "New algorithm for sorting data"
+},
+"The system used a random number generator for encryption.": {
+"translate_de": "Das System verwendete einen zufälligen Zahlengenerator für die Verschlüsselung.",
+"question": "Does the system use a random number generator for encryption?",
+"negate": "The system did not use a random number generator for encryption.",
+"summarize": "Random number generator"
+},
+"The user struggled with debugging the console messages.": {
+"translate_de": "Der Benutzer hatte Schwierigkeiten beim Debuggen der Konsole-Meldungen.",
+"question": "Did the user struggle with debugging console messages?",
+"negate": "The user did not struggle with debugging the console messages.",
+"summarize": "Struggled debugging console messages."
+},
+"The editor had a feature to automatically suggest code blocks.": {
+"translate_de": "Der Redakteur hatte eine Funktion, die automatisch Codeblöcke vorschlägt.",
+"question": "Does the editor have a feature to automatically suggest code blocks?",
+"negate": "The editor did not have a feature to automatically suggest code blocks.",
+"summarize": "Automated code suggestions"
+},
+"The team experimented with parallel processing techniques.": {
+"translate_de": "Das Team hat parallelverarbeitungsverfahren ausprobiert.",
+"question": "Does the team use parallel processing techniques?",
+"negate": "The team did not experiment with parallel processing techniques.",
+"summarize": "Parallel processing tested."
+},
+"The library offered pre-built functions for common tasks.": {
+"translate_de": "Die Bibliothek bot vorgefertigte Funktionen für häufige Aufgaben an.",
+"question": "Does the library offer pre-built functions for common tasks?",
+"negate": "The library did not offer pre-built functions for common tasks.",
+"summarize": "Pre-built tools for common tasks."
+},
+"The debugger highlighted variables and stack traces.": {
+"translate_de": "Der Debugger hob Variablen und Stack-Traces hervor.",
+"question": "Does the debugger highlight variables and stack traces?",
+"negate": "The debugger did not highlight variables or stack traces.",
+"summarize": "Highlighted variables and traces"
+},
+"The visualization tools made it easier to interpret results.": {
+"translate_de": "Die Visualisierungstools machten es einfacher, die Ergebnisse zu interpretieren.",
+"question": "Does it make it easier to interpret results?",
+"negate": "The visualization tools made it harder to interpret results.",
+"summarize": "Visual tools made interpretation easier."
+},
+"The developer integrated AI assistants into their applications.": {
+"translate_de": "Der Entwickler hat AI-Assistenten in ihre Anwendungen integriert.",
+"question": "Does the developer integrate AI assistants into their applications?",
+"negate": "The developer did not integrate AI assistants into their applications.",
+"summarize": "AI assistants in apps"
+},
+"The software was tested on various operating systems.": {
+"translate_de": "Die Software wurde auf verschiedenen Betriebssystemen getestet.",
+"question": "Did the software work on various operating systems?",
+"negate": "The software was not tested on various operating systems.",
+"summarize": "Tested on OSes"
+},
+"Programming languages vary widely in syntax and performance.": {
+"translate_de": "Programmsprachen variieren stark in der Syntax und Leistung.",
+"question": "Does programming languages vary widely in syntax and performance?",
+"negate": "Programming languages differ greatly in syntax and performance.",
+"summarize": "Various languages differ in syntax and performance."
+},
+"Algorithms can be optimized for speed or accuracy depending on the problem.": {
+"translate_de": "Algorithmen können optimiert werden, um Geschwindigkeit oder Genauigkeit je nach Problem zu verbessern.",
+"question": "Can algorithms be optimized for speed or accuracy?",
+"negate": "Algorithms cannot be optimized for speed or accuracy depending on the problem.",
+"summarize": "Optimized algorithms speed or accuracy."
+},
+"Error handling is a critical skill for reliable software development.": {
+"translate_de": "Error-Handling ist eine kritische Fähigkeit für zuverlässigen Software-Entwicklungsprozess.",
+"question": "Is error handling a critical skill for reliable software development?",
+"negate": "Error handling is not a critical skill for reliable software development.",
+"summarize": "Critical skill."
+},
+"Data structures like trees and graphs are used to model complex relationships.": {
+"translate_de": "Strukturen wie Bäume und Graphen werden verwendet, um komplexe Beziehungen zu modellieren.",
+"question": "Do data structures like trees and graphs model complex relationships?",
+"negate": "Data structures such as networks and matrices are used to model complex relationships.",
+"summarize": "Trees and graphs model complex relationships."
+},
+"The ocean is filled with vibrant coral reefs": {
+"translate_de": "Der Ozean ist mit lebendigen Korallenriffen gefüllt.",
+"question": "Does the ocean have vibrant coral reefs?",
+"negate": "The ocean is not filled with vibrant coral reefs.",
+"summarize": "Coral reefs"
+},
+"Birds soar through the waves with joyful calls": {
+"translate_de": "Vögel fliegen durch die Wellen mit freundlichen Gesängen.",
+"question": "Does birds soar through the waves with joyful calls?",
+"negate": "Birds do not soar through the waves with joyful calls.",
+"summarize": "Birds soar joy"
+},
+"Storms rage across the horizon with powerful winds": {
+"translate_de": "Stürme ziehen über den Himmel mit starken Winden",
+"question": "Does it rage across the horizon?",
+"negate": "Storms do not rage across the horizon.",
+"summarize": "Storms rage across the sky"
+},
+"Waves crash against the shore with rhythmic tides": {
+"translate_de": "Wellen kriechen gegen die Küste mit rhythmischen Tiden",
+"question": "Does the waves crash against the shore?",
+"negate": "Waves do not crash against the shore.",
+"summarize": "Waves crash."
+},
+"Fish swim in schools, hiding in coral formations": {
+"translate_de": "Fische schwimmen in Schichten, verstecken sich in Korallenformationen.",
+"question": "Do fish swim in schools?",
+"negate": "Fish do not swim in schools.",
+"summarize": "Fish swim in schools"
+},
+"Dolphins dance gracefully in the water’s depths": {
+"translate_de": "Dolphinen tanzen im Wasserwellen",
+"question": "Does dolphins dance gracefully in the water's depths?",
+"negate": "Dolphins do not dance gracefully in the water’s depths.",
+"summarize": "Dolphins dance in water"
+},
+"Tides ebb and flow with the Earth’s gravitational pull": {
+"translate_de": "Die Tiden schwingen mit dem schwellen des Erdgravitationsfelds",
+"question": "Does the Earth's gravitational pull cause tides?",
+"negate": "Tides do not ebb and flow with the Earth’s gravitational pull.",
+"summarize": "Tides ebb"
+},
+"Coral reefs thrive in warm, clear waters": {
+"translate_de": "Korallenriffe gedeihen in warmen, klaren Gewässern.",
+"question": "Do coral reefs thrive in warm, clear waters?",
+"negate": "Coral reefs do not thrive in warm, clear waters.",
+"summarize": "Coral reefs thrive in warm clear water"
+},
+"Seashells drift silently through the ocean currents": {
+"translate_de": "Meerespinnchen driften silzentühre durch die Ozeanströmungen",
+"question": "Does the seashells drift silently through the ocean currents?",
+"negate": "Seashells do not drift silently through the ocean currents.",
+"summarize": "Seashells drift"
+},
+"The ocean covers over 70% of Earth's surface.": {
+"translate_de": "Der Ozean bedeckt über 70% der Erdoberfläche.",
+"question": "Does the ocean cover over 70% of Earth's surface?",
+"negate": "The ocean does not cover over 70% of Earth's surface.",
+"summarize": "The ocean covers 70% of Earth."
+},
+"Coral reefs support diverse marine life.": {
+"translate_de": "Korallenriffe unterstützen eine vielfältige Meereswelt.",
+"question": "Does coral reefs support diverse marine life?",
+"negate": "Coral reefs do not support diverse marine life.",
+"summarize": "Coral reefs support life."
+},
+"Deep ocean trenches reveal ancient marine fossils.": {
+"translate_de": "Die tiefen Ozeanhöhlen offenbaren alte Meeresfossilien.",
+"question": "Do deep ocean trenches reveal ancient marine fossils?",
+"negate": "Deep ocean trenches do not reveal ancient marine fossils.",
+"summarize": "Ancient marine fossils in deep trenches."
+},
+"Ocean currents transport water globally.": {
+"translate_de": "Ozeanströmungen transportieren Wasser weltweit.",
+"question": "Does ocean currents transport water globally?",
+"negate": "Ocean currents do not transport water globally.",
+"summarize": "Ocean currents move water worldwide."
+},
+"The ocean absorbs over 90% of the world's atmospheric CO₂.": {
+"translate_de": "Der Ozean absorbiert über 90% der atmosphärischen CO₂ des Weltraums.",
+"question": "Does the ocean absorb over 90% of the world's atmospheric CO₂?",
+"negate": "The ocean does not absorb over 90% of the world's atmospheric CO₂.",
+"summarize": "The ocean absorbs 90% of CO₂."
+},
+"Oceanic life adapts to extreme salinity levels.": {
+"translate_de": "Die Meereslebewesen passen sich an extreme Salzgehalte an.",
+"question": "Does oceanic life adapt to extreme salinity?",
+"negate": "Oceanic life does not adapt to extreme salinity levels.",
+"summarize": "Oceanic life survives."
+},
+"Sunlight penetrates the ocean's depths, creating sunlight-driven ecosystems.": {
+"translate_de": "Die Sonne taucht in die Tiefen des Ozeans ein, was zu leuchtenden Ökosystemen führt.",
+"question": "Does sunlight penetrate the ocean's depths?",
+"negate": "The ocean's depths are dark without sunlight.",
+"summarize": "Sunlight shapes ocean life."
+},
+"Tidal waves shape coastlines and coastal ecosystems.": {
+"translate_de": "Tidalwellen formen Küstenlinien und Küstökosysteme.",
+"question": "Does tidal waves shape coastlines and coastal ecosystems?",
+"negate": "Tidal waves do not shape coastlines or coastal ecosystems.",
+"summarize": "Tides shape coastlines and ecosystems."
+},
+"Mangrove forests act as natural buffers against storms.": {
+"translate_de": "Mangrovenwälder wirken als natürliche Barrieren gegen Stürme.",
+"question": "Do mangrove forests act as natural buffers against storms?",
+"negate": "Mangrove forests do not act as natural buffers against storms.",
+"summarize": "Mangroves protect from storms."
+},
+"The ocean's temperature fluctuates rapidly with seasonal changes.": {
+"translate_de": "Der Ozean-Temperatur schwankt schnell mit den Jahreszeiten.",
+"question": "Does the ocean's temperature fluctuate rapidly with seasonal changes?",
+"negate": "The ocean's temperature does not fluctuate rapidly with seasonal changes.",
+"summarize": "Seasonal shifts drive ocean temperature changes."
+},
+"Large waves can travel thousands of miles across the sea.": {
+"translate_de": "Große Wellen können Tausende von Meilen über die See hinwegreisen.",
+"question": "Can large waves travel thousands of miles across the sea?",
+"negate": "Small waves can travel only a few miles across the sea.",
+"summarize": "Large waves travel miles."
+},
+"Coral reefs are among the most diverse ecosystems on the planet.": {
+"translate_de": "Korallenriffe sind among die vielfältigsten Ökosysteme auf der Erde.",
+"question": "Do coral reefs are among the most diverse ecosystems on the planet?",
+"negate": "Coral reefs are not among the most diverse ecosystems on the planet.",
+"summarize": "Coral reefs are diverse."
+},
+"Seabirds migrate from the tropics to warmer waters each season.": {
+"translate_de": "Seesppel wandern von den Tropen in wärmeren Gewässern jede Saison.",
+"question": "Does seabirds migrate from the tropics to warmer waters each season?",
+"negate": "Seabirds do not migrate from the tropics to warmer waters each season.",
+"summarize": "Tropical to warmer"
+},
+"The ocean's temperature fluctuates dramatically with the seasons.": {
+"translate_de": "Der Ozean-Temperatur schwankt dramatisch mit den Jahreszeiten.",
+"question": "Does the ocean's temperature fluctuate dramatically with the seasons?",
+"negate": "The ocean's temperature does not fluctuate dramatically with the seasons.",
+"summarize": "Seasons shift ocean temperature."
+},
+"Tide pools form in shallow waters, providing shelter for marine life.": {
+"translate_de": "Tidepools bilden sich in flachen Gewässern, bieten Schutz für Meereslebewesen.",
+"question": "Do tide pools form in shallow waters?",
+"negate": "Tide pools do not form in shallow waters.",
+"summarize": "Tides create pools."
+},
+"Birthday parties bring joy and laughter": {
+"translate_de": "Birthday-Partys bringen Freude und Lachen",
+"question": "Do birthday parties bring joy and laughter?",
+"negate": "Birthday parties don't bring joy or laughter.",
+"summarize": "Joy"
+},
+"A birthday celebration leaves lasting memories": {
+"translate_de": "Eine Geburtstagsfeier hinterlässt bleibende Erinnerungen.",
+"question": "Does a birthday celebration leave lasting memories?",
+"negate": "A birthday doesn't leave lasting memories.",
+"summarize": "Memories last"
+},
+"Festivals are always the perfect time for celebration": {
+"translate_de": "Festivals sind immer die perfekte Zeit für Feiern",
+"question": "Is festivals always the perfect time for celebration?",
+"negate": "Festivals are not always the perfect time for celebration.",
+"summarize": "Perfect time for celebration"
+},
+"Themed parties spark excitement and fun": {
+"translate_de": "Themed Partys lösen Aufregung und Spaß aus.",
+"question": "Does it spark excitement and fun?",
+"negate": "Themed parties don't spark excitement or fun.",
+"summarize": "Themed parties spark excitement"
+},
+"A birthday cake is the centerpiece of a special day": {
+"translate_de": "Ein Geburtstagskuchen ist der Mittelpunkt eines besonderen Tages.",
+"question": "Is a birthday cake the centerpiece of a special day?",
+"negate": "A birthday cake is not the centerpiece of a special day.",
+"summarize": "Cake is centerpiece"
+},
+"Gifts from friends make the birthday special": {
+"translate_de": "Geschenke von Freunden machen den Geburtstag besonders.",
+"question": "Does it make the birthday special?",
+"negate": "Gifts from strangers make the birthday dull",
+"summarize": "Gifts make birthday special"
+},
+"A family gathering strengthens bonds among friends": {
+"translate_de": "Eine Familienveranstaltung stärkt die Bindungen unter Freunden.",
+"question": "Does a family gathering strengthen bonds among friends?",
+"negate": "A family gathering weakens bonds among friends.",
+"summarize": "Family bonds grow stronger"
+},
+"Outdoor parties offer a refreshing summer experience": {
+"translate_de": "Outdoor-Partys bieten eine erfrischende Sommererfahrung.",
+"question": "Do outdoor parties offer a refreshing summer experience?",
+"negate": "Outdoor parties don't offer a refreshing summer experience.",
+"summarize": "Summer fun"
+},
+"Virtual birthday parties accommodate distant guests": {
+"translate_de": "Virtual-Birthday-Partys nehmen entfernte Gäste an",
+"question": "Do virtual birthday parties accommodate distant guests?",
+"negate": "Virtual birthday parties do not accommodate distant guests.",
+"summarize": "Virtual parties for distant guests"
+},
+"A birthday party with a DIY menu adds personal touch": {
+"translate_de": "Ein Geburtstagsfeier mit einem DIY-Menü verleiht persönlichen Touch.",
+"question": "Does a DIY menu add a personal touch to a birthday party?",
+"negate": "A birthday party without a DIY menu has a different vibe.",
+"summarize": "DIY menu adds personal touch"
+},
+"A birthday party with a cake and confetti": {
+"translate_de": "Eine Geburtstagsfeier mit Kuchen und Glitzer",
+"question": "Does a birthday party with a cake and confetti happen?",
+"negate": "A cake and no confetti",
+"summarize": "Cake and confetti"
+},
+"The birthday boy received a birthday gift": {
+"translate_de": "Der Geburtstagsjungen erhielt ein Geburtstagsgeschenk.",
+"question": "Does the birthday boy receive a gift?",
+"negate": "The birthday girl received a birthday gift.",
+"summarize": "Birthday gift"
+},
+"A birthday party at a friend's house": {
+"translate_de": "Ein Geburtstagsfeier bei der Freundin's Wohnung",
+"question": "Does a birthday party at a friend's house happen?",
+"negate": "A friend's birthday party",
+"summarize": "Birthday at friend's house"
+},
+"A picnic with family and friends": {
+"translate_de": "Ein Picknick mit Familie und Freunden",
+"question": "Does a picnic with family and friends happen?",
+"negate": "A picnic without family and friends",
+"summarize": "A picnic with family"
+},
+"A themed dinner party": {
+"translate_de": "Ein thematisches Dinner-Party",
+"question": "Does a themed dinner party involve decorations and food?",
+"negate": "Not a themed dinner party",
+"summarize": "Themed dinner party"
+},
+"A birthday cookout with a live band": {
+"translate_de": "Ein Geburtstags-Kochabend mit einer Live-Band",
+"question": "Does a birthday cookout with a live band happen?",
+"negate": "A birthday cookout without a live band",
+"summarize": "Birthday cookout with band"
+},
+"A surprise video montage": {
+"translate_de": "Eine Überraschungsvideo-Montage",
+"question": "Does it have a surprise video montage?",
+"negate": "A negative video montage",
+"summarize": "Surprise video montage"
+},
+"A birthday brunch with a cake and salad": {
+"translate_de": "Ein Geburtstagsbrunch mit Kuchen und Salat",
+"question": "Does a birthday brunch with a cake and salad include a cake?",
+"negate": "A cake and salad are not a birthday brunch.",
+"summarize": "Birthday brunch with cake and salad"
+},
+"A movie night with snacks and decorations": {
+"translate_de": "Ein Filmabend mit Snacks und Dekorationen",
+"question": "Does a movie night with snacks and decorations happen?",
+"negate": "A movie without snacks and decorations",
+"summarize": "Movie night with snacks"
+},
+"A dance party with friends and family": {
+"translate_de": "Eine Tanzparty mit Freunden und Familie",
+"question": "Does a dance party with friends and family happen?",
+"negate": "A friend and family dance party",
+"summarize": "Dance party"
+},
+"Birthdays bring joy and laughter.": {
+"translate_de": "Geburtsjahre bringen Freude und Lachen.",
+"question": "Do birthdays bring joy and laughter?",
+"negate": "Birthdays have no joy or laughter.",
+"summarize": "Joyful"
+},
+"The cake is always a favorite.": {
+"translate_de": "Der Kuchen ist immer ein Lieblingsgericht.",
+"question": "Is the cake a favorite?",
+"negate": "The cake is not a favorite.",
+"summarize": "Favorite cake"
+},
+"Friends gather for a special evening.": {
+"translate_de": "Freunde treffen sich für eine besondere Abend.",
+"question": "Does anyone want to go?",
+"negate": "Friends do not gather for a special evening.",
+"summarize": "Friends gather."
+},
+"A cake topper surprises everyone.": {
+"translate_de": "Ein Kuchenüberzug überrascht jeden.",
+"question": "Does a cake topper surprise everyone?",
+"negate": "A cake is not surprising.",
+"summarize": "A cake surprise."
+},
+"Dentists are trained to clean teeth and remove decay.": {
+"translate_de": "Kneibähne werden von Zahnärzten gesteuert, um Zähne zu reinigen und Karies zu entfernen.",
+"question": "Does dentists clean teeth and remove decay?",
+"negate": "Dentists are not trained to clean teeth and remove decay.",
+"summarize": "Clean teeth"
+},
+"They use special tools to remove plaque from surfaces.": {
+"translate_de": "Sie verwenden besondere Werkzeuge, um Plaque von Oberflächen zu entfernen.",
+"question": "Do they use special tools to remove plaque from surfaces?",
+"negate": "They do not use special tools to remove plaque from surfaces.",
+"summarize": "They use special tools to clean."
+},
+"Many dentists specialize in preventive care and education.": {
+"translate_de": "Viele Zahnärzte spezialisieren sich auf präventive Versorgung und Bildung.",
+"question": "Do many dentists specialize in preventive care and education?",
+"negate": "Many dentists do not specialize in preventive care and education.",
+"summarize": "Preventive care and education"
+},
+"Dentists often perform dental check-ups to check for issues.": {
+"translate_de": "Kieferärzte führen oft Zahnuntersuchungen durch, um Probleme zu erkennen.",
+"question": "Does dentists perform dental check-ups?",
+"negate": "Dentists do not perform dental check-ups.",
+"summarize": "Check-ups"
+},
+"They offer preventive services like sealants to protect teeth.": {
+"translate_de": "Sie bieten präventive Dienstleistungen wie Zahnschutz an, um die Zähne zu schützen.",
+"question": "Do they offer preventive services like sealants?",
+"negate": "They do not offer preventive services like sealants.",
+"summarize": "Sealants protect teeth."
+},
+"Some dentists focus on diagnosing and treating cavities.": {
+"translate_de": "Einige Zahnärzte konzentrieren sich darauf, Karies zu diagnostizieren und zu behandeln.",
+"question": "Do some dentists focus on diagnosing and treating cavities?",
+"negate": "Some dentists do not focus on diagnosing and treating cavities.",
+"summarize": "Some dentists diagnose and treat cavities."
+},
+"Dentists teach patients how to maintain oral hygiene routines.": {
+"translate_de": "Kneibähne lehren Patienten, wie sie Mundhygiene-Routinen aufrechterhalten können.",
+"question": "Does dentists teach patients how to maintain oral hygiene routines?",
+"negate": "Dentists do not teach patients how to maintain oral hygiene routines.",
+"summarize": "Maintain oral hygiene"
+},
+"They work in hospitals, clinics, and private practices.": {
+"translate_de": "Sie arbeiten in Krankenhäusern, Kliniken und privaten Praxen.",
+"question": "Do they work in hospitals, clinics, and private practices?",
+"negate": "They do not work in hospitals, clinics, and private practices.",
+"summarize": "They work in hospitals, clinics, and private practices."
+},
+"They emphasize the importance of regular dental check-ups.": {
+"translate_de": "Sie betonen die Wichtigkeit regelmäßige Zahnarztbesuche.",
+"question": "Do they emphasize the importance of regular dental check-ups?",
+"negate": "They do not emphasize the importance of regular dental check-ups.",
+"summarize": "They stress regular check-ups."
+},
+"Dentists are trained to provide comfort during oral health-related visits.": {
+"translate_de": "Kneibähne sind geschult, um bei oralen Gesundheitsbesuchen Komfort zu bieten.",
+"question": "Does dentists provide comfort during oral health-related visits?",
+"negate": "Dentists do not provide comfort during oral health-related visits.",
+"summarize": "Comfort at dental visits."
+},
+"Dentists diagnose and treat oral health issues.": {
+"translate_de": "Kneibähne diagnostizieren und behandeln Mundgesundheitsprobleme.",
+"question": "Does dentists diagnose and treat oral health issues?",
+"negate": "Dentists do not diagnose or treat oral health issues.",
+"summarize": "Dentists diagnose and treat oral health"
+},
+"They perform cosmetic dental procedures.": {
+"translate_de": "Sie führen kosmetische Zahnarztverfahren durch.",
+"question": "Do they perform cosmetic dental procedures?",
+"negate": "They do not perform cosmetic dental procedures.",
+"summarize": "They do cosmetic dental work."
+},
+"Dentists provide preventive care through regular check-ups.": {
+"translate_de": "Kneibühne bieten präventive Versorgung durch regelmäßige Kontrollen.",
+"question": "Does dentists provide preventive care?",
+"negate": "Dentists do not provide preventive care through regular check-ups.",
+"summarize": "Preventive care"
+},
+"Many dentists specialize in pediatric dentistry.": {
+"translate_de": "Viele Zahnärzte spezialisieren sich auf die Kinderzahnmedizin.",
+"question": "Do many dentists specialize in pediatric dentistry?",
+"negate": "Many dentists do not specialize in pediatric dentistry.",
+"summarize": "Pediatric dentists"
+},
+"Oral hygiene is crucial for a healthy smile.": {
+"translate_de": "Die Mundhygiene ist entscheidend für einen gesunden Lächeln.",
+"question": "Is oral hygiene crucial for a healthy smile?",
+"negate": "Oral hygiene is not crucial for a healthy smile.",
+"summarize": "Healthy smile."
+},
+"Dentists educate patients on nutrition and dental health.": {
+"translate_de": "Kneibähne lehren Patienten über Ernährung und Zahngesundheit.",
+"question": "Does dentists educate patients on nutrition and dental health?",
+"negate": "Dentists do not educate patients on nutrition and dental health.",
+"summarize": "Nutrition & dental care"
+},
+"They develop custom dental restorations for patients.": {
+"translate_de": "Sie entwickeln maßgeschneiderte Zahnersatzes für Patienten.",
+"question": "Do they develop custom dental restorations for patients?",
+"negate": "They do not develop custom dental restorations for patients.",
+"summarize": "They create custom dental work."
+},
+"Dentists collaborate with oral surgeons for complex cases.": {
+"translate_de": "Kneibähne arbeiten mit Kieferchirurgen für komplexe Fälle.",
+"question": "Does dentists work with oral surgeons for complex cases?",
+"negate": "Dentists do not collaborate with oral surgeons for complex cases.",
+"summarize": "Dentists + oral surgeons"
+},
+"The field evolves with advancements in dental technology.": {
+"translate_de": "Der Feld evolue mit Fortschritten in der Zahnmedizin.",
+"question": "Does the field evolve with advancements in dental technology?",
+"negate": "The field does not evolve with advancements in dental technology.",
+"summarize": "Dental tech advances"
+},
+"Dentists often mentor new dentists in emerging practices.": {
+"translate_de": "Kneibäume leiten neue Zahnärzte in aufkommenden Praktiken.",
+"question": "Does dentists often mentor new dentists in emerging practices?",
+"negate": "Dentists do not mentor new dentists in emerging practices.",
+"summarize": "Dentists train new dentists."
+},
+"Winter's chill starts early.": {
+"translate_de": "Der Winterkühlstand beginnt früh.",
+"question": "Does it start early?",
+"negate": "Winter's warmth begins early.",
+"summarize": "Winter starts early."
+},
+"Snow falls in thick layers.": {
+"translate_de": "Schnee fällt in dicken Schichten.",
+"question": "Does snow fall in thick layers?",
+"negate": "Snow does not fall in thick layers.",
+"summarize": "Snow"
+},
+"Morning light struggles with cold winds.": {
+"translate_de": "Morgens kämpft die Tageslicht mit kalten Winden.",
+"question": "Does morning light struggle with cold winds?",
+"negate": "Cold winds struggle with morning light.",
+"summarize": "Morning light weakens with cold."
+},
+"Winter storms bring sudden gusts.": {
+"translate_de": "Winterstürme bringen plötzliche Böen.",
+"question": "Does it bring sudden gusts?",
+"negate": "Winter storms do not bring sudden gusts.",
+"summarize": "Winter storms bring gusts."
+},
+"Cold air clings to windows for days.": {
+"translate_de": "Kaltluft hängt an den Fenstern für Tage.",
+"question": "Does cold air cling to windows for days?",
+"negate": "Cold, clear air lingers on windows.",
+"summarize": "Cold air clings."
+},
+"Blizzard tears through the night.": {
+"translate_de": "Blizzard zieht durch die Nacht.",
+"question": "Does Blizzard tear through the night?",
+"negate": "Blizzard does not tear through the night.",
+"summarize": "Blizzard tears"
+},
+"Lakes freeze midday hours.": {
+"translate_de": "Lakes schmelzen im Mittag.",
+"question": "Does it freeze midday?",
+"negate": "Lakes do not freeze midday hours.",
+"summarize": "Lakes freeze midday."
+},
+"Blown snow covers entire streets.": {
+"translate_de": "Blätternebel bedeckt die ganze Straße.",
+"question": "Does it cover entire streets?",
+"negate": "Not blown snow covers entire streets.",
+"summarize": "Blown snow covers streets."
+},
+"Winter blues deepen as temperatures drop.": {
+"translate_de": "Winterblues vertiefen sich, als die Temperaturen sinken.",
+"question": "Does it deepen?",
+"negate": "Winter blues become less severe.",
+"summarize": "Winter blues deepen."
+},
+"Cold drafts enter homes with each passing day.": {
+"translate_de": "Kaltluftstürme kommen jeden Tag ein.",
+"question": "Do cold drafts enter homes each passing day?",
+"negate": "Cold air enters homes with each passing day.",
+"summarize": "Cold drafts enter."
+},
+"Winter brings cold temperatures": {
+"translate_de": "Winter bringt kalte Temperaturen.",
+"question": "Does it bring cold temperatures?",
+"negate": "Winter is not cold.",
+"summarize": "Cold"
+},
+"Snow falls gently in the evenings": {
+"translate_de": "Schnee fällt sanft in die Nachts.",
+"question": "Does snow fall in the evenings?",
+"negate": "Snow does not fall in the evenings.",
+"summarize": "Snow"
+},
+"Winds howl through the streets": {
+"translate_de": "Die Winde howeln durch die Straßen",
+"question": "Does the wind howl through the streets?",
+"negate": "The streets are quiet",
+"summarize": "Winds howl"
+},
+"Frost creeps along the windows": {
+"translate_de": "Schnee zieht entlang der Fenster",
+"question": "Does frost creeps along the windows?",
+"negate": "Frost does not creep along the windows.",
+"summarize": "Frost creeps"
+},
+"The air feels chilly and crisp": {
+"translate_de": "Der Luftdruck ist kalt und frisch.",
+"question": "Does the air feel chilly and crisp?",
+"negate": "The air is warm and soft",
+"summarize": "Chill"
+},
+"Snowstorms disrupt travel plans": {
+"translate_de": "Schneefälle stören die Reisepläne",
+"question": "Does snowstorms disrupt travel plans?",
+"negate": "Snow does not disrupt travel plans.",
+"summarize": "Snowstorms disrupt travel"
+},
+"The ground gets slippery and dangerous": {
+"translate_de": "Der Boden wird rutschig und gefährlich.",
+"question": "Does the ground get slippery and dangerous?",
+"negate": "The ground is not slippery and dangerous.",
+"summarize": "Slippery and dangerous"
+},
+"Dogs often stop for a walk in winter": {
+"translate_de": "Doggen machen oft Spaziergänge im Winter.",
+"question": "Does dogs often stop for a walk in winter?",
+"negate": "Dogs do not often stop for a walk in winter.",
+"summarize": "Dogs walk in winter."
+},
+"The scent of pine fills the air": {
+"translate_de": "Der Duft von Eichenfüller füllt die Luft.",
+"question": "Does the scent of pine fill the air?",
+"negate": "The air is not filled with pine.",
+"summarize": "Pine"
+},
+"Winter leaves can be covered in snow": {
+"translate_de": "Winterblätter können in Schnee bedeckt werden.",
+"question": "Can winter leaves be covered in snow?",
+"negate": "Winter leaves do not get covered in snow.",
+"summarize": "Snow can cover winter leaves."
+},
+"The cold air clung to the trees.": {
+"translate_de": "Der kalte Luftdruck haftete an den Bäumen.",
+"question": "Does the cold air cling to the trees?",
+"negate": "The heat air clung to the trees.",
+"summarize": "The cold air clung."
+},
+"Snow danced in the morning light.": {
+"translate_de": "Schnee dachte im Morgenlicht.",
+"question": "Does snow dance in the morning light?",
+"negate": "Snow did not dance in the morning light.",
+"summarize": "Snowlighted"
+},
+"Frost crept across the windowsill.": {
+"translate_de": "Der Frost zog über die Fensterbank.",
+"question": "Does frost crept across the windowsill?",
+"negate": "Frost did not creep across the windowsill.",
+"summarize": "Frost crept"
+},
+"A snowstorm rolled in near the park.": {
+"translate_de": "Ein Schneesturm rollte nahe am Park.",
+"question": "Does a snowstorm roll in near the park?",
+"negate": "A clear sky rolled in near the park.",
+"summarize": "Snowstorm near park"
+},
+"Learning to play the guitar takes practice.": {
+"translate_de": "Lernen Sie die Gitarre spielen, üben Sie.",
+"question": "Does learning to play the guitar require practice?",
+"negate": "Learning to play the guitar is not as easy as it seems.",
+"summarize": "Play practice."
+},
+"Every day is a chance to master new skills.": {
+"translate_de": "Jeden Tag ist eine Gelegenheit, neue Fähigkeiten zu erlernen.",
+"question": "Is every day a chance to master new skills?",
+"negate": "Not every day is a chance to master new skills.",
+"summarize": "Every day is a chance to learn."
+},
+"Repetition is key to improving guitar technique.": {
+"translate_de": "Wiederholung ist entscheidend für die Verbesserung der Gitarrentechnik.",
+"question": "Is repetition key to improving guitar technique?",
+"negate": "Negation is key to improving guitar technique.",
+"summarize": "Key improvement"
+},
+"Learning chords helps build a stronger foundation.": {
+"translate_de": "Lernen von Akkorden hilft, eine stärkere Grundlage zu schaffen.",
+"question": "Does learning chords help build a stronger foundation?",
+"negate": "Learning chords doesn't help build a stronger foundation.",
+"summarize": "Learning chords builds foundation."
+},
+"The fretting hand requires patience and practice.": {
+"translate_de": "Die freundliche Hand erfordert Geduld und Übung.",
+"question": "Does the fretting hand require patience and practice?",
+"negate": "The hand does not require patience or practice.",
+"summarize": "Patience and practice."
+},
+"Guitarists often start with simple exercises.": {
+"translate_de": "Gitarrenmusiker beginnen oft mit einfachen Übungen.",
+"question": "Does anyone start with simple exercises?",
+"negate": "Guitarists rarely begin with simple exercises.",
+"summarize": "Simple exercises"
+},
+"Online tutorials can make learning more accessible.": {
+"translate_de": "Online-Tutorials können das Lernen zugänglicher machen.",
+"question": "Can online tutorials make learning more accessible?",
+"negate": "Online tutorials cannot make learning more accessible.",
+"summarize": "Online help."
+},
+"The right posture is essential for effective playing.": {
+"translate_de": "Die richtige Haltung ist für effektives Spielen von entscheidender Bedeutung.",
+"question": "Is it essential for effective playing?",
+"negate": "The wrong posture is not effective for playing.",
+"summarize": "Posture matters."
+},
+"Consistent practice leads to steady progress over time.": {
+"translate_de": "Ständige Übung führt zu stetigem Fortschritt im Laufe der Zeit.",
+"question": "Does consistent practice lead to steady progress over time?",
+"negate": "Negative practice leads to inconsistent progress over time.",
+"summarize": "Consistent practice leads to steady progress."
+},
+"Experimenting with different styles enriches your musical voice.": {
+"translate_de": "Experimentieren Sie mit verschiedenen Stilen, um Ihre musikalische Stimme zu bereichern.",
+"question": "Does experimenting with different styles enrich your musical voice?",
+"negate": "Experimenting with styles does not enrich your musical voice.",
+"summarize": "Enrich your voice."
+},
+"Guitar lessons help improve finger strength.": {
+"translate_de": "Gitarrenunterricht hilft, die Fingerstärke zu verbessern.",
+"question": "Does guitar lessons help improve finger strength?",
+"negate": "Guitar lessons do not help improve finger strength.",
+"summarize": "Guitar lessons boost finger strength."
+},
+"Learning chords builds musical theory skills.": {
+"translate_de": "Lernen von Akkorden baut musikalische Theoriefertigkeiten auf.",
+"question": "Does learning chords build musical theory skills?",
+"negate": "Learning chords does not build musical theory skills.",
+"summarize": "Chords build theory."
+},
+"Practice scales daily can enhance dexterity.": {
+"translate_de": "Practice scales täglich kann die Handfertigkeit verbessern.",
+"question": "Can you practice scales daily?",
+"negate": "Practice scales rarely enhances dexterity.",
+"summarize": "Practice scales daily."
+},
+"Guitarists rely on rhythm for timing accuracy.": {
+"translate_de": "Gitarrenmusiker verlassen sich auf Rhythmus für die Genauigkeit der Zeit.",
+"question": "Does guitarists rely on rhythm for timing accuracy?",
+"negate": "Guitarists do not rely on rhythm for timing accuracy.",
+"summarize": "Rhythm matters."
+},
+"Repetition builds muscle memory in the hands.": {
+"translate_de": "Kraftaufbau baut Muskelknoten in den Händen auf.",
+"question": "Does repetition build muscle memory in the hands?",
+"negate": "Negation builds muscle memory.",
+"summarize": "Muscle memory builds."
+},
+"Learning theory explains chord transitions.": {
+"translate_de": "Lerntheorie erklärt chordtausche.",
+"question": "Does learning theory explain chord transitions?",
+"negate": "Chord transitions do not explain.",
+"summarize": "Chord transitions explained"
+},
+"Solos require practice with different musical contexts.": {
+"translate_de": "Solos erfordern Übung in verschiedenen musikalischen Kontexten.",
+"question": "Does practicing with different musical contexts help?",
+"negate": "Solos do not require practice with different musical contexts.",
+"summarize": "Solos need practice."
+},
+"A teacher can correct playable notes.": {
+"translate_de": "Ein Lehrer kann spielbare Notizen korrigieren.",
+"question": "Can a teacher correct playable notes?",
+"negate": "A teacher cannot correct playable notes.",
+"summarize": "Correct notes"
+},
+"Guitar keys correspond to note values.": {
+"translate_de": "Guitar-Tasten entsprechen den Notenwerten.",
+"question": "Does the guitar keys correspond to note values?",
+"negate": "Guitar keys do not correspond to note values.",
+"summarize": "GK"
+},
+"Online tutorials offer flexible learning options.": {
+"translate_de": "Online-Tutorials bieten flexible Lernmöglichkeiten.",
+"question": "Do online tutorials offer flexible learning options?",
+"negate": "Online tutorials do not offer flexible learning options.",
+"summarize": "Flexible learning online"
+},
+"Learning the guitar requires patience and practice.": {
+"translate_de": "Lernen Sie die Gitarre, braucht Geduld und Übung.",
+"question": "Does learning the guitar require patience and practice?",
+"negate": "Learning the guitar does not require patience and practice.",
+"summarize": "Patience and practice."
+},
+"Every chord shape starts with a simple finger placement.": {
+"translate_de": "Jede Struktur beginnt mit einer einfachen Fingerposition.",
+"question": "Does every chord shape start with a simple finger placement?",
+"negate": "Every chord shape does not start with a simple finger placement.",
+"summarize": "Simple finger placement"
+},
+"Repetition is key to mastering guitar techniques.": {
+"translate_de": "Wiederholung ist entscheidend, um Gitarrentechniken zu meistern.",
+"question": "Is repetition key to mastering guitar techniques?",
+"negate": "Negation is key to mastering guitar techniques.",
+"summarize": "Master guitar techniques."
+},
+"Understanding the song structure helps improve timing and rhythm.": {
+"translate_de": "Verstehen der Songstruktur hilft, die Zeit und den Rhythmus zu verbessern.",
+"question": "Does understanding the song structure improve timing and rhythm?",
+"negate": "Understanding the song structure doesn't improve timing or rhythm.",
+"summarize": "Timing & rhythm improve"
+},
+"The Milky Way is the largest galaxy in the universe.": {
+"translate_de": "Die Milchstraße ist die größte Galaxie im Universum.",
+"question": "Is the Milky Way the largest galaxy in the universe?",
+"negate": "The Milky Way is not the largest galaxy in the universe.",
+"summarize": "Milkball"
+},
+"Mars is a rocky planet in the southern hemisphere.": {
+"translate_de": "Mars ist ein felsiger Planet im südlichen Halbkugel.",
+"question": "Is Mars a rocky planet in the southern hemisphere?",
+"negate": "Mars is not a rocky planet in the southern hemisphere.",
+"summarize": "Mars is a rocky planet in the south."
+},
+"Saturn has a ring system made of ice and dust.": {
+"translate_de": "Saturn hat ein Ringsystem aus Eis und Staub.",
+"question": "Does Saturn have a ring system made of ice and dust?",
+"negate": "Saturn does not have a ring system made of ice and dust.",
+"summarize": "Saturn's rings are icy and dusty."
+},
+"Jupiter is known for its Great Red Spot, a storm-like phenomenon.": {
+"translate_de": "Jupiter ist für seinen Großen roten Sturm bekannt, ein Sturmähnliches Phänomen.",
+"question": "Does Jupiter have a Great Red Spot?",
+"negate": "Jupiter is not known for its Great Red Spot.",
+"summarize": "Great Red Spot"
+},
+"Earth orbits the Sun, completing one full revolution in about 365 days.": {
+"translate_de": "Der Erde umkreist den Sonnen, und sie macht etwa 365 Tage im Jahr.",
+"question": "Does Earth orbit the Sun?",
+"negate": "Earth does not orbit the Sun.",
+"summarize": "Earth orbits Sun."
+},
+"The Moon is the only celestial body that orbits the Earth.": {
+"translate_de": "Der Mond ist der einzige sichtbare Körper im Weltraum, der um die Erde kreist.",
+"question": "Is the Moon the only celestial body that orbits the Earth?",
+"negate": "The Earth is the only celestial body that orbits the Moon.",
+"summarize": "The Moon"
+},
+"The asteroid belt lies between Mars and Jupiter.": {
+"translate_de": "Der Asteroidenring liegt zwischen Mars und Jupiter.",
+"question": "Does the asteroid belt lie between Mars and Jupiter?",
+"negate": "The asteroid belt does not lie between Mars and Jupiter.",
+"summarize": "Mars-Jupiter belt"
+},
+"Venus is a terrestrial planet with a thick atmosphere and strong winds.": {
+"translate_de": "Venus ist ein terrestrischer Planet mit einer dicken Atmosphäre und starken Winden.",
+"question": "Is Venus a terrestrial planet?",
+"negate": "Venus is a gas giant with a thin atmosphere and weak winds.",
+"summarize": "Venus is a thick atmosphere with strong winds."
+},
+"Mercury has the fastest rotation in the solar system, completing one rotation in about 58 Earth days.": {
+"translate_de": "Mercury hat die schnellste Rotation im Sonnensystem, wobei es in etwa 58 Tagen eine Rotation vollendet.",
+"question": "Does Mercury have the fastest rotation in the solar system?",
+"negate": "Mercury has the slowest rotation in the solar system, completing one rotation in about 58,000 Earth days.",
+"summarize": "Mercury's fastest rotation."
+},
+"Proxima Centauri is the closest star to the Sun, located about 4.6 light-years away.": {
+"translate_de": "Proxima Centauri ist die nächste Sterne des Sonnensystems, liegt etwa 4,6 Lichtjahre entfernt.",
+"question": "Is Proxima Centauri the closest star to the Sun?",
+"negate": "Proxima Centauri is not the closest star to the Sun.",
+"summarize": "Proxima Centauri is 4.6 light-years away."
+},
+"Earth orbits the Sun.": {
+"translate_de": "Die Erde umkreist den Sonnen.",
+"question": "Does Earth orbit the Sun?",
+"negate": "Earth does not orbit the Sun.",
+"summarize": "Earth orbits."
+},
+"Mars has a thin atmosphere.": {
+"translate_de": "Mars hat eine dünne Atmosphäre.",
+"question": "Does Mars have a thin atmosphere?",
+"negate": "Mars has a thick atmosphere.",
+"summarize": "Thin atmosphere."
+},
+"Jupiter's storms are the largest in the solar system.": {
+"translate_de": "Die Stürme von Jupiter sind die größten im Sonnensystem.",
+"question": "Is Jupiter's storms the largest in the solar system?",
+"negate": "Jupiter's storms are the smallest in the solar system.",
+"summarize": "Jupiter's storms are the biggest."
+},
+"Saturn's rings are made of water ice.": {
+"translate_de": "Saturns Ringe sind aus Wasser-Eis hergestellt.",
+"question": "Is Saturn's rings made of water ice?",
+"negate": "Saturn's rings are not made of water ice.",
+"summarize": "Water ice rings."
+},
+"Venus absorbs most of the sunlight.": {
+"translate_de": "Venus absorbiert den meisten Sonnenlicht.",
+"question": "Does Venus absorb most of the sunlight?",
+"negate": "Venus does not absorb most of the sunlight.",
+"summarize": "Venus"
+},
+"Earth has oceans and lakes.": {
+"translate_de": "Die Erde hat Ozeane und Seen.",
+"question": "Does Earth have oceans and lakes?",
+"negate": "Earth does not have oceans and lakes.",
+"summarize": "Oceans and lakes"
+},
+"Saturn's rings are made mostly of ice.": {
+"translate_de": "Saturnringe sind mostly aus Eis.",
+"question": "Do Saturn's rings are mostly made of ice?",
+"negate": "Saturn's rings are not made mostly of ice.",
+"summarize": "Ice rings"
+},
+"Uranus rotates on its side.": {
+"translate_de": "Uranus rotiert auf seiner Seite.",
+"question": "Does Uranus rotate on its side?",
+"negate": "Uranus does not rotate on its side.",
+"summarize": "Uranus spins sideways."
+},
+"Mars is known for its ancient volcanoes.": {
+"translate_de": "Mars ist für seine alten Vulkan bekannt.",
+"question": "Does Mars have ancient volcanoes?",
+"negate": "Mars is not known for its ancient volcanoes.",
+"summarize": "Mars has ancient volcanoes."
+},
+"Neptune has a thick layer of ammonia clouds.": {
+"translate_de": "Neptune hat eine dicke Schicht aus Ammoniakwolken.",
+"question": "Does Neptune have a thick layer of ammonia clouds?",
+"negate": "Neptune does not have a thick layer of ammonia clouds.",
+"summarize": "Ammonia clouds on Neptune"
+},
+"The Moon orbits Earth.": {
+"translate_de": "Der Mond umkreist die Erde.",
+"question": "Does the Moon orbit Earth?",
+"negate": "The Moon does not orbit Earth.",
+"summarize": "The Moon orbits Earth."
+},
+"Venus is the hottest planet in the solar system.": {
+"translate_de": "Venus ist der heißeste Planet im Sonnensystem.",
+"question": "Is Venus the hottest planet in the solar system?",
+"negate": "Venus is the coldest planet in the solar system.",
+"summarize": "Venus is hot."
+},
+"Jupiter's Great Red Spot is a persistent storm.": {
+"translate_de": "Der Große rote Himmel von Jupiter ist ein anhaltender Sturm.",
+"question": "Is Jupiter's Great Red Spot persistent?",
+"negate": "The Great Red Spot is not a persistent storm.",
+"summarize": "Great Red Spot"
+},
+"Saturn's rings are composed of ice and dust.": {
+"translate_de": "Saturns Ringe bestehen aus Eis und Staub.",
+"question": "Do Saturn's rings are made of ice and dust?",
+"negate": "Saturn's rings are not made of ice and dust.",
+"summarize": "Saturn's rings are icy."
+},
+"Buying a car can save you money on fuel costs.": {
+"translate_de": "Kaufen Sie ein Auto, können Sie Geld für Benzin sparen.",
+"question": "Can buying a car save you money on fuel costs?",
+"negate": "Buying a car does not save you money on fuel costs.",
+"summarize": "Save money on fuel."
+},
+"The safety features in a new car can provide peace of mind.": {
+"translate_de": "Die Sicherheitsfunktionen in einem neuen Auto können Frieden bringen.",
+"question": "Can the safety features in a new car provide peace of mind?",
+"negate": "The safety features in a new car do not provide peace of mind.",
+"summarize": "Safety features bring peace."
+},
+"You should consider the maintenance costs before purchasing a car.": {
+"translate_de": "Sie sollten die Wartungskosten vor dem Kauf eines Autos berücksichtigen.",
+"question": "Should you consider the maintenance costs before purchasing a car?",
+"negate": "You should not consider the maintenance costs before purchasing a car.",
+"summarize": "Consider maintenance costs before buying."
+},
+"Choose a car that meets your budget and needs.": {
+"translate_de": "Wählen Sie ein Auto, das Ihrem Budget und Ihren Bedürfnissen entspricht.",
+"question": "Does your budget allow for a car that meets your needs?",
+"negate": "Choose a car that doesn't meet your budget.",
+"summarize": "Budget-friendly car"
+},
+"Research local dealerships to compare prices and deals.": {
+"translate_de": "Forschung nach lokalen Autowannschaften, um Preise und Angebote zu vergleichen.",
+"question": "Do you research local dealerships?",
+"negate": "Research dealerships and compare prices.",
+"summarize": "Check dealerships online."
+},
+"Ensure the car has a warranty to protect your investment.": {
+"translate_de": "Der Wagen hat eine Garantie, um Ihr Investment zu schützen.",
+"question": "Does the car have a warranty?",
+"negate": "The car does not have a warranty.",
+"summarize": "Warranty covers investment."
+},
+"Look for deals on used cars to reduce your initial cost.": {
+"translate_de": "Finde Angebote auf gebrauchten Autos, um deinen Anfangskosten zu reduzieren.",
+"question": "Does looking for deals on used cars help reduce your initial cost?",
+"negate": "Look for new cars to save money.",
+"summarize": "Deals on used cars"
+},
+"Consider the reliability of the car's performance and durability.": {
+"translate_de": "Überprüfen Sie die Zuverlässigkeit des Fahrzeugs und seine Haltbarkeit.",
+"question": "Does the car's performance and durability meet your expectations?",
+"negate": "Consider the car's reliability and lack of durability.",
+"summarize": "Reliability and durability."
+},
+"Check the insurance rates for the car you're interested in.": {
+"translate_de": "Überprüfen Sie die Versicherungsraten für das Auto, das Sie interessiert.",
+"question": "Do you have insurance rates for the car you're interested in?",
+"negate": "Check what insurance rates are available for the car you're interested in.",
+"summarize": "Insure rates"
+},
+"Test drive the car to ensure it meets your expectations and preferences.": {
+"translate_de": "Test fahren Sie das Auto, um sicherzustellen, dass es Ihren Erwartungen und Vorlieben entspricht.",
+"question": "Does the car meet your expectations and preferences?",
+"negate": "Test drive the car and not meet your expectations or preferences.",
+"summarize": "Test drive."
+},
+"Research different car models for your needs.": {
+"translate_de": "Forschung verschiedene Autos für Ihre Bedürfnisse.",
+"question": "Do you have a car model in mind?",
+"negate": "Research different car models for the wrong reasons.",
+"summarize": "Research car models."
+},
+"Consider fuel efficiency and cost-effectiveness.": {
+"translate_de": "Tauglichkeit und Kosteneffizienz",
+"question": "Does fuel efficiency and cost-effectiveness matter?",
+"negate": "Consider the cost-effectiveness and fuel efficiency.",
+"summarize": "Efficiency and cost"
+},
+"Check for insurance options and coverage.": {
+"translate_de": "Überprüfen Sie Versicherungsoptionen und Versicherungsdeckung.",
+"question": "Do you have insurance options and coverage?",
+"negate": "Check insurance options and not coverage.",
+"summarize": "Insurance options"
+},
+"Evaluate parking availability in your area.": {
+"translate_de": "Bewerten Sie die Parkplatzverfügbarkeit in Ihrer Gegend.",
+"question": "Does parking availability in your area?",
+"negate": "Evaluate parking availability for others.",
+"summarize": "Check parking info."
+},
+"Compare prices from multiple dealers.": {
+"translate_de": "Vergleiche Preise von mehreren Händlern.",
+"question": "Do you compare prices from multiple dealers?",
+"negate": "Not compare prices from multiple dealers.",
+"summarize": "Compare prices"
+},
+"Ensure safety features match your preferences.": {
+"translate_de": "Sicherheitsfunktionen passen zu Ihren Vorlieben an.",
+"question": "Does the safety features match your preferences?",
+"negate": "Safety features do not match your preferences.",
+"summarize": "Safety matches preferences"
+},
+"Look into warranty and maintenance guarantees.": {
+"translate_de": "Betrachten Sie die Garantie und Wartungsgarantien.",
+"question": "Do you have warranty and maintenance guarantees?",
+"negate": "Look away from warranty and maintenance guarantees.",
+"summarize": "Warranty & maintenance"
+},
+"Consider reliability and durability of the vehicle.": {
+"translate_de": "Reliabilität und Haltbarkeit des Fahrzeugs",
+"question": "Does the vehicle have reliability and durability?",
+"negate": "Consider the vehicle's reliability and durability.",
+"summarize": "Reliability and durability."
+},
+"Check for fuel prices and any promotions.": {
+"translate_de": "Überprüfen Sie die Tankpreise und alle Sonderangebote.",
+"question": "Do you check for fuel prices and promotions?",
+"negate": "Check the fuel prices and see if there are any promotions.",
+"summarize": "Check prices and promotions"
+},
+"Verify maintenance history and repair costs.": {
+"translate_de": "Prüfe die Wartungshistorie und die Reparaturkosten.",
+"question": "Does the maintenance history and repair costs match?",
+"negate": "Check the maintenance history and repair costs.",
+"summarize": "Check history and costs"
+},
+"Buy a car for the money.": {
+"translate_de": "Kaufen Sie ein Auto zum Geld.",
+"question": "Do you buy a car for the money?",
+"negate": "Not buy a car for the money.",
+"summarize": "Buy cheap"
+},
+"Choose a reliable dealership.": {
+"translate_de": "Wählen Sie eine zuverlässige Autohaus.",
+"question": "Does a reliable dealership exist?",
+"negate": "Not a reliable dealership.",
+"summarize": "Reliable dealership"
+},
+"Look for deals on lower prices.": {
+"translate_de": "Suche nach Angeboten auf niedrigeren Preisen.",
+"question": "Can you look for deals on lower prices?",
+"negate": "Look for higher prices.",
+"summarize": "Deals on lower prices"
+},
+"Consider fuel efficiency and safety.": {
+"translate_de": "Tanken und Sicherheit",
+"question": "Does fuel efficiency and safety matter?",
+"negate": "Consider the negative aspects of fuel efficiency and safety.",
+"summarize": "Efficiency and safety"
+},
+"A golden retriever always greets visitors with a wagging tail.": {
+"translate_de": "Ein goldenes Retriever greift immer Besuchern mit einem wackelnden Kopf entgegen.",
+"question": "Does a golden retriever always greet visitors with a wagging tail?",
+"negate": "A dog with a tail that does not wag always greets visitors.",
+"summarize": "Golden tail"
+},
+"Dogs are known for their loyalty and affection.": {
+"translate_de": "Hunde sind für ihre Loyalität und Fürsorge bekannt.",
+"question": "Do dogs are known for their loyalty and affection?",
+"negate": "Dogs are not known for their loyalty and affection.",
+"summarize": "Loyal"
+},
+"A sleek terrier stands proudly, tail wagging in the morning light.": {
+"translate_de": "Ein schlichter Terrier steht auf, der im Morgenlicht aufrecht steht.",
+"question": "Does a sleek terrier stand proudly in the morning light?",
+"negate": "A sluggish terrier does not stand proudly, tail wagging in the morning light.",
+"summarize": "Sleek terrier"
+},
+"Canines are highly social animals, thrilled by human interaction.": {
+"translate_de": "Canines sind sehr soziale Tiere, begeistert von der menschlichen Interaktion.",
+"question": "Isn't that right?",
+"negate": "Canines are not highly social animals, disliked by human interaction.",
+"summarize": "Canines are social."
+},
+"The scent of a dog can evoke strong emotions in people.": {
+"translate_de": "Der Geruch eines Hundes kann starke Gefühle in Menschen auslösen.",
+"question": "Does the scent of a dog evoke strong emotions?",
+"negate": "The scent of a cat does not evoke strong emotions in people.",
+"summarize": "Dog scent evokes strong emotions."
+},
+"Dogs can be trained to perform tricks, from chasing to guiding.": {
+"translate_de": "Hunde können trainiert werden, Tricks auszuführen, von der Jagd bis zur Anleitung.",
+"question": "Can dogs be trained to perform tricks?",
+"negate": "Dogs cannot be trained to perform tricks, such as chasing or guiding.",
+"summarize": "Train dogs for tricks."
+},
+"A calm dog rarely gets into trouble.": {
+"translate_de": "Ein ruhiger Hund bekommt selten Probleme.",
+"question": "Does a calm dog rarely get into trouble?",
+"negate": "A chaotic dog rarely gets into trouble.",
+"summarize": "Calm dog rarely gets trouble."
+},
+"The sound of a dog’s bark can be both entertaining and comforting.": {
+"translate_de": "Der Klang eines Hundesbarks kann sowohl unterhaltsam als auch bequem sein.",
+"question": "Can the sound of a dog’s bark be both entertaining and comforting?",
+"negate": "The sound of a dog’s bark is not entertaining nor comforting.",
+"summarize": "Dog barking is entertaining and comforting."
+},
+"Dogs often explore their surroundings, curious about new sights and smells.": {
+"translate_de": "Doggen erkunden oft ihre Umgebung, neugierig über neue Dinge und Gerüche.",
+"question": "Do dogs often explore their surroundings?",
+"negate": "Dogs rarely explore their surroundings, not even in curiosity.",
+"summarize": "Dogs explore."
+},
+"A golden retriever’s coat always shines, reflecting the sun.": {
+"translate_de": "Ein goldener Retriever’s Fell schwebt immer, reflektiert den Sonnenuntergang.",
+"question": "Does a golden retriever’s coat always shine?",
+"negate": "A golden retriever’s coat does not always shine, reflecting the sun.",
+"summarize": "Golden coat shines"
+},
+"They thrive in home environments with plenty of space.": {
+"translate_de": "Sie gedeihen in Wohnumgebungen mit viel Platz.",
+"question": "Do they thrive in home environments with plenty of space?",
+"negate": "They do not thrive in home environments with plenty of space.",
+"summarize": "Home-friendly."
+},
+"Their playful nature often brings joy to families.": {
+"translate_de": "Ihre spielerische Natur bringt oft Freude in Familien.",
+"question": "Do their playful nature bring joy to families?",
+"negate": "Their playful nature rarely brings joy to families.",
+"summarize": "Playful joy brings families together."
+},
+"Dogs can be trained to perform various tricks and services.": {
+"translate_de": "Hunde können trainiert werden, verschiedene Tricks und Dienstleistungen auszuführen.",
+"question": "Can dogs be trained to perform tricks and services?",
+"negate": "Dogs cannot be trained to perform various tricks and services.",
+"summarize": "Dogs can train tricks and services."
+},
+"They have a strong sense of scent and can follow directions easily.": {
+"translate_de": "Sie haben einen starken Geschmack und können Anweisungen leicht folgen.",
+"question": "Do they have a strong sense of scent?",
+"negate": "They lack a strong sense of scent and find it difficult to follow directions.",
+"summarize": "They smell well and follow directions easily."
+},
+"Dogs are highly social animals, enjoying human interactions.": {
+"translate_de": "Hunde sind sehr soziale Tiere und genießen menschliche Interaktionen.",
+"question": "Do dogs enjoy human interactions?",
+"negate": "Dogs are not highly social animals, enjoying human interactions.",
+"summarize": "Dogs are social."
+},
+"They can be trained to recognize and respond to basic commands.": {
+"translate_de": "Sie können trainiert werden, grundlegende Anweisungen zu erkennen und zu beantworten.",
+"question": "Can they be trained to recognize and respond to basic commands?",
+"negate": "They cannot be trained to recognize and respond to basic commands.",
+"summarize": "They can be trained to respond."
+},
+"Their presence can reduce anxiety and stress in pets.": {
+"translate_de": "Ihr Vorhandensein kann Angst und Stress bei Haustieren reduzieren.",
+"question": "Can their presence reduce anxiety and stress in pets?",
+"negate": "Their absence can increase anxiety and stress in pets.",
+"summarize": "Reduce anxiety and stress."
+},
+"Dogs are intelligent and can learn tricks through positive reinforcement.": {
+"translate_de": "Hunde sind intelligent und können durch positive Verstärkung Tricks lernen.",
+"question": "Do dogs learn tricks through positive reinforcement?",
+"negate": "Dogs are not intelligent and cannot learn tricks through positive reinforcement.",
+"summarize": "Positive reinforcement teaches dogs tricks."
+},
+"Their loyalty to their owners makes them often first-chosen pets.": {
+"translate_de": "Ihre Loyalität zu ihren Besitzern macht sie oft die erste gezogene Haustier.",
+"question": "Do their loyalty to their owners make them often first-chosen pets?",
+"negate": "Their loyalty does not make them often first-chosen pets.",
+"summarize": "Their loyalty makes them first-chosen pets."
+},
+"Coffee makes the perfect morning start": {
+"translate_de": "Kaffee macht den perfekten Morgenstart.",
+"question": "Does coffee make the perfect morning start?",
+"negate": "Coffee is not the perfect morning start.",
+"summarize": "Coffee starts the day"
+},
+"The aroma of freshly brewed coffee": {
+"translate_de": "Das Aroma frisch gebackener Kaffee",
+"question": "Does the aroma of freshly brewed coffee smell good?",
+"negate": "The smell of stale coffee",
+"summarize": "Fresh coffee"
+},
+"Coffee can be served at home or in cafes": {
+"translate_de": "Kaffee kann zu Hause oder in Cafés serviert werden.",
+"question": "Can coffee be served at home or in cafes?",
+"negate": "Coffee is not served at home or in cafes.",
+"summarize": "Coffee at home or cafes"
+},
+"A good cup of coffee enhances daily productivity": {
+"translate_de": "Ein gutes Kaffee verbessert die tägliche Produktivität.",
+"question": "Does a good cup of coffee enhance daily productivity?",
+"negate": "A bad cup of coffee reduces daily productivity.",
+"summarize": "Coffee boosts productivity"
+},
+"Coffee is a popular beverage worldwide": {
+"translate_de": "Kaffee ist ein beliebtes Getränk weltweit.",
+"question": "Is coffee a popular beverage worldwide?",
+"negate": "Coffee is not a popular beverage worldwide.",
+"summarize": "Coffee is popular worldwide."
+},
+"Brewing coffee often involves a meticulous process": {
+"translate_de": "Kaffeezubereitung beinhaltet oft einen sorgfältigen Prozess.",
+"question": "Does brewing coffee often involve a meticulous process?",
+"negate": "Brewing coffee rarely involves a meticulous process.",
+"summarize": "Coffee brewing"
+},
+"The taste of coffee varies greatly depending on origin": {
+"translate_de": "Der Geschmack des Kaffees variiert stark je nach Herkunft.",
+"question": "Does the taste of coffee vary greatly depending on origin?",
+"negate": "The taste of coffee is not as varied as it seems.",
+"summarize": "Coffee taste varies by origin"
+},
+"Coffee is known for its rich and bold flavor": {
+"translate_de": "Kaffee ist für seinen reichen und starken Geschmack bekannt.",
+"question": "Does coffee have a rich and bold flavor?",
+"negate": "Coffee is not known for its rich and bold flavor.",
+"summarize": "Rich and bold coffee"
+},
+"Brewing beans can be simple or complex in preparation": {
+"translate_de": "Brewing-Bohnen können einfach oder komplex sein in der Vorbereitung.",
+"question": "Can brewing beans be simple or complex?",
+"negate": "Brewing beans can be either simple or complex.",
+"summarize": "Simple or complex"
+},
+"Coffee is a daily ritual that brings joy and comfort": {
+"translate_de": "Kaffee ist ein tägliches Ritual, das Freude und Trost bringt.",
+"question": "Does coffee bring joy and comfort daily?",
+"negate": "Coffee is not a daily ritual that brings joy and comfort.",
+"summarize": "Coffee is daily."
+},
+"The aroma of freshly brewed coffee fills the room.": {
+"translate_de": "Das Aroma frisch gebackener Kaffee füllt die Halle.",
+"question": "Does the aroma of freshly brewed coffee fill the room?",
+"negate": "The smell of stale coffee fills the room.",
+"summarize": "Fresh coffee fills the room."
+},
+"A warm cup offers comfort during a cold day.": {
+"translate_de": "Ein warmes Glas bietet Trost auf einem kalten Tag.",
+"question": "Does a warm cup offer comfort during a cold day?",
+"negate": "A cold cup offers comfort.",
+"summarize": "Comfort on a cold day."
+},
+"Coffee enhances creativity, especially in the kitchen.": {
+"translate_de": "Kaffee verbessert die Kreativität, besonders in der Küche.",
+"question": "Does coffee enhance creativity in the kitchen?",
+"negate": "Coffee does not enhance creativity, especially in the kitchen.",
+"summarize": "Coffee boosts creativity in kitchen."
+},
+"The sound of a steady brew creates a relaxing atmosphere.": {
+"translate_de": "Der Klang eines ständigen Kaffees erzeugt eine entspannende Atmosphäre.",
+"question": "Does the sound of a steady brew create a relaxing atmosphere?",
+"negate": "The sound of a chaotic brew creates a stressful atmosphere.",
+"summarize": "Steady brew creates calm."
+},
+"A strong espresso provides intense flavor and energy.": {
+"translate_de": "Ein starker Espresso bietet intensiven Geschmack und Energie.",
+"question": "Does a strong espresso provide intense flavor and energy?",
+"negate": "A weak espresso has mild flavor and lacks energy.",
+"summarize": "Intense espresso"
+},
+"Coffee is a staple in coffee shops and cafes.": {
+"translate_de": "Kaffee ist ein Grundnahrungsmittel in Kaffeehäusern und Cafés.",
+"question": "Is coffee a staple in coffee shops and cafes?",
+"negate": "Coffee is not a staple in coffee shops and cafes.",
+"summarize": "Coffee is essential."
+},
+"Brewing time can vary, affecting taste and flavor.": {
+"translate_de": "Die Brauzeit kann variieren, was die Geschmacks- und Aromen beeinflusst.",
+"question": "Can brewing time affect taste and flavor?",
+"negate": "Brewing time does not affect taste and flavor.",
+"summarize": "Taste varies with brewing time."
+},
+"Coffee shops offer a variety of blends and brewing methods.": {
+"translate_de": "Kaffeehandlungen bieten eine Vielzahl von Mischungen und Zubereitungsmethoden.",
+"question": "Do coffee shops offer a variety of blends and brewing methods?",
+"negate": "Coffee shops do not offer a variety of blends and brewing methods.",
+"summarize": "Coffee blends and methods."
+},
+"A good cup can help improve focus and concentration.": {
+"translate_de": "Ein gutes Glas kann die Konzentration verbessern.",
+"question": "Does a good cup help improve focus and concentration?",
+"negate": "A bad cup can hinder focus and concentration.",
+"summarize": "Good cup improves focus"
+},
+"Coffee can be a social staple, bringing people together.": {
+"translate_de": "Kaffee kann ein soziales Grundnahrungsmittel sein, das Menschen zusammenbringt.",
+"question": "Can coffee be a social staple?",
+"negate": "Coffee is not a social staple, so it doesn't bring people together.",
+"summarize": "Coffee is a social staple."
+},
+"Coffee is a popular beverage worldwide.": {
+"translate_de": "Kaffee ist ein beliebtes Getränk weltweit.",
+"question": "Is coffee a popular beverage worldwide?",
+"negate": "Coffee is not a popular beverage worldwide.",
+"summarize": "Coffee is popular."
+},
+"The aroma of coffee adds comfort to any meal.": {
+"translate_de": "Der Duft von Kaffee gibt Trost zu jedem Essen.",
+"question": "Does the aroma of coffee add comfort to any meal?",
+"negate": "The smell of coffee does not add comfort to any meal.",
+"summarize": "Coffee adds comfort."
+},
+"Coffee shops often have the best baristas.": {
+"translate_de": "Kaffeehandlungen haben oft die besten Baristas.",
+"question": "Does coffee shops have the best baristas?",
+"negate": "Coffee shops don't have the best baristas.",
+"summarize": "Coffee shops have the best baristas."
+},
+"A good cup of coffee can improve concentration.": {
+"translate_de": "Ein gutes Kaffee kann die Konzentration verbessern.",
+"question": "Can a good cup of coffee improve concentration?",
+"negate": "A bad cup of coffee can hinder concentration.",
+"summarize": "Coffee boosts focus."
+},
+"Museums are places where art and artifacts are displayed.": {
+"translate_de": "Museen sind Orte, an denen Kunst und Artefakte ausgestellt werden.",
+"question": "Do museums display art and artifacts?",
+"negate": "Museums are places where art is not displayed.",
+"summarize": "Museums display art and artifacts."
+},
+"History enthusiasts often visit museums for educational exhibits.": {
+"translate_de": "Geschichtebegeisterte besuchen oft Museen für Bildungsausstellungen.",
+"question": "Do history enthusiasts visit museums for educational exhibits?",
+"negate": "History enthusiasts rarely visit museums for educational exhibits.",
+"summarize": "History lovers visit museums."
+},
+"Many museums offer guided tours to explore collections.": {
+"translate_de": "Viele Museen bieten geführte Touren an, um Sammlungen zu erkunden.",
+"question": "Do many museums offer guided tours?",
+"negate": "Many museums do not offer guided tours.",
+"summarize": "Many museums offer tours."
+},
+"The exhibits at a museum change seasonally to highlight new themes.": {
+"translate_de": "Die Ausstellungen an einem Museum ändern sich saisonal, um neue Themen zu betonen.",
+"question": "Does the museum change exhibits seasonally?",
+"negate": "The exhibits at a museum do not change seasonally to highlight new themes.",
+"summarize": "Seasonal exhibits highlight new themes."
+},
+"Interactive displays engage visitors with hands-on activities.": {
+"translate_de": "Interaktive Displays engagieren Besucher mit hands-on-Aktivitäten.",
+"question": "Does interactive displays engage visitors with hands-on activities?",
+"negate": "Interactive displays do not engage visitors with hands-on activities.",
+"summarize": "Interactive displays engage visitors."
+},
+"Local museums celebrate cultural heritage and traditions.": {
+"translate_de": "Lokale Museen feiern das kulturelle Erbe und Traditionen.",
+"question": "Do local museums celebrate cultural heritage and traditions?",
+"negate": "Local museums do not celebrate cultural heritage and traditions.",
+"summarize": "Local museums honor heritage."
+},
+"Children often find fun and engaging exhibits in these institutions.": {
+"translate_de": "Kinder finden oft lustige und ansprechende Ausstellungen in diesen Einrichtungen.",
+"question": "Do children often find fun and engaging exhibits in these institutions?",
+"negate": "Children rarely find fun and engaging exhibits in these institutions.",
+"summarize": "Fun exhibits in schools."
+},
+"Museums showcase rare items that are of historical significance.": {
+"translate_de": "Museen zeigen seltene Gegenstände, die historische Bedeutung haben.",
+"question": "Do museums showcase rare items of historical significance?",
+"negate": "Museums do not showcase rare items that are of historical significance.",
+"summarize": "Historical treasures in museums"
+},
+"The architecture of a museum often reflects its cultural context.": {
+"translate_de": "Die Architektur eines Museums oft spiegelt seinen kulturellen Kontext wider.",
+"question": "Does the architecture reflect its cultural context?",
+"negate": "The architecture of a museum does not reflect its cultural context.",
+"summarize": "Museum architecture mirrors culture."
+},
+"Travelers can use museums as a place to learn about global art movements.": {
+"translate_de": "Reisen können Museen als Ort nutzen, um über globale Kunstbewegungen zu lernen.",
+"question": "Can travelers use museums for learning about global art movements?",
+"negate": "Travelers should not visit museums.",
+"summarize": "Museums teach global art."
+},
+"The museum's collection spans centuries of art history.": {
+"translate_de": "Die Sammlung des Museums erstreckt sich über Jahrhunderte der Kunstgeschichte.",
+"question": "Does the museum's collection span centuries of art history?",
+"negate": "The museum's collection does not span centuries of art history.",
+"summarize": "Art history spans centuries."
+},
+"Curators work tirelessly to preserve fragile artifacts.": {
+"translate_de": "Kuratoren arbeiten tagtäglich daran, fragile Artefakte zu erhalten.",
+"question": "Does anyone care about preserving fragile artifacts?",
+"negate": "Curators do not work tirelessly to preserve fragile artifacts.",
+"summarize": "Preserve fragile artifacts."
+},
+"Visitors often marvel at the intricate design on the exhibit hall.": {
+"translate_de": "Besucher staunen oft auf das komplexe Design im Ausstellungsraum.",
+"question": "Do visitors often marvel at the exhibit hall's intricate design?",
+"negate": "Visitors rarely marvel at the intricate design on the exhibit hall.",
+"summarize": "Intricate design"
+},
+"The interactive displays offer hands-on learning opportunities.": {
+"translate_de": "Die interaktiven Displays bieten praktische Lernmöglichkeiten.",
+"question": "Does the interactive displays offer hands-on learning opportunities?",
+"negate": "The interactive displays do not offer hands-on learning opportunities.",
+"summarize": "Interactive displays offer hands-on learning."
+},
+"The gallery often hosts temporary exhibitions featuring emerging artists.": {
+"translate_de": "Die Galerie veranstaltet oft temporäre Ausstellungen mit neuen Künstlern.",
+"question": "Does the gallery often host temporary exhibitions featuring emerging artists?",
+"negate": "The gallery does not often host temporary exhibitions featuring emerging artists.",
+"summarize": "Emerging artists"
+},
+"A rare dinosaur fossil is on display, drawing curious crowds.": {
+"translate_de": "Ein seltenes Dinosaurierfossil ist auf Ausstellungen aufgestellt, was neugierige Besucher anzieht.",
+"question": "Is there a rare dinosaur fossil on display?",
+"negate": "A rare dinosaur fossil is not on display, drawing curious crowds.",
+"summarize": "Rare dinosaur fossil on display"
+},
+"The museum's architecture reflects its long-standing role as a cultural hub.": {
+"translate_de": "Die Architektur des Museums spiegelt seine lange anhaltende Rolle als kulturelles Zentrum wider.",
+"question": "Does the museum's architecture reflect its long-standing role as a cultural hub?",
+"negate": "The museum's architecture does not reflect its long-standing role as a cultural hub.",
+"summarize": "Cultural hub"
+},
+"The collection includes both contemporary and traditional cultural artifacts.": {
+"translate_de": "Die Sammlung enthält sowohl zeitgenössische als auch traditionelle kulturelle Artefakte.",
+"question": "Does the collection include both contemporary and traditional cultural artifacts?",
+"negate": "The collection does not include contemporary or traditional cultural artifacts.",
+"summarize": "Contemporary and traditional artifacts."
+},
+"Guided tours help visitors explore the museum's diverse themes.": {
+"translate_de": "Guided tours helfen Besuchern, die vielfältigen Themen des Museums zu erkunden.",
+"question": "Does the museum offer guided tours?",
+"negate": "The museum does not offer guided tours.",
+"summarize": "Guided tours explore museum themes."
+},
+"The archives hold rare documents that reveal historical events.": {
+"translate_de": "Die Archive behalten seltene Dokumente, die historische Ereignisse offenbaren.",
+"question": "Does the archives hold rare documents?",
+"negate": "The archives do not hold rare documents that reveal historical events.",
+"summarize": "Rare documents reveal history."
+},
+"Museums showcase historical artifacts and cultural stories.": {
+"translate_de": "Museen zeigen historische Artefakte und kulturelle Geschichten.",
+"question": "Do museums showcase historical artifacts and cultural stories?",
+"negate": "Museums do not showcase historical artifacts or cultural stories.",
+"summarize": "Museums display history and culture."
+},
+"They offer guided tours to explore collections.": {
+"translate_de": "Sie bieten geführte Touren an, um Sammlungen zu erkunden.",
+"question": "Do they offer guided tours?",
+"negate": "They do not offer guided tours.",
+"summarize": "Guided tours explore collections"
+},
+"Curators curate exhibits to highlight important discoveries.": {
+"translate_de": "Kuratoren kuratieren Ausstellungen, um wichtige Entdeckungen hervorzuheben.",
+"question": "Does curators curate exhibits?",
+"negate": "Curators do not curate exhibits.",
+"summarize": "Curators curate exhibits"
+},
+"The galleries often feature rotating exhibitions on current events.": {
+"translate_de": "Die Galerien zeigen oft wechselnde Ausstellungen zu aktuellen Ereignissen.",
+"question": "Do the galleries often feature rotating exhibitions on current events?",
+"negate": "The galleries rarely feature rotating exhibitions on current events.",
+"summarize": "Rotating events"
+},
+"Campfire stories whispered under the stars": {
+"translate_de": "Campfire-Geschichten flüstern unter den Sternen",
+"question": "Does the campfire stories sound?",
+"negate": "Campfire tales told no one",
+"summarize": "Campfire tales"
+},
+"Rain falls softly on the earth": {
+"translate_de": "Der Regen fällt sanft auf die Erde.",
+"question": "Does it rain?",
+"negate": "Rain does not fall on the earth.",
+"summarize": "Rain"
+},
+"Sunlight spilled through leaves on a clear night": {
+"translate_de": "Die Sonne fiel durch die Blätter auf eine klare Nacht.",
+"question": "Does sunlight spill through leaves on a clear night?",
+"negate": "The night sky was dark without sunlight.",
+"summarize": "Sunlight on leaves"
+},
+"Wildflowers glowed in the early morning light": {
+"translate_de": "Wildblumen glühten im frühen Morgenlicht",
+"question": "Does it glow in the early morning light?",
+"negate": "Wildflowers did not glow in the early morning light.",
+"summarize": "Wildflowers glow early"
+},
+"Coffee made from fresh beans": {
+"translate_de": "Kaffee aus frischen Beeren",
+"question": "Does coffee made from fresh beans taste good?",
+"negate": "Coffee without fresh beans",
+"summarize": "Fresh coffee"
+},
+"Dogs snored peacefully on a porch": {
+"translate_de": "Hunde schlafen friedlich auf einem Fenster",
+"question": "Does dogs snore peacefully on a porch?",
+"negate": "Dogs did not snore peacefully on a porch.",
+"summarize": "Dogs snore on porch"
+},
+"Trees watched over the campsite": {
+"translate_de": "Bäume beobachteten das Lagerplatz",
+"question": "Does the trees watch over the campsite?",
+"negate": "Trees did not watch over the campsite.",
+"summarize": "Trees watched over campsite"
+},
+"Coffee and campfire adventures": {
+"translate_de": "Kaffee und Lagerfeuer-Abenteuer",
+"question": "Do you have a coffee and campfire adventure?",
+"negate": "Not coffee and campfire adventures",
+"summarize": "Coffee & campfire"
+},
+"Road trip through a scenic trail": {
+"translate_de": "Rautenwanderung durch einen malerischen Weg",
+"question": "Does it have a scenic trail?",
+"negate": "Road trip through a boring trail",
+"summarize": "Scenic trail ride"
+},
+"A family picnic under the summer sky": {
+"translate_de": "Ein Familienpicknick unter dem Sommerhimmel",
+"question": "Does a family picnic under the summer sky happen?",
+"negate": "A family picnic not under the summer sky",
+"summarize": "Summer picnic"
+},
+"Birdwatching during a peaceful afternoon": {
+"translate_de": "Vogelbeobachtung während eines friedlichen Nachmittags",
+"question": "Is it a peaceful afternoon for birdwatching?",
+"negate": "Birdwatching during a chaotic afternoon",
+"summarize": "Peaceful afternoon birdwatching"
+},
+"The sun sets over the mountains, casting long shadows.": {
+"translate_de": "Der Sonne sinkt über die Berge, spiegelt lange Schatten.",
+"question": "Does the sun set over the mountains?",
+"negate": "The sun does not set over the mountains.",
+"summarize": "The sun sets over mountains."
+},
+"A campsite sits under a vast, star-filled sky.": {
+"translate_de": "Ein Campingplatz liegt unter einem großen, blauen Himmel.",
+"question": "Does a campsite sit under a vast, star-filled sky?",
+"negate": "A dark, starless sky sits under a campsite.",
+"summarize": "Under a vast sky"
+},
+"Fresh air fills the air with the scent of pine trees.": {
+"translate_de": "Frische Luft füllt die Luft mit dem Duft von Eichenbäumen.",
+"question": "Does the fresh air smell of pine trees?",
+"negate": "The scent of pine trees is not in the air.",
+"summarize": "Pine air"
+},
+"The night sky is alive with twinkling stars.": {
+"translate_de": "Der Nachthimmel ist mit funkelnden Sternen erfüllt.",
+"question": "Is the night sky alive with twinkling stars?",
+"negate": "The night sky is not alive with twinkling stars.",
+"summarize": "Twinkling stars"
+},
+"A campsite nestled in a serene forest grove.": {
+"translate_de": "Ein Campingplatz, der in einem friedlichen Waldgarten liegt.",
+"question": "Does a campsite nestled in a serene forest grove exist?",
+"negate": "A forest grove without a campsite.",
+"summarize": "A forest grove"
+},
+"A campfire crackles with warmth against a cold night.": {
+"translate_de": "Ein Lagerfeuer knistert mit Wärme gegen eine kalte Nacht.",
+"question": "Does the campfire crackles with warmth?",
+"negate": "A cold night does not crackles with warmth.",
+"summarize": "Warm fire against cold night"
+},
+"The horizon blurs into a gentle, soft light.": {
+"translate_de": "Der Himmel verwischt sich in ein sanftes, weiches Licht.",
+"question": "Does the horizon blur into a gentle, soft light?",
+"negate": "The horizon does not blur into a gentle, soft light.",
+"summarize": "Blur into soft light"
+},
+"A campfire glow fills the silence between days.": {
+"translate_de": "Ein Lagerfeuer erhellt den Lärm zwischen den Tagen.",
+"question": "Does the campfire glow fill the silence between days?",
+"negate": "The silence between days is louder than the campfire glow.",
+"summarize": "A campfire lights the night."
+},
+"The stars shine brightly, reflecting off the water.": {
+"translate_de": "Die Sterne leuchten hell, reflektieren das Wasser.",
+"question": "Does the stars shine brightly?",
+"negate": "The water reflects the stars.",
+"summarize": "Stars shine brightly on water."
+},
+"A simple meal of local ingredients is served at the campground.": {
+"translate_de": "Ein einfaches Essen aus lokalen Zutaten wird im Campingplatz serviert.",
+"question": "Is a simple meal of local ingredients served at the campground?",
+"negate": "A meal made from local ingredients is not served at the campground.",
+"summarize": "Local meal at camp"
+},
+"The sun sets over the mountains, casting a warm glow over the night sky.": {
+"translate_de": "Der Sonne sinkt über die Berge, was ein warmes Licht über den Himmel wirft.",
+"question": "Does the sun set over the mountains?",
+"negate": "The sun does not set over the mountains.",
+"summarize": "The sun sets over mountains."
+},
+"Families gather around campfires, sharing stories and laughter.": {
+"translate_de": "Familien versammeln sich um Lagerfeuer, teilen Geschichten und Lachen.",
+"question": "Do families gather around campfires?",
+"negate": "Families do not gather around campfires, sharing stories and laughter.",
+"summarize": "Campfires, stories"
+},
+"The scent of pine fills the air, creating a serene camping atmosphere.": {
+"translate_de": "Der Duft von Eichen füllt die Luft, schafft eine friedliche Campingatmosphäre.",
+"question": "Does the scent of pine fill the air?",
+"negate": "The air is not filled with pine, creating a different camping atmosphere.",
+"summarize": "Pine scent creates serenity."
+}
+}

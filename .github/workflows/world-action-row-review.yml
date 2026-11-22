@@ -1,0 +1,78 @@
+name: V13 World-JEPA row-permutation focused software review
+on:
+  push:
+    branches: [assistant/v13-world-action-permutation-control-20261027]
+    paths:
+      - '.github/workflows/world-action-row-review.yml'
+      - 'v13/code/scripts/world_jepa_action_permutation_control.py'
+      - 'v13/code/tests/test_world_jepa_action_permutation_control.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-world-action-row-focused
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Source-locked synthetic-only controls
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/world-action-row"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/world_jepa.py > "$evidence/MODEL_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_digital_shadow.py > "$evidence/BRIDGE_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_incremental_probe.py > "$evidence/PROBE_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_incremental_closedstore.py > "$evidence/CLOSED_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_fair_baseline.py > "$evidence/FAIR_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_action_permutation_control.py > "$evidence/CONTROL_BLOB.txt"
+          if [ "$(cat "$evidence/MODEL_BLOB.txt")" = "5ffd56097e66a37e2922e39d1dc0ba86cb28a760" ] && [ "$(cat "$evidence/BRIDGE_BLOB.txt")" = "4ab37e11d8238d376e568567f901c85c12d09da8" ] && [ "$(cat "$evidence/PROBE_BLOB.txt")" = "841a99e86099dc153a322717510a5c4e4aaffe0d" ] && [ "$(cat "$evidence/CLOSED_BLOB.txt")" = "088528535d887b10f5786a8c176002c20f4c013d" ] && [ "$(cat "$evidence/FAIR_BLOB.txt")" = "97367ad5eaae24024955a58fbdd079cfb59de179" ]; then echo 0; else echo 1; fi > "$evidence/FROZEN_EXIT.txt"
+          git merge-base --is-ancestor 00f1dd2fa737fe5cb3a9ea074e437c51233aa040 HEAD
+          echo "$?" > "$evidence/PREREG_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/world-action-row-venv"
+          py="$RUNNER_TEMP/world-action-row-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 6m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_world_jepa_action_permutation_control tests.test_world_jepa_fair_baseline tests.test_world_jepa_incremental_closedstore tests.test_world_jepa_incremental_probe
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          python3 -m py_compile v13/code/scripts/world_jepa_action_permutation_control.py v13/code/tests/test_world_jepa_action_permutation_control.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base c84b95142e30dabd834e0cb5e495b3b8511a0a0e --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check c84b95142e30dabd834e0cb5e495b3b8511a0a0e HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-world-action-row-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/world-action-row/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce actual exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/world-action-row"
+          for name in FROZEN PREREG INSTALL UNIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -90 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'WORLD_ACTION_ROW_SOFTWARE_ONLY_NO_JEPA_PROMOTION'

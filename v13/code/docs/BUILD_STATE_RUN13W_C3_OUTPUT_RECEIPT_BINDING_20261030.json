@@ -1,0 +1,81 @@
+{
+  "schema": "v13.run13w.c3_output_receipt_binding.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 Run13W isolated review branch",
+  "parent": {
+    "pr": 1313,
+    "branch": "assistant/v13-run13v-c3-jef-shadow-fallback-20261030-auto11",
+    "commit": "0cd76094ac433e1b5b9e1ce05cbb57f36205d8d8"
+  },
+  "branch": "assistant/v13-run13w-c3-output-receipt-bind-20261030-auto11",
+  "pr": 1314,
+  "pr_state": "DRAFT_REVIEW_ONLY",
+  "tested_commit": "591e4e226443baabd450a910f66986badc5d3d0a",
+  "prereg_commit": "ccc3ee8e1740805a66e7d9bdbf4b9c468b531ea0",
+  "issue": "Run13V accepted a source-fact-valid candidate with a receipt from different C3 output, because output bytes were not bound; bool native_calls also compared equal to integer one.",
+  "change": "Require exact SHA256 of UTF-8 candidate and exact positive byte length in caller-supplied receipt, strict int native_calls, preserving revalidated JEF fallback; source-only no native calls.",
+  "red": {
+    "run_id": 41099756129,
+    "artifact_id": 12998780778,
+    "zip_sha256": "9f323a21ed516624f8f060dd816ce9ad03ade0548433ca54661ae9f75cfdd164",
+    "crc": "PASS",
+    "inner_sha256": "16/16 PASS",
+    "tests": 29,
+    "failures": 9,
+    "expected_test_first_red": true,
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13W-C3-Receipt/run13w_red_original.zip",
+    "backup_readback": "BYTE_IDENTICAL"
+  },
+  "green": {
+    "run_id": 41100031378,
+    "artifact_id": 12997249312,
+    "zip_sha256": "7b0efa0641b2706fcbd8b9c9a13ffe9ada6db2f4ace5063878f855d2fb910137",
+    "crc": "PASS",
+    "inner_sha256": "16/16 PASS",
+    "tests": 30,
+    "failures": 0,
+    "stages": [
+      "PINS",
+      "VENV",
+      "DEPS",
+      "TEST",
+      "COMPILE",
+      "PRIVACY",
+      "DIFF"
+    ],
+    "all_stage_exit": 0,
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13W-C3-Receipt/run13w_green_original.zip",
+    "backup_readback": "BYTE_IDENTICAL"
+  },
+  "evidence_scope": "SOFTWARE_REAL_STORE_SYNTHETIC_RECEIPT_ONLY",
+  "limitations": [
+    "Caller-supplied receipt hashes are not authenticated native provenance.",
+    "No active Runtime delivery, no model invocation, no model learning, no Redmi run.",
+    "Original Run13T C3 native FIDELITY_HURT and 4027-test historical full-suite RED remain.",
+    "Run13W child branch is not merged into main or the parent."
+  ],
+  "gates": {
+    "learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "frozen": [
+    "Canon v10.16.1",
+    "Run13J/K/L/T/U original cohorts",
+    "native model revisions/hashes",
+    "seed/fixture/scorer",
+    "all negative gates"
+  ],
+  "open_questions": [
+    "Prove receipt authenticity by independent raw artifact binding rather than trusting caller-supplied dict.",
+    "Evaluate C3+JEF selection against exact original native raw without retroactive gate promotion.",
+    "Independent review of Run13W and cross-organ full suite remains open."
+  ],
+  "next_command": "Inspect GitHub PR #1314 at tested commit 591e4e2; independently validate original Run13T raw ZIP SHA256 86f728599312518bfa67efa0ae16e66be0eaec9ccfd8c3da8710fba40192717c, then build separate read-only source/output provenance audit on a child branch; no new heavy native run without owner preflight."
+}

@@ -1,0 +1,77 @@
+test_cross_partition_output_collisions_dropped_before_taps (tests.test_action_jepa_export.ExportTests.test_cross_partition_output_collisions_dropped_before_taps) ... ok
+test_declared_plan_cannot_change_after_capture (tests.test_action_jepa_export.ExportTests.test_declared_plan_cannot_change_after_capture) ... ERROR
+test_export_matches_native_array_and_detects_changed_state_lineage (tests.test_action_jepa_export.ExportTests.test_export_matches_native_array_and_detects_changed_state_lineage) ... ERROR
+test_no_manifest_missing_taps_never_exports_fixture (tests.test_action_jepa_export.ExportTests.test_no_manifest_missing_taps_never_exports_fixture) ... ERROR
+test_plan_preserves_old_test_and_unseen_new_partitions (tests.test_action_jepa_export.ExportTests.test_plan_preserves_old_test_and_unseen_new_partitions) ... FAIL
+test_text_order_or_library_change_blocks_export (tests.test_action_jepa_export.ExportTests.test_text_order_or_library_change_blocks_export) ... ERROR
+
+======================================================================
+ERROR: test_declared_plan_cannot_change_after_capture (tests.test_action_jepa_export.ExportTests.test_declared_plan_cannot_change_after_capture)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/tests/test_action_jepa_export.py", line 109, in test_declared_plan_cannot_change_after_capture
+    self.export(root, args)
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/tests/test_action_jepa_export.py", line 49, in export
+    return ex.export_dataset(*args[:5], root/'export')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/scripts/export_action_jepa_dataset.py", line 102, in export_dataset
+    expected = build_plan(sentences, actions, plan['legacy_split_seed'], plan['partition_seed'])
+                                              ~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'legacy_split_seed'
+
+======================================================================
+ERROR: test_export_matches_native_array_and_detects_changed_state_lineage (tests.test_action_jepa_export.ExportTests.test_export_matches_native_array_and_detects_changed_state_lineage)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/tests/test_action_jepa_export.py", line 67, in test_export_matches_native_array_and_detects_changed_state_lineage
+    receipt = self.export(root, args)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/tests/test_action_jepa_export.py", line 49, in export
+    return ex.export_dataset(*args[:5], root/'export')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/scripts/export_action_jepa_dataset.py", line 102, in export_dataset
+    expected = build_plan(sentences, actions, plan['legacy_split_seed'], plan['partition_seed'])
+                                              ~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'legacy_split_seed'
+
+======================================================================
+ERROR: test_no_manifest_missing_taps_never_exports_fixture (tests.test_action_jepa_export.ExportTests.test_no_manifest_missing_taps_never_exports_fixture)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/tests/test_action_jepa_export.py", line 84, in test_no_manifest_missing_taps_never_exports_fixture
+    self.export(root, args)
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/tests/test_action_jepa_export.py", line 49, in export
+    return ex.export_dataset(*args[:5], root/'export')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/scripts/export_action_jepa_dataset.py", line 102, in export_dataset
+    expected = build_plan(sentences, actions, plan['legacy_split_seed'], plan['partition_seed'])
+                                              ~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'legacy_split_seed'
+
+======================================================================
+ERROR: test_text_order_or_library_change_blocks_export (tests.test_action_jepa_export.ExportTests.test_text_order_or_library_change_blocks_export)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/tests/test_action_jepa_export.py", line 96, in test_text_order_or_library_change_blocks_export
+    self.export(root, args)
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/tests/test_action_jepa_export.py", line 49, in export
+    return ex.export_dataset(*args[:5], root/'export')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/scripts/export_action_jepa_dataset.py", line 102, in export_dataset
+    expected = build_plan(sentences, actions, plan['legacy_split_seed'], plan['partition_seed'])
+                                              ~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'legacy_split_seed'
+
+======================================================================
+FAIL: test_plan_preserves_old_test_and_unseen_new_partitions (tests.test_action_jepa_export.ExportTests.test_plan_preserves_old_test_and_unseen_new_partitions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/tests/test_action_jepa_export.py", line 61, in test_plan_preserves_old_test_and_unseen_new_partitions
+    self.assertEqual(plan, ex.build_plan(sp, ap))
+AssertionError: {'sch[304 chars]ns': ['translate_de', 'question', 'negate', 's[8197 chars]': 0} != {'sch[304 chars]ns': ('translate_de', 'question', 'negate', 's[8197 chars]': 0}
+Diff is 13897 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.088s
+
+FAILED (failures=1, errors=4)

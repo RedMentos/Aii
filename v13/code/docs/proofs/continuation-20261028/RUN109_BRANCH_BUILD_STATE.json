@@ -1,0 +1,33 @@
+{
+  "schema": "v13.run109.branch_build_state.v1",
+  "timestamp_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run109-step2-fresh-native-fixtures-20261029",
+  "base_head": "7546d14bb116f3a3c32f6c8d687eb35e464c9f46",
+  "base_pr": 1012,
+  "prereg_first_commit": "8283555d4505e6bb430044d3f60d6ca6f8873f95",
+  "source_commits": [
+    "1c17129ddcbe2cc9d878943e083a4265604de72b",
+    "1ea7cc67b13dacaa88410baf39231e0770049f7d"
+  ],
+  "blobs": {
+    "prereg": "fa81effcf6a9e7cf82e2f2377ae030e512897015",
+    "script": "31206feb0f2d4acb910d4db83a4b8518e0f5c435",
+    "tests": "78227dcd4a78dbc0ab33fb4ad2ef9938aee1de9c",
+    "z2_frozen": "2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7"
+  },
+  "parent_condition": "Run108 original raw Actions 40800196929 must be independently GREEN before CI execution",
+  "status": "PREREG_AND_SOURCE_STAGED; PARENT_RUN108_CI_PENDING; NO_MODEL_EXECUTION",
+  "negative_gates": {
+    "Age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Verify Run108 original ZIP and 15+ inner SHA256SUMS; if GREEN run Run109 software-only fixture generator/focused/full CI, inspect raw and private backup. Then separately preregister native STEP2 cohort with fresh seeds 20/21/22 and fixed body/model hashes; serialize heavy jobs.",
+  "remaining_execution_budget": "UNKNOWN"
+}

@@ -1,0 +1,9 @@
+{
+  "checked_at": "2026-09-29T03:57:53.730869+00:00",
+  "model_id": "facebook/MobileMoE-S-QAT",
+  "revision": "afda132cad380ac47da5ef055f186884d1c12f65",
+  "gated": "auto",
+  "primary_url": "https://huggingface.co/facebook/MobileMoE-S-QAT",
+  "no_credentials_used": true,
+  "public_config_http_status": 401
+}

@@ -1,0 +1,58 @@
+{
+ "prereg_sha256": "6c077592581d6c4bd470c6cb434073ac0516a1e56cbe9bd97c9a7f39efecb468",
+ "fresh_sha256": "16cfa2ad69fa84a059e2e8b76586dee7c0c5c0db23bbebb930d852684b0e0bba",
+ "policies": {
+  "c3_alone": {
+   "pass": 40,
+   "calc_turns": 0,
+   "mean_turn_s": 5.3,
+   "by_kind": {
+    "summary": 9,
+    "long": 14,
+    "notes": 12,
+    "compare": 5
+   }
+  },
+  "calc_always": {
+   "pass": 51,
+   "calc_turns": 30,
+   "mean_turn_s": 8.97,
+   "by_kind": {
+    "summary": 13,
+    "long": 14,
+    "notes": 12,
+    "compare": 12
+   }
+  },
+  "calc_uncertain": {
+   "pass": 50,
+   "calc_turns": 24,
+   "mean_turn_s": 8.23,
+   "by_kind": {
+    "summary": 13,
+    "long": 14,
+    "notes": 12,
+    "compare": 11
+   }
+  }
+ },
+ "primary": "calc_uncertain",
+ "threshold": 0.06373737752437592,
+ "paired_vs_c3": {
+  "wins": 11,
+  "losses": 1,
+  "net": 10,
+  "sign_test_p": 0.0063
+ },
+ "max_kind_drop": 0,
+ "value_correct_by_kind": {
+  "summary": 14,
+  "long": 0,
+  "notes": 0,
+  "compare": 15
+ },
+ "tool_refused": 30,
+ "verdict": "CALC_SUPPORTED",
+ "phone_measured": false,
+ "runtime_changed": false
+}

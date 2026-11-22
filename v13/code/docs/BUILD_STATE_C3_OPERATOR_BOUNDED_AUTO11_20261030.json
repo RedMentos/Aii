@@ -1,0 +1,40 @@
+{
+  "schema": "v13.build_state.scoped.v1",
+  "date": "2026-10-30",
+  "owner": "GPT-6 automation",
+  "branch": "codex/v13-c3-operator-bounded-input-20261030-auto11d",
+  "parent": "f9625470aa1ee67ea4356d36a3be8d16a84835e7",
+  "source_blob": "6f698ef12377b2e92d7c801e80e2648ca8aea78c",
+  "verified_head": "49b5a5cbc30c3239e48718b36abc98868d2d345f",
+  "red": {
+    "run": 41021387548,
+    "artifact": 12961940643,
+    "zip_sha256": "159d9bff4ee2ea617be0d50d6a9ddde480c6cca5d97f7aa83fade5a177f2f127",
+    "tests": 31,
+    "failures": 3,
+    "errors": 1
+  },
+  "green": {
+    "run": 41021490375,
+    "artifact": 12961394299,
+    "zip_sha256": "84eb00d155518f3659a3ddbb818efd50c8674c72805cdc16898cda45daa6043b",
+    "tests": 31,
+    "passed": 31,
+    "inner_hashes": "13/13",
+    "stages": "6/6 zero",
+    "privacy": "CLEAN"
+  },
+  "evidence_grade": "SOFTWARE_ONLY",
+  "native_model_run": false,
+  "redmi_measured": false,
+  "learning_mode": "RECORD_ONLY",
+  "step2_gate": "UTILITY_FAIL",
+  "b3_gate": "NO_PROMOTION",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run11-C3-Operator-Receipt/",
+  "next": "Disjoint prereg C3 typed-read native comparison vs deterministic baseline; no seed83 source/model/score changes.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}

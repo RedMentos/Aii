@@ -1,0 +1,121 @@
+{
+  "schema": "V13_FUTURE_MODEL_PRIMARY_METADATA_V1",
+  "scope": "Unmeasured research candidates only, no installed model change, no Roadmap change",
+  "models": [
+    {
+      "model_id": "LiquidAI/LFM2.5-350M",
+      "observed_at": "2026-10-11T21:22:57.720567+00:00",
+      "metadata_url": "https://huggingface.co/api/models/LiquidAI/LFM2.5-350M",
+      "model_card_url": "https://huggingface.co/LiquidAI/LFM2.5-350M",
+      "snapshot_revision": "9e6c6ccf47cd318696e137d381a7ded8fe4df09f",
+      "repository_created_at": "2026-03-31T06:21:25.000Z",
+      "repository_last_modified": "2026-08-05T17:01:13.000Z",
+      "repository_timestamp_note": "Repository creation/modification is not a release publication date.",
+      "model_card_pinned_url": "https://huggingface.co/LiquidAI/LFM2.5-350M/resolve/9e6c6ccf47cd318696e137d381a7ded8fe4df09f/README.md",
+      "model_card_sha256": "a2bb9f40aca96e21d0e2c497af58f459a4b1f92c9d459dc0ece67ec63f7480b5",
+      "model_card_bytes": 14508,
+      "config_pinned_url": "https://huggingface.co/LiquidAI/LFM2.5-350M/resolve/9e6c6ccf47cd318696e137d381a7ded8fe4df09f/config.json",
+      "config_sha256": "720b43d6ddc2ed25be23eed355aefcf342434a176dedad23dbe0a5e3ac24bbb8",
+      "architecture": {
+        "architectures": [
+          "Lfm2ForCausalLM"
+        ],
+        "model_type": "lfm2",
+        "hidden_size": 1024,
+        "num_hidden_layers": 16,
+        "max_position_embeddings": 128000
+      },
+      "license": "other",
+      "weights_downloaded": false,
+      "candidate_tested": false
+    },
+    {
+      "model_id": "Qwen/Qwen3.5-0.8B",
+      "observed_at": "2026-10-11T21:22:57.673608+00:00",
+      "metadata_url": "https://huggingface.co/api/models/Qwen/Qwen3.5-0.8B",
+      "model_card_url": "https://huggingface.co/Qwen/Qwen3.5-0.8B",
+      "snapshot_revision": "2fc06364715b967f1860aea9cf38778875588b17",
+      "repository_created_at": "2026-02-28T23:57:01.000Z",
+      "repository_last_modified": "2026-03-02T11:26:58.000Z",
+      "repository_timestamp_note": "Repository creation/modification is not a release publication date.",
+      "model_card_pinned_url": "https://huggingface.co/Qwen/Qwen3.5-0.8B/resolve/2fc06364715b967f1860aea9cf38778875588b17/README.md",
+      "model_card_sha256": "87a163af54f32fa608a0f8d3ac67945c53dd2b4a7c96740b3d7fdc28e8458864",
+      "model_card_bytes": 61705,
+      "config_pinned_url": "https://huggingface.co/Qwen/Qwen3.5-0.8B/resolve/2fc06364715b967f1860aea9cf38778875588b17/config.json",
+      "config_sha256": "b90b86f35c8e6925ef74ee04d0e758f0a845c83a42089ad82bbaa948de9b4204",
+      "architecture": {
+        "architectures": [
+          "Qwen3_5ForConditionalGeneration"
+        ],
+        "model_type": "qwen3_5",
+        "text_config": {
+          "model_type": "qwen3_5_text",
+          "hidden_size": 1024,
+          "num_hidden_layers": 24,
+          "max_position_embeddings": 262144,
+          "layer_types": [
+            "linear_attention",
+            "linear_attention",
+            "linear_attention",
+            "full_attention",
+            "linear_attention",
+            "linear_attention",
+            "linear_attention",
+            "full_attention",
+            "linear_attention",
+            "linear_attention",
+            "linear_attention",
+            "full_attention",
+            "linear_attention",
+            "linear_attention",
+            "linear_attention",
+            "full_attention",
+            "linear_attention",
+            "linear_attention",
+            "linear_attention",
+            "full_attention",
+            "linear_attention",
+            "linear_attention",
+            "linear_attention",
+            "full_attention"
+          ]
+        },
+        "vision_config": {
+          "model_type": "qwen3_5",
+          "hidden_size": 768,
+          "depth": 12
+        }
+      },
+      "license": "apache-2.0",
+      "weights_downloaded": false,
+      "candidate_tested": false
+    },
+    {
+      "model_id": "HuggingFaceTB/SmolLM2-360M-Instruct",
+      "observed_at": "2026-10-11T21:22:57.674134+00:00",
+      "metadata_url": "https://huggingface.co/api/models/HuggingFaceTB/SmolLM2-360M-Instruct",
+      "model_card_url": "https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct",
+      "snapshot_revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+      "repository_created_at": "2024-10-31T13:41:35.000Z",
+      "repository_last_modified": "2025-09-22T20:44:35.000Z",
+      "repository_timestamp_note": "Repository creation/modification is not a release publication date.",
+      "model_card_pinned_url": "https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct/resolve/a10cc1512eabd3dde888204e902eca88bddb4951/README.md",
+      "model_card_sha256": "6b88794416ac9da8f254ebb0bec228967a2bdd0badf9a2853863928b25facd95",
+      "model_card_bytes": 7304,
+      "config_pinned_url": "https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct/resolve/a10cc1512eabd3dde888204e902eca88bddb4951/config.json",
+      "config_sha256": "224f72354f10d617a359cc82ad15a3c96e866b9b2ffadb81997eeea9e88e22ee",
+      "architecture": {
+        "architectures": [
+          "LlamaForCausalLM"
+        ],
+        "model_type": "llama",
+        "hidden_size": 960,
+        "num_hidden_layers": 32,
+        "max_position_embeddings": 8192
+      },
+      "license": "apache-2.0",
+      "weights_downloaded": false,
+      "candidate_tested": false
+    }
+  ]
+}

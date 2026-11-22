@@ -1,0 +1,53 @@
+{
+ "changed_gate_reuses_old_adaptation": {
+  "defect_reproduced": true,
+  "result": {
+   "old_gate_in_domain": true,
+   "v2_gate_in_domain": false,
+   "old_adaptation_accepted_after_gate_change": true,
+   "adaptation_activated_on_unvalidated_region": true,
+   "receipt_bound_keys": [
+    "adapted_sha256",
+    "checkpoint_sha256",
+    "mode",
+    "pass",
+    "tool_sha256"
+   ]
+  }
+ },
+ "failed_reinstall_breaks_last_passing_retention": {
+  "defect_reproduced": true,
+  "result": {
+   "installer_exit": 1,
+   "old_encoder_json_byte_unchanged": true,
+   "old_encoder_still_accepted": true,
+   "retention_hash_mismatch": {
+    "calc_counter": true,
+    "note_edit": true
+   }
+  }
+ },
+ "pending_scores_across_checkpoint_change": {
+  "defect_reproduced": true,
+  "result": {
+   "pending_checkpoint": "b2cd4bc7ed8e4fa5152f87a5b39db755c6c4a80e7011446237d077cca255129e",
+   "current_checkpoint": "NEW-CHECKPOINT-IDENTITY",
+   "status_despite_changed_checkpoint_projection": "SCORED",
+   "experience_rows_in_new_checkpoint_world": 1
+  }
+ },
+ "corrupted_install_breaks_status": {
+  "defect_reproduced": true,
+  "result": {
+   "status_raises": "JSONDecodeError"
+  }
+ },
+ "expired_context_files_accumulate": {
+  "defect_reproduced": true,
+  "result": {
+   "pending_state_rows": 64,
+   "context_files": 66,
+   "orphan_files": 2
+  }
+ }
+}

@@ -1,0 +1,291 @@
+{
+ "prereg": {
+  "schema": "LATEWATCH_NUMBERS_PREREG_V1",
+  "test_seeds": [
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "changes": [
+   "thousands separators (groups of 3) read as integers",
+   "trailing number of a partial answer ignored until complete"
+  ],
+  "pass": [
+   "format: candidate > current in >=4/5",
+   "standard: candidate < current in <=1/5",
+   "candidate beats never/always/random >=4/5 on both streams",
+   "pure checks hold"
+  ]
+ },
+ "test": {
+  "standard": {
+   "13": {
+    "current": {
+     "primary": 0.07,
+     "cuts": 105
+    },
+    "candidate": {
+     "primary": 0.075,
+     "cuts": 98
+    },
+    "never": {
+     "primary": 0.0,
+     "cuts": 0
+    },
+    "always": {
+     "primary": -0.31,
+     "cuts": 323
+    },
+    "random": {
+     "primary": -0.0675,
+     "cuts": 98
+    }
+   },
+   "14": {
+    "current": {
+     "primary": 0.03,
+     "cuts": 102
+    },
+    "candidate": {
+     "primary": 0.035,
+     "cuts": 91
+    },
+    "never": {
+     "primary": 0.0,
+     "cuts": 0
+    },
+    "always": {
+     "primary": -0.3175,
+     "cuts": 302
+    },
+    "random": {
+     "primary": -0.0975,
+     "cuts": 91
+    }
+   },
+   "15": {
+    "current": {
+     "primary": 0.08,
+     "cuts": 128
+    },
+    "candidate": {
+     "primary": 0.08,
+     "cuts": 120
+    },
+    "never": {
+     "primary": 0.0,
+     "cuts": 0
+    },
+    "always": {
+     "primary": -0.255,
+     "cuts": 326
+    },
+    "random": {
+     "primary": -0.09,
+     "cuts": 120
+    }
+   },
+   "16": {
+    "current": {
+     "primary": 0.0875,
+     "cuts": 114
+    },
+    "candidate": {
+     "primary": 0.095,
+     "cuts": 106
+    },
+    "never": {
+     "primary": 0.0,
+     "cuts": 0
+    },
+    "always": {
+     "primary": -0.2825,
+     "cuts": 312
+    },
+    "random": {
+     "primary": -0.0775,
+     "cuts": 106
+    }
+   },
+   "17": {
+    "current": {
+     "primary": 0.05,
+     "cuts": 103
+    },
+    "candidate": {
+     "primary": 0.065,
+     "cuts": 95
+    },
+    "never": {
+     "primary": 0.0,
+     "cuts": 0
+    },
+    "always": {
+     "primary": -0.31,
+     "cuts": 306
+    },
+    "random": {
+     "primary": -0.085,
+     "cuts": 95
+    }
+   }
+  },
+  "format": {
+   "13": {
+    "current": {
+     "primary": -0.065,
+     "cuts": 158
+    },
+    "candidate": {
+     "primary": 0.07,
+     "cuts": 97
+    },
+    "never": {
+     "primary": 0.0,
+     "cuts": 0
+    },
+    "always": {
+     "primary": -0.3025,
+     "cuts": 322
+    },
+    "random": {
+     "primary": -0.1125,
+     "cuts": 97
+    }
+   },
+   "14": {
+    "current": {
+     "primary": -0.1025,
+     "cuts": 170
+    },
+    "candidate": {
+     "primary": 0.045,
+     "cuts": 103
+    },
+    "never": {
+     "primary": 0.0,
+     "cuts": 0
+    },
+    "always": {
+     "primary": -0.335,
+     "cuts": 319
+    },
+    "random": {
+     "primary": -0.125,
+     "cuts": 103
+    }
+   },
+   "15": {
+    "current": {
+     "primary": -0.04,
+     "cuts": 166
+    },
+    "candidate": {
+     "primary": 0.0775,
+     "cuts": 109
+    },
+    "never": {
+     "primary": 0.0,
+     "cuts": 0
+    },
+    "always": {
+     "primary": -0.2875,
+     "cuts": 318
+    },
+    "random": {
+     "primary": -0.0975,
+     "cuts": 109
+    }
+   },
+   "16": {
+    "current": {
+     "primary": -0.0675,
+     "cuts": 149
+    },
+    "candidate": {
+     "primary": 0.065,
+     "cuts": 89
+    },
+    "never": {
+     "primary": 0.0,
+     "cuts": 0
+    },
+    "always": {
+     "primary": -0.325,
+     "cuts": 307
+    },
+    "random": {
+     "primary": -0.08,
+     "cuts": 89
+    }
+   },
+   "17": {
+    "current": {
+     "primary": -0.1275,
+     "cuts": 154
+    },
+    "candidate": {
+     "primary": 0.0275,
+     "cuts": 86
+    },
+    "never": {
+     "primary": 0.0,
+     "cuts": 0
+    },
+    "always": {
+     "primary": -0.395,
+     "cuts": 310
+    },
+    "random": {
+     "primary": -0.1075,
+     "cuts": 86
+    }
+   }
+  }
+ },
+ "means": {
+  "standard": {
+   "current": 0.0635,
+   "candidate": 0.07,
+   "never": 0.0,
+   "always": -0.295,
+   "random": -0.0835
+  },
+  "format": {
+   "current": -0.0805,
+   "candidate": 0.057,
+   "never": 0.0,
+   "always": -0.329,
+   "random": -0.1045
+  }
+ },
+ "criteria": {
+  "format_beats_current": 5,
+  "standard_worse_than_current": 0,
+  "beats_controls": {
+   "standard": {
+    "never": 5,
+    "always": 5,
+    "random": 5
+   },
+   "format": {
+    "never": 5,
+    "always": 5,
+    "random": 5
+   }
+  },
+  "pure_checks": {
+   "decimal_comma": true,
+   "thousands": true,
+   "mixed": true,
+   "thousands_then_comma": true,
+   "tail_dropped": true,
+   "tail_with_separator_dropped": true,
+   "tail_kept_after_space": true
+  }
+ },
+ "verdict": "PASS",
+ "claim_limit": "synthetic arithmetic turns; isolated candidate, latewatch.py unchanged"
+}

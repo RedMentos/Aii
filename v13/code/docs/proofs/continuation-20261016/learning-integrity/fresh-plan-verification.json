@@ -1,0 +1,28 @@
+{
+  "schema": "V13_FRESH_LEARNING_PLAN_VERIFY_20261016_V1",
+  "snapshot_seed_reproduction_equal": true,
+  "current_inventory_regeneration_equal": true,
+  "source_hash_matches": {
+    "specs/tool_forecast/calc_counter/candidate.npz": true,
+    "specs/tool_forecast/note_edit/candidate.npz": true,
+    "specs/tool_forecast/live-plan.json": true,
+    "specs/tool_forecast/learning-plan.json": true,
+    "docs/proofs/continuation-20261013/tool-forecast-competence-v2/plan.json": true,
+    "docs/proofs/continuation-20261013/tool-forecast-competence-v2/preregistration.json": true,
+    "scripts/tool_forecast_learning_plan_20261016.py": true,
+    "scripts/tool_forecast_learning_check.py": true,
+    "scripts/tool_forecast_competence_check.py": true,
+    "scripts/tool_forecast_live_check.py": true,
+    "scripts/action_jepa_round5_tools.py": true,
+    "scripts/action_jepa_round7_fresh.py": true,
+    "scripts/action_jepa_round8_note_tool.py": true,
+    "v13/toolforecast.py": true
+  },
+  "plan_sha256": "669b5d119a8df0001e64bf11712bdd642651b9738f4f6e14a1319cc3fe449893",
+  "expected_rows": 610,
+  "phase_a_rows": 250,
+  "phase_b_rows": 360,
+  "outcomes_observed": false,
+  "native_models_launched": false,
+  "claim_scope": "Input-state exclusions and deterministic seed reconstruction only"
+}

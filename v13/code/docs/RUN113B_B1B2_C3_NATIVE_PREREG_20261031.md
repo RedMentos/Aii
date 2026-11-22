@@ -1,0 +1,16 @@
+# Run113B prereg — native B1 current detail + B2 earlier rule + C3 SHADOW receiver
+
+Date: 2026-10-31. Owner: GPT-6. Independent review-only child of Run112 PR #1482, exact starting HEAD `683af6fb9ca86aae9b0522d11ba91e38da790964`. No edits to Run112 or historical cohorts. Canon v10.16.1 and user decisions remain binding.
+
+## Frozen new synthetic task (seed 919, one case, no retuning)
+Fixture file: `docs/fixtures/RUN113B_B1B2_C3_SEED919.json`, exact bytes SHA256 `ff1720b73cdfa1cb2bdc91de165c0f85299c71dd02456728de6ea73e782e32ca` (UTF-8 one compact JSON line plus LF). Project Aster archived policy: maximum 140 credits, deadline 5 ticks, local-only true. Latest options: A 139 credits/4 ticks/local-only true, B 125 credits/3 ticks/local-only false. Expected strictly `{"choice":"A"}`. Current B1 exact quote `Option A budget 139 credits, deadline 4 ticks, local-only true.`; earlier B2 exact quote `Maximum budget: 140 credits.`. No answer label or expected field is allowed in C3 messages.
+
+## Procedure and evidence levels
+Model-free preflight: actual Runtime/SQLite Store, source-bound synthetic B1/B2 observer outputs explicitly labeled SYNTHETIC; B2 prior then current offer, B1 current offer, same current event, Context OS SHADOW plan; source provenance, no user-visible output/actions, restart-closed Store and negative gates. This does not prove native inference.
+
+Native pilot (only after preflight): pin existing catalog B1 LFM2.5-1.2B revision `6767265158422fb8a19c62ceb45f16f05363615b`, SHA256 `bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1`; B2 Qwen3.5-0.8B revision `8fea620810c4afa23dd6443f999a48574c1611a3`, SHA256 `57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf`; C3 LFM2.5-350M revision `657e078c94084481950a2d555a941481f715536b`, SHA256 `3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d`; llama-server b10964 SHA256 `79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39`. Native B2 prior + B1 current + B2 current (3 FINAL offers), then C3 one FINAL response. Serial unload/reap each model; no overlapping heavy native calls. Deterministic `scaffold_route` must select `both`; it is NOT native Needle/C2 evidence. No JEF native claim.
+
+Native structural PASS requires pinned actual model/runner hashes, 3 native FINAL offers, exact B1 current quote and B2 earlier prior quote with matching source refs in same current event, Context OS SHADOW provenance and full prior rules, 1 pinned C3 FINAL response, every process reaped, closed Store and no live output/action. The strict answer is scored separately (correct/incorrect); an incorrect C3 choice does not get hidden by structural PASS. Any absent quote/timeout/mismatch is RED, preserved, never repaired with synthetic data in native arm.
+
+## Claim limits and next
+This one-case Linux-native pilot is not a STEP2 counterbalanced causal proof, not native C2/JEF, not B3/JEPA/learning, not Redmi. Run111 NO_GAIN and Run105 4893-suite RED preserved. Age0 RECORD_ONLY; STEP2_EXIT EVIDENCE_NOT_PASSING; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; World-JEPA SHADOW; jepa_weight=0; whole V13 INCOMPLETE. If native pilot is structurally viable, preregister disjoint multi-case A/B1-only/B2-only/both comparisons with native JEF/C2 provenance and counterbalanced order before any utility claim.

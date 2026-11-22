@@ -1,0 +1,77 @@
+{
+  "schema": "v13.run117w.c3_arithmetic_seed1063.v1",
+  "seed": 1063,
+  "arms": [
+    "BASE_SOURCE_SYSTEM",
+    "EXPLICIT_ARITHMETIC_SYSTEM",
+    "TYPED_JEF_FORMATTER"
+  ],
+  "rows": [
+    {
+      "id": "Arbor",
+      "prior": "Project Arbor archived note. Earlier draft withdrawn. Binding policy: budget 140 euros; deadline 5 days; local-only true.",
+      "current": "Project Arbor latest options. Option A: cost 90 euros, duration 4 days, local true. Option B: cost 110 euros, duration 3 days, local true.",
+      "policy_span": "Binding policy: budget 140 euros; deadline 5 days; local-only true.",
+      "option_span": "Option A: cost 90 euros, duration 4 days, local true. Option B: cost 110 euros, duration 3 days, local true.",
+      "oracle": {
+        "choice": "A",
+        "remaining": 50
+      }
+    },
+    {
+      "id": "Brisa",
+      "prior": "Project Brisa archived note. Earlier draft withdrawn. Binding policy: budget 130 euros; deadline 6 days; local-only true.",
+      "current": "Project Brisa latest options. Option A: cost 115 euros, duration 4 days, local false. Option B: cost 70 euros, duration 5 days, local true.",
+      "policy_span": "Binding policy: budget 130 euros; deadline 6 days; local-only true.",
+      "option_span": "Option A: cost 115 euros, duration 4 days, local false. Option B: cost 70 euros, duration 5 days, local true.",
+      "oracle": {
+        "choice": "B",
+        "remaining": 60
+      }
+    },
+    {
+      "id": "Cyra",
+      "prior": "Project Cyra archived note. Earlier draft withdrawn. Binding policy: budget 100 euros; deadline 4 days; local-only true.",
+      "current": "Project Cyra latest options. Option A: cost 120 euros, duration 3 days, local true. Option B: cost 110 euros, duration 2 days, local true.",
+      "policy_span": "Binding policy: budget 100 euros; deadline 4 days; local-only true.",
+      "option_span": "Option A: cost 120 euros, duration 3 days, local true. Option B: cost 110 euros, duration 2 days, local true.",
+      "oracle": {
+        "choice": "NONE",
+        "remaining": null
+      }
+    },
+    {
+      "id": "Doran",
+      "prior": "Project Doran archived note. Earlier draft withdrawn. Binding policy: budget 200 euros; deadline 5 days; local-only true.",
+      "current": "Project Doran latest options. Option A: cost 180 euros, duration 8 days, local true. Option B: cost 130 euros, duration 3 days, local true.",
+      "policy_span": "Binding policy: budget 200 euros; deadline 5 days; local-only true.",
+      "option_span": "Option A: cost 180 euros, duration 8 days, local true. Option B: cost 130 euros, duration 3 days, local true.",
+      "oracle": {
+        "choice": "B",
+        "remaining": 70
+      }
+    },
+    {
+      "id": "Elyra",
+      "prior": "Project Elyra archived note. Earlier draft withdrawn. Binding policy: budget 175 euros; deadline 6 days; local-only true.",
+      "current": "Project Elyra latest options. Option A: cost 100 euros, duration 2 days, local true. Option B: cost 90 euros, duration 4 days, local true.",
+      "policy_span": "Binding policy: budget 175 euros; deadline 6 days; local-only true.",
+      "option_span": "Option A: cost 100 euros, duration 2 days, local true. Option B: cost 90 euros, duration 4 days, local true.",
+      "oracle": {
+        "choice": "B",
+        "remaining": 85
+      }
+    },
+    {
+      "id": "Fenix",
+      "prior": "Project Fenix archived note. Earlier draft withdrawn. Binding policy: budget 90 euros; deadline 4 days; local-only true.",
+      "current": "Project Fenix latest options. Option A: cost 80 euros, duration 3 days, local false. Option B: cost 70 euros, duration 6 days, local true.",
+      "policy_span": "Binding policy: budget 90 euros; deadline 4 days; local-only true.",
+      "option_span": "Option A: cost 80 euros, duration 3 days, local false. Option B: cost 70 euros, duration 6 days, local true.",
+      "oracle": {
+        "choice": "NONE",
+        "remaining": null
+      }
+    }
+  ]
+}

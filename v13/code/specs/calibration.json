@@ -1,0 +1,161 @@
+{
+ "source": "bench-results/KALIBRIERUNG.md (WP-KAL 2026-10-09, cloud x86 4 cores, English, not Redmi); Runde 2: bench-results/kalibrierung2-20261009",
+ "verdicts": {
+  "KEEP_BOOT_SUPPORTED": "measurement fits the BOOT value",
+  "KEEP_BOOT_NOT_CALIBRATABLE": "measured, but data cannot pick a better value",
+  "BETTER_SIGNAL_EXISTS": "value kept, a different input signal measured better",
+  "NEEDS_LEARNING_RUNS": "no model measurement possible without training outcomes",
+  "CHANGED_MEASURED": "default changed because a measurement supports the new value/signal (WP-KAL2)"
+ },
+ "values": {
+  "focal.BOOT[disagreement_trigger]": {
+   "verdict": "KEEP_BOOT_NOT_CALIBRATABLE",
+   "measured": {
+    "lexical_auroc_curated": 0.609,
+    "lexical_auroc_real_offers": 0.618,
+    "llm_judge_auroc_best": 0.649,
+    "embedding_auroc": 0.414
+   }
+  },
+  "focal.BOOT[uncertainty_trigger]": {
+   "verdict": "CHANGED_MEASURED",
+   "measured": {
+    "trigger_kept": 0.45,
+    "signal": "token logprob, least probable summary token (focal.TOKEN_UNC)",
+    "offer_uncertainty_auroc_b1_before": 0.52,
+    "offer_uncertainty_auroc_b1_after": 0.88,
+    "offer_uncertainty_auroc_b2_before": 0.61,
+    "offer_uncertainty_auroc_b2_after": 0.76,
+    "second_sample_auroc_b1": 0.83,
+    "second_sample_auroc_b2": 0.75,
+    "tpr_at_trigger_b1": 0.81,
+    "fpr_at_trigger_b1": 0.15,
+    "tpr_at_trigger_b2": 0.73,
+    "fpr_at_trigger_b2": 0.29,
+    "n_per_role": 40
+   }
+  },
+  "focal.BOOT[coalition_threshold]": {
+   "verdict": "NEEDS_LEARNING_RUNS"
+  },
+  "effort.BOOT[default]": {
+   "verdict": "KEEP_BOOT_NOT_CALIBRATABLE",
+   "measured": {
+    "c3_350m_boot_policy_acc": 0.4,
+    "c3_350m_never_wake": 0.317,
+    "c3_350m_always_detail": 0.35,
+    "c3_350m_always_both": 0.342,
+    "bodies_per_turn": 0.475,
+    "grid_distinct_outcomes": 1,
+    "cases": 40
+   }
+  },
+  "effort.BOOT[conflict_gain]": {
+   "verdict": "KEEP_BOOT_NOT_CALIBRATABLE"
+  },
+  "effort.BOOT[uncertainty_gain]": {
+   "verdict": "KEEP_BOOT_NOT_CALIBRATABLE"
+  },
+  "effort.BOOT[novelty_gain]": {
+   "verdict": "KEEP_BOOT_NOT_CALIBRATABLE"
+  },
+  "effort.BOOT[min_body_seconds]": {
+   "verdict": "KEEP_BOOT_SUPPORTED",
+   "measured": {
+    "b1_offer_p50_s": 1.7,
+    "b1_offer_p90_s": 2.01,
+    "b2_offer_p50_s": 2.12,
+    "b2_offer_p90_s": 3.04
+   }
+  },
+  "guards.C3_DECODER[repeat_penalty]": {
+   "verdict": "KEEP_BOOT_SUPPORTED",
+   "measured": {
+    "c3_230m_exact_acc_rp108": 0.12,
+    "c3_230m_exact_acc_rp115": 0.009,
+    "c3_230m_exact_acc_legacy": 0.222,
+    "c3_350m_exact_acc_rp108": 0.546,
+    "c3_350m_exact_acc_legacy": 0.509,
+    "c3_350m_runtime_alone_anti_echo": 0.317,
+    "c3_350m_runtime_alone_legacy": 0.292,
+    "c3_350m_runtime_b1_anti_echo": 0.35,
+    "c3_350m_runtime_b1_legacy": 0.4
+   }
+  },
+  "age.GATES[competence]": {
+   "verdict": "KEEP_BOOT_SUPPORTED",
+   "measured": {
+    "ag12_overall_raw_models_min": 0.125,
+    "ag12_overall_raw_models_max": 0.295
+   }
+  },
+  "age.GATES[calibration]": {
+   "verdict": "KEEP_BOOT_SUPPORTED",
+   "measured": {
+    "one_minus_ece_raw_models_min": 0.426,
+    "one_minus_ece_raw_models_max": 0.765
+   }
+  },
+  "attention.GAIN": {
+   "verdict": "NEEDS_LEARNING_RUNS"
+  },
+  "attention.SAL": {
+   "verdict": "NEEDS_LEARNING_RUNS"
+  },
+  "attention.CAUT": {
+   "verdict": "NEEDS_LEARNING_RUNS"
+  },
+  "neuromod.SOURCE_WEIGHT": {
+   "verdict": "NEEDS_LEARNING_RUNS"
+  },
+  "neuromod.DETAIL_RATE": {
+   "verdict": "NEEDS_LEARNING_RUNS"
+  },
+  "focal.TOKEN_UNC": {
+   "verdict": "CHANGED_MEASURED",
+   "measured": {
+    "pivot_b1": 0.65,
+    "pivot_b2": 0.86,
+    "note": "Youden thresholds, in-sample n=40; REFIT after body swap"
+   }
+  },
+  "cognition.OFFER_STYLE": {
+   "verdict": "CHANGED_MEASURED",
+   "measured": {
+    "b1_result_stated_hypothesis": 0.05,
+    "b1_result_stated_solve": 0.325,
+    "b2_result_stated_hypothesis": 0.125,
+    "b2_result_stated_solve": 0.35
+   }
+  },
+  "prompts.TEXT[answer_rules]": {
+   "verdict": "CHANGED_MEASURED",
+   "measured": {
+    "c3_230m_task_before": 0.16,
+    "c3_230m_task_after": 0.38,
+    "c3_350m_task_before": 0.08,
+    "c3_350m_task_after": 0.32,
+    "memory_use_230m_before": 0.07,
+    "memory_use_230m_after": 0.73,
+    "memory_use_350m_before": 0.0,
+    "memory_use_350m_after": 0.67,
+    "abstain_unsupported_350m_before": 1.0,
+    "abstain_unsupported_350m_after": 0.28
+   }
+  },
+  "models.language (C3)": {
+   "verdict": "CHANGED_MEASURED",
+   "measured": {
+    "chosen": "LFM2.5-350M",
+    "step2_both_exact_350m": 0.583,
+    "step2_both_exact_230m": 0.367,
+    "step2_b1_only_350m": 0.45,
+    "step2_b1_only_230m": 0.442,
+    "runtime_effort_policy_acc_350m": 0.4,
+    "runtime_effort_policy_acc_230m": 0.24,
+    "ag12_exact_anti_echo_350m": 0.55,
+    "ag12_exact_anti_echo_230m": 0.12
+   }
+  }
+ }
+}

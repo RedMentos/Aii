@@ -1,0 +1,19 @@
+# STEP2 paired native v2 fresh disjoint budget pilot — prereg 2026-10-30
+
+Owner V13 hourly continuation, independent review-only child of PR #1198, exact parent `8c0d07947edb81a1cf7cbaaa63cfbcc8522d2e3c`. Original pilot `40989187037` remains `PILOT_PARTIAL_RED`, source blob `e17aec9ede9d463b3903d3a79d2c4eb4d49f7e33`, original seed=13 and original fixtures unchanged. This v2 has **new** source/test/workflow identities, not a retroactive rescore. Canon blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7`; model catalog `7af05962af41d0bc3f7dd18ef01d4eba55eabf99`; tools `954a3f468f10195fbce12d27f68585ee7edee2c9`. Independent read-only contradiction-aware scorer source blob `fcd44ccce3b8b40d65a25187a78b0a8d49d9609d`.
+
+## New fixed unseen four-task fixtures (seed 29)
+1. **Solace**: budget 167 Euro; Opal costs 112 Euro / 4 days, Quartz 149 Euro / 2 days. Expected remainders Opal **55**, Quartz **18**.
+2. **Tundra**: budget 238 Euro; Maple costs 169 Euro / 1 day, Cedar 205 Euro / 5 days. Expected Maple **69**, Cedar **33** (cheaper also faster).
+3. **Harbor**: budget 193 Euro; Lotus costs 151 Euro / 6 days, Flint 176 Euro / 3 days. Expected Lotus **42**, Flint **17**.
+4. **Atlas**: budget 286 Euro; Linen costs 218 Euro / 2 days, Bronze 254 Euro / 4 days. Expected Linen **68**, Bronze **32** (cheaper also faster).
+
+Fixture canonical JSON SHA256 **`b8dba3465d80aa90142065550a6d1b6770b562fd852e25f598ec8260d2bf6cf4`**, computed before source implementation. All options local/no cloud; prompt asks exact named remainders and time/cost tradeoff. No correct remainder leaked into prompt or body questions. Four fixtures disjoint from original Vega/Lyra/Nadir/Orion and all original P2X registered cohorts; this is a **small new pilot**, not a statistical STEP2 acceptance cohort.
+
+## Fixed arms and evidence
+A `C3_ONLY`: route_override=simple, no B1/B2 installed. B `DEFAULT_BOTH`: route_override=both, original body questions. C `ARITH_BOTH`: same as B with original source-arithmetic-aware B1 and B2 body questions (no target answer injection). Fixed order A/B/C for each fixture, 12 fresh Age0 isolated Runtimes, learning_mode RECORD_ONLY, jepa_weight=0, latents off, pinned native model binaries, all heavy jobs serialized in the same GitHub Actions concurrency group as original. New seed 29.
+
+New scorer is the already-published read-only independent `semantic_diagnostic` from PR #1198: explicit option-bound remainder, `leaves` recognized, conflicting remainder claims veto, no cost echo or swapped value credit. Primary outcome correct named exact remainders per arm **out of 8**. Pilot signal only if C beats B by >=2/8 and A by >=2/8, **and all 12 native C3/Body output checks valid**; no automatic STEP2 gate even if pilot signal. Distinguish actual native C3/Body from C2: original route override records `route.source=OPERATOR_ROUTE_OVERRIDE`, C2 packet route simple/both, but `route.native_control` absent. This v2 validates actual route-override provenance, output model role/name and B1/B2 offers, **does not claim native Needle/C2 control**. C2 native proof remains a separate gate.
+
+## Verification, stop, negative gates
+Run source-only fixture/scorer/route tests first. Only then run the new pinned 4×3 Linux-native workflow (45min max, bootstrap original pinned public model artifacts, deep verify hashes). Preserve every native turn, original failed rows, exact HEAD/source/fixture/model hashes, stage exit codes, privacy scan, SHA256SUMS and private backup. If model/network fails, retain RED, do not relabel. Do not alter original pilot source, scorer, seed, raw ZIP or report. No Redmi measurement, B3 promotion, Body-JEPA/JEPA weight update, Age change, whole-system completion, or STEP2 UTILITY_PASS from this pilot. Full acceptance requires larger disjoint preregistered paired evidence with retention/regression.

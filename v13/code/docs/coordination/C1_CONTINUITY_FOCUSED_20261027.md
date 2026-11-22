@@ -1,0 +1,10 @@
+# C1/JEF malformed persisted continuity — focused RED/GREEN checkpoint (2026-10-27)
+
+Review-only PR #760, branch `assistant/v13-c1-corrupt-continuity-review-20261027`, exact parent `3a14e9bc62e19a58d6fa4bad1fcddbb3e9c179b2`, not main. Prereg `0509b573b3b2e426c2eb4f75ff3e16bf20fe83e8` before RED. Source candidate `0ce2a289e24bf77f835094d60192d18c8d08ce53` filters non-dict entries in four C1 continuity lists **before existing source/session/packet validation**. Frozen runtime is not integrated.
+
+- Original RED Actions 40564685582: 2 expected source exceptions (`TypeError` on null list, `AttributeError` on null list member), plus **one unrelated harness import failure** (`resource_pins` missing from PYTHONPATH); raw ZIP SHA256 `865679ec2d3b6971e33027e48e42c988e3a0902170305ca49348992ceb4035c1`. INSTALL/COMPILE/PRIVACY/DIFF exits0, UNIT exit1.
+- Intermediate GREEN source Actions 40564848169: both new regression tests PASS, but same harness import failure; raw ZIP SHA256 `c877e2c7bb12c0ab6381b4ce5232bd59523bc1d250cd84f97048da7a0026e7b0`. Failure preserved, not relabeled as source defect.
+- Final focused GREEN Actions 40564860568: corrected CI `PYTHONPATH=.:tests` at `eba25234feb35f7a1eec48511e10b66b0408165a`, **14/14 focused tests PASS** in 0.767s, all INSTALL/UNIT/COMPILE/PRIVACY/DIFF exits0, privacy CLEAN, raw ZIP SHA256 `09d4567332108cc57ff8cd8e1697a4a70e75ae3cb929b7857941f9d3c0264288`.
+- All three original raw ZIPs CRC/HEAD checked, privately saved under `/V13-Checkpoints/2026-10-27/Automation11ZD-C1-Continuity/` and re-materialized byte-identical.
+
+**Full source-wide regression PENDING** (workflow committed at `5ad96f12f09327b50bc39ff24418b4f76eb451bf`). No native/Redmi/utility/age promotion; LP1 NO_ATTRIBUTABLE_GAIN, LP2 ALIGNS_NO_GAIN, BJ1 NO_SIGNAL, STEP2 UTILITY_FAIL, B3 L1 FAIL, jepa_weight0, Age authority0, V13 incomplete. Next exact focused command: `cd v13/code && PYTHONPATH=.:tests python -m unittest -v tests.test_executive_corrupt_continuity_review tests.test_executive`. Independent frozen-runtime owner review required.

@@ -1,0 +1,73 @@
+name: V13 Run101 actual Context OS B2 wide-narrow delivery software
+on:
+  push:
+    branches:
+      - assistant/v13-run101-b2-wide-narrow-delivery-20261031-auto11
+    paths:
+      - v13/code/docs/RUN101_B2_DELIVERY_TRIGGER.txt
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      NO_MODEL_DOWNLOADS: "1"
+      DO_NOT_TRACK: "1"
+      V13_NO_AUTOSTART: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify actual store/consumer and frozen original controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/run101"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/run101-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/run101-venv/bin/python"
+          echo 0 > "$e/VENV_EXIT.txt"
+          "$py" -m pip install --disable-pip-version-check --no-input -q \
+            'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo 0 > "$e/DEPS_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          "$py" -m compileall -q v13/code/tests/test_b2_wide_narrow_actual_consumer_20261031.py > "$e/COMPILE_RAW.log" 2>&1
+          echo 0 > "$e/COMPILE_EXIT.txt"
+          set +e
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_b2_wide_narrow_actual_consumer_20261031.py -v) > "$e/DELIVERY_RAW.log" 2>&1
+          delivery_rc=$?
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_b2_prior_quote_span_candidate.py -v) > "$e/CANDIDATE_RAW.log" 2>&1
+          candidate_rc=$?
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_run87_b1b2_budget_fixture.py -v) > "$e/FROZEN_FIXTURE_RAW.log" 2>&1
+          fixture_rc=$?
+          (cd v13/code && env PYTHONPATH=.:tests:scripts "$py" -m unittest discover -s tests -p test_run87_native_verify.py -v) > "$e/FROZEN_VERIFY_RAW.log" 2>&1
+          verify_rc=$?
+          set -e
+          echo "$delivery_rc" > "$e/DELIVERY_EXIT.txt"
+          echo "$candidate_rc" > "$e/CANDIDATE_EXIT.txt"
+          echo "$fixture_rc" > "$e/FROZEN_FIXTURE_EXIT.txt"
+          echo "$verify_rc" > "$e/FROZEN_VERIFY_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base b9282da0b532aa1a87daf73f86b64eaf5697a898 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo 0 > "$e/PRIVACY_EXIT.txt"
+          git diff --check b9282da0b532aa1a87daf73f86b64eaf5697a898 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo 0 > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          tail -n 35 "$e/DELIVERY_RAW.log"
+          test "$delivery_rc" -eq 0
+          test "$candidate_rc" -eq 0
+          test "$fixture_rc" -eq 0
+          test "$verify_rc" -eq 0
+      - name: Upload raw receipts including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run101-b2-delivery-${{ github.sha }}
+          path: ${{ runner.temp }}/run101/
+          if-no-files-found: error
+          retention-days: 90

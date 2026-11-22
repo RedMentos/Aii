@@ -1,0 +1,19 @@
+{
+ "schema": "ABLATION_SLEEP_OFFLINE_PREREG_V1",
+ "seeds": [
+  13,
+  14,
+  15,
+  16,
+  17
+ ],
+ "days": 10,
+ "turns_per_day": 60,
+ "noise": 0.3,
+ "streams": {
+  "stationary": "fixed hidden weights",
+  "drift": "hidden weights redrawn after day 5"
+ },
+ "primary": "mean summed abs prediction error (before each online update), days 2-10, stationary",
+ "win_rule": "sleep beats no_sleep and shuffled_replay in >=4/5 seeds -> SUPPORTED_SYNTHETIC; one -> PARTIAL; none -> NOT_SUPPORTED"
+}

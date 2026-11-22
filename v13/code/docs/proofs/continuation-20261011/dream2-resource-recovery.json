@@ -1,0 +1,144 @@
+{
+  "schema": "v13-dream2-resource-restoration-v1",
+  "restored_at": "2026-10-11T09:58:51.004119+00:00",
+  "status": "EXACT_BINDING_READY_AWAITING_SERIAL_GO",
+  "revision": "40cb2ad3b3044d5a41eee083a6103c8b523afa45",
+  "master_path": "/workspace/scratch/5a9214d3f329/training-resources/master230",
+  "files": {
+    "config.json": {
+      "bytes": 1568,
+      "sha256": "f7d0bcc454b7a30fa471b1e7b9e359e11fb25b56f5b4ffd59bb18248e3c2ea3d"
+    },
+    "generation_config.json": {
+      "bytes": 303,
+      "sha256": "4f88574c47c3215f7f952e1f520d1df7387422dde0345655228fb7b3fde6858c"
+    },
+    "tokenizer_config.json": {
+      "bytes": 489,
+      "sha256": "75c287923e252b08b0a0f1c367bbe557ab23a681d0b71c5a34e0932ddbe2f5ee"
+    },
+    "tokenizer.json": {
+      "bytes": 4733389,
+      "sha256": "df1d8d5ec5d091b460562ffd545e4a5e91d17d4a0db7ebe733be34ed374377bd"
+    },
+    "chat_template.jinja": {
+      "bytes": 4762,
+      "sha256": "c5b67247c9f736f6c40eaa91ae1ef27dc67f5b041eedaadb97a1bea5030fb0ff"
+    },
+    "LICENSE": {
+      "bytes": 10574,
+      "sha256": "30adf9d6478191fb87f2424f63ba0728598335aaf99cd2848ef17e8e545fe94b"
+    },
+    "model.safetensors": {
+      "bytes": 459401112,
+      "sha256": "f630da86651136c9aee893b04b7542007e90fdd718355358e57e7ecc31517cfd"
+    },
+    "RESOURCE_BINDING.json": {
+      "bytes": 1212,
+      "sha256": "47f989a5ea77fbea995a2677859d447d321e517b29143298a02e8fbab1912af7"
+    }
+  },
+  "training_started": false,
+  "canonical_gate_pass": false,
+  "phone_measured": false,
+  "preflight_at": "2026-10-11T09:59:30.631993+00:00",
+  "environment": {
+    "python": "3.12.14",
+    "torch": "2.8.0+cpu",
+    "transformers": "5.19.0",
+    "peft": "0.21.2",
+    "safetensors": "0.8.0"
+  },
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.39",
+  "run_binding_matches_saved": true,
+  "report_unchanged_sha256": "be0c2ed6d90d8d862bdd85d361e9c1f617dbc734dd3364cb299ba536fd5dd778",
+  "completed_pairs": [
+    [
+      13,
+      "none"
+    ],
+    [
+      13,
+      "replay_exact"
+    ]
+  ],
+  "completed_row_sha256": [
+    "ef21c7900292a79ae3468bff5bb676e0e7b8ea40e8a58b4b9dc10e921b8c8c4d",
+    "caee9e05ee3601769d5b760152baa576905d2d6a5e1547aa05f02ceae410bccd"
+  ],
+  "unfinished_arm": {
+    "seed": 13,
+    "arm": "dream_validated",
+    "phase": "B",
+    "training_progress": {
+      "steps": 10,
+      "final_ce": 0.022822588147391798,
+      "items": 16
+    },
+    "phase_a": {
+      "steps": 12,
+      "final_ce": 0.01672,
+      "items": 4
+    },
+    "after_a": {
+      "A": {
+        "recall": 1.0,
+        "paraphrase": 0.75
+      },
+      "B": {
+        "recall": 0.0,
+        "paraphrase": 0.0
+      },
+      "near_miss_leak": 0.6,
+      "probe_retention": 0.75,
+      "kl_to_base": 1.1130312408010166,
+      "forgotten": [
+        "What colour is the sky on a clear day?",
+        "Which planet do we live on?"
+      ]
+    }
+  },
+  "resume_rule": "Only completed whole arms reused; active seed13 dream_validated restarts from unchanged base; no weight checkpoint available.",
+  "frozen_source_sha256": {
+    "scripts/dream_ablation_bench.py": "b8cd08820ed24840b4763391f50f1c0d219c7ba4ded5e43e9db22adb72389491",
+    "scripts/sparse_memory_bench.py": "17b9ba2393f7790b56ea3eba24f6c28aed16b81b47aae5e9ca5b516717c53d5c",
+    "scripts/lora_bench.py": "313bc41c447640241b00319932469345c801f089dae0b949f1f6ebda26d3d53f",
+    "v13/lora_trainer.py": "45ee09f701239d2a09285edcc970d87652e2cadc17f43bc3c4fe3b546d8895cb",
+    "v13/sparse_memory.py": "039728e48a87a8e5763fda2ed854ea686ece9c2293faa1068ffafd28a13c71af",
+    "v13/common.py": "0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a"
+  },
+  "corpus_sha256": "037a641d2ac5b344355322483c1c93a145b5a86f870f8188cfc9c8d1556915ec",
+  "transitive_dependencies_note": "Original run bound the four core package versions above. Transitive dependencies newly resolved and explicitly recorded; historical transitive versions were not saved, so no exact historical equivalence is claimed beyond the existing binding.",
+  "checks": {
+    "checkpoint_analyzer_unit_tests": {
+      "tests": 11,
+      "passed": 11,
+      "log": "dream2-recovery-checkpoint-tests.log"
+    },
+    "tiny_torch_memory_tests": {
+      "tests": 14,
+      "passed": 14,
+      "log": "dream2-recovery-torch-tests.log"
+    }
+  },
+  "resume_command": [
+    "/workspace/scratch/5a9214d3f329/training-resources/venv/bin/python",
+    "scripts/dream_ablation_bench.py",
+    "--master",
+    "/workspace/scratch/5a9214d3f329/training-resources/master230",
+    "--dreams",
+    "../bench-results/dream-ablation-20261010/dreams.json",
+    "--out",
+    "docs/proofs/continuation-20261011/dream2-b40-v2",
+    "--seeds",
+    "13,21,34",
+    "--threads",
+    "1",
+    "--per-fact",
+    "3",
+    "--b-steps",
+    "40",
+    "--resume"
+  ],
+  "requirements_sha256": "17aa5c71096e96afae4dd1a41e2744d691073bc9cda8aa7a6809f83c5abc5437"
+}

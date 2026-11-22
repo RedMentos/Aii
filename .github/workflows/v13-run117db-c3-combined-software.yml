@@ -1,0 +1,73 @@
+name: V13 Run117DB combined C3 schema and live Store source-only software
+on:
+  push:
+    branches:
+      - assistant/v13-run117db-c3-live-source-integration-20261101-gpt6
+permissions:
+  contents: read
+jobs:
+  combined-no-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Exact source blob integration and software-only real Store tests
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run117db"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          {
+            test "$(git hash-object v13/code/v13/jef_c3_source_callback_shadow_candidate.py)" = 09122520c49ccaca128692b0617b2c05586063fa
+            test "$(git hash-object v13/code/scripts/run117cy_live_source_native.py)" = 4c073a62110e7f9ac0bbbb991c8aa0bca8a99652
+            test "$(git hash-object v13/code/tests/test_run117cw_c3_source_callback.py)" = 24f7fe70fb01495e411f30e1c180f15d4f74fbc2
+            test "$(git hash-object v13/code/tests/test_run117cy_live_source_native.py)" = c8195118986cf46cde02020b03da2b537aa00957
+          } > "$e/BLOBS_RAW.log" 2>&1
+          echo "$?" > "$e/BLOBS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117db-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run117db-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' 'psutil==7.0.0' 'PyYAML==6.0.2' 'Pillow==11.3.0' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+          echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          python3 -m py_compile v13/code/v13/jef_c3_source_callback_shadow_candidate.py v13/code/scripts/run117cy_live_source_native.py v13/code/scripts/run117da_disjoint_schema_native.py v13/code/tests/test_run117cw_c3_source_callback.py v13/code/tests/test_run117cy_live_source_native.py v13/code/tests/test_run117da_disjoint_schema_native.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 300s env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run117da_source_only_preflight tests.test_run117da_disjoint_schema_native tests.test_run117cw_c3_source_callback tests.test_run117cy_live_source_native tests.test_run117cm_c3_source_only_candidate tests.test_run117cu_qwen_c3_source_only_preflight) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 9d7844e8eb21aa3ef0e2bd69c2cb2052f0184f84 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 9d7844e8eb21aa3ef0e2bd69c2cb2052f0184f84 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original combined software GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117db-combined-source-only-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117db/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce all exact blobs, tests and privacy
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117db"
+          for stage in BLOBS VENV DEPS PIP_CHECK COMPILE TEST PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw preserved"
+              tail -80 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN117DB_COMBINED_SOURCE_ONLY_SOFTWARE_NO_NATIVE_PROOF

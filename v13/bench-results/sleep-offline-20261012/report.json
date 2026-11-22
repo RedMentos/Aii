@@ -1,0 +1,311 @@
+{
+ "prereg": {
+  "schema": "ABLATION_SLEEP_OFFLINE_PREREG_V1",
+  "seeds": [
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "days": 10,
+  "turns_per_day": 60,
+  "noise": 0.3,
+  "streams": {
+   "stationary": "fixed hidden weights",
+   "drift": "hidden weights redrawn after day 5"
+  },
+  "primary": "mean summed abs prediction error (before each online update), days 2-10, stationary",
+  "win_rule": "sleep beats no_sleep and shuffled_replay in >=4/5 seeds -> SUPPORTED_SYNTHETIC; one -> PARTIAL; none -> NOT_SUPPORTED"
+ },
+ "streams": {
+  "stationary": {
+   "per_seed": {
+    "13": {
+     "sleep": {
+      "primary": 0.74076,
+      "sleeps_kept": 3
+     },
+     "no_sleep": {
+      "primary": 0.78264,
+      "sleeps_kept": 0
+     },
+     "shuffled_replay": {
+      "primary": 1.36521,
+      "sleeps_kept": 10
+     },
+     "unguarded": {
+      "primary": 0.72335,
+      "sleeps_kept": 10
+     }
+    },
+    "14": {
+     "sleep": {
+      "primary": 1.00974,
+      "sleeps_kept": 2
+     },
+     "no_sleep": {
+      "primary": 1.07455,
+      "sleeps_kept": 0
+     },
+     "shuffled_replay": {
+      "primary": 1.74203,
+      "sleeps_kept": 10
+     },
+     "unguarded": {
+      "primary": 0.97598,
+      "sleeps_kept": 10
+     }
+    },
+    "15": {
+     "sleep": {
+      "primary": 1.08669,
+      "sleeps_kept": 3
+     },
+     "no_sleep": {
+      "primary": 1.17199,
+      "sleeps_kept": 0
+     },
+     "shuffled_replay": {
+      "primary": 1.97128,
+      "sleeps_kept": 10
+     },
+     "unguarded": {
+      "primary": 1.04532,
+      "sleeps_kept": 10
+     }
+    },
+    "16": {
+     "sleep": {
+      "primary": 1.06054,
+      "sleeps_kept": 3
+     },
+     "no_sleep": {
+      "primary": 1.17645,
+      "sleeps_kept": 0
+     },
+     "shuffled_replay": {
+      "primary": 1.68146,
+      "sleeps_kept": 10
+     },
+     "unguarded": {
+      "primary": 1.03677,
+      "sleeps_kept": 10
+     }
+    },
+    "17": {
+     "sleep": {
+      "primary": 0.85137,
+      "sleeps_kept": 4
+     },
+     "no_sleep": {
+      "primary": 0.95942,
+      "sleeps_kept": 0
+     },
+     "shuffled_replay": {
+      "primary": 1.68217,
+      "sleeps_kept": 10
+     },
+     "unguarded": {
+      "primary": 0.82738,
+      "sleeps_kept": 10
+     }
+    }
+   },
+   "wins_of_5": {
+    "no_sleep": 5,
+    "shuffled_replay": 5,
+    "unguarded": 0
+   },
+   "summary": {
+    "sleep": {
+     "primary": {
+      "mean": 0.9498,
+      "sd": 0.1483
+     },
+     "sleeps_kept": {
+      "mean": 3.0,
+      "sd": 0.7071
+     }
+    },
+    "no_sleep": {
+     "primary": {
+      "mean": 1.033,
+      "sd": 0.1656
+     },
+     "sleeps_kept": {
+      "mean": 0.0,
+      "sd": 0.0
+     }
+    },
+    "shuffled_replay": {
+     "primary": {
+      "mean": 1.6884,
+      "sd": 0.2165
+     },
+     "sleeps_kept": {
+      "mean": 10.0,
+      "sd": 0.0
+     }
+    },
+    "unguarded": {
+     "primary": {
+      "mean": 0.9218,
+      "sd": 0.1412
+     },
+     "sleeps_kept": {
+      "mean": 10.0,
+      "sd": 0.0
+     }
+    }
+   }
+  },
+  "drift": {
+   "per_seed": {
+    "13": {
+     "sleep": {
+      "primary": 1.13529,
+      "sleeps_kept": 2
+     },
+     "no_sleep": {
+      "primary": 1.16726,
+      "sleeps_kept": 0
+     },
+     "shuffled_replay": {
+      "primary": 1.70247,
+      "sleeps_kept": 10
+     },
+     "unguarded": {
+      "primary": 1.25781,
+      "sleeps_kept": 10
+     }
+    },
+    "14": {
+     "sleep": {
+      "primary": 1.21635,
+      "sleeps_kept": 4
+     },
+     "no_sleep": {
+      "primary": 1.27867,
+      "sleeps_kept": 0
+     },
+     "shuffled_replay": {
+      "primary": 1.63449,
+      "sleeps_kept": 10
+     },
+     "unguarded": {
+      "primary": 1.25426,
+      "sleeps_kept": 10
+     }
+    },
+    "15": {
+     "sleep": {
+      "primary": 1.33444,
+      "sleeps_kept": 5
+     },
+     "no_sleep": {
+      "primary": 1.38443,
+      "sleeps_kept": 0
+     },
+     "shuffled_replay": {
+      "primary": 1.82639,
+      "sleeps_kept": 10
+     },
+     "unguarded": {
+      "primary": 1.46293,
+      "sleeps_kept": 10
+     }
+    },
+    "16": {
+     "sleep": {
+      "primary": 1.2116,
+      "sleeps_kept": 3
+     },
+     "no_sleep": {
+      "primary": 1.30095,
+      "sleeps_kept": 0
+     },
+     "shuffled_replay": {
+      "primary": 1.78983,
+      "sleeps_kept": 10
+     },
+     "unguarded": {
+      "primary": 1.31405,
+      "sleeps_kept": 10
+     }
+    },
+    "17": {
+     "sleep": {
+      "primary": 1.22587,
+      "sleeps_kept": 4
+     },
+     "no_sleep": {
+      "primary": 1.30822,
+      "sleeps_kept": 0
+     },
+     "shuffled_replay": {
+      "primary": 1.75812,
+      "sleeps_kept": 10
+     },
+     "unguarded": {
+      "primary": 1.34208,
+      "sleeps_kept": 10
+     }
+    }
+   },
+   "wins_of_5": {
+    "no_sleep": 5,
+    "shuffled_replay": 5,
+    "unguarded": 5
+   },
+   "summary": {
+    "sleep": {
+     "primary": {
+      "mean": 1.2247,
+      "sd": 0.0712
+     },
+     "sleeps_kept": {
+      "mean": 3.6,
+      "sd": 1.1402
+     }
+    },
+    "no_sleep": {
+     "primary": {
+      "mean": 1.2879,
+      "sd": 0.0783
+     },
+     "sleeps_kept": {
+      "mean": 0.0,
+      "sd": 0.0
+     }
+    },
+    "shuffled_replay": {
+     "primary": {
+      "mean": 1.7423,
+      "sd": 0.0755
+     },
+     "sleeps_kept": {
+      "mean": 10.0,
+      "sd": 0.0
+     }
+    },
+    "unguarded": {
+     "primary": {
+      "mean": 1.3262,
+      "sd": 0.0851
+     },
+     "sleeps_kept": {
+      "mean": 10.0,
+      "sd": 0.0
+     }
+    }
+   }
+  }
+ },
+ "beats_on_stationary": [
+  "no_sleep",
+  "shuffled_replay"
+ ],
+ "verdict": "SUPPORTED_SYNTHETIC",
+ "claim_limit": "synthetic linear outcome process, BOOT LR/epochs/holdout; digest and TTT staging untested"
+}

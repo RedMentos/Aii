@@ -1,0 +1,13 @@
+# V13 Run11 / 2026-10-30 — JEF human RECORD beyond 512-window verified
+
+Review-only PR #1186, child of verified #1185 `5f341acaba4ff37289cde0753448c6b3829f27ec`. Owner: automation; no production merge. Canon blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7` unchanged.
+
+- Prereg `b49eca8315f53dfcc8a28b1535a79a38f9feacbf`, RED test `037cb375876088d4a535a4dc9fa1c244f009d32a`. Real SQLite fixture: one older human `record` for JEF skill context A; 513 newer legitimate feedback records for unrelated context B; recent-512 scan excludes A.
+- Original RED Actions **40984757745**, exact test/workflow head `89923a0fc720328725bdbef18234e95380bf4f57`: **33 tests, 1 expected failure** (older RECORD did not suppress self-label); all other 32 PASS. Raw artifact **12946402527** ZIP SHA256 `a6068841eca8d5374bb7f3f7af171a0fd0974d1c6057c497e404235e414271ca`, CRC clean, 18/18 inner hashes.
+- Source fix `2a53f21c30aea18c3671aa68e9a2bfd353732031`, `jefoutcome.py` blob `25488d70f3143173dd74e7dcf2747102c8f15a57`. Self-label admission now checks exact still-valid human feedback linked to the head, ExecutiveDecision context SHA and revision, independent of the caller's recent-512 window; at most 1024 retained self-label candidates and cached by context. Existing recent-human suppression in `learning.py` remains.
+- GREEN Actions **40984852553** at exact source commit: **33/33 tests PASS**, 8/8 stage exit0, compile, privacy CLEAN, diff clean. Raw artifact **12946776032** ZIP SHA256 `c7533a239d4b5a59ccf0c02d4c569aac07730abe07eaca0800964d1b94079897`, CRC clean, 18/18 inner hashes.
+- Private Library backup: `/V13-Checkpoints/2026-10-30/Run11-JEF-RecordWindow/` RED and GREEN ZIPs uploaded and independently re-materialized **byte-identical**. GitHub source and raw evidence are separately persisted.
+- No native/model/Redmi run; no Age, STEP2, B3, Body-JEPA, `jepa_weight` or full-system gate promotion. Current branch is a review candidate only; no merge/activation.
+- Remaining questions: explicit source deletion semantics for human feedback and historical `HumanDecision` linkage; no broader redesign authorized. Continue other blueprint organs, do not repeatedly rework this helper absent new failing evidence.
+
+Exact next commands: `cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_jef_human_record_window_20261030 tests.test_jef_human_record_precedence_20261030 tests.test_jefoutcome`; unfiltered suite `PYTHONPATH=.:tests:scripts python -m unittest discover -s tests -p 'test_*.py'` in pinned isolated deps. Separate unfiltered replay already running on parent branch `codex/v13-jef-record-fullsuite-20261030-auto11u` and must be audited without suppressing known frozen Run34/Run37 failures.

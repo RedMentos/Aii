@@ -1,0 +1,933 @@
+{
+  "schema": "V13_ARCHITECTURE_READ_ONLY_AUDIT_V1",
+  "source_saved_cest": "2026-10-09T00:28:45+02:00",
+  "archive_name": "V13-WORK-RESCUE-20261009.zip",
+  "archive_sha256": "05602399fa36f46fd8f89856412e647c34aab52ffd2ad3799831093b581d6f18",
+  "project_code_modified": false,
+  "tests_rerun_for_this_audit": false,
+  "live_parallel_chat_access": false,
+  "source_hashes": {
+    "v13/__init__.py": "41c4be18b82981cef6c290e555c62d2f6b6061026f5880e23fab442113887971",
+    "v13/__main__.py": "f9c81e68265965896e3c7bb11158c9d4428ecc3c77b48997723d1c2fb9eb1aa5",
+    "v13/backup.py": "eecdd2ecd02804af452208dc6652b00a266f155a351fc4f56141ebdca0247845",
+    "v13/bootstrap.py": "f6fe8ae83a51c5629fe74bc7d413a87762d195c28bf73dfacc11e40b7220d7bf",
+    "v13/cognition.py": "b99032e30dfe6792ae0df33d5d08d7ea8000a57e3b307429fca90495d72b996a",
+    "v13/common.py": "0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a",
+    "v13/config.py": "13d1b91b25dcf3d126e876b0a82dfa1d9499119a44a4d972c6788ea62e413ffb",
+    "v13/consolidation.py": "a5e7c69884fc8ed4de8bade50299ac141b22ce5894f726f00f459242983dbbbe",
+    "v13/contracts.py": "0f26376389b90aceda042d9fc95f6e21f60dec00bc4b84b8a67498d1230411ce",
+    "v13/control_calibration_worker.py": "f8a591a3cb4ee486f0e5f766bc9ce7a2a2cbe982a5cc84862b18f2621bf54624",
+    "v13/executive.py": "61822628d16b4ebe8534d8e05ac1cce4c737c23c99356bbb05dce9b2afc7fb91",
+    "v13/history.py": "cf9a740c8bb586df931a58fafbd1a5d63fab6a504d00a0cc04bf0a3016b95411",
+    "v13/learning.py": "9a25ae48f7f05e1ce41641806fbcd30a8ccb91bbcd9b737de66e354bf698854c",
+    "v13/learning_worker.py": "1be41f19f668440c2c05e807d31708bad4979fd6a677f008ce322ba6b9057b15",
+    "v13/memory.py": "35e3e476bc2ac62e68e6fec04d3e9e410692aa7a8992bb18894655b86689b663",
+    "v13/models.py": "9ef4f9a19ade7b52c5a0d36f1c4a5adeeac7c705385f8f873d4a29d1572011fe",
+    "v13/operator.py": "ba3de75dc70904be14d41ec060f7b9aa26324766d3070beaf33950e7d83f0aa9",
+    "v13/output_adapter_worker.py": "a2cb6234778027dcd13bf34eb0c4c09b13a75736ea90b2df809fe56b74429bf7",
+    "v13/output_policy.py": "6bf1dca8d32d4b39da248cfd9d8f1291a58a58837d3b944d142c7cd628b6def9",
+    "v13/plasticity.py": "d7c88d29927213ebc62bc27cd2d9fe3e3da865feaba9fe3f0e32ec2171b46811",
+    "v13/predictor_worker.py": "5671a9521b7fe3d78d9fce82e3f89efa0fd9989e0aaaf78713d02ae16cf5d1ab",
+    "v13/pressure.py": "e9a2960a67c5caadf8d3126fcd6b905fdeefa6f884ea01b3896bf54a59e8d269",
+    "v13/proofs.py": "16cd6a3bf020eef1edfc69dff27b7ddd417a944f2c24fdf5db19411994044a20",
+    "v13/readout_worker.py": "5080a0d6f5fe2a0a5237b92afff8bbf096a0b2496f364ca2eadf7b5d040860dc",
+    "v13/resources.py": "29fb8e8e4a97ef90f8f694e12d779da0f675c1c190ddafbdd270264ab0898637",
+    "v13/retrieval_worker.py": "6fb52f61e9d8de9ea5074fae5c53ddaa65ae7e1b2c0e25a85347f0e67ca8f0a3",
+    "v13/runners.py": "72f3b544fa59f2127e5f5debbe54307234056001242931ff6be9a1b719f30a31",
+    "v13/runtime.py": "bc608ed536545c2a881316741f4e42cfe043e7cabafcdf82185ed5912c2a521f",
+    "v13/store.py": "1287df6a87dfab7f80ce806a026cb5e7d07fe33122d5079aa48a0c3625e52b0e",
+    "v13/student_worker.py": "11d0b88e30aebfe674a7d80419a047f537ff83e345e663b918e42604f4b990e5",
+    "v13/ui.py": "a3f964f55fcb5b189efdc230d0fdfaccba0e1a46186cce2b8017c8b421862454",
+    "v13/utility.py": "896ba2f720784d5826ed71d7aec334351d1e2cb33875b4cdf979189dd9a40604",
+    "v13/verification.py": "a717b7732490d2842d7bd8ea4797e87479ab0e8fece0a23fad44fdc6eb7bb365",
+    "v13/world.py": "cc985d9506b6b6efa69ee378c9fd889f0244fd91c17d000c134d8f540f2d0218",
+    "v13/world_worker.py": "82b3fce142d9d5bca8f781c8e0ed37a1415655efcb2a0a835b09bddcd7ba6ddc",
+    "scripts/native_midlayer_effect.cpp": "9d476d6b6bc7d1bf4f8fd60716dcb48d8e573ae2442c1dca44b18b8115f16145",
+    "scripts/native_prefill_session.cpp": "bfd608156bd1e0bba9d864c4cb57740202485ac5b9c455277beed0a0a012638b",
+    "scripts/native_prefill_worker.cpp": "e7eed84de38c6e0f21d1ac1195a1a250134f9fd843b190da881ed5ef28625c56",
+    "scripts/native_receiver_effect.cpp": "a9db16c398e7e98a46e34b2ad29b6b2983d30bb58c6309a81b073bc71c79a4fa",
+    "scripts/needle_worker.cpp": "e5cd72ba40dd534abc7b97ec38c4ef7a75b7e1ce0456ad45beef89803db52ecd",
+    "specs/c3-benchmark.json": "595db21565291661aad7df9062ea55e5322edf5310dad45b1626a89ea48f431a",
+    "specs/component-contracts.json": "14418d3312debacbacf881237d8742a64f164c49ea0e650964a35d77dde2601e",
+    "specs/control_tools.json": "057438ac217c62499eb67135801c99339db5f7f9eae985d5616cda858045d2ca",
+    "specs/learning-objectives.json": "b688421bd41a1d5e9c030abd9a35f5490f310812b71e415d103c296ecbabe5e4",
+    "specs/models.json": "7fb791596c34d8b28e4934f1e09880e5435ebe560db984284ecd03a550511fcb",
+    "docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+    "BUILD_STATE.json": "b4a1a0bd9d53838ee1894e15898ca76488913c538299bf00976ba90b9ba2c5ed",
+    "USER_DECISIONS_AND_OPEN_QUESTIONS.md": "c833b74349184de02c1a2a822a13de984e03127005b53dbffd6fa7d93cc77e53",
+    "docs/current-unit-deadline-lock-20261008.log": "41bb73b7b379edebb613976e7bb5b880e9ae8fb4c9c6a1ebc8c31f31124ad629"
+  },
+  "selected_preserved_proofs": [
+    {
+      "path": "docs/proofs/portable-prefill-native-evening-20261008/report.json",
+      "sha256": "a94f5eb78e6f24812a530614881d247864d2939ce6e595d9608c2f9e28776ede",
+      "status": "LIVE_PREFILL_OBSERVER_INVARIANCE_PASS",
+      "checks": {
+        "five_preregistered_cases": true,
+        "all_actual_native_pairs_pass": true,
+        "all_processes_reaped": true,
+        "exact_model_libraries_unchanged": true,
+        "worker_binary_unchanged": true,
+        "all_source_hashes_unchanged": true
+      },
+      "scope": "Read-only observer invariance of a same causal C3 prefill and continuation. No production integration, old embedding-feature compatibility, speedup, semantic quality, receiver injection, model training or full-Canon proof."
+    },
+    {
+      "path": "docs/proofs/portable-prefill-native-evening-20261008/artifact-audit.json",
+      "sha256": "1e4a22c7319e6b73aa11ab756845b2a012400560bcc8c43dbb89927390b4c0f0",
+      "status": "ARTIFACT_AUDIT_PASS",
+      "checks": {
+        "report_complete_pass": true,
+        "five_fixed_pairs": true,
+        "preregistration_sha_matches": true,
+        "captured_sources_current": true,
+        "ten_actual_variant_artifacts": true,
+        "all_raw_binding_checks": true
+      },
+      "scope": "Read-only observer invariance of a same causal C3 prefill and continuation. No production integration, old embedding-feature compatibility, speedup, semantic quality, receiver injection, model training or full-Canon proof."
+    },
+    {
+      "path": "docs/proofs/prefill-session-native-evening-20261008/report.json",
+      "sha256": "428ef72178ed29bdc76ce782abb1186848c38adfadc6a30e12294179ffdf1e7d",
+      "status": "PAUSE_RESUME_NUMERIC_PAIR_PASS",
+      "checks": {
+        "two_actual_variants_pass": true,
+        "same_original_native_prefill_logits": true,
+        "same_original_live_state": true,
+        "all_source_model_library_binary_unchanged": true
+      },
+      "scope": "Authored numeric zero/nonzero first-position bias on one paused real causal C3 context, followed by unbiased native continuation. No production/approval authority, old embedding-head compatibility, learning, receiver injection, latency or phone claim."
+    },
+    {
+      "path": "docs/proofs/receiver-effect-native-evening-20261008/report.json",
+      "sha256": "768239e0fad2b31380c2c92d9cf465a8d30ecd5c41ef687a367a166176707882",
+      "status": "BOUNDED_RECEIVER_NUMERIC_EFFECT_PASS",
+      "checks": {
+        "actual_receiver_comparison_pass": true,
+        "all_processes_reaped": true,
+        "source_model_library_binary_unchanged": true
+      },
+      "scope": "AUTHORED_NUMERIC_DIAGNOSTIC: bounded write to one ephemeral host F32 result_norm row before its verified current result_output matmul. No learned projector, B3 utility, receiver authority, model training, production integration, latency improvement or phone claim."
+    },
+    {
+      "path": "docs/proofs/native-norm-acceptance-native-evening-20261008/report.json",
+      "sha256": "737e99ed940a08c72113a51ef11878a28e50101e33a01f78d752643c1f846903",
+      "status": "NUMERICAL_UPDATE_RELOAD_SCOPE_PASS",
+      "checks": {
+        "all_processes_reaped": true,
+        "scoped_numerical_checks": true,
+        "source_unchanged": true,
+        "original_model_unchanged": true
+      },
+      "scope": "Isolated authored numerical fixtures, actual FP32 final-norm scale update, full native quantized decode, independently dequantized FP64 reference, fresh-process reload and rollback. No human approval, runtime registration, retention/generalization, target-phone learning or full TrainRunnerProof."
+    },
+    {
+      "path": "docs/proofs/midlayer-effect-prepared-20261008/report.json",
+      "sha256": "eac55114f0d4ac9f7a757b7879b3d464c3e286ab709202316ca7d844cb9194a5",
+      "status": "COMPILED32GUARDS_PASS_ACTUAL_EFFECT_PENDING",
+      "scope": "Optional existingBodyPort interface; no actualmidlayer effect or production/receiver/B3/train authority"
+    },
+    {
+      "path": "docs/proofs/retrieval-native-artifact-audit-20261007.json",
+      "sha256": "5e463de04f3577fdea99b6dd2c25983384cbdecf8d1a7a0add854df9a54e498e",
+      "status": "MEMORY_RETRIEVAL_PARTIAL",
+      "checks": 28,
+      "passed": 27,
+      "failed": [
+        "native_language_answer_uses_human_source"
+      ],
+      "scope": "Read-only reconstruction/hash audit of preserved actual native evidence; C3 remains failed, not a PASS or Redmi proof."
+    },
+    {
+      "path": "docs/proofs/output-production-native-20261007.audit.json",
+      "sha256": "8e34ab878390d4654a55c00368679749f5c8538ffcbb98d48a12e4c35aec6d96",
+      "status": "RAW_AUDIT_PASS",
+      "checks": {
+        "reported_all_23_checks_true": true,
+        "feature_sha_matches": true,
+        "current_runtime_source_hashes_match": true,
+        "complete_300_observations": true,
+        "each_native_feature_finite_1024d": true,
+        "all_exact_context_bindings": true,
+        "full_baseline_bindings_valid": true,
+        "initial_context_sha_groups_match": true,
+        "unchanged_128_authored_fixture": true
+      },
+      "scope": "Authored human opening-reference first native token preference on greet/thanks requests; source-held-out familiar template families, no full output correctness, arithmetic, general language or semantic OOD claim",
+      "proof_status": "OUTPUT_ADAPTER_PASS"
+    },
+    {
+      "path": "docs/proofs/student-native-current-20260930.json",
+      "sha256": "282c7aebb9069b6c1a17ecf84f74abfa844d3ce882bb60462e0f2033bd4af626",
+      "status": "STUDENT_LIFECYCLE_PASS",
+      "checks": {
+        "shadow_no_commit": true,
+        "actual_targets": true,
+        "gradient": true,
+        "noncollapse": true,
+        "alignment_gain": true,
+        "reconstruction_gain": true,
+        "separate_ablations": true,
+        "partition": true,
+        "route_preserves_student": true,
+        "restart": true,
+        "actual_jef_consumer": true,
+        "no_routing_promotion": true,
+        "local_route_agreement": true,
+        "retention_no_auto_commit": true,
+        "retention_measured": true,
+        "rollback_removes_student": true,
+        "encoder_unchanged": true,
+        "integrity": true
+      },
+      "scope": "A3 text raw-byte projector + frozen Needle semantic target/reconstruction; T1 JEF shadow, no teacher removal or receiver injection"
+    },
+    {
+      "path": "docs/proofs/world-native-geometry-20260930.json",
+      "sha256": "8c87584c7be355e042dac6f707466f79529e861c522a7317cfd08cadc9a4e5f4",
+      "status": "WORLD_LIFECYCLE_PASS",
+      "checks": {
+        "actual_transitions": true,
+        "shadow_no_commit": true,
+        "gradient": true,
+        "noncollapse": true,
+        "prediction_ablation": true,
+        "action_ablation": true,
+        "target_ema": true,
+        "retention": true,
+        "restart": true,
+        "actual_forecast_consumer": true,
+        "observed_prediction_error": true,
+        "no_semantic_truth_promotion": true,
+        "native_vertical_consumer": true,
+        "active_retention_gate": true,
+        "active_candidate_does_not_replace_parent": true,
+        "rollback_removes_consumer": true,
+        "native_weights_unchanged": true,
+        "integrity": true
+      },
+      "scope": "digital raw-state/action-role -> actual committed own output latent; source-copy/native-C3 counterfactual fixture, not external-world truth"
+    },
+    {
+      "path": "docs/proofs/consolidation-native-approval-bounds-20261002.json",
+      "sha256": "15f62e7bddbe5f4f13f46b87246d55a2ef69edbc39f9d48890ed63afb8191633",
+      "status": "CONSOLIDATION_PASS",
+      "checks": {
+        "shadow_no_activation": true,
+        "production_compaction": true,
+        "lineage_complete": true,
+        "consumer_lineage_complete": true,
+        "other_entity_refused": true,
+        "actual_native_c3_consumer": true,
+        "actual_replay_consumer": true,
+        "replay_lineage_complete": true,
+        "restart_retains_approved_index": true,
+        "production_procedural_consumer": true,
+        "unseen_procedural_cue_refused": true,
+        "procedural_rollback": true,
+        "semantic_rollback": true,
+        "rollback_keeps_experience": true,
+        "current_correction_retained": true,
+        "forget_removes_source": true,
+        "native_weights_unchanged": true,
+        "integrity": true
+      },
+      "claim_limits": [
+        "Exact repeated human-confirmation semantic compaction and authored-cue procedure only.",
+        "No native base-weight merge, automatic dream truth, or unseen semantic/procedural generalization.",
+        "Expected-number presence is a consumer diagnostic, not factual or reasoning validation."
+      ]
+    },
+    {
+      "path": "docs/proofs/executive-native-20261004.json",
+      "sha256": "380e64025e8f9a3a1a5791ebd684db57686fc13a8f63907d6a65cbadae6d52a7",
+      "status": "EXECUTIVE_CONTINUITY_PASS",
+      "checks": {
+        "actual_native_control": true,
+        "first_actual_c3": true,
+        "second_actual_c3": true,
+        "task_source_consumed_in_native_context": true,
+        "semantic_completion_not_inferred": true,
+        "actual_action_and_corollary_bound": true,
+        "body_not_required": true,
+        "restart_state_exact": true,
+        "forced_best_actual_output": true,
+        "no_weight_updates": true,
+        "integrity": true
+      },
+      "claim_limits": [
+        "Actual unchanged native C2 query and actual C3 output, no B manifest in this test home.",
+        "Explicit structured task continuity and exact provenance; no native KV persistence or learned executive body.",
+        "Native wording is recorded; fluent answers do not prove task completion or truthful self reports.",
+        "Fixture task is explicitly authored by the test operator. No Android sustained or energy proof inferred from Linux."
+      ]
+    },
+    {
+      "path": "docs/proofs/resource-monitor-native-20261004.json",
+      "sha256": "9cc5390b860f853218a90a779dc820481d7fbaaad34876f743702f753b5da439",
+      "status": "RESOURCE_MONITOR_NATIVE_PASS",
+      "checks": {
+        "actual_partial_before_cancel": true,
+        "user_cancel_retains_partial": true,
+        "native_process_reaped": true,
+        "monitor_stopped": true,
+        "measured_native_rss": true,
+        "measured_native_pss": true,
+        "actual_load_prefill_stream_observed": true,
+        "real_phase_durations": true,
+        "user_cancel_has_no_fabricated_resource_reason": true,
+        "exact_kv_unavailable": true,
+        "restart_keeps_partial": true,
+        "subsequent_real_c3_usable": true,
+        "next_monitor_stopped": true,
+        "native_weights_unchanged": true,
+        "integrity": true
+      },
+      "scope": "ACTUAL_NATIVE_C3_RESOURCE_OBSERVATION_AND_USER_CANCEL"
+    },
+    {
+      "path": "docs/proofs/control-calibration-native-consumer-20261001.json",
+      "sha256": "7add23442be8b517fb93781e525600c87ebb8ef7bb30dd00f783c215a433d6ce",
+      "status": "CONTROL_CALIBRATION_PASS",
+      "checks": {
+        "actual_native_observations": true,
+        "shadow_no_commit": true,
+        "calibration_gain": true,
+        "retention": true,
+        "gradient": true,
+        "support": true,
+        "reload": true,
+        "repeat": true,
+        "restart": true,
+        "consumer_source_held_out": true,
+        "actual_route_consumer": true,
+        "uncertain_native_abstains": true,
+        "actual_final_output": true,
+        "unsupported_native_falls_back": true,
+        "second_candidate_parent_unchanged": true,
+        "active_retention_enforced": true,
+        "rollback_restores_baseline": true,
+        "native_weights_unchanged": true,
+        "integrity": true
+      },
+      "scope": "Native route confidence agreement with explicit fixture labels; not semantic truth confidence"
+    }
+  ],
+  "components": [
+    {
+      "component_id": "A0",
+      "name": "Raw sources",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/store.py"
+      ],
+      "schemas": [
+        "SourceRef",
+        "EventEnvelope"
+      ],
+      "runtime_owner": "A0",
+      "state_owner": "A0",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Exact text only; other modalities unavailable",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "A1",
+      "name": "Segmentation",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/cognition.py"
+      ],
+      "schemas": [
+        "PerceptPacket"
+      ],
+      "runtime_owner": "A1",
+      "state_owner": "A1",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Text boundaries only",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "A2",
+      "name": "Frozen input teacher",
+      "current_mode": "UNAVAILABLE",
+      "implementation_files": [],
+      "schemas": [],
+      "runtime_owner": "A2",
+      "state_owner": "A2",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "No semantic input teacher wired",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "A3",
+      "name": "Student projector",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/student_worker.py",
+        "v13/learning.py",
+        "v13/cognition.py"
+      ],
+      "schemas": [
+        "PerceptPacket",
+        "TrainRunnerProof"
+      ],
+      "runtime_owner": "A3",
+      "state_owner": "A3",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "No trained representation alignment",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "A4",
+      "name": "Perceptual attention",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/cognition.py"
+      ],
+      "schemas": [
+        "PerceptPacket"
+      ],
+      "runtime_owner": "A4",
+      "state_owner": "A4",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Bounded text views; no learned salience or region requests",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "A5",
+      "name": "Percept source binding",
+      "current_mode": "IMPLEMENTED",
+      "implementation_files": [
+        "v13/cognition.py",
+        "v13/store.py"
+      ],
+      "schemas": [
+        "PerceptPacket",
+        "SourceRef"
+      ],
+      "runtime_owner": "A5",
+      "state_owner": "A5",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Text identity path",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "B1",
+      "name": "Detail body",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/cognition.py",
+        "v13/runners.py"
+      ],
+      "schemas": [
+        "QueryPacket",
+        "OfferPacket",
+        "LatentTapPacket"
+      ],
+      "runtime_owner": "B1",
+      "state_owner": "B1",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Native dense body; sparse expert training unavailable",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "B2",
+      "name": "Gist body",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/cognition.py",
+        "v13/runners.py"
+      ],
+      "schemas": [
+        "QueryPacket",
+        "OfferPacket",
+        "LatentTapPacket"
+      ],
+      "runtime_owner": "B2",
+      "state_owner": "B2",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Bounded persisted source context; semantic complementarity unproven",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "B3",
+      "name": "Callosum",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/cognition.py"
+      ],
+      "schemas": [
+        "MessagePacket",
+        "ReceiverCalibration"
+      ],
+      "runtime_owner": "B3",
+      "state_owner": "B3",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "NONE/EXACT/CONTROL/SYMBOLIC; native latent taps/injection unavailable",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "B4",
+      "name": "Active workspace",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/cognition.py",
+        "v13/store.py"
+      ],
+      "schemas": [
+        "WorkspaceSlot"
+      ],
+      "runtime_owner": "B4",
+      "state_owner": "B4",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Explicit source slots; no trained latent admission",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "B5",
+      "name": "Fabric interfaces",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/memory.py",
+        "v13/world.py"
+      ],
+      "schemas": [
+        "MemoryRecord",
+        "QueryPacket"
+      ],
+      "runtime_owner": "B5",
+      "state_owner": "B5",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "State/recall interfaces; no learned access policy",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "C0",
+      "name": "Shell and permissions",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/operator.py",
+        "v13/runtime.py"
+      ],
+      "schemas": [
+        "CapabilityProfile"
+      ],
+      "runtime_owner": "C0",
+      "state_owner": "C0",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Local operator origin and text gate; external actions off",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "C1",
+      "name": "Executive continuity",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/executive.py",
+        "v13/runtime.py"
+      ],
+      "schemas": [
+        "ExecState",
+        "ExecutiveControlContext",
+        "JEFBroadcastPacket",
+        "OutputSnapshot"
+      ],
+      "runtime_owner": "C1",
+      "state_owner": "C1",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Bounded source-validated explicit executive task/state/action continuity and actual native context consumer. No learned executive latent objective or broad taskcompletion claim.",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "C2",
+      "name": "Structured control",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/runners.py",
+        "v13/learning.py",
+        "v13/control_calibration_worker.py",
+        "v13/runtime.py"
+      ],
+      "schemas": [
+        "ExecutiveDecision",
+        "ModelManifest",
+        "StudentEvaluation",
+        "ControlCalibration",
+        "TrainRunnerProof"
+      ],
+      "runtime_owner": "C2",
+      "state_owner": "C2",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Actual Needle, external route head and approved first-native-proposal agreement calibration; general semantic confidence/native confidence-head training unproved",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "C3",
+      "name": "Language organ",
+      "current_mode": "IMPLEMENTED",
+      "implementation_files": [
+        "v13/runners.py",
+        "v13/runtime.py",
+        "v13/output_adapter_worker.py",
+        "v13/learning.py"
+      ],
+      "schemas": [
+        "ModelManifest",
+        "OutputAdapterContext",
+        "OutputAdapterDecision"
+      ],
+      "runtime_owner": "C3",
+      "state_owner": "C3",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Real baseline local free language; limited model quality; human-approved external first-native-token rowdelta now implemented; native base frozen, general language/semantic OOD and phone proof remain open",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "C4",
+      "name": "Focal coalition",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/cognition.py"
+      ],
+      "schemas": [
+        "FocalItem",
+        "ExecutiveDecision"
+      ],
+      "runtime_owner": "C4",
+      "state_owner": "C4",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Bounded fresh offers and one reentry; no learned competition",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "C5",
+      "name": "Action/report intent",
+      "current_mode": "IMPLEMENTED",
+      "implementation_files": [
+        "v13/executive.py",
+        "v13/runtime.py",
+        "v13/store.py",
+        "v13/output_policy.py"
+      ],
+      "schemas": [
+        "ActionIntent",
+        "CorollaryCopy",
+        "OutputSnapshot",
+        "OutputPolicyDecision"
+      ],
+      "runtime_owner": "C5",
+      "state_owner": "C5",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Single local text report owner",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "C6",
+      "name": "Egress port manager",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/store.py",
+        "v13/runtime.py"
+      ],
+      "schemas": [
+        "ActionOutcome"
+      ],
+      "runtime_owner": "C6",
+      "state_owner": "C6",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Text only",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "C7",
+      "name": "Effectors",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/ui.py"
+      ],
+      "schemas": [
+        "ActionOutcome"
+      ],
+      "runtime_owner": "C7",
+      "state_owner": "C7",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "TTY text; speech/image/UI/motor unavailable",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "F1",
+      "name": "Attention/gain/admission",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/cognition.py"
+      ],
+      "schemas": [
+        "FocalItem",
+        "OfferPacket"
+      ],
+      "runtime_owner": "F1",
+      "state_owner": "F1",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Deterministic source/freshness gates; learned gain unavailable",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F2",
+      "name": "Salience/interrupt/reflex",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/runtime.py",
+        "v13/resources.py"
+      ],
+      "schemas": [
+        "EventEnvelope"
+      ],
+      "runtime_owner": "F2",
+      "state_owner": "F2",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Preemption/cancel/resource guard; learned salience unavailable",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F3",
+      "name": "Memory/context/provenance",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/memory.py",
+        "v13/store.py",
+        "v13/retrieval_worker.py",
+        "v13/learning.py",
+        "v13/consolidation.py"
+      ],
+      "schemas": [
+        "MemoryRecord",
+        "ExperienceRecord",
+        "HumanDecision",
+        "MemoryRetrievalDecision"
+      ],
+      "runtime_owner": "F3",
+      "state_owner": "F3",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Source-backed exact/episodic memory plus approved learned Needle pair relevance; repeated cue-family native proof only, no learned fact truth or semantic/skill consolidation; Human-approved repeated-confirmation compaction and exact authored procedural cues now executable; no native weight merge or novel semantic generalization",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F4",
+      "name": "Self/body/world prediction",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/world.py",
+        "v13/world_worker.py",
+        "v13/learning.py"
+      ],
+      "schemas": [
+        "ActionPrediction",
+        "PredictionOutcome",
+        "WorldTransition",
+        "ModulatorPacket"
+      ],
+      "runtime_owner": "F4",
+      "state_owner": "F4",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Observed digital state/timing plus approved external action-conditioned latent predictor; no external-world causal truth, native body training or automatic semantic consolidation",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F5",
+      "name": "Action selection/safety/corollary",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/store.py",
+        "v13/runtime.py"
+      ],
+      "schemas": [
+        "ActionIntent",
+        "CorollaryCopy",
+        "ActionOutcome"
+      ],
+      "runtime_owner": "F5",
+      "state_owner": "F5",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Actual local text-action ordering; no general action competition",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F6",
+      "name": "Learning/eligibility/modulation",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/learning.py",
+        "v13/learning_worker.py"
+      ],
+      "schemas": [
+        "LearningTrace",
+        "ModulatorPacket",
+        "UpdateManifest",
+        "TrainRunnerProof"
+      ],
+      "runtime_owner": "F6",
+      "state_owner": "F6",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Ten independent external component paths with actual frozen inputs/native taps, explicit source-bound targets, gradients, scoped calibration/retention/ablations and individual approval. Full body/cross/executive JEPA, active sparse-expert training and native base masters remain unavailable.",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F7",
+      "name": "Metaplasticity/homeostasis/stability",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/resources.py",
+        "v13/learning_worker.py",
+        "v13/proofs.py",
+        "v13/plasticity.py",
+        "v13/learning.py"
+      ],
+      "schemas": [
+        "TrainRunnerProof",
+        "PlasticityState",
+        "PlasticityBudget"
+      ],
+      "runtime_owner": "F7",
+      "state_owner": "F7",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Measured slow per-component shadow-budget feedback, atomic restart/idempotence, stability tags, bounded damping/reopening. No neural metaplasticity training, native shared-layer interference, source truth or autonomous commit authority.",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F8",
+      "name": "Age/human control/rules",
+      "current_mode": "IMPLEMENTED",
+      "implementation_files": [
+        "v13/operator.py",
+        "v13/store.py"
+      ],
+      "schemas": [
+        "HumanDecision",
+        "BrainGenerationManifest"
+      ],
+      "runtime_owner": "F8",
+      "state_owner": "F8",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Individual artifact approval/rollback, rule generations, Age0 only",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F9",
+      "name": "Replay/dream/consolidation",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/runtime.py",
+        "v13/consolidation.py"
+      ],
+      "schemas": [
+        "ReplayItem"
+      ],
+      "runtime_owner": "F9",
+      "state_owner": "F9",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Actual episodic replay and hypothetical dream; no autonomous consolidation; Human-approved repeated-confirmation compaction and exact authored procedural cues now executable; no native weight merge or novel semantic generalization",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F10",
+      "name": "Runtime/cache/scheduling/governor",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/pressure.py",
+        "v13/resources.py",
+        "v13/runners.py",
+        "v13/runtime.py",
+        "v13/store.py"
+      ],
+      "schemas": [
+        "ModelManifest",
+        "BrainGenerationManifest"
+      ],
+      "runtime_owner": "F10",
+      "state_owner": "F10",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Actual durable accepted queue, transactional schema migration, bounded continuous native RSS/PSS and cancellation. Current Redmi thermal/energy/KV and long-duration proofs remain open.",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F11",
+      "name": "Metrics/calibration/retention",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/verification.py",
+        "v13/proofs.py"
+      ],
+      "schemas": [
+        "TrainRunnerProof",
+        "ReceiverCalibration"
+      ],
+      "runtime_owner": "F11",
+      "state_owner": "F11",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Real metrics/proofs; general calibration/OOD/semantic utility open",
+      "canon_source": "§31.2"
+    }
+  ],
+  "catalog_warning": "A2/A3 and some B3/Objective limit rows are stale. Use runtime/worker and scoped preserved proof evidence; no blanket gate promotion."
+}

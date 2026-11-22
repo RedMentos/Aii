@@ -1,0 +1,82 @@
+name: V13 Run128 manual-native admission static SOFTWARE guard
+on:
+  push:
+    branches: [assistant/v13-step2-native-verify-admission-20261029]
+permissions:
+  contents: read
+jobs:
+  static:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Check native fail-closed admission, source hashes, focused tests and privacy
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run128-static"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 - "$e" > "$e/STATIC_RAW.log" 2>&1 <<'PY'
+          from pathlib import Path
+          import subprocess,sys
+          p=Path('.github/workflows/v13-step2-exact-rule-native-staged.yml')
+          text=p.read_text()
+          assert '  workflow_dispatch:' in text and '  push:' not in text
+          assert text.index('INDEPENDENT_ORIGINAL_RAW_AUDIT_MISSING_NO_NATIVE') < text.index(' -m v13.bootstrap')
+          assert 'ADMISSION_EXIT.txt' in text
+          assert 'if [ "$(cat "$e/ADMISSION_EXIT.txt")" = 0 ] && [ "$(cat "$e/RESOURCE_EXIT.txt")" = 0 ]' in text
+          assert 'for n in SOURCE ADMISSION RESOURCE' in text
+          assert '40812183190' in text and '7f25f3b0d0d8b7167817420240d0475f57f0a538' in text
+          assert '-m scripts.step2_exact_rule_transport_verify --source-report' in text
+          assert 'STEP2_RUN126_EXACT_HEAD_SOFTWARE_INDEPENDENT_AUDIT.json' in text
+          assert 'NATIVE_OWNER_RELEASE_MISSING_NO_NATIVE' in text
+          assert not Path('v13/code/docs/proofs/continuation-20261029/STEP2_RUN126_NATIVE_OWNER_RELEASE.json').exists()
+          for name, expected in {
+              'v13/code/scripts/step2_exact_rule_transport_native.py':'9b43ce0721213775ef7067169ec4bd6f0b1e0f0e',
+              'v13/code/scripts/step2_exact_rule_transport_verify.py':'4c233aaade91e55d00fa152c934de0e03e26d58f',
+              'v13/code/tests/test_step2_exact_rule_transport_verify.py':'c6ae8c8f7447cede21caebddda81de1f5beae034',
+              'v13/code/docs/proofs/continuation-20261029/STEP2_NATIVE_VERIFY_ADMISSION_PREREG.md':'b2c5679ffff632f4c1ebdd0bc673b474ea092530',
+          }.items():
+              actual=subprocess.check_output(['git','hash-object',name],text=True).strip()
+              assert actual==expected,(name,actual)
+          print('RUN128_STATIC_MANUAL_ONLY_NO_AUDIT_NO_NATIVE_8_GATES_OK')
+          PY
+          echo "$?" > "$e/STATIC_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/step2_exact_rule_transport_verify.py v13/code/tests/test_step2_exact_rule_transport_verify.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 120s python3 -m unittest -v tests.test_step2_exact_rule_transport_verify) > "$e/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$e/FOCUSED_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 80b2694a466faddb8901b3759c32fe128646f1a5 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 80b2694a466faddb8901b3759c32fe128646f1a5 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Retain closed software raw including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run128-native-admission-software-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run128-static/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce static software gates
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run128-static"
+          for n in STATIC COMPILE FOCUSED PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; raw retained; native not launched"
+              tail -40 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN128_SOFTWARE_STATIC_GREEN_NO_NATIVE

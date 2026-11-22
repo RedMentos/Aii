@@ -1,0 +1,90 @@
+name: V13 Run117AO authenticated USER SourceRef plus Body prewarm SHADOW
+on:
+  push:
+    branches:
+      - assistant/v13-run117ao-bound-prewarm-20261031-gpt6
+    paths:
+      - .github/workflows/v13-run117ao-bound-prewarm.yml
+      - v13/code/v13/b1b2_source_id_event_binding_candidate.py
+      - v13/code/v13/body_source_id_bound_prewarm_candidate.py
+      - v13/code/tests/test_run117ai_event_source_binding_candidate.py
+      - v13/code/tests/test_run117ao_bound_prewarm.py
+permissions:
+  contents: read
+jobs:
+  authenticated-prewarm:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Verify imported guard SHA and real SQLite adversarial composition
+        shell: bash
+        run: |
+          set -uo pipefail
+          e="$RUNNER_TEMP/v13-run117ao-bound"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117ao-venv" > "$e/VENV_RAW.log" 2>&1
+          venv_rc=$?
+          py="$RUNNER_TEMP/v13-run117ao-venv/bin/python"
+          if test "$venv_rc" -eq 0; then
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            deps_rc=$?
+          else
+            deps_rc=125;echo VENV_RED > "$e/DEPS_RAW.log"
+          fi
+          test "$(git hash-object v13/code/v13/b1b2_source_id_event_binding_candidate.py)" = d3b19676db4c90a5febfdbe05606311fbed16e31
+          guard_rc=$?
+          test "$(git hash-object v13/code/tests/test_run117ai_event_source_binding_candidate.py)" = 3527460b7c467ec6a5534a2bf553ca79fd87f94d
+          test_blob_rc=$?
+          if test "$deps_rc" -eq 0 && test "$guard_rc" -eq 0 && test "$test_blob_rc" -eq 0; then
+            (cd v13/code && env PYTHONPATH=. "$py" -m unittest -v \
+              tests.test_run117ai_event_source_binding_candidate \
+              tests.test_run117al_body_source_id_prewarm \
+              tests.test_run117am_body_source_id_native \
+              tests.test_run117ao_bound_prewarm) > "$e/TEST_RAW.log" 2>&1
+            test_rc=$?
+          else
+            test_rc=125;echo PREREQUISITE_RED > "$e/TEST_RAW.log"
+          fi
+          python3 -m compileall -q v13/code/v13/b1b2_source_id_event_binding_candidate.py v13/code/v13/body_source_id_bound_prewarm_candidate.py v13/code/tests/test_run117ai_event_source_binding_candidate.py v13/code/tests/test_run117ao_bound_prewarm.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base f65fbde8b273d883bdbe5fad1a14403794aa17e9 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check f65fbde8b273d883bdbe5fad1a14403794aa17e9 HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          for x in "VENV:$venv_rc" "DEPS:$deps_rc" "GUARD:$guard_rc" "TEST_BLOB:$test_blob_rc" "TEST:$test_rc" "COMPILE:$compile_rc" "PRIVACY:$privacy_rc" "DIFF:$diff_rc"; do
+            echo "${x#*:}" > "$e/${x%%:*}_EXIT.txt"
+          done
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=('VENV','DEPS','GUARD','TEST_BLOB','TEST','COMPILE','PRIVACY','DIFF')
+          r={'schema':'v13.run117ao.bound_prewarm_software.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'imported_run117ai_guard_sha':'d3b19676db4c90a5febfdbe05606311fbed16e31',
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'native_model_calls':0,'original_native_seed1069':'STRUCTURAL_RED_UNCHANGED',
+             'step2_promoted':False,'b3_promoted':False,'jepa_weight':0,
+             'redmi_measured':False,'whole_system_complete':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 18 "$e/TEST_RAW.log"
+          for rc in "$venv_rc" "$deps_rc" "$guard_rc" "$test_blob_rc" "$test_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0 || exit 2; done
+      - name: Preserve software GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117ao-bound-prewarm-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117ao-bound/
+          if-no-files-found: warn
+          retention-days: 90

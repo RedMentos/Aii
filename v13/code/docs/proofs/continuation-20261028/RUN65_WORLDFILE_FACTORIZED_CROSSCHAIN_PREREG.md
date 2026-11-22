@@ -1,0 +1,13 @@
+# Run65 — exact Run62 integration with independently verified Run63 factorized baselines (2026-10-28)
+
+Owner GPT-6 scheduled continuation; review-only child of Run62 #970 **exact GREEN** head `7538efa0022c5eec58d823201584d7ddce458645`, Actions `40764846710`, original ZIP SHA256 `cdeaa7f57abc4b03ee4a2265719d9a1da5afa943a21c3e0abf300472200d8f33`, CRC clean, 23/23 inner SHA256SUMS, 70 focused/2606 full OK, privacy CLEAN. Private Library backup re-materialized hash-identical.
+
+Disjoint Run63 #971 **exact GREEN** head `57ff0d96b2bb095a06779697543a099aa97a176e`, Actions `40765099787`, original ZIP SHA256 `7a51969bd7626a531298a19c2b9e2e926e55248e6863c9b1fe9ae8b368b5d8af`, CRC clean, 20/20 SHA256SUMS, 21 focused/2603 full OK, privacy CLEAN; private backup re-materialized hash-identical. Exact source blob `9d33026c3431fa4501fa2793db64f049bd5c6ef9`, test blob `b12f679176d5d51633515a8588f60317c8fa8a49`, prereg blob `9396fbf9d60cedfe3b3633b70c7b41dea3c22e2f`. Run63's original source, tests and prereg are disjoint from Run62 B2/WorldJEPA/Run60 files.
+
+## Integration contract
+
+Copy exactly these three Git blobs into a new child of Run62, no edits to original Run60/63/WorldJEPA/Z12b/Run42/51/54/55/57/59 or registered models/cohorts/seeds. Add dedicated pinned **push exact-head** and PR CI covering Run62 B2 disk-backed source race, Run59 synthetic World-JEPA heldout action swap, Run60 real isolated file-action slot-local baseline, Run63 fresh factorized global/slot-aware baselines, full suite, compile, source pins, privacy/diff, both raw metrics reports and closed SHA256SUMS. No new experiment or thresholds; Run64 fresh WorldJEPA training is a **separate** conditional child of Run63 and is not included in this integration until independently GREEN.
+
+Run63 fresh seeds 233/239/241, supervised real Linux temporary-file action heldout overall MSE: shared slot-local `0.013703751825446737`, slot-aware local `0.01405750346407955`, persistence `0.04840606062734107`, global exact-action ridge `0.06147310315826512`, factorized global delta ridge `0.06779423611231132`. All three seeds favor shared local, but these are small supervised file transitions with a correct structural locality prior; no causal/JEPA-only/native/Redmi or general utility claim.
+
+Run65 GREEN only after original exact-head push ZIP HEAD matches new commit, all exits zero, focused/full, CRC, SHA256SUMS, frozen hashes and privacy independently audited. No production main merge or learning/age/authority promotion. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight=0; phone UNMEASURED; full V13 incomplete.

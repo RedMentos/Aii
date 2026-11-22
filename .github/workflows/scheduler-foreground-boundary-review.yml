@@ -1,0 +1,72 @@
+name: V13 scheduler foreground-kind action boundary review
+on:
+  push:
+    branches: [codex/automation11h-scheduler-foreground-boundary-20261027]
+    paths:
+      - '.github/workflows/scheduler-foreground-boundary-review.yml'
+      - 'v13/code/v13/scheduler.py'
+      - 'v13/code/tests/test_sleep_scheduler.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-scheduler-foreground-cap-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Focused tests, source binding, privacy and raw exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/v13-scheduler-foreground"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/scheduler.py > "$evidence/SCHEDULER_BLOB.txt"
+          python3 -m venv "$RUNNER_TEMP/scheduler-foreground-venv"
+          py="$RUNNER_TEMP/scheduler-foreground-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 8m env PYTHONPATH=. "$py" -m unittest -v tests.test_sleep_scheduler.SchedulerTests
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          python3 -m py_compile v13/code/v13/scheduler.py v13/code/tests/test_sleep_scheduler.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base a76badb3b19ed9ae332174acd2089fdd5e153c26 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check a76badb3b19ed9ae332174acd2089fdd5e153c26 HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-scheduler-foreground-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-scheduler-foreground/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exits and preserve failed attempts
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/v13-scheduler-foreground"
+          for name in INSTALL UNIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; original raw artifact retained"
+              tail -80 "$evidence/${name}_RAW.log"
+              exit 1
+            fi
+          done
+          echo 'SCHEDULER_FOREGROUND_BOUNDARY_SOFTWARE_ONLY_NO_AGE_PROMOTION'

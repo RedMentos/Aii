@@ -1,0 +1,82 @@
+{
+  "schema": "v13.run19.resource_finite_calibration.software_focused_green.fullsuite_pending.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; §97.2 resource profile finite/provenance admission",
+  "parent": {
+    "pr": 1345,
+    "branch": "assistant/v13-run18-sleep-batch-budget-20261030-hourly11",
+    "head_sha": "bb271d1f755dea6c8f0cdb4d4cffac0f606e8587",
+    "review_only": true
+  },
+  "branch": "assistant/v13-run19-resource-measurement-finite-20261030-hourly11",
+  "source_blobs": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "prereg": "748478be2db25f46c6d1438a8bbfd71d62ab767d",
+    "test_first": "da9507c96857fb17c3b85994c81503026c4e8c88",
+    "resource_original": "fef6f6f72d6bd479177f366c79c4f4651cce8b58",
+    "resource_candidate": "d8325b0a05bec623bc45b30a1a26de3d7ca176f4"
+  },
+  "change": "Resource profile validate() rejects nonfinite/boolean mem,temp,rss thresholds. calibrate() rejects nonfinite, nonpositive or bool body RSS and thermal values. Only device_info.android is exactly True can label DEVICE_MEASURED or BOOT_REDMI_TARGET; strings/1 cannot promote host measurements. Stored malformed profile falls back to BOOT.",
+  "evidence": {
+    "original_red": {
+      "run": 41132020150,
+      "head": "9ed34c51f4b45774919e6b8ba689e39bcbe20f83",
+      "artifact": 13014260102,
+      "sha256": "f040ac5969bf0482c45dcab31c692af02ba88d66656af25bd8ec5c217370034a",
+      "tests": 5,
+      "failures": 11,
+      "errors": 0,
+      "stage_exits": "PINS/VENV/DEPS/PIP_CHECK/COMPILE/PRIVACY/DIFF 0; TEST 1 expected",
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run19-ResourceFinite/Run19_ORIGINAL_RED.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate_green": {
+      "run": 41132075438,
+      "head": "e5607dff189cfb159060566aff6c9da1791a51aa",
+      "artifact": 13013079019,
+      "sha256": "4281ef6c151d953157af46f8410ae68d5a7d28c78dc84ba9050f011c8d492fff",
+      "tests": 86,
+      "failures": 0,
+      "errors": 0,
+      "stage_exits": "PINS/VENV/DEPS/PIP_CHECK/TEST/COMPILE/PRIVACY/DIFF all 0",
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "privacy": "CLEAN",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run19-ResourceFinite/Run19_CANDIDATE_GREEN.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "run16_unfiltered": {
+      "run": 41131035846,
+      "head": "6a5093a604b14e9d1bd288af504064ea29d72830",
+      "artifact": 13012429562,
+      "sha256": "e99ac521b3a8b57f8bed1a1e2e1431bac6bdcc769b74dcc619920bb41432768b",
+      "tests": 4168,
+      "failures": 4,
+      "errors": 66,
+      "skipped": 16,
+      "stage_exits": "PINS/VENV/DEPS/TORCH/TRANSFORMERS/PEFT/PIP_CHECK/COMPILE/PRIVACY/DIFF 0; FULL 1",
+      "crc": "PASS",
+      "inner_sha256": "25/25",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run16-ContextOS/Run16_UNFILTERED_HISTORICAL_RED.zip",
+      "readback": "BYTE_IDENTICAL",
+      "comparison_to_run15": "Run15 4164/4/66/16; Run16 +4 new tests, 121/121 failure+error labels identical and in same order; no regression observed in unfiltered failure identities, but historical failures remain."
+    }
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "limitations": [
+    "Software/SQLite Linux only; synthetic Android flag is not Redmi measurement.",
+    "No independent external agent available; test-first adversarial profile injection and manual source review.",
+    "No production merge; latest chain Run17/18/19 unfiltered suite still pending."
+  ],
+  "next_command": "Run exact-head unfiltered cross-organ full suite on latest Run19 review branch (includes Run16/17/18/19), pin all changed source/tests and preserve raw. Compare against Run16 4168/4/66/16 and exact failure identities; record all negative gates. Continue next independent canonical package if budget permits."
+}

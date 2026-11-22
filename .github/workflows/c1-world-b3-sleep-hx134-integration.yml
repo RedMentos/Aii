@@ -1,0 +1,109 @@
+name: V13 C1 World B3 Sleep HX134 integrated software proof
+on:
+  push:
+    branches: [assistant/v13-c1-world-b3-sleep-hx134-integration-20261027]
+    paths:
+      - '.github/workflows/c1-world-b3-sleep-hx134-integration.yml'
+      - 'v13/code/v13/sleep.py'
+      - 'v13/code/v13/b3bridge.py'
+      - 'v13/code/v13/executive.py'
+      - 'v13/code/v13/agi/self_improve.py'
+      - 'v13/code/v13/agi/harness.py'
+      - 'v13/code/v13/agi/experience.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-c1-world-b3-sleep-hx134-integration
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Preserve raw integration evidence without promoting gates
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/c1-world-b3-sleep-hx134"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git show -s --format='%P' HEAD > "$evidence/PARENTS.txt"
+          for sha in edbb440f0a4298f1d740aa6260ca2b16e2791e7f e7ae51d59bfc50f0c70e3e81c2ce11aea9255cf8 52df674637c952b1d8d2e08abb0ef0bd2472a05e 117f503aea0503c39351cbf064e7e64898cf4eb0 c6e78f72dfa8da0cb23d8be75ad032bbb1ffebac; do
+            git merge-base --is-ancestor "$sha" HEAD || echo "$sha" >> "$evidence/PARENTS_MISSING.txt"
+          done
+          if [ ! -s "$evidence/PARENTS_MISSING.txt" ]; then echo 0; else echo 1; fi > "$evidence/PARENTS_EXIT.txt"
+          git hash-object v13/code/v13/executive.py > "$evidence/C1_BLOB.txt"
+          git hash-object v13/code/v13/b3bridge.py > "$evidence/B3_BLOB.txt"
+          git hash-object v13/code/v13/b3degrade.py > "$evidence/B3_DEGRADE_BLOB.txt"
+          git hash-object v13/code/v13/sleep.py > "$evidence/SLEEP_BLOB.txt"
+          git hash-object v13/code/tests/test_sleep_a_exact_recall_identity_review.py > "$evidence/SLEEP_TEST_BLOB.txt"
+          git hash-object v13/code/v13/agi/self_improve.py > "$evidence/AG8_BLOB.txt"
+          git hash-object v13/code/v13/agi/harness.py > "$evidence/HARNESS_BLOB.txt"
+          git hash-object v13/code/v13/agi/experience.py > "$evidence/EXPERIENCE_BLOB.txt"
+          git hash-object v13/code/v13/agi/__init__.py > "$evidence/AGI_INIT_BLOB.txt"
+          git hash-object v13/code/tests/test_hx_approval_run133.py > "$evidence/RUN133_TEST_BLOB.txt"
+          if [ "$(cat "$evidence/C1_BLOB.txt")" = "057dda1e705053047489516fc9ab10581018f5a4" ] &&
+             [ "$(cat "$evidence/B3_BLOB.txt")" = "8837693b4ee1b37ed2fec538c40a2b398ad8261a" ] &&
+             [ "$(cat "$evidence/B3_DEGRADE_BLOB.txt")" = "5cc822ecad749887acfad69f5fcba39a5a2dae8f" ] &&
+             [ "$(cat "$evidence/SLEEP_BLOB.txt")" = "469101c9979b9cabe0dbd154cffde40912fa8a2c" ] &&
+             [ "$(cat "$evidence/SLEEP_TEST_BLOB.txt")" = "48a692f5d0d47aece40d5c56d6c2f2ae96ba3c6a" ] &&
+             [ "$(cat "$evidence/AG8_BLOB.txt")" = "0f71e36b9542f1aa3aa57db734c448c305dfb48b" ] &&
+             [ "$(cat "$evidence/HARNESS_BLOB.txt")" = "78e3fd6c6c40a75db9cb88ea683194011e058d6f" ] &&
+             [ "$(cat "$evidence/EXPERIENCE_BLOB.txt")" = "83ede4b83161bc78b5cc718c647d984e06d9f54a" ] &&
+             [ "$(cat "$evidence/AGI_INIT_BLOB.txt")" = "27a5f57885a2836d0a3fbd4cf1829c0a1ab4edce" ] &&
+             [ "$(cat "$evidence/RUN133_TEST_BLOB.txt")" = "243caf41dafe914697867b4ee2bd3ab5f5db8a8d" ]; then echo 0; else echo 1; fi > "$evidence/FROZEN_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/c1-world-b3-sleep-hx134-venv"
+          py="$RUNNER_TEMP/c1-world-b3-sleep-hx134-venv/bin/python"
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$evidence/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'transformers==5.20.2' 'peft==0.21.2' >> "$evidence/INSTALL_RAW.log" 2>&1
+          second=$?
+          if [ "$first" -eq 0 ] && [ "$second" -eq 0 ]; then echo 0; else echo 1; fi > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 7m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_harness_hx tests.test_hx_approval_run133 tests.test_agi_live tests.test_sleep_a_exact_recall_identity_review tests.test_sleep_offline tests.test_sleep_scheduler tests.test_sleep_validation tests.test_executive_goal_sequence_binding_review tests.test_executive_question_origin_binding_review tests.test_b3_l1_seed_identity_review tests.test_b3_l1_report_revalidation_review tests.test_b3_l1_promotion_evidence_review tests.test_b3calibration tests.test_b3order tests.test_world_jepa_incremental_closedstore
+          ) > "$evidence/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$evidence/FOCUSED_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q
+          ) > "$evidence/FULL_RAW.log" 2>&1
+          echo "$?" > "$evidence/FULL_EXIT.txt"
+          python3 -m compileall -q v13/code/v13 > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 87dd02f82abdcc3762029dac3ea8170c9db30e7c --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 87dd02f82abdcc3762029dac3ea8170c9db30e7c HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          (cd "$evidence" && sha256sum * > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-c1-world-b3-sleep-hx134-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/c1-world-b3-sleep-hx134/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce every raw exit
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/c1-world-b3-sleep-hx134"
+          for name in PARENTS FROZEN INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -100 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'C1_WORLD_B3_SLEEP_HX134_INTEGRATED_SOFTWARE_ONLY_NO_PROMOTION'

@@ -1,0 +1,27 @@
+{
+  "bytes": 2327824,
+  "chunk_bytes": 1048576,
+  "file_name": "action-jepa-native-train-seeds.closed.zip",
+  "parts": [
+    {
+      "bytes": 1048576,
+      "index": 0,
+      "name": "part-00000.bin",
+      "sha256": "c8e3bdee67cb37a0934c516b8c07d354ad868ece69914516f357ffa2e1ec5681"
+    },
+    {
+      "bytes": 1048576,
+      "index": 1,
+      "name": "part-00001.bin",
+      "sha256": "ca318a8dcfc2c90351873e7dbbabb7d0882ecaebb517811e7a779c510fba2559"
+    },
+    {
+      "bytes": 230672,
+      "index": 2,
+      "name": "part-00002.bin",
+      "sha256": "5753d0c919b9142c1433e9efe79105ea229fdeb48eafb311ec684a2ef0624018"
+    }
+  ],
+  "schema": "v13-sealed-storage-parts-v1",
+  "sha256": "67f1c9d8d35a5f1a15325d30d8798def16d8401def41d63044bd963cd5644a74"
+}

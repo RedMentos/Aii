@@ -1,0 +1,60 @@
+{"fixture": "summary00", "p1": false, "expr": "95 + 18 + 21", "value": 134, "p3": false}
+{"fixture": "summary01", "p1": false, "expr": "16 + 23 + 67", "value": 106, "p3": false}
+{"fixture": "summary02", "p1": true, "expr": "82 + 66 + 19", "value": 167, "p3": false}
+{"fixture": "summary03", "p1": true, "expr": "18 + 40 + 17", "value": 75, "p3": false}
+{"fixture": "summary04", "p1": true, "expr": "81 + 27 + 85", "value": 193, "p3": false}
+{"fixture": "summary05", "p1": false, "expr": "86 + 85 + 93", "value": 264, "p3": true}
+{"fixture": "summary06", "p1": false, "expr": "84 + 19 + 91", "value": 194, "p3": false}
+{"fixture": "summary07", "p1": false, "expr": "52 + 71 + 86", "value": 209, "p3": false}
+{"fixture": "summary08", "p1": true, "expr": "35 + 43 + 22", "value": 100, "p3": false}
+{"fixture": "summary09", "p1": false, "expr": "69 + 48 + 89", "value": 206, "p3": false}
+{"fixture": "summary10", "p1": true, "expr": "33 + 55 + 31", "value": 119, "p3": true}
+{"fixture": "summary11", "p1": true, "expr": "83 + 85 + 52", "value": 220, "p3": true}
+{"fixture": "summary12", "p1": false, "expr": "20 + 23 + 46", "value": 89, "p3": true}
+{"fixture": "summary13", "p1": true, "expr": "94 + 85 + 69", "value": 248, "p3": true}
+{"fixture": "summary14", "p1": false, "expr": "71 + 57 + 33", "value": 161, "p3": true}
+{"fixture": "long00", "p1": true, "expr": "180", "value": null, "p3": null}
+{"fixture": "long01", "p1": true, "expr": "202", "value": null, "p3": null}
+{"fixture": "long02", "p1": true, "expr": "405", "value": null, "p3": null}
+{"fixture": "long03", "p1": true, "expr": "357", "value": null, "p3": null}
+{"fixture": "long04", "p1": true, "expr": "124", "value": null, "p3": null}
+{"fixture": "long05", "p1": true, "expr": "752", "value": null, "p3": null}
+{"fixture": "long06", "p1": true, "expr": "769", "value": null, "p3": null}
+{"fixture": "long07", "p1": true, "expr": "468", "value": null, "p3": null}
+{"fixture": "long08", "p1": true, "expr": "492", "value": null, "p3": null}
+{"fixture": "long09", "p1": true, "expr": "769", "value": null, "p3": null}
+{"fixture": "long10", "p1": true, "expr": "611", "value": null, "p3": null}
+{"fixture": "long11", "p1": true, "expr": "968", "value": null, "p3": null}
+{"fixture": "long12", "p1": true, "expr": "147", "value": null, "p3": null}
+{"fixture": "long13", "p1": true, "expr": "484", "value": null, "p3": null}
+{"fixture": "long14", "p1": true, "expr": "957", "value": null, "p3": null}
+{"fixture": "notes00", "p1": true, "expr": "71", "value": null, "p3": null}
+{"fixture": "notes01", "p1": true, "expr": "32", "value": null, "p3": null}
+{"fixture": "notes02", "p1": true, "expr": "25", "value": null, "p3": null}
+{"fixture": "notes03", "p1": true, "expr": "41", "value": null, "p3": null}
+{"fixture": "notes04", "p1": true, "expr": "56", "value": null, "p3": null}
+{"fixture": "notes05", "p1": true, "expr": "85", "value": null, "p3": null}
+{"fixture": "notes06", "p1": true, "expr": "65", "value": null, "p3": null}
+{"fixture": "notes07", "p1": true, "expr": "39", "value": null, "p3": null}
+{"fixture": "notes08", "p1": true, "expr": "18", "value": null, "p3": null}
+{"fixture": "notes09", "p1": false, "expr": "49", "value": null, "p3": null}
+{"fixture": "notes10", "p1": true, "expr": "39", "value": null, "p3": null}
+{"fixture": "notes11", "p1": true, "expr": "43", "value": null, "p3": null}
+{"fixture": "notes12", "p1": true, "expr": "26", "value": null, "p3": null}
+{"fixture": "notes13", "p1": true, "expr": "58", "value": null, "p3": null}
+{"fixture": "notes14", "p1": true, "expr": "13", "value": null, "p3": null}
+{"fixture": "compare00", "p1": true, "expr": "644 + 255 + 636", "value": 1535, "p3": false}
+{"fixture": "compare01", "p1": true, "expr": "75 - 31", "value": 44, "p3": false}
+{"fixture": "compare02", "p1": false, "expr": "244 + 584 + 733", "value": 1561, "p3": true}
+{"fixture": "compare03", "p1": true, "expr": "Linz + Lyon + Graz", "value": null, "p3": null}
+{"fixture": "compare04", "p1": true, "expr": "895 + 208 + 673", "value": 1776, "p3": false}
+{"fixture": "compare05", "p1": false, "expr": "Lyon - (383 + 143 + 890)", "value": null, "p3": null}
+{"fixture": "compare06", "p1": false, "expr": "Lyon - Turin", "value": null, "p3": null}
+{"fixture": "compare07", "p1": false, "expr": "727 + 617 + 720", "value": 2064, "p3": false}
+{"fixture": "compare08", "p1": false, "expr": "Malmo + (Lyon - Porto)", "value": null, "p3": null}
+{"fixture": "compare09", "p1": false, "expr": "75 - 31", "value": 44, "p3": false}
+{"fixture": "compare10", "p1": false, "expr": "240 + 526 + 224", "value": 990, "p3": false}
+{"fixture": "compare11", "p1": false, "expr": "174 + 787 + 346", "value": 1307, "p3": false}
+{"fixture": "compare12", "p1": false, "expr": "785 + 410 + 225", "value": 1420, "p3": false}
+{"fixture": "compare13", "p1": false, "expr": "359 + 240 + 578", "value": 1177, "p3": false}
+{"fixture": "compare14", "p1": false, "expr": "598 + 266 + 783", "value": 1647, "p3": false}

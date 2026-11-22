@@ -1,0 +1,80 @@
+name: V13 P2 pinned QAD-vs-HF tokenizer behavior source-only
+on:
+  push:
+    branches: [codex/v13-p2-structural-tensor-audit-20261029]
+    paths:
+      - '.github/workflows/v13-p2-qad-hf-tokenizer-behavior-20261029.yml'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install isolated pinned HF tokenizers parser
+        run: |
+          python3 -m venv "$RUNNER_TEMP/p2-tokenizer-venv"
+          "$RUNNER_TEMP/p2-tokenizer-venv/bin/python" -m pip install --no-input --disable-pip-version-check 'tokenizers==0.22.1'
+      - name: Retrieve exact public JSON bytes, compare eight preregistered synthetic probes
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p p2-tokenizer
+          git rev-parse HEAD > p2-tokenizer/HEAD.txt
+          curl -fL --retry 2 --connect-timeout 20 --max-time 180 \
+            'https://huggingface.co/LiquidAI/LFM2.5-350M/resolve/120bf032c36dd1273de754669da040dba7ad4982/tokenizer.json?download=true' \
+            -o p2-tokenizer/ordinary.json
+          curl -fL --retry 2 --connect-timeout 20 --max-time 180 \
+            'https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/resolve/657e078c94084481950a2d555a941481f715536b/qad/tokenizer.json?download=true' \
+            -o p2-tokenizer/qad.json
+          printf '%s  %s\n' \
+            '2221c71b5dce048a8abae62843b92bd7deec13cc153f95fa6e3327a47b79a7da' p2-tokenizer/ordinary.json \
+            'df1d8d5ec5d091b460562ffd545e4a5e91d17d4a0db7ebe733be34ed374377bd' p2-tokenizer/qad.json \
+            | sha256sum -c > p2-tokenizer/SOURCE_SHA_RAW.log
+          "$RUNNER_TEMP/p2-tokenizer-venv/bin/python" - <<'PY'
+          import json
+          from pathlib import Path
+          from tokenizers import Tokenizer
+          a=Tokenizer.from_file('p2-tokenizer/ordinary.json')
+          b=Tokenizer.from_file('p2-tokenizer/qad.json')
+          prompts=['Hello.','2 + 2 = ?','<|tool_call_start|>python<|tool_call_end|>',
+                   '<think>reasoning</think>','Mathias uses python.',
+                   '{"tool":"python"}','Äpfel, Öl und Straße.','Line one\nLine two']
+          rows=[]
+          for s in prompts:
+              ia=a.encode(s,add_special_tokens=False).ids
+              ib=b.encode(s,add_special_tokens=False).ids
+              da=a.decode(ia,skip_special_tokens=True)
+              db=b.decode(ib,skip_special_tokens=True)
+              rows.append({'prompt':s,'ordinary_ids':ia,'qad_ids':ib,
+                           'ids_equal':ia==ib,
+                           'ordinary_skip_special':da,'qad_skip_special':db,
+                           'skip_special_equal':da==db,
+                           'ordinary_decode_all':a.decode(ia,skip_special_tokens=False),
+                           'qad_decode_all':b.decode(ib,skip_special_tokens=False)})
+          out={'schema':'v13.p2.qad_hf_tokenizer_behavior_source_only.v1',
+               'status':'TOKENIZER_SOURCE_BEHAVIOR_MEASURED_GGUF_UNPROVEN',
+               'parser_version':'tokenizers==0.22.1','probes':rows,
+               'probe_count':len(rows),
+               'token_ids_equal_count':sum(r['ids_equal'] for r in rows),
+               'skip_special_equal_count':sum(r['skip_special_equal'] for r in rows),
+               'gguf_runtime_tokenizer_parity_proven':False}
+          assert out['probe_count']==8
+          Path('p2-tokenizer/TOKENIZER_PROBES.json').write_text(json.dumps(out,indent=2,ensure_ascii=False)+'\n')
+          print('SOURCE_ONLY_TOKENIZER_PROBES',out['probe_count'],
+                out['token_ids_equal_count'],out['skip_special_equal_count'],
+                'NO_GGUF_RUNTIME_PARITY')
+          PY
+      - name: Preserve source-only result without tokenizer file copies
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p2-qad-hf-tokenizer-source-probes
+          path: |
+            p2-tokenizer/HEAD.txt
+            p2-tokenizer/SOURCE_SHA_RAW.log
+            p2-tokenizer/TOKENIZER_PROBES.json
+          retention-days: 30
+          if-no-files-found: error

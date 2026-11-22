@@ -1,0 +1,48 @@
+{
+  "schema": "v13.build_state.scoped.v1",
+  "date": "2026-10-30",
+  "owner": "GPT-6 automation",
+  "branch": "codex/v13-c3-deterministic-operator-20261030-auto11g",
+  "parent": "d1b2b3bd8d8ef16b21438244bd5ff3868c5ee79e",
+  "cli_blob": "88cc63489ca6e304d04e6f591ec67ef3323568ee",
+  "tested_head": "0c69a4894c2348642e7095614b729363ac61759b",
+  "software": {
+    "red": {
+      "run": 41022616360,
+      "artifact": 12962656075,
+      "zip_sha256": "8db1dbbc4955c7da6f0c31c462882208b901510ba8afa46be470a9ee4c3d95f0",
+      "tests": 37,
+      "errors": 27
+    },
+    "intermediate_red": {
+      "run": 41022710667,
+      "artifact": 12962606339,
+      "zip_sha256": "e033d9476bb5be16367db39ced105ecf301a07554c7cc51c10add0ffb7d85a7c",
+      "errors": 27
+    },
+    "green": {
+      "run": 41022739342,
+      "artifact": 12962571453,
+      "zip_sha256": "2f4bc23d7c348261c10ad8913c58bdb8dcb2289991cb991f44cd6647cd7eb371",
+      "tests": "37/37",
+      "inner_hashes": "13/13",
+      "stages": "6/6 zero",
+      "privacy": "CLEAN",
+      "frozen_narrow_cases": "8/8",
+      "adversarial_abstentions": 15
+    }
+  },
+  "evidence_grade": "SOFTWARE_DETERMINISTIC_SOURCE_BOUND",
+  "native_attempted": false,
+  "redmi_measured": false,
+  "learning_mode": "RECORD_ONLY",
+  "step2_gate": "UTILITY_FAIL",
+  "b3_gate": "NO_PROMOTION",
+  "body_jepa": "UNAVAILABLE",
+  "jepa_weight": 0,
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run11-C3-Operator-Receipt/",
+  "next": "Seeded novel-source deterministic robustness/property tests; then JEF/Context OS/Body-JEPA canonical roadmap. No ToolStep/C5 promotion.",
+  "stop_reason": "INTERMEDIATE_CHECKPOINT_CONTINUE"
+}

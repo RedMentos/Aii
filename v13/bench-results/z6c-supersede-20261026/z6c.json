@@ -1,0 +1,1411 @@
+{
+ "kind": "V13_Z6B_LIFECYCLE_BENCH",
+ "seed": 73,
+ "scores": {
+  "fixed": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 5,
+   "promotions": 6,
+   "approval_requests": 6,
+   "false_promotions": 3,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 16,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 0.95,
+   "final_acc": 0.7,
+   "final_half_items": 0.0,
+   "retention_unchanged": 0.9333,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 0.625,
+    "both": 0.875
+   },
+   "rollback": {
+    "update_id": "upd_1df2d127b68a40fdb1a7e1b0387af06c",
+    "expected_parent_acc": 0.75,
+    "after_rollback_acc": 0.75,
+    "restored": true
+   },
+   "restart_same_session": true
+  },
+  "fixed+sup": {
+   "shadow_jobs": 10,
+   "unnecessary_updates": 5,
+   "promotions": 5,
+   "approval_requests": 5,
+   "false_promotions": 2,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 16,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 0.95,
+   "final_acc": 0.75,
+   "final_half_items": 0.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 0.75,
+    "both": 1.0
+   },
+   "rollback": {
+    "update_id": "upd_4db0af4becf746a2985d1f6f31b321b3",
+    "expected_parent_acc": 0.975,
+    "after_rollback_acc": 0.975,
+    "restored": true
+   },
+   "restart_same_session": true
+  },
+  "adaptive+sup": {
+   "shadow_jobs": 6,
+   "unnecessary_updates": 4,
+   "promotions": 1,
+   "approval_requests": 1,
+   "false_promotions": 0,
+   "record_only_updates": 0,
+   "corrections_to_p1_acc90": 16,
+   "corrections_to_shift_half80": null,
+   "p1_end_acc": 1.0,
+   "final_acc": 0.8,
+   "final_half_items": 0.0,
+   "retention_unchanged": 1.0,
+   "per_route_final": {
+    "simple": 1.0,
+    "detail": 1.0,
+    "gist": 1.0,
+    "both": 1.0
+   },
+   "rollback": {
+    "update_id": "upd_ffa31c29da9545d8bf8a9c9ef5281467",
+    "expected_parent_acc": 0.325,
+    "after_rollback_acc": 0.325,
+    "restored": true
+   },
+   "restart_same_session": true
+  }
+ },
+ "arms": {
+  "fixed": {
+   "policy": "fixed",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     },
+     "shadow_result": "upd_2257520e32584d6fa77f8d6d9055fea1 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_2257520e32584d6fa77f8d6d9055fea1",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.8125,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062
+     },
+     "superseded": 0,
+     "active_acc_after": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     },
+     "shadow_result": "upd_40af496779144124827428fe435f2c75 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_40af496779144124827428fe435f2c75",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": 0.125,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0
+     },
+     "shadow_result": "upd_65d39ef2ff3a4c73a5f74572a6b6b9c8 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_65d39ef2ff3a4c73a5f74572a6b6b9c8",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.125,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062
+     },
+     "shadow_result": "upd_9f9912edd14640ce9fdb502c7c3a4544 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_9f9912edd14640ce9fdb502c7c3a4544",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.0,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375
+     },
+     "shadow_result": "upd_016804563c82461abfd43225cff2e4dd PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_016804563c82461abfd43225cff2e4dd",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.0,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688
+     },
+     "shadow_result": "upd_32e7f89c9a5c4121bfc392c65d34137c PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_32e7f89c9a5c4121bfc392c65d34137c",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375
+     },
+     "shadow_result": "upd_1df2d127b68a40fdb1a7e1b0387af06c PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_1df2d127b68a40fdb1a7e1b0387af06c",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     },
+     "shadow_result": "upd_b44c9df7dd5c4b7894aefafc184d5159 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_b44c9df7dd5c4b7894aefafc184d5159",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.675,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.5,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.8438
+     },
+     "superseded": 0,
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     },
+     "shadow_result": "upd_48f6929ee0ec4c4fac88148f57e205b5 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_48f6929ee0ec4c4fac88148f57e205b5",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 0.5,
+       "both": 0.875
+      },
+      "half_items": 0.25,
+      "unchanged": 0.8125
+     },
+     "superseded": 0,
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     },
+     "shadow_result": "upd_c9225b8eba8247d18adb8572555dbaa1 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_c9225b8eba8247d18adb8572555dbaa1",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 0.375,
+       "both": 0.875
+      },
+      "half_items": 0.75,
+      "unchanged": 0.7812
+     },
+     "superseded": 0,
+     "active_acc_after": {
+      "all": 0.7,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.875
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_1df2d127b68a40fdb1a7e1b0387af06c",
+    "expected_parent_acc": 0.75,
+    "after_rollback_acc": 0.75,
+    "restored": true
+   },
+   "restart_same_session": true
+  },
+  "fixed+sup": {
+   "policy": "fixed+sup",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     },
+     "shadow_result": "upd_dfa1d721a5ca452dada48cf01a42b346 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_dfa1d721a5ca452dada48cf01a42b346",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.8125,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062
+     },
+     "superseded": 0,
+     "active_acc_after": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     },
+     "shadow_result": "upd_16842e571fa948a0a60ece7cdd04ecbb PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_16842e571fa948a0a60ece7cdd04ecbb",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": 0.125,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0
+     },
+     "shadow_result": "upd_1edd90dd4fc14c739b4c387546c186f3 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_1edd90dd4fc14c739b4c387546c186f3",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.125,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.925,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.625,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9062
+     },
+     "shadow_result": "upd_9f79b6957adb40999468e74c61304ba1 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_9f79b6957adb40999468e74c61304ba1",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.0,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375
+     },
+     "shadow_result": "upd_d205c5ece6ab4f6d91a5f370c4cf2a8d PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_d205c5ece6ab4f6d91a5f370c4cf2a8d",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.0,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.975,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.875,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9688
+     },
+     "shadow_result": "upd_4db0af4becf746a2985d1f6f31b321b3 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_4db0af4becf746a2985d1f6f31b321b3",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 0.95,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.9375
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375
+     },
+     "shadow_result": "upd_56c8f2cade8f4ee89d82618aaaf13260 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_56c8f2cade8f4ee89d82618aaaf13260",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.675,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.875,
+       "gist": 0.625,
+       "both": 0.875
+      },
+      "half_items": 0.0,
+      "unchanged": 0.8438
+     },
+     "superseded": 6,
+     "active_acc_after": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375
+     },
+     "shadow_result": "upd_a04a8d1fdb914510b26d4245b1a9366b EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_a04a8d1fdb914510b26d4245b1a9366b",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.775,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.5,
+       "gist": 0.5,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.7188
+     },
+     "superseded": 6,
+     "active_acc_after": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375
+     },
+     "shadow_result": "upd_f2e4c78b0c164ba2bf7f37e663f57a15 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_f2e4c78b0c164ba2bf7f37e663f57a15",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.675,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.125,
+       "gist": 0.375,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.5938
+     },
+     "superseded": 6,
+     "active_acc_after": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375
+     },
+     "shadow_result": "upd_63cce3a9028e4ff59f7f15e508cc4495 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_63cce3a9028e4ff59f7f15e508cc4495",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.625,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.125,
+       "gist": 0.25,
+       "both": 0.75
+      },
+      "half_items": 1.0,
+      "unchanged": 0.5312
+     },
+     "superseded": 6,
+     "active_acc_after": {
+      "all": 0.75,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 0.75,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 0.9375
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_4db0af4becf746a2985d1f6f31b321b3",
+    "expected_parent_acc": 0.975,
+    "after_rollback_acc": 0.975,
+    "restored": true
+   },
+   "restart_same_session": true
+  },
+  "adaptive+sup": {
+   "policy": "adaptive+sup",
+   "record_only_updates": 0,
+   "log": [
+    {
+     "phase": "p1",
+     "batch": 0,
+     "corrections": 8,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     },
+     "shadow_result": "upd_f382bf0452f648c08e3dcd58bc3768c9 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_f382bf0452f648c08e3dcd58bc3768c9",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.9,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.8125,
+       "gist": 1.0,
+       "both": 0.875
+      },
+      "half_items": 0.875,
+      "unchanged": 0.9062
+     },
+     "superseded": 0,
+     "active_acc_after": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 1,
+     "corrections": 16,
+     "disagreement_before": null,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.325,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.125,
+       "both": 0.5
+      },
+      "half_items": 0.0,
+      "unchanged": 0.4062
+     },
+     "shadow_result": "upd_ffa31c29da9545d8bf8a9c9ef5281467 PENDING_APPROVAL; aktive Generation unverändert",
+     "update_id": "upd_ffa31c29da9545d8bf8a9c9ef5281467",
+     "status": "PENDING_APPROVAL",
+     "candidate_acc": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0
+     },
+     "superseded": 0,
+     "promoted": true,
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 2,
+     "corrections": 24,
+     "disagreement_before": 0.125,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0
+     },
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 3,
+     "corrections": 32,
+     "disagreement_before": 0.0,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0
+     },
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 4,
+     "corrections": 40,
+     "disagreement_before": 0.125,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0
+     },
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0
+     }
+    },
+    {
+     "phase": "p1",
+     "batch": 5,
+     "corrections": 48,
+     "disagreement_before": 0.0,
+     "shadow": false,
+     "active_acc_before": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0
+     },
+     "active_acc_after": {
+      "all": 1.0,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 1.0,
+      "unchanged": 1.0
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 0,
+     "corrections": 56,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0
+     },
+     "shadow_result": "upd_753265e0d97940f6ab03f936c42c2606 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_753265e0d97940f6ab03f936c42c2606",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.675,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.5,
+       "both": 0.875
+      },
+      "half_items": 1.0,
+      "unchanged": 0.5938
+     },
+     "superseded": 6,
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 1,
+     "corrections": 64,
+     "disagreement_before": 0.625,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0
+     },
+     "shadow_result": "upd_5e1a9f475c644e15aad85ceddba37fea EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_5e1a9f475c644e15aad85ceddba37fea",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.5,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.0,
+       "both": 0.5
+      },
+      "half_items": 1.0,
+      "unchanged": 0.375
+     },
+     "superseded": 6,
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 2,
+     "corrections": 72,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0
+     },
+     "shadow_result": "upd_78e7e540bd3e4170b1f1c77beea5631a EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_78e7e540bd3e4170b1f1c77beea5631a",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.0,
+       "both": 0.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.25
+     },
+     "superseded": 6,
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0
+     }
+    },
+    {
+     "phase": "p2",
+     "batch": 3,
+     "corrections": 80,
+     "disagreement_before": 0.5,
+     "shadow": true,
+     "active_acc_before": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0
+     },
+     "shadow_result": "upd_7075e2dec37e48f784433658b1d16e11 EVALUATED_FAIL; aktive Generation unverändert",
+     "update_id": "upd_7075e2dec37e48f784433658b1d16e11",
+     "status": "EVALUATED_FAIL",
+     "candidate_acc": {
+      "all": 0.4,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 0.0,
+       "gist": 0.0,
+       "both": 0.0
+      },
+      "half_items": 1.0,
+      "unchanged": 0.25
+     },
+     "superseded": 6,
+     "active_acc_after": {
+      "all": 0.8,
+      "per_route": {
+       "simple": 1.0,
+       "detail": 1.0,
+       "gist": 1.0,
+       "both": 1.0
+      },
+      "half_items": 0.0,
+      "unchanged": 1.0
+     }
+    }
+   ],
+   "rollback": {
+    "update_id": "upd_ffa31c29da9545d8bf8a9c9ef5281467",
+    "expected_parent_acc": 0.325,
+    "after_rollback_acc": 0.325,
+    "restored": true
+   },
+   "restart_same_session": true
+  }
+ },
+ "phone_measured": false,
+ "prereg": "docs/proofs/continuation-20261026/z6c-supersede/PREREG.md",
+ "claim_limit": "route head only (STEP5 NumPy head on Needle embeddings), generated German paraphrases, harness approves every eligible candidate",
+ "criteria_z6c": {
+  "S1_half_items_learned_ge_80pct": false,
+  "S2_retention_ge_90pct": true,
+  "S3_rollback_restores": true,
+  "S4_no_false_promotion": false,
+  "S5_control_without_rule_fails": true
+ },
+ "verdict_z6c": "Z6C_SUPERSEDE_FAIL"
+}

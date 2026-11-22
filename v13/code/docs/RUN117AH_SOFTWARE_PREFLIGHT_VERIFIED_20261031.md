@@ -1,0 +1,11 @@
+# Run117AH software preflight checkpoint — 2026-10-31
+
+Review-only source-ID Body quote candidate. Prereg `acbd6758f437a24b14176189d65479700bb05389` before code and frozen seed1069. Fixture SHA256 `cff778da793fbab2d456143b5d8290176b1097cc0e4d867eabbd9fbc2e05f67a`, Git blob `c0cd2764a3b6ad7470e7be5d46e1273be50aa264`, six disjoint Auric/Beryl/Cobalt/Daphne/Elder/Fable rows.
+
+**Failed attempts preserved**: initial Actions `41235925265` RED 8/11 because Store.add_packet validates registered packet contracts; attempted interim `41236011265` RED because first contract migration had invalid Python syntax. Corrected canonical `BodySourceIdSelection` schema in `v13/contracts.py`, now built via `contracts.packet`, preserving zero authority. Final Actions `41236024613` and `41236034045` GREEN; latest head `0a4ef45b95bbfdaeac9987fdbadcbc9626dce712`, **11/11 real SQLite synthetic-callback tests PASS**, fixture/blob/deps/test/compile/privacy/diff all exit 0. Latest raw artifact ID `13055765679`, ZIP SHA256 `d3b3b53512c3a2d7f5bb7a6a8f4c010a47ee9e063a48e2ab12222951f8cebd6f`.
+
+**Implemented**: default-OFF trusted callback source-ID selection with two opaque IDs per role, exact source-verified USER spans, independent deterministic baseline, latest USER Store/epoch/prompt integrity, strict JSON, explicit fallible hypothesis, validated persisted `BodySourceIdSelection` packet, source ref + output hash, no actions/delivery/learning. Six fixtures produce 12/12 correct synthetic selections; this is **not native Body evidence**.
+
+**Next**: preregister/run serial pinned Linux-native B1_DETAIL and B2_GIST seed1069 experiment on same *frozen* cohort, compare original Body quote transport with model-selected IDs and deterministic selector, export complete OfferPacket and BodySourceIdSelection raw payloads plus exact SourceRefs/closed Store hashes. No native C3 calls; no model scores yet. Check active native owner and pins before launch. All original Run117U partial RED, Run117AF 6/6-vs-6/6 no-gain and Run117AG independent audit preserved.
+
+Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; `jepa_weight=0`; no Redmi, no whole-system completion. Remaining platform budget UNKNOWN.

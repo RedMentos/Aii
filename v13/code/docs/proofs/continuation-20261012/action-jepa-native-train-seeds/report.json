@@ -1,0 +1,402 @@
+{
+  "schema": "v13-action-jepa-native-training-result-v1",
+  "utc": "2026-10-12T03:15:09.061519+00:00",
+  "status": "ALL_SEEDS_CANDIDATE_GATE_FAIL",
+  "training_input_binding": "training-input-binding.json",
+  "dataset_sha256": "56146f32c6dea4d61de32b49b999208f267e15fafe981533bda1a007e94487ec",
+  "native_taps_sha256": "09fde379793ea8c4a63268df729a33b4b98a3f4f90f3eeee2dec4a83a10b5843",
+  "native_taps_storage": "docs/proofs/continuation-20261011/action-jepa-prefix736.closed.zip + action-native1875-recovered-20261012/parts (restore with scripts/action_jepa_delta_storage.py restore)",
+  "closed_zip": {
+    "file": "action-jepa-native-train-seeds.closed.zip",
+    "sha256": "67f1c9d8d35a5f1a15325d30d8798def16d8401def41d63044bd963cd5644a74",
+    "bytes": 2327824
+  },
+  "runtime": {
+    "python": "3.13.16",
+    "numpy": "2.3.5",
+    "blas_threads": 1,
+    "host": "Linux cloud container, not Redmi",
+    "wall_seconds_per_seed": "3-4"
+  },
+  "seeds": {
+    "13": {
+      "checkpoint_sha256": "1b8e992edba416389e1b60a4645649a6b31dfdc40f83487228a2008ed62c0566",
+      "metrics_sha256": "d19c366f28a30bb3f29364d5ca683787be1800b57a1f57fce52c7e5f6527660e",
+      "gates": {
+        "analytic_gradient": true,
+        "finite": true,
+        "deterministic": true,
+        "checkpoint_reload": true,
+        "noncollapse": true,
+        "predictive_gain_over_controls": false,
+        "fixed_reference_retention": false,
+        "observed_input_declared": true
+      },
+      "candidate_gate_pass": false,
+      "final_train_loss": 0.0994000713318624,
+      "finite_difference_max_error": 3.174474572098518e-12,
+      "partitions": {
+        "calibration": {
+          "prediction_mse": 0.3216934612808057,
+          "initial_mse": 0.4182535821893014,
+          "no_bias_mse": 0.32585975016624863,
+          "copy_mse": 0.4182535821893014,
+          "mean_delta_mse": 0.18781009507147906,
+          "shuffled_target_mse": 0.5232971849017859,
+          "target_std_ratio": 0.9110861061708178,
+          "per_action": {
+            "negate": {
+              "prediction_mse": 0.320086,
+              "mean_delta_mse": 0.103443,
+              "copy_mse": 0.112089,
+              "shuffled_target_mse": 0.550824
+            },
+            "question": {
+              "prediction_mse": 0.322039,
+              "mean_delta_mse": 0.121755,
+              "copy_mse": 0.189498,
+              "shuffled_target_mse": 0.539659
+            },
+            "summarize": {
+              "prediction_mse": 0.321543,
+              "mean_delta_mse": 0.241969,
+              "copy_mse": 0.235829,
+              "shuffled_target_mse": 0.535703
+            },
+            "translate_de": {
+              "prediction_mse": 0.323106,
+              "mean_delta_mse": 0.284074,
+              "copy_mse": 1.135599,
+              "shuffled_target_mse": 0.467003
+            }
+          }
+        },
+        "test": {
+          "prediction_mse": 0.3099033729564679,
+          "initial_mse": 0.3935367975109731,
+          "no_bias_mse": 0.3142120225182151,
+          "copy_mse": 0.3935367975109731,
+          "mean_delta_mse": 0.17972738561909243,
+          "shuffled_target_mse": 0.5047486874356207,
+          "target_std_ratio": 0.9310451828861817,
+          "per_action": {
+            "negate": {
+              "prediction_mse": 0.264227,
+              "mean_delta_mse": 0.076183,
+              "copy_mse": 0.087624,
+              "shuffled_target_mse": 0.512397
+            },
+            "question": {
+              "prediction_mse": 0.262387,
+              "mean_delta_mse": 0.100734,
+              "copy_mse": 0.166375,
+              "shuffled_target_mse": 0.496159
+            },
+            "summarize": {
+              "prediction_mse": 0.357552,
+              "mean_delta_mse": 0.223192,
+              "copy_mse": 0.242858,
+              "shuffled_target_mse": 0.529992
+            },
+            "translate_de": {
+              "prediction_mse": 0.355447,
+              "mean_delta_mse": 0.3188,
+              "copy_mse": 1.07729,
+              "shuffled_target_mse": 0.480447
+            }
+          }
+        },
+        "retention": {
+          "prediction_mse": 0.2808597769583856,
+          "initial_mse": 0.4320665369108338,
+          "no_bias_mse": 0.2853604211533081,
+          "copy_mse": 0.4320665369108338,
+          "mean_delta_mse": 0.16153928881762977,
+          "shuffled_target_mse": 0.4887661263182046,
+          "target_std_ratio": 0.904298652909504,
+          "per_action": {
+            "negate": {
+              "prediction_mse": 0.22103,
+              "mean_delta_mse": 0.048561,
+              "copy_mse": 0.061801,
+              "shuffled_target_mse": 0.493228
+            },
+            "question": {
+              "prediction_mse": 0.278568,
+              "mean_delta_mse": 0.081933,
+              "copy_mse": 0.127377,
+              "shuffled_target_mse": 0.514418
+            },
+            "summarize": {
+              "prediction_mse": 0.338331,
+              "mean_delta_mse": 0.204809,
+              "copy_mse": 0.217099,
+              "shuffled_target_mse": 0.528605
+            },
+            "translate_de": {
+              "prediction_mse": 0.28551,
+              "mean_delta_mse": 0.310854,
+              "copy_mse": 1.32199,
+              "shuffled_target_mse": 0.418813
+            }
+          }
+        }
+      }
+    },
+    "21": {
+      "checkpoint_sha256": "9a70fd6d108bd10a405c81f0c32f06c587e8751e0ff51b8210383773d62d601d",
+      "metrics_sha256": "5ba5dfab2826e030da51fe5c27dbe01afcc7a5eb2aa485cbfad8deca774471b0",
+      "gates": {
+        "analytic_gradient": true,
+        "finite": true,
+        "deterministic": true,
+        "checkpoint_reload": true,
+        "noncollapse": true,
+        "predictive_gain_over_controls": false,
+        "fixed_reference_retention": false,
+        "observed_input_declared": true
+      },
+      "candidate_gate_pass": false,
+      "final_train_loss": 0.10716171412149875,
+      "finite_difference_max_error": 4.539493780875148e-12,
+      "partitions": {
+        "calibration": {
+          "prediction_mse": 0.3335916904882987,
+          "initial_mse": 0.3964224905348154,
+          "no_bias_mse": 0.3376384344934513,
+          "copy_mse": 0.3964224905348154,
+          "mean_delta_mse": 0.22755292410284927,
+          "shuffled_target_mse": 0.5367154541804771,
+          "target_std_ratio": 0.8917099441549059,
+          "per_action": {
+            "negate": {
+              "prediction_mse": 0.303999,
+              "mean_delta_mse": 0.135022,
+              "copy_mse": 0.144618,
+              "shuffled_target_mse": 0.540452
+            },
+            "question": {
+              "prediction_mse": 0.317236,
+              "mean_delta_mse": 0.153643,
+              "copy_mse": 0.219305,
+              "shuffled_target_mse": 0.541306
+            },
+            "summarize": {
+              "prediction_mse": 0.384012,
+              "mean_delta_mse": 0.28094,
+              "copy_mse": 0.331171,
+              "shuffled_target_mse": 0.594176
+            },
+            "translate_de": {
+              "prediction_mse": 0.329119,
+              "mean_delta_mse": 0.340607,
+              "copy_mse": 0.890596,
+              "shuffled_target_mse": 0.470927
+            }
+          }
+        },
+        "test": {
+          "prediction_mse": 0.31094326846694803,
+          "initial_mse": 0.3602156772267027,
+          "no_bias_mse": 0.31415800363155977,
+          "copy_mse": 0.3602156772267027,
+          "mean_delta_mse": 0.19411715199589438,
+          "shuffled_target_mse": 0.5260456106061663,
+          "target_std_ratio": 0.8922602125562571,
+          "per_action": {
+            "negate": {
+              "prediction_mse": 0.257574,
+              "mean_delta_mse": 0.078791,
+              "copy_mse": 0.085438,
+              "shuffled_target_mse": 0.513488
+            },
+            "question": {
+              "prediction_mse": 0.282198,
+              "mean_delta_mse": 0.105203,
+              "copy_mse": 0.150221,
+              "shuffled_target_mse": 0.528984
+            },
+            "summarize": {
+              "prediction_mse": 0.366238,
+              "mean_delta_mse": 0.24851,
+              "copy_mse": 0.278957,
+              "shuffled_target_mse": 0.563851
+            },
+            "translate_de": {
+              "prediction_mse": 0.337763,
+              "mean_delta_mse": 0.343965,
+              "copy_mse": 0.926247,
+              "shuffled_target_mse": 0.497859
+            }
+          }
+        },
+        "retention": {
+          "prediction_mse": 0.30439951226615963,
+          "initial_mse": 0.3403889484548132,
+          "no_bias_mse": 0.3073759610161781,
+          "copy_mse": 0.3403889484548132,
+          "mean_delta_mse": 0.1675267588034102,
+          "shuffled_target_mse": 0.5298213404067568,
+          "target_std_ratio": 0.8873487576740874,
+          "per_action": {
+            "negate": {
+              "prediction_mse": 0.270946,
+              "mean_delta_mse": 0.05552,
+              "copy_mse": 0.061369,
+              "shuffled_target_mse": 0.558401
+            },
+            "question": {
+              "prediction_mse": 0.251013,
+              "mean_delta_mse": 0.094492,
+              "copy_mse": 0.124247,
+              "shuffled_target_mse": 0.504512
+            },
+            "summarize": {
+              "prediction_mse": 0.40327,
+              "mean_delta_mse": 0.236492,
+              "copy_mse": 0.24938,
+              "shuffled_target_mse": 0.582585
+            },
+            "translate_de": {
+              "prediction_mse": 0.292369,
+              "mean_delta_mse": 0.283603,
+              "copy_mse": 0.92656,
+              "shuffled_target_mse": 0.473788
+            }
+          }
+        }
+      }
+    },
+    "34": {
+      "checkpoint_sha256": "5fc8f06bb51354070cb48df9b9fd1dbf07900a2db5e5673c1d83245c34f0baae",
+      "metrics_sha256": "3bf4b6bb4aaddec09d8e1391c7b997cca0ef6219c6dc76cc7d3cb2254f016dd3",
+      "gates": {
+        "analytic_gradient": true,
+        "finite": true,
+        "deterministic": true,
+        "checkpoint_reload": true,
+        "noncollapse": true,
+        "predictive_gain_over_controls": false,
+        "fixed_reference_retention": false,
+        "observed_input_declared": true
+      },
+      "candidate_gate_pass": false,
+      "final_train_loss": 0.09862211192574583,
+      "finite_difference_max_error": 5.158429239315865e-12,
+      "partitions": {
+        "calibration": {
+          "prediction_mse": 0.3125816178857716,
+          "initial_mse": 0.283699837670471,
+          "no_bias_mse": 0.31404585691536857,
+          "copy_mse": 0.283699837670471,
+          "mean_delta_mse": 0.17791833711696936,
+          "shuffled_target_mse": 0.4693792621739743,
+          "target_std_ratio": 0.903257851768521,
+          "per_action": {
+            "negate": {
+              "prediction_mse": 0.310742,
+              "mean_delta_mse": 0.110052,
+              "copy_mse": 0.123268,
+              "shuffled_target_mse": 0.493352
+            },
+            "question": {
+              "prediction_mse": 0.311023,
+              "mean_delta_mse": 0.121238,
+              "copy_mse": 0.218506,
+              "shuffled_target_mse": 0.477512
+            },
+            "summarize": {
+              "prediction_mse": 0.353045,
+              "mean_delta_mse": 0.205016,
+              "copy_mse": 0.233312,
+              "shuffled_target_mse": 0.524777
+            },
+            "translate_de": {
+              "prediction_mse": 0.275517,
+              "mean_delta_mse": 0.275368,
+              "copy_mse": 0.559713,
+              "shuffled_target_mse": 0.381876
+            }
+          }
+        },
+        "test": {
+          "prediction_mse": 0.2842925402474347,
+          "initial_mse": 0.2765782579949586,
+          "no_bias_mse": 0.2853389143103746,
+          "copy_mse": 0.2765782579949586,
+          "mean_delta_mse": 0.17605438138273866,
+          "shuffled_target_mse": 0.47485459423981563,
+          "target_std_ratio": 0.9140808083561158,
+          "per_action": {
+            "negate": {
+              "prediction_mse": 0.232728,
+              "mean_delta_mse": 0.06787,
+              "copy_mse": 0.089878,
+              "shuffled_target_mse": 0.463503
+            },
+            "question": {
+              "prediction_mse": 0.253315,
+              "mean_delta_mse": 0.099186,
+              "copy_mse": 0.191007,
+              "shuffled_target_mse": 0.490488
+            },
+            "summarize": {
+              "prediction_mse": 0.356907,
+              "mean_delta_mse": 0.227654,
+              "copy_mse": 0.249285,
+              "shuffled_target_mse": 0.518157
+            },
+            "translate_de": {
+              "prediction_mse": 0.294221,
+              "mean_delta_mse": 0.309508,
+              "copy_mse": 0.576143,
+              "shuffled_target_mse": 0.427271
+            }
+          }
+        },
+        "retention": {
+          "prediction_mse": 0.26357017289744794,
+          "initial_mse": 0.26589783670924133,
+          "no_bias_mse": 0.2656101648655881,
+          "copy_mse": 0.26589783670924133,
+          "mean_delta_mse": 0.13473096276546573,
+          "shuffled_target_mse": 0.4315154740864468,
+          "target_std_ratio": 0.8877377442916884,
+          "per_action": {
+            "negate": {
+              "prediction_mse": 0.217787,
+              "mean_delta_mse": 0.052267,
+              "copy_mse": 0.088113,
+              "shuffled_target_mse": 0.41141
+            },
+            "question": {
+              "prediction_mse": 0.266707,
+              "mean_delta_mse": 0.069722,
+              "copy_mse": 0.154267,
+              "shuffled_target_mse": 0.464149
+            },
+            "summarize": {
+              "prediction_mse": 0.337031,
+              "mean_delta_mse": 0.182102,
+              "copy_mse": 0.181579,
+              "shuffled_target_mse": 0.49321
+            },
+            "translate_de": {
+              "prediction_mse": 0.232755,
+              "mean_delta_mse": 0.234833,
+              "copy_mse": 0.639632,
+              "shuffled_target_mse": 0.357293
+            }
+          }
+        }
+      }
+    }
+  },
+  "finding": "On real Qwen3.5-0.8B native taps the preregistered affine predictor learns (loss 0.30-0.40 -> 0.10-0.12; held-out MSE below copy) but is about 1.7x worse than the per-action mean-delta control on every partition and seed; it also regresses per-action retention. Only translate_de approaches mean-delta. Predictive-gain and retention gates FAIL for 13/21/34.",
+  "receiver_authority": 0,
+  "learn_authority": 0,
+  "runtime_integrated": false,
+  "semantic_quality_proven": false,
+  "phone_measured": false,
+  "canonical_architecture_complete": false
+}

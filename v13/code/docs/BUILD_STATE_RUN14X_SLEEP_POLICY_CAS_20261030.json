@@ -1,0 +1,93 @@
+{
+  "schema": "v13.run14x.sleep_policy_cas.software_green.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; independent F9 Sleep policy control-plane package",
+  "parent": {
+    "branch": "assistant/v13-run14w-crossorgan-integration-20261030-hourly11",
+    "head_sha": "ef8f6d0bda3d6b19e2280c4bafeed4658639de55",
+    "full_suite_run": 41125663275,
+    "full_suite_status_at_parent": "IN_PROGRESS"
+  },
+  "branch": "assistant/v13-run14x-sleep-policy-cas-20261030-hourly11",
+  "production_merge": false,
+  "source_blobs": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "prereg": "21ef598dee658fe0629dd3a770a13f93f309d811",
+    "test_first": "1a57db25ca669c0895e963f2070247bdb834e4ad",
+    "sleep_original": "90d5361d1f8ad34c2311e870572a1d40146e4ca0",
+    "sleep_candidate": "097527ab8d58caf389419f4dcaae329cc4971e83"
+  },
+  "changes": [
+    "SleepCycle.set_policy('enabled') now accepts only explicit true/false aliases, including yes/no, and rejects unknown values instead of silently disabling Sleep.",
+    "Every Sleep policy mutation reads versioned state and uses expected-version CAS; bounded 8 retries preserve independent concurrent operator updates and fail closed under contention.",
+    "Locked gain, finite mix, numeric bounds, sleep age/resource permissions and default disabled/approval gates unchanged."
+  ],
+  "evidence": {
+    "original_red": {
+      "run": 41126030000,
+      "head": "ade6d9cb32c8940b393c56171406939446641407",
+      "artifact": 13011205851,
+      "zip_sha256": "d6524ec24fd8c2d0449a3916937ab945bcba2fcf9b57802fe8c7a9eb190d8a11",
+      "tests": 35,
+      "failures": 8,
+      "errors": 0,
+      "stage_exits": {
+        "PINS": 0,
+        "VENV": 0,
+        "DEPS": 0,
+        "PIP_CHECK": 0,
+        "TEST": 1,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14X-SleepPolicy/Run14X_Sleep_ORIGINAL_RED.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate_green": {
+      "run": 41126117481,
+      "head": "18ba8269d4edd487bbe14141f3469718c730e3e2",
+      "artifact": 13010298825,
+      "zip_sha256": "d5cee8f2dd040988942d9df234d6a19c8a444914eb6f067fd9c55cd2a8318b3e",
+      "tests": 67,
+      "failures": 0,
+      "errors": 0,
+      "stage_exits": {
+        "PINS": 0,
+        "VENV": 0,
+        "DEPS": 0,
+        "PIP_CHECK": 0,
+        "TEST": 0,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14X-SleepPolicy/Run14X_Sleep_CANDIDATE_GREEN.zip",
+      "readback": "BYTE_IDENTICAL"
+    }
+  },
+  "review": [
+    "Test-first prereg and original RED before source patch; original 8 failures include unknown booleans, lost-update and retry-bound counterexamples.",
+    "67/67 real SQLite Sleep scheduler/validation/AG12 holdout/source authority tests GREEN; no model inference.",
+    "No independent external review agent available; coordinator checked source diff, stage exits, CRC/SHA and private readback."
+  ],
+  "limitations": [
+    "Unfiltered full-suite Run14W parent was still in progress at checkpoint; Run14X targeted proof does not claim that suite.",
+    "Concurrent CAS retry handles state conflicts, not an atomic multi-organ transaction; no native or Redmi measurement.",
+    "No production merge."
+  ],
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Review Run14X Sleep policy PR against Run14W parent; finish parent full-suite original raw and compare historical failure counts, no waivers. Continue other canonical organ utility work after verified save; preserve frozen source/model/seed pins."
+}

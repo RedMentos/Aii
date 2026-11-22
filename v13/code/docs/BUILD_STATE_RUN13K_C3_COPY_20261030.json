@@ -1,0 +1,118 @@
+{
+  "package": "RUN13K_C3_COPY_INSTRUCTION_SEED239_20261030",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run13k-c3-copy-native-20261030-auto11",
+  "parent_review_commit": "91ff2eb31866c909381f9b5a36dc76064ffbf2c5",
+  "preregistered_commit": "33acfd5f4e1e95bc222055027b6071c44c38d273",
+  "source_head_at_native_launch": "234e5468fb38cfd24af2a5f14a4d30ec90b5b91f",
+  "cohort": {
+    "seed": 239,
+    "cases": 6,
+    "arms": [
+      "ORIGINAL_SHADOW",
+      "COPY_DIRECT"
+    ],
+    "fixture_sha256": "c2e98d20730ec653678bac0ee7393fa143b08508ee684b6f87b6d875ee0b0796",
+    "model_revision": "657e078c94084481950a2d555a941481f715536b",
+    "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
+  },
+  "preflight": {
+    "actions_run": 41086332016,
+    "head": "74c07fa2c9f0cf00ec70a2d258c5454634d822f9",
+    "artifact_id": 12990863876,
+    "zip_sha256": "a1f01ee973bdf3a73990883604f4930bd97268151d36c1941f93c47225920698",
+    "crc": "PASS",
+    "inner_hashes": "16/16",
+    "tests": "10/10",
+    "stage_exits": {
+      "PINS": 0,
+      "VENV": 0,
+      "DEPS": 0,
+      "TEST": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13K-C3-Copy/run13k-preflight-41086332016.zip",
+    "backup_byte_identical": true
+  },
+  "native": {
+    "attempts": [
+      {
+        "actions_run": 41086544571,
+        "source_head": "234e5468fb38cfd24af2a5f14a4d30ec90b5b91f",
+        "result": "CI_RED_ARTIFACT_PATH",
+        "reason": "Native script stage completed, but upload-artifact and enforcement pointed to stale preflight temp path; original raw not exported. Retain Actions logs, do not claim native result."
+      },
+      {
+        "actions_run": 41086768006,
+        "source_head": "4f1f3e71e9d609a8f259e84d1df7e28e4713a560",
+        "result": "CI_SUCCESS_STRUCTURAL_GREEN_FIDELITY_RED",
+        "workflow_fix": "2e8d9889dab1d8f0dc5030a57f7486d8bf7d8b85",
+        "artifact_id": 12990949266,
+        "zip_sha256": "e6b1072c08c603ab775135dbd1123290a633f9f98afac315416b8ba3687f05da",
+        "crc": "PASS",
+        "inner_hashes": "35/35",
+        "rows": "12/12",
+        "native_final_reaped": "12/12",
+        "distinct_native_pids": 12,
+        "independent_replay": "RUN13K_RAW_REPLAY_VALID",
+        "stage_exits": {
+          "PINS": 0,
+          "VENV": 0,
+          "DEPS": 0,
+          "TEST": 0,
+          "BOOTSTRAP": 0,
+          "NATIVE": 0,
+          "REPORT_CHECK": 0,
+          "COMPILE": 0,
+          "PRIVACY": 0,
+          "DIFF": 0
+        },
+        "private_backup": "/V13-Checkpoints/2026-10-30/Run13K-C3-Copy/run13k-native-original-41086768006.zip",
+        "backup_byte_identical": true
+      }
+    ],
+    "original_artifact": 12990949266,
+    "native_quality": "RED",
+    "totals": {
+      "ORIGINAL_SHADOW": {
+        "n": 6,
+        "native_final": 6,
+        "exact_copy": 0,
+        "numeric_correct": 0,
+        "faster_correct": 0,
+        "strict_full": 0,
+        "literal_abstain_dot": 6
+      },
+      "COPY_DIRECT": {
+        "n": 6,
+        "native_final": 6,
+        "exact_copy": 0,
+        "numeric_correct": 0,
+        "faster_correct": 0,
+        "strict_full": 0,
+        "literal_abstain_dot": 6
+      }
+    }
+  },
+  "prior_negative": "Run13J seed227 JEF 6/6 ABSTAIN., exact copy 0/6; original native RED preserved.",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Both JEF_C3 prompt arms emitted literal ABSTAIN. in all six disjoint cases. Does the shared SYSTEM abstention instruction dominate? Requires a new preregistered isolated system-prompt ablation.",
+    "Can deterministic JEF exact answers be delivered only on explicit operator command without involving C3? Existing :jeflink last is operator-only; no active chat promotion.",
+    "Original Run13A native full-task and G14 full-suite RED remain."
+  ],
+  "next_command": "Preregister a new disjoint source cohort with system-instruction contrast; do not modify or rescore Run13J/Run13K. Retain original ZIPs, native failures and all negative gates.",
+  "platform_remaining_budget": "UNKNOWN"
+}

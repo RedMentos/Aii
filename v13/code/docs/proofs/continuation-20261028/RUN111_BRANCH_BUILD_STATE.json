@@ -1,0 +1,41 @@
+{
+  "schema": "v13.run111.branch_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run111-step2-fresh-native-preflight-20261029",
+  "base_pr": 1014,
+  "base_head": "f918ce2c2474678c99f44f8816fec27909c0d604",
+  "prereg_first": "026d8c3b7facac5f7b09b85c00c59d947d9f67e5",
+  "fixture_sha_amendment": "ed408540771892f257831b60df47066e60f11104",
+  "fixture_sha256": "b8896bfba0c6c323ba1dafd12bc788e7f378bbf5d23c96e5074b3b1d058ef1d1",
+  "source_blob": "468d2bc72a5584fc6e5c67292968feb3a4125c07",
+  "test_blob": "eb3777be2458b47774858f3bb536aa8027cf1cad",
+  "prereg_blob": "87008e8ca85cf9f54d7f6a7fe44f77d8e4d25cda",
+  "amendment_blob": "e006147f794a97d85aa0ad73aa829f314a9b8897",
+  "parent_original_raw": {
+    "run": 40801220110,
+    "head": "f918ce2c2474678c99f44f8816fec27909c0d604",
+    "artifact_id": 12866052866,
+    "zip_sha256": "3e40efb6188d0721196eaccf14ec86b0d5a34d6a816ccca66e0bd836818a98a2",
+    "crc": "CLEAN",
+    "inner_hashes": "18/18",
+    "exits": "8/8 ZERO",
+    "focused": "19 PASS",
+    "full": "2681 PASS one skipped",
+    "private_backup": "/V13-Checkpoints/2026-10-29/Run110-STEP2-Fresh-Fixtures/RAW_40801220110_sha3E40EFB6.zip",
+    "private_byte_match": true
+  },
+  "status": "SOFTWARE_PREFLIGHT_STAGED; CI_PENDING; NO_NATIVE_EXECUTION; NO_GATE_PROMOTION",
+  "negative_gates": {
+    "Age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Run exact pinned Run111 preflight focused/full CI, independently audit original ZIP and private backup. Then separately preregister and run one-fixture distinct/shared/off Linux-native pilot serially with pinned model/runner/library hashes; no STEP2 promotion.",
+  "remaining_execution_budget": "UNKNOWN"
+}

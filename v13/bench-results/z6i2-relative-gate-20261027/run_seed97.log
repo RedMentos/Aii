@@ -1,0 +1,52 @@
+{"policy": "adaptive+now+words+teach+rel", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.4}
+{"policy": "adaptive+now+words+teach+rel", "phase": "p1", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.9}
+{"policy": "adaptive+now+words+teach+rel", "phase": "p1", "batch": 2, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.975}
+{"policy": "adaptive+now+words+teach+rel", "phase": "p1", "batch": 3, "shadow": false, "status": null, "acc": 0.975}
+{"policy": "adaptive+now+words+teach+rel", "phase": "p1", "batch": 4, "shadow": false, "status": null, "acc": 0.975}
+{"policy": "adaptive+now+words+teach+rel", "phase": "p1", "batch": 5, "shadow": false, "status": null, "acc": 0.975}
+{"policy": "adaptive+now+words+teach+rel", "handover_check": "p2-0", "learned": false, "run": 0}
+{"policy": "adaptive+now+words+teach+rel", "phase": "p2", "batch": 0, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.925}
+{"policy": "adaptive+now+words+teach+rel", "handover_check": "p2-1", "learned": false, "run": 0}
+{"policy": "adaptive+now+words+teach+rel", "phase": "p2", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 1.0}
+{"policy": "adaptive+now+words+teach+rel", "handover_check": "p2-2", "learned": true, "run": 8}
+{"policy": "adaptive+now+words+teach+rel", "phase": "p2", "batch": 2, "shadow": false, "status": null, "acc": 1.0}
+{"policy": "adaptive+now+words+teach+rel", "handover_check": "p2-3", "learned": true, "run": 16}
+{"policy": "adaptive+now+words+teach+rel", "phase": "p2", "batch": 3, "shadow": false, "status": null, "acc": 1.0}
+{"policy": "adaptive+now+words+teach+rel", "handover_check": "p3", "learned": true, "run": 24}
+{"policy": "fixed+now+words+teach+rel", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.4}
+{"policy": "fixed+now+words+teach+rel", "phase": "p1", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.9}
+{"policy": "fixed+now+words+teach+rel", "phase": "p1", "batch": 2, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.975}
+{"policy": "fixed+now+words+teach+rel", "phase": "p1", "batch": 3, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.975}
+{"policy": "fixed+now+words+teach+rel", "phase": "p1", "batch": 4, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.975}
+{"policy": "fixed+now+words+teach+rel", "phase": "p1", "batch": 5, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.975}
+{"policy": "fixed+now+words+teach+rel", "handover_check": "p2-0", "learned": false, "run": 0}
+{"policy": "fixed+now+words+teach+rel", "phase": "p2", "batch": 0, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.925}
+{"policy": "fixed+now+words+teach+rel", "handover_check": "p2-1", "learned": false, "run": 0}
+{"policy": "fixed+now+words+teach+rel", "phase": "p2", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 1.0}
+{"policy": "fixed+now+words+teach+rel", "handover_check": "p2-2", "learned": true, "run": 8}
+{"policy": "fixed+now+words+teach+rel", "phase": "p2", "batch": 2, "shadow": true, "status": "EVALUATED_FAIL", "acc": 1.0}
+{"policy": "fixed+now+words+teach+rel", "handover_check": "p2-3", "learned": true, "run": 16}
+{"policy": "fixed+now+words+teach+rel", "phase": "p2", "batch": 3, "shadow": true, "status": "EVALUATED_FAIL", "acc": 1.0}
+{"policy": "fixed+now+words+teach+rel", "handover_check": "p3", "learned": true, "run": 24}
+{"policy": "fixed+now", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.4}
+{"policy": "fixed+now", "phase": "p1", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.775}
+{"policy": "fixed+now", "phase": "p1", "batch": 2, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.85}
+{"policy": "fixed+now", "phase": "p1", "batch": 3, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.85}
+{"policy": "fixed+now", "phase": "p1", "batch": 4, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.85}
+{"policy": "fixed+now", "phase": "p1", "batch": 5, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.85}
+{"policy": "fixed+now", "phase": "p2", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.7}
+{"policy": "fixed+now", "phase": "p2", "batch": 1, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.7}
+{"policy": "fixed+now", "phase": "p2", "batch": 2, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.7}
+{"policy": "fixed+now", "phase": "p2", "batch": 3, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.7}
+{
+ "verdict": null,
+ "criteria": null,
+ "verdict_z6i": null,
+ "criteria_z6i": null,
+ "verdict_z6j": "Z6J_PASS",
+ "criteria_z6j": {
+  "J1_adaptive_all": true,
+  "J2_fixed_learns": true,
+  "J3_control_not_clean": true
+ }
+}

@@ -1,0 +1,41 @@
+name: V13 N7 append-only source invalidation review
+on:
+  push:
+    branches: [codex/automation11-n7-append-source-invalidation-20261027]
+    paths:
+      - '.github/workflows/n7-append-source-invalidation.yml'
+      - 'v13/code/v13/context_os.py'
+      - 'v13/code/tests/test_context_os.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-n7-append-invalidation-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Source-invalidation regressions, privacy and diff
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/n7-venv"
+          py="$RUNNER_TEMP/n7-venv/bin/python"
+          "$py" -m pip install --no-input --disable-pip-version-check 'numpy==2.2.6' psutil PyYAML Pillow
+          cd v13/code
+          PYTHONPATH=. "$py" -m unittest -v tests.test_context_os
+          "$py" -m py_compile v13/context_os.py tests/test_context_os.py
+          cd ../..
+          "$py" v13/code/scripts/public_repo_privacy_scan.py --base acaaefde09072e38cb541f82fb2182bb8b9d11de --head HEAD
+          git diff --check acaaefde09072e38cb541f82fb2182bb8b9d11de HEAD
+          echo 'N7_SOURCE_INVALIDATION_SOFTWARE_ONLY_NO_NATIVE_OR_AGE_PROMOTION'

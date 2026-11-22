@@ -1,0 +1,71 @@
+{
+  "schema": "v13.run21.ag12_solver_identity.software_review_only.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation",
+  "branch": "assistant/v13-run21-ag12-solver-identity-20261030-hourly11",
+  "base_pr": 1347,
+  "base_sha": "8cb422295156ef50199d0c24df2e80d379fac692",
+  "source_of_truth": "v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "original_generality_blob": "84ca3580c37a00701286d0d9b00d535ee8c3153f",
+  "candidate_generality_blob": "a1cab60363814cb86472a42defb5089d4cdbd432",
+  "test_blob": "27dea154c15b16a00c28c2eed1c7fd23a89c6222",
+  "prereg_blob": "74d6f421c1a89f1fbb11af00f0af024f573effd8",
+  "bug": "AG12 solver_name[:32] silently aliases distinct long model names, corrupting persisted forgetting baselines and per-solver curves",
+  "fix": "bounded strict solver identity; short keys unchanged; >32 names deterministic SHA256 namespace; read-only curve lookup supports long names and returned keys",
+  "original_red": {
+    "actions": 41134782829,
+    "source_head": "9f99fd6ad7346d28e431b34a9c11d0623e8edc4a",
+    "tests": 3,
+    "failures": 10,
+    "errors": 0,
+    "stage_exits": {
+      "pins": 0,
+      "test": 1,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "zip_sha256": "eab409d6b18ad6e3646fc6ce3cf967a59824d5d9c038789d867fae2e54b141ae",
+    "crc": "PASS",
+    "inner": "12/12",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run21-AG12-SolverIdentity/ORIGINAL_RED_shaEAB409D6.zip",
+    "readback": "BYTE_IDENTICAL"
+  },
+  "candidate_green": {
+    "actions": 41134938718,
+    "source_head": "93add23f08ace8655c2aff9fdf9f606d122dedd4",
+    "tests": 19,
+    "failures": 0,
+    "errors": 0,
+    "stage_exits": {
+      "pins": 0,
+      "test": 0,
+      "compile": 0,
+      "privacy": 0,
+      "diff": 0
+    },
+    "zip_sha256": "2c9eeb3a38923a5d9c632c1762b151560cdf6ce871327350733507be091be26d",
+    "crc": "PASS",
+    "inner": "12/12",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run21-AG12-SolverIdentity/CANDIDATE_GREEN_sha2C9EEB3A.zip",
+    "readback": "BYTE_IDENTICAL"
+  },
+  "evidence_level": "software real Runtime/SQLite restart; no model/native/Redmi",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "blockers": [
+    "Production main remains older than active review chain",
+    "Historical unfiltered full suite Run20 RED 4 failures 66 errors 16 skips; no waiver",
+    "Current Redmi measurements require device"
+  ],
+  "next_command": "Independent review of Run21 patch and PR; continue substantive Canon organ package from newest verified review-chain head. Do not rerun historical full-suite failures without changed prerequisites."
+}

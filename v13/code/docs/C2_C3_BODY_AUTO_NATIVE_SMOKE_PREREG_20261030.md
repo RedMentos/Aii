@@ -1,0 +1,18 @@
+# Integrated native C2 auto-route → C3/Body Age0 smoke — prereg 2026-10-30
+
+Owner `assistant/v13-c2-c3-body-auto-native-smoke-20261030-0500`, review-only child of isolated C2 native verified #1207 at `0984b7a2908e2bfa81622c6d8f6a7666a0c62453`. Prior genuine native C2 calls **3/3**, actual route selected **1/3**, BOOT_SCAFFOLD **2/3**; native C2 proof is *not* integrated native utility. Prior STEP2 v3 27 native rows used operator route override and failed prereg pilot gain; frozen original v3 untouched. This is a **new small integration smoke**, not a utility comparison or acceptance gate.
+
+## Frozen before code
+
+Seed **47**. Three distinct previously unused synthetic local project tasks, fixed compact canonical JSON fixture list SHA256 **`74818535a13819a65d4d32801d704fecd7716ea99c112b33c3bca248f3442c36`**:
+- Zephyr47: budget 287 Euro, Marigold cost 191 days4, Basalt cost 263 days7; expected remainders 96/24.
+- Solstice47: budget 346 Euro, Kestrel cost 214 days8, Linden cost 319 days3; expected 132/27.
+- Talon47: budget 229 Euro, Orion cost 173 days6, Willow cost 205 days2; expected 56/24.
+
+Use v3 fixed prompt grammar without leaking expected remainders. **Three independent fresh Age0 Runtime instances**, no prior history/learned state, `route_override=auto`, `observer_mode=background`, `control_seconds=20`, `learning_mode=RECORD_ONLY`, `jepa_weight=0`, `latents_enabled=false`, seed47. No forced route, no manual B1/B2 injection, no external actions or tools, no model/seed/hash swaps. Native C2 and B1/B2/C3 use existing pinned catalog. Serialize all heavy inference. No user data; all source texts synthetic.
+
+**Proof contract:** for each turn preserve raw `audit_event`, exact source event and FINAL output, route provenance `NATIVE_C2_ADVISORY` vs `BOOT_SCAFFOLD` separately, actual native C2 `C/FINAL` process memory, `ExecutiveControlContext` source/event/session binding, actual runner role/model, whether B1/B2 offered, process-reaped receipts, native output timing, Age0/no learning. A successful isolated C2 invocation without native route selection must not be counted as native-controlled routing. An output with only C3 and no B1/B2 offers must not count as C2+C3+Body integration. For `both` route require two distinct B1/B2 offer roles, release receipts and source-bound output. All three raw rows retained even on failures; failed turns never replaced.
+
+**Outcome labels:** `NATIVE_AUTO_ROUTE_3_OF_3` only if all three real C2 invocations and FINAL source-bound native outputs valid. Separately count `native_c2_selected_route` and `full_body_offer_path`. Do not require all three to select both; record actual route distribution and fail to claim full integration if no full-body path. Any missing evidence → `PARTIAL_RED`. No comparative utility or STEP2 promotion even if all 3 valid. Source/score candidate from expression PR #1208 is not integrated into this smoke. No new model/worker source changes. Canon/catalog/tools Git blobs `218464b12a2d27d92524c751922fa8e1c3fb0ea7`, `7af05962af41d0bc3f7dd18ef01d4eba55eabf99`, `954a3f468f10195fbce12d27f68585ee7edee2c9` unchanged.
+
+**Execution:** implement a new isolated script/tests, run focused software preflight and preserve raw, then one bounded Ubuntu Linux-native workflow in same C2/STEP2 concurrency group; verify source pins, SHA256SUMS/CRC/raw and private byte-backed ZIP. Do not start if another heavy owner active. No Redmi evidence. Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, jepa_weight=0, whole system incomplete; historical Run34/Run37 full-suite RED remains.

@@ -1,0 +1,80 @@
+name: V13 Sleep A exact recall full software regression
+on:
+  push:
+    branches: [assistant/v13-sleep-a-exact-recall-identity-review-20261027]
+    paths:
+      - '.github/workflows/sleep-a-exact-recall-fullsuite.yml'
+      - 'v13/code/v13/sleep.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-sleep-a-exact-recall-full
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Preserve Sleep A full source-wide raw exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/sleep-a-exact-full"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/sleep.py > "$evidence/SOURCE_BLOB.txt"
+          git hash-object v13/code/tests/test_sleep_a_exact_recall_identity_review.py > "$evidence/TEST_BLOB.txt"
+          git merge-base --is-ancestor d9ee59ef7d189334533f58a9be63229466fa345f HEAD
+          echo "$?" > "$evidence/PREREG_EXIT.txt"
+          git merge-base --is-ancestor 19c048e1f8fc585082acafa911d41ef0e24123ed HEAD
+          echo "$?" > "$evidence/RED_TEST_EXIT.txt"
+          if [ "$(cat "$evidence/SOURCE_BLOB.txt")" = "469101c9979b9cabe0dbd154cffde40912fa8a2c" ]; then echo 0; else echo 1; fi > "$evidence/FROZEN_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/sleep-a-exact-full-venv"
+          py="$RUNNER_TEMP/sleep-a-exact-full-venv/bin/python"
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$evidence/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'transformers==5.20.2' 'peft==0.21.2' >> "$evidence/INSTALL_RAW.log" 2>&1
+          second=$?
+          if [ "$first" -eq 0 ] && [ "$second" -eq 0 ]; then echo 0; else echo 1; fi > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/v13 > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 1ab88aa30947e2f3da9905b1d3055f04b98a8bed --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 1ab88aa30947e2f3da9905b1d3055f04b98a8bed HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-sleep-a-exact-full-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/sleep-a-exact-full/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce all raw exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/sleep-a-exact-full"
+          for name in PREREG RED_TEST FROZEN INSTALL UNIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -100 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'SLEEP_A_EXACT_RECALL_FULL_SOFTWARE_ONLY_NO_PROMOTION'

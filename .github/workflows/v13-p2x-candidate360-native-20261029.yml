@@ -1,0 +1,247 @@
+name: V13 P2X C3 candidate360 isolated QAD LoRA native heldout diagnostic
+on:
+  push:
+    branches: [assistant/v13-p2x-candidate360-standalone-20261029]
+    paths: ['.github/workflows/v13-p2x-candidate360-native-20261029.yml']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: v13-p2-qad-fp32-real-value-serial-20261029
+  cancel-in-progress: false
+jobs:
+  candidate360-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 85
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Source-bound frozen candidate360 native calls and closed evidence
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-p2x-candidate360-native-evidence"
+          work="$RUNNER_TEMP/v13-p2x-candidate360-native-work"
+          home="$RUNNER_TEMP/v13-p2x-candidate360-native-home"
+          mkdir -p "$e" "$work" "$home"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          ab2c495d09727421955bee1c1de177a75d7c6e21 v13/code/docs/proofs/continuation-20261029/P2X_CANDIDATE360_EXACT_ADAPTER_PREREG.md
+          72782e00a3f7497e4d9f7cf3b71cc5b9eb31c272 v13/code/docs/proofs/continuation-20261029/P2X_CANDIDATE360_STANDALONE_PREREG.md
+          106253036934a2237be24c743e94bb1b40862581 v13/code/docs/proofs/continuation-20261029/P2X_CANDIDATE360_CACHE_PARITY_ADDENDUM.md
+          eb810d0ee137d8567ca192d00fd015741b4f66a7 v13/code/scripts/p2x_candidate360_standalone.py
+          41b16b85da5e45c02bd11fdce5e6aafbabceb551 v13/code/tests/test_p2x_candidate360_standalone.py
+          eeebf85e33e214e7648fd182f7023f3723d922d4 v13/code/scripts/p2x_base360_native_verifier.py
+          c9509e299510540af4e43ebbc397f2e5a144142d v13/code/scripts/p2x_native_receiver_eval_scorer.py
+          8135fa2792df2c541dc1719e49d941c775703697 v13/code/scripts/p2x_disjoint_receiver_trainset.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          BLOBS
+          source_red=0
+          : > "$e/SOURCE_RAW.log"
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            printf '%s %s %s\n' "$want" "$got" "$path" >> "$e/SOURCE_RAW.log"
+            if [ "$want" != "$got" ]; then source_red=1; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          echo "$source_red" > "$e/SOURCE_EXIT.txt"
+          python3 - "$work" > "$e/RESOURCE_RAW.log" 2>&1 <<'PY'
+          import sys
+          sys.path.insert(0,"v13/code/scripts")
+          from p2x_c3_lora_pilot import resource_admission
+          print(resource_admission(sys.argv[1]))
+          PY
+          echo "$?" > "$e/RESOURCE_EXIT.txt"
+          if [ "$source_red" = 0 ] && [ "$(cat "$e/RESOURCE_EXIT.txt")" = 0 ]; then
+            python3 v13/code/scripts/p2x_disjoint_receiver_trainset.py \
+              --out "$work/cohort" \
+              --fixture-sha256 cd3edfdb464c6f99650b1ea32b5b09854268f0b53faa79df22ddcd135f21985a \
+              > "$e/COHORT_RAW.json" 2>&1
+            echo "$?" > "$e/COHORT_EXIT.txt"
+          else echo SKIPPED > "$e/COHORT_EXIT.txt"; fi
+          if [ "$(cat "$e/COHORT_EXIT.txt")" = 0 ]; then
+            printf '%s  %s\n' \
+              'af191c087d872a42924f2d2d465a3f26f6c323bf48c5c0682b30094b9d666cf1' "$work/cohort/train.jsonl" \
+              'a7f2d70d463305a43ec03bbd758a61cc91129a411094ed60e5503d4ffe0894cf' "$work/cohort/validation_inputs.jsonl" \
+              'd1cbe570ae3caa2a80177f861ba5751c93208ffccc98f8d12d90578c59555e9a' "$work/cohort/validation_answers.jsonl" \
+              | sha256sum -c > "$e/COHORT_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/COHORT_SHA_EXIT.txt"
+          else echo SKIPPED > "$e/COHORT_SHA_EXIT.txt"; fi
+          if [ "$(cat "$e/COHORT_SHA_EXIT.txt")" = 0 ]; then
+            python3 -m venv "$work/venv" > "$e/VENV_RAW.log" 2>&1
+            echo "$?" > "$e/VENV_EXIT.txt"
+          else echo SKIPPED > "$e/VENV_EXIT.txt"; fi
+          py="$work/venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input \
+              'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' \
+              > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+            "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+            "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          else echo SKIPPED > "$e/DEPS_EXIT.txt"; echo SKIPPED > "$e/PIP_CHECK_EXIT.txt"; fi
+          if [ "$source_red" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$e/PIP_CHECK_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v \
+              tests.test_p2x_candidate360_standalone \
+              tests.test_p2x_base360_native_verifier \
+              tests.test_p2x_native_receiver_eval_scorer) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else echo SKIPPED > "$e/FOCUSED_EXIT.txt"; fi
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=20s 1500s \
+              "$py" -m scripts.p2x_base360_native_executor --home "$home" --install) \
+              > "$e/INSTALL_RAW.log" 2>&1
+            echo "$?" > "$e/INSTALL_EXIT.txt"
+          else echo SKIPPED > "$e/INSTALL_EXIT.txt"; fi
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            curl -fLsS --retry 2 --connect-timeout 20 --max-time 240 \
+              'https://github.com/ggml-org/llama.cpp/releases/download/b10964/llama-b10964-bin-ubuntu-x64.tar.gz' \
+              -o "$work/runner.tar.gz" > "$e/RUNTIME_DOWNLOAD_RAW.log" 2>&1
+            echo "$?" > "$e/RUNTIME_DOWNLOAD_EXIT.txt"
+            printf '%s  %s\n' '9abf88aea48a55d0f80edb1ee20220b186848cca0b4e919d71518cfd7ca67443' "$work/runner.tar.gz" \
+              | sha256sum -c > "$e/RUNTIME_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/RUNTIME_SHA_EXIT.txt"
+          else echo SKIPPED > "$e/RUNTIME_DOWNLOAD_EXIT.txt"; echo SKIPPED > "$e/RUNTIME_SHA_EXIT.txt"; fi
+          if [ "$(cat "$e/RUNTIME_SHA_EXIT.txt")" = 0 ]; then
+            curl -fLsS --retry 2 --connect-timeout 20 --max-time 240 \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H 'Accept: application/vnd.github+json' \
+              'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12890306165/zip' \
+              -o "$work/base.zip" > "$e/BASE_DOWNLOAD_RAW.log" 2>&1
+            echo "$?" > "$e/BASE_DOWNLOAD_EXIT.txt"
+            printf '%s  %s\n' '43e8dcc71370cf17355d4cd0bbc4f9aaa1378ead648a1de3425edf333b082d93' "$work/base.zip" \
+              | sha256sum -c > "$e/BASE_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/BASE_SHA_EXIT.txt"
+            if [ "$(cat "$e/BASE_SHA_EXIT.txt")" = 0 ]; then
+              mkdir -p "$work/base"
+              unzip -q "$work/base.zip" -d "$work/base" > "$e/BASE_UNZIP_RAW.log" 2>&1
+              echo "$?" > "$e/BASE_UNZIP_EXIT.txt"
+            else echo SKIPPED > "$e/BASE_UNZIP_EXIT.txt"; fi
+          else for stage in BASE_DOWNLOAD BASE_SHA BASE_UNZIP; do echo SKIPPED > "$e/${stage}_EXIT.txt"; done; fi
+          if [ "$(cat "$e/BASE_UNZIP_EXIT.txt")" = 0 ]; then
+            curl -fLsS --retry 2 --connect-timeout 20 --max-time 240 \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H 'Accept: application/vnd.github+json' \
+              'https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12896411365/zip' \
+              -o "$work/adapter.zip" > "$e/ADAPTER_DOWNLOAD_RAW.log" 2>&1
+            echo "$?" > "$e/ADAPTER_DOWNLOAD_EXIT.txt"
+            printf '%s  %s\n' 'c86ef27fc5a8abe4419888329286d271d971a2a6b63f9fd6c1d8ed704cf81a09' "$work/adapter.zip" \
+              | sha256sum -c > "$e/ADAPTER_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/ADAPTER_SHA_EXIT.txt"
+            if [ "$(cat "$e/ADAPTER_SHA_EXIT.txt")" = 0 ]; then
+              mkdir -p "$work/adapter"
+              unzip -q "$work/adapter.zip" -d "$work/adapter" > "$e/ADAPTER_UNZIP_RAW.log" 2>&1
+              echo "$?" > "$e/ADAPTER_UNZIP_EXIT.txt"
+              printf '%s  %s\n' '062c20d796c59169579529f4a069f77693a847123f599d00f374bd01a8618e92' "$work/adapter/adapter/adapter.gguf" \
+                | sha256sum -c > "$e/ADAPTER_GGUF_SHA_RAW.log" 2>&1
+              echo "$?" > "$e/ADAPTER_GGUF_SHA_EXIT.txt"
+            else echo SKIPPED > "$e/ADAPTER_UNZIP_EXIT.txt"; echo SKIPPED > "$e/ADAPTER_GGUF_SHA_EXIT.txt"; fi
+          else for stage in ADAPTER_DOWNLOAD ADAPTER_SHA ADAPTER_UNZIP ADAPTER_GGUF_SHA; do echo SKIPPED > "$e/${stage}_EXIT.txt"; done; fi
+          if [ "$(cat "$e/ADAPTER_GGUF_SHA_EXIT.txt")" = 0 ]; then
+            PYTHONPATH=v13/code "$py" - "$home" > "$e/MODEL_PATH_RAW.log" 2>&1 <<'PY'
+          import sys
+          from pathlib import Path
+          from v13.models import ModelManager
+          print(ModelManager(Path(sys.argv[1])).path_for("C3_LANGUAGE"))
+          PY
+            echo "$?" > "$e/MODEL_PATH_EXIT.txt"
+          else echo SKIPPED > "$e/MODEL_PATH_EXIT.txt"; fi
+          if [ "$(cat "$e/MODEL_PATH_EXIT.txt")" = 0 ]; then
+            model_path="$(tail -1 "$e/MODEL_PATH_RAW.log")"
+            (cd v13/code && PYTHONPATH=. timeout --signal=TERM --kill-after=20s 2700s \
+              "$py" -m scripts.p2x_candidate360_standalone \
+              --server-binary "$(readlink -f "$home/bin/llama-server")" \
+              --runtime-archive "$work/runner.tar.gz" \
+              --model "$model_path" \
+              --adapter "$work/adapter/adapter/adapter.gguf" \
+              --adapter-sha256 062c20d796c59169579529f4a069f77693a847123f599d00f374bd01a8618e92 \
+              --validation-dir "$work/cohort" \
+              --base-evidence "$work/base/evidence" \
+              --out "$work/candidate") > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else echo SKIPPED > "$e/NATIVE_EXIT.txt"; fi
+          if [ -d "$work/candidate" ]; then cp -a "$work/candidate" "$e/evidence"; fi
+          if [ "$(cat "$e/NATIVE_EXIT.txt")" = 0 ]; then
+            PYTHONPATH=v13/code "$py" - "$e/evidence" "$work/cohort" "$work/base/evidence" \
+              > "$e/VERIFY_RAW.json" 2>&1 <<'PY'
+          import json,sys
+          from pathlib import Path
+          from scripts import p2x_native_receiver_eval_scorer as s
+          from scripts import p2x_base360_native_verifier as v
+          from scripts import p2x_c3_lora_pilot as p
+          evidence=Path(sys.argv[1]); validation=Path(sys.argv[2]); base=Path(sys.argv[3])
+          assert v.verify(base,validation)['status']=='VERIFIED_BASE_ONLY_LINUX_NATIVE_NO_GATE'
+          plan,answers=s.load_validation(validation)
+          records=json.loads((evidence/'RAW.json').read_bytes())
+          adapter='062c20d796c59169579529f4a069f77693a847123f599d00f374bd01a8618e92'
+          score=s.score(records,plan,answers,adapter)
+          assert (evidence/'SCORE.json').read_bytes()==s.canonical(score)
+          paired=s.compare(json.loads((base/'SCORE.json').read_bytes()),score)
+          assert (evidence/'PAIRED.json').read_bytes()==s.canonical(paired)
+          receipt=json.loads((evidence/'RECEIPT.json').read_bytes())
+          assert receipt['status']=='P2X_CANDIDATE360_NATIVE_DIAGNOSTIC_NO_GATE'
+          assert receipt['recorded_calls']==360 and receipt['process_reaped'] is True
+          assert receipt['adapter_sha256']==adapter
+          assert receipt['ag6_approved'] is False and receipt['production_activation'] is False
+          assert receipt['jepa_weight']==0 and receipt['redmi_measured'] is False
+          assert receipt['canonical_gate_pass'] is False and receipt['whole_system_complete'] is False
+          for name,key in [('RAW.json','raw_sha256'),('SCORE.json','score_sha256'),
+                           ('PAIRED.json','paired_sha256'),('INPUTS.json','inputs_sha256'),
+                           ('ANSWERS.json','answers_sha256')]:
+              assert receipt[key]==p.file_sha(evidence/name)
+          print(json.dumps({'status':'VERIFIED_CANDIDATE360_NO_GATE','rows':360,
+                            'both_exact_delta':paired['both_exact_delta'],
+                            'candidate_exact_both':paired['candidate_exact_both'],
+                            'foreign_wrong_committed_candidate':paired['foreign_wrong_committed_candidate'],
+                            'step2_status':'UTILITY_FAIL','redmi_measured':False,
+                            'whole_system_complete':False},sort_keys=True))
+          PY
+            echo "$?" > "$e/VERIFY_EXIT.txt"
+          else echo SKIPPED > "$e/VERIFY_EXIT.txt"; fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 740636ba9e413eeae713a7496209073f586a8e38 --head HEAD --no-worktree \
+            > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 740636ba9e413eeae713a7496209073f586a8e38 HEAD \
+            > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original raw including RED before enforce
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p2x-candidate360-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p2x-candidate360-native-evidence/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce exact pinned source, candidate 360 calls and no gate promotion
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p2x-candidate360-native-evidence"
+          for stage in SOURCE RESOURCE COHORT COHORT_SHA VENV DEPS PIP_CHECK FOCUSED INSTALL RUNTIME_DOWNLOAD RUNTIME_SHA BASE_DOWNLOAD BASE_SHA BASE_UNZIP ADAPTER_DOWNLOAD ADAPTER_SHA ADAPTER_UNZIP ADAPTER_GGUF_SHA MODEL_PATH NATIVE VERIFY PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; raw preserved; no STEP2/AG6/JEPA promotion"
+              tail -40 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          python3 - "$e/VERIFY_RAW.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          assert x['status']=='VERIFIED_CANDIDATE360_NO_GATE'
+          assert x['rows']==360 and x['step2_status']=='UTILITY_FAIL'
+          assert x['redmi_measured'] is False and x['whole_system_complete'] is False
+          print('P2X_CANDIDATE360_NATIVE_DIAGNOSTIC_ONLY_NO_GATE')
+          PY

@@ -1,0 +1,135 @@
+{
+  "schema": "v13.p0x.c3_600call_native_review_result.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated native review",
+  "review_pr": 1066,
+  "parent_pr": 1064,
+  "source_pr": 1062,
+  "prereg_commit": "6f76921f434b769394958c9d05768629e471a060",
+  "prereg_blob": "27074170ff9e6474e3e181afbd648005ca50a22c",
+  "fixture_sha256": "ab03aba600e8085b02247657cc5fb718195e89a83641ef69ad006a27c776647e",
+  "run": {
+    "id": 40841374171,
+    "head_sha": "4a98235e7e17c0dfd0e9a9cc3cb8478f99d9abac",
+    "status": "GREEN_CLOSED_LINUX_NATIVE_C3_SOURCE_ABLATIONS_NO_GATE",
+    "artifact_id": 12883820129,
+    "zip_sha256": "be222ad4790c6ce92225d9cda37fac3a23cc5cbcd8316231e22bd1feb1a88d4f",
+    "zip_crc_clean": true,
+    "internal_sha256sums_verified": 96,
+    "stage_exit_zero": [
+      "SOURCE",
+      "PARENT_BASELINE_DOWNLOAD",
+      "PARENT_SOURCE_DOWNLOAD",
+      "PARENT_MOCK_DOWNLOAD",
+      "PARENT_VERIFY",
+      "RESOURCE",
+      "DEPS",
+      "COMPILE",
+      "FOCUSED",
+      "INSTALL",
+      "NATIVE",
+      "VERIFY",
+      "PRIVACY",
+      "DIFF"
+    ],
+    "focused_tests": 8,
+    "private_backup": "/V13/RawEvidence/P0X_40841374171_600native_exact_head_raw.zip",
+    "backup_rematerialized_sha256": "be222ad4790c6ce92225d9cda37fac3a23cc5cbcd8316231e22bd1feb1a88d4f"
+  },
+  "native_evidence": {
+    "kind": "LINUX_NATIVE_C3_P0X_EXACT_SOURCE_ABLATIONS",
+    "c3_native_calls": 600,
+    "seed": 13,
+    "c3_sampling": "off",
+    "model_sha256_before_after": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "runner_sha256_before_after": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+    "baseline_raw_sha256": "79be6584d465b0fc3ccd33294d882a41bb1990920f3098ed39203b7aef7d18a1",
+    "baseline_score_sha256": "7c603158c6d821592d5777d46bb4723503f74c063c5c30fcc0f72fe2720b836e",
+    "raw_sha256": "41712a41467349069fd8af0b418624636bc3ab122604c611f95d3745ba188332",
+    "score_sha256": "c03e2ad145b17a5aa34f0552db6944516b1310ca14861d83e05ba98bdc5767f7",
+    "comparison_sha256": "85a808cc106d509bbc64b96a70874a282596550ef7716d215985a6c46e22e675",
+    "inputs_sha256": "bf1e298852d87a5bf984ca9189a03a92fb0b04928597fe0019b24244d3eb20af",
+    "answers_sha256": "9c6f32638ee455e083467ed04201f5f9ddf657105977066907ba1cf93efe2a71",
+    "process_reaped": true,
+    "weight_updates": false
+  },
+  "score_per_arm": {
+    "b1_only": {
+      "exact": 51,
+      "wrong_committed": 99,
+      "unknown": 0,
+      "unparseable": 0
+    },
+    "b2_only": {
+      "exact": 50,
+      "wrong_committed": 100,
+      "unknown": 0,
+      "unparseable": 0
+    },
+    "both_exact": {
+      "exact": 52,
+      "wrong_committed": 98,
+      "unknown": 0,
+      "unparseable": 0
+    },
+    "shuffled": {
+      "exact": 50,
+      "wrong_committed": 100,
+      "unknown": 0,
+      "unparseable": 0
+    }
+  },
+  "output_labels": {
+    "b1_only": {
+      "A": 0,
+      "B": 4,
+      "NONE": 146,
+      "UNKNOWN": 0,
+      "UNPARSEABLE": 0
+    },
+    "b2_only": {
+      "A": 0,
+      "B": 0,
+      "NONE": 150,
+      "UNKNOWN": 0,
+      "UNPARSEABLE": 0
+    },
+    "both_exact": {
+      "A": 0,
+      "B": 62,
+      "NONE": 88,
+      "UNKNOWN": 0,
+      "UNPARSEABLE": 0
+    },
+    "shuffled": {
+      "A": 0,
+      "B": 0,
+      "NONE": 150,
+      "UNKNOWN": 0,
+      "UNPARSEABLE": 0
+    }
+  },
+  "comparison": {
+    "baseline_exact": 50,
+    "both_exact": 52,
+    "improvement": 2,
+    "threshold": 15,
+    "threshold_met": false,
+    "both_exceeds_singles": true,
+    "shuffled_wrong_committed": 100
+  },
+  "interpretation": "On 150 prospectively frozen public synthetic tasks, exact B1+B2 source raised C3 accuracy only 50/150 to 52/150 (+2), far below preregistered +15 threshold. B1-only 51, B2-only 50, foreign B1 shuffled 50. C3 never produced A in any 600 source-arm calls and committed wrong decisions on 98/150 both-exact and 100/150 foreign-shuffled; no reliable semantic source-complementarity demonstrated. This is a descriptive source-bound Linux-native negative result, not a JEPA/B3/Redmi or full-system proof.",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "next_package": "Prioritize existing V13 LP3 causal-state-dependent receiver learning or default-off C3 supervised source-composition baseline on disjoint training corpus, using existing LoraTrainer/AG6 approval and QAD parity checks. Keep P0X 150 frozen holdout and all original negative evidence. Continue Context OS/JEF/B1-B2 learning independently; Redmi device action remains unavailable.",
+  "production_merge": false,
+  "remaining_platform_budget": "UNKNOWN"
+}

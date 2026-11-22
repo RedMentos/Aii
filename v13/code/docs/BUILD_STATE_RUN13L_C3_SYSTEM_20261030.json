@@ -1,0 +1,112 @@
+{
+  "package": "RUN13L_C3_SYSTEM_ABSTENTION_SEED251_20261030",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run13l-c3-system-abstention-native-20261030-auto11",
+  "parent": "edaf8f5354ffc4f9d7091f705af7ceed17d75488",
+  "preregistered_commit": "962a9e7f6cc6de632a8f3575afc86b72c472218a",
+  "native_launch_source_head": "5a78f544ea349d7d787f2fb6ad5d4d8c86f8e3c9",
+  "fixture": {
+    "seed": 251,
+    "cases": 6,
+    "arms": [
+      "SYSTEM_ABSTAIN",
+      "SYSTEM_COPY"
+    ],
+    "cases_sha256": "ccf9e0aebdf5a4376f2b3a0b65460cce5dd1ac3198ac3dde189080f3dbeb4473"
+  },
+  "model": {
+    "revision": "657e078c94084481950a2d555a941481f715536b",
+    "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
+  },
+  "preflight": {
+    "actions_run": 41087408992,
+    "artifact_id": 12991947717,
+    "zip_sha256": "3fbb038452486bf36a2d144207e1f9fe0f5b5006a6f8c632a90add184d0c9821",
+    "crc": "PASS",
+    "inner_hashes": "16/16",
+    "tests": "16/16",
+    "stage_exits": {
+      "PINS": 0,
+      "VENV": 0,
+      "DEPS": 0,
+      "TEST": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13L-C3-System/run13l-preflight-41087408992.zip",
+    "byte_identical": true
+  },
+  "native": {
+    "actions_run": 41087610878,
+    "head": "5a78f544ea349d7d787f2fb6ad5d4d8c86f8e3c9",
+    "status": "CI_SUCCESS_NATIVE_STRUCTURAL_GREEN",
+    "artifact_id": 12991823249,
+    "zip_sha256": "cb1c2786f663ca49840ff73d26146f60c3bbebd66546ac7b2d155e24fc72f4cb",
+    "zip_bytes": 28560,
+    "crc": "PASS",
+    "inner_hashes": "35/35",
+    "rows": "12/12",
+    "native_final_reaped": "12/12",
+    "distinct_native_pids": 12,
+    "stage_exits": {
+      "PINS": 0,
+      "VENV": 0,
+      "DEPS": 0,
+      "TEST": 0,
+      "BOOTSTRAP": 0,
+      "NATIVE": 0,
+      "REPORT_CHECK": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "independent_replay": "RUN13L_RAW_REPLAY_VALID",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13L-C3-System/run13l-native-original-41087610878.zip",
+    "backup_byte_identical": true,
+    "totals": {
+      "SYSTEM_ABSTAIN": {
+        "n": 6,
+        "native_final": 6,
+        "exact_copy": 0,
+        "numeric_correct": 0,
+        "faster_correct": 0,
+        "strict_full": 0,
+        "literal_abstain_dot": 6
+      },
+      "SYSTEM_COPY": {
+        "n": 6,
+        "native_final": 6,
+        "exact_copy": 0,
+        "numeric_correct": 9,
+        "faster_correct": 5,
+        "strict_full": 4,
+        "literal_abstain_dot": 0
+      }
+    },
+    "interpretation": "EXPLORATORY_SYSTEM_PROMPT_SENSITIVITY_NOT_UTILITY_GATE"
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "historical_negative": [
+    "Run13J native seed227 JEF 6/6 literal ABSTAIN., 0/6 exact copy",
+    "Run13K native seed239 both arms 6/6 literal ABSTAIN., 0/6 exact copy",
+    "Run13A native fulltask and G14 fullsuite RED"
+  ],
+  "open_questions": [
+    "Native SYSTEM_COPY improved frozen lexical numeric/faster on this new n=6 synthetic cohort, but exact byte copy 0/6. Does it generalize on preregistered heldout with independent source group and stricter contradiction checks?",
+    "SYSTEM_ABSTAIN 6/6 literal ABSTAIN. suggests system-level wording dominates; no causal generalization claim beyond controlled prompt contrast.",
+    "Original Run13A full-task and G14 full-suite RED; no Redmi or active C3 egress."
+  ],
+  "next_command": "Independent original-ZIP review of Run13L 41087610878, then preregister disjoint heldout system-copy fidelity/contradiction cohort; do not alter original seed251 or scorer; consider non-C3 canonical packages next.",
+  "platform_remaining_budget": "UNKNOWN"
+}

@@ -1,0 +1,63 @@
+{
+  "schema": "v13.run135.age_step2_crosschain_software_build_state.v1",
+  "recorded_date": "2026-10-29",
+  "owner": "GPT-6 automation; software-only review, no native/production owner",
+  "branch": "assistant/v13-run135-age-step2-crosschain-software-20261029",
+  "pr": 1035,
+  "parent_pr": 1034,
+  "parent_sha": "58dad4b349719104a1db227c6f01360891466e8b",
+  "prereg_commit": "eefcf3a0bf6714724e315c7ee132b702277dd781",
+  "prereg_blob": "cfd55e143f5bbcb10617ca2a31d5848aa0c00c8e",
+  "test_blob": "7d466fef05c3c35306786a7488bacdfef67be644",
+  "workflow_blob": "210efd4e376dcdeb254f6757248efb0a6c548697",
+  "workflow_head_before_checkpoint": "3cb2a8260a4f05ad0821009d15f88e9713873efe",
+  "donor_blobs": {
+    "run131_age_finite_source": "6f10566fb141e618111efa3102929d8f078f0f9b",
+    "run131_age_finite_test": "d11d0ac1aac63a13c5c394c40bb82caa369cb8e8",
+    "run131_prereg": "c1a3039b6bb4df4b7c8c2c5f577d7a3cd232735f",
+    "run132_age_state_source": "8143c5995ab04e4c08e87dfa76d3345570dede22",
+    "run132_age_state_test": "eab41fbe046d167530f2ed5187c78ce52e142b4b",
+    "run132_prereg": "e8da3fa027a959b7e0f7556a3a126da85fba915e",
+    "exact_import_verified": true
+  },
+  "software_ci": {
+    "run_id": 40817178054,
+    "status": "RUNNING_OR_UNAUDITED",
+    "focused": "PENDING",
+    "original_42": "PENDING",
+    "full": "PENDING",
+    "privacy": "PENDING",
+    "original_raw": "PENDING",
+    "native_calls": 0
+  },
+  "changes": [
+    "Exact imports of Run131/132 Age finite evidence and persisted-state diagnostics, no production edits.",
+    "New Store lifecycle crosschain tests for Age0 typed evidence, corrupt persisted state, and no mutation from STEP2 replay.",
+    "Original frozen 42-row Run134 composition retained; no new native inference."
+  ],
+  "private_backup": "/V13-Checkpoints/2026-10-29/Run129-133-Independent (prior raw ZIPs SHA-verified after re-materialization)",
+  "open_questions": [
+    "Does Run135 exact-head focused/full/privacy/original raw close GREEN?",
+    "Does Run134 parent composed replay close 0 wrong committed and source/model hashes unchanged?",
+    "When can independent reviewed source-only candidates be integrated into production under canonical gates?",
+    "Native-owner release and Redmi measurement still absent."
+  ],
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "next_command": "Check GitHub Actions run 40817178054 at exact source head 3cb2a8260a4f05ad0821009d15f88e9713873efe; download original raw ZIP; verify HEAD, CRC, SHA256SUMS, donor blobs, focused/full/privacy/diff, original 42-row replay and negative gates. Preserve RED and repair only on owned branch. Verify parent Run134/133 current-head raw first if they complete earlier; back up verified ZIPs privately.",
+  "prerequisites": [
+    "No production AgeControl/operator/runtime changes",
+    "No native owner or Redmi claimed",
+    "No main merge, no Drive rejected destination",
+    "No source/model/seed/registered cohort drift"
+  ],
+  "no_main_merge": true
+}

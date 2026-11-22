@@ -1,0 +1,65 @@
+name: V13 BP2b independent source-manifest binding review
+on:
+  push:
+    branches: [assistant/v13-bp2b-manifest-binding-20261027]
+    paths:
+      - '.github/workflows/bp2b-manifest-binding-review.yml'
+      - 'v13/code/scripts/bp2b_native_runner.py'
+      - 'v13/code/tests/test_bp2b_native_runner.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp2b-native-runner-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Isolated source-only prerequisites
+        run: |
+          set -euo pipefail
+          python3 -m venv --system-site-packages "$RUNNER_TEMP/bp2b-manifest-binding-venv"
+          "$RUNNER_TEMP/bp2b-manifest-binding-venv/bin/python" -m pip install --disable-pip-version-check --no-input 'numpy==2.3.5'
+      - name: Capture fake orchestration, dry-run plans, compile and privacy
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp2b-manifest-binding"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp2b-manifest-binding/HEAD.txt"
+          git hash-object v13/code/scripts/bp2b_native_runner.py > "$RUNNER_TEMP/bp2b-manifest-binding/RUNNER_BLOB.txt"
+          (cd v13/code && PYTHONPATH="$PWD" "$RUNNER_TEMP/bp2b-manifest-binding-venv/bin/python" -m unittest -v tests.test_bp2b_native_runner tests.test_bp2b_transfer_score) > "$RUNNER_TEMP/bp2b-manifest-binding/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp2b-manifest-binding/UNIT_EXIT.txt"
+          for arm in legacy bp2b bp2b_minor manual_ref; do
+            PYTHONPATH=v13/code "$RUNNER_TEMP/bp2b-manifest-binding-venv/bin/python" v13/code/scripts/bp2b_native_runner.py --seed 41 --arm "$arm" --out "$RUNNER_TEMP/bp2b-manifest-binding/dry" --dry-run
+          done > "$RUNNER_TEMP/bp2b-manifest-binding/DRY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp2b-manifest-binding/DRY_EXIT.txt"
+          "$RUNNER_TEMP/bp2b-manifest-binding-venv/bin/python" -m compileall -q v13/code/scripts/bp2b_native_runner.py v13/code/tests/test_bp2b_native_runner.py > "$RUNNER_TEMP/bp2b-manifest-binding/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp2b-manifest-binding/COMPILE_EXIT.txt"
+          "$RUNNER_TEMP/bp2b-manifest-binding-venv/bin/python" v13/code/scripts/public_repo_privacy_scan.py --base b6ad3d025a8f93cbafd9bca97d2e9e5a657b83c5 --head HEAD > "$RUNNER_TEMP/bp2b-manifest-binding/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp2b-manifest-binding/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bp2b-manifest-binding-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp2b-manifest-binding/
+          if-no-files-found: error
+      - name: Enforce software-only gates
+        run: |
+          set -euo pipefail
+          for n in UNIT DRY COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp2b-manifest-binding/${n}_EXIT.txt")" = 0 || {
+              tail -100 "$RUNNER_TEMP/bp2b-manifest-binding/${n}_RAW.log"; exit 1;
+            }
+          done
+          echo "BP2B_MANIFEST_BINDING_SOFTWARE_ONLY_NO_NATIVE_PROOF"

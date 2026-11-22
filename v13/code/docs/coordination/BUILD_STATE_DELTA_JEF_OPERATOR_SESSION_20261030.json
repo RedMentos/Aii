@@ -1,0 +1,53 @@
+{
+  "schema": "V13_REVIEW_BRANCH_DELTA_V1",
+  "date_utc": "2026-10-29T23:11:15Z",
+  "branch": "codex/v13-jef-operator-session-boundary-20261030-auto11",
+  "pr": 1167,
+  "base_pr": 1166,
+  "base_commit": "59943da7b0d835988637f095f5ec671fdf4a6985",
+  "verified_ci_commit": "1a17e5ffac1ee5b4b8d252eabc5ade84dc27e66d",
+  "ci_run": 40971321856,
+  "ci_conclusion": "success",
+  "focused_tests": 19,
+  "raw_artifact_id": 12941160031,
+  "raw_zip_sha256": "9502bd98848a8f8b3bc4b10ce838012f4f17d13bad6475f537031f96558ae986",
+  "raw_crc": "PASS",
+  "raw_internal_sha256": "PASS",
+  "raw_internal_files": 18,
+  "source_blobs": {
+    "v13/code/v13/jefbridge.py": "612385dcd860b35ee4c8491b6d75fa995a4fa5fb",
+    "v13/code/tests/test_jef_operator_session_20261030.py": "22f856bc0cd60c605ae3474c72f62932196edca7",
+    ".github/workflows/v13-jef-operator-session-20261030.yml": "562f3b2f24a28aedb728a54a66d14b511f34dab2"
+  },
+  "feature": "Current-session JEF operator last/outcome and finite 0..1 human rating; internal on_rating untouched",
+  "checks": {
+    "focused_unittest": "PASS",
+    "canon_blob": "PASS",
+    "python_compile": "PASS",
+    "privacy_scan": "PASS",
+    "diff_check": "PASS",
+    "pip_check": "PASS"
+  },
+  "evidence_level": "software_ci_only",
+  "age0": "RECORD_ONLY",
+  "step2": "UTILITY_FAIL",
+  "b3_l1": "FAIL",
+  "body_jepa": "UNAVAILABLE",
+  "lp3": "FAIL",
+  "jepa_weight": 0,
+  "world_jepa_utility": "UNPROVEN",
+  "redmi": "UNMEASURED",
+  "canonical_architecture_complete": false,
+  "user_full_scope_complete": false,
+  "current_owner": "codex/v13-jef-operator-session-boundary-20261030-auto11",
+  "open_questions": [
+    "Repeated explicit or implicit human ratings currently apply additional JEF SGD updates despite one-rating-per-origin record replacement; decide safe idempotency separately.",
+    "Native JEF/C2, Redmi, STEP2, B3, Body-JEPA and whole-system gates still open."
+  ],
+  "next_command": "Read v13/code/v13/inputs.py record_rating and v13/code/v13/jefbridge.py outcome; preregister duplicate-label behavior before any implementation; run tests.test_jefbridge and tests.test_jef_operator_session_20261030; full-suite cross-review separately.",
+  "prerequisites": [
+    "Fresh remote head and ownership check",
+    "New preregistration before changed behavior",
+    "No native/model acquisition for software label idempotency"
+  ]
+}

@@ -1,0 +1,1724 @@
+...........................................................................................................................................................................................................................................................................................................................................................................................................................{"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+.{"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+.{"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+.{"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+.{"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+.{"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+........................................................................./home/user/Aii/v13/code/scripts/fast_trace_compare.py:39: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpg64srrqn/dead.log' mode='r' encoding='utf-8'>
+  p.wait();raise RuntimeError('server exited during startup: '+open(log).read()[-400:])
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 12.75, 'seconds_mean': 0.15, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 12.75, 'seconds_mean': 0.15, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE', 'forgotten': []}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE', 'forgotten': []}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE', 'forgotten': []}
+.base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+.base {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 1.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+exact+trace {'facts': 1.0, 'paraphrase': 1.0, 'near_miss': 1.0, 'probes': 0.0, 'prompt_tokens_mean': 10.0, 'seconds_mean': 0.1, 'status': 'COMPLETE'}
+..............................................................................................................................................................................s...s.................E.EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE................................................................................FFF...............usage: python3 -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                           [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                           [--cycles-per-batch CYCLES_PER_BATCH]
+                           [--batches BATCHES]
+                           [--duration-seconds DURATION_SECONDS]
+                           [--sample-seconds SAMPLE_SECONDS]
+                           [--max-samples MAX_SAMPLES] [--sensors-only]
+                           [--termux-battery] [--source-zip SOURCE_ZIP]
+python3 -m unittest: error: duration-seconds: 1..86400; sample-seconds: .25..60; max-samples: 10..100000
+usage: python3 -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                           [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                           [--cycles-per-batch CYCLES_PER_BATCH]
+                           [--batches BATCHES]
+                           [--duration-seconds DURATION_SECONDS]
+                           [--sample-seconds SAMPLE_SECONDS]
+                           [--max-samples MAX_SAMPLES] [--sensors-only]
+                           [--termux-battery] [--source-zip SOURCE_ZIP]
+python3 -m unittest: error: cycles-per-batch: 4..128; batches: 1..32
+usage: python3 -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                           [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                           [--cycles-per-batch CYCLES_PER_BATCH]
+                           [--batches BATCHES]
+                           [--duration-seconds DURATION_SECONDS]
+                           [--sample-seconds SAMPLE_SECONDS]
+                           [--max-samples MAX_SAMPLES] [--sensors-only]
+                           [--termux-battery] [--source-zip SOURCE_ZIP]
+python3 -m unittest: error: cycles-per-batch: 4..128; batches: 1..32
+usage: python3 -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                           [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                           [--cycles-per-batch CYCLES_PER_BATCH]
+                           [--batches BATCHES]
+                           [--duration-seconds DURATION_SECONDS]
+                           [--sample-seconds SAMPLE_SECONDS]
+                           [--max-samples MAX_SAMPLES] [--sensors-only]
+                           [--termux-battery] [--source-zip SOURCE_ZIP]
+python3 -m unittest: error: duration-seconds: 1..86400; sample-seconds: .25..60; max-samples: 10..100000
+.....INTERRUPTED
+Berichte: /tmp/tmpnbehr2ep/proof
+Fehlende Proofs: target_phone, native_sustained_batches, thermal_sensor_observed, battery_energy_intervals_observed, native_runner_rss_observed, native_kv_growth_measured, long_term_retention_proven
+COLLECTION_COMPLETE
+Berichte: /tmp/tmpnbehr2ep/proof
+Fehlende Proofs: target_phone, native_sustained_batches, thermal_sensor_observed, battery_energy_intervals_observed, native_runner_rss_observed, native_kv_growth_measured, long_term_retention_proven
+usage: python3 -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                           [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                           [--cycles-per-batch CYCLES_PER_BATCH]
+                           [--batches BATCHES]
+                           [--duration-seconds DURATION_SECONDS]
+                           [--sample-seconds SAMPLE_SECONDS]
+                           [--max-samples MAX_SAMPLES] [--sensors-only]
+                           [--termux-battery] [--source-zip SOURCE_ZIP]
+python3 -m unittest: error: Stored sensor evidence changed; resume refused
+.....................................................................................................................................................................................E..EEE...........EEEEEEEEEEE..........................................................ss...........................................................................................................................................
+======================================================================
+ERROR: test_both_changes_survive_composition_and_live_sources_are_unchanged (test_native_firing_merged_candidate.MergedPreparation.test_both_changes_survive_composition_and_live_sources_are_unchanged)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_merged_candidate.py", line 16, in test_both_changes_survive_composition_and_live_sources_are_unchanged
+    original,changed=smoke.merged_sources()
+                     ~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_prepare_is_inference_free_and_hash_change_rejected_before_report (test_native_firing_merged_candidate.MergedPreparation.test_prepare_is_inference_free_and_hash_change_rejected_before_report)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_merged_candidate.py", line 36, in test_prepare_is_inference_free_and_hash_change_rejected_before_report
+    registration=smoke.prepare(binary,model,out)
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 85, in prepare
+    registration=binding(binary,model)
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 64, in binding
+    original,changed=merged_sources()
+                     ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_opt_in_only_approved_memory_child_and_toggle_reloads (tests.test_native_firing_runtime_candidate.AuditLaunch.test_opt_in_only_approved_memory_child_and_toggle_reloads)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 239, in test_opt_in_only_approved_memory_child_and_toggle_reloads
+    self.runner=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,cfg)
+                ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_real_loopback_http_stream_binds_window_and_terminal_stop (tests.test_native_firing_runtime_candidate.AuditLaunch.test_real_loopback_http_stream_binds_window_and_terminal_stop)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 272, in test_real_loopback_http_stream_binds_window_and_terminal_stop
+    self.runner=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,cfg)
+                ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_actual_write_map_is_shadow_only_and_zero_is_observed_zero (tests.test_native_firing_runtime_candidate.FiringRowMap.test_actual_write_map_is_shadow_only_and_zero_is_observed_zero)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 54, in test_actual_write_map_is_shadow_only_and_zero_is_observed_zero
+    result=self.observed()
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 49, in observed
+    return load_candidate('memory_server').observed_shadow_delivery(self.s,self.home,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_bound_model_binary_library_sidecar_native_change_fails_closed (tests.test_native_firing_runtime_candidate.FiringRowMap.test_bound_model_binary_library_sidecar_native_change_fails_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 69, in test_bound_model_binary_library_sidecar_native_change_fails_closed
+    result=self.observed(a=audit(binding),binding=binding)
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 49, in observed
+    return load_candidate('memory_server').observed_shadow_delivery(self.s,self.home,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_forgotten_inactive_deleted_and_source_conflict_never_claim_fact_firing (tests.test_native_firing_runtime_candidate.FiringRowMap.test_forgotten_inactive_deleted_and_source_conflict_never_claim_fact_firing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 77, in test_forgotten_inactive_deleted_and_source_conflict_never_claim_fact_firing
+    self.assertEqual(self.observed()['observed_memory_ids'],[])
+                     ~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 49, in observed
+    return load_candidate('memory_server').observed_shadow_delivery(self.s,self.home,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_native_truncated_after_inventory_returns_unavailable_without_fact_claim (tests.test_native_firing_runtime_candidate.FiringRowMap.test_native_truncated_after_inventory_returns_unavailable_without_fact_claim)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 118, in test_native_truncated_after_inventory_returns_unavailable_without_fact_claim
+    module=load_candidate('memory_server')
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_reapproval_or_forget_during_mapping_rechecks_binding (tests.test_native_firing_runtime_candidate.FiringRowMap.test_reapproval_or_forget_during_mapping_rechecks_binding)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 108, in test_reapproval_or_forget_during_mapping_rechecks_binding
+    module=load_candidate('memory_server')
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_row_dimensions_status_binding_and_authority_fail_closed (tests.test_native_firing_runtime_candidate.FiringRowMap.test_row_dimensions_status_binding_and_authority_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 92, in test_row_dimensions_status_binding_and_authority_fail_closed
+    binding=self.observed()['binding']
+            ~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 49, in observed
+    return load_candidate('memory_server').observed_shadow_delivery(self.s,self.home,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_cancel_changed_binding_cache_malformed_and_ambiguous_fail_closed (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_cancel_changed_binding_cache_malformed_and_ambiguous_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_cancelled_generator_keeps_unavailable_metrics_and_unloads (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_cancelled_generator_keeps_unavailable_metrics_and_unloads)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_concurrent_audit_request_is_rejected_and_off_path_adds_no_metrics (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_concurrent_audit_request_is_rejected_and_off_path_adds_no_metrics)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_eof_without_completion_stop_never_claims_completed_firing (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_eof_without_completion_stop_never_claims_completed_firing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_log_rotate_truncate_and_multi_native_steps_fail_closed (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_log_rotate_truncate_and_multi_native_steps_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_metrics_wrap_actual_request_window_and_clear_on_next_request (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_metrics_wrap_actual_request_window_and_clear_on_next_request)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_only_current_request_window_is_reported (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_only_current_request_window_is_reported)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_candidate_hash_bound_sources_remain_unmodified (tests.test_native_firing_runtime_candidate.FiringRuntimeShadow.test_candidate_hash_bound_sources_remain_unmodified)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 306, in test_candidate_hash_bound_sources_remain_unmodified
+    original,changed=sources()
+                     ~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_candidate_persists_observation_without_removing_exact_sources (tests.test_native_firing_runtime_candidate.FiringRuntimeShadow.test_candidate_persists_observation_without_removing_exact_sources)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 290, in test_candidate_persists_observation_without_removing_exact_sources
+    candidate=load_candidate('runtime');self.r.__class__=candidate.Runtime
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_opt_in_only_approved_memory_child_and_toggle_reloads (test_native_firing_runtime_candidate.AuditLaunch.test_opt_in_only_approved_memory_child_and_toggle_reloads)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 239, in test_opt_in_only_approved_memory_child_and_toggle_reloads
+    self.runner=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,cfg)
+                ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_real_loopback_http_stream_binds_window_and_terminal_stop (test_native_firing_runtime_candidate.AuditLaunch.test_real_loopback_http_stream_binds_window_and_terminal_stop)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 272, in test_real_loopback_http_stream_binds_window_and_terminal_stop
+    self.runner=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,cfg)
+                ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_actual_write_map_is_shadow_only_and_zero_is_observed_zero (test_native_firing_runtime_candidate.FiringRowMap.test_actual_write_map_is_shadow_only_and_zero_is_observed_zero)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 54, in test_actual_write_map_is_shadow_only_and_zero_is_observed_zero
+    result=self.observed()
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 49, in observed
+    return load_candidate('memory_server').observed_shadow_delivery(self.s,self.home,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_bound_model_binary_library_sidecar_native_change_fails_closed (test_native_firing_runtime_candidate.FiringRowMap.test_bound_model_binary_library_sidecar_native_change_fails_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 69, in test_bound_model_binary_library_sidecar_native_change_fails_closed
+    result=self.observed(a=audit(binding),binding=binding)
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 49, in observed
+    return load_candidate('memory_server').observed_shadow_delivery(self.s,self.home,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_forgotten_inactive_deleted_and_source_conflict_never_claim_fact_firing (test_native_firing_runtime_candidate.FiringRowMap.test_forgotten_inactive_deleted_and_source_conflict_never_claim_fact_firing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 77, in test_forgotten_inactive_deleted_and_source_conflict_never_claim_fact_firing
+    self.assertEqual(self.observed()['observed_memory_ids'],[])
+                     ~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 49, in observed
+    return load_candidate('memory_server').observed_shadow_delivery(self.s,self.home,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_native_truncated_after_inventory_returns_unavailable_without_fact_claim (test_native_firing_runtime_candidate.FiringRowMap.test_native_truncated_after_inventory_returns_unavailable_without_fact_claim)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 118, in test_native_truncated_after_inventory_returns_unavailable_without_fact_claim
+    module=load_candidate('memory_server')
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_reapproval_or_forget_during_mapping_rechecks_binding (test_native_firing_runtime_candidate.FiringRowMap.test_reapproval_or_forget_during_mapping_rechecks_binding)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 108, in test_reapproval_or_forget_during_mapping_rechecks_binding
+    module=load_candidate('memory_server')
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_row_dimensions_status_binding_and_authority_fail_closed (test_native_firing_runtime_candidate.FiringRowMap.test_row_dimensions_status_binding_and_authority_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 92, in test_row_dimensions_status_binding_and_authority_fail_closed
+    binding=self.observed()['binding']
+            ~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 49, in observed
+    return load_candidate('memory_server').observed_shadow_delivery(self.s,self.home,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_cancel_changed_binding_cache_malformed_and_ambiguous_fail_closed (test_native_firing_runtime_candidate.FiringRunnerWindow.test_cancel_changed_binding_cache_malformed_and_ambiguous_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_cancelled_generator_keeps_unavailable_metrics_and_unloads (test_native_firing_runtime_candidate.FiringRunnerWindow.test_cancelled_generator_keeps_unavailable_metrics_and_unloads)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_concurrent_audit_request_is_rejected_and_off_path_adds_no_metrics (test_native_firing_runtime_candidate.FiringRunnerWindow.test_concurrent_audit_request_is_rejected_and_off_path_adds_no_metrics)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_eof_without_completion_stop_never_claims_completed_firing (test_native_firing_runtime_candidate.FiringRunnerWindow.test_eof_without_completion_stop_never_claims_completed_firing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_log_rotate_truncate_and_multi_native_steps_fail_closed (test_native_firing_runtime_candidate.FiringRunnerWindow.test_log_rotate_truncate_and_multi_native_steps_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_metrics_wrap_actual_request_window_and_clear_on_next_request (test_native_firing_runtime_candidate.FiringRunnerWindow.test_metrics_wrap_actual_request_window_and_clear_on_next_request)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_only_current_request_window_is_reported (test_native_firing_runtime_candidate.FiringRunnerWindow.test_only_current_request_window_is_reported)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_candidate_hash_bound_sources_remain_unmodified (test_native_firing_runtime_candidate.FiringRuntimeShadow.test_candidate_hash_bound_sources_remain_unmodified)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 306, in test_candidate_hash_bound_sources_remain_unmodified
+    original,changed=sources()
+                     ~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_candidate_persists_observation_without_removing_exact_sources (test_native_firing_runtime_candidate.FiringRuntimeShadow.test_candidate_persists_observation_without_removing_exact_sources)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_native_firing_runtime_candidate.py", line 290, in test_candidate_persists_observation_without_removing_exact_sources
+    candidate=load_candidate('runtime');self.r.__class__=candidate.Runtime
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_corrupt_prior_is_not_repaired_or_secretly_supplied (test_source_handoff_ablation.HandoffAblation.test_corrupt_prior_is_not_repaired_or_secretly_supplied)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_source_handoff_ablation.py", line 104, in test_corrupt_prior_is_not_repaired_or_secretly_supplied
+    arms,validator=ablation.arm_sources()
+                   ~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_ablation.py", line 71, in arm_sources
+    original, changed=sources()
+                      ~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_preregistration_is_written_before_first_inference_and_resume_skips_recorded_failures (test_source_handoff_ablation.HandoffAblation.test_preregistration_is_written_before_first_inference_and_resume_skips_recorded_failures)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_source_handoff_ablation.py", line 131, in test_preregistration_is_written_before_first_inference_and_resume_skips_recorded_failures
+    ablation.main()
+    ~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_ablation.py", line 198, in main
+    registration=preregistration(args.installed_home,cohort)
+  File "/home/user/Aii/v13/code/scripts/source_handoff_ablation.py", line 100, in preregistration
+    arms,_=arm_sources()
+           ~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_ablation.py", line 71, in arm_sources
+    original, changed=sources()
+                      ~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_real_store_offline_row_exercises_all_four_arms_and_cold_release (test_source_handoff_ablation.HandoffAblation.test_real_store_offline_row_exercises_all_four_arms_and_cold_release)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_source_handoff_ablation.py", line 90, in test_real_store_offline_row_exercises_all_four_arms_and_cold_release
+    arms,validator=ablation.arm_sources()
+                   ~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_ablation.py", line 71, in arm_sources
+    original, changed=sources()
+                      ~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_register_only_never_calls_native_inference (test_source_handoff_ablation.HandoffAblation.test_register_only_never_calls_native_inference)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_source_handoff_ablation.py", line 145, in test_register_only_never_calls_native_inference
+    ablation.main()
+    ~~~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_ablation.py", line 198, in main
+    registration=preregistration(args.installed_home,cohort)
+  File "/home/user/Aii/v13/code/scripts/source_handoff_ablation.py", line 100, in preregistration
+    arms,_=arm_sources()
+           ~~~~~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_ablation.py", line 71, in arm_sources
+    original, changed=sources()
+                      ~~~~~~~^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_context_ablations_and_current_override_preserve_existing_scope (test_source_handoff_candidate.SourceHandoffCandidate.test_context_ablations_and_current_override_preserve_existing_scope)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_deleted_and_corrupted_prior_source_fail_closed (test_source_handoff_candidate.SourceHandoffCandidate.test_deleted_and_corrupted_prior_source_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_exact_integrated_candidate_is_accepted_but_mixed_or_tampered_sources_reject (test_source_handoff_candidate.SourceHandoffCandidate.test_exact_integrated_candidate_is_accepted_but_mixed_or_tampered_sources_reject)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_mutable_offer_and_wrong_turn_cannot_change_consumer_evidence (test_source_handoff_candidate.SourceHandoffCandidate.test_mutable_offer_and_wrong_turn_cannot_change_consumer_evidence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_no_evidence_never_autofills_available_context (test_source_handoff_candidate.SourceHandoffCandidate.test_no_evidence_never_autofills_available_context)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_out_of_scope_persisted_reference_is_not_authorized_by_existence (test_source_handoff_candidate.SourceHandoffCandidate.test_out_of_scope_persisted_reference_is_not_authorized_by_existence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_own_action_absence_does_not_describe_source_knowledge (test_source_handoff_candidate.SourceHandoffCandidate.test_own_action_absence_does_not_describe_source_knowledge)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_patch_applies_to_runtime_rendering_and_keeps_frozen_source_bytes (test_source_handoff_candidate.SourceHandoffCandidate.test_patch_applies_to_runtime_rendering_and_keeps_frozen_source_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_query_scope_and_model_revision_are_rechecked (test_source_handoff_candidate.SourceHandoffCandidate.test_query_scope_and_model_revision_are_rechecked)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_rejected_and_own_state_quotes_never_gain_verified_delivery (test_source_handoff_candidate.SourceHandoffCandidate.test_rejected_and_own_state_quotes_never_gain_verified_delivery)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_relevant_prior_quote_delivered_without_unselected_prior_text (test_source_handoff_candidate.SourceHandoffCandidate.test_relevant_prior_quote_delivered_without_unselected_prior_text)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/home/user/Aii/v13/code/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+FAIL: test_actual_phone_zip_runs_approval_reader_and_merged_firing_after_extraction (test_package_source.PackageSource.test_actual_phone_zip_runs_approval_reader_and_merged_firing_after_extraction)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_package_source.py", line 119, in test_actual_phone_zip_runs_approval_reader_and_merged_firing_after_extraction
+    self.assertEqual(tested.returncode,0,tested.stdout+'\n'+tested.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : 
+...........E.EEEEEEEEEEEEEEEEEE
+======================================================================
+ERROR: test_both_changes_survive_composition_and_live_sources_are_unchanged (tests.test_native_firing_merged_candidate.MergedPreparation.test_both_changes_survive_composition_and_live_sources_are_unchanged)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_merged_candidate.py", line 16, in test_both_changes_survive_composition_and_live_sources_are_unchanged
+    original,changed=smoke.merged_sources()
+                     ~~~~~~~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_prepare_is_inference_free_and_hash_change_rejected_before_report (tests.test_native_firing_merged_candidate.MergedPreparation.test_prepare_is_inference_free_and_hash_change_rejected_before_report)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_merged_candidate.py", line 36, in test_prepare_is_inference_free_and_hash_change_rejected_before_report
+    registration=smoke.prepare(binary,model,out)
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 85, in prepare
+    registration=binding(binary,model)
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 64, in binding
+    original,changed=merged_sources()
+                     ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_opt_in_only_approved_memory_child_and_toggle_reloads (tests.test_native_firing_runtime_candidate.AuditLaunch.test_opt_in_only_approved_memory_child_and_toggle_reloads)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 239, in test_opt_in_only_approved_memory_child_and_toggle_reloads
+    self.runner=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,cfg)
+                ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_real_loopback_http_stream_binds_window_and_terminal_stop (tests.test_native_firing_runtime_candidate.AuditLaunch.test_real_loopback_http_stream_binds_window_and_terminal_stop)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 272, in test_real_loopback_http_stream_binds_window_and_terminal_stop
+    self.runner=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,cfg)
+                ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_actual_write_map_is_shadow_only_and_zero_is_observed_zero (tests.test_native_firing_runtime_candidate.FiringRowMap.test_actual_write_map_is_shadow_only_and_zero_is_observed_zero)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 54, in test_actual_write_map_is_shadow_only_and_zero_is_observed_zero
+    result=self.observed()
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 49, in observed
+    return load_candidate('memory_server').observed_shadow_delivery(self.s,self.home,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_bound_model_binary_library_sidecar_native_change_fails_closed (tests.test_native_firing_runtime_candidate.FiringRowMap.test_bound_model_binary_library_sidecar_native_change_fails_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 69, in test_bound_model_binary_library_sidecar_native_change_fails_closed
+    result=self.observed(a=audit(binding),binding=binding)
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 49, in observed
+    return load_candidate('memory_server').observed_shadow_delivery(self.s,self.home,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_forgotten_inactive_deleted_and_source_conflict_never_claim_fact_firing (tests.test_native_firing_runtime_candidate.FiringRowMap.test_forgotten_inactive_deleted_and_source_conflict_never_claim_fact_firing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 77, in test_forgotten_inactive_deleted_and_source_conflict_never_claim_fact_firing
+    self.assertEqual(self.observed()['observed_memory_ids'],[])
+                     ~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 49, in observed
+    return load_candidate('memory_server').observed_shadow_delivery(self.s,self.home,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_native_truncated_after_inventory_returns_unavailable_without_fact_claim (tests.test_native_firing_runtime_candidate.FiringRowMap.test_native_truncated_after_inventory_returns_unavailable_without_fact_claim)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 118, in test_native_truncated_after_inventory_returns_unavailable_without_fact_claim
+    module=load_candidate('memory_server')
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_reapproval_or_forget_during_mapping_rechecks_binding (tests.test_native_firing_runtime_candidate.FiringRowMap.test_reapproval_or_forget_during_mapping_rechecks_binding)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 108, in test_reapproval_or_forget_during_mapping_rechecks_binding
+    module=load_candidate('memory_server')
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_row_dimensions_status_binding_and_authority_fail_closed (tests.test_native_firing_runtime_candidate.FiringRowMap.test_row_dimensions_status_binding_and_authority_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 92, in test_row_dimensions_status_binding_and_authority_fail_closed
+    binding=self.observed()['binding']
+            ~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 49, in observed
+    return load_candidate('memory_server').observed_shadow_delivery(self.s,self.home,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_cancel_changed_binding_cache_malformed_and_ambiguous_fail_closed (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_cancel_changed_binding_cache_malformed_and_ambiguous_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_cancelled_generator_keeps_unavailable_metrics_and_unloads (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_cancelled_generator_keeps_unavailable_metrics_and_unloads)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_concurrent_audit_request_is_rejected_and_off_path_adds_no_metrics (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_concurrent_audit_request_is_rejected_and_off_path_adds_no_metrics)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_eof_without_completion_stop_never_claims_completed_firing (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_eof_without_completion_stop_never_claims_completed_firing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_log_rotate_truncate_and_multi_native_steps_fail_closed (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_log_rotate_truncate_and_multi_native_steps_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_metrics_wrap_actual_request_window_and_clear_on_next_request (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_metrics_wrap_actual_request_window_and_clear_on_next_request)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_only_current_request_window_is_reported (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_only_current_request_window_is_reported)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_candidate_hash_bound_sources_remain_unmodified (tests.test_native_firing_runtime_candidate.FiringRuntimeShadow.test_candidate_hash_bound_sources_remain_unmodified)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 306, in test_candidate_hash_bound_sources_remain_unmodified
+    original,changed=sources()
+                     ~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_candidate_persists_observation_without_removing_exact_sources (tests.test_native_firing_runtime_candidate.FiringRuntimeShadow.test_candidate_persists_observation_without_removing_exact_sources)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 290, in test_candidate_persists_observation_without_removing_exact_sources
+    candidate=load_candidate('runtime');self.r.__class__=candidate.Runtime
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 46, in load_merged
+    _,changed=merged_sources()
+              ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_candidate_smoke.py", line 37, in merged_sources
+    original,_=firing.sources()
+               ~~~~~~~~~~~~~~^^
+  File "/tmp/tmpp1b_4v9b/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+----------------------------------------------------------------------
+Ran 31 tests in 3.630s
+
+FAILED (errors=19)
+
+
+======================================================================
+FAIL: test_actual_phone_zip_runs_isolated_native_firing_candidate_after_extraction (test_package_source.PackageSource.test_actual_phone_zip_runs_isolated_native_firing_candidate_after_extraction)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_package_source.py", line 106, in test_actual_phone_zip_runs_isolated_native_firing_candidate_after_extraction
+    self.assertEqual(tested.returncode,0,tested.stdout+'\n'+tested.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : 
+EEEEEEEEEEEEEEEEE
+======================================================================
+ERROR: test_opt_in_only_approved_memory_child_and_toggle_reloads (tests.test_native_firing_runtime_candidate.AuditLaunch.test_opt_in_only_approved_memory_child_and_toggle_reloads)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 239, in test_opt_in_only_approved_memory_child_and_toggle_reloads
+    self.runner=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,cfg)
+                ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_real_loopback_http_stream_binds_window_and_terminal_stop (tests.test_native_firing_runtime_candidate.AuditLaunch.test_real_loopback_http_stream_binds_window_and_terminal_stop)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 272, in test_real_loopback_http_stream_binds_window_and_terminal_stop
+    self.runner=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,cfg)
+                ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_actual_write_map_is_shadow_only_and_zero_is_observed_zero (tests.test_native_firing_runtime_candidate.FiringRowMap.test_actual_write_map_is_shadow_only_and_zero_is_observed_zero)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 54, in test_actual_write_map_is_shadow_only_and_zero_is_observed_zero
+    result=self.observed()
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 49, in observed
+    return load_candidate('memory_server').observed_shadow_delivery(self.s,self.home,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_bound_model_binary_library_sidecar_native_change_fails_closed (tests.test_native_firing_runtime_candidate.FiringRowMap.test_bound_model_binary_library_sidecar_native_change_fails_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 69, in test_bound_model_binary_library_sidecar_native_change_fails_closed
+    result=self.observed(a=audit(binding),binding=binding)
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 49, in observed
+    return load_candidate('memory_server').observed_shadow_delivery(self.s,self.home,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_forgotten_inactive_deleted_and_source_conflict_never_claim_fact_firing (tests.test_native_firing_runtime_candidate.FiringRowMap.test_forgotten_inactive_deleted_and_source_conflict_never_claim_fact_firing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 77, in test_forgotten_inactive_deleted_and_source_conflict_never_claim_fact_firing
+    self.assertEqual(self.observed()['observed_memory_ids'],[])
+                     ~~~~~~~~~~~~~^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 49, in observed
+    return load_candidate('memory_server').observed_shadow_delivery(self.s,self.home,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_native_truncated_after_inventory_returns_unavailable_without_fact_claim (tests.test_native_firing_runtime_candidate.FiringRowMap.test_native_truncated_after_inventory_returns_unavailable_without_fact_claim)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 118, in test_native_truncated_after_inventory_returns_unavailable_without_fact_claim
+    module=load_candidate('memory_server')
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_reapproval_or_forget_during_mapping_rechecks_binding (tests.test_native_firing_runtime_candidate.FiringRowMap.test_reapproval_or_forget_during_mapping_rechecks_binding)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 108, in test_reapproval_or_forget_during_mapping_rechecks_binding
+    module=load_candidate('memory_server')
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_row_dimensions_status_binding_and_authority_fail_closed (tests.test_native_firing_runtime_candidate.FiringRowMap.test_row_dimensions_status_binding_and_authority_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 92, in test_row_dimensions_status_binding_and_authority_fail_closed
+    binding=self.observed()['binding']
+            ~~~~~~~~~~~~~^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 49, in observed
+    return load_candidate('memory_server').observed_shadow_delivery(self.s,self.home,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_cancel_changed_binding_cache_malformed_and_ambiguous_fail_closed (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_cancel_changed_binding_cache_malformed_and_ambiguous_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_cancelled_generator_keeps_unavailable_metrics_and_unloads (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_cancelled_generator_keeps_unavailable_metrics_and_unloads)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_concurrent_audit_request_is_rejected_and_off_path_adds_no_metrics (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_concurrent_audit_request_is_rejected_and_off_path_adds_no_metrics)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_eof_without_completion_stop_never_claims_completed_firing (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_eof_without_completion_stop_never_claims_completed_firing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_log_rotate_truncate_and_multi_native_steps_fail_closed (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_log_rotate_truncate_and_multi_native_steps_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_metrics_wrap_actual_request_window_and_clear_on_next_request (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_metrics_wrap_actual_request_window_and_clear_on_next_request)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_only_current_request_window_is_reported (tests.test_native_firing_runtime_candidate.FiringRunnerWindow.test_only_current_request_window_is_reported)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 144, in setUp
+    self.r=load_candidate('runners').LlamaRunner(self.home,'C3_LANGUAGE',self.model,
+           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_candidate_hash_bound_sources_remain_unmodified (tests.test_native_firing_runtime_candidate.FiringRuntimeShadow.test_candidate_hash_bound_sources_remain_unmodified)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 306, in test_candidate_hash_bound_sources_remain_unmodified
+    original,changed=sources()
+                     ~~~~~~~^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+======================================================================
+ERROR: test_candidate_persists_observation_without_removing_exact_sources (tests.test_native_firing_runtime_candidate.FiringRuntimeShadow.test_candidate_persists_observation_without_removing_exact_sources)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/tests/test_native_firing_runtime_candidate.py", line 290, in test_candidate_persists_observation_without_removing_exact_sources
+    candidate=load_candidate('runtime');self.r.__class__=candidate.Runtime
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 192, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmpmsckw8q_/extracted/V13-Phone/scripts/native_firing_runtime_candidate.py", line 187, in sources
+    raise ValueError('Live sources differ from complete baseline/candidate')
+ValueError: Live sources differ from complete baseline/candidate
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.655s
+
+FAILED (errors=17)
+
+
+======================================================================
+FAIL: test_actual_phone_zip_runs_source_handoff_regressions_after_extraction (test_package_source.PackageSource.test_actual_phone_zip_runs_source_handoff_regressions_after_extraction)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/Aii/v13/code/tests/test_package_source.py", line 93, in test_actual_phone_zip_runs_source_handoff_regressions_after_extraction
+    self.assertEqual(tested.returncode,0,tested.stdout+'\n'+tested.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : 
+EEEEEEEEEEE..E..EEE.
+======================================================================
+ERROR: test_context_ablations_and_current_override_preserve_existing_scope (tests.test_source_handoff_candidate.SourceHandoffCandidate.test_context_ablations_and_current_override_preserve_existing_scope)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_deleted_and_corrupted_prior_source_fail_closed (tests.test_source_handoff_candidate.SourceHandoffCandidate.test_deleted_and_corrupted_prior_source_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_exact_integrated_candidate_is_accepted_but_mixed_or_tampered_sources_reject (tests.test_source_handoff_candidate.SourceHandoffCandidate.test_exact_integrated_candidate_is_accepted_but_mixed_or_tampered_sources_reject)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_mutable_offer_and_wrong_turn_cannot_change_consumer_evidence (tests.test_source_handoff_candidate.SourceHandoffCandidate.test_mutable_offer_and_wrong_turn_cannot_change_consumer_evidence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_no_evidence_never_autofills_available_context (tests.test_source_handoff_candidate.SourceHandoffCandidate.test_no_evidence_never_autofills_available_context)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_out_of_scope_persisted_reference_is_not_authorized_by_existence (tests.test_source_handoff_candidate.SourceHandoffCandidate.test_out_of_scope_persisted_reference_is_not_authorized_by_existence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_own_action_absence_does_not_describe_source_knowledge (tests.test_source_handoff_candidate.SourceHandoffCandidate.test_own_action_absence_does_not_describe_source_knowledge)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_patch_applies_to_runtime_rendering_and_keeps_frozen_source_bytes (tests.test_source_handoff_candidate.SourceHandoffCandidate.test_patch_applies_to_runtime_rendering_and_keeps_frozen_source_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_query_scope_and_model_revision_are_rechecked (tests.test_source_handoff_candidate.SourceHandoffCandidate.test_query_scope_and_model_revision_are_rechecked)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_rejected_and_own_state_quotes_never_gain_verified_delivery (tests.test_source_handoff_candidate.SourceHandoffCandidate.test_rejected_and_own_state_quotes_never_gain_verified_delivery)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_relevant_prior_quote_delivered_without_unselected_prior_text (tests.test_source_handoff_candidate.SourceHandoffCandidate.test_relevant_prior_quote_delivered_without_unselected_prior_text)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/tests/test_source_handoff_candidate.py", line 26, in setUp
+    self.cognition = load_candidate('cognition').Cognition(self.r)
+                     ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 122, in load_candidate
+    _, changed = sources(root)
+                 ~~~~~~~^^^^^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_corrupt_prior_is_not_repaired_or_secretly_supplied (tests.test_source_handoff_ablation.HandoffAblation.test_corrupt_prior_is_not_repaired_or_secretly_supplied)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/tests/test_source_handoff_ablation.py", line 104, in test_corrupt_prior_is_not_repaired_or_secretly_supplied
+    arms,validator=ablation.arm_sources()
+                   ~~~~~~~~~~~~~~~~~~~~^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_ablation.py", line 71, in arm_sources
+    original, changed=sources()
+                      ~~~~~~~^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_preregistration_is_written_before_first_inference_and_resume_skips_recorded_failures (tests.test_source_handoff_ablation.HandoffAblation.test_preregistration_is_written_before_first_inference_and_resume_skips_recorded_failures)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/tests/test_source_handoff_ablation.py", line 131, in test_preregistration_is_written_before_first_inference_and_resume_skips_recorded_failures
+    ablation.main()
+    ~~~~~~~~~~~~~^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_ablation.py", line 198, in main
+    registration=preregistration(args.installed_home,cohort)
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_ablation.py", line 100, in preregistration
+    arms,_=arm_sources()
+           ~~~~~~~~~~~^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_ablation.py", line 71, in arm_sources
+    original, changed=sources()
+                      ~~~~~~~^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_real_store_offline_row_exercises_all_four_arms_and_cold_release (tests.test_source_handoff_ablation.HandoffAblation.test_real_store_offline_row_exercises_all_four_arms_and_cold_release)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/tests/test_source_handoff_ablation.py", line 90, in test_real_store_offline_row_exercises_all_four_arms_and_cold_release
+    arms,validator=ablation.arm_sources()
+                   ~~~~~~~~~~~~~~~~~~~~^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_ablation.py", line 71, in arm_sources
+    original, changed=sources()
+                      ~~~~~~~^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+======================================================================
+ERROR: test_register_only_never_calls_native_inference (tests.test_source_handoff_ablation.HandoffAblation.test_register_only_never_calls_native_inference)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/tests/test_source_handoff_ablation.py", line 145, in test_register_only_never_calls_native_inference
+    ablation.main()
+    ~~~~~~~~~~~~~^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_ablation.py", line 198, in main
+    registration=preregistration(args.installed_home,cohort)
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_ablation.py", line 100, in preregistration
+    arms,_=arm_sources()
+           ~~~~~~~~~~~^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_ablation.py", line 71, in arm_sources
+    original, changed=sources()
+                      ~~~~~~~^^
+  File "/tmp/tmp6be61m7h/extracted/V13-Phone/scripts/source_handoff_candidate.py", line 110, in sources
+    raise ValueError('Runtime is neither exact frozen baseline nor complete reviewed candidate')
+ValueError: Runtime is neither exact frozen baseline nor complete reviewed candidate
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.633s
+
+FAILED (errors=15)
+
+
+----------------------------------------------------------------------
+Ran 1236 tests in 259.972s
+
+FAILED (failures=3, errors=51, skipped=4)

@@ -1,0 +1,57 @@
+{
+  "schema": "V13_FUTURE_RESEARCH_PRIMARY_SOURCES_V1",
+  "accessed_at": "2026-10-11T21:24:02.736744+00:00",
+  "sources": [
+    {
+      "id": "liquid_card",
+      "url": "https://huggingface.co/LiquidAI/LFM2.5-350M",
+      "publisher": "Liquid AI",
+      "publication_date": null,
+      "date_note": "Model card has no independent visible publication date; associated official release blog dated 2026-03-31.",
+      "web_ref": "turn1view0"
+    },
+    {
+      "id": "liquid_release",
+      "url": "https://www.liquid.ai/blog/lfm2-5-350m-no-size-left-behind",
+      "publisher": "Liquid AI",
+      "publication_date": "2026-03-31",
+      "web_ref": "turn3view0"
+    },
+    {
+      "id": "qwen_card",
+      "url": "https://huggingface.co/Qwen/Qwen3.5-0.8B",
+      "publisher": "Qwen",
+      "publication_date": null,
+      "date_note": "Visible card did not state release date; HF repository creation 2026-02-28 is recorded separately and not called publication.",
+      "web_ref": "turn1view1"
+    },
+    {
+      "id": "smollm2_card",
+      "url": "https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct",
+      "publisher": "Hugging Face SmolLM team",
+      "publication_date": null,
+      "date_note": "Visible card does not state model release date; model repository creation and paper date differ.",
+      "web_ref": "turn1view2"
+    },
+    {
+      "id": "smollm2_paper",
+      "url": "https://arxiv.org/abs/2502.02737",
+      "publisher": "SmolLM2 authors",
+      "publication_date": "2025-02-04",
+      "date_note": "First paper submission, not model release date.",
+      "web_ref": "turn4view1"
+    },
+    {
+      "id": "smollm3_release",
+      "url": "https://huggingface.co/blog/smollm3",
+      "publisher": "Hugging Face SmolLM team",
+      "publication_date": "2025-07-08",
+      "web_ref": "turn4view3"
+    }
+  ],
+  "lookup_issue": {
+    "requested_url": "https://github.com/QwenLM/Qwen3.5",
+    "redirected_url": "https://github.com/QwenLM/Qwen3.8",
+    "used_as_qwen35_evidence": false
+  }
+}

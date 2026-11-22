@@ -1,0 +1,247 @@
+{"fixture":"Aurora","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Aurora","status":"RECORDED","utility":0.9166666666666666,"variant":"b2_only"}
+{"fixture":"Aurora","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Aurora","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Aurora","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Aurora","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Aurora","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Borealis","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Borealis","status":"RECORDED","utility":0.5,"variant":"b2_only"}
+{"fixture":"Borealis","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Borealis","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Borealis","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Borealis","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Borealis","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Cygnus","status":"RECORDED","utility":0.9166666666666666,"variant":"b1_only"}
+{"fixture":"Cygnus","status":"RECORDED","utility":0.9166666666666666,"variant":"b2_only"}
+{"fixture":"Cygnus","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Cygnus","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Cygnus","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Cygnus","status":"RECORDED","utility":0.9166666666666666,"variant":"same_policy_dual"}
+{"fixture":"Cygnus","status":"RECORDED","utility":0.9166666666666666,"variant":"prompt_only_dual"}
+{"fixture":"Dorado","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Dorado","status":"RECORDED","utility":0.5,"variant":"b2_only"}
+{"fixture":"Dorado","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Dorado","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Dorado","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Dorado","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Dorado","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Equinox","status":"RECORDED","utility":0.9166666666666666,"variant":"b1_only"}
+{"fixture":"Equinox","status":"RECORDED","utility":0.9166666666666666,"variant":"b2_only"}
+{"fixture":"Equinox","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Equinox","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Equinox","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Equinox","status":"RECORDED","utility":0.9166666666666666,"variant":"same_policy_dual"}
+{"fixture":"Equinox","status":"RECORDED","utility":0.9166666666666666,"variant":"prompt_only_dual"}
+{"fixture":"Fornax","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Fornax","status":"RECORDED","utility":0.5,"variant":"b2_only"}
+{"fixture":"Fornax","status":"RECORDED","utility":0.5,"variant":"both_none"}
+{"fixture":"Fornax","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Fornax","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Fornax","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Fornax","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Gemini","status":"RECORDED","utility":0.9166666666666666,"variant":"b1_only"}
+{"fixture":"Gemini","status":"RECORDED","utility":0.9166666666666666,"variant":"b2_only"}
+{"fixture":"Gemini","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Gemini","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Gemini","status":"RECORDED","utility":0.4166666666666667,"variant":"both_control"}
+{"fixture":"Gemini","status":"RECORDED","utility":0.9166666666666666,"variant":"same_policy_dual"}
+{"fixture":"Gemini","status":"RECORDED","utility":0.9166666666666666,"variant":"prompt_only_dual"}
+{"fixture":"Helios","status":"RECORDED","utility":0.5,"variant":"b1_only"}
+{"fixture":"Helios","status":"RECORDED","utility":0.9166666666666666,"variant":"b2_only"}
+{"fixture":"Helios","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Helios","status":"RECORDED","utility":0.5,"variant":"both_exact"}
+{"fixture":"Helios","status":"RECORDED","utility":0.5,"variant":"both_control"}
+{"fixture":"Helios","status":"RECORDED","utility":0.5,"variant":"same_policy_dual"}
+{"fixture":"Helios","status":"RECORDED","utility":0.5,"variant":"prompt_only_dual"}
+{"fixture":"Indigo","status":"RECORDED","utility":0.9166666666666666,"variant":"b1_only"}
+{"fixture":"Indigo","status":"RECORDED","utility":0.9166666666666666,"variant":"b2_only"}
+{"fixture":"Indigo","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Indigo","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Indigo","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Indigo","status":"RECORDED","utility":0.9166666666666666,"variant":"same_policy_dual"}
+{"fixture":"Indigo","status":"RECORDED","utility":0.9166666666666666,"variant":"prompt_only_dual"}
+{"fixture":"Juno","status":"RECORDED","utility":0.9166666666666666,"variant":"b1_only"}
+{"fixture":"Juno","status":"RECORDED","utility":0.9166666666666666,"variant":"b2_only"}
+{"fixture":"Juno","status":"RECORDED","utility":0.9166666666666666,"variant":"both_none"}
+{"fixture":"Juno","status":"RECORDED","utility":0.9166666666666666,"variant":"both_exact"}
+{"fixture":"Juno","status":"RECORDED","utility":0.9166666666666666,"variant":"both_control"}
+{"fixture":"Juno","status":"RECORDED","utility":0.9166666666666666,"variant":"same_policy_dual"}
+{"fixture":"Juno","status":"RECORDED","utility":0.9166666666666666,"variant":"prompt_only_dual"}
+{
+ "status": "TOOL_UTILITY_FAIL",
+ "mean_utility": {
+  "b1_only": 0.7083333333333333,
+  "b2_only": 0.7916666666666666,
+  "both_control": 0.7416666666666666,
+  "both_exact": 0.7083333333333333,
+  "both_none": 0.7916666666666666,
+  "prompt_only_dual": 0.7083333333333333,
+  "same_policy_dual": 0.7083333333333333
+ },
+ "summary": {
+  "tool": {
+   "b1_only": {
+    "rows": 10,
+    "decision_exact": 5,
+    "wrong_committed": 0,
+    "unknown": 6,
+    "mean_utility": 0.7083333333333333,
+    "exact_fixtures": [
+     "Cygnus",
+     "Equinox",
+     "Gemini",
+     "Indigo",
+     "Juno"
+    ]
+   },
+   "b2_only": {
+    "rows": 10,
+    "decision_exact": 7,
+    "wrong_committed": 0,
+    "unknown": 4,
+    "mean_utility": 0.7916666666666666,
+    "exact_fixtures": [
+     "Aurora",
+     "Cygnus",
+     "Equinox",
+     "Gemini",
+     "Helios",
+     "Indigo",
+     "Juno"
+    ]
+   },
+   "both_control": {
+    "rows": 10,
+    "decision_exact": 6,
+    "wrong_committed": 0,
+    "unknown": 5,
+    "mean_utility": 0.7416666666666666,
+    "exact_fixtures": [
+     "Aurora",
+     "Borealis",
+     "Cygnus",
+     "Equinox",
+     "Indigo",
+     "Juno"
+    ]
+   },
+   "both_exact": {
+    "rows": 10,
+    "decision_exact": 5,
+    "wrong_committed": 0,
+    "unknown": 6,
+    "mean_utility": 0.7083333333333333,
+    "exact_fixtures": [
+     "Cygnus",
+     "Equinox",
+     "Gemini",
+     "Indigo",
+     "Juno"
+    ]
+   },
+   "both_none": {
+    "rows": 10,
+    "decision_exact": 7,
+    "wrong_committed": 0,
+    "unknown": 4,
+    "mean_utility": 0.7916666666666666,
+    "exact_fixtures": [
+     "Aurora",
+     "Cygnus",
+     "Equinox",
+     "Gemini",
+     "Helios",
+     "Indigo",
+     "Juno"
+    ]
+   },
+   "prompt_only_dual": {
+    "rows": 10,
+    "decision_exact": 5,
+    "wrong_committed": 0,
+    "unknown": 6,
+    "mean_utility": 0.7083333333333333,
+    "exact_fixtures": [
+     "Cygnus",
+     "Equinox",
+     "Gemini",
+     "Indigo",
+     "Juno"
+    ]
+   },
+   "same_policy_dual": {
+    "rows": 10,
+    "decision_exact": 5,
+    "wrong_committed": 0,
+    "unknown": 6,
+    "mean_utility": 0.7083333333333333,
+    "exact_fixtures": [
+     "Cygnus",
+     "Equinox",
+     "Gemini",
+     "Indigo",
+     "Juno"
+    ]
+   }
+  },
+  "no_tool_w1": {
+   "b1_only": {
+    "rows": 10,
+    "decision_exact": 0,
+    "wrong_committed": 8,
+    "unknown": 1,
+    "mean_utility": 0.5833333333333333,
+    "exact_fixtures": []
+   },
+   "b2_only": {
+    "rows": 10,
+    "decision_exact": 0,
+    "wrong_committed": 9,
+    "unknown": 0,
+    "mean_utility": 0.65,
+    "exact_fixtures": []
+   },
+   "both_control": {
+    "rows": 10,
+    "decision_exact": 0,
+    "wrong_committed": 9,
+    "unknown": 0,
+    "mean_utility": 0.6333333333333333,
+    "exact_fixtures": []
+   },
+   "both_exact": {
+    "rows": 10,
+    "decision_exact": 0,
+    "wrong_committed": 8,
+    "unknown": 1,
+    "mean_utility": 0.6083333333333333,
+    "exact_fixtures": []
+   },
+   "both_none": {
+    "rows": 10,
+    "decision_exact": 0,
+    "wrong_committed": 9,
+    "unknown": 0,
+    "mean_utility": 0.6166666666666667,
+    "exact_fixtures": []
+   },
+   "prompt_only_dual": {
+    "rows": 10,
+    "decision_exact": 0,
+    "wrong_committed": 7,
+    "unknown": 2,
+    "mean_utility": 0.6416666666666666,
+    "exact_fixtures": []
+   },
+   "same_policy_dual": {
+    "rows": 10,
+    "decision_exact": 0,
+    "wrong_committed": 7,
+    "unknown": 2,
+    "mean_utility": 0.5916666666666667,
+    "exact_fixtures": []
+   }
+  }
+ }
+}

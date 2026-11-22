@@ -1,0 +1,93 @@
+name: V13 Run117Z real Store JEF native seed1065 model-free preflight
+on:
+  push:
+    branches:
+      - assistant/v13-run117z-real-jef-c3-native-20261031
+    paths:
+      - .github/workflows/v13-run117z-real-jef-c3-preflight.yml
+      - v13/code/scripts/run117z_real_store_jef_c3_native.py
+      - v13/code/tests/test_run117z_real_store_jef_c3_native.py
+      - v13/code/docs/fixtures/RUN117Z_REAL_JEF_NATIVE_SEED1065.json
+permissions:
+  contents: read
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Verify immutable seed1065 source and model-free Store contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117z-preflight"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117z-preflight-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-run117z-preflight-venv/bin/python"
+          set +e
+          "$py" -m pip install --disable-pip-version-check --no-input -q \
+            'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          deps_rc=$?
+          echo 'cb008f27a4d1ef7f0f288419ac276ebb67c8d7958da3c62104994822dd90634d  v13/code/docs/fixtures/RUN117Z_REAL_JEF_NATIVE_SEED1065.json' | sha256sum -c - > "$e/FIXTURE_RAW.log" 2>&1
+          fixture_rc=$?
+          test "$(git hash-object v13/code/scripts/run117z_real_store_jef_c3_native.py)" = 154f6d96cbb135f94352ccb4f610c04fcf37fd51
+          source_rc=$?
+          if test "$deps_rc" -eq 0 && test "$fixture_rc" -eq 0 && test "$source_rc" -eq 0; then
+            (cd v13/code && env PYTHONPATH=. "$py" -m unittest -v \
+              tests.test_run117z_real_store_jef_c3_native \
+              tests.test_jef_span_budget_shadow_candidate \
+              tests.test_run117w_c3_arithmetic_native \
+              tests.test_two_source_pointer_shadow_candidate \
+              tests.test_jef_two_source_role_formatter_candidate \
+              tests.test_run46b_jef_source_eligibility_shadow \
+              tests.test_run117s_r_prior_source_binding_review) > "$e/TEST_RAW.log" 2>&1
+            test_rc=$?
+          else
+            test_rc=125;echo PREREQUISITE_RED > "$e/TEST_RAW.log"
+          fi
+          "$py" -m compileall -q v13/code/scripts/run117z_real_store_jef_c3_native.py \
+            v13/code/tests/test_run117z_real_store_jef_c3_native.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 3e2a282a19dc30f778c1542e044fce99cf490302 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check 3e2a282a19dc30f778c1542e044fce99cf490302 HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          for x in "DEPS:$deps_rc" "FIXTURE:$fixture_rc" "SOURCE:$source_rc" \
+                   "TEST:$test_rc" "COMPILE:$compile_rc" "PRIVACY:$privacy_rc" "DIFF:$diff_rc"; do
+            echo "${x#*:}" > "$e/${x%%:*}_EXIT.txt"
+          done
+          set -e
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=('DEPS','FIXTURE','SOURCE','TEST','COMPILE','PRIVACY','DIFF')
+          r={'schema':'v13.run117z.seed1065_model_free_preflight.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),'seed':1065,
+             'fixture_sha256':'cb008f27a4d1ef7f0f288419ac276ebb67c8d7958da3c62104994822dd90634d',
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'native_model_called':False,'step2_promoted':False,
+             'b3_promoted':False,'jepa_weight':0,'redmi_measured':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 5 "$e/TEST_RAW.log"
+          for rc in "$deps_rc" "$fixture_rc" "$source_rc" "$test_rc" "$compile_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+      - name: Preserve original preflight GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117z-preflight-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117z-preflight/
+          if-no-files-found: warn
+          retention-days: 90

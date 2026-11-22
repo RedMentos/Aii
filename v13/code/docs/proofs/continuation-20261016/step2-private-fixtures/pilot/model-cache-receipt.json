@@ -1,0 +1,70 @@
+{
+  "b2_or_runner_copy_performed": false,
+  "b2_present": false,
+  "catalog_sha256": "81fe561e19b92614555453a1b99a39d8d77fe35dd7c7e06034e6dc7ff2e0bc58",
+  "cohort_registration": false,
+  "created_utc": "2026-10-16T20:34:22.839005+00:00",
+  "downloader_sha256": "290ad845add126c7ada4da864bc3d0c112d9fe814279dfbb2a32a5a2dff740b8",
+  "gate_promotion": false,
+  "home": "/workspace/scratch/f24630d7727d/private16-pilot-home",
+  "license_metadata_source": "Repository pinned specs/models.json; no new license-acceptance record asserted",
+  "main_native_assets_modified": false,
+  "models": {
+    "body": {
+      "download_authorization": "operator_setup_or_download",
+      "exact_revision": "6767265158422fb8a19c62ceb45f16f05363615b",
+      "files": {
+        "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf": {
+          "actual_sha256": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+          "actual_size": 695755488,
+          "path": "models/body/LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+          "sha256": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+          "size": 695755488
+        }
+      },
+      "license_accepted_by_user": null,
+      "license_id": "LFM Open License 1.0",
+      "license_url": "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/blob/6767265158422fb8a19c62ceb45f16f05363615b/LICENSE",
+      "model_id": "LiquidAI/LFM2.5-1.2B-Instruct-GGUF",
+      "quant_format": "QAD_Q4_0"
+    },
+    "language": {
+      "download_authorization": "operator_setup_or_download",
+      "exact_revision": "657e078c94084481950a2d555a941481f715536b",
+      "files": {
+        "LFM2.5-350M-QAD-Q4_0.gguf": {
+          "actual_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+          "actual_size": 219312832,
+          "path": "models/language/LFM2.5-350M-QAD-Q4_0.gguf",
+          "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+          "size": 219312832
+        }
+      },
+      "license_accepted_by_user": null,
+      "license_id": "LFM Open License 1.0",
+      "license_url": "https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/blob/657e078c94084481950a2d555a941481f715536b/LICENSE",
+      "model_id": "LiquidAI/LFM2.5-350M-GGUF",
+      "quant_format": "QAD_Q4_0"
+    }
+  },
+  "models_manifest_sha256": "41ce88841dcfb50878e3ba2f63a6e9f36819a340c138cd69e6c27c519116baa6",
+  "native_runs": 0,
+  "runner_present": false,
+  "schema": "V13_STEP2_PRIVATE_PILOT_MODEL_CACHE_RECEIPT_V1",
+  "scope": "THREE_COMPLEMENTARY_CASE_DIAGNOSTIC_NOT_FULL_STEP2",
+  "status": "BODY_LANGUAGE_DOWNLOADED_AND_SHA_VERIFIED_NO_INFERENCE",
+  "verification": {
+    "body": {
+      "errors": [],
+      "hash_checked": true,
+      "ok": true,
+      "revision": "6767265158422fb8a19c62ceb45f16f05363615b"
+    },
+    "language": {
+      "errors": [],
+      "hash_checked": true,
+      "ok": true,
+      "revision": "657e078c94084481950a2d555a941481f715536b"
+    }
+  }
+}

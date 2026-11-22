@@ -1,0 +1,58 @@
+name: V13 BP2b locked master metadata local preflight software review
+on:
+  push:
+    branches: [codex/automation11-bp2b-master-metadata-20261027]
+    paths:
+      - '.github/workflows/bp2b-master-preflight-review.yml'
+      - 'v13/code/specs/bp2b_master_metadata.json'
+      - 'v13/code/scripts/bp2b_master_preflight.py'
+      - 'v13/code/tests/test_bp2b_master_preflight.py'
+      - 'v13/code/docs/proofs/continuation-20261027/bp2b-master-metadata/**'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp2b-master-preflight-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Capture local preflight software tests, compile and privacy
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/bp2b-master-preflight"
+          git rev-parse HEAD > "$RUNNER_TEMP/bp2b-master-preflight/HEAD.txt"
+          git hash-object v13/code/specs/bp2b_master_metadata.json > "$RUNNER_TEMP/bp2b-master-preflight/PIN_BLOB.txt"
+          git hash-object v13/code/scripts/bp2b_master_preflight.py > "$RUNNER_TEMP/bp2b-master-preflight/SCRIPT_BLOB.txt"
+          (cd v13/code && PYTHONPATH="$PWD" python3 -m unittest -v tests.test_bp2b_master_preflight) > "$RUNNER_TEMP/bp2b-master-preflight/UNIT_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp2b-master-preflight/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/bp2b_master_preflight.py v13/code/tests/test_bp2b_master_preflight.py > "$RUNNER_TEMP/bp2b-master-preflight/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp2b-master-preflight/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 96973e070d91f5dfb456e0ae8166dfedc4ad6f15 --head HEAD > "$RUNNER_TEMP/bp2b-master-preflight/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$RUNNER_TEMP/bp2b-master-preflight/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bp2b-master-preflight-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp2b-master-preflight/
+          if-no-files-found: error
+      - name: Enforce preflight gates
+        run: |
+          set -euo pipefail
+          for n in UNIT COMPILE PRIVACY; do
+            test "$(cat "$RUNNER_TEMP/bp2b-master-preflight/${n}_EXIT.txt")" = 0 || {
+              tail -100 "$RUNNER_TEMP/bp2b-master-preflight/${n}_RAW.log"; exit 1;
+            }
+          done
+          echo "BP2B_MASTER_PREFLIGHT_SOFTWARE_ONLY_NO_NATIVE_PROOF"

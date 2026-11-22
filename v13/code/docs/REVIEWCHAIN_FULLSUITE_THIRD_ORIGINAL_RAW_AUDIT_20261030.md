@@ -1,0 +1,11 @@
+# Independent original raw audit — review-chain unfiltered full suite third attempt (2026-10-30)
+
+**Review-only, historical RED preserved.** This audit concerns owner branch `codex/v13-review-chain-audit-fullsuite-20261030-hourly11b`, PR #1211, not this branch's native seed61 run. No test, model, source pin or production gate changed.
+
+- GitHub Actions `41002640672`, exact workflow source head `b55ad7e4eb8709e96ffb7166c96d166df77556e2`, original artifact `12954705447`. Independently downloaded ZIP SHA256 **`ad90c641c18dbd220d90a99504162329a9b42b5bbeb8a15f78218eade450740c`**, CRC clean, **33/33** inner SHA256SUMS. All stages zero except **FULL_EXIT=1**; original failed raw preserved.
+- Focused software **31/31 PASS**; historical “37 expected” count is incorrect. Unfiltered **3465 tests, 2 errors, 11 skipped, 0 assertion failures**. Only two errors: `test_run34_c3_native_quote_intervention_pilot.Run34NativePilotPreflight.test_pinned_source_model_runner_and_negative_gates` and `test_run37_c3_rule_use_native_pilot.Run37NativePreflight.test_pinned_source_model_runner_and_negative_gates`, both raising `native_source_or_catalog_changed` because the historical registered source/catalog differs from current review-chain source. This is an intended fail-closed source-pin refusal, not permission to alter the original registered cohort. The previous run's temporary symlink packaging failures are absent in this third original raw.
+- Original artifact privately backed at `/V13-Checkpoints/2026-10-30/Run11-ReviewChain-Independent/FULLSUITE_RED_41002640672_shaAD90C6.zip`; Library copy materialized and SHA256 verified byte-identical.
+
+**Next step:** Do not weaken historical Run34/37 prereg pins to force an unfiltered GREEN. Keep unfiltered RED and separately report passing current-source tests vs historical immutable prereg checks. If a clean current-source acceptance suite is needed, preregister a new current-source suite/negative-control split without reinterpreting the 3465-test original result.
+
+**Gates unchanged:** Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, jepa_weight 0, Redmi UNMEASURED, whole system INCOMPLETE. No native inference or Redmi evidence in this audit.

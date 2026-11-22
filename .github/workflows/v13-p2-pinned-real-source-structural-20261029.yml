@@ -1,0 +1,121 @@
+name: V13 P2 pinned HF-QAD real-source structural audit
+on:
+  push:
+    branches: [codex/v13-p2-structural-tensor-audit-20261029]
+    paths:
+      - '.github/workflows/v13-p2-pinned-real-source-structural-20261029.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-p2-real-source-structural-serial-20261029
+  cancel-in-progress: false
+jobs:
+  pinned-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      V13_NO_AUTOSTART: '1'
+      PYTHONNOUSERSITE: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Pin parser and model source bytes, execute read-only structural audit
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-p2-structural-evidence"
+          work="$RUNNER_TEMP/v13-p2-structural-work"
+          mkdir -p "$e" "$work/master" "$work/parser"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 - "$work" > "$e/RESOURCE_RAW.log" 2>&1 <<'PY'
+          import pathlib,shutil,sys
+          root=pathlib.Path(sys.argv[1])
+          print('disk_free_bytes',shutil.disk_usage(root).free)
+          assert shutil.disk_usage(root).free>=2_500_000_000
+          PY
+          echo "$?" > "$e/RESOURCE_EXIT.txt"
+          if [ "$(cat "$e/RESOURCE_EXIT.txt")" = 0 ]; then
+            python3 -m venv "$work/venv" > "$e/VENV_RAW.log" 2>&1
+            echo "$?" > "$e/VENV_EXIT.txt"
+          else echo SKIPPED > "$e/VENV_RAW.log"; echo SKIPPED > "$e/VENV_EXIT.txt"; fi
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            curl -fL --retry 2 --connect-timeout 20 --max-time 300 \
+              https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10964.tar.gz \
+              -o "$work/llama-b10964.tar.gz" > "$e/PARSER_DOWNLOAD_RAW.log" 2>&1
+            echo "$?" > "$e/PARSER_DOWNLOAD_EXIT.txt"
+            printf '%s  %s\n' '4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe' "$work/llama-b10964.tar.gz" | sha256sum -c > "$e/PARSER_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/PARSER_SHA_EXIT.txt"
+          else echo SKIPPED > "$e/PARSER_DOWNLOAD_EXIT.txt"; echo SKIPPED > "$e/PARSER_SHA_EXIT.txt"; fi
+          if [ "$(cat "$e/PARSER_SHA_EXIT.txt")" = 0 ]; then
+            tar -xzf "$work/llama-b10964.tar.gz" -C "$work/parser" --strip-components=1 > "$e/PARSER_EXTRACT_RAW.log" 2>&1
+            "$work/venv/bin/python" -m pip install --no-input --disable-pip-version-check 'numpy==2.2.6' "$work/parser/gguf-py" > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else echo SKIPPED > "$e/DEPS_RAW.log"; echo SKIPPED > "$e/DEPS_EXIT.txt"; fi
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            cd "$work/master"
+            for name in config.json tokenizer.json tokenizer_config.json model.safetensors; do
+              curl -fL --retry 2 --connect-timeout 20 --max-time 900 \
+                "https://huggingface.co/LiquidAI/LFM2.5-350M/resolve/120bf032c36dd1273de754669da040dba7ad4982/$name?download=true" \
+                -o "$name" >> "$e/HF_DOWNLOAD_RAW.log" 2>&1 || break
+            done
+            cd - >/dev/null
+            curl -fL --retry 2 --connect-timeout 20 --max-time 600 \
+              'https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/resolve/657e078c94084481950a2d555a941481f715536b/LFM2.5-350M-QAD-Q4_0.gguf?download=true' \
+              -o "$work/LFM2.5-350M-QAD-Q4_0.gguf" > "$e/GGUF_DOWNLOAD_RAW.log" 2>&1
+            echo "$?" > "$e/GGUF_DOWNLOAD_EXIT.txt"
+            printf '%s  %s\n' \
+              '720b43d6ddc2ed25be23eed355aefcf342434a176dedad23dbe0a5e3ac24bbb8' "$work/master/config.json" \
+              '2221c71b5dce048a8abae62843b92bd7deec13cc153f95fa6e3327a47b79a7da' "$work/master/tokenizer.json" \
+              '3701f370c70034d06e28947ff51c1063983393319f429e3ce58f06a45fae67cc' "$work/master/tokenizer_config.json" \
+              '1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e' "$work/master/model.safetensors" \
+              '3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d' "$work/LFM2.5-350M-QAD-Q4_0.gguf" \
+              | sha256sum -c > "$e/MODEL_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/MODEL_SHA_EXIT.txt"
+          else echo SKIPPED > "$e/GGUF_DOWNLOAD_EXIT.txt"; echo SKIPPED > "$e/MODEL_SHA_EXIT.txt"; fi
+          if [ "$(cat "$e/MODEL_SHA_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 240s \
+              "$work/venv/bin/python" v13/code/scripts/p2_qad_hf_tensor_audit.py \
+              --master "$work/master" --gguf "$work/LFM2.5-350M-QAD-Q4_0.gguf" \
+              --output "$e/STRUCTURAL_RESULT.json" > "$e/AUDIT_RAW.log" 2>&1
+            echo "$?" > "$e/AUDIT_EXIT.txt"
+          else echo SKIPPED_SOURCE_RED > "$e/AUDIT_RAW.log"; echo SKIPPED > "$e/AUDIT_EXIT.txt"; fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 100268d45a70ab7ad62757e55367bd0dbe147fb6 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 100268d45a70ab7ad62757e55367bd0dbe147fb6 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve raw hashes, original RED and exact exits; never weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p2-real-source-structural-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p2-structural-evidence/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce source and structural diagnostic result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p2-structural-evidence"
+          for stage in RESOURCE VENV PARSER_DOWNLOAD PARSER_SHA DEPS GGUF_DOWNLOAD MODEL_SHA PRIVACY DIFF; do
+            test "$(cat "$e/${stage}_EXIT.txt")" = 0
+          done
+          test "$(cat "$e/AUDIT_EXIT.txt")" = 0
+          python3 - "$e/STRUCTURAL_RESULT.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          assert x['schema']=='v13.p2.qad_hf_tensor_structural_audit.v1'
+          assert x['status']=='STRUCTURE_MATCH_PARITY_UNPROVEN'
+          assert x['hf_count']==x['gguf_count']==148
+          assert x['matched_count']==138
+          assert len(x['approved_shape_transforms'])==10
+          assert all(t['transform']=='LFM2_SHORTCONV_SQUEEZE1' for t in x['approved_shape_transforms'])
+          assert not any(x[k] for k in ('missing','shape_mismatch','unmapped_hf','collisions','unaccounted_gguf'))
+          print('PINNED_138_EXACT_PLUS_10_EXPLAINED_STRUCTURAL_ONLY_NO_WEIGHT_LOGIT_OR_UTILITY_PARITY')
+          PY

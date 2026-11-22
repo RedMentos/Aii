@@ -1,0 +1,83 @@
+{
+  "schema": "v13.run13s.independent_raw_review_checkpoint.v1",
+  "date": "2026-10-30",
+  "owner": "GPT-6 automation review",
+  "base_branch": "assistant/v13-run13r-bjepa-scale-heldout-20261030-auto11",
+  "base_head": "d1f728b8373bf4331f1c763e2b76c80379ae98cc",
+  "pr": 1310,
+  "source_run": {
+    "run_id": 41093680211,
+    "head": "aab856a28b8e864eddba37c03f945e9454804363",
+    "artifact_id": 12996160234,
+    "zip_sha256": "d3d4ba03e2740e1dbe44a6b1c0b756c947a57cbfbc30a91293da6f0f3d76ee49",
+    "crc": "PASS",
+    "sha256sums": "33/33",
+    "stage_exits": "11/11",
+    "original_software_tests": "18/18",
+    "native_arms": "8/8",
+    "row_nll": "256/256",
+    "generated_outputs": "32/32",
+    "original_evidence_class": "LINUX_FP32_TORCH_SYNTHETIC_HELDOUT"
+  },
+  "independent_replay": {
+    "status": "DIAGNOSTIC_HURT",
+    "seed_wins": 0,
+    "mean_high_minus_ce_paraphrase": 0.8604828361421824,
+    "mean_high_minus_shuffled_paraphrase": 0.09561282396316528,
+    "mean_moderate_minus_ce_paraphrase": -0.03902878612279892,
+    "mean_high_minus_ce_near_miss": 1.1197504810988903,
+    "mean_high_minus_ce_retention": -0.4256898807361722,
+    "greedy_exact_hits": {
+      "ce": 4,
+      "moderate": 5,
+      "high": 0,
+      "shuffled": 0
+    },
+    "local_artifact_bound_tamper_tests": "10/10 PASS"
+  },
+  "ci": {
+    "failed_attempts": [
+      {
+        "run": 41096032842,
+        "reason": "shallow checkout missing review base",
+        "artifact_id": 12995049277
+      },
+      {
+        "run": 41096133577,
+        "reason": "separate shallow base fetch insufficient for merge-base",
+        "artifact_id": 12996007703
+      }
+    ],
+    "green_run": 41096253522,
+    "green_tested_head": "b93d029ee92603955943e80fc6a6dcb656241a1e",
+    "green_artifact_id": 12996566921,
+    "green_zip_sha256": "0672db684b8082931e33bc402a23b6b20bd030bc068b2c9af4fbc14a6fac67f9",
+    "crc": "PASS",
+    "inner_hashes": "5/5",
+    "tests": "10/10",
+    "privacy": "CLEAN",
+    "diff": "CLEAN"
+  },
+  "private_library": {
+    "path": "/V13-Checkpoints/2026-10-30/Run13S-Independent-Raw/",
+    "original_native_zip_byte_identical": true,
+    "review_ci_zip_byte_identical": true,
+    "rejected_anyone_writable_drive_not_used": true
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false,
+    "full_unfiltered_suite": "HISTORICAL_RED_4027_4_FAILURES_65_ERRORS_15_SKIPPED"
+  },
+  "blocked_paths": [
+    "Original frozen SourceHandoff runtime edits require owner approval",
+    "Redmi device native sustained acceptance unavailable"
+  ],
+  "next_command": "Inspect next current open PR heads/active heavy owners; implement next independent canonical C2/C3/ContextOS/Body package on a new review-only branch. Preserve all Run13R original source and failed attempts. Do not promote JEPA/STEP2/B3 from this tiny cohort.",
+  "remaining_platform_budget": "UNKNOWN"
+}

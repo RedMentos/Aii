@@ -1,0 +1,35 @@
+[1/16] jef-modes — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T223540.365803Z/jef-modes.json
+  PASS · JEF_MODES_PASS
+[2/16] experience — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T223540.365803Z/experience.json
+  PASS · EXPERIENCE_REPLAY_PASS
+[3/16] learning — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T223540.365803Z/learning.json
+  PASS · LEARNING_LIFECYCLE_PASS
+[4/16] executive — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T223540.365803Z/executive.json
+  PASS · EXECUTIVE_CONTINUITY_PASS
+[5/16] resources — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T223540.365803Z/resources.json
+  PASS · RESOURCE_MONITOR_NATIVE_PASS
+[6/16] readouts — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T223540.365803Z/readouts.json
+  PASS · READOUT_LIFECYCLE_PASS
+[7/16] native-taps — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T223540.365803Z/native-taps.json
+  PASS · NATIVE_TAP_PASS
+[8/16] predictor-b1 — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T223540.365803Z/predictor-b1.json
+  PASS · PREDICTOR_LIFECYCLE_PASS
+[9/16] predictor-b2 — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T223540.365803Z/predictor-b2.json
+  PASS · PREDICTOR_LIFECYCLE_PASS
+[10/16] control-calibration — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T223540.365803Z/control-calibration.json
+  FAIL · CONTROL_CALIBRATION_PARTIAL
+[11/16] memory-retrieval — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T223540.365803Z/memory-retrieval.json
+  FAIL · MEMORY_RETRIEVAL_PARTIAL
+[12/16] consolidation — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T223540.365803Z/consolidation.json
+  PASS · CONSOLIDATION_PASS
+[13/16] output-adapter — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T223540.365803Z/output-adapter.json
+  FAIL · OUTPUT_ADAPTER_PARTIAL
+[14/16] a3-student — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T223540.365803Z/a3-student.json
+  PASS · STUDENT_LIFECYCLE_PASS
+[15/16] world-predictor — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T223540.365803Z/world-predictor.json
+  PASS · WORLD_LIFECYCLE_PASS
+[16/16] sustained — echte Modelle, Bericht: /tmp/v13-bench/home/exports/acceptance-20261009T223540.365803Z/sustained.json
+  PASS · BOUNDED_STABILITY_PASS
+IMPLEMENTED_PATHS_PARTIAL
+Berichte: /tmp/v13-bench/home/exports/acceptance-20261009T223540.365803Z
+Das Ergebnis bewertet die ausgeführten Pfade; offene Canon-Funktionen bleiben offen.

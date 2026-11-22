@@ -1,0 +1,120 @@
+name: V13 Run70 B2 World-JEPA paired real-file crosschain
+on:
+  push:
+    branches:
+      - codex/automation11-run70-b2-worldjepa-paired-realfile-integration-20261028
+  pull_request:
+    branches:
+      - codex/automation11-run66-worldjepa-realfile-training-crosschain-20261028
+permissions:
+  contents: read
+concurrency:
+  group: v13-run70-integration-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      V13_NO_AUTOSTART: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Capture exact synthetic source-only evidence
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run70"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          for p in v13/code/scripts/run64_realfile_jepa_factorized_readout.py v13/code/tests/test_run64_realfile_jepa_factorized_readout.py v13/code/docs/proofs/continuation-20261028/RUN64_REALFILE_JEPA_FACTORIZED_PREREG.md v13/code/scripts/run63_z12b_factorized_real_file_baselines.py v13/code/tests/test_run63_z12b_factorized_real_file_baselines.py v13/code/docs/proofs/continuation-20261028/RUN63_FACTORIZED_REAL_FILE_PREREG.md v13/code/scripts/z12b_world_jepa.py v13/code/scripts/run60_z12b_slotlocal_real_file_baseline.py v13/code/tests/test_run60_z12b_slotlocal_real_file_baseline.py v13/code/docs/proofs/continuation-20261028/RUN60_Z12B_SLOTLOCAL_REAL_FILE_PREREG.md v13/code/v13/world_model.py v13/code/v13/world_jepa.py v13/code/v13/world_jepa_action_outcome_adapter.py v13/code/v13/world_jepa_holdout_diagnostic.py v13/code/scripts/run67_delta_jepa_realfile.py v13/code/tests/test_run67_delta_jepa_realfile.py v13/code/docs/proofs/continuation-20261028/RUN67_DELTA_JEPA_REALFILE_PREREG.md v13/code/scripts/run69_paired_realfile_counterfactual.py v13/code/tests/test_run69_paired_realfile_counterfactual.py v13/code/docs/proofs/continuation-20261028/RUN69_PAIRED_REALFILE_COUNTERFACTUAL_PREREG.md; do git hash-object "$p" | xargs -I{} echo "{} $p"; done > "$e/FROZEN_RAW.log"
+          if [ "$(git hash-object v13/code/scripts/run64_realfile_jepa_factorized_readout.py)" = 0566a4d0a9d81d8b1bbc11c0b6e6878c5b6a86bc ] && [ "$(git hash-object v13/code/tests/test_run64_realfile_jepa_factorized_readout.py)" = 7f0cd4fe268fdced3a58203b98e80041d24373cd ] && [ "$(git hash-object v13/code/docs/proofs/continuation-20261028/RUN64_REALFILE_JEPA_FACTORIZED_PREREG.md)" = fa3f03168685b3586c8b5a51fe7867761bf60505 ] && [ "$(git hash-object v13/code/scripts/run63_z12b_factorized_real_file_baselines.py)" = 9d33026c3431fa4501fa2793db64f049bd5c6ef9 ] && [ "$(git hash-object v13/code/tests/test_run63_z12b_factorized_real_file_baselines.py)" = b12f679176d5d51633515a8588f60317c8fa8a49 ] && [ "$(git hash-object v13/code/docs/proofs/continuation-20261028/RUN63_FACTORIZED_REAL_FILE_PREREG.md)" = 9396fbf9d60cedfe3b3633b70c7b41dea3c22e2f ] && [ "$(git hash-object v13/code/scripts/z12b_world_jepa.py)" = 2fd1366dc1b6d8c02803ee3254020f70e5bf3eb4 ] && [ "$(git hash-object v13/code/scripts/run60_z12b_slotlocal_real_file_baseline.py)" = 08063f3df630f558589dd297860dd19e0021dc90 ] && [ "$(git hash-object v13/code/tests/test_run60_z12b_slotlocal_real_file_baseline.py)" = e2e45040631b7f013e802417f86d8cb630d1deb3 ] && [ "$(git hash-object v13/code/docs/proofs/continuation-20261028/RUN60_Z12B_SLOTLOCAL_REAL_FILE_PREREG.md)" = dac891563ef78b97b19f0dde7f98001657dc25c1 ] && [ "$(git hash-object v13/code/v13/world_model.py)" = 03048707912a23a2ae75a0944a58e39a7134a595 ] && [ "$(git hash-object v13/code/v13/world_jepa.py)" = b95cd3fd9172ddef0fb88f0a7d70e2921c43e777 ] && [ "$(git hash-object v13/code/v13/world_jepa_action_outcome_adapter.py)" = cbe5eef5a1ec1335ee09e0661804bb220f4dd6b2 ] && [ "$(git hash-object v13/code/v13/world_jepa_holdout_diagnostic.py)" = 8ed127fba3907d80bb3efcf92983e7266499e8cb ] && [ "$(git hash-object v13/code/v13/world_jepa_action_outcome_shadow_fit.py)" = d6a101f8dbca82dd2d65dc9a63395207736f0cc0 ] && [ "$(git hash-object v13/code/v13/world_jepa_synthetic_outcome_baselines.py)" = cd8bdb67a4758e1e75b2663748cef75c4196a2f3 ] && [ "$(git hash-object v13/code/v13/world_jepa_synthetic_predicted_latent_readout.py)" = 96165bf52dcb498af5cccd02c0aa3684a18f873e ] && [ "$(git hash-object v13/code/tests/test_run51_world_jepa_shadow_fit.py)" = 246da2d687bcd7065b2921ce91272e48deebadf9 ] && [ "$(git hash-object v13/code/v13/world_jepa_synthetic_heldout_action_swap.py)" = fda1c652e9e9e2a5c6ac0b57999ec392450c61d0 ] && [ "$(git hash-object v13/code/tests/test_run59_world_jepa_synthetic_heldout_action_swap.py)" = 0d6d637af23c2e4e127defd0673358243f9c7df7 ] && [ "$(git hash-object v13/code/scripts/run42_b2_eligibility_source_shadow.py)" = 3b0e5e67b908fe09130555c6f78e341c88d4de78 ] && [ "$(git hash-object v13/code/tests/test_run42_b2_eligibility_source_shadow.py)" = 98a022de8a8aa396f55c88066b9761191b0b7502 ] && [ "$(git hash-object v13/code/scripts/run67_delta_jepa_realfile.py)" = 3ef07b776dd1acd8990672ba1184f5b528b4c88d ] && [ "$(git hash-object v13/code/tests/test_run67_delta_jepa_realfile.py)" = 973f2248766108c767d5e89bb53d16e46aceb1e9 ] && [ "$(git hash-object v13/code/docs/proofs/continuation-20261028/RUN67_DELTA_JEPA_REALFILE_PREREG.md)" = af0bcef0f888ccc0bbbb5c21ac353c954e4a0a58 ] && [ "$(git hash-object v13/code/scripts/run69_paired_realfile_counterfactual.py)" = 135183d568b7121b17543ad30e23bb22352bac70 ] && [ "$(git hash-object v13/code/tests/test_run69_paired_realfile_counterfactual.py)" = b51774d110660ce58b9f231a90e3c8c9bc791df1 ] && [ "$(git hash-object v13/code/docs/proofs/continuation-20261028/RUN69_PAIRED_REALFILE_COUNTERFACTUAL_PREREG.md)" = 65f0d22795ca6fc3c64faf7b4a979848d2c2a0cc ]; then echo 0 > "$e/FROZEN_EXIT.txt"; else echo 1 > "$e/FROZEN_EXIT.txt"; fi
+          python3 -m venv "$RUNNER_TEMP/v13-run70-venv"
+          py="$RUNNER_TEMP/v13-run70-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' > "$e/NUMPY_RAW.log" 2>&1
+          echo "$?" > "$e/NUMPY_EXIT.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 600s env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_run69_paired_realfile_counterfactual tests.test_run67_delta_jepa_realfile tests.test_run64_realfile_jepa_factorized_readout tests.test_run63_z12b_factorized_real_file_baselines tests.test_run60_z12b_slotlocal_real_file_baseline tests.test_run58_b2_offline_current_source_crosschain tests.test_run44_b2_shadow_readonly_cli tests.test_run42_b2_eligibility_source_shadow tests.test_run59_world_jepa_synthetic_heldout_action_swap tests.test_run55_world_jepa_synthetic_predicted_latent_readout tests.test_run54_world_jepa_synthetic_outcome_baselines tests.test_run51_world_jepa_shadow_fit tests.test_run50_world_jepa_action_outcome_adapter tests.test_run48_world_jepa_holdout_diagnostic tests.test_run46_world_jepa_zero_step_evidence) > "$e/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$e/FOCUSED_EXIT.txt"
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 120s env PYTHONPATH=.:tests "$py" -c 'import json; from v13 import world_model; from v13 import world_jepa_action_outcome_adapter as adapter; from v13 import world_jepa_synthetic_heldout_action_swap as probe; from tests.test_run50_world_jepa_action_outcome_adapter import FakeReadOnlyView; b=adapter.build(world_model.transitions(FakeReadOnlyView(128))); print(json.dumps(probe.run(b,approved_shadow_fit=True,source_kind="SYNTHETIC_TEST_ONLY",seed=11,steps=20,ensemble=2),sort_keys=True,allow_nan=False))') > "$e/METRICS_RAW.json" 2> "$e/METRICS_ERR.log"
+            echo "$?" > "$e/METRICS_EXIT.txt"
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 120s env PYTHONPATH=.:tests "$py" -c 'import json; from scripts import run60_z12b_slotlocal_real_file_baseline as probe; print(json.dumps(probe.run(),sort_keys=True,allow_nan=False))') > "$e/REALFILE_METRICS_RAW.json" 2> "$e/REALFILE_METRICS_ERR.log"
+            echo "$?" > "$e/REALFILE_METRICS_EXIT.txt"
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 180s env PYTHONPATH=.:tests "$py" -c 'import json; from scripts import run63_z12b_factorized_real_file_baselines as probe; print(json.dumps(probe.run(),sort_keys=True,allow_nan=False))') > "$e/FACTORIZED_METRICS_RAW.json" 2> "$e/FACTORIZED_METRICS_ERR.log"
+            echo "$?" > "$e/FACTORIZED_METRICS_EXIT.txt"
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 600s env PYTHONPATH=.:tests "$py" -c 'import json; from scripts import run64_realfile_jepa_factorized_readout as probe; print(json.dumps(probe.run(),sort_keys=True,allow_nan=False))') > "$e/JEPA_REALFILE_METRICS_RAW.json" 2> "$e/JEPA_REALFILE_METRICS_ERR.log"
+            echo "$?" > "$e/JEPA_REALFILE_METRICS_EXIT.txt"
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 600s env PYTHONPATH=.:tests "$py" -c 'import json; from scripts import run69_paired_realfile_counterfactual as probe; print(json.dumps(probe.run(),sort_keys=True,allow_nan=False))') > "$e/PAIRED_METRICS_RAW.json" 2> "$e/PAIRED_METRICS_ERR.log"
+            echo "$?" > "$e/PAIRED_METRICS_EXIT.txt"
+          else
+            echo SKIPPED_FOCUSED_RED > "$e/METRICS_RAW.json"
+            echo SKIPPED_FOCUSED_RED > "$e/METRICS_ERR.log"
+            echo SKIPPED_RED > "$e/METRICS_EXIT.txt"
+            echo SKIPPED_FOCUSED_RED > "$e/REALFILE_METRICS_RAW.json"
+            echo SKIPPED_FOCUSED_RED > "$e/REALFILE_METRICS_ERR.log"
+            echo SKIPPED_RED > "$e/REALFILE_METRICS_EXIT.txt"
+            echo SKIPPED_FOCUSED_RED > "$e/FACTORIZED_METRICS_RAW.json"
+            echo SKIPPED_FOCUSED_RED > "$e/FACTORIZED_METRICS_ERR.log"
+            echo SKIPPED_RED > "$e/FACTORIZED_METRICS_EXIT.txt"
+            echo SKIPPED_FOCUSED_RED > "$e/JEPA_REALFILE_METRICS_RAW.json"
+            echo SKIPPED_FOCUSED_RED > "$e/JEPA_REALFILE_METRICS_ERR.log"
+            echo SKIPPED_RED > "$e/JEPA_REALFILE_METRICS_EXIT.txt"
+            echo SKIPPED_FOCUSED_RED > "$e/PAIRED_METRICS_RAW.json"
+            echo SKIPPED_FOCUSED_RED > "$e/PAIRED_METRICS_ERR.log"
+            echo SKIPPED_RED > "$e/PAIRED_METRICS_EXIT.txt"
+          fi
+          python3 -m compileall -q v13/code/scripts/run69_paired_realfile_counterfactual.py v13/code/tests/test_run69_paired_realfile_counterfactual.py v13/code/scripts/run67_delta_jepa_realfile.py v13/code/tests/test_run67_delta_jepa_realfile.py v13/code/scripts/run64_realfile_jepa_factorized_readout.py v13/code/tests/test_run64_realfile_jepa_factorized_readout.py v13/code/scripts/run63_z12b_factorized_real_file_baselines.py v13/code/tests/test_run63_z12b_factorized_real_file_baselines.py v13/code/scripts/run60_z12b_slotlocal_real_file_baseline.py v13/code/tests/test_run60_z12b_slotlocal_real_file_baseline.py v13/code/tests/test_run58_b2_offline_current_source_crosschain.py v13/code/scripts/run42_b2_eligibility_source_shadow.py v13/code/tests/test_run42_b2_eligibility_source_shadow.py v13/code/v13/world_jepa_synthetic_heldout_action_swap.py v13/code/tests/test_run59_world_jepa_synthetic_heldout_action_swap.py v13/code/v13/world_jepa_synthetic_predicted_latent_readout.py v13/code/tests/test_run55_world_jepa_synthetic_predicted_latent_readout.py v13/code/v13/world_jepa_synthetic_outcome_baselines.py v13/code/tests/test_run54_world_jepa_synthetic_outcome_baselines.py v13/code/v13/world_jepa_action_outcome_shadow_fit.py v13/code/tests/test_run51_world_jepa_shadow_fit.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+            first=$?
+            "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+            second=$?
+            "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+            third=$?
+            if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then
+              echo 0 > "$e/INSTALL_EXIT.txt"
+              (cd v13/code && timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
+              echo "$?" > "$e/FULL_EXIT.txt"
+            else
+              echo 1 > "$e/INSTALL_EXIT.txt"
+              echo SKIPPED_PREREQ_RED > "$e/FULL_RAW.log"
+              echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+            fi
+          else
+            for n in INSTALL FULL; do echo SKIPPED_FOCUSED_RED > "$e/${n}_RAW.log"; echo SKIPPED_RED > "$e/${n}_EXIT.txt"; done
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 8ed2b753fa722b723cbc78bff28a42109f822b2d --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 8ed2b753fa722b723cbc78bff28a42109f822b2d HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve original raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: run70-crosschain-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run70/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source-only gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run70"
+          for n in FROZEN NUMPY FOCUSED METRICS REALFILE_METRICS FACTORIZED_METRICS JEPA_REALFILE_METRICS PAIRED_METRICS COMPILE INSTALL FULL PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; raw retained; no native or gate promotion"
+              tail -40 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN70_B2_WORLDJEPA_PAIRED_REALFILE_SOFTWARE_ONLY

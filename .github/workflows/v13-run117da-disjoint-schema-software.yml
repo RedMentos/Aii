@@ -1,0 +1,66 @@
+name: V13 Run117DA disjoint C3 schema ablation real Store preflight
+on:
+  push:
+    branches:
+      - assistant/v13-run117da-disjoint-schema-ablation-20261101-gpt6
+permissions:
+  contents: read
+jobs:
+  no-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Frozen cohort, real Store source-only no-native tests
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run117da"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117da-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run117da-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' 'psutil==7.0.0' 'PyYAML==6.0.2' 'Pillow==11.3.0' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          "$py" -m pip check > "$e/PIP_CHECK_RAW.log" 2>&1
+          echo "$?" > "$e/PIP_CHECK_EXIT.txt"
+          python3 -m py_compile v13/code/scripts/run117da_disjoint_schema_fixture.py v13/code/scripts/run117da_source_only_preflight.py v13/code/scripts/run117da_disjoint_schema_native.py v13/code/tests/test_run117da_source_only_preflight.py v13/code/tests/test_run117da_disjoint_schema_native.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 300s env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run117da_source_only_preflight tests.test_run117da_disjoint_schema_native tests.test_run117cu_qwen_c3_source_only_preflight tests.test_run117cn_c3_source_independence_fixture) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 1719870530b7b7702660f9518dcf5b556077e811 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 1719870530b7b7702660f9518dcf5b556077e811 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original software GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117da-disjoint-schema-preflight-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run117da/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce prereg and real Store software tests
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run117da"
+          for stage in VENV DEPS PIP_CHECK COMPILE TEST PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw preserved"
+              tail -80 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo RUN117DA_REAL_STORE_NO_NATIVE_PROOF

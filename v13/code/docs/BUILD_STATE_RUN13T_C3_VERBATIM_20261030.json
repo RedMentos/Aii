@@ -1,0 +1,121 @@
+{
+  "schema": "v13.run13t.c3_verbatim_heldout_checkpoint.v1",
+  "date": "2026-10-30",
+  "owner": "GPT-6",
+  "pr": 1311,
+  "branch": "assistant/v13-run13t-c3-verbatim-heldout-20261030-auto11",
+  "base": "964a862a7866d20a113194e448843eed2e0387c9",
+  "prereg_commit": "8f9a86b44d1d01716b78721749e5cf7e9851f04c",
+  "fixture_sha256": "c9a28de0e7fb198015b4b8845096d31f4af43f5c9679df7a8019a55ee4767b11",
+  "source_blobs": {
+    "fixture": "df7c23c7bf1af068a4cadc42fd1418fcbb05bf48",
+    "runner": "81be859e6e3944042aee3e28ddb23751c4b9a433",
+    "verifier": "9518bc9b9ad4c799aa93cdd663c6adc8a8b7a319",
+    "tests": "1ba451fa7a1ce7aeaaf673723d99c9cface3bc78",
+    "prereg": "dd2eaa4d7bc4c47df5808069ea89b184d6c10117",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "native_model": {
+    "id": "LiquidAI/LFM2.5-350M-QAD-Q4_0.gguf",
+    "revision": "657e078c94084481950a2d555a941481f715536b",
+    "sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d"
+  },
+  "cohort": {
+    "seed": 283,
+    "cases": 8,
+    "arms": [
+      "COPY_BASELINE",
+      "COPY_STRICT"
+    ],
+    "planned_native_calls": 16,
+    "only_system_changes": true,
+    "source_linked_jef": true,
+    "learning_mode": "RECORD_ONLY"
+  },
+  "preflight": {
+    "original": {
+      "run_id": 41096979781,
+      "head": "fad1f5b7423ac7ab17f995464dccd456c12b36cf",
+      "result": "GREEN",
+      "tests": "17/17",
+      "artifact_id": 12996268149,
+      "zip_sha256": "570a09152b7a337db98b24ccc6c837d0eb551175ed08c03def577d7f03b5ee54"
+    },
+    "amended": {
+      "run_id": 41097440059,
+      "head": "087c59cbd3fa5aa14e7e2cb62a6986d0a02b70f7",
+      "result": "GREEN",
+      "tests": "18/18",
+      "artifact_id": 12996453525,
+      "zip_sha256": "6c85a58065038beb10b7ba31ac777cb3552be523406ee53042b3ef767931e235",
+      "crc": "PASS",
+      "stage_exits": "7/7",
+      "privacy": "CLEAN",
+      "private_backup_byte_identical": true
+    }
+  },
+  "native": {
+    "status": "STRUCTURAL_GREEN_DIAGNOSTIC_HURT",
+    "run_id": 41097658020,
+    "tested_head": "d9d0b312168000283e84109ec3e7951304e6520b",
+    "original_artifact_id": 12996917793,
+    "original_zip_sha256": "86f728599312518bfa67efa0ae16e66be0eaec9ccfd8c3da8710fba40192717c",
+    "crc": "PASS",
+    "inner_hashes": "39/39",
+    "stage_exits": "10/10",
+    "tests": "18/18",
+    "privacy": "CLEAN",
+    "native_calls": "16/16",
+    "native_final": "16/16",
+    "process_reaped": "16/16",
+    "independent_native_verifier": "PASS",
+    "diagnostic": "FIDELITY_HURT",
+    "totals": {
+      "COPY_BASELINE": {
+        "exact_copy": 0,
+        "strict_full": 6,
+        "source_facts_verified": 3,
+        "numeric_correct": 12,
+        "faster_correct": 8,
+        "wrong_claims": 0
+      },
+      "COPY_STRICT": {
+        "exact_copy": 0,
+        "strict_full": 4,
+        "source_facts_verified": 0,
+        "numeric_correct": 12,
+        "faster_correct": 7,
+        "wrong_claims": 0
+      }
+    },
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run13T-C3-Verbatim/run13t-native-original.zip",
+    "private_backup_byte_identical": true
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Commit independent Run13U stdlib raw verifier and synthetic tamper tests on new review-only child of native tested head d9d0b312168000283e84109ec3e7951304e6520b, run original-artifact CI and private backup. Then investigate source-bound deterministic fallback / C3 SHADOW gating without changing frozen native cohort or activating delivery. Retain FIDELITY_HURT and all negative gates.",
+  "remaining_platform_budget": "UNKNOWN",
+  "amendment": {
+    "commit": "376d8e0714d97758601a65b7a70fedebe6b63546",
+    "blob": "acce2ae73238298109a156a29608f852b4de3ad7",
+    "reason": "Operationalize prereg wrong numeric/faster claims before native"
+  },
+  "independent_readonly_local_replay": {
+    "script": "run13u_independent_c3_raw_audit.py",
+    "status": "FIDELITY_HURT",
+    "manifest_hashes": "39/39",
+    "stage_exits": "10/10",
+    "native_rows": 16,
+    "distinct_pids": 16,
+    "synthetic_tamper_tests": "6/6 PASS",
+    "source_only_no_model": true,
+    "git_checkpoint": "PENDING"
+  }
+}

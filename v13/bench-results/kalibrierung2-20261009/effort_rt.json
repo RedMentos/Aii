@@ -1,0 +1,7216 @@
+{
+ "offer_style": "solve",
+ "b1": "lfm25_1p2b_body",
+ "b2": "qwen35_0p8b",
+ "seeds": [
+  13,
+  21,
+  34
+ ],
+ "c3": {
+  "lfm25_230m_c3:anti_echo": {
+   "accuracy": {
+    "none": 0.1583,
+    "detail": 0.1667,
+    "gist": 0.15,
+    "both": 0.1333
+   },
+   "oracle_wake": 0.2333,
+   "helped": {
+    "detail": 4,
+    "gist": 4,
+    "both": 3
+   },
+   "hurt": {
+    "detail": 5,
+    "gist": 6,
+    "both": 8
+   },
+   "sweep": {
+    "boot": {
+     "accuracy": 0.1583,
+     "bodies_per_turn": 0.475,
+     "wakes": {
+      "detail": 18,
+      "none": 21,
+      "gist": 1
+     }
+    },
+    "fixed": {
+     "none": {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0
+     },
+     "detail": {
+      "accuracy": 0.1667,
+      "bodies_per_turn": 1
+     },
+     "gist": {
+      "accuracy": 0.15,
+      "bodies_per_turn": 1
+     },
+     "both": {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 2
+     }
+    },
+    "grid": [
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.5,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.5,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.5,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.5,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.55
+     }
+    ],
+    "best": [
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.1583,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.25
+     }
+    ],
+    "distinct_outcomes": [
+     [
+      0.1583,
+      0.475
+     ]
+    ]
+   },
+   "cases": [
+    {
+     "id": "e645c56ff7f85992",
+     "kind": "arith_add",
+     "text": "Compute: 3 + 7 = ?",
+     "gold": "10",
+     "out": {
+      "none": 0.6667,
+      "detail": 0.3333,
+      "gist": 0.6667,
+      "both": 0.3333
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess: \n\n\\boxed{10}",
+       "Nothing verified, my guess:\n\n\\boxed{10}",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 10"
+      ],
+      "gist": [
+       "Nothing verified, my guess:\n\nThe result of 3 + 7 is **10**.",
+       "Nothing verified, my guess:\n\n**Answer:** 10",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 10",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 0
+    },
+    {
+     "id": "6fae7ebaf0dd9b6c",
+     "kind": "arith_add",
+     "text": "Compute: 0 + 7 = ?",
+     "gold": "7",
+     "out": {
+      "none": 0.6667,
+      "detail": 0.6667,
+      "gist": 0.3333,
+      "both": 0.3333
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess: 0 + 7 equals 7.",
+       "Nothing verified, my guess: 7",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\nCompute: 0 + 7 = 7",
+       "Nothing verified, my guess:\n\n**Answer:** 7",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 7",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 7",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "7dc8c4114b5d5cdc",
+     "kind": "arith_add",
+     "text": "Compute: 46 + 62 = ?",
+     "gold": "108",
+     "out": {
+      "none": 0.6667,
+      "detail": 0.3333,
+      "gist": 0.6667,
+      "both": 0.6667
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess: \n\n46 + 62 equals **108**.",
+       "Nothing verified, my guess:\n\n**46 + 62 = 108**",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 108"
+      ],
+      "gist": [
+       "Nothing verified, my guess:\n\n- **Answer:** 108",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 108"
+      ],
+      "both": [
+       "Nothing verified, my guess:\n\n- **Answer:** 108",
+       "Nothing verified, my guess:\n\n**Answer:** 108",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "49ca59a14f0aa304",
+     "kind": "arith_add",
+     "text": "Compute: 394 + 904 = ?",
+     "gold": "1298",
+     "out": {
+      "none": 0.0,
+      "detail": 0.6667,
+      "gist": 1.0,
+      "both": 0.6667
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:\n\n394 + 904 = 1198",
+       "Nothing verified, my guess: 394 + 904 equals 1398.",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\n\\boxed{1298}",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 1298"
+      ],
+      "gist": [
+       "Nothing verified, my guess:\n\n- **Answer:** 1298",
+       "Nothing verified, my guess:\n\n**Answer:** 1298",
+       "Nothing verified, my guess:\n\n**Answer:** 1298"
+      ],
+      "both": [
+       "Nothing verified, my guess:\n\nAnswer: 1298",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 1298"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "77d9ce01eb7c47c0",
+     "kind": "arith_mul",
+     "text": "Compute: 5 * 2 = ?",
+     "gold": "10",
+     "out": {
+      "none": 0.6667,
+      "detail": 0.3333,
+      "gist": 0.3333,
+      "both": 0.3333
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess: \n\n\\boxed{10}",
+       "Nothing verified, my guess:\n\n5 * 2 = 10",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 10."
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 10"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 10.",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "4a7d5b901f4563d2",
+     "kind": "arith_mul",
+     "text": "Compute: 4 * 4 = ?",
+     "gold": "16",
+     "out": {
+      "none": 0.6667,
+      "detail": 0.3333,
+      "gist": 0.3333,
+      "both": 0.3333
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess: \n\n\\boxed{16}",
+       "Nothing verified, my guess:\n\n\\boxed{16}",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 16."
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 16."
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 16",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "694defc39f4a57c5",
+     "kind": "arith_mul",
+     "text": "Compute: 24 * 2 = ?",
+     "gold": "48",
+     "out": {
+      "none": 0.6667,
+      "detail": 0.6667,
+      "gist": 0.6667,
+      "both": 0.3333
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess: 24 * 2 equals 48.",
+       "Nothing verified, my guess:\n\n\\boxed{48}",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\nAnswer: 48",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 48."
+      ],
+      "gist": [
+       "Nothing verified, my guess:\n\nThe calculation yields **48**.",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 48."
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 48."
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "e23eafd3b4af60b3",
+     "kind": "arith_mul",
+     "text": "Compute: 917 * 2 = ?",
+     "gold": "1834",
+     "out": {
+      "none": 0.3333,
+      "detail": 0.6667,
+      "gist": 0.3333,
+      "both": 0.3333
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess: 917 * 2 = 1834",
+       "[compute(917 * 2)]Computing 917 * 2 to determine the result of that multiplication.",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\n- **Answer:** 1834",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 1834"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 1834"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 1834"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "e65dd6976d77aa30",
+     "kind": "grid_path",
+     "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS...\n....\n.##.\n..#Z",
+     "gold": "6",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\nShortest path from S to Z involves taking the first step down, then right, and finally left",
+       "Nothing verified, my guess:\n\n**Summary:** The shortest path from S to Z involves moving down the first wall, then right ",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nThe shortest path from S to Z involves moving down and right, which require 3 steps up + 2 "
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** The shortest path from S to Z involves moving down and right, with the first st"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "0af1c11eb15e3eac",
+     "kind": "grid_path",
+     "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS.....\n#...#.\n#.....\n......\n......\n##...Z",
+     "gold": "10",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess.",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess."
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\nShortest path from S to Z involves moving right to Z and then left to S. This yields the sh",
+       "Nothing verified, my guess:\n\n**Answer:** Shortest path from S to Z requires moving right through the vertical layer.",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nThe shortest path from S to Z involves four steps in the order:  \n**S → # → # → # → Z** (4 ",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:\n\nShortest path from S to Z involves taking the following route:\n- Move left on the first ste",
+       "Nothing verified, my guess:\n\nThe shortest path from S to Z involves traversing the grid in a zig-zag pattern. The first ",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "4a2dbac3043a3695",
+     "kind": "grid_path",
+     "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS.#.....\n..#.....\n........\n....#...\n..#.....\n#.#.....\n.......#\n..#....Z",
+     "gold": "14",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nThe shortest path from S to Z involves taking the sequence of steps up (1), down (2), left "
+      ],
+      "gist": [
+       "Nothing verified, my guess:\n\n**Shortest path:** S → Z (steps: 4)\n\nThis route avoids the wall and uses the shortest path ",
+       "Nothing verified, my guess:\n\nThe shortest path from S to Z involves climbing the '#' wall in order (down and right) to r",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:\n\nI'm sorry, but I can't determine the path from S to Z using the given information. The quer",
+       "Nothing verified, my guess:\n\nThe shortest path from S to Z involves following the wall '#' as you navigate downward and ",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "57c057ab220c9ea1",
+     "kind": "grid_path",
+     "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS.#.......\n..........\n#...#.....\n........#.\n...#......\n..#..#...#\n......#...\n..........\n..........\n..#......Z",
+     "gold": "18",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nThe shortest path from S to Z involves visiting the following steps:\n- #...#.....\n- #...#..",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:\n\nNothing verified, my question.",
+       "Nothing verified, my guess:\n\nThe shortest path from S to Z involves the following steps:\n1. Start at S\n2. Move down 3 st",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:\n\nThe shortest path from S to Z involves moving down 1 step, right 1 step, left 2 steps, and ",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nShortest path from S to Z involves navigating through the grid using walls and moving in va"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "8b874dc69658d08a",
+     "kind": "reverse_word",
+     "text": "Write backwards: island",
+     "gold": "dnalsi",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess: island",
+       "Nothing verified, my guess: island",
+       "Nothing verified, my guess:\n\nIsland is a beach."
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\n- island",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nIsland"
+      ],
+      "gist": [
+       "Nothing verified, my guess:\n\nWriting backwards: island",
+       "Nothing verified, my guess:\n\n**Writing backwards: island**\n\nThis concept is a creative interpretation of the word “islan",
+       "Nothing verified, my guess:\n\n**Island** is the exact result of writing backwards."
+      ],
+      "both": [
+       "Nothing verified, my guess:\n\nI'm writing backwards from 'island' to discover a hidden world!",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nWriting backwards: island"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "eaae2528eb2da348",
+     "kind": "reverse_word",
+     "text": "Write backwards: rain",
+     "gold": "niar",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess: rain",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nRain is a type of weather that occurs when moist air rises and cools, leading to precipitat"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\nWriting backwards: rain",
+       "Nothing verified, my guess: rain",
+       "Nothing verified, my guess:\n\n**\"Rainnaw\"**  \n(Note: This is a creative interpretation of backward phrasing.)"
+      ],
+      "gist": [
+       "Nothing verified, my guess:\n\nWrite backwards: rain",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Writing backwards:** rain  \nThis is a creative and imaginative concept inspired by the so"
+      ],
+      "both": [
+       "Nothing verified, my guess:\n\nWrite backwards: rain",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nWriting backwards: rain"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "78959ae944989100",
+     "kind": "reverse_word",
+     "text": "Write backwards: candlewindow",
+     "gold": "wodniweldnac",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess: candlewindow",
+       "Nothing verified, my guess:\n\nCandle window  \nWindow  \nCandles  \nGlasses  \nVases  \nLamp  \n\n"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nCandle window was not a candlewindow."
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nCandlewindow"
+      ],
+      "both": [
+       "Nothing verified, my guess:\n\nCandle window was hidden behind the door.  \nWrite backwards: **candle**",
+       "Nothing verified, my guess:\n\nCandlewindow",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "4cb59bf77c774f7f",
+     "kind": "reverse_word",
+     "text": "Write backwards: fogmoonmoon",
+     "gold": "noomnoomgof",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Fogmoonmoon\n\nNothing verified, my guess:",
+       "Fogmoonmoon\n\nNothing verified, my guess:",
+       "Fogmoonmoon\n\nNothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\n**Fogmoonmoon**",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nFogmoonmoon is reversed."
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess: fogmoonmoon\n\nI'm sorry, but I can't assist with that.",
+       "Nothing verified, my guess:\n\nFogmoonmoon is a reversed word."
+      ],
+      "both": [
+       "Nothing verified, my guess:\n\nFogmoonmoon is written backwards.",
+       "Nothing verified, my guess:\n\nThe reversed string is 'nomoonmoon'. Quotes confirm the transformation.",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "a95d04e64771c992",
+     "kind": "rule_map",
+     "text": "Examples: bread->euhdg; dog->grj; window->zlqgrz. Apply the same rule: bird->?",
+     "gold": "elug",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Application:** Applying the pattern consistently across examples.  \n**Uncertainty:** low"
+      ],
+      "gist": [
+       "Nothing verified, my guess:\n\nExample: bread->euhdg  \nApplication to apply the same rule: bird->?  \n\nWould you like me to",
+       "Nothing verified, my guess:\n\nThe rules provided do not specify a direct application of the 'bird' →?' instruction to der",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nExamples: bread->euhdg ; dog->grj ; window->zlqgrz  \nApply the same rule: bird->?  \n\nThis f"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "8f9328b591054309",
+     "kind": "rule_map",
+     "text": "Examples: apple->ettpi; candle->gerhpi; lamp->peqt. Apply the same rule: window->?",
+     "gold": "amrhsa",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nExamples: apple->ettpi; candle→gerhpi; lamp→peqt.  \nApply the same rule: window→?",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:\n\nExample: apple->ettpi  \nApplication: window  \n\nApplication: lamp  \n\nThese examples follow t",
+       "Nothing verified, my guess:\n\nExamples: apple->ettpi; candle->gerrhpi; lamp->peqt apply the same rule: window->?",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nExamples: apple->ettpi; candle ->gerhpi; lamp ->peqt. Apply the same pattern to window->?",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "fdcc11841986338c",
+     "kind": "rule_map",
+     "text": "Examples: bird->cjse; garden->hbsefo; bird->cjse; bread->csfbe. Apply the same rule: garden->?",
+     "gold": "hbsefo",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.3333,
+      "both": 0.6667
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\n- **Example:** \"bird->cjse\"\n- **Needs_reentry:** false",
+       "Nothing verified, my guess:\n\n**Summary:** The pattern applies consistently across examples.  \n**Uncertainty:** Low  \n**N",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nThe rules apply to garden → hbsefo, which is a gardening scenario in this context.",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:\n\nThe rule 'garden -> hbsefo' is applied to \"garden\", resulting in the output \"hbsefo\".",
+       "Nothing verified, my guess:\n\n**Example:**  \n\"The rule 'garden→hbsefo' is applied.\"  \n\n**Reason:** The pattern aligns wit",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "513d1f7ab8fdfc88",
+     "kind": "rule_map",
+     "text": "Examples: moon->prrq; lamp->odps; candle->fdqgoh; window->zlqgrz; oven->ryhq. Apply the same rule: island->?",
+     "gold": "lvodqg",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Summary:** Apply the pattern consistently across examples.  \n**Quotes:** Examples: moon→p"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nThe pattern 'moon -> prrq' suggests a substitution where 'moon' replaces 'prrq', indicating",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:\n\nExample: moon->prrq  \nThis pattern is consistent across examples, suggesting a substitution",
+       "Nothing verified, my guess:\n\nThe pattern 'moon -> prrq' indicates a substitution where \"moon\" is replaced by \"prrq\", sug",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "f7b7d84a3d8dc2dd",
+     "kind": "seq_next",
+     "text": "Continue: 16, 18, 20, 22, ?",
+     "gold": "24",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nThe numbers 16, 18, and 20 form a sequence where the gaps between consecutive terms increas",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "24c09e73b8b9e3c1",
+     "kind": "seq_next",
+     "text": "Continue: 1, 2, 3, 4, ?",
+     "gold": "5",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "ae52f6441ea6e3b7",
+     "kind": "seq_next",
+     "text": "Continue: 9, 16, 23, 30, 37, ?",
+     "gold": "44",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nThe sequence continues with the next number being **42**.",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "91d29498564b2c8d",
+     "kind": "seq_next",
+     "text": "Continue: 7, 8, 9, 10, 11, 12, ?",
+     "gold": "13",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "959517696d129cb7",
+     "kind": "sort_letters",
+     "text": "Sort the letters alphabetically: fog",
+     "gold": "fgo",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess: fog",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Fog**"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nFog should be sorted alphabetically.",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Fog** is a common term.",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "fbdfe49e35c69077",
+     "kind": "sort_letters",
+     "text": "Sort the letters alphabetically: island",
+     "gold": "adilns",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nIsland",
+       "Nothing verified, my guess: island"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\nIsland is sorted by alphabetical order.",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Island** (sorting the alphabet)"
+      ],
+      "gist": [
+       "Nothing verified, my guess:\n\nSort the letters alphabetically: island",
+       "Nothing verified, my guess:\n\nThe hypothesis 'Sort the letters alphabetally: island' is confirmed.",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Sort the letters alphabetically: island**",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "d468feee03339576",
+     "kind": "sort_letters",
+     "text": "Sort the letters alphabetically: fograin",
+     "gold": "afginor",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess: fograin",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\n- **Fograin** (alphabetically)",
+       "Nothing verified, my guess:\n\n**Fograin** is sorted alphabetically.",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nFograin is not a valid English word."
+      ],
+      "both": [
+       "Nothing verified, my guess:\n\n- fograin",
+       "Nothing verified, my guess:\n\nFograin",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "28e5a89092610291",
+     "kind": "sort_letters",
+     "text": "Sort the letters alphabetically: appleovenapple",
+     "gold": "aaeeellnoppppv",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nApple\nOven\nVine\nAmen",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nSort the letters alphabetically: appleovenapple"
+      ],
+      "gist": [
+       "Nothing verified, my guess:\n\n**Apple** < **Oven** < **Air** < **Bread****",
+       "Nothing verified, my guess:\n\nThe hypothesis is that the string 'applehaven' contains a hidden pattern or error in sortin",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Appleovenapple** appears to contain a hidden pattern or error in sorting."
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read0",
+     "kind": "reading",
+     "text": "The order has 3 boxes with 12 pens each. How many pens are in the order?",
+     "gold": "36",
+     "out": {
+      "none": 0.0,
+      "detail": 0.3333,
+      "gist": 0.3333,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 36 pens**",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 36 pens**",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "read1",
+     "kind": "reading",
+     "text": "Lena paid 45 euros and Tom paid 30 euros. How much did they pay together?",
+     "gold": "75",
+     "out": {
+      "none": 0.3333,
+      "detail": 0.3333,
+      "gist": 0.0,
+      "both": 0.3333
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nNothing verified, my guess: Lena and Tom combined their payments was 45 + 30 = 75 euros.",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nLena paid 45 euros.\nTom paid 30 euros.\nTogether they paid: 45 + 30 = 75 euros.\n\nAnswer: 75 ",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 15 euros.",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nNothing confirmed, but the calculations are clear as follows:\n- Lena paid 45 euros.\n- Tom p",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "read2",
+     "kind": "reading",
+     "text": "The train leaves at 14:10 and the trip takes 50 minutes. At what time does it arrive?",
+     "gold": "15:00",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read3",
+     "kind": "reading",
+     "text": "Project Aurora has a budget of 120 euros and has spent 85. How much is left?",
+     "gold": "35",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read4",
+     "kind": "reading",
+     "text": "Anna is 31. Ben is 4 years younger than Anna. How old is Ben?",
+     "gold": "27",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nearly 5 years.\n\n\\boxed{4}",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "read5",
+     "kind": "reading",
+     "text": "A recipe needs 250 g flour per cake. How many grams for 3 cakes?",
+     "gold": "750",
+     "out": {
+      "none": 0.6667,
+      "detail": 0.3333,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "To determine how many grams of flour are needed for 3 cakes, multiply the amount needed per cake by 3:  \n**250 g × 3 = 7",
+       "To determine how much flour is needed for 3 cakes, multiply the amount in grams per cake by the number of cakes:  \n**250",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 750 grams.",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 0
+    },
+    {
+     "id": "read6",
+     "kind": "reading",
+     "text": "The meeting is on Monday. It was moved two days later. Which day is it now?",
+     "gold": "wednesday",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read7",
+     "kind": "reading",
+     "text": "Mia has 5 apples, eats 2 and buys 6 more. How many apples does she have?",
+     "gold": "9",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nMia starts with 5 apples. She eats 2, leaving 5 - 2 = 3 apples. Then she buys 6 more, addin",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nMia starts with 5 apples.  \nShe eats 2, so she has 5 - 2 = 3 apples remaining.  \nThen she b",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nMia starts with 5 apples. She eats 2, leaving 5 - 2 = 3 apples. Then she buys 6 more, addin",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read8",
+     "kind": "reading",
+     "text": "What is the capital of Australia?",
+     "gold": "canberra",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Capital of Australia** is Sydney.",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read9",
+     "kind": "reading",
+     "text": "How many legs does a spider have?",
+     "gold": "8",
+     "out": {
+      "none": 0.3333,
+      "detail": 0.3333,
+      "gist": 0.3333,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess: spider has 8 legs.",
+       "Nothing verified, my guess: spider legs are typically made of silk and can vary in size depending on species.",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\n**Answer:** 8 legs.",
+       "Nothing verified, my guess: spider has eight legs.",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** A spider has **8 legs**.",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Summary:** A spider has eight legs.",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "read10",
+     "kind": "reading",
+     "text": "Which planet is closest to the sun?",
+     "gold": "mercury",
+     "out": {
+      "none": 0.0,
+      "detail": 0.6667,
+      "gist": 0.3333,
+      "both": 0.6667
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess: Mercury.",
+       "Nothing verified, my guess:\n\n**Answer:** Mercury.",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess: The closest planet to the Sun is Mercury.",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess: Mercury.",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess: Mercury."
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 0
+    },
+    {
+     "id": "read11",
+     "kind": "reading",
+     "text": "What is 15 percent of 200?",
+     "gold": "30",
+     "out": {
+      "none": 0.6667,
+      "detail": 0.6667,
+      "gist": 0.3333,
+      "both": 0.3333
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess: 15% of 200 equals 30.",
+       "Nope, 15 percent of 200 is 30.",
+       "To find 15% of 200:\n1. Convert the percentage to a decimal: \\( \\frac{15}{100} = 0.15 \\).\n2. Multiply by the number: \\( 0"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\n**Answer:** 30",
+       "Nothing verified, my guess:\n\n**Answer:** 30",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 30"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 30.0%"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 0
+    }
+   ]
+  },
+  "lfm25_230m_c3:legacy": {
+   "accuracy": {
+    "none": 0.0,
+    "detail": 0.05,
+    "gist": 0.05,
+    "both": 0.025
+   },
+   "oracle_wake": 0.0833,
+   "helped": {
+    "detail": 3,
+    "gist": 3,
+    "both": 1
+   },
+   "hurt": {
+    "detail": 0,
+    "gist": 0,
+    "both": 0
+   },
+   "sweep": {
+    "boot": {
+     "accuracy": 0.05,
+     "bodies_per_turn": 0.475,
+     "wakes": {
+      "detail": 18,
+      "none": 21,
+      "gist": 1
+     }
+    },
+    "fixed": {
+     "none": {
+      "accuracy": 0.0,
+      "bodies_per_turn": 0
+     },
+     "detail": {
+      "accuracy": 0.05,
+      "bodies_per_turn": 1
+     },
+     "gist": {
+      "accuracy": 0.05,
+      "bodies_per_turn": 1
+     },
+     "both": {
+      "accuracy": 0.025,
+      "bodies_per_turn": 2
+     }
+    },
+    "grid": [
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.5,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.5,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.5,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.5,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.55
+     }
+    ],
+    "best": [
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.05,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.25
+     }
+    ],
+    "distinct_outcomes": [
+     [
+      0.05,
+      0.475
+     ]
+    ]
+   },
+   "cases": [
+    {
+     "id": "e645c56ff7f85992",
+     "kind": "arith_add",
+     "text": "Compute: 3 + 7 = ?",
+     "gold": "10",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 0
+    },
+    {
+     "id": "6fae7ebaf0dd9b6c",
+     "kind": "arith_add",
+     "text": "Compute: 0 + 7 = ?",
+     "gold": "7",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "7dc8c4114b5d5cdc",
+     "kind": "arith_add",
+     "text": "Compute: 46 + 62 = ?",
+     "gold": "108",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.3333,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 108",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "49ca59a14f0aa304",
+     "kind": "arith_add",
+     "text": "Compute: 394 + 904 = ?",
+     "gold": "1298",
+     "out": {
+      "none": 0.0,
+      "detail": 1.0,
+      "gist": 1.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\n**Answer:** 1298",
+       "Nothing verified, my guess:\n\n**Answer:** 1298",
+       "Nothing verified, my guess:\n\n**Answer:** 1298"
+      ],
+      "gist": [
+       "Nothing verified, my guess:\n\n**Answer:** 1298",
+       "Nothing verified, my guess:\n\n**Answer:** 1298",
+       "Nothing verified, my guess:\n\n**Answer:** 1298"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "77d9ce01eb7c47c0",
+     "kind": "arith_mul",
+     "text": "Compute: 5 * 2 = ?",
+     "gold": "10",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "4a7d5b901f4563d2",
+     "kind": "arith_mul",
+     "text": "Compute: 4 * 4 = ?",
+     "gold": "16",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "694defc39f4a57c5",
+     "kind": "arith_mul",
+     "text": "Compute: 24 * 2 = ?",
+     "gold": "48",
+     "out": {
+      "none": 0.0,
+      "detail": 0.6667,
+      "gist": 0.6667,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\n**Answer:** 48",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 48"
+      ],
+      "gist": [
+       "Nothing verified, my guess:\n\n**Answer:** 48",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 48"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "e23eafd3b4af60b3",
+     "kind": "arith_mul",
+     "text": "Compute: 917 * 2 = ?",
+     "gold": "1834",
+     "out": {
+      "none": 0.0,
+      "detail": 0.3333,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n**Answer:** 1834"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "e65dd6976d77aa30",
+     "kind": "grid_path",
+     "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS...\n....\n.##.\n..#Z",
+     "gold": "6",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "0af1c11eb15e3eac",
+     "kind": "grid_path",
+     "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS.....\n#...#.\n#.....\n......\n......\n##...Z",
+     "gold": "10",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "4a2dbac3043a3695",
+     "kind": "grid_path",
+     "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS.#.....\n..#.....\n........\n....#...\n..#.....\n#.#.....\n.......#\n..#....Z",
+     "gold": "14",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "57c057ab220c9ea1",
+     "kind": "grid_path",
+     "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS.#.......\n..........\n#...#.....\n........#.\n...#......\n..#..#...#\n......#...\n..........\n..........\n..#......Z",
+     "gold": "18",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:\n\nShortest path from S to Z is found by following the wall '#' and moving down, resulting in ",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nShortest path from S to Z is found by following the wall '#' and moving down, resulting in "
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "8b874dc69658d08a",
+     "kind": "reverse_word",
+     "text": "Write backwards: island",
+     "gold": "dnalsi",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess: island",
+       "Nothing verified, my guess: island",
+       "Nothing verified, my guess: island"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nIsland"
+      ],
+      "gist": [
+       "Nothing verified, my guess:\n\n**\"Write backwards: island\"**",
+       "Nothing verified, my guess:\n\nThe hypothesis 'Write backwards: island' is the exact result of the analysis.",
+       "Nothing verified, my guess:\n\nThe hypothesis 'Write backwards: island' is the exact result of the analysis."
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "eaae2528eb2da348",
+     "kind": "reverse_word",
+     "text": "Write backwards: rain",
+     "gold": "niar",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess: rain",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess: rain"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\nRain",
+       "Nothing verified, my guess:\n\nRain",
+       "Nothing verified, my guess:\n\nRain"
+      ],
+      "gist": [
+       "Nothing verified, my guess:\n\nThe hypothesis 'Write backwards: rain' is the primary goal derived from the source segments",
+       "Nothing verified, my guess:\n\nThe hypothesis 'Write backwards: rain' is the primary goal derived from the source segments",
+       "Nothing verified, my guess:\n\nThe hypothesis 'Write backwards: rain' is the primary goal derived from the source segments"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nThe reversed phrase is \"niwrac ra.\"",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "78959ae944989100",
+     "kind": "reverse_word",
+     "text": "Write backwards: candlewindow",
+     "gold": "wodniweldnac",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nCandlewindow",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "4cb59bf77c774f7f",
+     "kind": "reverse_word",
+     "text": "Write backwards: fogmoonmoon",
+     "gold": "noomnoomgof",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Fogmoonmoon\n\nNothing verified, my guess:",
+       "Fogmoonmoon\n\nNothing verified, my guess:",
+       "Fogmoonmoon\n\nNothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\nFogmoonmoon",
+       "Nothing verified, my guess:\n\nFogmoonmoon",
+       "Nothing verified, my guess:\n\nFogmoonmoon"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "a95d04e64771c992",
+     "kind": "rule_map",
+     "text": "Examples: bread->euhdg; dog->grj; window->zlqgrz. Apply the same rule: bird->?",
+     "gold": "elug",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "8f9328b591054309",
+     "kind": "rule_map",
+     "text": "Examples: apple->ettpi; candle->gerhpi; lamp->peqt. Apply the same rule: window->?",
+     "gold": "amrhsa",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "fdcc11841986338c",
+     "kind": "rule_map",
+     "text": "Examples: bird->cjse; garden->hbsefo; bird->cjse; bread->csfbe. Apply the same rule: garden->?",
+     "gold": "hbsefo",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "513d1f7ab8fdfc88",
+     "kind": "rule_map",
+     "text": "Examples: moon->prrq; lamp->odps; candle->fdqgoh; window->zlqgrz; oven->ryhq. Apply the same rule: island->?",
+     "gold": "lvodqg",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "f7b7d84a3d8dc2dd",
+     "kind": "seq_next",
+     "text": "Continue: 16, 18, 20, 22, ?",
+     "gold": "24",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "24c09e73b8b9e3c1",
+     "kind": "seq_next",
+     "text": "Continue: 1, 2, 3, 4, ?",
+     "gold": "5",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "ae52f6441ea6e3b7",
+     "kind": "seq_next",
+     "text": "Continue: 9, 16, 23, 30, 37, ?",
+     "gold": "44",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "91d29498564b2c8d",
+     "kind": "seq_next",
+     "text": "Continue: 7, 8, 9, 10, 11, 12, ?",
+     "gold": "13",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "959517696d129cb7",
+     "kind": "sort_letters",
+     "text": "Sort the letters alphabetically: fog",
+     "gold": "fgo",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "fbdfe49e35c69077",
+     "kind": "sort_letters",
+     "text": "Sort the letters alphabetically: island",
+     "gold": "adilns",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess: island",
+       "Nothing verified, my guess: island",
+       "Nothing verified, my guess: island"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "d468feee03339576",
+     "kind": "sort_letters",
+     "text": "Sort the letters alphabetically: fograin",
+     "gold": "afginor",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "28e5a89092610291",
+     "kind": "sort_letters",
+     "text": "Sort the letters alphabetically: appleovenapple",
+     "gold": "aaeeellnoppppv",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read0",
+     "kind": "reading",
+     "text": "The order has 3 boxes with 12 pens each. How many pens are in the order?",
+     "gold": "36",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "read1",
+     "kind": "reading",
+     "text": "Lena paid 45 euros and Tom paid 30 euros. How much did they pay together?",
+     "gold": "75",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "read2",
+     "kind": "reading",
+     "text": "The train leaves at 14:10 and the trip takes 50 minutes. At what time does it arrive?",
+     "gold": "15:00",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read3",
+     "kind": "reading",
+     "text": "Project Aurora has a budget of 120 euros and has spent 85. How much is left?",
+     "gold": "35",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read4",
+     "kind": "reading",
+     "text": "Anna is 31. Ben is 4 years younger than Anna. How old is Ben?",
+     "gold": "27",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "read5",
+     "kind": "reading",
+     "text": "A recipe needs 250 g flour per cake. How many grams for 3 cakes?",
+     "gold": "750",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 0
+    },
+    {
+     "id": "read6",
+     "kind": "reading",
+     "text": "The meeting is on Monday. It was moved two days later. Which day is it now?",
+     "gold": "wednesday",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read7",
+     "kind": "reading",
+     "text": "Mia has 5 apples, eats 2 and buys 6 more. How many apples does she have?",
+     "gold": "9",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read8",
+     "kind": "reading",
+     "text": "What is the capital of Australia?",
+     "gold": "canberra",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read9",
+     "kind": "reading",
+     "text": "How many legs does a spider have?",
+     "gold": "8",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess: spider legs are typically made of silk and do not have any visible legs.",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "read10",
+     "kind": "reading",
+     "text": "Which planet is closest to the sun?",
+     "gold": "mercury",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 1.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess: Mercury.",
+       "Nothing verified, my guess: Mercury.",
+       "Nothing verified, my guess: Mercury."
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 0
+    },
+    {
+     "id": "read11",
+     "kind": "reading",
+     "text": "What is 15 percent of 200?",
+     "gold": "30",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 0
+    }
+   ]
+  },
+  "lfm25_350m:anti_echo": {
+   "accuracy": {
+    "none": 0.0833,
+    "detail": 0.1667,
+    "gist": 0.1083,
+    "both": 0.125
+   },
+   "oracle_wake": 0.225,
+   "helped": {
+    "detail": 7,
+    "gist": 6,
+    "both": 6
+   },
+   "hurt": {
+    "detail": 2,
+    "gist": 4,
+    "both": 3
+   },
+   "sweep": {
+    "boot": {
+     "accuracy": 0.1333,
+     "bodies_per_turn": 0.475,
+     "wakes": {
+      "detail": 18,
+      "none": 21,
+      "gist": 1
+     }
+    },
+    "fixed": {
+     "none": {
+      "accuracy": 0.0833,
+      "bodies_per_turn": 0
+     },
+     "detail": {
+      "accuracy": 0.1667,
+      "bodies_per_turn": 1
+     },
+     "gist": {
+      "accuracy": 0.1083,
+      "bodies_per_turn": 1
+     },
+     "both": {
+      "accuracy": 0.125,
+      "bodies_per_turn": 2
+     }
+    },
+    "grid": [
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.5,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.5,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.5,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.5,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.55
+     }
+    ],
+    "best": [
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.1333,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.25
+     }
+    ],
+    "distinct_outcomes": [
+     [
+      0.1333,
+      0.475
+     ]
+    ]
+   },
+   "cases": [
+    {
+     "id": "e645c56ff7f85992",
+     "kind": "arith_add",
+     "text": "Compute: 3 + 7 = ?",
+     "gold": "10",
+     "out": {
+      "none": 0.0,
+      "detail": 0.3333,
+      "gist": 0.0,
+      "both": 0.3333
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "0",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Compute: 3 + 7",
+       "Compute: 3 + 7",
+       "3 + 7 = 10"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Compute: 3 + 7",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "3 + 7 = 10",
+       "Compute: 3 + 7"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 0
+    },
+    {
+     "id": "6fae7ebaf0dd9b6c",
+     "kind": "arith_add",
+     "text": "Compute: 0 + 7 = ?",
+     "gold": "7",
+     "out": {
+      "none": 1.0,
+      "detail": 0.3333,
+      "gist": 0.0,
+      "both": 0.3333
+     },
+     "answers": {
+      "none": [
+       "0 + 7 equals 7.",
+       "0 + 7 = 7",
+       "0 + 7 = 7"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "0 + 7 = 7",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "0 + 7 = 7",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "7dc8c4114b5d5cdc",
+     "kind": "arith_add",
+     "text": "Compute: 46 + 62 = ?",
+     "gold": "108",
+     "out": {
+      "none": 0.0,
+      "detail": 1.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "46 + 62 = 108",
+       "46 + 62 = 108",
+       "46 + 62 = 108"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "49ca59a14f0aa304",
+     "kind": "arith_add",
+     "text": "Compute: 394 + 904 = ?",
+     "gold": "1298",
+     "out": {
+      "none": 0.0,
+      "detail": 0.6667,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "394 + 904 = 1298",
+       "394 + 904 = 1098",
+       "394 + 904 = 1298"
+      ],
+      "gist": [
+       "394 + 904 = 1098",
+       "394 + 904 = 1098",
+       "394 + 904 = 1098"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "77d9ce01eb7c47c0",
+     "kind": "arith_mul",
+     "text": "Compute: 5 * 2 = ?",
+     "gold": "10",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Compute: 5 * 2 = ?\n\nNothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Compute: 5 * 2 = ?",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "4a7d5b901f4563d2",
+     "kind": "arith_mul",
+     "text": "Compute: 4 * 4 = ?",
+     "gold": "16",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "694defc39f4a57c5",
+     "kind": "arith_mul",
+     "text": "Compute: 24 * 2 = ?",
+     "gold": "48",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.3333,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "24 * 2 = 48",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "e23eafd3b4af60b3",
+     "kind": "arith_mul",
+     "text": "Compute: 917 * 2 = ?",
+     "gold": "1834",
+     "out": {
+      "none": 0.0,
+      "detail": 1.0,
+      "gist": 1.0,
+      "both": 0.6667
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "917 * 2 = 1834",
+       "917 * 2 = 1834",
+       "917 * 2 = 1834"
+      ],
+      "gist": [
+       "917 * 2 = 1834",
+       "917 * 2 = 1834",
+       "917 * 2 = 1834"
+      ],
+      "both": [
+       "917 * 2 = 1834",
+       "Nothing verified, my guess:",
+       "917 * 2 = 1834"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "e65dd6976d77aa30",
+     "kind": "grid_path",
+     "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS...\n....\n.##.\n..#Z",
+     "gold": "6",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nS...",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "0af1c11eb15e3eac",
+     "kind": "grid_path",
+     "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS.....\n#...#.\n#.....\n......\n......\n##...Z",
+     "gold": "10",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nThe shortest path from S to Z involves moving through walls. The most direct path includes ",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "4a2dbac3043a3695",
+     "kind": "grid_path",
+     "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS.#.....\n..#.....\n........\n....#...\n..#.....\n#.#.....\n.......#\n..#....Z",
+     "gold": "14",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "57c057ab220c9ea1",
+     "kind": "grid_path",
+     "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS.#.......\n..........\n#...#.....\n........#.\n...#......\n..#..#...#\n......#...\n..........\n..........\n..#......Z",
+     "gold": "18",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "8b874dc69658d08a",
+     "kind": "reverse_word",
+     "text": "Write backwards: island",
+     "gold": "dnalsi",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess.",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess."
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess.",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "eaae2528eb2da348",
+     "kind": "reverse_word",
+     "text": "Write backwards: rain",
+     "gold": "niar",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Rain",
+       "Rain",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "niwrac",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "78959ae944989100",
+     "kind": "reverse_word",
+     "text": "Write backwards: candlewindow",
+     "gold": "wodniweldnac",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Candlewindow\n\nNothing verified, my guess.",
+       "Candlewick",
+       "Candlewindow"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Candlewindow backwards\n\nNothing verified, my guess:",
+       "Candlewindow backwards",
+       "Candlewindow backward"
+      ],
+      "both": [
+       "Candlewindow backward",
+       "Candlewindow backward",
+       "Candlewindow backwards"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "4cb59bf77c774f7f",
+     "kind": "reverse_word",
+     "text": "Write backwards: fogmoonmoon",
+     "gold": "noomnoomgof",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess: fogmoon",
+       "Nothing verified, my guess: fogmoon",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Fogmoon",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "a95d04e64771c992",
+     "kind": "rule_map",
+     "text": "Examples: bread->euhdg; dog->grj; window->zlqgrz. Apply the same rule: bird->?",
+     "gold": "elug",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:\n\nbird",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nBird?"
+      ],
+      "detail": [
+       "Bird->unknown  \n\nNothing verified, my guess.",
+       "Bird->unknown",
+       "Bird->unknown\n\nNothing verified, my guess:"
+      ],
+      "gist": [
+       "Bird->",
+       "Nothing verified, my guess:",
+       "Bird->"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "8f9328b591054309",
+     "kind": "rule_map",
+     "text": "Examples: apple->ettpi; candle->gerhpi; lamp->peqt. Apply the same rule: window->?",
+     "gold": "amrhsa",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\nApplies to window",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "fdcc11841986338c",
+     "kind": "rule_map",
+     "text": "Examples: bird->cjse; garden->hbsefo; bird->cjse; bread->csfbe. Apply the same rule: garden->?",
+     "gold": "hbsefo",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess: garden",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\ngarden",
+       "Nothing verified, my guess: garden",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "513d1f7ab8fdfc88",
+     "kind": "rule_map",
+     "text": "Examples: moon->prrq; lamp->odps; candle->fdqgoh; window->zlqgrz; oven->ryhq. Apply the same rule: island->?",
+     "gold": "lvodqg",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\nIsland",
+       "Island->window",
+       "Nothing verified, my guess: island"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "f7b7d84a3d8dc2dd",
+     "kind": "seq_next",
+     "text": "Continue: 16, 18, 20, 22, ?",
+     "gold": "24",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess."
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "24c09e73b8b9e3c1",
+     "kind": "seq_next",
+     "text": "Continue: 1, 2, 3, 4, ?",
+     "gold": "5",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n"
+      ],
+      "detail": [
+       "Nothing verified, my guess.",
+       "Nothing verified, my guess:\n\n",
+       "Nothing verified, my guess."
+      ],
+      "gist": [
+       "Nothing verified, my guess.",
+       "Nothing verified, my guess:\n\n",
+       "Nothing verified, my guess."
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "ae52f6441ea6e3b7",
+     "kind": "seq_next",
+     "text": "Continue: 9, 16, 23, 30, 37, ?",
+     "gold": "44",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\n",
+       "Nothing verified, my guess:\n\n",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "91d29498564b2c8d",
+     "kind": "seq_next",
+     "text": "Continue: 7, 8, 9, 10, 11, 12, ?",
+     "gold": "13",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess.",
+       "Nothing verified, my guess:\n\n",
+       "Nothing verified, my guess."
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "959517696d129cb7",
+     "kind": "sort_letters",
+     "text": "Sort the letters alphabetically: fog",
+     "gold": "fgo",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess: fog",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "fbdfe49e35c69077",
+     "kind": "sort_letters",
+     "text": "Sort the letters alphabetically: island",
+     "gold": "adilns",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess: island",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess: island"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "d468feee03339576",
+     "kind": "sort_letters",
+     "text": "Sort the letters alphabetically: fograin",
+     "gold": "afginor",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess: fograin",
+       "Nothing verified, my guess: fograin",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess: fogarn",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess: fogran"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "28e5a89092610291",
+     "kind": "sort_letters",
+     "text": "Sort the letters alphabetically: appleovenapple",
+     "gold": "aaeeellnoppppv",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:\n\n\"appleovenapple\" contains a hidden pattern.\""
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read0",
+     "kind": "reading",
+     "text": "The order has 3 boxes with 12 pens each. How many pens are in the order?",
+     "gold": "36",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.6667,
+      "both": 0.6667
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Three boxes with 12 pens each have a total of 36 pens.",
+       "Three boxes × 12 pens/box = 36 pens.",
+       "Three times twelve equals ninety-six."
+      ],
+      "both": [
+       "36",
+       "36",
+       "Three"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "read1",
+     "kind": "reading",
+     "text": "Lena paid 45 euros and Tom paid 30 euros. How much did they pay together?",
+     "gold": "75",
+     "out": {
+      "none": 0.6667,
+      "detail": 1.0,
+      "gist": 1.0,
+      "both": 1.0
+     },
+     "answers": {
+      "none": [
+       "Total = 45 + 30 = 75\n\nnothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "45 + 30 = 75\n\nNothing verified, my guess:"
+      ],
+      "detail": [
+       "Total payment = Lena + Tom = 75 + 30 = 105 euros",
+       "Lena paid 45 euros + Tom paid 30 euros = 75 euros total.",
+       "Together, Lena and Tom paid 75 euros."
+      ],
+      "gist": [
+       "Lena and Tom together paid 75 euros.",
+       "Lena paid 45 euros, Tom paid 30 euros, so together they paid 75 euros.\n\nNothing verified, my guess:",
+       "Lena paid 45 and Tom paid 30, so together they paid 75 euros."
+      ],
+      "both": [
+       "Lena and Tom paid together a total of 75 euros.",
+       "Lena paid 45 euros + Tom paid 30 euros = 75 euros in total.",
+       "Lena paid 45 + 30 = 75 euros\n\nThe guess: Lena paid 75 euros."
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "read2",
+     "kind": "reading",
+     "text": "The train leaves at 14:10 and the trip takes 50 minutes. At what time does it arrive?",
+     "gold": "15:00",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "14:10 + 50 = 14:20",
+       "0:00",
+       "The train arrives at 14:30."
+      ],
+      "detail": [
+       "0",
+       "0",
+       "The train arrives at 14:30."
+      ],
+      "gist": [
+       "The train arrives at 18:30.",
+       "50 minutes before 14:10",
+       "The train arrives at 18:00."
+      ],
+      "both": [
+       "19:20",
+       "19:20",
+       "19:20"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read3",
+     "kind": "reading",
+     "text": "Project Aurora has a budget of 120 euros and has spent 85. How much is left?",
+     "gold": "35",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.3333,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess: 35 euros remain.",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read4",
+     "kind": "reading",
+     "text": "Anna is 31. Ben is 4 years younger than Anna. How old is Ben?",
+     "gold": "27",
+     "out": {
+      "none": 0.6667,
+      "detail": 1.0,
+      "gist": 1.0,
+      "both": 1.0
+     },
+     "answers": {
+      "none": [
+       "Ben is 27.",
+       "Ben is 25.",
+       "Ben is 27."
+      ],
+      "detail": [
+       "Ben is 4 years younger than Anna, so Ben = Anna - 4. If Anna is 31, then Ben = 31 - 4 = 27.\n\nNothing verified, my guess:",
+       "Ben is 31 - 4 = 27.",
+       "Ben is 27 - 4 = 23"
+      ],
+      "gist": [
+       "Ben is 4 years younger than Anna, so Ben = Anna - 4. If Anna is 27, then Ben = 27 - 4 = 23.\n\nNothing verified, my guess:",
+       "Ben is 31 - 4 = 27.",
+       "Ben is 4 years younger than Anna, so Ben's age is Anna's age minus 4. Since Anna is 27, Ben's age is 23.\n\nNothing verifi"
+      ],
+      "both": [
+       "Ben is 4 years younger than Anna, so Ben is 31 - 4 = 27.",
+       "Ben is 31 - 4 = 27.",
+       "Ben is 4 years younger than Anna, so Ben's age is Anna's age minus 4. Since Anna is 27, Ben's age would be 27 - 4 = 23.\n"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "read5",
+     "kind": "reading",
+     "text": "A recipe needs 250 g flour per cake. How many grams for 3 cakes?",
+     "gold": "750",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Three cakes × 250g = 750g\n\nNothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 0
+    },
+    {
+     "id": "read6",
+     "kind": "reading",
+     "text": "The meeting is on Monday. It was moved two days later. Which day is it now?",
+     "gold": "wednesday",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Monday",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Monday",
+       "Monday",
+       "Monday"
+      ],
+      "gist": [
+       "Monday\n\n",
+       "Monday\n\nNothing verified, my guess:",
+       "Monday"
+      ],
+      "both": [
+       "Monday",
+       "Monday",
+       "Monday"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read7",
+     "kind": "reading",
+     "text": "Mia has 5 apples, eats 2 and buys 6 more. How many apples does she have?",
+     "gold": "9",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Mia has 11 apples.",
+       "Mia has 11 apples.",
+       "Mia has 11 apples."
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read8",
+     "kind": "reading",
+     "text": "What is the capital of Australia?",
+     "gold": "canberra",
+     "out": {
+      "none": 0.3333,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess: Australia’s capital is Canberra.",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read9",
+     "kind": "reading",
+     "text": "How many legs does a spider have?",
+     "gold": "8",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Zero",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Zero",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "read10",
+     "kind": "reading",
+     "text": "Which planet is closest to the sun?",
+     "gold": "mercury",
+     "out": {
+      "none": 0.3333,
+      "detail": 1.0,
+      "gist": 0.0,
+      "both": 1.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess: Mercury",
+       "Nothing verified, my guess: Mars",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Mercury",
+       "Nothing verified, my guess: Mercury.",
+       "Mercury"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess: Mercury.",
+       "Nothing verified, my guess: Mercury.",
+       "Nothing verified, my guess: Mercury."
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 0
+    },
+    {
+     "id": "read11",
+     "kind": "reading",
+     "text": "What is 15 percent of 200?",
+     "gold": "30",
+     "out": {
+      "none": 0.3333,
+      "detail": 0.3333,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess: 30",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess: 30",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 0
+    }
+   ]
+  },
+  "lfm25_350m:legacy": {
+   "accuracy": {
+    "none": 0.075,
+    "detail": 0.2167,
+    "gist": 0.1167,
+    "both": 0.1
+   },
+   "oracle_wake": 0.2667,
+   "helped": {
+    "detail": 6,
+    "gist": 3,
+    "both": 2
+   },
+   "hurt": {
+    "detail": 1,
+    "gist": 1,
+    "both": 1
+   },
+   "sweep": {
+    "boot": {
+     "accuracy": 0.1917,
+     "bodies_per_turn": 0.475,
+     "wakes": {
+      "detail": 18,
+      "none": 21,
+      "gist": 1
+     }
+    },
+    "fixed": {
+     "none": {
+      "accuracy": 0.075,
+      "bodies_per_turn": 0
+     },
+     "detail": {
+      "accuracy": 0.2167,
+      "bodies_per_turn": 1
+     },
+     "gist": {
+      "accuracy": 0.1167,
+      "bodies_per_turn": 1
+     },
+     "both": {
+      "accuracy": 0.1,
+      "bodies_per_turn": 2
+     }
+    },
+    "grid": [
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.5,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.5,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.5,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.5,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.45,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.55
+     }
+    ],
+    "best": [
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.25
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.35
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.45
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.3,
+      "one_body_need": 0.55
+     },
+     {
+      "accuracy": 0.1917,
+      "bodies_per_turn": 0.475,
+      "wakes": {
+       "detail": 18,
+       "none": 21,
+       "gist": 1
+      },
+      "escalate_uncertainty": 0.35,
+      "escalate_conflict": 0.4,
+      "one_body_need": 0.25
+     }
+    ],
+    "distinct_outcomes": [
+     [
+      0.1917,
+      0.475
+     ]
+    ]
+   },
+   "cases": [
+    {
+     "id": "e645c56ff7f85992",
+     "kind": "arith_add",
+     "text": "Compute: 3 + 7 = ?",
+     "gold": "10",
+     "out": {
+      "none": 0.0,
+      "detail": 1.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "3 + 7 = 10",
+       "3 + 7 = 10",
+       "3 + 7 = 10"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Compute: 3 + 7",
+       "Compute: 3 + 7",
+       "Compute: 3 + 7"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 0
+    },
+    {
+     "id": "6fae7ebaf0dd9b6c",
+     "kind": "arith_add",
+     "text": "Compute: 0 + 7 = ?",
+     "gold": "7",
+     "out": {
+      "none": 1.0,
+      "detail": 0.6667,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "0 + 7 = 7",
+       "0 + 7 = 7",
+       "0 + 7 = 7"
+      ],
+      "detail": [
+       "0 + 7 = 7",
+       "0 + 7 = 7",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "7dc8c4114b5d5cdc",
+     "kind": "arith_add",
+     "text": "Compute: 46 + 62 = ?",
+     "gold": "108",
+     "out": {
+      "none": 0.0,
+      "detail": 1.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "46 + 62 = 108",
+       "46 + 62 = 108",
+       "46 + 62 = 108"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "49ca59a14f0aa304",
+     "kind": "arith_add",
+     "text": "Compute: 394 + 904 = ?",
+     "gold": "1298",
+     "out": {
+      "none": 0.0,
+      "detail": 1.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "394 + 904 = 1298",
+       "394 + 904 = 1298",
+       "394 + 904 = 1298"
+      ],
+      "gist": [
+       "394 + 904 = 1098",
+       "394 + 904 = 1098",
+       "394 + 904 = 1098"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "77d9ce01eb7c47c0",
+     "kind": "arith_mul",
+     "text": "Compute: 5 * 2 = ?",
+     "gold": "10",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Compute: 5 * 2 = ?",
+       "Compute: 5 * 2 = ?",
+       "Compute: 5 * 2 = ?"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "4a7d5b901f4563d2",
+     "kind": "arith_mul",
+     "text": "Compute: 4 * 4 = ?",
+     "gold": "16",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "694defc39f4a57c5",
+     "kind": "arith_mul",
+     "text": "Compute: 24 * 2 = ?",
+     "gold": "48",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.6667,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "24 * 2 = 48",
+       "Nothing verified, my guess:",
+       "24 * 2 = 48"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "e23eafd3b4af60b3",
+     "kind": "arith_mul",
+     "text": "Compute: 917 * 2 = ?",
+     "gold": "1834",
+     "out": {
+      "none": 0.0,
+      "detail": 1.0,
+      "gist": 1.0,
+      "both": 1.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "917 * 2 = 1834",
+       "917 * 2 = 1834",
+       "917 * 2 = 1834"
+      ],
+      "gist": [
+       "917 * 2 = 1834",
+       "917 * 2 = 1834",
+       "917 * 2 = 1834"
+      ],
+      "both": [
+       "917 * 2 = 1834",
+       "917 * 2 = 1834",
+       "917 * 2 = 1834"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "e65dd6976d77aa30",
+     "kind": "grid_path",
+     "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS...\n....\n.##.\n..#Z",
+     "gold": "6",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "0af1c11eb15e3eac",
+     "kind": "grid_path",
+     "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS.....\n#...#.\n#.....\n......\n......\n##...Z",
+     "gold": "10",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "4a2dbac3043a3695",
+     "kind": "grid_path",
+     "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS.#.....\n..#.....\n........\n....#...\n..#.....\n#.#.....\n.......#\n..#....Z",
+     "gold": "14",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "57c057ab220c9ea1",
+     "kind": "grid_path",
+     "text": "Shortest path from S to Z (steps up/down/left/right, # is a wall):\nS.#.......\n..........\n#...#.....\n........#.\n...#......\n..#..#...#\n......#...\n..........\n..........\n..#......Z",
+     "gold": "18",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "8b874dc69658d08a",
+     "kind": "reverse_word",
+     "text": "Write backwards: island",
+     "gold": "dnalsi",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "eaae2528eb2da348",
+     "kind": "reverse_word",
+     "text": "Write backwards: rain",
+     "gold": "niar",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "78959ae944989100",
+     "kind": "reverse_word",
+     "text": "Write backwards: candlewindow",
+     "gold": "wodniweldnac",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Candlewindow",
+       "Candlewindow",
+       "Candlewindow"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Candlewindow backwards",
+       "Candlewindow backwards",
+       "Candlewindow backwards"
+      ],
+      "both": [
+       "Candlewindow backwards",
+       "Candlewindow backwards",
+       "Candlewindow backwards"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "4cb59bf77c774f7f",
+     "kind": "reverse_word",
+     "text": "Write backwards: fogmoonmoon",
+     "gold": "noomnoomgof",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "a95d04e64771c992",
+     "kind": "rule_map",
+     "text": "Examples: bread->euhdg; dog->grj; window->zlqgrz. Apply the same rule: bird->?",
+     "gold": "elug",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:\n\nBird",
+       "Nothing verified, my guess:\n\nBird",
+       "Nothing verified, my guess:\n\nBird"
+      ],
+      "detail": [
+       "Bird->unknown",
+       "Bird->unknown",
+       "Bird->unknown"
+      ],
+      "gist": [
+       "Bird->",
+       "Bird->",
+       "Bird->"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "8f9328b591054309",
+     "kind": "rule_map",
+     "text": "Examples: apple->ettpi; candle->gerhpi; lamp->peqt. Apply the same rule: window->?",
+     "gold": "amrhsa",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "fdcc11841986338c",
+     "kind": "rule_map",
+     "text": "Examples: bird->cjse; garden->hbsefo; bird->cjse; bread->csfbe. Apply the same rule: garden->?",
+     "gold": "hbsefo",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "513d1f7ab8fdfc88",
+     "kind": "rule_map",
+     "text": "Examples: moon->prrq; lamp->odps; candle->fdqgoh; window->zlqgrz; oven->ryhq. Apply the same rule: island->?",
+     "gold": "lvodqg",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess: island",
+       "Nothing verified, my guess: island",
+       "Nothing verified, my guess: island"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "f7b7d84a3d8dc2dd",
+     "kind": "seq_next",
+     "text": "Continue: 16, 18, 20, 22, ?",
+     "gold": "24",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "24c09e73b8b9e3c1",
+     "kind": "seq_next",
+     "text": "Continue: 1, 2, 3, 4, ?",
+     "gold": "5",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:\n\n",
+       "Nothing verified, my guess:\n\n",
+       "Nothing verified, my guess:\n\n"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "ae52f6441ea6e3b7",
+     "kind": "seq_next",
+     "text": "Continue: 9, 16, 23, 30, 37, ?",
+     "gold": "44",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "91d29498564b2c8d",
+     "kind": "seq_next",
+     "text": "Continue: 7, 8, 9, 10, 11, 12, ?",
+     "gold": "13",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "959517696d129cb7",
+     "kind": "sort_letters",
+     "text": "Sort the letters alphabetically: fog",
+     "gold": "fgo",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "fbdfe49e35c69077",
+     "kind": "sort_letters",
+     "text": "Sort the letters alphabetically: island",
+     "gold": "adilns",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess: island",
+       "Nothing verified, my guess: island",
+       "Nothing verified, my guess: island"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "d468feee03339576",
+     "kind": "sort_letters",
+     "text": "Sort the letters alphabetically: fograin",
+     "gold": "afginor",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess: fograin",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess: fograin",
+       "Nothing verified, my guess: fograin",
+       "Nothing verified, my guess: fograin"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "28e5a89092610291",
+     "kind": "sort_letters",
+     "text": "Sort the letters alphabetically: appleovenapple",
+     "gold": "aaeeellnoppppv",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read0",
+     "kind": "reading",
+     "text": "The order has 3 boxes with 12 pens each. How many pens are in the order?",
+     "gold": "36",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 1.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Three boxes × 12 pens per box = 36 pens.",
+       "Three boxes × 12 pens per box = 36 pens.",
+       "Three boxes × 12 pens per box = 36 pens."
+      ],
+      "both": [
+       "Three",
+       "Three",
+       "Three"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "read1",
+     "kind": "reading",
+     "text": "Lena paid 45 euros and Tom paid 30 euros. How much did they pay together?",
+     "gold": "75",
+     "out": {
+      "none": 1.0,
+      "detail": 1.0,
+      "gist": 1.0,
+      "both": 1.0
+     },
+     "answers": {
+      "none": [
+       "45 + 30 = 75\n\nNothing verified, my guess:",
+       "45 + 30 = 75\n\nNothing verified, my guess:",
+       "45 + 30 = 75\n\nNothing verified, my guess:"
+      ],
+      "detail": [
+       "Together they paid 75 euros.",
+       "Together they paid 75 euros.",
+       "Together they paid 75 euros."
+      ],
+      "gist": [
+       "Lena paid 45 euros and Tom paid 30 euros. Together, they paid 75 euros.",
+       "Lena paid 45 euros and Tom paid 30 euros. Together, they paid 75 euros.",
+       "Lena paid 45 euros and Tom paid 30 euros. Together, they paid 75 euros."
+      ],
+      "both": [
+       "Lena paid 45 euros and Tom paid 30 euros. Together, they paid 75 euros.",
+       "Lena paid 45 euros and Tom paid 30 euros. Together, they paid 75 euros.",
+       "Lena paid 45 euros and Tom paid 30 euros. Together, they paid 75 euros."
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "read2",
+     "kind": "reading",
+     "text": "The train leaves at 14:10 and the trip takes 50 minutes. At what time does it arrive?",
+     "gold": "15:00",
+     "out": {
+      "none": 0.0,
+      "detail": 1.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "14:20",
+       "14:00",
+       "The train arrives at 14:30."
+      ],
+      "detail": [
+       "The train arrives at 15:00.",
+       "The train arrives at 15:00.",
+       "The train arrives at 15:00."
+      ],
+      "gist": [
+       "The train arrives at 19:20.",
+       "The train arrives at 19:20.",
+       "The train arrives at 19:20."
+      ],
+      "both": [
+       "19:20",
+       "19:20",
+       "19:20"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read3",
+     "kind": "reading",
+     "text": "Project Aurora has a budget of 120 euros and has spent 85. How much is left?",
+     "gold": "35",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read4",
+     "kind": "reading",
+     "text": "Anna is 31. Ben is 4 years younger than Anna. How old is Ben?",
+     "gold": "27",
+     "out": {
+      "none": 1.0,
+      "detail": 1.0,
+      "gist": 1.0,
+      "both": 1.0
+     },
+     "answers": {
+      "none": [
+       "Ben is 27.",
+       "Ben is 27.",
+       "Ben is 27."
+      ],
+      "detail": [
+       "Ben is 4 years younger than Anna, so Ben's age is Anna's age minus 4. Anna is 31, so Ben is 31 - 4 = 27.\n\nNothing verifi",
+       "Ben is 4 years younger than Anna, so Ben's age is Anna's age minus 4. Anna is 31, so Ben is 31 - 4 = 27.\n\nNothing verifi",
+       "Ben is 4 years younger than Anna, so Ben's age is Anna's age minus 4. Anna is 31, so Ben is 31 - 4 = 27.\n\nNothing verifi"
+      ],
+      "gist": [
+       "Ben is 4 years younger than Anna, so Ben's age is Anna's age minus 4. Anna is 31, so Ben is 31 - 4 = 27.\n\nNothing verifi",
+       "Ben is 4 years younger than Anna, so Ben's age is Anna's age minus 4. Anna is 31, so Ben is 31 - 4 = 27.\n\nNothing verifi",
+       "Ben is 4 years younger than Anna, so Ben's age is Anna's age minus 4. Anna is 31, so Ben is 31 - 4 = 27.\n\nNothing verifi"
+      ],
+      "both": [
+       "Ben is 4 years younger than Anna, so Ben's age is Anna's age minus 4. Anna is 31, so Ben's age is 31 - 4 = 27.\n\nNothing ",
+       "Ben is 4 years younger than Anna, so Ben's age is Anna's age minus 4. Anna's age is 27, so Ben's age is 27 - 4 = 23.\n\nNo",
+       "Ben is 4 years younger than Anna, so Ben's age is Anna's age minus 4. Anna is 31, so Ben is 31 - 4 = 27.\n\nNothing verifi"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 1
+    },
+    {
+     "id": "read5",
+     "kind": "reading",
+     "text": "A recipe needs 250 g flour per cake. How many grams for 3 cakes?",
+     "gold": "750",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 0
+    },
+    {
+     "id": "read6",
+     "kind": "reading",
+     "text": "The meeting is on Monday. It was moved two days later. Which day is it now?",
+     "gold": "wednesday",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Monday",
+       "Monday",
+       "Monday"
+      ],
+      "gist": [
+       "Monday",
+       "Monday",
+       "Monday"
+      ],
+      "both": [
+       "Monday",
+       "Monday",
+       "Monday"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read7",
+     "kind": "reading",
+     "text": "Mia has 5 apples, eats 2 and buys 6 more. How many apples does she have?",
+     "gold": "9",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Mia has 11 apples.",
+       "Mia has 11 apples.",
+       "Mia has 11 apples."
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read8",
+     "kind": "reading",
+     "text": "What is the capital of Australia?",
+     "gold": "canberra",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 0
+    },
+    {
+     "id": "read9",
+     "kind": "reading",
+     "text": "How many legs does a spider have?",
+     "gold": "8",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 0,
+     "b2_correct": 1
+    },
+    {
+     "id": "read10",
+     "kind": "reading",
+     "text": "Which planet is closest to the sun?",
+     "gold": "mercury",
+     "out": {
+      "none": 0.0,
+      "detail": 1.0,
+      "gist": 0.0,
+      "both": 1.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Mercury",
+       "Mercury",
+       "Mercury"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess: Mercury.",
+       "Nothing verified, my guess: Mercury.",
+       "Nothing verified, my guess: Mercury."
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 0
+    },
+    {
+     "id": "read11",
+     "kind": "reading",
+     "text": "What is 15 percent of 200?",
+     "gold": "30",
+     "out": {
+      "none": 0.0,
+      "detail": 0.0,
+      "gist": 0.0,
+      "both": 0.0
+     },
+     "answers": {
+      "none": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "detail": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "gist": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ],
+      "both": [
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:",
+       "Nothing verified, my guess:"
+      ]
+     },
+     "b1_correct": 1,
+     "b2_correct": 0
+    }
+   ]
+  }
+ },
+ "experiment": "effort_rt",
+ "seconds": 399.9,
+ "cpu": 4,
+ "claim": "cloud x86 CPU, not Redmi; English only"
+}

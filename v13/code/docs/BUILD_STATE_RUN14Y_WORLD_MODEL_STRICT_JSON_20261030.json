@@ -1,0 +1,103 @@
+{
+  "schema": "v13.run14y.world_model_duplicate_json.software_green.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; T8 World-model source admission, review-only",
+  "parent": {
+    "pr": 1339,
+    "branch": "assistant/v13-run14x-sleep-policy-cas-20261030-hourly11",
+    "head_sha": "3aad48000d9b1fe543b7d84b0aef342be2a8258e"
+  },
+  "branch": "assistant/v13-run14y-worldmodel-strict-json-20261030-hourly11",
+  "production_merge": false,
+  "source_blobs": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "prereg": "98b55ae21bf89da3ddebbed8a837099502b8c6e0",
+    "test_first": "6bba48dcf0aa89407b6c6fe4880e7b7027a86276",
+    "world_model_original": "356540e09b740240768ede47a653e43e70452200",
+    "world_model_candidate2": "5825fe0c9a457314caa9461880ffc0b007af8d93"
+  },
+  "change": "T8 World-model transitions and counterfactual observed-state reads reject duplicate JSON keys at all depths (including escaped aliases) for expected, outcome and committed ActionSelection. Reuses F4 World duplicate-key hook; retains T8 existing optional-invalid-latent -> latent=None semantics and numeric checks.",
+  "evidence": {
+    "original_red": {
+      "run": 41128046744,
+      "head": "fe18a4dd30562dc884df88b0c33bd5358fb46e30",
+      "artifact": 13011676801,
+      "zip_sha256": "eb3de6e239aeeee7afd8cdbd72e3e9f3752cbdc1666505f93439bd1911d4f603",
+      "tests": 15,
+      "failures": 4,
+      "errors": 0,
+      "stage_exits": "PINS/VENV/DEPS/PIP_CHECK/COMPILE/PRIVACY/DIFF all 0; TEST 1",
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14Y-WorldModel/Run14Y_ORIGINAL_RED.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate1_regression": {
+      "run": 41128169920,
+      "head": "946f198bb4c8b220abab5063da86d1d5aa5f18d6",
+      "artifact": 13012575385,
+      "zip_sha256": "8561c5efafe771c7aa69756b8d84d4b8594c6925d5c4b72f0a87349646768d72",
+      "tests": 36,
+      "failures": 1,
+      "errors": 0,
+      "reason": "Full F4 parser rejected optional NaN latent and changed historical T8 action transition inclusion; existing test unchanged",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14Y-WorldModel/Run14Y_CANDIDATE1_REGRESSION_RED.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate2_green": {
+      "run": 41128352055,
+      "head": "f169b5e4b6b6c6c9cee6ad062e7ee333ed56adc8",
+      "artifact": 13011083984,
+      "zip_sha256": "c4dd57497d4d96d9b6927ea2a4be8a01477c74f922649e2e7157acf8db4b88c5",
+      "tests": 36,
+      "failures": 0,
+      "errors": 0,
+      "stage_exits": "PINS/VENV/DEPS/PIP_CHECK/COMPILE/PRIVACY/DIFF/TEST all 0",
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14Y-WorldModel/Run14Y_CANDIDATE2_GREEN.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "parent_unfiltered": {
+      "run": 41125663275,
+      "head": "aa55380f373aa54bd77c578eca67f491c609a8d0",
+      "artifact": 13009774939,
+      "zip_sha256": "d0d3bfd31c7d7f236588fe1999b2a471c0af4f347ceeedcdceda44af300bea08",
+      "tests": 4154,
+      "failures": 4,
+      "errors": 66,
+      "skipped": 16,
+      "baseline_run14r": {
+        "tests": 4140,
+        "failures": 4,
+        "errors": 66,
+        "skipped": 16
+      },
+      "crc": "PASS",
+      "inner_sha256": "25/25",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14W-CrossOrgan/Run14W_UNFILTERED_HISTORICAL_RED.zip",
+      "readback": "BYTE_IDENTICAL",
+      "status": "HISTORICAL_RED_UNWAIVED"
+    }
+  },
+  "review": [
+    "Test-first original RED captured before code change; candidate1 regression preserved and repaired without changing existing historical test.",
+    "Real SQLite Runtime tests exercised via GitHub Actions; new duplicates use mocked Store.rows to inject exact ambiguous historical source bytes.",
+    "All new source changes are review-only; no native model or Redmi evidence; no independent external review agent available."
+  ],
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "limitations": [
+    "36 focused software tests only; parent unfiltered full-suite retains 4 failures and 66 errors.",
+    "T8 duplicate-key guard does not itself prove native World-JEPA benefit or real Redmi fit performance.",
+    "No production merge."
+  ],
+  "next_command": "Review Run14Y exact source diff and original/candidate ZIP hashes; add real SQLite T8 ambiguous-source fixture (not only mocked rows), rerun focused tests and unfiltered suite if runtime changes. Continue next canonical end-to-end utility package; do not promote STEP2/B3/JEPA/age."
+}

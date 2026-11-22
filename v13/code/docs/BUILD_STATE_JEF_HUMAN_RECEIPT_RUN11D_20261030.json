@@ -1,0 +1,52 @@
+{
+  "schema": "v13.build_state.scoped.jef_human_receipt_run11d.v1",
+  "owner": "assistant/v13-jef-human-receipt-run11d-20261030",
+  "parent_pr": 1225,
+  "parent_head": "852f2c6ccef375cb03a0ad8318fec851f3b191ad",
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "source_blobs": {
+    "jefoutcome": "56a1fae5671378450fd5806d8b6690601a2720ed",
+    "learning": "b62dbb7f05909b91ac88ed3cfb2983cfaf7701a9"
+  },
+  "tests": {
+    "baseline_red": {
+      "run": 41018948224,
+      "failures": 7,
+      "total": 20,
+      "zip_sha256": "ed66c186faa927b93d468979eadb59bbe89fcdfc4eb4875423788e29462db6ab"
+    },
+    "report_red": {
+      "run": 41019389430,
+      "failures": 2,
+      "total": 25,
+      "zip_sha256": "8fb738e01e0728c2f6403f5d4fc83223b662accf44436284283c4b958a243936"
+    },
+    "final_green": {
+      "run": 41019455506,
+      "head": "21f7d1cde1f9332e4d7559ceaa6beac89d46806f",
+      "artifact": 12961340744,
+      "zip_sha256": "40796e7a1d60b7895262b30c867492fff043d820eb76de6d2bed6e38b1ae3872",
+      "passed": 25,
+      "failed": 0,
+      "inner_hashes": "13/13",
+      "stage_exits": "6/6 ZERO",
+      "privacy": "CLEAN"
+    }
+  },
+  "safety_policy": "invalid human receipt cannot train as explicit human; active suspicious human context conservatively vetoes self; deleted human source removes veto",
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run11-JEF-Human-Receipt/",
+  "production_integration": false,
+  "evidence_level": "SOFTWARE_REAL_STORE_NO_NATIVE",
+  "next_package": "post-fix unfiltered full-suite after run11c terminal, diagnose only genuinely new errors; independent canonical work",
+  "next_command": "cd v13/code && PYTHONPATH=.:tests:scripts python3 -m unittest -v tests.test_jef_human_receipt_integrity_20261030 tests.test_jef_human_report_receipt_integrity_20261030 tests.test_jef_human_record_precedence_20261030 tests.test_jef_human_record_window_20261030",
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system": "INCOMPLETE"
+  },
+  "remaining_platform_budget": "UNKNOWN"
+}

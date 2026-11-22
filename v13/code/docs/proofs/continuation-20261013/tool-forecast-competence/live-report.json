@@ -1,0 +1,585 @@
+{
+ "schema": "v13-tool-forecast-live-check-v1",
+ "utc": "2026-10-13T04:18:45Z",
+ "plan": {
+  "calc_in_world": [
+   15,
+   45,
+   60,
+   83,
+   104,
+   120,
+   143,
+   146,
+   167,
+   218,
+   265,
+   283,
+   329,
+   407,
+   446,
+   465,
+   467,
+   470,
+   516,
+   573,
+   605,
+   652,
+   679,
+   701,
+   755,
+   767,
+   769,
+   804,
+   917,
+   980
+  ],
+  "calc_out_of_range": [
+   1148,
+   1671,
+   1673,
+   1687,
+   3595,
+   3695,
+   3713,
+   4440,
+   4524,
+   4579,
+   4967,
+   5142,
+   5305,
+   5691,
+   5763,
+   5952,
+   5958,
+   7096,
+   7595,
+   8134,
+   8557,
+   8729,
+   8743,
+   8824,
+   9424,
+   9636,
+   9731,
+   9796,
+   9953,
+   9978
+  ],
+  "note_in_world": [
+   "Ask the dentist next week.",
+   "Ask the doctor on Monday.",
+   "Call the dentist next week.",
+   "Call the neighbour on Friday.",
+   "Email grandma on Monday.",
+   "Email the doctor this evening.",
+   "Email the neighbour next week.",
+   "Email the plumber today.",
+   "Help grandma on Monday.",
+   "Help the landlord tomorrow.",
+   "Help the plumber next week.",
+   "Help the team next week.",
+   "Invite the bank tomorrow.",
+   "Invite the plumber this evening.",
+   "Invite the team today.",
+   "Meet the bank on Friday.",
+   "Meet the doctor on Friday.",
+   "Meet the landlord tomorrow.",
+   "Meet the school today.",
+   "Pay grandma on Monday.",
+   "Pay grandma tomorrow.",
+   "Pay the doctor on Monday.",
+   "Pay the library on Friday.",
+   "Pay the plumber this evening.",
+   "Pay the team tomorrow.",
+   "Remind grandma on Friday.",
+   "Remind the library this evening.",
+   "Remind the plumber this evening.",
+   "Thank the school this evening.",
+   "Visit the library on Friday."
+  ],
+  "note_free": [
+   "Pick up the dry cleaning before six.",
+   "Ask Lena about the spare key.",
+   "Defrost the freezer this weekend.",
+   "Order new ink for the printer.",
+   "Call grandma on her birthday.",
+   "Cancel the gym membership.",
+   "Bring the blue folder to the meeting.",
+   "Plant the garlic in October.",
+   "Feed the neighbours cat on Tuesday.",
+   "Sort the receipts for the tax return.",
+   "Replace the smoke alarm battery.",
+   "Measure the window for curtains.",
+   "Return the library books by Friday.",
+   "Charge the camera for the trip.",
+   "Write a thank-you card to Omar.",
+   "Clean the gutters before winter.",
+   "Pay the parking fine online.",
+   "Find a recipe for lentil soup.",
+   "Oil the bike chain.",
+   "Print the boarding passes.",
+   "Ask the landlord about the heating.",
+   "Pack sunscreen and a hat.",
+   "Update the address at the bank.",
+   "Practise the speech twice.",
+   "Bake a cake for the school fair.",
+   "Book the car for its inspection.",
+   "Label the moving boxes.",
+   "Test the new router settings.",
+   "Buy stamps and envelopes.",
+   "Water the orchid once a week."
+  ]
+ },
+ "encoder": {
+  "capture_tool_sha256": "c00d6829f85ec993fe650906157958b9df6e33d4b40d72644d0f91f46d501367",
+  "layer": 11,
+  "model_path": "/root/native/Qwen3.5-0.8B-Q4_0.gguf",
+  "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+  "parity": {
+   "gate": 0.98,
+   "status": "PASS",
+   "worlds": {
+    "calc_counter": {
+     "drift_vs_capture": {
+      "bit_identical": false,
+      "cos_min": 0.9998517366538487,
+      "rel_rms_max": 0.01721995043795961
+     },
+     "pass": true,
+     "per_action": {
+      "add_15": {
+       "copy": 0.41344186604776373,
+       "forecast": 0.005504995426220202,
+       "mean_delta": 0.05866708099332285,
+       "rows": 80
+      },
+      "double": {
+       "copy": 0.17826462757552458,
+       "forecast": 0.007914731322582903,
+       "mean_delta": 0.05848482345402145,
+       "rows": 80
+      },
+      "quarter": {
+       "copy": 0.4593729175718839,
+       "forecast": 0.021964414393590974,
+       "mean_delta": 0.11702333255709559,
+       "rows": 80
+      },
+      "subtract_7": {
+       "copy": 0.6083656072099684,
+       "forecast": 0.0052310595947623415,
+       "mean_delta": 0.05699269031534078,
+       "rows": 80
+      }
+     },
+     "ratio_to_best_control": {
+      "add_15": 0.0938,
+      "double": 0.1353,
+      "quarter": 0.1877,
+      "subtract_7": 0.0918
+     },
+     "texts": 400
+    },
+    "note_edit": {
+     "drift_vs_capture": {
+      "bit_identical": false,
+      "cos_min": 0.9998338242473672,
+      "rel_rms_max": 0.018230510836559917
+     },
+     "pass": true,
+     "per_action": {
+      "append_done": {
+       "copy": 0.48118159289865614,
+       "forecast": 0.0036807063282563958,
+       "mean_delta": 0.06426840872656155,
+       "rows": 80
+      },
+      "prefix_urgent": {
+       "copy": 0.18897634028820373,
+       "forecast": 0.003159469887978239,
+       "mean_delta": 0.03281320851239049,
+       "rows": 80
+      },
+      "undo": {
+       "copy": 0.23977096565417927,
+       "forecast": 0.002911386845111741,
+       "mean_delta": 0.026232255938917197,
+       "rows": 80
+      },
+      "uppercase": {
+       "copy": 0.5212195602773635,
+       "forecast": 0.005743546330458009,
+       "mean_delta": 0.06731345285813196,
+       "rows": 80
+      }
+     },
+     "ratio_to_best_control": {
+      "append_done": 0.0573,
+      "prefix_urgent": 0.0963,
+      "undo": 0.111,
+      "uppercase": 0.0853
+     },
+     "texts": 400
+    }
+   }
+  },
+  "pooling": "last",
+  "schema": "v13-tool-forecast-v1-encoder",
+  "tool_path": "/root/native/native_layer_taps",
+  "tool_sha256": "da4c23c12d0d16b5febde6b92a9e9ed805cd5f433b1389ecad6a72e4b9f6cd71"
+ },
+ "arms": {
+  "calc_in_world": {
+   "double": {
+    "forecast": 0.007970672333333333,
+    "copy": 0.15452634633333334,
+    "mean_delta": 0.06070534366666668,
+    "n": 30,
+    "ratio_to_best_control": 0.1313,
+    "pass": true
+   },
+   "add_15": {
+    "forecast": 0.005748944000000001,
+    "copy": 0.3914363746666668,
+    "mean_delta": 0.052346211999999996,
+    "n": 30,
+    "ratio_to_best_control": 0.1098,
+    "pass": true
+   },
+   "quarter": {
+    "forecast": 0.03743540066666668,
+    "copy": 0.451013059,
+    "mean_delta": 0.112956298,
+    "n": 30,
+    "ratio_to_best_control": 0.3314,
+    "pass": true
+   },
+   "subtract_7": {
+    "forecast": 0.005307523666666667,
+    "copy": 0.5685528663333334,
+    "mean_delta": 0.054091873666666665,
+    "n": 30,
+    "ratio_to_best_control": 0.0981,
+    "pass": true
+   }
+  },
+  "calc_out_of_range": {
+   "double": {
+    "forecast": 0.031427363666666666,
+    "copy": 0.13917782066666667,
+    "mean_delta": 0.07916243399999999,
+    "n": 30,
+    "ratio_to_best_control": 0.397,
+    "pass": true
+   },
+   "add_15": {
+    "forecast": 0.07664730700000001,
+    "copy": 0.291161409,
+    "mean_delta": 0.11093781133333332,
+    "n": 30,
+    "ratio_to_best_control": 0.6909,
+    "pass": true
+   },
+   "quarter": {
+    "forecast": 0.235098503,
+    "copy": 0.3618749533333334,
+    "mean_delta": 0.1984113883333333,
+    "n": 30,
+    "ratio_to_best_control": 1.1849,
+    "pass": false
+   },
+   "subtract_7": {
+    "forecast": 0.036985700333333336,
+    "copy": 0.567689432,
+    "mean_delta": 0.11132306133333333,
+    "n": 30,
+    "ratio_to_best_control": 0.3322,
+    "pass": true
+   }
+  },
+  "note_in_world": {
+   "append_done": {
+    "forecast": 0.0036257756666666662,
+    "copy": 0.46932489966666663,
+    "mean_delta": 0.061249584,
+    "n": 30,
+    "ratio_to_best_control": 0.0592,
+    "pass": true
+   },
+   "prefix_urgent": {
+    "forecast": 0.0033029483333333327,
+    "copy": 0.18850830866666665,
+    "mean_delta": 0.032601033333333335,
+    "n": 30,
+    "ratio_to_best_control": 0.1013,
+    "pass": true
+   },
+   "uppercase": {
+    "forecast": 0.006589286333333333,
+    "copy": 0.5249928156666667,
+    "mean_delta": 0.06425685,
+    "n": 30,
+    "ratio_to_best_control": 0.1025,
+    "pass": true
+   }
+  },
+  "note_free": {
+   "append_done": {
+    "forecast": 0.07966770033333333,
+    "copy": 0.5167539823333333,
+    "mean_delta": 0.1435580166666667,
+    "n": 30,
+    "ratio_to_best_control": 0.555,
+    "pass": true
+   },
+   "prefix_urgent": {
+    "forecast": 0.08572045433333335,
+    "copy": 0.22153473233333332,
+    "mean_delta": 0.10494722266666669,
+    "n": 30,
+    "ratio_to_best_control": 0.8168,
+    "pass": true
+   },
+   "uppercase": {
+    "forecast": 0.15853589033333332,
+    "copy": 0.5611786796666666,
+    "mean_delta": 0.18101111766666664,
+    "n": 30,
+    "ratio_to_best_control": 0.8758,
+    "pass": true
+   }
+  }
+ },
+ "statuses": {
+  "SCORED": 420
+ },
+ "seconds_per_call_median": 3.5395000000000003,
+ "tap_process_max_rss_mb": 998.5,
+ "device": {
+  "machine": "x86_64",
+  "system": "Linux",
+  "release": "6.18.44-fc-v114",
+  "termux": false
+ },
+ "runtime_report": {
+  "schema": "v13-tool-forecast-v1",
+  "mode": "SHADOW",
+  "encoder": "INSTALLED",
+  "worlds": {
+   "calc_counter": {
+    "actions": [
+     "add_15",
+     "double",
+     "quarter",
+     "subtract_7"
+    ],
+    "source": "docs/proofs/continuation-20261012/action-jepa-round7-fresh (runs/tool_l11_last/full-seed13)"
+   },
+   "note_edit": {
+    "actions": [
+     "append_done",
+     "prefix_urgent",
+     "undo",
+     "uppercase"
+    ],
+    "source": "docs/proofs/continuation-20261012/action-jepa-round8-note-tool (runs/note_l11_last/full-seed13)"
+   }
+  },
+  "pending": 0,
+  "counts": {
+   "FORECAST": 420,
+   "SCORED": 420
+  },
+  "stats": {
+   "calc_counter:add_15": {
+    "in_domain": 48,
+    "in_range": 30,
+    "n": 60,
+    "sum_log_ratio": -84.94735640416013,
+    "wins": 54,
+    "win_rate": 0.9,
+    "geo_mean_ratio_to_best_control": 0.2427
+   },
+   "calc_counter:double": {
+    "in_domain": 48,
+    "in_range": 30,
+    "n": 60,
+    "sum_log_ratio": -92.14384453539927,
+    "wins": 60,
+    "win_rate": 1.0,
+    "geo_mean_ratio_to_best_control": 0.2153
+   },
+   "calc_counter:quarter": {
+    "in_domain": 48,
+    "in_range": 30,
+    "n": 60,
+    "sum_log_ratio": -33.407347882895344,
+    "wins": 38,
+    "win_rate": 0.6333,
+    "geo_mean_ratio_to_best_control": 0.573
+   },
+   "calc_counter:subtract_7": {
+    "in_domain": 48,
+    "in_range": 30,
+    "n": 60,
+    "sum_log_ratio": -110.65906848203161,
+    "wins": 59,
+    "win_rate": 0.9833,
+    "geo_mean_ratio_to_best_control": 0.1581
+   },
+   "note_edit:append_done": {
+    "in_domain": 29,
+    "in_range": 30,
+    "n": 60,
+    "sum_log_ratio": -106.36407383660539,
+    "wins": 56,
+    "win_rate": 0.9333,
+    "geo_mean_ratio_to_best_control": 0.1699
+   },
+   "note_edit:prefix_urgent": {
+    "in_domain": 29,
+    "in_range": 30,
+    "n": 60,
+    "sum_log_ratio": -79.49871588992825,
+    "wins": 57,
+    "win_rate": 0.95,
+    "geo_mean_ratio_to_best_control": 0.2658
+   },
+   "note_edit:uppercase": {
+    "in_domain": 29,
+    "in_range": 30,
+    "n": 60,
+    "sum_log_ratio": -79.16805697005782,
+    "wins": 50,
+    "win_rate": 0.8333,
+    "geo_mean_ratio_to_best_control": 0.2673
+   }
+  },
+  "recent": [
+   {
+    "action": "prefix_urgent",
+    "action_tx": "atx_fd0190cc2c3f4576b5d3e30209883707",
+    "beats_controls": true,
+    "competence": {
+     "distance": 0.09247821,
+     "in_domain": false,
+     "signal": "knn5_cosine_distance",
+     "threshold": 0.03475002
+    },
+    "id": "tfc_192c8f9bebf141e7a5c966467d2eff72",
+    "in_world_range": false,
+    "mse": {
+     "copy": 0.42071504,
+     "forecast": 0.13444257,
+     "mean_delta": 0.17214273
+    },
+    "outcome_text": "After adding a prefix, the note reads: Urgent: Buy stamps and envelopes.",
+    "ratio_to_best_control": 0.780995,
+    "scored_at": 1791865110.459717,
+    "status": "SCORED",
+    "tool_call": "tool_4f96015f85f94147b88e98b3b925689f",
+    "world": "note_edit"
+   },
+   {
+    "action": "uppercase",
+    "action_tx": "atx_ce3bffa451c643adbe0868554d014f30",
+    "beats_controls": true,
+    "competence": {
+     "distance": 0.09247821,
+     "in_domain": false,
+     "signal": "knn5_cosine_distance",
+     "threshold": 0.03475002
+    },
+    "id": "tfc_15d7aae9920644c2a760e0086737c635",
+    "in_world_range": false,
+    "mse": {
+     "copy": 0.78332107,
+     "forecast": 0.15076948,
+     "mean_delta": 0.26051988
+    },
+    "outcome_text": "After uppercasing, the note reads: BUY STAMPS AND ENVELOPES.",
+    "ratio_to_best_control": 0.578725,
+    "scored_at": 1791865114.1346614,
+    "status": "SCORED",
+    "tool_call": "tool_274e3c7291ce45b5b3d06f38196d440f",
+    "world": "note_edit"
+   },
+   {
+    "action": "append_done",
+    "action_tx": "atx_eb968d3792e34cdcba47eded24e5364e",
+    "beats_controls": true,
+    "competence": {
+     "distance": 0.08697445,
+     "in_domain": false,
+     "signal": "knn5_cosine_distance",
+     "threshold": 0.03475002
+    },
+    "id": "tfc_80c7370b63b549d49b03186768fff6e3",
+    "in_world_range": false,
+    "mse": {
+     "copy": 0.37597352,
+     "forecast": 0.04401654,
+     "mean_delta": 0.13015635
+    },
+    "outcome_text": "After appending, the note reads: Water the orchid once a week. Done.",
+    "ratio_to_best_control": 0.338182,
+    "scored_at": 1791865117.7234013,
+    "status": "SCORED",
+    "tool_call": "tool_5d9427082ae745e7862144b6826730dd",
+    "world": "note_edit"
+   },
+   {
+    "action": "prefix_urgent",
+    "action_tx": "atx_a637a2446e714dd7b23f7b85ce4a3cb7",
+    "beats_controls": true,
+    "competence": {
+     "distance": 0.08697445,
+     "in_domain": false,
+     "signal": "knn5_cosine_distance",
+     "threshold": 0.03475002
+    },
+    "id": "tfc_62af1d0ed4054111ac4a5f6a2b4c0f87",
+    "in_world_range": false,
+    "mse": {
+     "copy": 0.09056603,
+     "forecast": 0.03588163,
+     "mean_delta": 0.07682593
+    },
+    "outcome_text": "After adding a prefix, the note reads: Urgent: Water the orchid once a week.",
+    "ratio_to_best_control": 0.467051,
+    "scored_at": 1791865121.3743563,
+    "status": "SCORED",
+    "tool_call": "tool_a45576ae3f194c60a59a8130e133a04a",
+    "world": "note_edit"
+   },
+   {
+    "action": "uppercase",
+    "action_tx": "atx_d4d858f8851647ef92ae0e795ec484ea",
+    "beats_controls": false,
+    "competence": {
+     "distance": 0.08697445,
+     "in_domain": false,
+     "signal": "knn5_cosine_distance",
+     "threshold": 0.03475002
+    },
+    "id": "tfc_41ed421813984610854bfb9cb33456bc",
+    "in_world_range": false,
+    "mse": {
+     "copy": 0.20575949,
+     "forecast": 0.20122707,
+     "mean_delta": 0.13020089
+    },
+    "outcome_text": "After uppercasing, the note reads: WATER THE ORCHID ONCE A WEEK.",
+    "ratio_to_best_control": 1.545512,
+    "scored_at": 1791865125.1196036,
+    "status": "SCORED",
+    "tool_call": "tool_67f9e515594b4de1812ccc097bb69c96",
+    "world": "note_edit"
+   }
+  ],
+  "claim_limit": "SHADOW measurement of a narrow candidate (closed worlds of rounds 7/8); no gate, answer, wake or learning reads it. Live calls outside those worlds get no forecast. Redmi latency/RSS unmeasured."
+ },
+ "verdict": "LIVE_PATH_CONFIRMED",
+ "claim_limit": "Runtime components with a script acting as the user; closed rounds-7/8 worlds; Linux x86 cloud, not the Redmi. SHADOW only: nothing reads the forecast."
+}

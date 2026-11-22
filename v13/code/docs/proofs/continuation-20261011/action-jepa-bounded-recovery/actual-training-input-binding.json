@@ -1,0 +1,31 @@
+{
+  "schema": "v13-action-jepa-actual-training-input-binding-v1",
+  "status": "BOUND_BEFORE_FIRST_SEED",
+  "training_started": false,
+  "training_preregistration_sha256": "f76743f2a15cc4c4d3ccf4c7b58ac508d66c154af0133971c7bd9c66e25c6a86",
+  "lifecycle_registration_sha256": "93d0283a2c84f7abf31e214f7e3780954e42a53fce54eb357f4e5cc85a049216",
+  "terminal_capture_summary_sha256": "a603fab2766a95d9807a62fdf5ee3a17b7855b37f33a6ea0eab14b054f6534ab",
+  "dataset": {
+    "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/action-jepa-bounded-recovery/dataset.checkpoint/dataset.json",
+    "sha256": "be96e6719d3406c4c2619203b2a4a28851a96bf4cec7d3ce90ece48da7cdf976"
+  },
+  "native_taps_sha256": "533ff0beed228dc6c1d95f381b8b44a910b3942093c8a1a04cc984f82815803d",
+  "pair_count": 1492,
+  "source_hashes_unchanged": true,
+  "seeds": [
+    13,
+    21,
+    34
+  ],
+  "config_per_seed": {
+    "steps": 240,
+    "dim": 16,
+    "lr": 0.02,
+    "max_update_norm": 0.05,
+    "ema_decay": 0.99,
+    "retention_max_delta": 0.0
+  },
+  "receiver_authority": 0,
+  "semantic_quality_proven": false,
+  "canonical_architecture_complete": false
+}

@@ -1,0 +1,55 @@
+name: V13 STEP2 four-arm B1 identity review (software only)
+on:
+  push:
+    branches: [assistant/v13-step2-crossarm-b1-identity-review-20261028]
+    paths:
+      - '.github/workflows/step2-crossarm-b1-identity-20261028.yml'
+      - 'v13/code/tests/test_step2_crossarm_b1_identity_20261028.py'
+      - 'v13/code/scripts/step2_longnote_fourarm_analysis.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-step2-crossarm-b1-identity-20261028
+  cancel-in-progress: false
+jobs:
+  stdlib:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Capture raw RED/GREEN, privacy, diff and compile exits
+        shell: bash
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/step2-crossarm-b1"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/scripts/step2_longnote_fourarm_analysis.py > "$evidence/SOURCE_BLOB.txt"
+          (cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_step2_crossarm_b1_identity_20261028 tests.test_step2_longnote_fourarm_analysis_20261028) > "$evidence/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$evidence/FOCUSED_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/step2_longnote_fourarm_analysis.py v13/code/tests/test_step2_crossarm_b1_identity_20261028.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 0cc5e59fc1c91a71b0b232b42f70668c562d9d2b --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 0cc5e59fc1c91a71b0b232b42f70668c562d9d2b HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          (cd "$evidence" && sha256sum * > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-step2-crossarm-b1-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/step2-crossarm-b1/
+          retention-days: 30
+      - name: Enforce exits without discarding negative controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/step2-crossarm-b1"
+          for name in FOCUSED COMPILE PRIVACY DIFF; do
+            test "$(cat "$evidence/${name}_EXIT.txt")" = 0 || { tail -60 "$evidence/${name}_RAW.log"; exit 1; }
+          done
+          echo 'SOFTWARE_ONLY_NO_GATE_PROMOTION'

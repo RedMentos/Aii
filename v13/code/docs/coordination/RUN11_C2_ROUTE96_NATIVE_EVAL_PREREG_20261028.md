@@ -1,0 +1,13 @@
+# C2 Needle3 96-row native route accuracy vs scaffold — prereg 2026-10-28
+
+Owner: Codex review-only child of #844 at `af71f1ebc26d934a180db39f77a2978ced7b6261`, no parent/main overwrite. The current C2 Needle3 single-call native proof `40631873306` returned valid route `both` for `Budget 120 Euro. Berechne die Hälfte.`; a single valid call does not establish route accuracy. This package measures actual control quality without tuning or gate promotion.
+
+**Frozen corpus:** `specs/c2-benchmark.json` Git blob `758c5a7dea93bfb178bc3778428ee262178b6a58`, `items_sha256=54f3da390fb79c3f966edd61d3390d94dc59d850987174c644ef45ef531a54e6`, 96 author-labelled items, exactly 24 each of simple/detail/gist/both. No row/label rewording, dropping, post-hoc filtering, or prompt changes. **Frozen model:** current catalog blob `7af05962af41d0bc3f7dd18ef01d4eba55eabf99`; C2 Needle3 `needle3.cact` SHA256 `c9d915eca282ed42d1a09b143b592adb4cc6744ffe2d294adf5cfc5548170c38`, Linux binary `5eb163c5ed33bd914c103ef8eba2134c7bb2d97bafafdd69f410a4a3100e8c37`, tools schema blob `954a3f468f10195fbce12d27f68585ee7edee2c9`. Apache-2.0, no model/binary redistribution.
+
+## Execution and metrics
+
+Fresh Linux x86_64 scratch. One pinned model/binary download+SHA check. For each of all 96 inputs, execute the exact existing V13 Needle CLI fallback with unchanged `--max 160 --depth 8 --threads 2`, only `--prompt` set to that registered corpus text; no explicit seed flag in pinned Needle CLI protocol, record that limitation. Strict unique-key finite JSON; count invalid/no-call/timeout/cap as wrong. File-backed raw <=1MiB per stream, fresh per-item directories, closed raw and hashes, preserve failures. In parallel only **software scaffold** route baseline over identical 96 texts, no second native model. Compute accuracy, macro-F1, confusion, valid-call rate, latency p50/p95, and confidence AUROC where finite. Preserve all 96 paired rows, IDs, labels, predictions, source/model/binary/tools hashes. No tuning on this corpus, no re-labels or threshold optimization. Software tests first; heavy native job only after Age0 owner ends and no heavy native active.
+
+**Claim limit:** Linux-native author-labelled route benchmark for one frozen cohort, not JEF deployment approval, human preference, semantic STEP2 four-arm utility, Redmi, learning, or whole-system. No route head promotion. STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 heldout FAIL, jepa_weight=0, Age0 RECORD_ONLY. Remaining platform budget UNKNOWN.
+
+Next exact command after code: `PYTHONPATH=v13/code python3 v13/code/scripts/c2_native_route96_eval_20261028.py --scratch-home <fresh> --evidence-dir <fresh>`.

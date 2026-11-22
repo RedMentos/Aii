@@ -1,0 +1,114 @@
+name: V13 Run63 JEF F1 F5 native C3 paired typed receiver engineering pilot
+on:
+  push:
+    branches: [assistant/v13-run63-jef-c3-native-gpt6-20261031]
+    paths:
+      - '.github/workflows/v13-run63-jef-c3-native.yml'
+      - 'v13/code/scripts/run63_jef_c3_native.py'
+      - 'v13/code/scripts/run63_jef_c3_native_verify.py'
+      - 'v13/code/tests/test_run63_jef_c3_native.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-step2-budget-paired-native-20261030
+  cancel-in-progress: false
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Frozen source, real JEF Store tests and six pinned native C3 calls
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run63-jef-c3"
+          mkdir -p "$e/receipts"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          b0dc2b4515dc5d8aaae09ae7e6672346c8504a62 v13/code/docs/RUN63_JEF_C3_NATIVE_PREREG_20261031.md
+          4409692865d284382de9a14aae55aa3a4315ecfc v13/code/scripts/run63_jef_c3_native.py
+          9643f776e9771c4db1c3c1b28dc753852fefa28a v13/code/scripts/run63_jef_c3_native_verify.py
+          c1ed5a6d2466ef280fcee7defb449985a81e997d v13/code/tests/test_run63_jef_c3_native.py
+          e94d70be7ec5f4666392a50ea17f813bd92c0879 v13/code/v13/jef_c3_typed_envelope_candidate.py
+          de59302a2fb8880758cc9dce3249b919dde63bf3 v13/code/v13/jef_f1f5_live_current_candidate.py
+          e417c3bb4afa34a226aa116752df8c10d659a113 v13/code/v13/jef_f1f5_source_admission.py
+          7cfae3d54e49718181813cea68238301e2ffae87 v13/code/v13/jef_typed_source_shadow.py
+          8135fa2792df2c541dc1719e49d941c775703697 v13/code/scripts/p2x_disjoint_receiver_trainset.py
+          4705a46640134e213aa00a86e02375d972c76cda v13/code/scripts/run47_jef_c3_typed_receiver_native.py
+          67a8a41ded15955721b55b90cf81b5765ab8531c v13/code/scripts/run59_crossorgan_c6_native.py
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            [ "$want" = "$got" ] || bad=1
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run63-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run63-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else echo VENV_RED > "$e/DEPS_RAW.log"; echo 99 > "$e/DEPS_EXIT.txt"; fi
+          if [ "$bad" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 7m env PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_run63_jef_c3_native tests.test_jef_c3_typed_envelope_candidate tests.test_jef_f1f5_live_current_candidate tests.test_jef_f1f5_source_admission tests.test_jef_typed_source_shadow) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else echo SKIPPED_PINS_OR_DEPS_RED > "$e/TEST_RAW.log"; echo 99 > "$e/TEST_EXIT.txt"; fi
+          export V13_HOME="$RUNNER_TEMP/v13-run63-installed"
+          if [ "$(cat "$e/TEST_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 15m env PYTHONPATH=v13/code "$py" -m v13.bootstrap --home "$V13_HOME" > "$e/BOOTSTRAP_RAW.log" 2>&1
+            echo "$?" > "$e/BOOTSTRAP_EXIT.txt"
+          else echo SKIPPED_TEST_RED > "$e/BOOTSTRAP_RAW.log"; echo 99 > "$e/BOOTSTRAP_EXIT.txt"; fi
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 36m env PYTHONPATH=v13/code "$py" v13/code/scripts/run63_jef_c3_native.py --home "$V13_HOME" --out "$e/pilot" > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else echo SKIPPED_BOOTSTRAP_RED > "$e/NATIVE_RAW.log"; echo 99 > "$e/NATIVE_EXIT.txt"; fi
+          if [ -f "$e/pilot/report.json" ]; then
+            timeout --signal=TERM --kill-after=5s 3m env PYTHONPATH=v13/code "$py" v13/code/scripts/run63_jef_c3_native_verify.py --report "$e/pilot/report.json" > "$e/REPORT_CHECK_RAW.log" 2>&1
+            echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          else echo NO_NATIVE_REPORT_RED > "$e/REPORT_CHECK_RAW.log"; echo 99 > "$e/REPORT_CHECK_EXIT.txt"; fi
+          "$py" -m py_compile v13/code/scripts/run63_jef_c3_native.py v13/code/scripts/run63_jef_c3_native_verify.py v13/code/v13/jef_c3_typed_envelope_candidate.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 3d88e10047cca380cac150bace2425f6c11c1563 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 3d88e10047cca380cac150bace2425f6c11c1563 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          cp "$e/HEAD.txt" "$e/PINS.txt" "$e/receipts/"
+          for s in PINS VENV DEPS TEST BOOTSTRAP NATIVE REPORT_CHECK COMPILE PRIVACY DIFF; do
+            cp "$e/${s}_RAW.log" "$e/${s}_EXIT.txt" "$e/receipts/" 2>/dev/null || true
+          done
+          [ ! -f "$e/pilot/report.json" ] || cp "$e/pilot/report.json" "$e/receipts/ORIGINAL_REPORT.json"
+          (cd "$e/receipts" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve original native including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run63-jef-c3-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run63-jef-c3/receipts/
+          retention-days: 90
+          if-no-files-found: error
+      - name: Require all ten native and software stage exits zero
+        if: always()
+        shell: bash
+        run: |
+          set -eu
+          e="$RUNNER_TEMP/v13-run63-jef-c3"
+          for s in PINS VENV DEPS TEST BOOTSTRAP NATIVE REPORT_CHECK COMPILE PRIVACY DIFF; do
+            echo "$s $(cat "$e/${s}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            test "$(cat "$e/${s}_EXIT.txt" 2>/dev/null)" = 0 || exit 1
+          done
+          echo RUN63_NATIVE_P2X_CALIBRATION_ENGINEERING_ONLY_NO_PROMOTION

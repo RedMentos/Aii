@@ -1,0 +1,47 @@
+{
+ "stamp": "20261009T130549Z",
+ "mode": "candidates",
+ "source": "/mnt/project-files/v13/code",
+ "platform": "Linux-6.18.44-fc-v80-x86_64-with-glibc2.39",
+ "python": "3.13.16",
+ "units": {
+  "ran": 496,
+  "ok": true,
+  "failed": null
+ },
+ "logs": {
+  "setup": [
+   "    \"seed\": 13",
+   "  },",
+   "  \"status\": \"SMOKE_PARTIAL\",",
+   "  \"missing_proofs\": [",
+   "    \"sustained thermal/energy\",",
+   "    \"target-phone RSS/KV growth under pressure\",",
+   "    \"native sparse body training\",",
+   "    \"B3 receiver-effect ablations\",",
+   "    \"long-term retention\"",
+   "  ]",
+   "}",
+   "",
+   "Mindestens ein Modelltest ist fehlgeschlagen. Der Bericht liegt in exports/native-probe.json. Mit :doctor/:logs prüfen; der Chat zeigt auch Fehler ausdrücklich an.",
+   "",
+   "Startbereit: /tmp/bench/home/bin/v13 chat"
+  ],
+  "acceptance": null,
+  "candidates": [
+   "{\"id\": \"lfm25_230m_c3\", \"load\": \"OK\", \"en\": {\"passed\": 7, \"total\": 8, \"mean_gen_tps\": 163.1, \"mean_margin\": null}, \"de\": {\"passed\": 7, \"total\": 8, \"mean_gen_tps\": 171.4, \"mean_margin\": null}}",
+   "{\"id\": \"lfm25_1p2b_body\", \"load\": \"OK\", \"en\": {\"passed\": 7, \"total\": 8, \"mean_gen_tps\": 37.5, \"mean_margin\": null}, \"de\": {\"passed\": 7, \"total\": 8, \"mean_gen_tps\": 42.3, \"mean_margin\": null}}",
+   "lade lfm25_350m",
+   "{\"id\": \"lfm25_350m\", \"load\": \"OK\", \"en\": {\"passed\": 8, \"total\": 8, \"mean_gen_tps\": 97.6, \"mean_margin\": null}, \"de\": {\"passed\": 8, \"total\": 8, \"mean_gen_tps\": 97.7, \"mean_margin\": null}}",
+   "lade gemma3_270m_it",
+   "{\"id\": \"gemma3_270m_it\", \"load\": \"OK\", \"en\": {\"passed\": 5, \"total\": 8, \"mean_gen_tps\": 115.7, \"mean_margin\": null}, \"de\": {\"passed\": 8, \"total\": 8, \"mean_gen_tps\": 111.1, \"mean_margin\": null}}",
+   "lade qwen35_0p8b",
+   "{\"id\": \"qwen35_0p8b\", \"load\": \"OK\", \"en\": {\"passed\": 7, \"total\": 8, \"mean_gen_tps\": 44.9, \"mean_margin\": null}, \"de\": {\"passed\": 8, \"total\": 8, \"mean_gen_tps\": 42.2, \"mean_margin\": null}}",
+   "lade embeddinggemma_300m",
+   "{\"id\": \"embeddinggemma_300m\", \"load\": \"OK\", \"en\": {\"passed\": 8, \"total\": 8, \"mean_gen_tps\": null, \"mean_margin\": 0.3648}, \"de\": {\"passed\": 8, \"total\": 8, \"mean_gen_tps\": null, \"mean_margin\": 0.2951}}"
+  ]
+ },
+ "probe": {
+  "status": "SMOKE_PARTIAL"
+ }
+}

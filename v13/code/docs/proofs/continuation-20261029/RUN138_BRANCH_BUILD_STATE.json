@@ -1,0 +1,59 @@
+{
+  "schema": "v13.run138.age_id_step2_crosschain.v1",
+  "date": "2026-10-29",
+  "owner": "codex/v13-run138-age-id-step2-crosschain-20261029",
+  "base_sha": "e9145ed6d11f1b251bf228305f52845e82f1b821",
+  "base_pr": 1036,
+  "base_raw": {
+    "run": 40818614497,
+    "zip_sha256": "b92db49fa1926a7f04e6ff599bcdc3091e4db2cb77e0b8678286fff247a1fba6",
+    "CRC": "CLEAN",
+    "hashes": "51/51 outer, 29/29 original",
+    "focused": "48 OK",
+    "full": "2806 OK, 7 skipped",
+    "privacy": "CLEAN"
+  },
+  "donor_pr": 1037,
+  "donor_sha": "856cb77d011e85253293e13ef9f81b0be312eb8e",
+  "donor_raw": {
+    "run": 40819124668,
+    "zip_sha256": "aeda2ae5d92aaf6566336469ccf36f42ba435a6e3a80ae88364510c7f8e2fcc6",
+    "CRC": "CLEAN",
+    "hashes": "16/16",
+    "focused": "40 OK",
+    "full": "2781 OK, 3 skipped",
+    "privacy": "CLEAN"
+  },
+  "prereg_commit": "47c511bf39a7ef344a9f8ff22abdb5ed1901ebc2",
+  "prereg_blob": "8c78ef92e40014028d37948ee5753d8cac46d1d4",
+  "imported_exact_blobs": {
+    "source": "5ef987673ac10f1f790306bab47b9ef310a6a5de",
+    "test": "a2b577f5841137494dadf8a546aa2fba30dd9669",
+    "prereg": "42ada155c675f8d9d5a6a151d805ab0ebe747ad7"
+  },
+  "new_test_blob": "bea156157be36f43b1b2b80d2b9eefb479ec0490",
+  "source_runtime_changed": false,
+  "registered_cohorts_changed": false,
+  "native_calls": 0,
+  "software_ci": {
+    "status": "PENDING",
+    "raw": "PENDING",
+    "privacy": "PENDING"
+  },
+  "gates": {
+    "Age0": "RECORD_ONLY",
+    "STEP2": "UTILITY_FAIL",
+    "B3": "FAIL",
+    "Body_JEPA": "UNAVAILABLE",
+    "LP3": "FAIL",
+    "jepa_weight": 0,
+    "Redmi": "UNMEASURED",
+    "V13": "INCOMPLETE"
+  },
+  "open_questions": [
+    "No runtime AgeControl integration until frozen SourceHandoff permits",
+    "No B1/B2 complementary utility proof",
+    "No B3 receiver or Body-JEPA native train proof"
+  ],
+  "next_command": "Check exact-head Run138 Actions, download original raw ZIP, verify HEAD/CRC/SHA256SUMS, 42 frozen rows, all exits, focused/full/privacy, and back up privately. Preserve RED if any. Continue independent canonical utility packages; do not promote gates."
+}

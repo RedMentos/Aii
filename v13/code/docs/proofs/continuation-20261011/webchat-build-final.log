@@ -1,0 +1,52 @@
+Native build: cmake -S /workspace/scratch/5a9214d3f329/native-audit-cache/source/llama.cpp-b10964 -B /workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964 -DCMAKE_BUILD_TYPE=Release -DGGML_NATIVE=OFF -DGGML_OPENMP=OFF -DGGML_LLAMAFILE=OFF -DLLAMA_OPENSSL=OFF -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_BUILD_SERVER=ON -DLLAMA_BUILD_UI=OFF -DLLAMA_USE_PREBUILT_UI=OFF
+-- llama.cpp version: 0.4.1-dev
+CMAKE_BUILD_TYPE=Release
+fatal: not a git repository (or any of the parent directories): .git
+fatal: not a git repository (or any of the parent directories): .git
+-- Warning: ccache not found - consider installing it for faster compilation or disable this warning with GGML_CCACHE=OFF
+-- CMAKE_SYSTEM_PROCESSOR: x86_64
+-- GGML_SYSTEM_ARCH: x86
+-- Including CPU backend
+-- x86 detected
+-- Adding CPU backend variant ggml-cpu: -msse4.2;-mf16c;-mfma;-mbmi2;-mavx;-mavx2 GGML_SSE42;GGML_F16C;GGML_FMA;GGML_BMI2;GGML_AVX;GGML_AVX2
+-- ggml version: 0.24.0
+-- ggml commit:  unknown
+CMake Warning at common/CMakeLists.txt:33 (message):
+  Git repository not found; to enable automatic generation of build info,
+  make sure Git is installed and the project is a Git repository.
+
+
+-- Generating embedded license file for target: llama-app
+-- Configuring done (0.1s)
+-- Generating done (0.1s)
+-- Build files have been written to: /workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964
+Native build: cmake --build /workspace/scratch/5a9214d3f329/native-audit-cache/bin/build-mem-b10964 --target llama-server --parallel 4
+[  1%] Built target llama-common-base
+[  1%] Built target cpp-httplib
+[  3%] Built target vendor-hash
+[  8%] Built target ggml-base
+[  8%] Provisioning UI assets
+CMake Warning at /workspace/scratch/5a9214d3f329/native-audit-cache/source/llama.cpp-b10964/scripts/ui-assets.cmake:584 (message):
+  UI: no assets available - building without an embedded UI.  In a
+  disconnected environment, download the pre-built UI from a llama.cpp
+  release at https://github.com/ggml-org/llama.cpp/releases and extract to
+  tools/ui/dist.
+
+
+-- UI: assets unchanged, skipping embedding
+[  8%] Built target llama-ui-assets
+[ 10%] Built target llama-ui
+[ 17%] Built target ggml-cpu
+[ 19%] Built target ggml
+[ 41%] Built target llama
+[ 66%] Built target mtmd
+[ 92%] Built target llama-common
+[ 93%] Building CXX object tools/server/CMakeFiles/server-context.dir/server-context.cpp.o
+[ 94%] Linking CXX static library libserver-context.a
+[ 97%] Built target server-context
+[ 97%] Building CXX object tools/server/CMakeFiles/llama-server-impl.dir/server.cpp.o
+[ 97%] Linking CXX shared library ../../bin/libllama-server-impl.so
+[ 98%] Built target llama-server-impl
+[100%] Linking CXX executable ../../bin/llama-server
+[100%] Built target llama-server
+{'tag': 'b10964', 'source': '/workspace/scratch/5a9214d3f329/native-audit-cache/source/llama.cpp-b10964', 'server_cpp_sha256': 'af73304b089ae56f27aa74fd080a31e9375cec6e64a4c550fe790b3935cbe852', 'header_sha256': '78adb6a6814240ad6a7c485169215697df9eb89cac0abcbf828a0942f6387bf4', 'server_context_sha256': '929e58f8e7b6db428aa82f5b0459f82c32b2cd906757b477617a71867ce73b80', 'binary_sha256': '0e60bf71aa93c6284040539e6ffbf95f80675a5237d7a79fab7a11f2f03f8ff8'}

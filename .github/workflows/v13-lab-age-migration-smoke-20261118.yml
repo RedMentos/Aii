@@ -1,0 +1,36 @@
+name: V13 Laboratory Age two-checkout updater migration
+on:
+  push:
+    branches:
+      - gpt6/fix-lab-age-compatible-release-20261118
+  pull_request:
+    paths:
+      - 'v13/code/v13/lab_age.py'
+      - 'v13/code/v13/lab_age_runtime.py'
+      - 'v13/code/v13/runtime_deploy.py'
+      - 'v13/code/scripts/lab_age_stage_candidate_20261118.py'
+      - 'v13/code/scripts/termux_runtime_recovery_candidate_20261112.py'
+      - 'v13/code/tests/test_two_checkout_migration_20261116.py'
+      - '.github/workflows/v13-lab-age-migration-smoke-20261118.yml'
+permissions:
+  contents: read
+jobs:
+  old-phone-to-new-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.2.6
+      - name: Recreate old phone updater and two sparse checkouts through actual Git
+        env:
+          PYTHONPATH: v13/code
+          PYTHONDONTWRITEBYTECODE: '1'
+          NO_MODEL_DOWNLOADS: '1'
+        run: python -m pytest -q -s v13/code/tests/test_two_checkout_migration_20261116.py

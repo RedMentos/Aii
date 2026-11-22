@@ -1,0 +1,52 @@
+{
+  "status": "NATIVE_SMOKE_PASS",
+  "phone_measured": false,
+  "repeat_reason": "Current runner lifecycle materially changed after first baseline; repeat same four fixtures on frozen finalized source.",
+  "fresh_processes": 4,
+  "cache_tokens_all_zero": true,
+  "all_processes_reaped": true,
+  "strict_exact_budget_checks": {
+    "en_grounded_recall": true,
+    "de_grounded_recall": true
+  },
+  "rows": [
+    {
+      "id": "en_greeting",
+      "status": "FINAL",
+      "output": "Hello! How can I assist you today?",
+      "ttft_s": 0.5399808669999402,
+      "elapsed_s": 0.6259588910002094
+    },
+    {
+      "id": "de_greeting",
+      "status": "FINAL",
+      "output": "Hallo! Wie kann ich dir helfen?",
+      "ttft_s": 0.5359663129997898,
+      "elapsed_s": 0.615664494000157
+    },
+    {
+      "id": "en_grounded_recall",
+      "status": "FINAL",
+      "output": "120",
+      "ttft_s": 0.5757090739998603,
+      "elapsed_s": 0.5895342969997728
+    },
+    {
+      "id": "de_grounded_recall",
+      "status": "FINAL",
+      "output": "120",
+      "ttft_s": 0.6031732349997583,
+      "elapsed_s": 0.6165222700001323
+    }
+  ],
+  "ttft_s_range": [
+    0.5359663129997898,
+    0.6031732349997583
+  ],
+  "sampled_peak_rss_bytes": 448008192,
+  "model_revision": "657e078c94084481950a2d555a941481f715536b",
+  "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+  "runner_binary_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+  "runner_source_sha256": "dce06b89b2a413845644432362b68149d969cd042a78992f8cbd49c7160edfaf",
+  "scope": "Frozen finalized source, fresh-home C3 only Linux CPU baseline. No model selection, sparse memory, training or Redmi claim."
+}

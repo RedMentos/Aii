@@ -1,0 +1,24 @@
+{
+  "schema": "v13.run52.b1b2_cross_turn_seed479.v1",
+  "seed": 479,
+  "fixtures": [
+    {
+      "id": "Harbor",
+      "prior": "Project Harbor. Budget 120 euros. Deadline 7 days. Local-only requirement: true. These are the binding project rules.",
+      "current": "Project Harbor. Option A costs 90 euros, takes 5 days, and is local. Option B costs 70 euros, takes 6 days, and is not local. Use the earlier project rules. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {"choice": "A", "remaining": 30}
+    },
+    {
+      "id": "Willow",
+      "prior": "Project Willow. Budget 65 euros. Deadline 4 days. Local-only requirement: false. These are the binding project rules.",
+      "current": "Project Willow. Option A costs 60 euros, takes 6 days, and is local. Option B costs 50 euros, takes 3 days, and is local. Use the earlier project rules. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {"choice": "B", "remaining": 15}
+    },
+    {
+      "id": "Cobalt",
+      "prior": "Project Cobalt. Budget 30 euros. Deadline 2 days. Local-only requirement: true. These are the binding project rules.",
+      "current": "Project Cobalt. Option A costs 28 euros, takes 4 days, and is local. Option B costs 35 euros, takes 1 day, and is local. Use the earlier project rules. Choose the cheapest eligible option and state its remaining budget.",
+      "oracle": {"choice": "NONE", "remaining": null}
+    }
+  ]
+}

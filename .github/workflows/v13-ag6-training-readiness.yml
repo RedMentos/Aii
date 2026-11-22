@@ -1,0 +1,28 @@
+name: V13 AG6 real weight training readiness
+on:
+  push:
+    branches:
+      - 'codex/v13-core-training-readiness-*'
+  pull_request:
+    paths:
+      - 'v13/code/v13/agi/trainers.py'
+      - 'v13/code/v13/agi/__init__.py'
+      - 'v13/code/tests/test_ag6_training_readiness_20261108.py'
+      - '.github/workflows/v13-ag6-training-readiness.yml'
+  workflow_dispatch:
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test dependency
+        run: python -m pip install pytest
+      - name: Compile
+        run: python -m py_compile v13/code/v13/agi/trainers.py v13/code/v13/agi/__init__.py v13/code/tests/test_ag6_training_readiness_20261108.py
+      - name: Test real training readiness and existing Growth integration
+        working-directory: v13/code
+        run: python -m pytest -q tests/test_ag6_training_readiness_20261108.py tests/test_growth.py

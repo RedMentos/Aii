@@ -1,0 +1,108 @@
+{
+  "schema": "v13.run14m.ag12_historical_holdout.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 V13 continuation; review-only AG12 historical holdout",
+  "parent": {
+    "pr": 1329,
+    "source_commit": "067920aa2d3896917e9cdd07e24b5ba0be28201c",
+    "native_checkpoint_commit": "c50034ef1cb6995182fbf575b06eb65cbfa0a5b2"
+  },
+  "pr": 1330,
+  "branch": "assistant/v13-run14m-ag12-historical-holdout-20261030-2014",
+  "state": "BOUNDED_HISTORICAL_HOLDOUT_REGISTRY_32_SUITES_2048_DIGESTS_FAIL_CLOSED_SOFTWARE_TESTFIRST_RED_CANDIDATE_AND_57_CROSSORGAN_GREEN_PRIVATE_BYTE_VERIFIED",
+  "prereg_commit": "e40a8e39589e951ae33fca3480c7faed5bc9ab33",
+  "test_commit": "c9ed920c64f21cb2b57d8250ce4e2143cbae9c88",
+  "original_red_workflow_commit": "0da2f3d85ead08ca6308abad6393b0067bd43e27",
+  "candidate_source_commit": "6f39f66bb64cb28a3a8aa4763acb8a1e53a29b9b",
+  "candidate_workflow_commit": "a12f2483aa65115743c4e2f109e75b0616501eb8",
+  "crossorgan_workflow_commit": "25ef04176ec9a407330682aa463ae5a2d51f5353",
+  "source_blobs": {
+    "prereg": "69b172b0f8a35d4de0ee735341e8c8e2f2202b2f",
+    "test": "e5d33296435e01c59c301dc36e5214939a909c33",
+    "generality_original": "357837d8dd312a3a511d96f6e9c320fcf9dc9708",
+    "generality_candidate": "0972b10353b8b1911060992f037d0f71eaa05331",
+    "metacog": "7bed7c85357dee21cb50f8cb8b3964a564e6d9d8",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "changes": [
+    "AG12 historical unseen-prompt digests survive same-language seed rotation and restart via per-suite registry and union.",
+    "Refuse suite 33 or more than 2048 unique unseen digests atomically without evicting historical exclusions.",
+    "Detect corrupt registry, digest, union and stale active suite; refuse training and practice when legacy historical digests cannot be reconstructed.",
+    "Preserve existing suite-scoped curves, historical runs and English/German StateBox separation; no change to suite generator, scorer or native solver."
+  ],
+  "ci": {
+    "original_test_first_red": {
+      "run": 41113708130,
+      "artifact": 13003823663,
+      "zip_sha256": "5d138700f3b85153e53f72bc87619eb565428a01872a84da8baa9e6299e49f95",
+      "tests": 8,
+      "failures": 4,
+      "errors": 2,
+      "crc": "PASS",
+      "inner_sha256": "12/12 PASS",
+      "stage_exits": {
+        "PINS": 0,
+        "TEST": 1,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14M-AG12HistoricalHoldout/Run14M_ORIGINAL_TEST_FIRST_RED.zip",
+      "private_readback": "BYTE_IDENTICAL"
+    },
+    "candidate_green": {
+      "run": 41114091914,
+      "artifact": 13003913846,
+      "zip_sha256": "e27826956fbe157bdd0061bfa94f78b672103e12a684501e5c99296eded6a019",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "crc": "PASS",
+      "inner_sha256": "12/12 PASS",
+      "stage_exits": {
+        "PINS": 0,
+        "TEST": 0,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14M-AG12HistoricalHoldout/Run14M_CANDIDATE_GREEN.zip",
+      "private_readback": "BYTE_IDENTICAL"
+    },
+    "crossorgan_green": {
+      "run": 41114325052,
+      "artifact": 13005711061,
+      "zip_sha256": "ca2ec59612347f18af284dc72321edc9d88eb961bfa27b194d6233226eaa49e5",
+      "tests": 57,
+      "failures": 0,
+      "errors": 0,
+      "crc": "PASS",
+      "inner_sha256": "12/12 PASS",
+      "stage_exits": {
+        "PINS": 0,
+        "TEST": 0,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14M-AG12HistoricalHoldout/Run14M_CROSSORGAN_57_GREEN.zip",
+      "private_readback": "BYTE_IDENTICAL"
+    }
+  },
+  "limitations": [
+    "Software/SQLite only, not native learning or model generalization.",
+    "Historical legacy runs with irrecoverable suite digests require explicit recovery; training remains blocked by design.",
+    "English and German registries remain isolated; cross-language dataset guard not yet proven.",
+    "Historical unfiltered Run14E full suite remains RED (4098 tests, 4 failures, 65 errors, 16 skips); no waivers or replacement."
+  ],
+  "negative_gates": {
+    "learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Review next highest-priority substantive ContextOS / B1-B2 learning or Dream/Sleep package from current Canon and ROADMAP; do not retune C3 seed307 after FIDELITY_HURT. Keep historical Run14E fullsuite RED and source-hash-bound candidate tests unchanged. Any new native cohort must be preregistered."
+}

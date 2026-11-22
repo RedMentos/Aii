@@ -1,0 +1,98 @@
+name: V13 BP2b exact public full-master hash preflight (no model load)
+on:
+  push:
+    branches: [assistant/v13-bp2b-full-master-preflight-20261027]
+    paths:
+      - '.github/workflows/bp2b-full-master-preflight.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-bp2b-public-master-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_TRAINING: '1'
+      PYTHONNOUSERSITE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Capture bounded exact-revision public source download
+        run: |
+          set +e
+          master="$RUNNER_TEMP/bp2b-full-master"
+          evidence="$RUNNER_TEMP/bp2b-full-master-evidence"
+          mkdir -p "$master" "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/scripts/bp2b_master_preflight.py > "$evidence/PREFLIGHT_BLOB.txt"
+          git hash-object v13/code/specs/bp2b_master_metadata.json > "$evidence/PIN_BLOB.txt"
+          (
+            set -euo pipefail
+            df -B1 "$RUNNER_TEMP"
+            base="https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct/resolve/8c1348a4aac046a3a5d7698e7fcaaa8a3b7d9cdf"
+            for name in config.json generation_config.json tokenizer.json tokenizer_config.json special_tokens_map.json chat_template.jinja LICENSE; do
+              curl --silent --show-error --fail --location --retry 2 --retry-delay 3 \
+                   --connect-timeout 30 --max-time 180 --max-filesize 10000000 \
+                   "$base/$name?download=true" -o "$master/$name.partial"
+              mv "$master/$name.partial" "$master/$name"
+              stat -c '%n %s' "$master/$name"
+            done
+            curl --silent --show-error --fail --location --retry 2 --retry-delay 3 \
+                 --connect-timeout 30 --max-time 1000 --max-filesize 3000000000 \
+                 "$base/model.safetensors?download=true" -o "$master/model.safetensors.partial"
+            mv "$master/model.safetensors.partial" "$master/model.safetensors"
+            stat -c '%n %s' "$master/model.safetensors"
+            du -sb "$master"
+          ) > "$evidence/DOWNLOAD_RAW.log" 2>&1
+          echo "$?" > "$evidence/DOWNLOAD_EXIT.txt"
+          exit 0
+      - name: Verify original bytes, compile, and public privacy boundary
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/bp2b-full-master-evidence"
+          if [ "$(cat "$evidence/DOWNLOAD_EXIT.txt")" = 0 ]; then
+            (
+              set -euo pipefail
+              PYTHONPATH=v13/code python3 v13/code/scripts/bp2b_master_preflight.py \
+                --master-dir "$RUNNER_TEMP/bp2b-full-master" \
+                --out "$evidence/PREFLIGHT.json"
+              sha256sum "$RUNNER_TEMP/bp2b-full-master/model.safetensors"
+            ) > "$evidence/VERIFY_RAW.log" 2>&1
+            echo "$?" > "$evidence/VERIFY_EXIT.txt"
+          else
+            echo 'SKIPPED: original download failed; no model verification claimed' > "$evidence/VERIFY_RAW.log"
+            echo 99 > "$evidence/VERIFY_EXIT.txt"
+          fi
+          python3 -m compileall -q v13/code/scripts/bp2b_master_preflight.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base ac3a6294c316e58ba0e5f8ea1f1f1f5b1fc82b22 --head HEAD \
+            > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: bp2b-public-full-master-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/bp2b-full-master-evidence/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce source-only verification (never upload weights)
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/bp2b-full-master-evidence"
+          for name in DOWNLOAD VERIFY COMPILE PRIVACY; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -40 "$evidence/${name}_RAW.log"
+              exit 1
+            fi
+          done
+          echo "BP2B_PUBLIC_MASTER_FULL_SHA_PASS_NO_MODEL_LOAD_NO_TRAINING"

@@ -1,0 +1,100 @@
+name: V13 P2 pinned QAD GGUF embedded template byte audit
+on:
+  push:
+    branches: [codex/v13-p2-structural-tensor-audit-20261029]
+    paths:
+      - '.github/workflows/v13-p2-qad-gguf-template-native-20261029.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-p2-qad-fp32-real-value-serial-20261029
+  cancel-in-progress: false
+jobs:
+  pinned-template:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      V13_NO_AUTOSTART: '1'
+      PYTHONNOUSERSITE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Hash exact sources and compare GGUF embedded template bytes
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-p2-qad-template-evidence"
+          w="$RUNNER_TEMP/v13-p2-qad-template-work"
+          mkdir -p "$e" "$w/parser"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$w/venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            curl -fL --retry 2 --connect-timeout 20 --max-time 300 \
+              https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10964.tar.gz \
+              -o "$w/parser.tar.gz" > "$e/PARSER_DOWNLOAD_RAW.log" 2>&1
+            echo "$?" > "$e/PARSER_DOWNLOAD_EXIT.txt"
+            printf '%s  %s\n' '4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe' "$w/parser.tar.gz" | sha256sum -c > "$e/PARSER_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/PARSER_SHA_EXIT.txt"
+          else echo SKIPPED > "$e/PARSER_DOWNLOAD_EXIT.txt"; echo SKIPPED > "$e/PARSER_SHA_EXIT.txt"; fi
+          if [ "$(cat "$e/PARSER_SHA_EXIT.txt")" = 0 ]; then
+            tar -xzf "$w/parser.tar.gz" -C "$w/parser" --strip-components=1 > "$e/EXTRACT_RAW.log" 2>&1
+            "$w/venv/bin/python" -m pip install --no-input --disable-pip-version-check 'numpy==2.2.6' "$w/parser/gguf-py" > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else echo SKIPPED > "$e/DEPS_RAW.log"; echo SKIPPED > "$e/DEPS_EXIT.txt"; fi
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            curl -fL --retry 2 --connect-timeout 20 --max-time 180 \
+              'https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/resolve/657e078c94084481950a2d555a941481f715536b/qad/chat_template.jinja?download=true' \
+              -o "$w/chat_template.jinja" > "$e/TEMPLATE_DOWNLOAD_RAW.log" 2>&1
+            echo "$?" > "$e/TEMPLATE_DOWNLOAD_EXIT.txt"
+            curl -fL --retry 2 --connect-timeout 20 --max-time 600 \
+              'https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/resolve/657e078c94084481950a2d555a941481f715536b/LFM2.5-350M-QAD-Q4_0.gguf?download=true' \
+              -o "$w/QAD.gguf" > "$e/GGUF_DOWNLOAD_RAW.log" 2>&1
+            echo "$?" > "$e/GGUF_DOWNLOAD_EXIT.txt"
+            printf '%s  %s\n' \
+              'ba551d58630afa3190b1be3602e28301f3d2e9bbac978dfc49d6d825171648b6' "$w/chat_template.jinja" \
+              '3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d' "$w/QAD.gguf" \
+              | sha256sum -c > "$e/SOURCE_SHA_RAW.log" 2>&1
+            echo "$?" > "$e/SOURCE_SHA_EXIT.txt"
+          else echo SKIPPED > "$e/TEMPLATE_DOWNLOAD_EXIT.txt"; echo SKIPPED > "$e/GGUF_DOWNLOAD_EXIT.txt"; echo SKIPPED > "$e/SOURCE_SHA_EXIT.txt"; fi
+          if [ "$(cat "$e/SOURCE_SHA_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 120s \
+              "$w/venv/bin/python" v13/code/scripts/p2_qad_gguf_template_audit.py \
+              --template "$w/chat_template.jinja" --gguf "$w/QAD.gguf" --output "$e/RESULT.json" \
+              > "$e/AUDIT_RAW.log" 2>&1
+            echo "$?" > "$e/AUDIT_EXIT.txt"
+          else echo SKIPPED > "$e/AUDIT_EXIT.txt"; echo SOURCE_RED > "$e/AUDIT_RAW.log"; fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 100268d45a70ab7ad62757e55367bd0dbe147fb6 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 100268d45a70ab7ad62757e55367bd0dbe147fb6 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve raw source-only evidence including RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-p2-qad-template-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-p2-qad-template-evidence/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce exact template bytes without token parity promotion
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-p2-qad-template-evidence"
+          for stage in VENV PARSER_DOWNLOAD PARSER_SHA DEPS TEMPLATE_DOWNLOAD GGUF_DOWNLOAD SOURCE_SHA AUDIT PRIVACY DIFF; do
+            test "$(cat "$e/${stage}_EXIT.txt")" = 0
+          done
+          python3 - "$e/RESULT.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          assert x['schema']=='v13.p2.qad_gguf_chat_template_metadata.v1'
+          assert x['status']=='TEMPLATE_BYTES_EQUAL_TOKEN_IDS_UNPROVEN'
+          assert x['source_sha256']==x['embedded_sha256']=='ba551d58630afa3190b1be3602e28301f3d2e9bbac978dfc49d6d825171648b6'
+          assert x['token_id_logit_and_utility_parity_proven'] is False
+          print('QAD_TEMPLATE_BYTES_EQUAL_NO_TOKEN_ID_OR_LOGIT_PARITY_PROMOTION')
+          PY

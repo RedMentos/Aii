@@ -1,0 +1,30 @@
+name: V13 Termux signed patch review-only stage
+on:
+  push:
+    branches:
+      - boss/v13-termux-signed-patch-review-20261111
+  pull_request:
+    paths:
+      - 'v13/code/v13/termux_patch_staging.py'
+      - 'v13/code/tests/test_termux_patch_staging.py'
+      - '.github/workflows/v13-termux-signed-patch-staging.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  staged-patches:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: v13/code
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check pytest cryptography
+      - name: Verify Ed25519 stage and adversarial rejection gates
+        run: |
+          python -m py_compile v13/termux_patch_staging.py tests/test_termux_patch_staging.py
+          python -m pytest -q tests/test_termux_patch_staging.py

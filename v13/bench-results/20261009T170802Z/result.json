@@ -1,0 +1,35 @@
+{
+ "stamp": "20261009T170802Z",
+ "mode": "smoke",
+ "source": "/mnt/project-files/v13/code",
+ "platform": "Linux-6.18.44-fc-v80-x86_64-with-glibc2.39",
+ "python": "3.13.16",
+ "units": {
+  "ran": 708,
+  "ok": false,
+  "failed": "errors=1"
+ },
+ "logs": {
+  "setup": [
+   "----------------------------------------------------------------------",
+   "Traceback (most recent call last):",
+   "  File \"/tmp/v13-bench/app/tests/test_callosum.py\", line 72, in test_message_fields_outcome_rating_and_doctor",
+   "    self.assertIn('LATENT blocked',Operator(self.r).run(':callosum'));self.assertEqual(N.kind_of('callosum_channel_policy'),'control')",
+   "                                   ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^",
+   "  File \"/tmp/v13-bench/app/v13/operator.py\", line 404, in run",
+   "    raise ValueError('Unbekannter/unvollständiger Befehl. :help')",
+   "ValueError: Unbekannter/unvollständiger Befehl. :help",
+   "",
+   "----------------------------------------------------------------------",
+   "Ran 708 tests in 70.615s",
+   "",
+   "FAILED (errors=1)",
+   "",
+   "Installation unterbrochen (Zeile 40). Nach Beheben erneut starten; fertige Downloads werden geprüft und wiederverwendet."
+  ],
+  "acceptance": null,
+  "candidates": null,
+  "semantic": null,
+  "suite": null
+ }
+}

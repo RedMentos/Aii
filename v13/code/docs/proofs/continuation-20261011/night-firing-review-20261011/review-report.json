@@ -1,0 +1,57 @@
+{
+  "schema": "V13_ISOLATED_FIRING_MERGED_REVIEW_V1",
+  "created_utc": "2026-10-11T21:23:02.817530+00:00",
+  "status": "READY_FOR_SERIALIZED_NATIVE_DIAGNOSTIC_NO_INFERENCE",
+  "live_runtime_sources_changed": false,
+  "native_model_rows_executed": 0,
+  "frozen_runtime_source_count": 121,
+  "tests": {
+    "standalone_firing": 17,
+    "merged_firing_and_preparation": 20,
+    "packaging": 6,
+    "total": 43,
+    "exit_code": 0,
+    "footer": "Ran 43 tests in 9.556s; OK",
+    "actual_zip_extracted_tests": true
+  },
+  "race_review": {
+    "before": "struct.error escaped after actual native file truncation between inventory check and row header read",
+    "after": "INVALID_REQUEST_ROW_MAP with no observed fact IDs; Exact retained and authority false",
+    "pre_fix_evidence": "row-map-race-review.json",
+    "regression": "test_native_truncated_after_inventory_returns_unavailable_without_fact_claim"
+  },
+  "prior_reports_preserved": true,
+  "diagnostic_plan": {
+    "arms": [
+      "exact",
+      "trace",
+      "combined"
+    ],
+    "audit_pair": [
+      false,
+      true
+    ],
+    "cases": [
+      "authored_fact",
+      "near_miss",
+      "repeated_original_prompt"
+    ],
+    "rows": 18,
+    "memory_origin": "SYNTHETIC_PROTOCOL_FIXTURE",
+    "guard_disabled": true,
+    "no_learning_or_quality_gate": true,
+    "requires_parent_native_queue_GO": true
+  },
+  "hashes": {
+    "scripts/native_firing_runtime_candidate.py": "756ac5e0e7fae7ca2a64e3ed54f1cac6c3b5244e016275c10ca23386e3493bba",
+    "scripts/native_firing_candidate_smoke.py": "81c4b6f6582c496fd065b4cb4cd76d4724df2346daf91f4f568e8e9ada2321b9",
+    "scripts/approval_reader_runtime_candidate.py": "c4de4104418f152b9560bf6c62a802306b0c95e80e72bb98872d5d5bc6f9be5e",
+    "tests/test_native_firing_runtime_candidate.py": "06b533183d188581c5dcde9e2682fb04721cc724cf0805ed80cffde7c9166e00",
+    "tests/test_native_firing_merged_candidate.py": "a4498e8b33f804b2aabd6e04ac20a076dddba246bfa102092d2a3d42e6516a2a",
+    "tests/test_package_source.py": "d93b2178f8619f4e209daf06abb8f359dd98790039b30670f276b6ec4ab4969a",
+    "scripts/package_source.py": "d78305a0f9f9975d8c583e35881ff3f7593f150d1ab5e5d36aaf8e64ecf2b38c",
+    "docs/proofs/continuation-20261011/night-firing-native-diagnostic-v2-20261011/registration.json": "5432a312c70bb07aa76a5bcc6054af0cd6e9c18c29579ee052b713b90825e701",
+    "docs/proofs/continuation-20261011/night-firing-review-20261011/native-firing-runtime-candidate-race-fixed.patch": "460a84618d89f82c8ffc8d3720e3743dc40f1b870b9eccf32e0177025b997c98",
+    "docs/proofs/continuation-20261011/night-firing-review-20261011/approval-reader-and-firing-merged.patch": "9e4458429dabe458e32094037ff0ab67d17c6a18062530970be1c4a419ec1da6"
+  }
+}

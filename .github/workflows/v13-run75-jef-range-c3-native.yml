@@ -1,0 +1,103 @@
+name: V13 Run75 authenticated JEF range to pinned native C3 JSON formatter
+on:
+  push:
+    branches: [assistant/v13-run75-jef-range-c3-native-schema-20261031-auto11]
+    paths: ['.github/workflows/v13-run75-jef-range-c3-native.yml']
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-ag12-20261030
+  cancel-in-progress: false
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Exact source pins, bootstrap pinned native, six C3 formatter calls
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run75-native"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          c00783a7cdf9124d52419e74ffbbc9d32270655f v13/code/docs/RUN75_JEF_RANGE_C3_NATIVE_PREREG_20261031.md
+          fe6df7f94efff9edbe524a3f5869ae7c592ec749 v13/code/v13/jef_range_c3_typed_envelope_shadow.py
+          e391695628d2b69b57fb4cf4e739c477695f8295 v13/code/tests/test_jef_range_c3_typed_envelope_shadow.py
+          201531fe6341c8093d157d15ed92a5671277506d v13/code/scripts/jef_range_native_fixture_773.py
+          7de1552e5bf21ee8e747c1b4d8fb1ad4ed0a89ab v13/code/scripts/run75_jef_range_c3_native.py
+          05667901f2e56cd58583ce13dd0647e56cee53a2 v13/code/scripts/run75_jef_range_c3_verify.py
+          f041b09e709832ec574d72c722f3f32f83b83510 v13/code/tests/test_run75_jef_range_c3_verify.py
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            [ "$want" = "$got" ] || bad=1
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run75-native-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run75-native-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else echo VENV_RED > "$e/DEPS_RAW.log"; echo 99 > "$e/DEPS_EXIT.txt"; fi
+          for t in test_jef_range_c3_typed_envelope_shadow.py test_run75_jef_range_c3_verify.py; do
+            key="${t%.py}"
+            if [ "$bad" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+              timeout --signal=TERM --kill-after=5s 5m env PYTHONPATH=v13/code:v13/code/scripts "$py" -m unittest discover -s v13/code/tests -p "$t" -v > "$e/${key}_RAW.log" 2>&1
+              echo "$?" > "$e/${key}_EXIT.txt"
+            else echo SKIPPED > "$e/${key}_RAW.log"; echo 99 > "$e/${key}_EXIT.txt"; fi
+          done
+          export V13_HOME="$RUNNER_TEMP/v13-run75-native-home"
+          if [ "$(cat "$e/test_jef_range_c3_typed_envelope_shadow_EXIT.txt")" = 0 ] && [ "$(cat "$e/test_run75_jef_range_c3_verify_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 15m env PYTHONPATH=v13/code:v13/code/scripts "$py" -m v13.bootstrap --home "$V13_HOME" > "$e/BOOTSTRAP_RAW.log" 2>&1
+            echo "$?" > "$e/BOOTSTRAP_EXIT.txt"
+          else echo SKIPPED > "$e/BOOTSTRAP_RAW.log"; echo 99 > "$e/BOOTSTRAP_EXIT.txt"; fi
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 42m env PYTHONPATH=v13/code:v13/code/scripts "$py" v13/code/scripts/run75_jef_range_c3_native.py --home "$V13_HOME" --out "$e/pilot" > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else echo SKIPPED > "$e/NATIVE_RAW.log"; echo 99 > "$e/NATIVE_EXIT.txt"; fi
+          if [ -f "$e/pilot/report.json" ]; then
+            env PYTHONPATH=v13/code:v13/code/scripts "$py" v13/code/scripts/run75_jef_range_c3_verify.py "$e/pilot/report.json" > "$e/VERIFY_RAW.log" 2>&1
+            echo "$?" > "$e/VERIFY_EXIT.txt"
+          else echo NO_REPORT > "$e/VERIFY_RAW.log"; echo 99 > "$e/VERIFY_EXIT.txt"; fi
+          python3 -m compileall -q v13/code/v13/jef_range_c3_typed_envelope_shadow.py v13/code/scripts/jef_range_native_fixture_773.py v13/code/scripts/run75_jef_range_c3_native.py v13/code/scripts/run75_jef_range_c3_verify.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 919964613b86fd001005d9599112afd52007478c --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 919964613b86fd001005d9599112afd52007478c HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Retain original Linux-native raw including scientific or engineering RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run75-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run75-native/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Require engineering completeness and independent raw reparse
+        if: always()
+        shell: bash
+        run: |
+          e="$RUNNER_TEMP/v13-run75-native"
+          for s in PINS VENV DEPS test_jef_range_c3_typed_envelope_shadow test_run75_jef_range_c3_verify BOOTSTRAP NATIVE VERIFY COMPILE PRIVACY DIFF; do
+            echo "$s $(cat "$e/${s}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            test "$(cat "$e/${s}_EXIT.txt" 2>/dev/null)" = 0 || exit 1
+          done
+          echo RUN75_NATIVE_ENGINEERING_COMPLETE_SCIENTIFIC_FORMATTER_SCORE_MAY_BE_RED

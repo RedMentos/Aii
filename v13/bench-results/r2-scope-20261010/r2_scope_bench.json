@@ -1,0 +1,281 @@
+{
+ "schema": "v13-r2-scope-bench-v1",
+ "experiment": "blueprint \u00a731 R2 (dense part)",
+ "date": "2026-10-10",
+ "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+ "torch": "2.14.1+cpu",
+ "master_sha256": "f630da86651136c9aee893b04b7542007e90fdd718355358e57e7ecc31517cfd",
+ "drift_layers": [
+  3,
+  7,
+  13
+ ],
+ "runs": [
+  {
+   "name": "attn_lora",
+   "cfg": {
+    "kind": "lora",
+    "targets": ".*self_attn\\.(q_proj|k_proj|v_proj|out_proj)",
+    "lr": 0.0003
+   },
+   "train": {
+    "steps": 30,
+    "final_ce": 0.04913,
+    "trainable_parameters": 344064
+   },
+   "eval": {
+    "learned_recall": 1.0,
+    "paraphrase_recall": 0.6666666666666666,
+    "near_miss_leak": 0.8,
+    "probe_retention": 0.5833333333333334,
+    "kl_to_base": 1.6749307463566463,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "What is the largest ocean on Earth?",
+     "List three fruits.",
+     "Translate \"thank you\" into German."
+    ],
+    "representation_drift": {
+     "3": 0.003146,
+     "7": 0.000152,
+     "13": 0.144185
+    }
+   },
+   "rollback_bytes": 1376256,
+   "seconds": 70.2
+  },
+  {
+   "name": "conv_lora",
+   "cfg": {
+    "kind": "lora",
+    "targets": ".*conv\\.(in_proj|out_proj)",
+    "lr": 0.0003
+   },
+   "train": {
+    "steps": 32,
+    "final_ce": 0.03901,
+    "trainable_parameters": 393216
+   },
+   "eval": {
+    "learned_recall": 1.0,
+    "paraphrase_recall": 0.6666666666666666,
+    "near_miss_leak": 0.8,
+    "probe_retention": 0.75,
+    "kl_to_base": 0.9856434389948845,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?"
+    ],
+    "representation_drift": {
+     "3": 0.001043,
+     "7": 4.1e-05,
+     "13": 0.031267
+    }
+   },
+   "rollback_bytes": 1572864,
+   "seconds": 72.8
+  },
+  {
+   "name": "ffn_lora",
+   "cfg": {
+    "kind": "lora",
+    "targets": [
+     "w1",
+     "w2",
+     "w3"
+    ],
+    "lr": 0.0003
+   },
+   "train": {
+    "steps": 17,
+    "final_ce": 0.03706,
+    "trainable_parameters": 1204224
+   },
+   "eval": {
+    "learned_recall": 1.0,
+    "paraphrase_recall": 0.8333333333333334,
+    "near_miss_leak": 1.0,
+    "probe_retention": 0.8333333333333334,
+    "kl_to_base": 1.5155719419320424,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?"
+    ],
+    "representation_drift": {
+     "3": 0.001013,
+     "7": 0.000182,
+     "13": 0.044078
+    }
+   },
+   "rollback_bytes": 4816896,
+   "seconds": 50.2
+  },
+  {
+   "name": "all_lora",
+   "cfg": {
+    "kind": "lora",
+    "targets": [
+     "v_proj",
+     "out_proj",
+     "in_proj",
+     "w1",
+     "w2",
+     "w3"
+    ],
+    "lr": 0.0003
+   },
+   "train": {
+    "steps": 14,
+    "final_ce": 0.03474,
+    "trainable_parameters": 1769472
+   },
+   "eval": {
+    "learned_recall": 1.0,
+    "paraphrase_recall": 0.8333333333333334,
+    "near_miss_leak": 0.8,
+    "probe_retention": 0.8333333333333334,
+    "kl_to_base": 1.605872777601083,
+    "forgotten": [
+     "What colour is the sky on a clear day?"
+    ],
+    "representation_drift": {
+     "3": 0.001793,
+     "7": 0.00017,
+     "13": 0.052406
+    }
+   },
+   "rollback_bytes": 7077888,
+   "seconds": 47.8
+  },
+  {
+   "name": "norms_only",
+   "cfg": {
+    "kind": "dense",
+    "select": "norm",
+    "lr": 0.01
+   },
+   "train": {
+    "steps": 9,
+    "final_ce": 0.02789,
+    "trainable_parameters": 29440
+   },
+   "eval": {
+    "learned_recall": 1.0,
+    "paraphrase_recall": 0.6666666666666666,
+    "near_miss_leak": 0.8,
+    "probe_retention": 0.5,
+    "kl_to_base": 1.8464838713407516,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?",
+     "What is the opposite of hot?",
+     "What is 7 plus 5?",
+     "Translate \"thank you\" into German."
+    ],
+    "representation_drift": {
+     "3": 0.012817,
+     "7": 0.000507,
+     "13": 0.167828
+    }
+   },
+   "rollback_bytes": 117760,
+   "seconds": 34.0
+  },
+  {
+   "name": "top_block",
+   "cfg": {
+    "kind": "dense",
+    "select": "layers.13.",
+    "lr": 0.0001
+   },
+   "train": {
+    "steps": 10,
+    "final_ce": 0.04183,
+    "trainable_parameters": 12063744
+   },
+   "eval": {
+    "learned_recall": 1.0,
+    "paraphrase_recall": 0.8333333333333334,
+    "near_miss_leak": 1.0,
+    "probe_retention": 0.75,
+    "kl_to_base": 0.4173514038945238,
+    "forgotten": [
+     "Which planet do we live on?"
+    ],
+    "representation_drift": {
+     "3": 0.0,
+     "7": -0.0,
+     "13": 0.00493
+    }
+   },
+   "rollback_bytes": 48254976,
+   "seconds": 35.7
+  },
+  {
+   "name": "smf_keyed",
+   "cfg": {
+    "kind": "smf",
+    "smf": {
+     "mode": "keyed",
+     "theta_min": 0.9
+    }
+   },
+   "train": {
+    "steps": 8,
+    "final_ce": 0.04823,
+    "selected_slots": 80,
+    "trainable_parameters": 81920,
+    "layer": 7
+   },
+   "eval": {
+    "learned_recall": 1.0,
+    "paraphrase_recall": 0.5,
+    "near_miss_leak": 0.8,
+    "probe_retention": 0.8333333333333334,
+    "kl_to_base": 2.9763842979146915e-06,
+    "forgotten": [],
+    "representation_drift": null
+   },
+   "seconds": 86.1,
+   "rollback_bytes": 327680
+  },
+  {
+   "name": "full",
+   "cfg": {
+    "kind": "dense",
+    "select": "",
+    "lr": 1e-05
+   },
+   "train": {
+    "steps": 8,
+    "final_ce": 0.04371,
+    "trainable_parameters": 162583296
+   },
+   "eval": {
+    "learned_recall": 1.0,
+    "paraphrase_recall": 0.8333333333333334,
+    "near_miss_leak": 0.8,
+    "probe_retention": 0.75,
+    "kl_to_base": 0.9857658122976621,
+    "forgotten": [
+     "What colour is the sky on a clear day?",
+     "Which planet do we live on?"
+    ],
+    "representation_drift": {
+     "3": 0.001034,
+     "7": 4.7e-05,
+     "13": 0.026214
+    }
+   },
+   "rollback_bytes": 650333184,
+   "seconds": 41.4
+  }
+ ],
+ "claim_limit": "dense LFM2.5-230M, one seed, 8 facts / 12 probes; router-only and expert-only arms need the MoE body (WP-N11)",
+ "base": {
+  "learned_recall": 0.0,
+  "paraphrase_recall": 0.0,
+  "near_miss_leak": 0.0,
+  "probe_retention": 0.8333333333333334
+ }
+}

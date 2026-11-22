@@ -1,0 +1,72 @@
+name: V13 Run22 AG12 bilingual compare candidate GREEN
+on:
+  push:
+    branches: [assistant/v13-run22-ag12-bilingual-compare-20261030-hourly11]
+    paths:
+      - '.github/workflows/v13-run22-ag12-bilingual-candidate.yml'
+permissions:
+  contents: read
+jobs:
+  compare-green:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Pinned AG12 read-only operator and SQLite regressions
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run22-candidate"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/PINS.txt" <<'PINS'
+          7a83e74e3472f4386c724fb4133714790382e32e v13/code/docs/AG12_BILINGUAL_COMPARE_PREREG_RUN22_20261030.md
+          5458d6cbac9ae0383b780738985657ef5c0f6003 v13/code/tests/test_ag12_bilingual_compare_run22.py
+          1944cffced498a32a28d74ec13bc9674df8e55fb v13/code/v13/agi/language_compare.py
+          7f6f56b2b0731a5d34a63e364e42262221cf71f6 v13/code/v13/agi/__init__.py
+          6636efcb7e79acd9a010b3ef31bab55342cca349 v13/code/v13/operator.py
+          a1cab60363814cb86472a42defb5089d4cdbd432 v13/code/v13/agi/generality.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          PINS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then bad=1; fi
+          done < "$e/PINS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 5m env PYTHONPATH=. python3 -m unittest -v tests.test_ag12_bilingual_compare_run22 tests.test_ag12_solver_identity_run21 tests.test_ag12_suite_identity_run14h tests.test_ag12_historical_holdout_run14m tests.test_ag12_language_isolation_run14f tests.test_ag12_crosslanguage_holdout_run14p tests.test_ag9_ag12_sqlite_lifecycle_run14d tests.test_growth) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          python3 -m py_compile v13/code/v13/agi/language_compare.py v13/code/v13/agi/__init__.py v13/code/v13/operator.py v13/code/tests/test_ag12_bilingual_compare_run22.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base b02a73917bdb2b5aa451890e41af988c83bb2f5f --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check b02a73917bdb2b5aa451890e41af988c83bb2f5f HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve candidate raw
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run22-candidate-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run22-candidate/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Require every candidate stage GREEN
+        if: always()
+        run: |
+          set -eu
+          e="$RUNNER_TEMP/v13-run22-candidate"
+          test "$(cat "$e/PINS_EXIT.txt")" = 0
+          test "$(cat "$e/TEST_EXIT.txt")" = 0
+          test "$(cat "$e/COMPILE_EXIT.txt")" = 0
+          test "$(cat "$e/PRIVACY_EXIT.txt")" = 0
+          test "$(cat "$e/DIFF_EXIT.txt")" = 0
+          echo 'RUN22_BILINGUAL_READONLY_DIAGNOSTIC_SOFTWARE_GREEN_NO_TRANSFER_CLAIM'

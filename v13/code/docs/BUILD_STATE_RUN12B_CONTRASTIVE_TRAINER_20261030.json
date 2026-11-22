@@ -1,0 +1,73 @@
+{
+  "schema": "V13_RUN12B_TINY_TRAINER_SOFTWARE_GREEN_NO_NATIVE_350M",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run12b-bjepa-contrastive-trainer-20261030",
+  "parent_pr": 1257,
+  "parent_head": "54d28b4ea669df3a45312e20ff90df1b8805cf45",
+  "prereg_commit": "edfd0219a7bb5603523f05e5aae5e12d7977186c",
+  "fixture_sha256": "848021441551627c47107c7b1298d338ab674d8983ff10af4848cf33adf77748",
+  "seeds": [
+    227,
+    229,
+    233
+  ],
+  "arms": [
+    "CE",
+    "COS_EMA",
+    "CONTRAST_EMA",
+    "CONTRAST_SHUFFLED"
+  ],
+  "original_source_blobs": {
+    "body_jepa": "b560d4e88fe457f381e89dfc5d6188a8ec3b306b",
+    "run11p": "af685a22ddd4ff6412643a8849a1f00bf2112487",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "original_software": {
+    "run_id": 41043975832,
+    "head": "741a7c297c9446c59d5476f36b77bf3b720087ea",
+    "artifact_id": 12971058605,
+    "zip_sha256": "09dd8ddca8640dc0750ab09ea5cc263ecccadfbda48ebd9dddd9a729cf77c3c9",
+    "crc": "PASS",
+    "inner_sha256": "22/22",
+    "tests": "9 tests 3 ERROR missing MODES import; original Run12A 6 PASS",
+    "status": "RED",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12B-BJEPA-Trainer239/ORIGINAL_RED_41043975832_sha09DD8DDC.zip",
+    "backup_byte_exact": true
+  },
+  "fix": {
+    "commit": "871f883243b035c8d7481f8fa91a188fe0163463",
+    "scope": "isolated trainer MODES import only",
+    "source_blob": "a31a18d9be0b1137a10304f24d3a241d720bd247"
+  },
+  "second_software": {
+    "run_id": 41044363071,
+    "head": "2bb1ee8c5a643b5ec0f704720d72ba8c7eebcba0",
+    "status": "GREEN",
+    "artifact_id": 12971119132,
+    "zip_sha256": "8b7b765e6f67d6b73d9f8097c0ad8778f4529eed32779336d6a720b3273abc64",
+    "bytes": 4875,
+    "zip_entries": 23,
+    "inner_sha256": "22/22",
+    "crc": "PASS",
+    "stages": "10/10 zero",
+    "tests": "9/9 PASS, including 3 real two-step tiny Torch+PEFT trainer tests",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run12B-BJEPA-Trainer239/SOFTWARE_GREEN_41044363071_sha8B7B765E.zip",
+    "backup_byte_exact": true
+  },
+  "native": {
+    "launched": false,
+    "proven": false
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "next_command": "Prepare disjoint seed239 350M runner and prereg source-only preflight. Keep original Run11P source/model/seed pins unchanged. Only after native owner terminal launch explicit serialized native trigger, then verify raw and private backup. Continue other canonical packages meanwhile."
+}

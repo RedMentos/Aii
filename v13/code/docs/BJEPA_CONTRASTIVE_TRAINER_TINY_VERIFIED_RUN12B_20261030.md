@@ -1,0 +1,11 @@
+# Run12B tiny real Torch+PEFT contrastive trainer — original RED and verified GREEN (2026-10-30)
+
+Preregistered seed239 350M disjoint cohort in `edfd0219a7bb5603523f05e5aae5e12d7977186c` before the isolated trainer port. Frozen original `v13/body_jepa.py` blob `b560d4e88fe457f381e89dfc5d6188a8ec3b306b`, Run11P runner blob `af685a22ddd4ff6412643a8849a1f00bf2112487`, original Run11P `DIAGNOSTIC_HURT`, model and Canon unchanged. New `ContrastiveBodyJepaTrainer` uses a separately copied fit loop, detached EMA target, new contrastive loss and no adapter/predictor export; not integrated with Runtime.
+
+**Original RED preserved:** Actions **41043975832 FAILURE**, exact HEAD `741a7c297c9446c59d5476f36b77bf3b720087ea`, artifact **12971058605**, ZIP SHA256 `09dd8ddca8640dc0750ab09ea5cc263ecccadfbda48ebd9dddd9a729cf77c3c9`, CRC clean, 22/22 inner hashes, privacy CLEAN, 9 tests with **3 ERROR** (new trainer omitted `MODES` import), other 6 Run12A tests PASS. Original raw privately backed byte-exact to `/V13-Checkpoints/2026-10-30/Run12B-BJEPA-Trainer239/ORIGINAL_RED_41043975832_sha09DD8DDC.zip`. Minimal new-file-only import fix `871f883243b035c8d7481f8fa91a188fe0163463`.
+
+**Verified GREEN:** Actions **41044363071 SUCCESS**, exact tested HEAD `2bb1ee8c5a643b5ec0f704720d72ba8c7eebcba0`, artifact **12971119132**, ZIP SHA256 `8b7b765e6f67d6b73d9f8097c0ad8778f4529eed32779336d6a720b3273abc64`, 4875 bytes, CRC clean, 22/22 inner hashes, **10/10** stage exits0, privacy CLEAN. **9/9 tests PASS** in 0.616s, including actual two-step tiny GPT2 Torch+PEFT CE, EMA-contrastive and deranged-target runs with no weight/predictor export. Private backup `/V13-Checkpoints/2026-10-30/Run12B-BJEPA-Trainer239/SOFTWARE_GREEN_41044363071_sha8B7B765E.zip`, independently materialized byte-exact.
+
+**Limits:** Tiny random GPT2 is not the pinned 350M LFM2.5 model, real heldout utility, phone runtime, B1/B2 learned performance, JEPA promotion or a production learner. All gates Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, jepa_weight0, Redmi UNMEASURED, V13 incomplete.
+
+**Next:** source-only preregistered disjoint 350M seed239 native runner, original model/master/license pins, fresh negative controls, serial heavy owner, independent raw verifier and private backup. Do not infer benefit from a tiny software fit.

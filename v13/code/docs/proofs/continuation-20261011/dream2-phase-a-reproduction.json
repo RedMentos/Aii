@@ -1,0 +1,57 @@
+{
+  "schema": "v13-dream-phase-a-reproduction-v1",
+  "recorded_at": "2026-10-11T04:08:59Z",
+  "seed": 13,
+  "arm": "none",
+  "phase": "A",
+  "old_source_sha256": "8f19edcd15e2fc99f879153ec93c75839f71762b5e4cad47997055c00b974e0b",
+  "current_snapshot_sha256": "4d1185a8e508014a9648c423ddea81bd52031dacb31e43367542bfd6a809bf1c",
+  "prior_phase_a": {
+    "steps": 12,
+    "final_ce": 0.01672,
+    "items": 4
+  },
+  "current_phase_a": {
+    "steps": 12,
+    "final_ce": 0.01672,
+    "items": 4
+  },
+  "prior_after_a": {
+    "A": {
+      "recall": 1.0,
+      "paraphrase": 0.75
+    },
+    "B": {
+      "recall": 0.0,
+      "paraphrase": 0.0
+    },
+    "near_miss_leak": 0.6,
+    "probe_retention": 0.75,
+    "kl_to_base": 1.113032025595506,
+    "forgotten": [
+      "What colour is the sky on a clear day?",
+      "Which planet do we live on?"
+    ]
+  },
+  "current_after_a": {
+    "A": {
+      "recall": 1.0,
+      "paraphrase": 0.75
+    },
+    "B": {
+      "recall": 0.0,
+      "paraphrase": 0.0
+    },
+    "near_miss_leak": 0.6,
+    "probe_retention": 0.75,
+    "kl_to_base": 1.1130312408010166,
+    "forgotten": [
+      "What colour is the sky on a clear day?",
+      "Which planet do we live on?"
+    ]
+  },
+  "kl_numeric_difference_current_minus_prior": -7.847944893946135e-07,
+  "claim_limit": "Shared original phase-A reproduction only. PhaseB40 ongoing; no retention/dream benefit/phone/architecture acceptance inferred. Different recorded Torch versions.",
+  "current_snapshot_file": "dream2-phase-a-reproduction-source.json",
+  "source_row_complete": true
+}

@@ -1,0 +1,9 @@
+# Run107 pinned b10964 tar compatibility from actual Run104 phone source — prereg 2026-10-31
+
+Owner GPT-6 automation11. Review-only independent child of PR #1475 exact parent `35113fc42f0b4594ca46ef33194877b8e277054f`. Run105 unfiltered software suite and Run103 native owner remain separate. Donor PR #1470 `assistant/v13-phone-pinned-tar-compat-20261031-gpt6` already verified original pinned upstream source/binary tar compatibility. Current source `v13/safe_tar.py` Git blob `40119aeb1eae19ec56ee404b5d76a81bef22fa93` and `v13/bootstrap.py` blob `aac9a0f8b86b957398bd1837d5cc409592bc0cc9` are **identical** to donor, no production tar code changes.
+
+## Fixed scope before implementation
+
+Copy donor's `scripts/phone_pinned_tar_compat_20261031.py` **exact Git blob** `64c1ec72d149462f0a4b690c49301cc5e4ac2ac9` to current phone source. It reads pinned `catalog()['runner']` b10964 original source and Linux x86_64 binary URLs, sizes and SHA256; verifies both original downloads and transactional safe-tar extract/retry tree identity, CMakeLists.txt and ELF llama-server. No model download or native launch. Keep catalog, registered source/binary/model/seed hashes unchanged.
+
+Run donor's exact script once from current checkout and again from the **extracted actual current phone source ZIP** with same already downloaded pinned archive inputs (no altered URLs/pins), verify identical source and binary tree fingerprints, all 2,100+ source ZIP manifest hashes, current 21-case Run104 bounded smoke and original 11-case safe_tar regression. Preserve original raw failures, exit receipts, exact HEAD, ZIP CRC/SHA, SHA256SUMS, privacy/diff, and private backup if permitted. No Redmi/native/STEP2/B3/JEPA/age/whole-system promotion. If download or extraction fails, retain RED and diagnose, do not substitute archive or bypass pin.

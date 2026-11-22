@@ -1,0 +1,1246 @@
+{
+ "schema": "USER_RULES_PARAPHRASE_AUDIT_V1",
+ "round": 2,
+ "rule": "hand audit before the parser ran on these sentences: accept only if the rewrite keeps the meaning (language may change); identical copies (ignoring case and punctuation) and near copies are excluded; labels are inherited from the holdout item unchanged",
+ "rows": [
+  {
+   "index": 0,
+   "role": "B1_DETAIL",
+   "sentence": "Make sure to keep all of your records intact.",
+   "accepted": false,
+   "reason": "owner changed (your records)"
+  },
+  {
+   "index": 0,
+   "role": "B2_GIST",
+   "sentence": "I'm not gonna let you touch those notes, I mean no harm done to them.",
+   "accepted": true,
+   "reason": "same meaning (broader: do not touch)"
+  },
+  {
+   "index": 0,
+   "role": "C3_LANGUAGE",
+   "sentence": "Never delete any of my notes",
+   "accepted": false,
+   "reason": "near copy (ratio 0.89)"
+  },
+  {
+   "index": 1,
+   "role": "B1_DETAIL",
+   "sentence": "Please refrain from erasing my notes ever again.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 1,
+   "role": "B2_GIST",
+   "sentence": "Nicht die Notizen schon los!",
+   "accepted": false,
+   "reason": "garbled, no instruction"
+  },
+  {
+   "index": 1,
+   "role": "C3_LANGUAGE",
+   "sentence": "Lösch bitte niemals meine Notizen",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 2,
+   "role": "B1_DETAIL",
+   "sentence": "You are not allowed to remove my pictures.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 2,
+   "role": "B2_GIST",
+   "sentence": "Du hast mir die Bilder nicht wegnehmen können.",
+   "accepted": false,
+   "reason": "meaning changed (statement about the past)"
+  },
+  {
+   "index": 2,
+   "role": "C3_LANGUAGE",
+   "sentence": "Du darfst meine Fotos nicht löschen",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 3,
+   "role": "B1_DETAIL",
+   "sentence": "Avoid sharing messages until you get permission.",
+   "accepted": true,
+   "reason": "same meaning (messages)"
+  },
+  {
+   "index": 3,
+   "role": "B2_GIST",
+   "sentence": "Nimm mir vor, dass ich dich nicht ansprich.",
+   "accepted": false,
+   "reason": "garbled"
+  },
+  {
+   "index": 3,
+   "role": "C3_LANGUAGE",
+   "sentence": "Don't send emails without asking you first.",
+   "accepted": false,
+   "reason": "roles swapped (asking you)"
+  },
+  {
+   "index": 4,
+   "role": "B1_DETAIL",
+   "sentence": "Avoid posting anything online unless you ask me first.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 4,
+   "role": "B2_GIST",
+   "sentence": "Ich weiß nicht, ob ich dich fragen soll, also schick nichts ins Internet.",
+   "accepted": false,
+   "reason": "meaning changed (ask-first dropped)"
+  },
+  {
+   "index": 4,
+   "role": "C3_LANGUAGE",
+   "sentence": "Schick nichts ins Internet, ohne mich vorher zu fragen",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 5,
+   "role": "B1_DETAIL",
+   "sentence": "Never add fresh components without clear permission.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 5,
+   "role": "B2_GIST",
+   "sentence": "Ich weiß, dass ich das nicht erst einmal einstellbar habe, wenn ich es nicht explizit erlaubt habe.",
+   "accepted": false,
+   "reason": "garbled"
+  },
+  {
+   "index": 5,
+   "role": "C3_LANGUAGE",
+   "sentence": "Never install new modules unless I explicitly allow it",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 6,
+   "role": "B1_DETAIL",
+   "sentence": "Avoid relying on that tool.",
+   "accepted": true,
+   "reason": "same meaning (that tool = the calculator)"
+  },
+  {
+   "index": 6,
+   "role": "B2_GIST",
+   "sentence": "Warte nicht auf die Zahl, nur die Rechnung.",
+   "accepted": false,
+   "reason": "garbled"
+  },
+  {
+   "index": 6,
+   "role": "C3_LANGUAGE",
+   "sentence": "Stop using the calculator",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 7,
+   "role": "B1_DETAIL",
+   "sentence": "Pay attention to what you find online.",
+   "accepted": false,
+   "reason": "meaning changed (pay attention)"
+  },
+  {
+   "index": 7,
+   "role": "B2_GIST",
+   "sentence": "Suche auf dem Internet nach dem Ziel.",
+   "accepted": false,
+   "reason": "opposite meaning (search)"
+  },
+  {
+   "index": 7,
+   "role": "C3_LANGUAGE",
+   "sentence": "Hör auf, im Internet zu suchen",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 8,
+   "role": "B1_DETAIL",
+   "sentence": "You should avoid browsing the internet.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 8,
+   "role": "B2_GIST",
+   "sentence": "Du musst nicht auf dem Internet gehen.",
+   "accepted": false,
+   "reason": "meaning changed (need not)"
+  },
+  {
+   "index": 8,
+   "role": "C3_LANGUAGE",
+   "sentence": "You must not go online",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 9,
+   "role": "B1_DETAIL",
+   "sentence": "I don't want you to modify anything in my files.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 9,
+   "role": "B2_GIST",
+   "sentence": "Ich will nicht, dass du irgendwas an meine Dateien ändern.",
+   "accepted": false,
+   "reason": "near copy (grammar only)"
+  },
+  {
+   "index": 9,
+   "role": "C3_LANGUAGE",
+   "sentence": "Ich will nicht, dass du irgendwas an meinen Dateien änderst.",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 10,
+   "role": "B1_DETAIL",
+   "sentence": "Don't forget to save my notes.",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 10,
+   "role": "B2_GIST",
+   "sentence": "Warte ich nicht auf deine Notizen zu speichern.",
+   "accepted": false,
+   "reason": "garbled"
+  },
+  {
+   "index": 10,
+   "role": "C3_LANGUAGE",
+   "sentence": "Don't forget to save my notes",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 11,
+   "role": "B1_DETAIL",
+   "sentence": "Don't forget to save the note.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 11,
+   "role": "B2_GIST",
+   "sentence": "Warte nicht, die Notiz aufzulegen.",
+   "accepted": false,
+   "reason": "garbled"
+  },
+  {
+   "index": 11,
+   "role": "C3_LANGUAGE",
+   "sentence": "Never forget to save the note.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 12,
+   "role": "B1_DETAIL",
+   "sentence": "Don't hesitate to ask me if something is unclear.",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 12,
+   "role": "B2_GIST",
+   "sentence": "Nicht zu spät fragen, was nicht klar ist.",
+   "accepted": false,
+   "reason": "meaning changed (do not ask too late)"
+  },
+  {
+   "index": 12,
+   "role": "C3_LANGUAGE",
+   "sentence": "Don't hesitate to ask me if something is unclear",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 13,
+   "role": "B1_DETAIL",
+   "sentence": "Would you like me to remove the previous entry?",
+   "accepted": false,
+   "reason": "roles swapped (the AI offers)"
+  },
+  {
+   "index": 13,
+   "role": "B2_GIST",
+   "sentence": "Wirds ich das schon raus?",
+   "accepted": false,
+   "reason": "garbled"
+  },
+  {
+   "index": 13,
+   "role": "C3_LANGUAGE",
+   "sentence": "Can you delete the old note?",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 14,
+   "role": "B1_DETAIL",
+   "sentence": "Can you help me draft an email?",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 14,
+   "role": "B2_GIST",
+   "sentence": "Gut, ich kann dir eine E-Mail schreiben.",
+   "accepted": false,
+   "reason": "roles swapped (I can write you)"
+  },
+  {
+   "index": 14,
+   "role": "C3_LANGUAGE",
+   "sentence": "Kannst du mir eine Mail schreiben?",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 15,
+   "role": "B1_DETAIL",
+   "sentence": "I haven't removed anything from the past day.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 15,
+   "role": "B2_GIST",
+   "sentence": "I didn't delete anything yesterday.",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 15,
+   "role": "C3_LANGUAGE",
+   "sentence": "I didn't delete anything yesterday",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 16,
+   "role": "B1_DETAIL",
+   "sentence": "What is the product when you multiply 17 by 23?",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 16,
+   "role": "B2_GIST",
+   "sentence": "Was 17 mal 23?",
+   "accepted": true,
+   "reason": "same meaning (ungrammatical)"
+  },
+  {
+   "index": 16,
+   "role": "C3_LANGUAGE",
+   "sentence": "What is 17 times 23?",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 17,
+   "role": "B1_DETAIL",
+   "sentence": "Never remove or change my records, and refrain from sharing them with others.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 17,
+   "role": "B2_GIST",
+   "sentence": "Warte nicht, dass ich meine Notizen löschen oder überschreiben soll und sie auch nicht weiter senden soll.",
+   "accepted": false,
+   "reason": "garbled"
+  },
+  {
+   "index": 17,
+   "role": "C3_LANGUAGE",
+   "sentence": "Never delete or overwrite my notes, and don't send them anywhere either.",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 18,
+   "role": "B1_DETAIL",
+   "sentence": "Delete and never send my pictures or messages.",
+   "accepted": false,
+   "reason": "meaning changed (delete becomes a command)"
+  },
+  {
+   "index": 18,
+   "role": "B2_GIST",
+   "sentence": "Nicht mehr Fotos oder Nachrichten löschen und versenden.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 18,
+   "role": "C3_LANGUAGE",
+   "sentence": "Lösche und verschicke niemals meine Fotos oder Nachrichten",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 19,
+   "role": "B1_DETAIL",
+   "sentence": "Make sure to seek permission first before you proceed with any changes.",
+   "accepted": true,
+   "reason": "same meaning (broader: any changes)"
+  },
+  {
+   "index": 19,
+   "role": "B2_GIST",
+   "sentence": "Warte mal, bevor ich was schreiben soll.",
+   "accepted": false,
+   "reason": "roles swapped"
+  },
+  {
+   "index": 19,
+   "role": "C3_LANGUAGE",
+   "sentence": "Always ask me before you write anything to my files",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 20,
+   "role": "B1_DETAIL",
+   "sentence": "Ask me for advice before you proceed with anything.",
+   "accepted": true,
+   "reason": "same meaning (broader: anything)"
+  },
+  {
+   "index": 20,
+   "role": "B2_GIST",
+   "sentence": "Ich gehe immer zuerst vor, bevor du was installierst.",
+   "accepted": false,
+   "reason": "garbled"
+  },
+  {
+   "index": 20,
+   "role": "C3_LANGUAGE",
+   "sentence": "Frag mich immer zuerst, bevor du etwas installierst",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 21,
+   "role": "B1_DETAIL",
+   "sentence": "Please let me know ahead of time.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 21,
+   "role": "B2_GIST",
+   "sentence": "Warte, ich mache nichts, bevor ich etwas tun kann.",
+   "accepted": false,
+   "reason": "garbled"
+  },
+  {
+   "index": 21,
+   "role": "C3_LANGUAGE",
+   "sentence": "Before you do anything, tell me what you need.",
+   "accepted": false,
+   "reason": "meaning changed (tell me what you need)"
+  },
+  {
+   "index": 22,
+   "role": "B1_DETAIL",
+   "sentence": "Tell me ahead of time what you intend to do.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 22,
+   "role": "B2_GIST",
+   "sentence": "Sag mir immer vorher, was du tun willst.",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 22,
+   "role": "C3_LANGUAGE",
+   "sentence": "Sag mir immer vorher, was du tun willst.",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 23,
+   "role": "B1_DETAIL",
+   "sentence": "Finger weg von meinen Notizen!",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 23,
+   "role": "B2_GIST",
+   "sentence": "Wahnehmiger, ich habe meine Notizen nicht gesehen!",
+   "accepted": false,
+   "reason": "garbled"
+  },
+  {
+   "index": 23,
+   "role": "C3_LANGUAGE",
+   "sentence": "Finger weg von meinen Notizen!",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 24,
+   "role": "B1_DETAIL",
+   "sentence": "Maintain a safe distance from my pictures.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 24,
+   "role": "B2_GIST",
+   "sentence": "Warte nicht auf meine Fotos, ich bin bereit für dich.",
+   "accepted": false,
+   "reason": "meaning changed"
+  },
+  {
+   "index": 24,
+   "role": "C3_LANGUAGE",
+   "sentence": "Keep your hands off my photos",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 25,
+   "role": "B1_DETAIL",
+   "sentence": "Never remove files, save only the drafts.",
+   "accepted": false,
+   "reason": "meaning changed (save only the drafts)"
+  },
+  {
+   "index": 25,
+   "role": "B2_GIST",
+   "sentence": "Warte, ich habe keine Dateien zu löschen, nur die Vorlagen.",
+   "accepted": false,
+   "reason": "meaning changed (statement)"
+  },
+  {
+   "index": 25,
+   "role": "C3_LANGUAGE",
+   "sentence": "Never delete files, except the drafts",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 26,
+   "role": "B1_DETAIL",
+   "sentence": "Don't remove any files except the drafts.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 26,
+   "role": "B2_GIST",
+   "sentence": "Nicht alle Dateien löschen, nur die Ideen.",
+   "accepted": false,
+   "reason": "scope changed (not all files, ideas)"
+  },
+  {
+   "index": 26,
+   "role": "C3_LANGUAGE",
+   "sentence": "Lösche keine Dateien außer den Entwürfen",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 27,
+   "role": "B1_DETAIL",
+   "sentence": "Never remove my cooking ideas.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 27,
+   "role": "B2_GIST",
+   "sentence": "I never let you take my recipes away.",
+   "accepted": true,
+   "reason": "same meaning (never let you)"
+  },
+  {
+   "index": 27,
+   "role": "C3_LANGUAGE",
+   "sentence": "Never delete my recipes",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 28,
+   "role": "B1_DETAIL",
+   "sentence": "It might be better to hold off on that message.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 28,
+   "role": "B2_GIST",
+   "sentence": "Warte ich doch mal nicht das E-Mail schick.",
+   "accepted": false,
+   "reason": "garbled"
+  },
+  {
+   "index": 28,
+   "role": "C3_LANGUAGE",
+   "sentence": "Maybe don't send that email yet",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 29,
+   "role": "B1_DETAIL",
+   "sentence": "Maybe it would be better to avoid deleting anything.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 29,
+   "role": "B2_GIST",
+   "sentence": "Vielleicht solltest du lieber nichts löschen.",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 29,
+   "role": "C3_LANGUAGE",
+   "sentence": "Vielleicht solltest du lieber nichts löschen",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 30,
+   "role": "B1_DETAIL",
+   "sentence": "My sibling advises against accessing the web.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 30,
+   "role": "B2_GIST",
+   "sentence": "My brother says you should never use the internet.",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 30,
+   "role": "C3_LANGUAGE",
+   "sentence": "My brother says you should never use the internet",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 31,
+   "role": "B1_DETAIL",
+   "sentence": "My boss says I shouldn't send any messages.",
+   "accepted": false,
+   "reason": "subject changed (I should not)"
+  },
+  {
+   "index": 31,
+   "role": "B2_GIST",
+   "sentence": "Mein Chef sagt, du kannst keine E-Mails versenden.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 31,
+   "role": "C3_LANGUAGE",
+   "sentence": "Mein Chef meint, du darfst keine Mails verschicken",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 32,
+   "role": "B1_DETAIL",
+   "sentence": "You have the option to remove your entries once more.",
+   "accepted": false,
+   "reason": "owner changed (your entries)"
+  },
+  {
+   "index": 32,
+   "role": "B2_GIST",
+   "sentence": "Du kannst die Notizen jetzt noch löschen.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 32,
+   "role": "C3_LANGUAGE",
+   "sentence": "You can delete notes again now",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 33,
+   "role": "B1_DETAIL",
+   "sentence": "Du darfst jetzt wieder ins Internet.",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 33,
+   "role": "B2_GIST",
+   "sentence": "Du hast jetzt wieder ins Internet.",
+   "accepted": false,
+   "reason": "garbled"
+  },
+  {
+   "index": 33,
+   "role": "C3_LANGUAGE",
+   "sentence": "Du darfst jetzt wieder ins Internet, aber ich habe noch keine Verbindung hergestellt.",
+   "accepted": false,
+   "reason": "content added (no connection yet)"
+  },
+  {
+   "index": 34,
+   "role": "B1_DETAIL",
+   "sentence": "Feel free to install whatever you need.",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 34,
+   "role": "B2_GIST",
+   "sentence": "Gut, ich bin bereit, alles zu installieren.",
+   "accepted": false,
+   "reason": "roles swapped (I am ready to install)"
+  },
+  {
+   "index": 34,
+   "role": "C3_LANGUAGE",
+   "sentence": "Feel free to install whatever you need",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 35,
+   "role": "B1_DETAIL",
+   "sentence": "No downloads, please.",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 35,
+   "role": "B2_GIST",
+   "sentence": "No downloads, please.",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 35,
+   "role": "C3_LANGUAGE",
+   "sentence": "No downloads, please",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 36,
+   "role": "B1_DETAIL",
+   "sentence": "No uploads happening right now!",
+   "accepted": false,
+   "reason": "statement (no uploads happening)"
+  },
+  {
+   "index": 36,
+   "role": "B2_GIST",
+   "sentence": "No uploads allowed!",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 36,
+   "role": "C3_LANGUAGE",
+   "sentence": "Keine Uploads!",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 37,
+   "role": "B1_DETAIL",
+   "sentence": "You shouldn't pick up information from my personal exchanges.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 37,
+   "role": "B2_GIST",
+   "sentence": "Du hast keine Privatsphäre, um mir Nachrichten zu lesen.",
+   "accepted": false,
+   "reason": "garbled"
+  },
+  {
+   "index": 37,
+   "role": "C3_LANGUAGE",
+   "sentence": "You can't learn from my private messages.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 38,
+   "role": "B1_DETAIL",
+   "sentence": "Don't share any details about my relatives.",
+   "accepted": false,
+   "reason": "meaning changed (share instead of remember)"
+  },
+  {
+   "index": 38,
+   "role": "B2_GIST",
+   "sentence": "Merk dir nichts über meine Familie.",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 38,
+   "role": "C3_LANGUAGE",
+   "sentence": "Merk dir nichts über meine Familie",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 39,
+   "role": "B1_DETAIL",
+   "sentence": "Avoid handling any part of my device unless I say it's okay.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 39,
+   "role": "B2_GIST",
+   "sentence": "Warte doch auf dem Handy, ohne meine Zustimmung.",
+   "accepted": false,
+   "reason": "garbled"
+  },
+  {
+   "index": 39,
+   "role": "C3_LANGUAGE",
+   "sentence": "Don't touch anything on my phone without my permission",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 40,
+   "role": "B1_DETAIL",
+   "sentence": "Only with your permission you're allowed to send messages.",
+   "accepted": false,
+   "reason": "roles swapped (your permission)"
+  },
+  {
+   "index": 40,
+   "role": "B2_GIST",
+   "sentence": "Nur mit meiner Erlaubnis kannst du Nachrichten versenden.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 40,
+   "role": "C3_LANGUAGE",
+   "sentence": "Nur mit meiner Erlaubnis darfst du Nachrichten verschicken",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 41,
+   "role": "B1_DETAIL",
+   "sentence": "Don't cease your efforts to preserve my records.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 41,
+   "role": "B2_GIST",
+   "sentence": "Warte nicht auf meine Notizen zu verlieren.",
+   "accepted": false,
+   "reason": "garbled"
+  },
+  {
+   "index": 41,
+   "role": "C3_LANGUAGE",
+   "sentence": "Don't stop saving my notes",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 42,
+   "role": "B1_DETAIL",
+   "sentence": "Don't fret over the finances.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 42,
+   "role": "B2_GIST",
+   "sentence": "Nicht die Gelder zu kümmern.",
+   "accepted": true,
+   "reason": "same meaning (ungrammatical)"
+  },
+  {
+   "index": 42,
+   "role": "C3_LANGUAGE",
+   "sentence": "Don't worry about the budget",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 43,
+   "role": "B1_DETAIL",
+   "sentence": "Don't worry about the deadline.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 43,
+   "role": "B2_GIST",
+   "sentence": "Mach dir keine Sorgen wegen der Frist.",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 43,
+   "role": "C3_LANGUAGE",
+   "sentence": "Mach dir keine Sorgen wegen der Frist",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 44,
+   "role": "B1_DETAIL",
+   "sentence": "Never disclose my phone numbers or addresses.",
+   "accepted": true,
+   "reason": "same meaning (phone numbers or addresses)"
+  },
+  {
+   "index": 44,
+   "role": "B2_GIST",
+   "sentence": "Ich weiß, dass ich dich nicht teilen darf.",
+   "accepted": false,
+   "reason": "meaning changed"
+  },
+  {
+   "index": 44,
+   "role": "C3_LANGUAGE",
+   "sentence": "Under no circumstance should you share my contacts",
+   "accepted": false,
+   "reason": "near copy (circumstance)"
+  },
+  {
+   "index": 45,
+   "role": "B1_DETAIL",
+   "sentence": "You should not spend any money.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 45,
+   "role": "B2_GIST",
+   "sentence": "Nicht einmal kannst du Geld ausgeben.",
+   "accepted": false,
+   "reason": "garbled"
+  },
+  {
+   "index": 45,
+   "role": "C3_LANGUAGE",
+   "sentence": "Never spend money on that.",
+   "accepted": false,
+   "reason": "scope changed (on that)"
+  },
+  {
+   "index": 46,
+   "role": "B1_DETAIL",
+   "sentence": "I prohibit anyone from executing any scripts.",
+   "accepted": true,
+   "reason": "same meaning (anyone, scripts)"
+  },
+  {
+   "index": 46,
+   "role": "B2_GIST",
+   "sentence": "I forbade you from running any programs.",
+   "accepted": true,
+   "reason": "same meaning (past tense prohibition)"
+  },
+  {
+   "index": 46,
+   "role": "C3_LANGUAGE",
+   "sentence": "I forbid you to run any programs",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 47,
+   "role": "B1_DETAIL",
+   "sentence": "Please refrain from downloading anything.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 47,
+   "role": "B2_GIST",
+   "sentence": "Nicht alles laden.",
+   "accepted": false,
+   "reason": "scope changed (not everything)"
+  },
+  {
+   "index": 47,
+   "role": "C3_LANGUAGE",
+   "sentence": "Bitte nichts herunterladen",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 48,
+   "role": "B1_DETAIL",
+   "sentence": "Never change my records without permission.",
+   "accepted": false,
+   "reason": "meaning changed (forbid becomes ask-first)"
+  },
+  {
+   "index": 48,
+   "role": "B2_GIST",
+   "sentence": "I'm gonna keep the notes safe from anyone trying to mess with them.",
+   "accepted": false,
+   "reason": "statement of intent, not an instruction"
+  },
+  {
+   "index": 48,
+   "role": "C3_LANGUAGE",
+   "sentence": "Never overwrite my notes",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 49,
+   "role": "B1_DETAIL",
+   "sentence": "Modify my notes only when you let me know.",
+   "accepted": false,
+   "reason": "roles swapped (when you let me know)"
+  },
+  {
+   "index": 49,
+   "role": "B2_GIST",
+   "sentence": "Ich muss deine Texte nur ändern, wenn ich dir sage.",
+   "accepted": false,
+   "reason": "roles swapped (I must change)"
+  },
+  {
+   "index": 49,
+   "role": "C3_LANGUAGE",
+   "sentence": "Ändere meine Notizen nur, wenn ich es dir sagen",
+   "accepted": false,
+   "reason": "near copy (grammar only)"
+  },
+  {
+   "index": 50,
+   "role": "B1_DETAIL",
+   "sentence": "The indication warned against coming inside.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 50,
+   "role": "B2_GIST",
+   "sentence": "Die Anzeige sagt nicht ein.",
+   "accepted": false,
+   "reason": "garbled"
+  },
+  {
+   "index": 50,
+   "role": "C3_LANGUAGE",
+   "sentence": "The sign said do not enter",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 51,
+   "role": "B1_DETAIL",
+   "sentence": "Don't worry, it wasn't that big of a deal.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 51,
+   "role": "B2_GIST",
+   "sentence": "Nun, es war nichts.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 51,
+   "role": "C3_LANGUAGE",
+   "sentence": "Never mind, it was nothing",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 52,
+   "role": "B1_DETAIL",
+   "sentence": "Write the message but never erase the old one.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 52,
+   "role": "B2_GIST",
+   "sentence": "Schreib die Notiz, aber lösche niemals die alte.",
+   "accepted": false,
+   "reason": "near copy (lösche)"
+  },
+  {
+   "index": 52,
+   "role": "C3_LANGUAGE",
+   "sentence": "Schreib die Notiz, aber lösch niemals die alte",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 53,
+   "role": "B1_DETAIL",
+   "sentence": "Before you send anything, show it to me.",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 53,
+   "role": "B2_GIST",
+   "sentence": "Gut vor dem Senden, mir zeigen.",
+   "accepted": true,
+   "reason": "same meaning (ungrammatical)"
+  },
+  {
+   "index": 53,
+   "role": "C3_LANGUAGE",
+   "sentence": "Before you send anything, show it to me",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 54,
+   "role": "B1_DETAIL",
+   "sentence": "Nichts verschicken!",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 54,
+   "role": "B2_GIST",
+   "sentence": "Nichts verschicken!",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 54,
+   "role": "C3_LANGUAGE",
+   "sentence": "Nicht versenden!",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 55,
+   "role": "B1_DETAIL",
+   "sentence": "Please refrain from employing any instruments today.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 55,
+   "role": "B2_GIST",
+   "sentence": "Nicht mit Werkzeug heute nutzen.",
+   "accepted": true,
+   "reason": "same meaning (ungrammatical)"
+  },
+  {
+   "index": 55,
+   "role": "C3_LANGUAGE",
+   "sentence": "Don't use any tools today",
+   "accepted": false,
+   "reason": "near copy (ratio 0.88)"
+  },
+  {
+   "index": 56,
+   "role": "B1_DETAIL",
+   "sentence": "Avoid employing any instruments.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 56,
+   "role": "B2_GIST",
+   "sentence": "Nicht mit Werkzeugen arbeiten.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 56,
+   "role": "C3_LANGUAGE",
+   "sentence": "Benutzst du keine Werkzeuge?",
+   "accepted": false,
+   "reason": "meaning changed (question)"
+  },
+  {
+   "index": 57,
+   "role": "B1_DETAIL",
+   "sentence": "Never obtain components from any source without my explicit approval.",
+   "accepted": true,
+   "reason": "same meaning"
+  },
+  {
+   "index": 57,
+   "role": "B2_GIST",
+   "sentence": "I'm gonna keep the modules off the table, no matter what the hell happens.",
+   "accepted": false,
+   "reason": "statement of intent, not an instruction"
+  },
+  {
+   "index": 57,
+   "role": "C3_LANGUAGE",
+   "sentence": "Never fetch modules from anywhere without my conscious permission",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 58,
+   "role": "B1_DETAIL",
+   "sentence": "One must never acquire components without explicit agreement.",
+   "accepted": true,
+   "reason": "same meaning (impersonal)"
+  },
+  {
+   "index": 58,
+   "role": "B2_GIST",
+   "sentence": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "accepted": false,
+   "reason": "COPY"
+  },
+  {
+   "index": 58,
+   "role": "C3_LANGUAGE",
+   "sentence": "Du sollst niemals Module holen, ohne dass ich bewusst zustimme.",
+   "accepted": false,
+   "reason": "COPY"
+  }
+ ]
+}

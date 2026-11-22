@@ -1,0 +1,11 @@
+# Context OS warm memory: source disappears after F5 verification (prereg 2026-10-30)
+
+Owner GPT-6; review-only child of #1235 exact `75daa272237a5800e8577e59d9eca834cc878918`. Isolated files `v13/code/v13/context_os.py`, `v13/code/tests/test_context_warm_postverify_race_run11.py`, new branch-scoped workflow and docs. All source/model/seed pins and existing frozen evidence unchanged. No changes to `memory.py`, live tools, age rights, learning or approval.
+
+**Code-level hypothesis:** `ContextOS.warm` first verifies F1/F5 lineage via `Memory._verified_rows`, then separately calls `Store.read_source` for delivery. The latter is wrapped in `except ValueError` only, although a source blob can disappear between those reads, raising `FileNotFoundError` (`OSError`). The late missing source must fail closed by skipping that warm candidate rather than raising and breaking the whole context plan.
+
+**Preregistered deterministic real-Store synthetic race:** create one live human-feedback fact, warm it through a FINAL observation; prove normal warm retrieval yields its id. In the race arm, patch the read-only verification method to call its original implementation and then remove the corresponding content-addressed blob immediately after successful verification, before the final read. Expected: `warm(...)` returns no items/ids, never presents stale memory, does not mutate source authority or start native processes. This is an injected race, **not** evidence that a real concurrent deletion occurred. Include existing Context OS warm-authority, final status and exact quote regression tests.
+
+**Test-first:** prereg then test/CI RED and original hashed raw, minimal `OSError`-inclusive fail-closed exception handling for late delivery only, CI GREEN, private backup of original artifacts. Do not hide integrity errors elsewhere or weaken `Memory._verified_rows`; it already handles missing blobs during first verification. If the test fails for an unrelated reason, preserve RED and investigate before code changes.
+
+**Gates:** software real-Store synthetic only, Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA unavailable, jepa_weight=0, Redmi unmeasured, V13 incomplete; no automatic merge.

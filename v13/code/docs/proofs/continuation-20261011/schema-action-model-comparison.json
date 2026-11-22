@@ -1,0 +1,1243 @@
+{
+  "status": "COMPARABLE",
+  "checks": {
+    "both_complete": true,
+    "cases_and_oracles_identical": true,
+    "arms_identical": true,
+    "binding_identical_except_model": true,
+    "both_artifacts_unchanged": true,
+    "both_servers_reaped": true,
+    "all_native_request_payloads_identical": true
+  },
+  "canonical_gate_pass": false,
+  "phone_measured": false,
+  "latency_comparison_valid": false,
+  "models": [
+    {
+      "report": "docs/proofs/continuation-20261011/schema-action-350m/report.json",
+      "report_sha256": "28a6ad5158ca1b49979221a0c6ad4a07276ea62d592527c00734f7eb9d2de440",
+      "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+      "arms": {
+        "free_json": {
+          "copy": {
+            "n": 4,
+            "all_requested_fields_exact": 0,
+            "field_exact": {
+              "action": 4,
+              "remaining": 4,
+              "eligible": 4
+            },
+            "errors": [
+              {
+                "case": "copy_A",
+                "raw_answer": "{\n  \"action\": \"A\",\n  \"eligible\": [\n    true,\n    false\n  ],\n  \"remaining\": [\n    9,\n    5\n  ],\n  \"task\": \"copy\"\n}",
+                "expected": {
+                  "action": "A",
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    true,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "action": "A",
+                  "eligible": [
+                    true,
+                    false
+                  ],
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "task": "copy"
+                }
+              },
+              {
+                "case": "copy_B",
+                "raw_answer": "{\n  \"action\": \"B\",\n  \"eligible\": [\n    true,\n    false\n  ],\n  \"remaining\": [\n    9,\n    5\n  ],\n  \"task\": \"copy\"\n}",
+                "expected": {
+                  "action": "B",
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    true,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "action": "B",
+                  "eligible": [
+                    true,
+                    false
+                  ],
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "task": "copy"
+                }
+              },
+              {
+                "case": "copy_NONE",
+                "raw_answer": "{\n  \"action\": \"NONE\",\n  \"eligible\": [\n    true,\n    false\n  ],\n  \"remaining\": [\n    9,\n    5\n  ],\n  \"task\": \"copy\"\n}",
+                "expected": {
+                  "action": "NONE",
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    true,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "action": "NONE",
+                  "eligible": [
+                    true,
+                    false
+                  ],
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "task": "copy"
+                }
+              },
+              {
+                "case": "copy_UNKNOWN",
+                "raw_answer": "{\n  \"action\": \"UNKNOWN\",\n  \"eligible\": [\n    true,\n    false\n  ],\n  \"remaining\": [\n    9,\n    5\n  ],\n  \"task\": \"copy\"\n}",
+                "expected": {
+                  "action": "UNKNOWN",
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    true,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "action": "UNKNOWN",
+                  "eligible": [
+                    true,
+                    false
+                  ],
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "task": "copy"
+                }
+              }
+            ]
+          },
+          "decision": {
+            "n": 4,
+            "all_requested_fields_exact": 0,
+            "field_exact": {
+              "action": 1,
+              "remaining": 0,
+              "eligible": 0
+            },
+            "errors": [
+              {
+                "case": "decision_A",
+                "raw_answer": "{\n  \"action\": \"NONE\",\n  \"remaining\": 0,\n  \"eligible\": true,\n  \"in\": \"A then B\"\n}",
+                "expected": {
+                  "action": "A",
+                  "remaining": [
+                    16,
+                    13
+                  ],
+                  "eligible": [
+                    true,
+                    true
+                  ]
+                },
+                "parsed": {
+                  "action": "NONE",
+                  "remaining": 0,
+                  "eligible": true,
+                  "in": "A then B"
+                }
+              },
+              {
+                "case": "decision_B",
+                "raw_answer": "{\n  \"action\": \"NONE\",\n  \"remaining\": 0,\n  \"eligible\": true,\n  \"in\": \"A then B\"\n}",
+                "expected": {
+                  "action": "B",
+                  "remaining": [
+                    11,
+                    17
+                  ],
+                  "eligible": [
+                    true,
+                    true
+                  ]
+                },
+                "parsed": {
+                  "action": "NONE",
+                  "remaining": 0,
+                  "eligible": true,
+                  "in": "A then B"
+                }
+              },
+              {
+                "case": "decision_NONE",
+                "raw_answer": "{\n  \"action\": \"UNKNOWN\",\n  \"remaining\": 0,\n  \"eligible\": true,\n  \"in\": \"A then B\"\n}",
+                "expected": {
+                  "action": "NONE",
+                  "remaining": [
+                    -1,
+                    -2
+                  ],
+                  "eligible": [
+                    false,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "action": "UNKNOWN",
+                  "remaining": 0,
+                  "eligible": true,
+                  "in": "A then B"
+                }
+              },
+              {
+                "case": "decision_UNKNOWN",
+                "raw_answer": "{\n  \"action\": \"UNKNOWN\",\n  \"remaining\": 0,\n  \"eligible\": true,\n  \"in\": \"A then B\"\n}",
+                "expected": {
+                  "action": "UNKNOWN",
+                  "remaining": [
+                    null,
+                    null
+                  ],
+                  "eligible": [
+                    null,
+                    null
+                  ]
+                },
+                "parsed": {
+                  "action": "UNKNOWN",
+                  "remaining": 0,
+                  "eligible": true,
+                  "in": "A then B"
+                }
+              }
+            ]
+          }
+        },
+        "action_only": {
+          "copy": {
+            "n": 4,
+            "all_requested_fields_exact": 4,
+            "field_exact": {
+              "action": 4
+            },
+            "errors": []
+          },
+          "decision": {
+            "n": 4,
+            "all_requested_fields_exact": 2,
+            "field_exact": {
+              "action": 2
+            },
+            "errors": [
+              {
+                "case": "decision_A",
+                "raw_answer": "{\"action\": \"UNKNOWN\"}",
+                "expected": {
+                  "action": "A"
+                },
+                "parsed": {
+                  "action": "UNKNOWN"
+                }
+              },
+              {
+                "case": "decision_B",
+                "raw_answer": "{\"action\": \"NONE\"}",
+                "expected": {
+                  "action": "B"
+                },
+                "parsed": {
+                  "action": "NONE"
+                }
+              }
+            ]
+          }
+        },
+        "schema_action_first": {
+          "copy": {
+            "n": 4,
+            "all_requested_fields_exact": 4,
+            "field_exact": {
+              "action": 4,
+              "remaining": 4,
+              "eligible": 4
+            },
+            "errors": []
+          },
+          "decision": {
+            "n": 4,
+            "all_requested_fields_exact": 0,
+            "field_exact": {
+              "action": 1,
+              "remaining": 0,
+              "eligible": 2
+            },
+            "errors": [
+              {
+                "case": "decision_A",
+                "raw_answer": "{\n  \"action\": \"NONE\",\n  \"eligible\": [\n    true,\n    true\n  ],\n  \"remaining\": [\n    0,\n    0\n  ]\n}",
+                "expected": {
+                  "action": "A",
+                  "remaining": [
+                    16,
+                    13
+                  ],
+                  "eligible": [
+                    true,
+                    true
+                  ]
+                },
+                "parsed": {
+                  "action": "NONE",
+                  "eligible": [
+                    true,
+                    true
+                  ],
+                  "remaining": [
+                    0,
+                    0
+                  ]
+                }
+              },
+              {
+                "case": "decision_B",
+                "raw_answer": "{\n  \"action\": \"NONE\",\n  \"eligible\": [\n    true,\n    true\n  ],\n  \"remaining\": [\n    6,\n    0\n  ]\n}",
+                "expected": {
+                  "action": "B",
+                  "remaining": [
+                    11,
+                    17
+                  ],
+                  "eligible": [
+                    true,
+                    true
+                  ]
+                },
+                "parsed": {
+                  "action": "NONE",
+                  "eligible": [
+                    true,
+                    true
+                  ],
+                  "remaining": [
+                    6,
+                    0
+                  ]
+                }
+              },
+              {
+                "case": "decision_NONE",
+                "raw_answer": "{\n  \"action\": \"UNKNOWN\",\n  \"eligible\": [\n    true,\n    true\n  ],\n  \"remaining\": [\n    1,\n    0\n  ]\n}",
+                "expected": {
+                  "action": "NONE",
+                  "remaining": [
+                    -1,
+                    -2
+                  ],
+                  "eligible": [
+                    false,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "action": "UNKNOWN",
+                  "eligible": [
+                    true,
+                    true
+                  ],
+                  "remaining": [
+                    1,
+                    0
+                  ]
+                }
+              },
+              {
+                "case": "decision_UNKNOWN",
+                "raw_answer": "{\n  \"action\": \"UNKNOWN\",\n  \"eligible\": [\n    true,\n    true\n  ],\n  \"remaining\": [\n    0,\n    0\n  ]\n}",
+                "expected": {
+                  "action": "UNKNOWN",
+                  "remaining": [
+                    null,
+                    null
+                  ],
+                  "eligible": [
+                    null,
+                    null
+                  ]
+                },
+                "parsed": {
+                  "action": "UNKNOWN",
+                  "eligible": [
+                    true,
+                    true
+                  ],
+                  "remaining": [
+                    0,
+                    0
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "schema_facts_first": {
+          "copy": {
+            "n": 4,
+            "all_requested_fields_exact": 3,
+            "field_exact": {
+              "action": 3,
+              "remaining": 4,
+              "eligible": 4
+            },
+            "errors": [
+              {
+                "case": "copy_NONE",
+                "raw_answer": "{\n  \"remaining\": [9, 5],\n  \"eligible\": [true, false],\n  \"action\": \"UNKNOWN\"\n}",
+                "expected": {
+                  "action": "NONE",
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    true,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    true,
+                    false
+                  ],
+                  "action": "UNKNOWN"
+                }
+              }
+            ]
+          },
+          "decision": {
+            "n": 4,
+            "all_requested_fields_exact": 0,
+            "field_exact": {
+              "action": 1,
+              "remaining": 1,
+              "eligible": 2
+            },
+            "errors": [
+              {
+                "case": "decision_A",
+                "raw_answer": "{\n  \"remaining\": [\n    null,\n    null\n  ],\n  \"eligible\": [\n    true,\n    true\n  ],\n  \"action\": \"UNKNOWN\"\n}",
+                "expected": {
+                  "action": "A",
+                  "remaining": [
+                    16,
+                    13
+                  ],
+                  "eligible": [
+                    true,
+                    true
+                  ]
+                },
+                "parsed": {
+                  "remaining": [
+                    null,
+                    null
+                  ],
+                  "eligible": [
+                    true,
+                    true
+                  ],
+                  "action": "UNKNOWN"
+                }
+              },
+              {
+                "case": "decision_B",
+                "raw_answer": "{\n  \"remaining\": [\n    null,\n    null\n  ],\n  \"eligible\": [\n    true,\n    true\n  ],\n  \"action\": \"UNKNOWN\"\n}",
+                "expected": {
+                  "action": "B",
+                  "remaining": [
+                    11,
+                    17
+                  ],
+                  "eligible": [
+                    true,
+                    true
+                  ]
+                },
+                "parsed": {
+                  "remaining": [
+                    null,
+                    null
+                  ],
+                  "eligible": [
+                    true,
+                    true
+                  ],
+                  "action": "UNKNOWN"
+                }
+              },
+              {
+                "case": "decision_NONE",
+                "raw_answer": "{\n  \"remaining\": [\n    null,\n    null\n  ],\n  \"eligible\": [\n    true,\n    true\n  ],\n  \"action\": \"UNKNOWN\"\n}",
+                "expected": {
+                  "action": "NONE",
+                  "remaining": [
+                    -1,
+                    -2
+                  ],
+                  "eligible": [
+                    false,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "remaining": [
+                    null,
+                    null
+                  ],
+                  "eligible": [
+                    true,
+                    true
+                  ],
+                  "action": "UNKNOWN"
+                }
+              },
+              {
+                "case": "decision_UNKNOWN",
+                "raw_answer": "{\n  \"remaining\": [\n    null,\n    null\n  ],\n  \"eligible\": [\n    true,\n    true\n  ],\n  \"action\": \"UNKNOWN\"\n}",
+                "expected": {
+                  "action": "UNKNOWN",
+                  "remaining": [
+                    null,
+                    null
+                  ],
+                  "eligible": [
+                    null,
+                    null
+                  ]
+                },
+                "parsed": {
+                  "remaining": [
+                    null,
+                    null
+                  ],
+                  "eligible": [
+                    true,
+                    true
+                  ],
+                  "action": "UNKNOWN"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "report": "docs/proofs/continuation-20261011/schema-action-1p2b/report.json",
+      "report_sha256": "dc5597ad36cab75d5d02e821a449d1b0f489f675aa49a519979b966433f8607c",
+      "model_sha256": "bb741ebb106d543e9de114b843a3d3d73d51c74b5801e69da2abde821a0cb3e1",
+      "arms": {
+        "free_json": {
+          "copy": {
+            "n": 4,
+            "all_requested_fields_exact": 0,
+            "field_exact": {
+              "action": 4,
+              "remaining": 4,
+              "eligible": 2
+            },
+            "errors": [
+              {
+                "case": "copy_A",
+                "raw_answer": "{\n  \"action\": \"A\",\n  \"remaining\": [9, 5],\n  \"eligible\": [true, false],\n  \"budget\": null\n}",
+                "expected": {
+                  "action": "A",
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    true,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "action": "A",
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    true,
+                    false
+                  ],
+                  "budget": null
+                }
+              },
+              {
+                "case": "copy_B",
+                "raw_answer": "{\"action\": \"B\", \"remaining\": [9, 5], \"eligible\": [false, true]}",
+                "expected": {
+                  "action": "B",
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    true,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "action": "B",
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    false,
+                    true
+                  ]
+                }
+              },
+              {
+                "case": "copy_NONE",
+                "raw_answer": "{\"action\": \"NONE\", \"remaining\": [9, 5], \"eligible\": [false, true], \"task\": \"copy\"}",
+                "expected": {
+                  "action": "NONE",
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    true,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "action": "NONE",
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    false,
+                    true
+                  ],
+                  "task": "copy"
+                }
+              },
+              {
+                "case": "copy_UNKNOWN",
+                "raw_answer": "{\n  \"action\": \"UNKNOWN\",\n  \"remaining\": [9, 5],\n  \"eligible\": [true, false],\n  \"budget\": null\n}",
+                "expected": {
+                  "action": "UNKNOWN",
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    true,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "action": "UNKNOWN",
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    true,
+                    false
+                  ],
+                  "budget": null
+                }
+              }
+            ]
+          },
+          "decision": {
+            "n": 4,
+            "all_requested_fields_exact": 0,
+            "field_exact": {
+              "action": 1,
+              "remaining": 0,
+              "eligible": 2
+            },
+            "errors": [
+              {
+                "case": "decision_A",
+                "raw_answer": "{\n  \"action\": \"decision\",\n  \"remaining\": 16,\n  \"eligible\": [false, false],\n  \"budget\": 20,\n  \"costs\": [4, 7]\n}",
+                "expected": {
+                  "action": "A",
+                  "remaining": [
+                    16,
+                    13
+                  ],
+                  "eligible": [
+                    true,
+                    true
+                  ]
+                },
+                "parsed": {
+                  "action": "decision",
+                  "remaining": 16,
+                  "eligible": [
+                    false,
+                    false
+                  ],
+                  "budget": 20,
+                  "costs": [
+                    4,
+                    7
+                  ]
+                }
+              },
+              {
+                "case": "decision_B",
+                "raw_answer": "{\n  \"action\": \"decision\",\n  \"remaining\": 11,\n  \"eligible\": [true, true],\n  \"budget\": 20,\n  \"costs\": [9, 3]\n}",
+                "expected": {
+                  "action": "B",
+                  "remaining": [
+                    11,
+                    17
+                  ],
+                  "eligible": [
+                    true,
+                    true
+                  ]
+                },
+                "parsed": {
+                  "action": "decision",
+                  "remaining": 11,
+                  "eligible": [
+                    true,
+                    true
+                  ],
+                  "budget": 20,
+                  "costs": [
+                    9,
+                    3
+                  ]
+                }
+              },
+              {
+                "case": "decision_NONE",
+                "raw_answer": "{\n  \"action\": \"decision\",\n  \"remaining\": 2,\n  \"eligible\": [false, false],\n  \"budget\": 2,\n  \"costs\": [3, 4]\n}",
+                "expected": {
+                  "action": "NONE",
+                  "remaining": [
+                    -1,
+                    -2
+                  ],
+                  "eligible": [
+                    false,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "action": "decision",
+                  "remaining": 2,
+                  "eligible": [
+                    false,
+                    false
+                  ],
+                  "budget": 2,
+                  "costs": [
+                    3,
+                    4
+                  ]
+                }
+              },
+              {
+                "case": "decision_UNKNOWN",
+                "raw_answer": "{\n  \"action\": \"UNKNOWN\",\n  \"remaining\": [2, 0],\n  \"eligible\": [false, false]\n}",
+                "expected": {
+                  "action": "UNKNOWN",
+                  "remaining": [
+                    null,
+                    null
+                  ],
+                  "eligible": [
+                    null,
+                    null
+                  ]
+                },
+                "parsed": {
+                  "action": "UNKNOWN",
+                  "remaining": [
+                    2,
+                    0
+                  ],
+                  "eligible": [
+                    false,
+                    false
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "action_only": {
+          "copy": {
+            "n": 4,
+            "all_requested_fields_exact": 4,
+            "field_exact": {
+              "action": 4
+            },
+            "errors": []
+          },
+          "decision": {
+            "n": 4,
+            "all_requested_fields_exact": 1,
+            "field_exact": {
+              "action": 1
+            },
+            "errors": [
+              {
+                "case": "decision_A",
+                "raw_answer": "{\"action\": \"NONE\"\n}",
+                "expected": {
+                  "action": "A"
+                },
+                "parsed": {
+                  "action": "NONE"
+                }
+              },
+              {
+                "case": "decision_B",
+                "raw_answer": "{\"action\": \"NONE\"\n}",
+                "expected": {
+                  "action": "B"
+                },
+                "parsed": {
+                  "action": "NONE"
+                }
+              },
+              {
+                "case": "decision_UNKNOWN",
+                "raw_answer": "{\n  \"action\": \"NONE\"\n}",
+                "expected": {
+                  "action": "UNKNOWN"
+                },
+                "parsed": {
+                  "action": "NONE"
+                }
+              }
+            ]
+          }
+        },
+        "schema_action_first": {
+          "copy": {
+            "n": 4,
+            "all_requested_fields_exact": 2,
+            "field_exact": {
+              "action": 4,
+              "remaining": 4,
+              "eligible": 2
+            },
+            "errors": [
+              {
+                "case": "copy_B",
+                "raw_answer": "{\"action\": \"B\", \"eligible\": [false, true], \"remaining\": [9, 5]}",
+                "expected": {
+                  "action": "B",
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    true,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "action": "B",
+                  "eligible": [
+                    false,
+                    true
+                  ],
+                  "remaining": [
+                    9,
+                    5
+                  ]
+                }
+              },
+              {
+                "case": "copy_NONE",
+                "raw_answer": "{\"action\": \"NONE\", \"eligible\": [false, true], \"remaining\": [9, 5]}",
+                "expected": {
+                  "action": "NONE",
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    true,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "action": "NONE",
+                  "eligible": [
+                    false,
+                    true
+                  ],
+                  "remaining": [
+                    9,
+                    5
+                  ]
+                }
+              }
+            ]
+          },
+          "decision": {
+            "n": 4,
+            "all_requested_fields_exact": 0,
+            "field_exact": {
+              "action": 1,
+              "remaining": 0,
+              "eligible": 1
+            },
+            "errors": [
+              {
+                "case": "decision_A",
+                "raw_answer": "{\n  \"action\": \"UNKNOWN\",\n  \"eligible\": [false, false],\n  \"remaining\": [20, 0] }",
+                "expected": {
+                  "action": "A",
+                  "remaining": [
+                    16,
+                    13
+                  ],
+                  "eligible": [
+                    true,
+                    true
+                  ]
+                },
+                "parsed": {
+                  "action": "UNKNOWN",
+                  "eligible": [
+                    false,
+                    false
+                  ],
+                  "remaining": [
+                    20,
+                    0
+                  ]
+                }
+              },
+              {
+                "case": "decision_B",
+                "raw_answer": "{\n  \"action\": \"NONE\",\n  \"eligible\": [\n    false,\n    false\n  ],\n  \"remaining\": [20, 17]\n}",
+                "expected": {
+                  "action": "B",
+                  "remaining": [
+                    11,
+                    17
+                  ],
+                  "eligible": [
+                    true,
+                    true
+                  ]
+                },
+                "parsed": {
+                  "action": "NONE",
+                  "eligible": [
+                    false,
+                    false
+                  ],
+                  "remaining": [
+                    20,
+                    17
+                  ]
+                }
+              },
+              {
+                "case": "decision_NONE",
+                "raw_answer": "{\n  \"action\": \"UNKNOWN\",\n  \"eligible\": [false, false],\n  \"remaining\": [2, null] }",
+                "expected": {
+                  "action": "NONE",
+                  "remaining": [
+                    -1,
+                    -2
+                  ],
+                  "eligible": [
+                    false,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "action": "UNKNOWN",
+                  "eligible": [
+                    false,
+                    false
+                  ],
+                  "remaining": [
+                    2,
+                    null
+                  ]
+                }
+              },
+              {
+                "case": "decision_UNKNOWN",
+                "raw_answer": "{\n  \"action\": \"UNKNOWN\",\n  \"eligible\": [false, false],\n  \"remaining\": [2, null] }",
+                "expected": {
+                  "action": "UNKNOWN",
+                  "remaining": [
+                    null,
+                    null
+                  ],
+                  "eligible": [
+                    null,
+                    null
+                  ]
+                },
+                "parsed": {
+                  "action": "UNKNOWN",
+                  "eligible": [
+                    false,
+                    false
+                  ],
+                  "remaining": [
+                    2,
+                    null
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "schema_facts_first": {
+          "copy": {
+            "n": 4,
+            "all_requested_fields_exact": 1,
+            "field_exact": {
+              "action": 4,
+              "remaining": 4,
+              "eligible": 1
+            },
+            "errors": [
+              {
+                "case": "copy_A",
+                "raw_answer": "{\n  \"remaining\": [9, 5],\n  \"eligible\": [false, true],\n  \"action\": \"A\"\n}",
+                "expected": {
+                  "action": "A",
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    true,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    false,
+                    true
+                  ],
+                  "action": "A"
+                }
+              },
+              {
+                "case": "copy_B",
+                "raw_answer": "{\"remaining\": [9, 5], \"eligible\": [false, true], \"action\": \"B\"}",
+                "expected": {
+                  "action": "B",
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    true,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    false,
+                    true
+                  ],
+                  "action": "B"
+                }
+              },
+              {
+                "case": "copy_NONE",
+                "raw_answer": "{\"remaining\": [9, 5], \"eligible\": [false, true], \"action\": \"NONE\"}",
+                "expected": {
+                  "action": "NONE",
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    true,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "remaining": [
+                    9,
+                    5
+                  ],
+                  "eligible": [
+                    false,
+                    true
+                  ],
+                  "action": "NONE"
+                }
+              }
+            ]
+          },
+          "decision": {
+            "n": 4,
+            "all_requested_fields_exact": 0,
+            "field_exact": {
+              "action": 1,
+              "remaining": 1,
+              "eligible": 0
+            },
+            "errors": [
+              {
+                "case": "decision_A",
+                "raw_answer": "{\n  \"remaining\": [6, 13],\n  \"eligible\": [false, true],\n  \"action\": \"A\"\n}",
+                "expected": {
+                  "action": "A",
+                  "remaining": [
+                    16,
+                    13
+                  ],
+                  "eligible": [
+                    true,
+                    true
+                  ]
+                },
+                "parsed": {
+                  "remaining": [
+                    6,
+                    13
+                  ],
+                  "eligible": [
+                    false,
+                    true
+                  ],
+                  "action": "A"
+                }
+              },
+              {
+                "case": "decision_B",
+                "raw_answer": "{\n  \"remaining\": [11, 17],\n  \"eligible\": [false, true],\n  \"action\": \"A\"\n}",
+                "expected": {
+                  "action": "B",
+                  "remaining": [
+                    11,
+                    17
+                  ],
+                  "eligible": [
+                    true,
+                    true
+                  ]
+                },
+                "parsed": {
+                  "remaining": [
+                    11,
+                    17
+                  ],
+                  "eligible": [
+                    false,
+                    true
+                  ],
+                  "action": "A"
+                }
+              },
+              {
+                "case": "decision_NONE",
+                "raw_answer": "{\n  \"remaining\": [2, 0],\n  \"eligible\": [false, true],\n  \"action\": \"A\"\n}",
+                "expected": {
+                  "action": "NONE",
+                  "remaining": [
+                    -1,
+                    -2
+                  ],
+                  "eligible": [
+                    false,
+                    false
+                  ]
+                },
+                "parsed": {
+                  "remaining": [
+                    2,
+                    0
+                  ],
+                  "eligible": [
+                    false,
+                    true
+                  ],
+                  "action": "A"
+                }
+              },
+              {
+                "case": "decision_UNKNOWN",
+                "raw_answer": "{\n  \"remaining\": [2, 0],\n  \"eligible\": [false, false],\n  \"action\": \"NONE\"\n}",
+                "expected": {
+                  "action": "UNKNOWN",
+                  "remaining": [
+                    null,
+                    null
+                  ],
+                  "eligible": [
+                    null,
+                    null
+                  ]
+                },
+                "parsed": {
+                  "remaining": [
+                    2,
+                    0
+                  ],
+                  "eligible": [
+                    false,
+                    false
+                  ],
+                  "action": "NONE"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

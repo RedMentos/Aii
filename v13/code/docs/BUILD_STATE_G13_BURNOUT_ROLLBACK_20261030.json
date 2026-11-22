@@ -1,0 +1,44 @@
+{
+  "package": "G13_BURNOUT_CLOCK_ROLLBACK",
+  "date": "2026-10-30",
+  "owner": "GPT-6 automation",
+  "base_sha": "501042c1581b226bf1cc24be0e939880a2393cd4",
+  "tested_head": "052799259a9106aff03e8225cf91f27a5f9d21d2",
+  "pr": 1285,
+  "mode": "REVIEW_ONLY_NOT_MERGED",
+  "changes": [
+    "v13/code/v13/scheduler.py",
+    "v13/code/tests/test_scheduler_burnout_rollback_20261030.py"
+  ],
+  "workflow_run": 41069251893,
+  "workflow_conclusion": "SUCCESS",
+  "artifact_id": 12983847672,
+  "artifact_status": "UPLOADED_NOT_DOWNLOADED_IN_THIS_SESSION",
+  "checks": [
+    "CANON",
+    "VENV",
+    "DEPS",
+    "TEST",
+    "COMPILE",
+    "PRIVACY",
+    "DIFF"
+  ],
+  "checks_result": "ALL_ENFORCED_ZERO_EXIT_PER_GITHUB_ACTIONS_SUCCESS",
+  "evidence_level": "SOFTWARE_GITHUB_ACTIONS_NOT_NATIVE_OR_REDMi",
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Original raw ZIP not independently downloaded/rehashed in this connector session",
+    "Full unfiltered cross-organ suite not run for this candidate; historical Run13A full-suite RED remains",
+    "Substantive C2/C3/B2 route utility still RED; needs prospective new cohort and independent native evidence"
+  ],
+  "exact_next_command": "Perform independent unfiltered full-suite cross-review on cumulative G13 candidate; retain historical RED, no waivers. Then return to C2/C3/B1/B2 comparative utility and unimplemented Canon organs.",
+  "remaining_platform_budget": "UNKNOWN"
+}

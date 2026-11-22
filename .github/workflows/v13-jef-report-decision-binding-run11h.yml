@@ -1,0 +1,78 @@
+name: V13 JEF report decision lineage run11h
+on:
+  push:
+    branches:
+      - 'assistant/v13-jef-report-decision-binding-run11h-20261030'
+    paths:
+      - '.github/workflows/v13-jef-report-decision-binding-run11h.yml'
+      - 'v13/code/tests/test_jef_report_decision_binding_run11h.py'
+      - 'v13/code/v13/jefoutcome.py'
+      - 'v13/code/docs/JEF_REPORT_DECISION_BINDING_CI_TRIGGER_RUN11H.txt'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  decision-lineage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - name: Focused real-Store JEF lineage tests with raw evidence
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/jef-report-lineage-run11h"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/jef-report-lineage-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/jef-report-lineage-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          (cd v13/code && timeout --signal=TERM --kill-after=5s 7m \
+            env PYTHONPATH=.:tests:scripts "$py" -m unittest -v \
+              tests.test_jef_report_decision_binding_run11h \
+              tests.test_jef_report_self_source_run11 \
+              tests.test_jef_human_receipt_integrity_20261030 \
+              tests.test_jef_human_report_receipt_integrity_20261030 \
+              tests.test_jefoutcome_self_source_20261030 \
+              tests.test_jefoutcome_report_source_20261030 \
+              tests.test_jefoutcome) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          "$py" -m py_compile v13/code/v13/jefoutcome.py \
+            v13/code/tests/test_jef_report_decision_binding_run11h.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base 0b6fb758828c2834a45c9879191a7854ac96060f \
+            --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 0b6fb758828c2834a45c9879191a7854ac96060f HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-jef-report-lineage-run11h-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/jef-report-lineage-run11h/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Fail closed and preserve raw
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/jef-report-lineage-run11h"
+          for stage in VENV DEPS TEST COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/"$stage"_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; raw retained"
+              tail -100 "$e/"$stage"_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo "JEF_REPORT_SOFTWARE_ONLY_NO_AUTHORITY_OR_AGE_PROMOTION"

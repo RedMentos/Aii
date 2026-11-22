@@ -1,0 +1,13 @@
+# Prereg: integrate verified World-JEPA overlapping-fit guard into TP27 review chain (2026-10-28)
+
+Owner: automation, **new independent review branch** `assistant/v13-run11-tp27-worldjepa-integration-20261028`, exact base #916 head `770515daba84d8bb4b4fc9fa78b3bc424d8b8b88`. Donor #913 head `0924da3a91bda75b6d47412bde526b973c44ba96`, parent checkpoint #912 `b3586688c9d4ea88e1cfd05877f2dc8ce22ebeaa`. No force-push or production merge.
+
+**Independent donor evidence review before integration:** original GREEN Actions `40681962744` at exact fix source `d41304614e227c271f168f48f31473df2b7e436f`, original ZIP artifact `12813666212`, SHA256 `a4323f2b4bffb5e2bd45be789e0aedca756ca06b97e6984871eacc5d4864ffdf`; independently downloaded and verified CRC clean, 15/15 SHA256SUMS, 7/7 stage exits zero, 24 focused and 2350 full software tests PASS (1 skip), privacy CLEAN. Original RED `40681756894` remains RED (2 expected failures), not erased. Donor private Library backup previously verified by its owner.
+
+**Frozen import:** donor World-JEPA source blob `e07216f214b2653295eb797318b20cd862602de6` (13-line additive change to source blob `98bf6f786656de20b33481f664a0fa93b4e7506f`), donor regression test blob `f1d5caeff91f9f73a92373d1124b3da0f11bfd5b`, donor prereg and verified evidence documents and original source-pinned donor workflow. Merge donor's BUILD_STATE entry **additively**, preserve all #916 TP27 audit and in-progress run entries. Record two-parent merge provenance. No changes to Runtime `68e7ed1352800174972558f1e0b0683a42c8689a`, model catalog, registered fixtures, C3 replay, or current TP27 native workflow source.
+
+**Functional contract:** World-JEPA SHADOW overlapping fit publication uses per-instance generation tickets outside `__dict__`; stale older fit raises, latest successful fit wins, newer failed fit vetoes older in-flight publication while preserving prior committed state. Training remains unlocked and inference/checkpoint reads serialized process-locally. No native JEPA training or utility claim.
+
+**Acceptance:** verify exact donor blobs in merged Git tree, no conflicts or lost BUILD_STATE keys, source-pinned focused + full Linux software regression, privacy CLEAN and original raw ZIP independent audit. Run this software workflow under the same `v13-run11-age0-native-endtoend` concurrency group to **queue behind** TP27 heavy native Actions `40685405624`, never compete for heavy resources. If tests RED, retain original artifact and repair in a new preregistered follow-up.
+
+All gates remain STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, LP3 FAIL, jepa_weight=0, Age0 RECORD_ONLY, Redmi unmeasured, whole-system incomplete. No production merge.

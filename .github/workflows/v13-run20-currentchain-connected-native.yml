@@ -1,0 +1,147 @@
+name: V13 Run20 latest-chain connected Age0 C2 C3 B1 B2 Linux native
+on:
+  push:
+    branches:
+      - assistant/v13-run20-resource-sensor-finite-20261030-hourly11
+    paths:
+      - '.github/workflows/v13-run20-currentchain-connected-native.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-run20-connected-native-20261030
+  cancel-in-progress: false
+jobs:
+  connected-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Focused software guards and serial connected native proof
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run20-connected"
+          mkdir -p "$e/proofs"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md > "$e/CANON_BLOB.txt"
+          git hash-object v13/code/specs/models.json > "$e/CATALOG_BLOB.txt"
+          git hash-object v13/code/specs/control_tools.json > "$e/TOOLS_BLOB.txt"
+          git hash-object v13/code/v13/proofs.py > "$e/PROOFS_BLOB.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run20-native-venv"
+          py="$RUNNER_TEMP/v13-run20-native-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$e/INSTALL_EXIT.txt"
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 3m env PYTHONPATH=.:tests "$py" -m unittest -q tests.test_step12 tests.test_jefoutcome tests.test_jef_human_record_precedence_20261030 tests.test_c2_route_admission_shadow) > "$e/GUARDS_RAW.log" 2>&1
+            echo "$?" > "$e/GUARDS_EXIT.txt"
+          else
+            echo SKIPPED_INSTALL_RED > "$e/GUARDS_RAW.log"
+            echo SKIPPED_RED > "$e/GUARDS_EXIT.txt"
+          fi
+          export V13_HOME="$RUNNER_TEMP/v13-run20-native-home"
+          if [ "$(cat "$e/GUARDS_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 15m env PYTHONPATH=v13/code "$py" -m v13.bootstrap --home "$V13_HOME" > "$e/BOOTSTRAP_RAW.log" 2>&1
+            echo "$?" > "$e/BOOTSTRAP_EXIT.txt"
+          else
+            echo SKIPPED_GUARDS_RED > "$e/BOOTSTRAP_RAW.log"
+            echo SKIPPED_RED > "$e/BOOTSTRAP_EXIT.txt"
+          fi
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 9m env PYTHONPATH=v13/code "$py" -m v13 --home "$V13_HOME" probe jef-modes > "$e/JEF_MODES_RAW.log" 2>&1
+            echo "$?" > "$e/JEF_MODES_EXIT.txt"
+          else
+            echo SKIPPED_BOOTSTRAP_RED > "$e/JEF_MODES_RAW.log"
+            echo SKIPPED_RED > "$e/JEF_MODES_EXIT.txt"
+          fi
+          if [ "$(cat "$e/JEF_MODES_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 10m env PYTHONPATH=v13/code "$py" -m v13 --home "$V13_HOME" probe step12 > "$e/STEP12_RAW.log" 2>&1
+            echo "$?" > "$e/STEP12_EXIT.txt"
+          else
+            echo SKIPPED_JEF_RED > "$e/STEP12_RAW.log"
+            echo SKIPPED_RED > "$e/STEP12_EXIT.txt"
+          fi
+          if [ "$(cat "$e/STEP12_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 3m env PYTHONPATH=v13/code "$py" -m v13 --home "$V13_HOME" ask 'Compare a local option costing 80 euros with a local option costing 110 euros under a 120 euro budget.' > "$e/ASK_RAW.log" 2>&1
+            echo "$?" > "$e/ASK_EXIT.txt"
+          else
+            echo SKIPPED_STEP12_RED > "$e/ASK_RAW.log"
+            echo SKIPPED_RED > "$e/ASK_EXIT.txt"
+          fi
+          for f in jef-modes-proof.json step12-proof.json native-probe.json; do
+            if [ -f "$V13_HOME/exports/$f" ]; then cp "$V13_HOME/exports/$f" "$e/proofs/$f"; fi
+          done
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            PYTHONPATH=v13/code "$py" - "$V13_HOME" "$e" > "$e/REPORT_CHECK_RAW.log" 2>&1 <<'PY'
+          import hashlib,json,pathlib,sys
+          from v13.models import ModelManager
+          from scripts.step2_current_catalog_artifact_probe import git_blob_sha
+          from v13.common import APP
+          home=pathlib.Path(sys.argv[1]);e=pathlib.Path(sys.argv[2])
+          assert git_blob_sha((APP/'specs/models.json').read_bytes())=='7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          assert git_blob_sha((APP/'specs/control_tools.json').read_bytes())=='954a3f468f10195fbce12d27f68585ee7edee2c9'
+          cfg=json.loads((home/'config/settings.json').read_text())
+          assert cfg['learning_mode']=='RECORD_ONLY' and cfg['system_stage']==0 and not cfg['latents_enabled']
+          assert cfg.get('jepa_weight',0)==0
+          v=ModelManager(home).verify(deep=True)
+          assert set(('needle','language','body','gist')).issubset(v)
+          assert all(v[k]['ok'] and v[k]['hash_checked'] for k in ('needle','language','body','gist'))
+          jef=e/'proofs/jef-modes-proof.json';step=e/'proofs/step12-proof.json'
+          if not jef.is_file() or not step.is_file():raise SystemExit('MISSING_NATIVE_PROOFS')
+          j=json.loads(jef.read_text());s=json.loads(step.read_text())
+          assert j['status']=='JEF_MODES_PASS' and j['no_b_dependency_proven']
+          assert s['status']=='VERTICAL_CHECKS_PASS'
+          assert s['step2_observed_both_roles'] and s['step1_native_control_observed']
+          assert s['step1_c3_without_body'] and all(s['step1_restart'].values())
+          assert all(v>0 for v in s['step2_role_states'].values())
+          assert s['body_releases'] and all(x['process_reaped'] for x in s['body_releases'])
+          assert not s['db_integrity_errors']
+          assert not s['full_runner_proof'] and not s['complementarity_proven']
+          assert not s['phone_measured'] and not j['phone_measured']
+          assert (e/'ASK_RAW.log').stat().st_size>0
+          print('CONNECTED_AGE0_JEF_C2_C3_B1_B2_LINUX_NATIVE_INTERMEDIATE_ONLY')
+          print('verified_roles',sorted(v),'jef_checks',len(j['checks']),'step12_checks',len(s['checks']))
+          PY
+            echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          else
+            echo SKIPPED_BOOTSTRAP_RED > "$e/REPORT_CHECK_RAW.log"
+            echo SKIPPED_RED > "$e/REPORT_CHECK_EXIT.txt"
+          fi
+          python3 -m compileall -q v13/code/v13/proofs.py v13/code/tests/test_step12.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 07b72767342308567cd32e562d3166fb397f56ce --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 07b72767342308567cd32e562d3166fb397f56ce HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-run20-connected-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run20-connected/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce current-chain connected native proof and retain RED
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run20-connected"
+          for name in INSTALL GUARDS BOOTSTRAP JEF_MODES STEP12 ASK REPORT_CHECK COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED; original raw retained; no connected native PASS"
+              tail -80 "$e/${name}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'CURRENT_CHAIN_AGE0_CONNECTED_LINUX_NATIVE_ONLY_NO_STEP2_B3_JEPA_REDMI_OR_SYSTEM_PROMOTION'

@@ -1,0 +1,7 @@
+# Run117CX native retry2 — 2026-11-01
+
+First original native CV [41261720829](https://github.com/RedMentos/Aii/actions/runs/41261720829) RED `RUN117CV_MODEL_OR_RUNNER_PIN_RED` before native call; original ZIP SHA256 `131496d6cad59ec0764e238dbe0ba6198f19189cf11572a79fe48635f19e9d40`. CX first retry [41261992511](https://github.com/RedMentos/Aii/actions/runs/41261992511) RED **before native call** because its workflow referenced a nonexistent `scripts/run117cx_qwen_c3_native.py` path, despite PREREG/DEPS/PREFLIGHT/INSTALL/QWEN/PRIVACY/DIFF all green. Original second ZIP SHA256 `5b37703721a1e30be14ad2113b95b33a9bbe4e902364b438caa8635c953ae12c`, CRC/24 inner SHA verified; private Library backup `/V13-Checkpoints/2026-11-01/Run117CV/RAW_RED_41261992511_sha5b377037.zip`. Neither original attempt made a native C3 call; both original failures retained.
+
+Workflow source now explicitly points to existing `scripts/run117cv_qwen_c3_native.py` in both compile and native commands (commit `971f408487484aec9a95ef4f9778cdeb5acd2383`). Original frozen Run117CV seed117041/9×2, models/hashes/scorer and Run117CX canonical symlink repair unchanged. Software 28/28 previously green. No heavy native owner active at check; only Run117CY software preflight running. Serial native group `v13-native-c3-ag12-20261030`, no cancel-in-progress.
+
+**This marker authorizes the corrected retry, not any promotion.** Native result PENDING. Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, `jepa_weight=0`, no Redmi/whole-system proof.

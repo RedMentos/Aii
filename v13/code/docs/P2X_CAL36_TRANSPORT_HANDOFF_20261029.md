@@ -1,0 +1,35 @@
+# P2X CAL36 review checkpoint — 2026-10-29
+
+## Baseline, ownership and evidence
+- PR #1099, branch `codex/v13-p2x-cal36-transport-20261029`, review-only child of PR #1093 at `6cf8a19ead783ec12461edbe54230a8d94fe3ac1`. Owner: this isolated CAL36 branch. Do not rewrite #1093 or #1090.
+- Preregistration committed before source at `8a670fca39f200c850cf66c7ff9638e59dfa0d87`. Frozen fixture SHA256 `cd3edfdb464c6f99650b1ea32b5b09854268f0b53faa79df22ddcd135f21985a`; 36 calibration rows, 12 A/12 B/12 NONE; 72 calls if native enabled. No training or held-out validation rows used.
+- New code: `scripts/p2x_cal36_transport.py` (plan, pinned asset preflight, owned loopback 72-call runner, per-call durable raw, fail-closed offline score and receipt verifier); `tests/test_p2x_cal36_transport_20261029.py` (six tests, fake server only). Parent fixed LoRA `--lora-scaled FNAME:SCALE` reused unchanged. No runtime integration, AG6 adapter registration, weights update or new user authority.
+- Exact source-only GitHub Actions run `40884064422` on commit `e7fc937fd69d98d137ae3f1f94554d8f4b503000`: 6/6 focused tests PASS; plan check 36/72 and frozen fixture hash PASS; compile PASS; all stage exits 0. **No native calls**. Original artifact ID `12901762304`, ZIP SHA256 `6191dfa682c6651ffde5d803d348b9aef38aab135e5c454359d5ea240948feb1`; CRC clean, 4/4 internal SHA256SUMS match, stage JSON 0/0/0. Independently downloaded and checked.
+- Original ZIP privately backed up at `/V13-Checkpoints/2026-10-29/GPT6-Review-Raw/V13_P2X_CAL36_SOURCE_ONLY_40884064422.zip` and re-materialized byte-identical SHA256. Rejected anyone-writable Drive destination not used.
+
+## Gates and blockers
+- Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; jepa_weight=0; AG6 unapproved; Redmi UNMEASURED; V13 INCOMPLETE. No native inference or new learning proof from source-only tests.
+- Parent #1096's actual 360 candidate calls all returned NONE, no measured gain. CAL36 is a diagnostic on disjoint calibration data; it cannot replace held-out validation or authorize a production model.
+- Native 72-call run remains unexecuted at this checkpoint. Requires exact pinned model/runtime/adapter/binary artifacts, a verified empty serial owner slot and no competing heavy job. Linux-native and Redmi evidence remain distinct.
+
+## Exact next steps
+1. Inspect active GitHub Actions native jobs and serial owner; if clear, create a **single** native CAL36 workflow using the same concurrency group as #1093 and exact frozen pins. Do not run overlapping heavy jobs.
+2. Install original pinned C3 GGUF with existing `python -m scripts.p2x_base360_native_executor --home HOME --install`; obtain exact llama b10964 tar and original adapter ZIP by SHA. Execute `python -m scripts.p2x_cal36_transport --server-binary BIN --runtime-archive TAR --model GGUF --adapter ADAPTER --out NEW_DIR` once. Independently run `python -m scripts.p2x_cal36_transport --verify NEW_DIR` and audit every original raw call, ZIP CRC and hashes.
+3. Preserve native failures and partial raw, publish aggregate results only with claim limits. If transport remains NONE, investigate fresh calibration-only prompt/schema/model-tokenization mechanism; never tune the held-out 72 validation rows. Continue unrelated canonical packages if native blocked.
+
+Remaining execution budget: UNKNOWN. This is a verified intermediate checkpoint, not V13 completion.
+
+## Addendum — exact pinned Linux-native result (2026-10-29)
+- GitHub Actions `40884436438` exact source head `ac1737c8c8106cd5e76a483359a7a991e52c1bfc` completed **GREEN as execution/verification**, not as model utility. The same original heavy-job concurrency group as #1093 was used; no competing heavy job observed before launch.
+- Original artifact `12901726981`, ZIP SHA256 `12b86b28bd7f2ab3ef5f85fc38ff71cc77b034d5958f6ed7555bc15f2dff74c5`, CRC clean, **45/45** internal SHA256SUMS verified. SOURCE/RESOURCE/VENV/DEPS/PIP_CHECK/FOCUSED/INSTALL/RUNTIME_DOWNLOAD/RUNTIME_SHA/ADAPTER_DOWNLOAD/ADAPTER_SHA/ADAPTER_UNZIP/ADAPTER_GGUF_SHA/MODEL_PATH/NATIVE/VERIFY/PRIVACY/DIFF all exit 0. 72/72 FINAL, one actual model call per row, server process reaped, source/model/adapter/runtime/binary pins preserved.
+- Independent offline raw replay (separate from the workflow verifier): exactly 36 calibration IDs, 12 A / 12 B / 12 NONE, both_exact and c3_only for every ID, no training or validation rows, 72 matching input hashes, 4/4 receipt payload hashes. **All 72 outputs were `{"action": "NONE"}`.** Positive A/B correct **0/24**, C3-only UNKNOWN **0/36**, paired source-sensitive positives **0/24**, NONE correct **12/12**. Both-exact wrong commitments 24/36; C3-only wrong commitments 36/36. Hypothesis H1 of positive source-conditioned A/B transport is rejected on this calibration.
+- This confirms the earlier #1096 constant-NONE diagnostic on disjoint data. It does **not** establish whether the root cause is LoRA learning, prompt interpretation, schema constraints or decoding; do not infer a mechanism from constant output alone.
+- Original ZIP privately backed up at `/V13-Checkpoints/2026-10-29/GPT6-Review-Raw/V13_P2X_CAL36_NATIVE_40884436438.zip` and re-materialized byte-identical SHA256. Rejected anyone-writable Drive destination was not used. Public repo contains no private prompt/user data.
+- Full software regression/privacy workflow `40884654019` launched on later docs/workflow-only head `7771606a4def91062eecc80e5bc5a4fd6c27179f`; **PENDING at this addendum**, do not claim full-suite GREEN until original raw is audited.
+- All negative gates unchanged: Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 L1 FAIL, Body-JEPA UNAVAILABLE, jepa_weight=0, AG6 unapproved, Redmi unmeasured, V13 incomplete. Native CAL36 is a diagnostic, not a production activation or learning proof.
+- Next: independently audit full software CI, then select a separate canonical organ package rather than repeatedly probing the same CAL36 sample. A future P2X format/schema/adapter diagnostic needs **new disjoint preregistered data** and a serialized owner; no tuning of the 72 held-out validation rows.
+
+## Addendum — full software regression closed
+- Exact-head full software Actions `40884654019` on `7771606a4def91062eecc80e5bc5a4fd6c27179f` **GREEN**: 13 focused PASS, **3163 full tests OK (11 skipped)**, all PIN/VENV/NUMPY/FOCUSED/COMPILE/INSTALL/PIP_CHECK/FULL/PRIVACY/DIFF exits 0. Privacy scan CLEAN, diff check 0. No native model calls in this workflow.
+- Original artifact `12902721356`, ZIP SHA256 `5ec9d90e94dcd7605c6477bdf4ee240ffc094484e00d99522bbea08b409b6fa9`, CRC clean, 23/23 SHA256SUMS. Privately backed up to `/V13-Checkpoints/2026-10-29/GPT6-Review-Raw/V13_P2X_CAL36_FULLSUITE_40884654019.zip`, re-materialized and byte-identical.
+- This closes software regression for this review-only package. It does not change the **negative** native CAL36 model-quality result or any canonical gate.

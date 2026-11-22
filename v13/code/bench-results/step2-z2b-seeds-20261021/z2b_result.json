@@ -1,0 +1,850 @@
+{
+  "gate": {
+    "status": "Z2B_DIVERGENCE_NOT_SUPPORTED",
+    "checks": {
+      "combination_beats_best_single": false,
+      "each_body_wins_an_episode": false,
+      "complementary_error_profiles": false,
+      "beats_same_model_same_policy": false,
+      "beats_same_model_prompt_only": false,
+      "structural": true,
+      "arms_did_what_they_say": true
+    },
+    "primary_arm": "CQ",
+    "control_arm": "DQ",
+    "two_body_both_exact_mean": 0.611111111111111,
+    "best_single": "b1_only",
+    "best_single_mean": 0.5916666666666667,
+    "error_profile_mean": {
+      "b1_only": {
+        "rule_fields_correct": 0.20000000000000004,
+        "option_fields_correct": 0.9944444444444445
+      },
+      "b2_only": {
+        "rule_fields_correct": 0.03333333333333333,
+        "option_fields_correct": 0.37222222222222223
+      }
+    },
+    "each_body_wins_seeds": 1,
+    "two_bodies_worth_cost": false,
+    "cheaper_shared_body_enough": true,
+    "secondary": {
+      "query_effect_two_body": "QUERY_HELPS",
+      "query_effect_shared_body": "QUERY_HELPS",
+      "b2_model_both_exact": "NO_CLEAR_DIFFERENCE",
+      "b2_model_b2_only": "NO_CLEAR_DIFFERENCE"
+    },
+    "ci": {
+      "primary_vs_best_single": {
+        "mean": 0.019444444444444438,
+        "ci95": [
+          -0.075,
+          0.10555555555555556
+        ],
+        "episodes": 10,
+        "seeds": 3,
+        "best_single": "b1_only"
+      },
+      "primary_vs_same_policy_dual": {
+        "mean": 0.04166666666666666,
+        "ci95": [
+          -0.055555555555555546,
+          0.125
+        ],
+        "episodes": 10,
+        "seeds": 3
+      },
+      "primary_vs_control_prompt_only_dual": {
+        "mean": 0.04166666666666666,
+        "ci95": [
+          -0.05833333333333335,
+          0.13055555555555556
+        ],
+        "episodes": 10,
+        "seeds": 3
+      },
+      "primary_vs_control_shared_body": {
+        "mean": -0.013888888888888885,
+        "ci95": [
+          -0.11111111111111109,
+          0.08333333333333333
+        ],
+        "episodes": 10,
+        "seeds": 3
+      },
+      "query_two_body": {
+        "mean": 0.2333333333333333,
+        "ci95": [
+          0.12222222222222223,
+          0.34444444444444444
+        ],
+        "episodes": 10,
+        "seeds": 3
+      },
+      "query_shared_body": {
+        "mean": 0.22777777777777772,
+        "ci95": [
+          0.09999999999999999,
+          0.3777777777777777
+        ],
+        "episodes": 10,
+        "seeds": 3
+      },
+      "lfm_minus_qwen_both_exact": {
+        "mean": 0.019444444444444455,
+        "ci95": [
+          -0.07222222222222222,
+          0.10833333333333335
+        ],
+        "episodes": 10,
+        "seeds": 3
+      },
+      "lfm_minus_qwen_b2_only": {
+        "mean": -0.047222222222222214,
+        "ci95": [
+          -0.11666666666666665,
+          0.016666666666666673
+        ],
+        "episodes": 10,
+        "seeds": 3
+      }
+    },
+    "bands": {
+      "C": {
+        "b1_only": {
+          "per_seed": {
+            "14": 0.275,
+            "15": 0.3416666666666667,
+            "16": 0.325
+          },
+          "mean": 0.3138888888888889,
+          "min": 0.275,
+          "max": 0.3416666666666667,
+          "range": 0.06666666666666665
+        },
+        "b2_only": {
+          "per_seed": {
+            "14": 0.24166666666666664,
+            "15": 0.18333333333333332,
+            "16": 0.2583333333333333
+          },
+          "mean": 0.22777777777777775,
+          "min": 0.18333333333333332,
+          "max": 0.2583333333333333,
+          "range": 0.07499999999999998
+        },
+        "both_none": {
+          "per_seed": {
+            "14": 0.39166666666666666,
+            "15": 0.4916666666666667,
+            "16": 0.31666666666666665
+          },
+          "mean": 0.39999999999999997,
+          "min": 0.31666666666666665,
+          "max": 0.4916666666666667,
+          "range": 0.17500000000000004
+        },
+        "both_exact": {
+          "per_seed": {
+            "14": 0.375,
+            "15": 0.45,
+            "16": 0.30833333333333335
+          },
+          "mean": 0.37777777777777777,
+          "min": 0.30833333333333335,
+          "max": 0.45,
+          "range": 0.14166666666666666
+        },
+        "both_control": {
+          "per_seed": {
+            "14": 0.39166666666666666,
+            "15": 0.475,
+            "16": 0.3416666666666667
+          },
+          "mean": 0.40277777777777773,
+          "min": 0.3416666666666667,
+          "max": 0.475,
+          "range": 0.1333333333333333
+        },
+        "same_policy_dual": {
+          "per_seed": {
+            "14": 0.275,
+            "15": 0.4166666666666667,
+            "16": 0.24166666666666664
+          },
+          "mean": 0.3111111111111111,
+          "min": 0.24166666666666664,
+          "max": 0.4166666666666667,
+          "range": 0.17500000000000004
+        },
+        "prompt_only_dual": {
+          "per_seed": {
+            "14": 0.29166666666666663,
+            "15": 0.36666666666666664,
+            "16": 0.375
+          },
+          "mean": 0.3444444444444444,
+          "min": 0.29166666666666663,
+          "max": 0.375,
+          "range": 0.08333333333333337
+        }
+      },
+      "D": {
+        "b1_only": {
+          "per_seed": {
+            "14": 0.35833333333333334,
+            "15": 0.36666666666666664,
+            "16": 0.3416666666666667
+          },
+          "mean": 0.35555555555555557,
+          "min": 0.3416666666666667,
+          "max": 0.36666666666666664,
+          "range": 0.024999999999999967
+        },
+        "b2_only": {
+          "per_seed": {
+            "14": 0.175,
+            "15": 0.18333333333333332,
+            "16": 0.18333333333333332
+          },
+          "mean": 0.18055555555555555,
+          "min": 0.175,
+          "max": 0.18333333333333332,
+          "range": 0.008333333333333331
+        },
+        "both_none": {
+          "per_seed": {
+            "14": 0.4583333333333333,
+            "15": 0.2833333333333333,
+            "16": 0.30833333333333335
+          },
+          "mean": 0.35000000000000003,
+          "min": 0.2833333333333333,
+          "max": 0.4583333333333333,
+          "range": 0.175
+        },
+        "both_exact": {
+          "per_seed": {
+            "14": 0.39166666666666666,
+            "15": 0.39166666666666666,
+            "16": 0.4083333333333333
+          },
+          "mean": 0.3972222222222222,
+          "min": 0.39166666666666666,
+          "max": 0.4083333333333333,
+          "range": 0.016666666666666663
+        },
+        "both_control": {
+          "per_seed": {
+            "14": 0.39166666666666666,
+            "15": 0.31666666666666665,
+            "16": 0.5083333333333333
+          },
+          "mean": 0.4055555555555555,
+          "min": 0.31666666666666665,
+          "max": 0.5083333333333333,
+          "range": 0.19166666666666665
+        },
+        "same_policy_dual": {
+          "per_seed": {
+            "14": 0.35833333333333334,
+            "15": 0.4083333333333333,
+            "16": 0.35
+          },
+          "mean": 0.37222222222222223,
+          "min": 0.35,
+          "max": 0.4083333333333333,
+          "range": 0.05833333333333335
+        },
+        "prompt_only_dual": {
+          "per_seed": {
+            "14": 0.3416666666666667,
+            "15": 0.275,
+            "16": 0.30833333333333335
+          },
+          "mean": 0.30833333333333335,
+          "min": 0.275,
+          "max": 0.3416666666666667,
+          "range": 0.06666666666666665
+        }
+      },
+      "CQ": {
+        "b1_only": {
+          "per_seed": {
+            "14": 0.6,
+            "15": 0.5833333333333333,
+            "16": 0.5916666666666667
+          },
+          "mean": 0.5916666666666667,
+          "min": 0.5833333333333333,
+          "max": 0.6,
+          "range": 0.01666666666666672
+        },
+        "b2_only": {
+          "per_seed": {
+            "14": 0.20833333333333331,
+            "15": 0.20833333333333334,
+            "16": 0.20833333333333334
+          },
+          "mean": 0.20833333333333334,
+          "min": 0.20833333333333331,
+          "max": 0.20833333333333334,
+          "range": 2.7755575615628914e-17
+        },
+        "both_none": {
+          "per_seed": {
+            "14": 0.7166666666666666,
+            "15": 0.7166666666666666,
+            "16": 0.575
+          },
+          "mean": 0.6694444444444443,
+          "min": 0.575,
+          "max": 0.7166666666666666,
+          "range": 0.1416666666666666
+        },
+        "both_exact": {
+          "per_seed": {
+            "14": 0.675,
+            "15": 0.5833333333333333,
+            "16": 0.575
+          },
+          "mean": 0.611111111111111,
+          "min": 0.575,
+          "max": 0.675,
+          "range": 0.10000000000000009
+        },
+        "both_control": {
+          "per_seed": {
+            "14": 0.675,
+            "15": 0.55,
+            "16": 0.6333333333333333
+          },
+          "mean": 0.6194444444444445,
+          "min": 0.55,
+          "max": 0.675,
+          "range": 0.125
+        },
+        "same_policy_dual": {
+          "per_seed": {
+            "14": 0.5916666666666667,
+            "15": 0.5833333333333333,
+            "16": 0.5333333333333333
+          },
+          "mean": 0.5694444444444444,
+          "min": 0.5333333333333333,
+          "max": 0.5916666666666667,
+          "range": 0.05833333333333335
+        },
+        "prompt_only_dual": {
+          "per_seed": {
+            "14": 0.5916666666666667,
+            "15": 0.55,
+            "16": 0.5833333333333333
+          },
+          "mean": 0.5750000000000001,
+          "min": 0.55,
+          "max": 0.5916666666666667,
+          "range": 0.04166666666666663
+        }
+      },
+      "DQ": {
+        "b1_only": {
+          "per_seed": {
+            "14": 0.6,
+            "15": 0.5916666666666667,
+            "16": 0.5916666666666667
+          },
+          "mean": 0.5944444444444444,
+          "min": 0.5916666666666667,
+          "max": 0.6,
+          "range": 0.008333333333333304
+        },
+        "b2_only": {
+          "per_seed": {
+            "14": 0.19166666666666665,
+            "15": 0.19166666666666665,
+            "16": 0.175
+          },
+          "mean": 0.18611111111111112,
+          "min": 0.175,
+          "max": 0.19166666666666665,
+          "range": 0.016666666666666663
+        },
+        "both_none": {
+          "per_seed": {
+            "14": 0.575,
+            "15": 0.5916666666666667,
+            "16": 0.6333333333333333
+          },
+          "mean": 0.6,
+          "min": 0.575,
+          "max": 0.6333333333333333,
+          "range": 0.05833333333333335
+        },
+        "both_exact": {
+          "per_seed": {
+            "14": 0.6666666666666666,
+            "15": 0.5333333333333333,
+            "16": 0.675
+          },
+          "mean": 0.625,
+          "min": 0.5333333333333333,
+          "max": 0.675,
+          "range": 0.14166666666666672
+        },
+        "both_control": {
+          "per_seed": {
+            "14": 0.625,
+            "15": 0.6,
+            "16": 0.625
+          },
+          "mean": 0.6166666666666667,
+          "min": 0.6,
+          "max": 0.625,
+          "range": 0.025000000000000022
+        },
+        "same_policy_dual": {
+          "per_seed": {
+            "14": 0.5916666666666667,
+            "15": 0.5916666666666667,
+            "16": 0.5916666666666667
+          },
+          "mean": 0.5916666666666667,
+          "min": 0.5916666666666667,
+          "max": 0.5916666666666667,
+          "range": 0.0
+        },
+        "prompt_only_dual": {
+          "per_seed": {
+            "14": 0.5916666666666667,
+            "15": 0.5333333333333333,
+            "16": 0.5833333333333333
+          },
+          "mean": 0.5694444444444444,
+          "min": 0.5333333333333333,
+          "max": 0.5916666666666667,
+          "range": 0.05833333333333335
+        }
+      }
+    },
+    "noise_vs_z2": {
+      "z2_two_body_minus_b1_only": -0.00833333333333336,
+      "seeds_two_body_minus_b1_only": [
+        -0.016666666666666663,
+        0.10833333333333334
+      ],
+      "z2_shared_minus_two_body": 0.04166666666666663,
+      "seeds_shared_minus_two_body": [
+        -0.05833333333333335,
+        0.09999999999999998
+      ],
+      "z2_c_both_exact_inside_seed_band": true
+    },
+    "canonical_gate_pass": false
+  },
+  "runs": {
+    "C_s14": {
+      "tool": {
+        "b1_only": 0.275,
+        "b2_only": 0.24166666666666664,
+        "both_control": 0.39166666666666666,
+        "both_exact": 0.375,
+        "both_none": 0.39166666666666666,
+        "prompt_only_dual": 0.29166666666666663,
+        "same_policy_dual": 0.275
+      },
+      "joint_access": {
+        "b1_only": 0,
+        "b2_only": 0,
+        "both_none": 2,
+        "both_exact": 3,
+        "both_control": 3,
+        "same_policy_dual": 0,
+        "prompt_only_dual": 0
+      },
+      "split_exact_tool": {
+        "b1_only": [],
+        "b2_only": [],
+        "both_control": [
+          "Nimbus"
+        ],
+        "both_exact": [
+          "Nimbus"
+        ],
+        "both_none": [],
+        "prompt_only_dual": [],
+        "same_policy_dual": []
+      }
+    },
+    "C_s15": {
+      "tool": {
+        "b1_only": 0.3416666666666667,
+        "b2_only": 0.18333333333333332,
+        "both_control": 0.475,
+        "both_exact": 0.45,
+        "both_none": 0.4916666666666667,
+        "prompt_only_dual": 0.36666666666666664,
+        "same_policy_dual": 0.4166666666666667
+      },
+      "joint_access": {
+        "b1_only": 0,
+        "b2_only": 0,
+        "both_none": 1,
+        "both_exact": 2,
+        "both_control": 2,
+        "same_policy_dual": 0,
+        "prompt_only_dual": 0
+      },
+      "split_exact_tool": {
+        "b1_only": [],
+        "b2_only": [],
+        "both_control": [],
+        "both_exact": [],
+        "both_none": [],
+        "prompt_only_dual": [],
+        "same_policy_dual": []
+      }
+    },
+    "C_s16": {
+      "tool": {
+        "b1_only": 0.325,
+        "b2_only": 0.2583333333333333,
+        "both_control": 0.3416666666666667,
+        "both_exact": 0.30833333333333335,
+        "both_none": 0.31666666666666665,
+        "prompt_only_dual": 0.375,
+        "same_policy_dual": 0.24166666666666664
+      },
+      "joint_access": {
+        "b1_only": 0,
+        "b2_only": 0,
+        "both_none": 0,
+        "both_exact": 0,
+        "both_control": 1,
+        "same_policy_dual": 0,
+        "prompt_only_dual": 0
+      },
+      "split_exact_tool": {
+        "b1_only": [],
+        "b2_only": [],
+        "both_control": [],
+        "both_exact": [],
+        "both_none": [],
+        "prompt_only_dual": [],
+        "same_policy_dual": []
+      }
+    },
+    "CQ_s14": {
+      "tool": {
+        "b1_only": 0.6,
+        "b2_only": 0.20833333333333331,
+        "both_control": 0.675,
+        "both_exact": 0.675,
+        "both_none": 0.7166666666666666,
+        "prompt_only_dual": 0.5916666666666667,
+        "same_policy_dual": 0.5916666666666667
+      },
+      "joint_access": {
+        "b1_only": 0,
+        "b2_only": 0,
+        "both_none": 5,
+        "both_exact": 2,
+        "both_control": 5,
+        "same_policy_dual": 0,
+        "prompt_only_dual": 2
+      },
+      "split_exact_tool": {
+        "b1_only": [],
+        "b2_only": [],
+        "both_control": [
+          "Kestrel",
+          "Lumen"
+        ],
+        "both_exact": [],
+        "both_none": [
+          "Kestrel",
+          "Lumen"
+        ],
+        "prompt_only_dual": [],
+        "same_policy_dual": []
+      }
+    },
+    "CQ_s15": {
+      "tool": {
+        "b1_only": 0.5833333333333333,
+        "b2_only": 0.20833333333333334,
+        "both_control": 0.55,
+        "both_exact": 0.5833333333333333,
+        "both_none": 0.7166666666666666,
+        "prompt_only_dual": 0.55,
+        "same_policy_dual": 0.5833333333333333
+      },
+      "joint_access": {
+        "b1_only": 0,
+        "b2_only": 0,
+        "both_none": 3,
+        "both_exact": 2,
+        "both_control": 1,
+        "same_policy_dual": 0,
+        "prompt_only_dual": 2
+      },
+      "split_exact_tool": {
+        "b1_only": [],
+        "b2_only": [],
+        "both_control": [],
+        "both_exact": [],
+        "both_none": [
+          "Lumen"
+        ],
+        "prompt_only_dual": [],
+        "same_policy_dual": []
+      }
+    },
+    "CQ_s16": {
+      "tool": {
+        "b1_only": 0.5916666666666667,
+        "b2_only": 0.20833333333333334,
+        "both_control": 0.6333333333333333,
+        "both_exact": 0.575,
+        "both_none": 0.575,
+        "prompt_only_dual": 0.5833333333333333,
+        "same_policy_dual": 0.5333333333333333
+      },
+      "joint_access": {
+        "b1_only": 0,
+        "b2_only": 0,
+        "both_none": 3,
+        "both_exact": 2,
+        "both_control": 3,
+        "same_policy_dual": 0,
+        "prompt_only_dual": 1
+      },
+      "split_exact_tool": {
+        "b1_only": [],
+        "b2_only": [],
+        "both_control": [
+          "Orion"
+        ],
+        "both_exact": [
+          "Orion"
+        ],
+        "both_none": [
+          "Perseus"
+        ],
+        "prompt_only_dual": [],
+        "same_policy_dual": []
+      }
+    },
+    "D_s14": {
+      "tool": {
+        "b1_only": 0.35833333333333334,
+        "b2_only": 0.175,
+        "both_control": 0.39166666666666666,
+        "both_exact": 0.39166666666666666,
+        "both_none": 0.4583333333333333,
+        "prompt_only_dual": 0.3416666666666667,
+        "same_policy_dual": 0.35833333333333334
+      },
+      "joint_access": {
+        "b1_only": 0,
+        "b2_only": 0,
+        "both_none": 3,
+        "both_exact": 0,
+        "both_control": 1,
+        "same_policy_dual": 0,
+        "prompt_only_dual": 0
+      },
+      "split_exact_tool": {
+        "b1_only": [],
+        "b2_only": [],
+        "both_control": [
+          "Orion"
+        ],
+        "both_exact": [],
+        "both_none": [
+          "Kestrel",
+          "Lumen",
+          "Nimbus"
+        ],
+        "prompt_only_dual": [],
+        "same_policy_dual": []
+      }
+    },
+    "D_s15": {
+      "tool": {
+        "b1_only": 0.36666666666666664,
+        "b2_only": 0.18333333333333332,
+        "both_control": 0.31666666666666665,
+        "both_exact": 0.39166666666666666,
+        "both_none": 0.2833333333333333,
+        "prompt_only_dual": 0.275,
+        "same_policy_dual": 0.4083333333333333
+      },
+      "joint_access": {
+        "b1_only": 0,
+        "b2_only": 0,
+        "both_none": 1,
+        "both_exact": 0,
+        "both_control": 0,
+        "same_policy_dual": 0,
+        "prompt_only_dual": 1
+      },
+      "split_exact_tool": {
+        "b1_only": [],
+        "b2_only": [],
+        "both_control": [],
+        "both_exact": [],
+        "both_none": [
+          "Perseus"
+        ],
+        "prompt_only_dual": [],
+        "same_policy_dual": []
+      }
+    },
+    "D_s16": {
+      "tool": {
+        "b1_only": 0.3416666666666667,
+        "b2_only": 0.18333333333333332,
+        "both_control": 0.5083333333333333,
+        "both_exact": 0.4083333333333333,
+        "both_none": 0.30833333333333335,
+        "prompt_only_dual": 0.30833333333333335,
+        "same_policy_dual": 0.35
+      },
+      "joint_access": {
+        "b1_only": 0,
+        "b2_only": 0,
+        "both_none": 1,
+        "both_exact": 0,
+        "both_control": 3,
+        "same_policy_dual": 0,
+        "prompt_only_dual": 1
+      },
+      "split_exact_tool": {
+        "b1_only": [],
+        "b2_only": [],
+        "both_control": [
+          "Lumen",
+          "Nimbus",
+          "Orion"
+        ],
+        "both_exact": [],
+        "both_none": [
+          "Nimbus"
+        ],
+        "prompt_only_dual": [],
+        "same_policy_dual": []
+      }
+    },
+    "DQ_s14": {
+      "tool": {
+        "b1_only": 0.6,
+        "b2_only": 0.19166666666666665,
+        "both_control": 0.625,
+        "both_exact": 0.6666666666666666,
+        "both_none": 0.575,
+        "prompt_only_dual": 0.5916666666666667,
+        "same_policy_dual": 0.5916666666666667
+      },
+      "joint_access": {
+        "b1_only": 1,
+        "b2_only": 0,
+        "both_none": 3,
+        "both_exact": 5,
+        "both_control": 3,
+        "same_policy_dual": 1,
+        "prompt_only_dual": 2
+      },
+      "split_exact_tool": {
+        "b1_only": [],
+        "b2_only": [],
+        "both_control": [
+          "Nimbus"
+        ],
+        "both_exact": [
+          "Kestrel",
+          "Perseus"
+        ],
+        "both_none": [
+          "Orion"
+        ],
+        "prompt_only_dual": [],
+        "same_policy_dual": []
+      }
+    },
+    "DQ_s15": {
+      "tool": {
+        "b1_only": 0.5916666666666667,
+        "b2_only": 0.19166666666666665,
+        "both_control": 0.6,
+        "both_exact": 0.5333333333333333,
+        "both_none": 0.5916666666666667,
+        "prompt_only_dual": 0.5333333333333333,
+        "same_policy_dual": 0.5916666666666667
+      },
+      "joint_access": {
+        "b1_only": 0,
+        "b2_only": 0,
+        "both_none": 3,
+        "both_exact": 3,
+        "both_control": 5,
+        "same_policy_dual": 0,
+        "prompt_only_dual": 2
+      },
+      "split_exact_tool": {
+        "b1_only": [],
+        "b2_only": [],
+        "both_control": [
+          "Nimbus",
+          "Perseus"
+        ],
+        "both_exact": [
+          "Perseus"
+        ],
+        "both_none": [
+          "Nimbus"
+        ],
+        "prompt_only_dual": [],
+        "same_policy_dual": []
+      }
+    },
+    "DQ_s16": {
+      "tool": {
+        "b1_only": 0.5916666666666667,
+        "b2_only": 0.175,
+        "both_control": 0.625,
+        "both_exact": 0.675,
+        "both_none": 0.6333333333333333,
+        "prompt_only_dual": 0.5833333333333333,
+        "same_policy_dual": 0.5916666666666667
+      },
+      "joint_access": {
+        "b1_only": 0,
+        "b2_only": 0,
+        "both_none": 4,
+        "both_exact": 4,
+        "both_control": 4,
+        "same_policy_dual": 0,
+        "prompt_only_dual": 2
+      },
+      "split_exact_tool": {
+        "b1_only": [],
+        "b2_only": [],
+        "both_control": [
+          "Nimbus",
+          "Orion"
+        ],
+        "both_exact": [
+          "Kestrel",
+          "Orion"
+        ],
+        "both_none": [
+          "Nimbus",
+          "Orion"
+        ],
+        "prompt_only_dual": [],
+        "same_policy_dual": []
+      }
+    }
+  }
+}

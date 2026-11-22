@@ -1,0 +1,269 @@
+{
+  "proof_kind": "C3_ANTI_ECHO_COMPARISON",
+  "model": "LFM2.5-230M-QAD-Q4_0.gguf",
+  "lang": "en",
+  "modes": {
+    "legacy": {
+      "rows": [
+        {
+          "id": "en_greeting",
+          "output": "Hello! How can I assist you today?",
+          "metrics": {
+            "tokens": 7,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": true
+          },
+          "checks": {
+            "must_any": true
+          }
+        },
+        {
+          "id": "en_rewrite",
+          "output": "The test is conducted locally and does not rely on cloud services.",
+          "metrics": {
+            "tokens": 12,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {
+            "must_all": true,
+            "forbid": true
+          }
+        },
+        {
+          "id": "en_grounded_report",
+          "output": "The budget for Project Aurora is 120 euros.",
+          "metrics": {
+            "tokens": 8,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {
+            "must_all": true
+          }
+        },
+        {
+          "id": "en_abstain",
+          "output": "Project Aurora is led by **Dr. Elena Martinez**.",
+          "metrics": {
+            "tokens": 8,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {
+            "must_any": false
+          }
+        },
+        {
+          "id": "open_memory",
+          "output": "A local assistant can remember corrections by recalling past interactions where the assistant made changes or adjustments, allowing them to retain these details for future reference. This helps in understanding patterns and improving future responses based on previous experiences.",
+          "metrics": {
+            "tokens": 39,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.9487179487179487,
+            "query_echo": 0.10810810810810811,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        },
+        {
+          "id": "open_plan",
+          "output": "1. **Assess Space**: Determine how much room you have and what plants you want to grow.\n2. **Choose Plants**: Select low-maintenance options like succulents, herbs, or dwarf fruit trees that thrive in indoor conditions.\n3. **Design Layout**: Plan the arrangement of plants to maximize sunlight exposure and ensure good airflow.\n\nThese steps help create a functional and beautiful balcony garden!",
+          "metrics": {
+            "tokens": 61,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.9016393442622951,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        },
+        {
+          "id": "open_compare",
+          "output": "Train commutes typically take about 1 hour, while bus commutes take around 30 minutes. For a 50 km daily commute, trains would be more efficient due to their higher speed and lower cost per kilometer compared to buses.",
+          "metrics": {
+            "tokens": 38,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.9210526315789473,
+            "query_echo": 0.1111111111111111,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        },
+        {
+          "id": "open_why",
+          "output": "A phone gets warm when it runs a language model because the device's internal components generate heat as it processes data and interacts with its surroundings. This heat can be transferred to the phone, causing it to become warmer. The warmth is typically due to factors like battery drain, power consumption, or the phone's cooling system operating at higher temperatures.",
+          "metrics": {
+            "tokens": 62,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.8064516129032258,
+            "query_echo": 0.08333333333333333,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        }
+      ],
+      "mean_query_echo": 0.03781906906906907,
+      "mean_repetition_rate": 0.0,
+      "mean_type_token_ratio": 0.9472326921828021,
+      "below_min_new": 1,
+      "checks_passed": 3,
+      "checked": 4
+    },
+    "anti_echo": {
+      "rows": [
+        {
+          "id": "en_greeting",
+          "output": "Hello! Could you tell me what's on your mind or topic of interest?",
+          "metrics": {
+            "tokens": 14,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {
+            "must_any": true
+          }
+        },
+        {
+          "id": "en_rewrite",
+          "output": "The tests run locally with no cloud access.",
+          "metrics": {
+            "tokens": 8,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {
+            "must_all": true,
+            "forbid": true
+          }
+        },
+        {
+          "id": "en_grounded_report",
+          "output": "The budget of the project is 120 euros.",
+          "metrics": {
+            "tokens": 8,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.875,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {
+            "must_all": true
+          }
+        },
+        {
+          "id": "en_abstain",
+          "output": "Project Aurora is led by its CEO or principal investigator.",
+          "metrics": {
+            "tokens": 10,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {
+            "must_any": false
+          }
+        },
+        {
+          "id": "open_memory",
+          "output": "A local assistant can remember corrections by associating them with recent tasks or actions, using visual cues like sticky notes or digital reminders, and regularly reviewing past interactions to reinforce their recall. This practice helps ensure the assistant stays on top of current responsibilities while minimizing forgetting.\n\nWould you like me to also provide examples of how this might work in specific contexts?",
+          "metrics": {
+            "tokens": 63,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.9047619047619048,
+            "query_echo": 0.06557377049180328,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        },
+        {
+          "id": "open_plan",
+          "output": "1. **Assess space and sunlight** – Measure how much light your balcony receives and decide which areas will receive it best.\n2. **Choose a layout** – Decide where to place pots, raised beds, or containers based on sunlight exposure and ease of maintenance.\n3. **Select plants and tools** – Pick a mix of hardy indoor plants suited to the balcony’s climate and choose appropriate garden tools for care and gardening tasks.",
+          "metrics": {
+            "tokens": 69,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.7971014492753623,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        },
+        {
+          "id": "open_compare",
+          "output": "Trains offer faster speeds, lower fares, and are often more environmentally friendly compared to buses, making them ideal for short daily commutes. However, buses may be less convenient due to longer travel times or higher costs.",
+          "metrics": {
+            "tokens": 36,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.9444444444444444,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        },
+        {
+          "id": "open_why",
+          "output": "A phone warms up while running a language model because of heat transfer between the device’s components and the air inside the phone. The phone contains electronic components (e.g., processors, batteries), which generate heat through conduction, convection, and radiation. As the phone operates with its processing power, these thermal currents flow into the surrounding environment, creating temperature gradients that cause the phone to warm up. This effect is often referred to as \"thermal comfort\" or \"humidity.\"",
+          "metrics": {
+            "tokens": 78,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.7692307692307693,
+            "query_echo": 0.013157894736842105,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        }
+      ],
+      "mean_query_echo": 0.009841458153580673,
+      "mean_repetition_rate": 0.0,
+      "mean_type_token_ratio": 0.9113173209640602,
+      "below_min_new": 0,
+      "checks_passed": 3,
+      "checked": 4
+    }
+  }
+}

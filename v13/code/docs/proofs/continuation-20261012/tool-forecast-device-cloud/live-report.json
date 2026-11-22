@@ -1,0 +1,504 @@
+{
+ "schema": "v13-tool-forecast-live-check-v1",
+ "utc": "2026-10-12T22:23:39Z",
+ "plan": {
+  "calc_in_world": [
+   1,
+   22,
+   48,
+   72,
+   173,
+   229,
+   341,
+   355,
+   363,
+   388,
+   395,
+   399,
+   493,
+   563,
+   576,
+   633,
+   681,
+   703,
+   750,
+   753,
+   811,
+   813,
+   878,
+   929,
+   973
+  ],
+  "calc_out_of_range": [
+   2641,
+   3388,
+   3508,
+   4806,
+   5661,
+   6101,
+   6885,
+   7043,
+   9010,
+   9550
+  ],
+  "note_in_world": [
+   "Ask the library tomorrow.",
+   "Ask the neighbour tomorrow.",
+   "Ask the school tomorrow.",
+   "Ask the team this evening.",
+   "Call the dentist on Monday.",
+   "Call the library on Monday.",
+   "Email the bank on Friday.",
+   "Email the bank this evening.",
+   "Email the neighbour on Monday.",
+   "Email the school on Friday.",
+   "Help the doctor next week.",
+   "Help the school tomorrow.",
+   "Help the team today.",
+   "Invite the landlord this evening.",
+   "Invite the plumber on Friday.",
+   "Invite the school on Monday.",
+   "Pay the school this evening.",
+   "Remind the landlord on Friday.",
+   "Remind the school on Friday.",
+   "Thank the bank tomorrow.",
+   "Thank the dentist this evening.",
+   "Thank the landlord today.",
+   "Thank the library this evening.",
+   "Visit grandma this evening.",
+   "Visit the plumber on Friday."
+  ],
+  "note_free": [
+   "Buy oat milk and two lemons.",
+   "Water the tomato plants on the balcony.",
+   "Renew the passport before June.",
+   "Send the slides to Mara after lunch.",
+   "Fix the squeaky hinge in the kitchen.",
+   "Book a table for six on Saturday.",
+   "Return the drill to Jonas.",
+   "Check the tyre pressure.",
+   "Read chapter four of the novel.",
+   "Back up the phone photos."
+  ],
+  "counts": {
+   "unused_values": 199,
+   "unused_notes": 200
+  }
+ },
+ "encoder": {
+  "backend_dir": "/root/native/phonehome/bin/b10964/llama-b10964",
+  "capture_tool_sha256": "c00d6829f85ec993fe650906157958b9df6e33d4b40d72644d0f91f46d501367",
+  "layer": 11,
+  "model_path": "/root/native/phonehome/models/gist/Qwen3.5-0.8B-Q4_0.gguf",
+  "model_sha256": "57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf",
+  "parity": {
+   "gate": 0.98,
+   "status": "PASS",
+   "worlds": {
+    "calc_counter": {
+     "drift_vs_capture": {
+      "bit_identical": false,
+      "cos_min": 0.9998691837016781,
+      "rel_rms_max": 0.016175061242649235
+     },
+     "pass": true,
+     "per_action": {
+      "add_15": {
+       "copy": 0.41286468440736357,
+       "forecast": 0.005533352116963193,
+       "mean_delta": 0.05842007805707283,
+       "rows": 80
+      },
+      "double": {
+       "copy": 0.1771252590158075,
+       "forecast": 0.0078067027032059965,
+       "mean_delta": 0.05808980624923067,
+       "rows": 80
+      },
+      "quarter": {
+       "copy": 0.45917634557805737,
+       "forecast": 0.02201900877821336,
+       "mean_delta": 0.11706815789471756,
+       "rows": 80
+      },
+      "subtract_7": {
+       "copy": 0.6073222779959705,
+       "forecast": 0.005194715384603888,
+       "mean_delta": 0.05692746830279734,
+       "rows": 80
+      }
+     },
+     "ratio_to_best_control": {
+      "add_15": 0.0947,
+      "double": 0.1344,
+      "quarter": 0.1881,
+      "subtract_7": 0.0913
+     },
+     "texts": 400
+    },
+    "note_edit": {
+     "drift_vs_capture": {
+      "bit_identical": false,
+      "cos_min": 0.9998379156542899,
+      "rel_rms_max": 0.01800468663496196
+     },
+     "pass": true,
+     "per_action": {
+      "append_done": {
+       "copy": 0.4800054566355164,
+       "forecast": 0.0037779772539589113,
+       "mean_delta": 0.0641697412181094,
+       "rows": 80
+      },
+      "prefix_urgent": {
+       "copy": 0.18916024406624402,
+       "forecast": 0.0031838749154063156,
+       "mean_delta": 0.03278961569381163,
+       "rows": 80
+      },
+      "undo": {
+       "copy": 0.2386768914657666,
+       "forecast": 0.0029039892444568697,
+       "mean_delta": 0.026015840357057875,
+       "rows": 80
+      },
+      "uppercase": {
+       "copy": 0.5219591118668696,
+       "forecast": 0.005810759515399328,
+       "mean_delta": 0.06715919527136933,
+       "rows": 80
+      }
+     },
+     "ratio_to_best_control": {
+      "append_done": 0.0589,
+      "prefix_urgent": 0.0971,
+      "undo": 0.1116,
+      "uppercase": 0.0865
+     },
+     "texts": 400
+    }
+   }
+  },
+  "pooling": "last",
+  "schema": "v13-tool-forecast-v1-encoder",
+  "tool_path": "/root/native/phonehome/bin/native-layer-taps",
+  "tool_sha256": "c3dba45454b83f4b259361fe121da0a7449147f99771538e3f3229a0a3d2a833",
+  "tool_source_sha256": "685c2a4fba3ccee6d1cfb529921ea6a57567f835a03e537145d73a99a2934822"
+ },
+ "arms": {
+  "calc_in_world": {
+   "double": {
+    "forecast": 0.0134846464,
+    "copy": 0.165649912,
+    "mean_delta": 0.060462522,
+    "n": 25,
+    "ratio_to_best_control": 0.223,
+    "pass": true
+   },
+   "add_15": {
+    "forecast": 0.011124474000000002,
+    "copy": 0.41456724640000003,
+    "mean_delta": 0.065160236,
+    "n": 25,
+    "ratio_to_best_control": 0.1707,
+    "pass": true
+   },
+   "quarter": {
+    "forecast": 0.020891631599999995,
+    "copy": 0.4670957892,
+    "mean_delta": 0.08826209880000001,
+    "n": 25,
+    "ratio_to_best_control": 0.2367,
+    "pass": true
+   },
+   "subtract_7": {
+    "forecast": 0.012085025200000002,
+    "copy": 0.6090054176,
+    "mean_delta": 0.0667628996,
+    "n": 25,
+    "ratio_to_best_control": 0.181,
+    "pass": true
+   }
+  },
+  "calc_out_of_range": {
+   "double": {
+    "forecast": 0.030442229000000005,
+    "copy": 0.127776218,
+    "mean_delta": 0.07481712800000001,
+    "n": 10,
+    "ratio_to_best_control": 0.4069,
+    "pass": true
+   },
+   "add_15": {
+    "forecast": 0.06830560499999999,
+    "copy": 0.287727904,
+    "mean_delta": 0.11791181099999999,
+    "n": 10,
+    "ratio_to_best_control": 0.5793,
+    "pass": true
+   },
+   "quarter": {
+    "forecast": 0.201220107,
+    "copy": 0.35450778199999994,
+    "mean_delta": 0.178120096,
+    "n": 10,
+    "ratio_to_best_control": 1.1297,
+    "pass": false
+   },
+   "subtract_7": {
+    "forecast": 0.038527691,
+    "copy": 0.5558735699999999,
+    "mean_delta": 0.11458927000000001,
+    "n": 10,
+    "ratio_to_best_control": 0.3362,
+    "pass": true
+   }
+  },
+  "note_in_world": {
+   "append_done": {
+    "forecast": 0.00363186,
+    "copy": 0.4943295008,
+    "mean_delta": 0.0650704748,
+    "n": 25,
+    "ratio_to_best_control": 0.0558,
+    "pass": true
+   },
+   "prefix_urgent": {
+    "forecast": 0.0027339575999999997,
+    "copy": 0.17939133920000003,
+    "mean_delta": 0.0299557296,
+    "n": 25,
+    "ratio_to_best_control": 0.0913,
+    "pass": true
+   },
+   "uppercase": {
+    "forecast": 0.006629922,
+    "copy": 0.5358944808,
+    "mean_delta": 0.0682217336,
+    "n": 25,
+    "ratio_to_best_control": 0.0972,
+    "pass": true
+   }
+  },
+  "note_free": {
+   "append_done": {
+    "forecast": 0.076056896,
+    "copy": 0.4580807760000001,
+    "mean_delta": 0.11880273700000002,
+    "n": 10,
+    "ratio_to_best_control": 0.6402,
+    "pass": true
+   },
+   "prefix_urgent": {
+    "forecast": 0.07659146300000001,
+    "copy": 0.19462339299999995,
+    "mean_delta": 0.08587518,
+    "n": 10,
+    "ratio_to_best_control": 0.8919,
+    "pass": true
+   },
+   "uppercase": {
+    "forecast": 0.13945011000000002,
+    "copy": 0.541454623,
+    "mean_delta": 0.153984403,
+    "n": 10,
+    "ratio_to_best_control": 0.9056,
+    "pass": true
+   }
+  }
+ },
+ "statuses": {
+  "SCORED": 245
+ },
+ "seconds_per_call_median": 2.684,
+ "tap_process_max_rss_mb": 999.3,
+ "device": {
+  "machine": "x86_64",
+  "system": "Linux",
+  "release": "6.18.44-fc-v114",
+  "termux": false
+ },
+ "runtime_report": {
+  "schema": "v13-tool-forecast-v1",
+  "mode": "SHADOW",
+  "encoder": "INSTALLED",
+  "worlds": {
+   "calc_counter": {
+    "actions": [
+     "add_15",
+     "double",
+     "quarter",
+     "subtract_7"
+    ],
+    "source": "docs/proofs/continuation-20261012/action-jepa-round7-fresh (runs/tool_l11_last/full-seed13)"
+   },
+   "note_edit": {
+    "actions": [
+     "append_done",
+     "prefix_urgent",
+     "undo",
+     "uppercase"
+    ],
+    "source": "docs/proofs/continuation-20261012/action-jepa-round8-note-tool (runs/note_l11_last/full-seed13)"
+   }
+  },
+  "pending": 0,
+  "counts": {
+   "FORECAST": 245,
+   "SCORED": 245
+  },
+  "stats": {
+   "calc_counter:add_15": {
+    "in_range": 25,
+    "n": 35,
+    "sum_log_ratio": -57.29025106746587,
+    "wins": 35,
+    "win_rate": 1.0,
+    "geo_mean_ratio_to_best_control": 0.1946
+   },
+   "calc_counter:double": {
+    "in_range": 25,
+    "n": 35,
+    "sum_log_ratio": -62.95155911110434,
+    "wins": 34,
+    "win_rate": 0.9714,
+    "geo_mean_ratio_to_best_control": 0.1655
+   },
+   "calc_counter:quarter": {
+    "in_range": 25,
+    "n": 35,
+    "sum_log_ratio": -36.66212916370161,
+    "wins": 28,
+    "win_rate": 0.8,
+    "geo_mean_ratio_to_best_control": 0.3508
+   },
+   "calc_counter:subtract_7": {
+    "in_range": 25,
+    "n": 35,
+    "sum_log_ratio": -71.73819375650783,
+    "wins": 35,
+    "win_rate": 1.0,
+    "geo_mean_ratio_to_best_control": 0.1288
+   },
+   "note_edit:append_done": {
+    "in_range": 25,
+    "n": 35,
+    "sum_log_ratio": -79.43951275619747,
+    "wins": 33,
+    "win_rate": 0.9429,
+    "geo_mean_ratio_to_best_control": 0.1033
+   },
+   "note_edit:prefix_urgent": {
+    "in_range": 25,
+    "n": 35,
+    "sum_log_ratio": -64.71940823653284,
+    "wins": 32,
+    "win_rate": 0.9143,
+    "geo_mean_ratio_to_best_control": 0.1574
+   },
+   "note_edit:uppercase": {
+    "in_range": 25,
+    "n": 35,
+    "sum_log_ratio": -62.90893473448186,
+    "wins": 31,
+    "win_rate": 0.8857,
+    "geo_mean_ratio_to_best_control": 0.1657
+   }
+  },
+  "recent": [
+   {
+    "action": "prefix_urgent",
+    "action_tx": "atx_3233c36dcb544c8f8850641f4abdf795",
+    "beats_controls": false,
+    "id": "tfc_aa53aff01e7f46d797eb2b4de9fc6a50",
+    "in_world_range": false,
+    "mse": {
+     "copy": 0.10033035,
+     "forecast": 0.1499493,
+     "mean_delta": 0.13443684
+    },
+    "outcome_text": "After adding a prefix, the note reads: Urgent: Read chapter four of the novel.",
+    "ratio_to_best_control": 1.494556,
+    "scored_at": 1791843809.4440105,
+    "status": "SCORED",
+    "tool_call": "tool_e86ae912ccb44507a844c5ae1a64d003",
+    "world": "note_edit"
+   },
+   {
+    "action": "uppercase",
+    "action_tx": "atx_10c656db539b440280dd2100359009d2",
+    "beats_controls": false,
+    "id": "tfc_e4eb48f3e69b4e02911ecc509fae6fe9",
+    "in_world_range": false,
+    "mse": {
+     "copy": 0.50644841,
+     "forecast": 0.25759627,
+     "mean_delta": 0.25147312
+    },
+    "outcome_text": "After uppercasing, the note reads: READ CHAPTER FOUR OF THE NOVEL.",
+    "ratio_to_best_control": 1.024349,
+    "scored_at": 1791843812.032884,
+    "status": "SCORED",
+    "tool_call": "tool_e16194be29e94466b4961b6199fadf77",
+    "world": "note_edit"
+   },
+   {
+    "action": "append_done",
+    "action_tx": "atx_1c59b4ce87e049c9bdb6448b6c4fce34",
+    "beats_controls": true,
+    "id": "tfc_d0bdc1c3a6054fb39d115c016b870263",
+    "in_world_range": false,
+    "mse": {
+     "copy": 0.44187385,
+     "forecast": 0.07760903,
+     "mean_delta": 0.1239333
+    },
+    "outcome_text": "After appending, the note reads: Back up the phone photos. Done.",
+    "ratio_to_best_control": 0.626216,
+    "scored_at": 1791843814.5775208,
+    "status": "SCORED",
+    "tool_call": "tool_e8604b82b8b34df99840f4bd61db89c4",
+    "world": "note_edit"
+   },
+   {
+    "action": "prefix_urgent",
+    "action_tx": "atx_bd051e66392f4b618931f8998e150947",
+    "beats_controls": false,
+    "id": "tfc_f46d44ebec8549fea45cf31d9ab7adf8",
+    "in_world_range": false,
+    "mse": {
+     "copy": 0.18767389,
+     "forecast": 0.06993888,
+     "mean_delta": 0.06823115
+    },
+    "outcome_text": "After adding a prefix, the note reads: Urgent: Back up the phone photos.",
+    "ratio_to_best_control": 1.025029,
+    "scored_at": 1791843816.9949908,
+    "status": "SCORED",
+    "tool_call": "tool_b0d68022a4dd4af4b08376398cf6161f",
+    "world": "note_edit"
+   },
+   {
+    "action": "uppercase",
+    "action_tx": "atx_b9f606ab4f8445e0b2f208fe037922fd",
+    "beats_controls": false,
+    "id": "tfc_f685ada117d34d139471678a367bc99d",
+    "in_world_range": false,
+    "mse": {
+     "copy": 0.57305702,
+     "forecast": 0.17964436,
+     "mean_delta": 0.14379212
+    },
+    "outcome_text": "After uppercasing, the note reads: BACK UP THE PHONE PHOTOS.",
+    "ratio_to_best_control": 1.249334,
+    "scored_at": 1791843819.4026842,
+    "status": "SCORED",
+    "tool_call": "tool_50345fc313d546b1969301d369542006",
+    "world": "note_edit"
+   }
+  ],
+  "claim_limit": "SHADOW measurement of a narrow candidate (closed worlds of rounds 7/8); no gate, answer, wake or learning reads it. Live calls outside those worlds get no forecast. Redmi latency/RSS unmeasured."
+ },
+ "verdict": "LIVE_PATH_CONFIRMED",
+ "claim_limit": "Runtime components with a script acting as the user; closed rounds-7/8 worlds; Linux x86 cloud, not the Redmi. SHADOW only: nothing reads the forecast."
+}

@@ -1,0 +1,21 @@
+# Preregistration — pinned 350M Body-JEPA CE/EMA/shuffled held-out NLL ablation (2026-10-30)
+
+**Parent:** PR #1181 verified mechanism head `1ce35f03b253bdeb5e2fad5392ec867fc390f9a9`. **Owner:** GPT-6 new review branch `codex/v13-bodyjepa-350m-heldout-ablation-20261030-auto11p`. This is a distinct experiment from the earlier one-step JEPA-only gradient probe. Canon and historical cohorts are frozen; no runtime or production authority.
+
+**Question:** At *equal supervised CE training budget*, does the existing `BodyJepaTrainer.fit` EMA-target JEPA term improve held-out paraphrase answer NLL compared with (1) CE alone and (2) CE + shuffled wrong-target JEPA, without worsening source-confusion leakage or general knowledge retention? This is a bounded **3-seed Linux FP32 diagnostic**, not a final utility gate.
+
+**Pinned model:** `LiquidAI/LFM2.5-350M` revision `120bf032c36dd1273de754669da040dba7ad4982`, `model.safetensors` SHA256 `1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e`, license lfm1.0. Canon Git blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7`, `v13/body_jepa.py` blob `be022258cd46cc11e460dd7438563c0d0cc4a0eb`, `v13/lora_trainer.py` blob `49a752879ae5d19391963742a0f042e740edb2cc`. These must not change in this pilot.
+
+**Synthetic source-bound training set (all invented, no user data):**
+- Asterion archive, blue vault -> Cobalt
+- Keldara archive, red vault -> Vermilion
+- Velaris archive, green vault -> Juniper
+- Meridia archive, gold vault -> Saffron
+
+Train wording for each: `In the invented <archive> archive, what is the <color> vault key?`. Holdout paraphrase wording: `Which key opens the <color> vault of the <archive> archive?`. Near-miss control: cross archive with the *same color* but different archive (cycle Asterion->Keldara->Velaris->Meridia->Asterion), score likelihood of the original trained answer; this must not be mistaken for a known ground-truth answer. Fixed general retention probes: capital of France -> Paris; 2 plus 2 -> 4; opposite of hot -> cold; gas plants absorb -> carbon dioxide. Exact rows/fixture SHA in the implementation receipt; no new labels from model output.
+
+**Fixed protocol:** seeds **73, 79, 83**. Three arms per seed, in order CE / EMA / SHUFFLED. Same frozen FP32 master, same initial seed, same 4 source rows, same optimizer steps **2**, LoRA r=2 alpha=4 on `w1,w2,w3`, lr=0.0005, weight_decay=0, no KL anchors, no locality swaps, max_tokens=96, predictor identity start, EMA decay=0.9. CE arm `jepa_weight=0`, EMA/shuffled `jepa_weight=0.5`. Do not change any default in the existing trainer; instantiate with explicit opt-in config. Override *only* GGUF adapter export (none published) and limit post-fit greedy recall to 8 tokens (never used in loss because no anchors). Evaluate exact teacher-forced answer-only NLL via the existing `LoraTrainer._encode` and frozen model, not loose keyword hits. Record per-row train, paraphrase, near-miss and general retention NLL, original baseline NLL, loss histories, rank, EMA deltas, source hashes, timings and errors. Keep completed arms and failures; no silent retry.
+
+**Predeclared diagnostic decision:** EMA must beat CE and SHUFFLED by >=0.05 mean paraphrase NLL across seeds and in >=2/3 seed comparisons; near-miss trained-answer NLL may not decrease by >0.05 vs CE (leak proxy); general retention NLL may not increase by >0.05 vs CE. If any requirement fails, `DIAGNOSTIC_NO_ATTRIBUTABLE_GAIN` or `DIAGNOSTIC_HURT`. Even if all pass, status only `BOUNDED_NLL_SIGNAL_NOT_UTILITY_GATE`: this is a tiny synthetic three-seed, two-step, one-model diagnostic, not held-out general semantic utility or native B1/B2 training.
+
+**Execution:** serialize one CPU native/model job (no parallel heavy jobs); bounded 30-minute native step, 45-minute workflow; isolated pinned torch 2.14.1 CPU, Transformers 5.20.2, PEFT 0.21.2, tokenizers 0.23.1, NumPy 2.2.6, GGUF dependency only if needed, hub >=1.31,<2.0. No paid/private resources. Full raw stdout/stderr, stage exits, SHA256SUMS and privacy scan. No adapter weights exported or activated. Preserve runtime jepa_weight=0, Age-0 RECORD_ONLY, Body-JEPA UNAVAILABLE, B3 OFF, STEP2 UTILITY_FAIL, Redmi unmeasured, all original negative gates.

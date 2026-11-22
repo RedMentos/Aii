@@ -1,0 +1,95 @@
+name: V13 HX3 ablation score integrity RED GREEN (software only)
+on:
+  push:
+    branches: [assistant/v13-hx3-ablation-finite-review-20261028]
+    paths:
+      - '.github/workflows/hx3-ablation-score-integrity-20261028.yml'
+      - 'v13/code/v13/agi/experience.py'
+      - 'v13/code/tests/test_hx3_ablation_score_integrity_20261028.py'
+      - 'v13/code/tests/test_b3degrade.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-hx3-ablation-score-integrity-20261028
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Capture exact source and raw tests
+        shell: bash
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/v13-hx3-ablation-integrity"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git show -s --format='%P' HEAD > "$evidence/PARENTS.txt"
+          for path in v13/code/v13/agi/experience.py v13/code/tests/test_hx3_ablation_score_integrity_20261028.py v13/code/tests/test_b3degrade.py v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md; do
+            git hash-object "$path"
+          done > "$evidence/BLOBS_RAW.log"
+          echo "$?" > "$evidence/BLOBS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-hx3-ablation-venv"
+          py="$RUNNER_TEMP/v13-hx3-ablation-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'prompt-toolkit==3.0.52' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 7m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_hx3_ablation_score_integrity_20261028 tests.test_harness_hx tests.test_hx3_revoked_approval_read_20261028
+          ) > "$evidence/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$evidence/FOCUSED_EXIT.txt"
+          if [ "$(cat "$evidence/FOCUSED_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$evidence/INSTALL_RAW.log" 2>&1
+            first=$?
+            "$py" -m pip install --no-input -q 'transformers==5.20.2' 'peft==0.21.2' >> "$evidence/INSTALL_RAW.log" 2>&1
+            second=$?
+            if [ "$first" != 0 ] || [ "$second" != 0 ]; then echo 1 > "$evidence/INSTALL_EXIT.txt"; fi
+            (
+              cd v13/code
+              timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q
+            ) > "$evidence/FULL_RAW.log" 2>&1
+            echo "$?" > "$evidence/FULL_EXIT.txt"
+          else
+            echo 'SKIPPED_FOCUSED_RED' > "$evidence/FULL_RAW.log"
+            echo 'SKIPPED_RED' > "$evidence/FULL_EXIT.txt"
+          fi
+          python3 -m compileall -q v13/code/v13 > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base e621be4869da2b6d87ff1e0b3317f887dd82cbe2 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check e621be4869da2b6d87ff1e0b3317f887dd82cbe2 HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          (cd "$evidence" && sha256sum * > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-hx3-ablation-score-integrity-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-hx3-ablation-integrity/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce raw exit status without erasing RED
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/v13-hx3-ablation-integrity"
+          for name in BLOBS INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed or preregistered RED; raw evidence retained"
+              tail -45 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'HX3_SOFTWARE_ONLY_NO_GATE_PROMOTION'

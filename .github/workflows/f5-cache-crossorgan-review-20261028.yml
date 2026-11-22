@@ -1,0 +1,113 @@
+name: V13 cached Dream F5 cross-organ Context Sleep integration (software only)
+on:
+  push:
+    branches: [assistant/v13-f5-dream-cache-crossorgan-review-20261028]
+    paths:
+      - '.github/workflows/f5-cache-crossorgan-review-20261028.yml'
+      - 'v13/code/v13/sleep.py'
+      - 'v13/code/tests/test_sleep_memory_authority_run274.py'
+      - 'v13/code/tests/test_sleep_a_exact_recall_identity_review.py'
+      - 'v13/code/v13/context_os.py'
+      - 'v13/code/tests/test_context_warm_authority_run271.py'
+      - 'v13/code/tests/test_dream_validation_authority_run275.py'
+      - 'v13/code/tests/test_context_sleep_f5_crossorgan_20261028.py'
+      - 'v13/code/tests/test_dream_cached_verdict_authority_20261028.py'
+      - 'v13/code/tests/test_f5_cached_dream_crossorgan_20261028.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-f5-cache-crossorgan-review-authority-20261027
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Capture RED or GREEN exact source with raw tests
+        shell: bash
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/v13-f5-cache-crossorgan-review"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git show -s --format='%P' HEAD > "$evidence/PARENTS.txt"
+          for item in \
+            "v13/code/v13/sleep.py:1f9cdb6046383c89e5d6c51ec57343098890cca4" \
+            "v13/code/v13/memory.py:501c8f43c92f031e034e4b93f4adbd4c67b7edfe" \
+            "v13/code/tests/test_sleep_memory_authority_run274.py:a0a62163e48c657df56540b52a6438880b4a5235" \
+            "v13/code/tests/test_sleep_a_exact_recall_identity_review.py:d7c76c42ccaf523d0e6dd227ec66f9276770f9f6" \
+            "v13/code/v13/context_os.py:127af0b872bfce002c6dd72020a22574f52691e8" \
+            "v13/code/tests/test_context_warm_authority_run271.py:cc1423c7f4961b038f073c77ceec6a31cbc99a43" \
+            "v13/code/tests/test_dream_validation_authority_run275.py:152933e4afaf0e7d1defd991ab3e5c3267315a00" \
+            "v13/code/tests/test_context_sleep_f5_crossorgan_20261028.py:026411036e19786402869e562a1f5af5fd8c05b5" \
+            "v13/code/tests/test_dream_cached_verdict_authority_20261028.py:2bd8961459278f8e662d25e7bdd594a6c12533f9" \
+            "v13/code/tests/test_f5_cached_dream_crossorgan_20261028.py:6b7cbd8bab8a370ce2121829aeb241ceefb70851"; do
+            path="${item%%:*}"; expected="${item##*:}"
+            observed="$(git hash-object "$path")"
+            printf '%s %s %s\n' "$path" "$expected" "$observed" >> "$evidence/BLOBS.txt"
+            if [ "$observed" != "$expected" ]; then echo "$path" >> "$evidence/BLOB_MISMATCH.txt"; fi
+          done
+          if [ -s "$evidence/BLOB_MISMATCH.txt" ]; then echo 1 > "$evidence/BLOBS_EXIT.txt"; else echo 0 > "$evidence/BLOBS_EXIT.txt"; fi
+          python3 -m venv "$RUNNER_TEMP/v13-f5-cache-crossorgan-review-venv"
+          py="$RUNNER_TEMP/v13-f5-cache-crossorgan-review-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'prompt-toolkit==3.0.52' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 7m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_f5_cached_dream_crossorgan_20261028 tests.test_dream_cached_verdict_authority_20261028 tests.test_context_sleep_f5_crossorgan_20261028 tests.test_dream_validation_authority_run275 tests.test_context_warm_authority_run271 tests.test_context_os tests.test_sleep_memory_authority_run274 tests.test_sleep_a_exact_recall_identity_review tests.test_sleep_offline tests.test_sleep_memory_c3_continuity_run205 tests.test_memory_human_decision_lineage_run270 tests.test_episodic_route_f5_authority_run279
+          ) > "$evidence/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$evidence/FOCUSED_EXIT.txt"
+          if [ "$(cat "$evidence/FOCUSED_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$evidence/INSTALL_RAW.log" 2>&1
+            first=$?
+            "$py" -m pip install --no-input -q 'transformers==5.20.2' 'peft==0.21.2' >> "$evidence/INSTALL_RAW.log" 2>&1
+            second=$?
+            if [ "$first" != 0 ] || [ "$second" != 0 ]; then echo 1 > "$evidence/INSTALL_EXIT.txt"; fi
+            (
+              cd v13/code
+              timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q
+            ) > "$evidence/FULL_RAW.log" 2>&1
+            echo "$?" > "$evidence/FULL_EXIT.txt"
+          else
+            echo 'SKIPPED_DUE_TO_PREREGISTERED_FOCUSED_RED' > "$evidence/FULL_RAW.log"
+            echo 'SKIPPED_RED' > "$evidence/FULL_EXIT.txt"
+          fi
+          python3 -m compileall -q v13/code/v13 > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 67dcf9abe58c8360c94dd183e9d9deb3392729ad --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 67dcf9abe58c8360c94dd183e9d9deb3392729ad HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          (cd "$evidence" && sha256sum * > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-f5-cache-crossorgan-review-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-f5-cache-crossorgan-review/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exact raw exits; RED stays a failed run
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/v13-f5-cache-crossorgan-review"
+          for name in BLOBS INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed or intentionally RED; raw evidence retained"
+              tail -90 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'CACHED_DREAM_CROSSORGAN_F5_SOFTWARE_ONLY_NO_GATE_PROMOTION'

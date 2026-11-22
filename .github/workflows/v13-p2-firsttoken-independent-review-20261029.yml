@@ -1,0 +1,26 @@
+name: V13 P2 independent native first-token raw reviewer source-only
+on:
+  push:
+    branches: [codex/v13-p2-firsttoken-native-review-20261029]
+    paths:
+      - 'v13/code/scripts/p2_firsttoken_native_independent_audit.py'
+      - 'v13/code/tests/test_p2_firsttoken_native_independent_audit.py'
+      - '.github/workflows/v13-p2-firsttoken-independent-review-20261029.yml'
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Compile, nine adversarial tests, privacy and diff
+        run: |
+          set -euo pipefail
+          python3 -m py_compile v13/code/scripts/p2_firsttoken_native_independent_audit.py v13/code/tests/test_p2_firsttoken_native_independent_audit.py
+          python3 -m unittest discover -s v13/code/tests -p 'test_p2_firsttoken_native_independent_audit.py' -v
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 955c7abab8a56e68781f651b2661de94b03aa382 --head HEAD --no-worktree
+          git diff --check 955c7abab8a56e68781f651b2661de94b03aa382 HEAD

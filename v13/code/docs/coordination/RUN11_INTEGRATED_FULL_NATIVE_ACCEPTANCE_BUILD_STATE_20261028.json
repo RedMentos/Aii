@@ -1,0 +1,101 @@
+{
+  "schema": "v13.review_scoped_build_state.v1",
+  "date": "2026-10-28",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run11-integrated-full-acceptance-20261028-0825",
+  "pr": 871,
+  "parent_pr": 870,
+  "parent_head": "07f0ad11607591ee4666a4833a68c182a46c932a",
+  "prereg_commit": "d5b46ad62f483411c192504ae24db3e1c1749421",
+  "prereg_blob": "8643dddb0cf3444bdf7c1cb89b42ec658e16c8aa",
+  "workflow_source": "4f106ad6b63977cdec1a4d9050ee2c361fe36260",
+  "run_id": 40649812006,
+  "status_at_checkpoint": "NATIVE_RUNNING_STAGE5_OF_20_CLOSED_PASS_5_OF_5",
+  "registered_stage_count": 20,
+  "checkpoint_limits": [
+    5,
+    10,
+    15,
+    20
+  ],
+  "source_blob_count": 24,
+  "acceptance_script_blob": "432b2e33eb53142b0d4246813b96fc791b0900f0",
+  "runtime_blob": "68e7ed1352800174972558f1e0b0683a42c8689a",
+  "model_catalog_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+  "changes": "ONLY PREREG DOC AND GITHUB WORKFLOW; NO PRODUCTION SOURCE/MODEL/SEED/TEST CHANGES",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3_heldout": "FAIL",
+    "jepa_weight": 0,
+    "age0": "RECORD_ONLY",
+    "phone_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Will all original 20 current-source actual-weight acceptance stages PASS?",
+    "Which exact stages remain RED and why?",
+    "Do four 5-stage artifact checkpoints persist closed raw even if later stages fail?",
+    "C5 no-B role selection vs executed C3 fallback remains separate SourceHandoff-frozen blocker."
+  ],
+  "known_workflow_issue": "The guard [ \"-n \"$live\"\" ] is always truthy, but absent checkpoint still fails closed through --resume and stage-count verification; do not edit the active registered run in place.",
+  "next_command": "Continue observing Actions 40649812006 checkpoints 10/15/20 and final; verify every stage status, raw ZIP CRC/SHA256SUMS and byte-exact private Library backup. Current 5/20 PASS is partial, not full acceptance or any canonical gate promotion.",
+  "prerequisites": "Exclusive native owner and no concurrent heavy jobs; public pinned model downloads; no user device access; no paid provisioning.",
+  "platform_remaining_budget": "UNKNOWN",
+  "bootstrap": {
+    "artifact_id": 12799486870,
+    "sha256": "35b4b8649a565a04d45ad727b63df07a011b63d4697387c473b25c6bb8611da2",
+    "source_pins": "24/24",
+    "installed_roles": "4/4 deep hash verified",
+    "private_readback_byte_exact": true
+  },
+  "closed_checkpoints": [
+    {
+      "stages": 5,
+      "passed": 5,
+      "failed": 0,
+      "status": "DIAGNOSTIC_INCOMPLETE_EXPECTED",
+      "artifact_id": 12799088332,
+      "sha256": "4386df7c124e53e4c4edad466c1d0abc601f055fc8b0248a5256662c953a6432",
+      "internal_hashes_verified": 27,
+      "private_readback_byte_exact": true
+    }
+  ],
+  "source_handoff_clarification": {
+    "historical_freeze_lifted": true,
+    "roadmap_date": "2026-10-16",
+    "historical_cohort_immutable": true,
+    "technical_blocker": "source_handoff_candidate.sources(ROOT) historical exact baseline/candidate check rejects later runtime variant; PR847 full suite RED",
+    "next": "preregister new current-source lineage with historical fixture-root tests and separate current C5 end-to-end proof, no old hash changes",
+    "decision_note": "v13/code/docs/coordination/RUN11_SOURCE_HANDOFF_POLICY_CLARIFICATION_20261028.md"
+  },
+  "roadmap_next_independent_packages": [
+    {
+      "priority": 1,
+      "name": "Full current-source acceptance",
+      "state": "RUNNING",
+      "run": 40649812006,
+      "next": "Close and audit 10/15/20 stages; repair exact observed failures only on separate review branch"
+    },
+    {
+      "priority": 2,
+      "name": "C5 manifest-aware ActionSelection/World fallback provenance",
+      "state": "BLOCKED_BY_HISTORICAL_TEST_BINDING_NOT_PERPETUAL_FREEZE",
+      "next": "New source lineage and independent historical fixture-root test; preserve old cohort and PR847 RED"
+    },
+    {
+      "priority": 3,
+      "name": "Z12b World-JEPA slot-wise compositional action",
+      "state": "Z12B_WORLD_JEPA_FAIL",
+      "next": "Preregister new disjoint real-file action cohort; test composition and no-action false alarms without tuning original heldout"
+    },
+    {
+      "priority": 4,
+      "name": "Redmi phone mandatory evidence",
+      "state": "USER_DEVICE_REQUIRED",
+      "next": "Run existing HANDY_PFLICHT.sh on actual Redmi; no Linux proxy"
+    }
+  ]
+}

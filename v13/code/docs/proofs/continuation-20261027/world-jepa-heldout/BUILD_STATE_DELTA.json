@@ -1,0 +1,64 @@
+{
+  "date_utc": "2026-10-27",
+  "scope": "SYNTHETIC_HELDOUT_RESEARCH_ONLY",
+  "owner": "GPT-6 automation continuation",
+  "parent_pr": 748,
+  "parent_commit": "50c0a73c22d53eeb708a491f7c6b26cddd492d8d",
+  "review_pr": 749,
+  "branch": "assistant/v13-world-jepa-heldout-20261027",
+  "prereg_commit": "e64eb87867f2efa9ee10b69f0fd613bb11d18d8c",
+  "source_commit": "255a93e2bce328551c78cd4bbaa3d03aef4f7a61",
+  "world_jepa_blob": "5ffd56097e66a37e2922e39d1dc0ba86cb28a760",
+  "harness_blob": "6982e857573f0420cc83ae83ed8529da977c78bb",
+  "registered": {
+    "train_seed": 20261027,
+    "train_n": 1000,
+    "train_sha256": "317410989c41a3e75032dfd02692da7d126596ab2ff350996e7b1b383a055822",
+    "heldout_seed": 20261107,
+    "heldout_n": 240,
+    "heldout_sha256": "011f122f4290f5b14cae8699841ae477cfcc0837958a0bc30c95e3e1af06b20b",
+    "model_seeds": [
+      3,
+      7,
+      11
+    ],
+    "steps": 1000,
+    "ensemble": 3
+  },
+  "evidence": {
+    "run": 40550853611,
+    "artifact_id": 12753484971,
+    "zip_sha256": "11cd8474537c59446fa1306e6f36cdea84636a1ca35046c3717b54c77e399a65",
+    "tests": "14/14 PASS",
+    "exits": "INSTALL/UNIT/MEASURE/COMPILE/PRIVACY/DIFF 0",
+    "private_library_backup": "/V13-Checkpoints/2026-10-27/Automation11S-World-JEPA-Heldout/V13_PR749_heldout_40550853611.zip",
+    "private_backup_byte_verified": true
+  },
+  "metrics": {
+    "mean_mse": 0.39011695809005137,
+    "first_mse": 0.42309610401566666,
+    "wrong_action_mse": 1.6655111986861348,
+    "persistence_mse": 1.3484922348588542,
+    "ensemble_relative_improvement": 0.07794717467876788,
+    "ensemble_gate": "PASS_SYNTHETIC_ONLY",
+    "action_signal_gate": "PASS_SYNTHETIC_ONLY"
+  },
+  "gates": {
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "blockers": [
+    "World-JEPA not runtime-wired",
+    "No calibrated state-action OOD confidence",
+    "No real-world causal utility or Redmi measurement",
+    "Independent review pending"
+  ],
+  "next": "Independent review PR749 and raw artifact; preregister harder state-action OOD/novel-action cohort, or resume LP3 utility diagnostics after checking native owner. No gate promotion."
+}

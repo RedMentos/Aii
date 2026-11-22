@@ -1,0 +1,114 @@
+name: V13 Run115E default-OFF two-source pointer SHADOW software proof
+on:
+  push:
+    branches:
+      - assistant/v13-run115e-two-source-pointer-shadow-20261031-gpt6
+    paths:
+      - .github/workflows/v13-run115e-two-source-pointer-shadow.yml
+      - v13/code/v13/two_source_pointer_shadow_candidate.py
+      - v13/code/tests/test_two_source_pointer_shadow_candidate.py
+permissions:
+  contents: read
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      NO_MODEL_DOWNLOADS: "1"
+      V13_NO_AUTOSTART: "1"
+      DO_NOT_TRACK: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify real Store two-source pointer and negative gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run115e"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run115e-venv" > "$e/VENV_RAW.log" 2>&1
+          py="$RUNNER_TEMP/v13-run115e-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log"
+          set +e
+          (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_two_source_pointer_shadow_candidate.py -v) > "$e/NEW_RAW.log" 2>&1
+          new_rc=$?
+          (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_b1b2_causal_context_candidate.py -v) > "$e/B1B2_RAW.log" 2>&1
+          b1b2_rc=$?
+          (cd v13/code && env PYTHONPATH=.:scripts:tests "$py" -m unittest discover -s tests -p test_jef_f1f5_live_current_candidate.py -v) > "$e/JEF_RAW.log" 2>&1
+          jef_rc=$?
+          "$py" -m compileall -q v13/code/v13/two_source_pointer_shadow_candidate.py v13/code/tests/test_two_source_pointer_shadow_candidate.py > "$e/COMPILE_RAW.log" 2>&1
+          compile_rc=$?
+          "$py" v13/code/scripts/package_source.py --root v13/code --out "$e/V13-Phone-Run115E.zip" --phone-install > "$e/PACK_RAW.log" 2>&1
+          pack_rc=$?
+          set -e
+          echo "$new_rc" > "$e/NEW_EXIT.txt"
+          echo "$b1b2_rc" > "$e/B1B2_EXIT.txt"
+          echo "$jef_rc" > "$e/JEF_EXIT.txt"
+          echo "$compile_rc" > "$e/COMPILE_EXIT.txt"
+          echo "$pack_rc" > "$e/PACK_EXIT.txt"
+          if test "$pack_rc" -eq 0; then
+            set +e
+            "$py" - "$e" <<'PY' > "$e/ZIP_RAW.log" 2>&1
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          e=Path(sys.argv[1]);p=e/'V13-Phone-Run115E.zip'
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              for name,expected in manifest['files'].items():
+                  assert hashlib.sha256(z.read('V13-Phone/'+name)).hexdigest()==expected,name
+              for name in ('v13/two_source_pointer_shadow_candidate.py',
+                           'tests/test_two_source_pointer_shadow_candidate.py',
+                           'docs/fixtures/RUN115B_JEF_B1B2_C3_SEED971.json'):
+                  assert z.read('V13-Phone/'+name)==(Path('v13/code')/name).read_bytes()
+          print(json.dumps({'phone_zip_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                            'source_files':len(manifest['files']),
+                            'native_executed':False},sort_keys=True))
+          PY
+            zip_rc=$?
+            set -e
+          else
+            zip_rc=125
+            echo 'PACK_RED' > "$e/ZIP_RAW.log"
+          fi
+          echo "$zip_rc" > "$e/ZIP_EXIT.txt"
+          set +e
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base a94c3a26d012fbab9ea6be24b1fedff8135379e7 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          privacy_rc=$?
+          git diff --check a94c3a26d012fbab9ea6be24b1fedff8135379e7 HEAD > "$e/DIFF_RAW.log" 2>&1
+          diff_rc=$?
+          set -e
+          echo "$privacy_rc" > "$e/PRIVACY_EXIT.txt"
+          echo "$diff_rc" > "$e/DIFF_EXIT.txt"
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log"
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=['NEW','B1B2','JEF','COMPILE','PACK','ZIP','PRIVACY','DIFF']
+          r={'schema':'v13.run115e.two_source_pointer_shadow.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'native_executed':False,'body_model_quote_verified':False,
+             'output_committed':False,'learning_authority':0,'delivery_authority':0,
+             'redmi_measured':False,'step2_promoted':False,'b3_promoted':False,
+             'body_jepa_promoted':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 12 "$e/NEW_RAW.log"
+          for rc in "$new_rc" "$b1b2_rc" "$jef_rc" "$compile_rc" "$pack_rc" "$zip_rc" "$privacy_rc" "$diff_rc"; do test "$rc" -eq 0; done
+      - name: Preserve original raw GREEN or RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run115e-two-source-pointer-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run115e/
+          if-no-files-found: warn
+          retention-days: 90

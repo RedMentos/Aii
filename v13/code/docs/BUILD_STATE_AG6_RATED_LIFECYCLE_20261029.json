@@ -1,0 +1,134 @@
+{
+  "schema": "v13.review_build_state.ag6_rated_lifecycle.v1",
+  "date_utc": "2026-10-29",
+  "scope": "review-only children PR1127 and PR1128; no production integration",
+  "canon": {
+    "path": "v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+    "blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "unchanged": true
+  },
+  "owner": {
+    "branch": "codex/v13-ag6-rated-metadata-recheck-20261029-auto10n",
+    "base_pr": 1127,
+    "parent_pr": 1126,
+    "exclusive_paths": [
+      "v13/code/v13/agi/weights.py (child branch only)",
+      "v13/code/tests/test_ag6_rated_metadata_lifecycle_20261029.py",
+      ".github/workflows/v13-ag6-rated-metadata-focused-20261029.yml",
+      ".github/workflows/v13-ag6-rated-metadata-full-20261029.yml",
+      "v13/code/docs/AG6_RATED_METADATA_LIFECYCLE_PREREG_20261029.md",
+      "v13/code/docs/BUILD_STATE_AG6_RATED_LIFECYCLE_20261029.json"
+    ]
+  },
+  "package1": {
+    "pr": 1127,
+    "prereg_commit": "12c49403de15b9deae05b27f0ebf94827a64201e",
+    "source_blob": "f0cb229d727d46ae5f9a0ac91603e6b4acaeda3a",
+    "test_blob": "6ed960fc555a6c6c5adf1dd1db37eb84fa75c280",
+    "original_red": {
+      "run": 40923010208,
+      "sha256_zip": "00204bddea69ba9e9cb0be1e67ed583ee16aad58a6234a415198f9b6a727888c",
+      "outcome": "2 FAIL + 1 ERROR; 32 PASS; original checkout privacy/diff nonzero due missing parent ref"
+    },
+    "focused_green": {
+      "run": 40923256224,
+      "tests": "37/37 PASS",
+      "zip_sha256": "76b085c403b817d7ee3dd4fb2c4e10759430b3cbb76a1cb1275efebfdf6a9276",
+      "crc": true,
+      "inner_sha256": "14/14",
+      "privacy": 0,
+      "diff": 0,
+      "private_readback": "byte-exact"
+    },
+    "full": {
+      "run": 40924683606,
+      "source_head": "2d5c3ff9d76dd2e78519ac00c42c04eb3c84f3b5",
+      "status": "RED_INHERITED_RUN34_RUN37_ONLY",
+      "tests": "3222, 2 errors, 11 skips",
+      "zip_sha256": "3b04c2234a14fdfb9c94f9cf100f11a83a84583a14ab7cf557af1de00f68bbb6",
+      "crc": true,
+      "inner_sha256": "17/17",
+      "private_readback": "byte-exact",
+      "exits": {
+        "VENV": 0,
+        "DEPS": 0,
+        "PIP_CHECK": 0,
+        "FULL": 1,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      }
+    }
+  },
+  "package2": {
+    "pr": 1128,
+    "prereg_commit": "3335a7918185a32292d054fbca6e991893063417",
+    "source_blob": "cda334f55eac2f9c1b03a9f467705866df50a490",
+    "test_blob": "6200bb595a592156d2c99e07ff1536393610fcd9",
+    "original_red": {
+      "run": 40923665976,
+      "tests": "42, 4 FAIL + 38 PASS",
+      "zip_sha256": "8335382cb2161a8ed8c07e5664a74d5794465e5a54452a10e4728a4363a8ca62",
+      "crc": true,
+      "inner_sha256": "14/14",
+      "private_readback": "byte-exact"
+    },
+    "focused_green": {
+      "run": 40923903293,
+      "tests": "44/44 PASS",
+      "zip_sha256": "d39d0cab26ed744caded1e01354c82aec23eef65c4b17466a4154f6720d500ed",
+      "crc": true,
+      "inner_sha256": "14/14",
+      "privacy": 0,
+      "diff": 0,
+      "private_readback": "byte-exact"
+    },
+    "full": {
+      "run": 40924690206,
+      "source_head": "1e1bf1bce2cdccb3c327957b682ebc2d654a57ea",
+      "status": "RED_INHERITED_RUN34_RUN37_ONLY",
+      "tests": "3229, 2 errors, 11 skips",
+      "zip_sha256": "647ff04a8e24aef3beda56b6404167423699e244ae31d8c7a06a00ffe1df6885",
+      "crc": true,
+      "inner_sha256": "17/17",
+      "private_readback": "byte-exact",
+      "exits": {
+        "VENV": 0,
+        "DEPS": 0,
+        "PIP_CHECK": 0,
+        "FULL": 1,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      }
+    }
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "ag6": "UNAPPROVED",
+    "redmi": "UNMEASURED",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "known_limits": [
+    "Only declared rated answer source lineage; no proof of complete historical context dependency recording",
+    "No atomicity with independent cross-process SQLite writers during fit",
+    "No native model or Redmi execution in these packages",
+    "Inherited Run34/Run37 frozen-source preflight errors remain; never modify frozen pins to manufacture GREEN",
+    "Post-approval source revocation policy and user message mutation still require separate review",
+    "Earlier full runs with numpy-only venv yielded four extra torch import errors; raw preserved and corrected pinned dependency reruns separately verified"
+  ],
+  "next_commands": [
+    "Review exact raw FULL_RAW.log in Actions 40924683606 (two inherited frozen-source errors only)",
+    "Review exact raw FULL_RAW.log in Actions 40924690206 (two inherited frozen-source errors only)",
+    "Download exact artifacts; verify SHA256 ZIP, CRC, every SHA256SUMS, stage exit files; private Library readback",
+    "cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_ag6_rated_metadata_lifecycle_20261029 tests.test_ag6_rated_dependency_lifecycle_20261029",
+    "Cross-review PR1128 against PR1127 and inspect unchanged original negative gates; do not merge without owner review"
+  ],
+  "stop_condition": "checkpoint only; source-only full suites closed with inherited Run34/37 RED; no platform hard-limit observed; remaining budget UNKNOWN"
+}

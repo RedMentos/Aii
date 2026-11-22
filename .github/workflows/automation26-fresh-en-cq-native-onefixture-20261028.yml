@@ -1,0 +1,176 @@
+name: V13 Run26 fresh Keldara CQ Linux-native one-fixture diagnostic
+on:
+  push:
+    branches:
+      - assistant/v13-run26-fresh-en-native-onefixture-20261028
+    paths:
+      - '.github/workflows/automation26-fresh-en-cq-native-onefixture-20261028.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-run11-age0-native-endtoend
+  cancel-in-progress: false
+jobs:
+  step2-tp27:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      V13_NO_AUTOSTART: "1"
+      NEEDLE_TELEMETRY: "0"
+      DO_NOT_TRACK: "1"
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Pinned Run15 Keldara CQ one-fixture Linux-native diagnostic
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run26-evidence"
+          work="$RUNNER_TEMP/v13-run26-work"
+          mkdir -p "$e" "$work"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          1fa2baf776ef5b9378405e18452b625f5575b891 v13/code/scripts/run16_step2_fresh_en_native_pilot.py
+          0845d7191267b3744baa51c35a29fb11c9483a77 v13/code/tests/test_run16_step2_fresh_en_native_pilot.py
+          fafae7ca677bac35729a905bc958e2e28e5c0226 v13/code/tests/test_run25_native_pilot_review.py
+          635e5727a42cb1eac4f84441afda2977b0c8109c v13/code/scripts/run15_step2_disjoint_bilingual_fixtures.py
+          7253b113b43de110059575cc14ef7b2ce7bccc43 v13/code/scripts/step2_longnote_tp27_native_pilot.py
+          7c299616495450e4a38f9aab9921f7176ba67556 v13/code/scripts/step2_z2b_seeds.py
+          2ad62fbbf1f6463d99360cdb8198f1104cfdfaf7 v13/code/scripts/step2_z2_timescale.py
+          a7ba12a8807a1ca8236f1c70d54dedb65c212caa v13/code/tests/integration_step2_utility.py
+          1a9eb6f7c7cbfce83d91cc09b4ff9516cff310cf v13/code/v13/cognition.py
+          efda7aa1aa5729e974d0d641870d4da05d21c961 v13/code/v13/runners.py
+          bd035cf8029850cce00b179edf533e53bf24358a v13/code/v13/models.py
+          dc23e192bcd01589475692666ebb6568c80d078b v13/code/v13/bootstrap.py
+          e1f1a2d09a614378a75e397819fdce96a46de22d v13/code/v13/agi/eligibility.py
+          68e7ed1352800174972558f1e0b0683a42c8689a v13/code/v13/runtime.py
+          7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json
+          954a3f468f10195fbce12d27f68585ee7edee2c9 v13/code/specs/control_tools.json
+          BLOBS
+          : > "$e/BLOBS_RAW.log"
+          while read -r want file; do
+            got="$(git hash-object "$file" 2>/dev/null)"
+            printf '%s %s %s\n' "$want" "$got" "$file" >> "$e/BLOBS_RAW.log"
+            if [ "$want" != "$got" ]; then echo MISMATCH >> "$e/BLOBS_RAW.log"; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          if grep -q MISMATCH "$e/BLOBS_RAW.log"; then echo 1 > "$e/BLOBS_EXIT.txt"; else echo 0 > "$e/BLOBS_EXIT.txt"; fi
+          python3 -m venv "$RUNNER_TEMP/v13-run26-venv"
+          py="$RUNNER_TEMP/v13-run26-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$e/INSTALL_EXIT.txt"
+          if [ "$(cat "$e/BLOBS_EXIT.txt")" = 0 ] && [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 3m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_run16_step2_fresh_en_native_pilot tests.test_run25_native_pilot_review tests.test_run15_step2_disjoint_bilingual_fixtures) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+            "$py" -m py_compile v13/code/scripts/run16_step2_fresh_en_native_pilot.py > "$e/COMPILE_RAW.log" 2>&1
+            echo "$?" > "$e/COMPILE_EXIT.txt"
+          else
+            echo SKIPPED_PREREQ_RED > "$e/FOCUSED_RAW.log"
+            echo SKIPPED_RED > "$e/FOCUSED_EXIT.txt"
+            echo SKIPPED_PREREQ_RED > "$e/COMPILE_RAW.log"
+            echo SKIPPED_RED > "$e/COMPILE_EXIT.txt"
+          fi
+          export V13_HOME="$RUNNER_TEMP/v13-run26-installed"
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ] && [ "$(cat "$e/COMPILE_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 15m env PYTHONPATH=v13/code "$py" -m v13.bootstrap --home "$V13_HOME" > "$e/BOOTSTRAP_RAW.log" 2>&1
+            echo "$?" > "$e/BOOTSTRAP_EXIT.txt"
+          else
+            echo SKIPPED_SOFTWARE_RED > "$e/BOOTSTRAP_RAW.log"
+            echo SKIPPED_RED > "$e/BOOTSTRAP_EXIT.txt"
+          fi
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 25m env PYTHONPATH=v13/code "$py" v13/code/scripts/run16_step2_fresh_en_native_pilot.py --installed-home "$V13_HOME" --evidence-dir "$work/evidence" > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else
+            echo SKIPPED_BOOTSTRAP_RED > "$e/NATIVE_RAW.log"
+            echo SKIPPED_RED > "$e/NATIVE_EXIT.txt"
+          fi
+          for f in RECEIPT.json STEP2_RAW.json; do
+            if [ -f "$work/evidence/$f" ]; then cp "$work/evidence/$f" "$e/$f"; fi
+          done
+          if [ "$(cat "$e/NATIVE_EXIT.txt")" = 0 ]; then
+            env PYTHONPATH=v13/code "$py" - "$e" > "$e/REPLAY_RAW.log" 2>&1 <<'PY'
+          import hashlib,json,sys
+          from pathlib import Path
+          from v13.common import dumps,digest
+          from scripts import run16_step2_fresh_en_native_pilot as pilot
+          e=Path(sys.argv[1]);receipt=json.loads((e/'RECEIPT.json').read_text())
+          report_bytes=(e/'STEP2_RAW.json').read_bytes();report=json.loads(report_bytes)
+          assert receipt['status']=='PASS_SCOPED_ONE_FIXTURE_NATIVE_NO_UTILITY_GATE'
+          assert receipt['schema']=='v13.step2.run16.keldara.native_pilot.v1'
+          assert receipt['arm']=='CQ' and receipt['seed']==20261114
+          assert receipt['fixture_id']=='Keldara' and receipt['fixture_limit']==1
+          assert receipt['scope']=='LINUX_NATIVE_FUTURE_ONE_FIXTURE_ONLY'
+          assert receipt['model_hashes_unchanged'] is True and receipt['runner_unchanged'] is True
+          assert receipt['model_hashes_before']==receipt['model_hashes_after']
+          assert receipt['runner_sha256_before']==receipt['runner_sha256_after']
+          assert receipt['model_hashes_before']['B1_DETAIL']!=receipt['model_hashes_before']['B2_GIST']
+          assert receipt['canonical_gate_pass'] is False and receipt['whole_system_complete'] is False
+          assert receipt['age_authority']==0 and receipt['jepa_weight']==0
+          assert receipt['weight_updates'] is False and receipt['redmi_measured'] is False
+          assert receipt['raw_report_sha256']==hashlib.sha256(report_bytes).hexdigest()
+          assert receipt['fixture_sha256']==report['fixture_sha256']==pilot.prereg()['fixture_sha256']
+          assert receipt['fixture_source_git_blob']==pilot.RUN15_SOURCE_BLOB
+          assert report['paired']['complete'] is False
+          assert report['phone_measured'] is False and report['device']['android'] is False
+          assert len(report['rows'])==7 and len(report['row_sha256'])==7
+          for row in report['rows']:
+              assert report['row_sha256'][row['fixture']+':'+row['variant']]==digest(dumps(row))
+              assert row['oracle_visible_to_native'] is False
+              user=json.loads(next(m['content'] for m in row['consumer_messages'] if m['role']=='user'))
+              assert set(user)=={'current_source','analysts'}
+              assert 'oracle' not in user and 'answer' not in user
+          result=pilot.verify_report(report,receipt['model_hashes_before'],receipt['native_offer_counts'])
+          assert result['status']==receipt['status']
+          print('RUN26_KELDARA_CQ_LINUX_NATIVE_ONE_FIXTURE_ONLY_NO_UTILITY_GATE')
+          print('RAW_REPORT_SHA256',receipt['raw_report_sha256'])
+          print('PER_VARIANT_UTILITY',[(r['variant'],r['score']['utility']) for r in report['rows']])
+          PY
+            echo "$?" > "$e/REPLAY_EXIT.txt"
+          else
+            echo SKIPPED_NATIVE_RED > "$e/REPLAY_RAW.log"
+            echo SKIPPED_RED > "$e/REPLAY_EXIT.txt"
+          fi
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$e/FULL_INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'transformers==5.20.2' 'peft==0.21.2' >> "$e/FULL_INSTALL_RAW.log" 2>&1
+          second=$?
+          if [ "$first" = 0 ] && [ "$second" = 0 ]; then echo 0 > "$e/FULL_INSTALL_EXIT.txt"; else echo 1 > "$e/FULL_INSTALL_EXIT.txt"; fi
+          if [ "$(cat "$e/REPLAY_EXIT.txt")" = 0 ] && [ "$(cat "$e/FULL_INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 7m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else
+            echo SKIPPED_NATIVE_OR_INSTALL_RED > "$e/FULL_RAW.log"
+            echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base e77781f6e97b4361aabc9a5d81690ce5c8df1d5f --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check e77781f6e97b4361aabc9a5d81690ce5c8df1d5f HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-run26-fresh-keldara-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run26-evidence/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce Run26 scoped native one-fixture diagnostic only
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run26-evidence"
+          for name in BLOBS INSTALL FOCUSED COMPILE BOOTSTRAP NATIVE REPLAY FULL_INSTALL FULL PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED; original raw retained; no STEP2 gate promotion"
+              tail -90 "$e/${name}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'RUN26_KELDARA_CQ_LINUX_NATIVE_ONE_FIXTURE_ONLY_NO_GATE_PROMOTION'

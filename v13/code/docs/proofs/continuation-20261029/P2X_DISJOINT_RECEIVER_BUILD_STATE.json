@@ -1,0 +1,56 @@
+{
+  "schema": "v13.p2x.disjoint_receiver_trainset_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated P2X source-only",
+  "branch": "codex/v13-p2x-disjoint-receiver-trainset-20261029",
+  "parent_pr": 1070,
+  "review_pr": 1072,
+  "parent_sha": "9be1c524d1ab813be97b80873b0ba223372f7fd0",
+  "prereg_commits": [
+    "673eac9fb5dfc13e6a0f25bf5a413c5ad9abd623",
+    "09784556c9a96fc11ba03c887a2c382a7f2beebc"
+  ],
+  "generator_blob_sha": "8135fa2792df2c541dc1719e49d941c775703697",
+  "fixture_sha256": "cd3edfdb464c6f99650b1ea32b5b09854268f0b53faa79df22ddcd135f21985a",
+  "source_only": {
+    "run": 40852661674,
+    "head": "290138b05ac23793d2bd55ea0cb92116991422ee",
+    "status": "PASS",
+    "tests": 11,
+    "privacy": "CLEAN"
+  },
+  "export": {
+    "run": 40852885034,
+    "head": "a7f2ebcea32a25cc3ae5a2bf74647ec291f85651",
+    "status": "GREEN_SOURCE_ONLY",
+    "artifact": 12888460763,
+    "zip_sha256": "61866eb1c548510b074b655e2f4145a2ce1587bb15fbe3a65e9a511e0f1ae819",
+    "manifest_entries": 11,
+    "stage_exits_zero": 3,
+    "train_examples": 504,
+    "validation_inputs": 360,
+    "validation_answers": 72,
+    "sha256": {
+      "train.jsonl": "af191c087d872a42924f2d2d465a3f26f6c323bf48c5c0682b30094b9d666cf1",
+      "validation_inputs.jsonl": "a7f2d70d463305a43ec03bbd758a61cc91129a411094ed60e5503d4ffe0894cf",
+      "validation_answers.jsonl": "d1cbe570ae3caa2a80177f861ba5751c93208ffccc98f8d12d90578c59555e9a"
+    }
+  },
+  "private_backup": {
+    "path": "/V13/RawEvidence/2026-10-29/P2X/source_export_40852885034_sha61866EB1.zip",
+    "byte_reverified": true
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "v13_complete": false,
+    "production_merged": false
+  },
+  "next_command": "Preregister default-off AG6-gated QAD FP32 C3 LoRA training pilot on frozen P2X train only (no P0X fitting), with exact dependency/model/seed/optimizer pins, resource admission, base-weight hash and adapter rollback; run focused source-only tests before any native training; retain all RED and raw evidence. Then evaluate disjoint P2X validation and frozen P0X holdout.",
+  "remaining_platform_budget": "UNKNOWN"
+}

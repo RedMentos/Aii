@@ -1,0 +1,26 @@
+V13 Werkzeug-Vorhersage auf dem Handy
+======================================
+
+Stufe: voll
+Gesamtstatus: LIVE_PATH_CONFIRMED+CONTINUAL_LEARNING_CONFIRMED
+Ablauf: DRIVER_EXITED (Exit 0, 22 Minuten)
+Gerät: 4 CPU-Kerne, RAM gesamt 16093 MB, frei vor Start 15421 MB, Termux nein
+Kleinster freier RAM während der Prüfung: 14587 MB
+
+Parität (eigener Tap-Build gegen den Erfassungs-Encoder): PASS, 45.5 s
+  calc_counter: PASS, Verhältnis zur besten Kontrolle add_15 0.09, double 0.13, quarter 0.19, subtract_7 0.09 (kleiner = besser, Grenze 0.98)
+  note_edit: PASS, Verhältnis zur besten Kontrolle append_done 0.06, prefix_urgent 0.10, undo 0.11, uppercase 0.09 (kleiner = besser, Grenze 0.98)
+
+Live-Prüfung (245 feste Aufrufe): LIVE_PATH_CONFIRMED, Median 1.474 s je Aufruf, Spitzen-RAM Tap-Prozess 1213.3 MB
+  Aufruf-Status: {"SCORED": 245}
+  calc_in_world: add_15 0.17, double 0.22, quarter 0.24, subtract_7 0.18
+  calc_out_of_range: add_15 0.58, double 0.41, quarter 1.13, subtract_7 0.34
+  note_free: append_done 0.64, prefix_urgent 0.89, uppercase 0.91
+  note_in_world: append_done 0.06, prefix_urgent 0.09, uppercase 0.10
+
+Lern-Prüfung (610 feste Aufrufe): CONTINUAL_LEARNING_CONFIRMED, 14.8 Minuten, Integrität PASS
+  calc_counter: PASS, verbesserte Handlungen 4
+  note_edit: PASS, verbesserte Handlungen 3
+
+Nur SHADOW-Messung: keine Autorität, nichts wurde aktiviert.
+Bitte diese ZIP-Datei in den Claude-Chat hochladen.

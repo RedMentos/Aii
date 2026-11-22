@@ -1,0 +1,41 @@
+test_completed_raw_evidence_tamper_rejected (test_dream_checkpoint.DreamCheckpoint.test_completed_raw_evidence_tamper_rejected) ... {"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+ok
+test_duplicate_control_rejected_even_if_digest_updated (test_dream_checkpoint.DreamCheckpoint.test_duplicate_control_rejected_even_if_digest_updated) ... {"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+ok
+test_existing_cohort_never_overwritten_without_resume (test_dream_checkpoint.DreamCheckpoint.test_existing_cohort_never_overwritten_without_resume) ... {"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+ok
+test_external_chat_template_drift_rejects_before_training (test_dream_checkpoint.DreamCheckpoint.test_external_chat_template_drift_rejects_before_training) ... {"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+ok
+test_interruption_preserves_arm_and_resume_skips_it (test_dream_checkpoint.DreamCheckpoint.test_interruption_preserves_arm_and_resume_skips_it) ... {"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+ok
+test_model_or_dream_drift_rejects_before_training (test_dream_checkpoint.DreamCheckpoint.test_model_or_dream_drift_rejects_before_training) ... {"seed": 13, "arm": "none", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "replay_exact", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_validated", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_self", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+{"seed": 13, "arm": "dream_unanchored", "A": {"recall": 0.5, "paraphrase": 0.5}, "B": {"recall": 0.5, "paraphrase": 0.5}, "near_miss_leak": 0.2, "probe_retention": 0.5, "steps_b": 40}
+ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.077s
+
+OK

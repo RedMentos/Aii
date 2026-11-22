@@ -1,0 +1,96 @@
+name: V13 World-JEPA synthetic closed-SQLite 400-step end-to-end proof
+on:
+  push:
+    branches: [assistant/v13-world-incremental-closedstore-20261027]
+    paths:
+      - '.github/workflows/world-incremental-closed-synthetic400.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-world-incremental-closed-full-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  synthetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Frozen-source synthetic SQLite 400-step proof and raw exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/world-closed-synthetic400"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/world_jepa.py > "$evidence/MODEL_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_digital_shadow.py > "$evidence/BRIDGE_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_incremental_probe.py > "$evidence/PROBE_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_incremental_closedstore.py > "$evidence/CLOSED_BLOB.txt"
+          if [ "$(cat "$evidence/MODEL_BLOB.txt")" = "5ffd56097e66a37e2922e39d1dc0ba86cb28a760" ] && [ "$(cat "$evidence/BRIDGE_BLOB.txt")" = "4ab37e11d8238d376e568567f901c85c12d09da8" ] && [ "$(cat "$evidence/PROBE_BLOB.txt")" = "841a99e86099dc153a322717510a5c4e4aaffe0d" ] && [ "$(cat "$evidence/CLOSED_BLOB.txt")" = "088528535d887b10f5786a8c176002c20f4c013d" ]; then echo 0; else echo 1; fi > "$evidence/FROZEN_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/world-closed-synthetic400-venv"
+          py="$RUNNER_TEMP/world-closed-synthetic400-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 10m env PYTHONPATH=.:tests "$py" - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+          from tempfile import TemporaryDirectory
+          from tests.test_world_jepa_readonly_store import fixture
+          from scripts import world_jepa_incremental_closedstore as closed
+          with TemporaryDirectory() as d:
+              p = Path(d) / 'synthetic-closed.sqlite'
+              fixture(p, n=64)
+              before = hashlib.sha256(p.read_bytes()).hexdigest()
+              report = closed.run_db(p)
+              after = hashlib.sha256(p.read_bytes()).hexdigest()
+              assert before == after
+              assert report['n'] == 64 and (report['train_n'], report['heldout_n']) == (47,17)
+              assert report['steps'] == 400 and report['seeds'] == [3,7] and report['ensemble'] == 3
+              assert not report['utility_proven'] and not report['runtime_wired']
+              assert report['negative_gates_unchanged']['jepa_weight'] == 0
+              assert not any(Path(str(p)+s).exists() for s in ('-wal','-shm','-journal'))
+              output = json.dumps({'fixture': 'SYNTHETIC_SQLITE_ONLY_NOT_REAL_OBSERVED',
+                                   'db_unchanged_sha256': before,
+                                   'report': report}, sort_keys=True, allow_nan=False)
+              assert 'synthetic-action-' not in output and str(p) not in output
+              print(output)
+          PY
+          ) > "$evidence/SYNTHETIC_REPORT.json" 2> "$evidence/SYNTHETIC_RAW.log"
+          echo "$?" > "$evidence/SYNTHETIC_EXIT.txt"
+          python3 -m py_compile v13/code/scripts/world_jepa_incremental_closedstore.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 0a66e68796cf294aaec360efa10199a5951e156f --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 0a66e68796cf294aaec360efa10199a5951e156f HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-world-closed-synthetic400-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/world-closed-synthetic400/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exits; no utility promotion
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/world-closed-synthetic400"
+          for name in FROZEN INSTALL SYNTHETIC COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -80 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'SYNTHETIC_SQLITE_ONLY_NO_UTILITY_OR_AGE_PROMOTION'

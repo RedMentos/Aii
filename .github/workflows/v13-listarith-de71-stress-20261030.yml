@@ -1,0 +1,66 @@
+name: V13 seed71 disjoint German list_arith SHADOW stress
+on:
+  push:
+    branches: [assistant/v13-listarith-de-disjoint-stress-seed71-20261030]
+permissions:
+  contents: read
+jobs:
+  synthetic-stress:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Exact frozen fixture and detector stress, no tool or model
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-listarith-de71-stress"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/specs/listarith_de_shadow_seed71_stress.json > "$e/FIXTURE_BLOB.txt"
+          git hash-object v13/code/v13/agi/listarith_de_shadow.py > "$e/DETECTOR_BLOB.txt"
+          git merge-base --is-ancestor c34db2dca64811f8b8012fac4c5f5dcc6e3c2d79 HEAD > "$e/PREREG_RAW.log" 2>&1
+          echo "$?" > "$e/PREREG_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/de71-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/de71-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_listarith_de_seed71_stress_20261030 tests.test_listarith_de_shadow_seed67_20261030) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          PYTHONPATH=v13/code "$py" v13/code/scripts/listarith_de_seed71_stress_eval.py --out "$e/REPORT.json" > "$e/EVAL_RAW.log" 2>&1
+          echo "$?" > "$e/EVAL_EXIT.txt"
+          "$py" -m py_compile v13/code/scripts/listarith_de_seed71_stress_eval.py v13/code/tests/test_listarith_de_seed71_stress_20261030.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 4915b0b20f72df7957bd688975518dd4e1a6a8a6 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 4915b0b20f72df7957bd688975518dd4e1a6a8a6 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-listarith-de71-stress-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-listarith-de71-stress/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Require source integrity only, RED generalization is evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-listarith-de71-stress"
+          for stage in PREREG VENV DEPS TEST EVAL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED"
+              tail -60 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo "SEED71_SYNTHETIC_SHADOW_STRESS_EVALUATED_NO_LIVE_AUTHORITY_OR_GATE"

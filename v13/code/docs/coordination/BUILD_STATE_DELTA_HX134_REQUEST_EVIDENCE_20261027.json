@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-27",
+  "scope": "review_only_hx134_request_revocation_evidence_freshness",
+  "prior_art_pr": 163,
+  "parent": "72b48d1b89bb73c8ffd6d7434a0e75242db349c3",
+  "prereg": "a88e8eff7bcb5f92c10b324c7f540f8a07f65654",
+  "red": {
+    "run": 40596029345,
+    "tests": 27,
+    "expected_failures": 2,
+    "zip_sha256": "64ebf08b384e36c3e22e973f31a19825ed2af043e1d9b61e39614c259655f375"
+  },
+  "green": {
+    "run": 40596135925,
+    "tests": 27,
+    "failures": 0,
+    "zip_sha256": "46bfdb6ccd3bd56b5ad71cb367010a53a33ff864c884bb87feab6214c049ac04"
+  },
+  "full": {
+    "run": 40596239077,
+    "tested_head": "7a56a53018fa6db9c0d783ee45065ee4dfaf4bed",
+    "tests": 2024,
+    "skipped": 1,
+    "success": true,
+    "zip_sha256": "92b3a12717c05f27baf215a963e9c1a6d69697e1234a80c2c0b57ac617627b7c",
+    "all_raw_exits_zero": true,
+    "privacy": "CLEAN",
+    "crc": "PASS",
+    "private_backup_byte_identical": true
+  },
+  "gates": {
+    "Age": 0,
+    "latent_authority": 0,
+    "jepa_weight": 0,
+    "B3_L1": "FAIL",
+    "STEP2": "UTILITY_FAIL",
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "native": false,
+  "redmi": false,
+  "production_merged": false,
+  "downstream_pr": 790,
+  "next": "Integrate Run380 AG8 strict shield then cross-organ C1 World B3 Sleep HX full suite; independent review"
+}

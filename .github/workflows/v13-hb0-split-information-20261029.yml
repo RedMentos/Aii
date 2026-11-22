@@ -1,0 +1,98 @@
+name: V13 HB0 split-information structural cohort SOFTWARE-only
+on:
+  push:
+    branches: [codex/v13-hb0-split-information-cohort-20261029]
+permissions:
+  contents: read
+concurrency:
+  group: v13-hb0-structural-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  hb0:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Exact-source, structural, full-suite and privacy verification
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-hb0-structural"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          source_red=0
+          check() {
+            got="$(git hash-object "$2" 2>/dev/null)" || return 1
+            printf '%s %s\n' "$got" "$2" >> "$e/SOURCE_RAW.log"
+            [ "$got" = "$1" ]
+          }
+          check 486030c7031b5cfa343c935fe39a0f3d74049c65 v13/code/docs/proofs/continuation-20261029/HB0_SPLIT_INFORMATION_COHORT_PREREG.md || source_red=1
+          check 329153aaa73df009fdc433523994e372e0fd2c95 v13/code/scripts/hb0_split_information_cohort.py || source_red=1
+          check c67fe0ee9d693413c1bb430b6f391d8a478f8960 v13/code/tests/test_hb0_split_information_cohort.py || source_red=1
+          check 8c79ab6d38eeebce832faa139c4a819f6d379d96 v13/code/scripts/context_option_safe_scope_candidate.py || source_red=1
+          check e1f1a2d09a614378a75e397819fdce96a46de22d v13/code/v13/agi/eligibility.py || source_red=1
+          echo "$source_red" > "$e/SOURCE_EXIT.txt"
+          python3 -m compileall -q v13/code/scripts/hb0_split_information_cohort.py v13/code/tests/test_hb0_split_information_cohort.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          if [ "$source_red" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 180s python3 -m unittest -v tests.test_hb0_split_information_cohort) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+            (cd v13/code && python3 -m scripts.hb0_split_information_cohort --out "$e/HB0_REPORT.json") > "$e/PROBE_RAW.log" 2>&1
+            echo "$?" > "$e/PROBE_EXIT.txt"
+          else
+            for n in FOCUSED PROBE; do echo SKIPPED_SOURCE_RED > "$e/${n}_RAW.log"; echo SKIPPED_RED > "$e/${n}_EXIT.txt"; done
+          fi
+          python3 -m venv "$RUNNER_TEMP/v13-hb0-venv"
+          py="$RUNNER_TEMP/v13-hb0-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          install_ok="$?"
+          if [ "$install_ok" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+            install_ok="$?"
+          fi
+          if [ "$install_ok" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+            install_ok="$?"
+          fi
+          echo "$install_ok" > "$e/INSTALL_EXIT.txt"
+          if [ "$install_ok" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 18m "$py" -m unittest discover -s tests -p 'test_*.py') > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else
+            echo SKIPPED_DEPENDENCY_RED > "$e/FULL_RAW.log"
+            echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 9eaccc99448af39aaa534b90c4924f11f8ecb389 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check 9eaccc99448af39aaa534b90c4924f11f8ecb389 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - name: Preserve complete evidence including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-hb0-structural-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-hb0-structural/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce software-only acceptance
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-hb0-structural"
+          for n in SOURCE COMPILE FOCUSED PROBE INSTALL FULL PRIVACY DIFF; do
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              echo "$n RED; evidence preserved; no gate promotion"
+              tail -40 "$e/${n}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo HB0_STRUCTURAL_SOFTWARE_ONLY_NO_GATE

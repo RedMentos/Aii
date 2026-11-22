@@ -1,0 +1,47 @@
+{
+  "date_utc": "2026-10-27",
+  "package": "WP-Z12d local closed SQLite observed digital outcome SHADOW",
+  "repo": "RedMentos/Aii",
+  "branch": "assistant/v13-world-jepa-local-store-20261027",
+  "pr": 758,
+  "base_sha": "3a14e9bc62e19a58d6fa4bad1fcddbb3e9c179b2",
+  "tested_source_sha": "9f0f21503c530a4cb0c87a0b684bdc5d9f0cfdaf",
+  "prereg_commit": "def1dbc7fd6adae7b60809e48f3b1d3329909a24",
+  "status": "SOFTWARE_FOCUSED_PASS_REAL_STORE_NOT_RUN",
+  "ci": {
+    "exact_head_run": 40563990900,
+    "exact_head_tests": 26,
+    "exact_head_raw_sha256": "698fe20f0409f0dadda415b302b917bf960200a5a91ecfd3882ebe31b9d02603",
+    "merge_run": 40564018633,
+    "merge_tests": 26,
+    "merge_raw_sha256": "e538421b1811488d7b443c9facacd86c5081f0a40136865c34452986e46cd75c",
+    "all_exits_zero": true,
+    "privacy": "CLEAN",
+    "private_backup_byte_verified": true
+  },
+  "prior_synthetic_comparison": {
+    "direct_ridge_pooled_mae": 0.15255538955666423,
+    "jepa_seed3_pooled_mae": 0.20332050430921955,
+    "jepa_seed7_pooled_mae": 0.1926208878029889,
+    "utility_gain_proven": false
+  },
+  "gates": {
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "owner": "GPT-6 review candidate",
+  "next_command": "cd v13/code && PYTHONPATH=. python scripts/world_jepa_readonly_store.py --db /path/to/closed.sqlite --ack-closed-store",
+  "prerequisites": [
+    "V13 stopped and SQLite closed/checkpointed with no WAL/SHM/journal sidecars",
+    "User-authorized private local observed-store access",
+    "Independent review before runtime integration"
+  ],
+  "blocked": "Actual private observed store and Redmi unavailable in this automation; synthetic tests do not count as real store evidence"
+}

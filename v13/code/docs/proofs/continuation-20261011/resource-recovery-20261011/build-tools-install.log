@@ -1,0 +1,7 @@
+Collecting cmake
+  Downloading cmake-4.4.4-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (7.0 kB)
+Downloading cmake-4.4.4-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (30.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 30.2/30.2 MB 17.4 MB/s  0:00:01
+Installing collected packages: cmake
+Successfully installed cmake-4.4.4
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.

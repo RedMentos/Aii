@@ -1,0 +1,82 @@
+name: V13 B3 L1 seed identity full software regression
+on:
+  push:
+    branches: [assistant/v13-b3-l1-seed-identity-review-20261027]
+    paths:
+      - '.github/workflows/b3-l1-seed-identity-fullsuite.yml'
+      - 'v13/code/v13/b3bridge.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-b3-l1-seed-identity-full
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Preserve source-wide raw exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/b3-seed-full"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/b3bridge.py > "$evidence/SOURCE_BLOB.txt"
+          git hash-object v13/code/tests/test_b3_l1_seed_identity_review.py > "$evidence/TEST_BLOB.txt"
+          git hash-object v13/code/tests/test_b3_l1_baseline_completeness_review.py > "$evidence/BASELINE_TEST_BLOB.txt"
+          git hash-object v13/code/tests/test_b3bridge.py > "$evidence/EXISTING_TEST_BLOB.txt"
+          git merge-base --is-ancestor 8d94664b9d144ae9a722c8a021f816e2a853e425 HEAD
+          echo "$?" > "$evidence/PREREG_EXIT.txt"
+          git merge-base --is-ancestor 1c1b09575ce4dab687bb33ff7bf7627c035a2281 HEAD
+          echo "$?" > "$evidence/RED_TEST_COMMIT_EXIT.txt"
+          if [ "$(cat "$evidence/SOURCE_BLOB.txt")" = "556c0a9f018f183483812e41db96ee4ebcc93258" ] && [ "$(cat "$evidence/TEST_BLOB.txt")" = "3921e38e02e168cddd0e3d4f303664980a936b2c" ] && [ "$(cat "$evidence/BASELINE_TEST_BLOB.txt")" = "265ba4a684812ed85e7f3377c819cfdc33640a1d" ] && [ "$(cat "$evidence/EXISTING_TEST_BLOB.txt")" = "423c9812faba6097fe5944017c324fcb78c9e1a2" ]; then echo 0; else echo 1; fi > "$evidence/FROZEN_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/b3-seed-full-venv"
+          py="$RUNNER_TEMP/b3-seed-full-venv/bin/python"
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$evidence/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'transformers==5.20.2' 'peft==0.21.2' >> "$evidence/INSTALL_RAW.log" 2>&1
+          second=$?
+          if [ "$first" -eq 0 ] && [ "$second" -eq 0 ]; then echo 0; else echo 1; fi > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/v13 > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 6ce9754a418dc85204efed174c1b0ef23e0f8ae4 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 6ce9754a418dc85204efed174c1b0ef23e0f8ae4 HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-b3-seed-full-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/b3-seed-full/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce all raw exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/b3-seed-full"
+          for name in PREREG RED_TEST_COMMIT FROZEN INSTALL UNIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; original raw evidence retained"
+              tail -100 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'B3_L1_SEED_FULL_SOFTWARE_ONLY_NO_PROMOTION'

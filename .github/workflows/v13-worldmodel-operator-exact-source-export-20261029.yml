@@ -1,0 +1,31 @@
+name: V13 World-Model operator exact candidate source export
+on:
+  push:
+    branches:
+      - codex/v13-worldmodel-operator-readonly-20261029-auto10ac
+    paths:
+      - .github/workflows/v13-worldmodel-operator-exact-source-export-20261029.yml
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Export exact changed operator and tests for independent replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/worldmodel-operator-exact"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git archive --format=tar HEAD v13/code/v13/operator.py v13/code/tests/test_worldmodel_operator_20261029.py v13/code/tests/test_worldmodel_realstore_integration_20261029.py > "$e/EXACT_PATCH_SOURCE.tar"
+          sha256sum "$e/EXACT_PATCH_SOURCE.tar" > "$e/EXACT_PATCH_SOURCE_SHA256.txt"
+          git hash-object v13/code/v13/operator.py v13/code/tests/test_worldmodel_operator_20261029.py v13/code/tests/test_worldmodel_realstore_integration_20261029.py > "$e/SOURCE_BLOBS.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-worldmodel-operator-exact-${{ github.sha }}
+          path: ${{ runner.temp }}/worldmodel-operator-exact/
+          if-no-files-found: error

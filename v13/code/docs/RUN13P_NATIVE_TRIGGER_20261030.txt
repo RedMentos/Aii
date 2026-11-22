@@ -1,0 +1,8 @@
+Run13P native trigger — 2026-10-30 UTC
+Owner GPT-6; explicit opt-in for one isolated Linux-native pinned LFM2.5-350M first-step CE-vs-contrastive gradient attribution, no optimizer step and no weight export.
+Prereg committed before implementation: 7528741a6a5b7a35ddec721a0baa99c611394ce9.
+Software preflight: Actions 41091771052 SUCCESS, tested 0af0df4fddc345fd02def19bb629af905e676855, 12/12 tests, all nine stage exits 0, privacy CLEAN.
+Original preflight artifact 12994446778 SHA256 89852143dbfeeb91f023b4072e140634136eb71c2f4f0f220cd78bd60d4685be, ZIP CRC clean, 23/23 inner hashes; private Library backup byte-identical.
+Source probe Git blob 07e64d1dacdadc12e16c59e4fb448466f5369fd5; test blob 410685fbf2e22294314b27d9429e8e8f07810c44; Canon 218464b12a2d27d92524c751922fa8e1c3fb0ea7.
+Heavy owner preflight: GitHub Actions in_progress=0 at trigger; native workflow uses existing serial Body-JEPA group and cancel-in-progress false.
+Run must preserve failed attempts and original raw. No runtime learning, Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, jepa_weight0, Redmi unmeasured, whole system incomplete.

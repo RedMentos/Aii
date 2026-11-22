@@ -1,0 +1,10 @@
+# Run14B prereg — AG12 nonfinite solver confidence containment (2026-10-30)
+
+Owner: GPT-6 scheduled continuation. Independent review-only child of verified Run13Z `7e7d57e1db88642f4fcd447eda2c012c1e625bfb`, separate from Run14A AG9. File ownership: `v13/code/v13/agi/generality.py`, new `tests/test_ag12_nonfinite_solver_run14b.py`, isolated CI and scoped checkpoint. No changes to the existing generality `calibration` scorer, suite generator, suite hashes, fixtures, seeds, task answers, or model cohorts.
+
+## Observed bug and fixed acceptance
+`GeneralityEval.run` passes solver confidence directly to `clamp01`. That function maps NaN/Inf to plausible finite scores (NaN to 1.0 in the current implementation), and accepts bool True as 1.0. A solver returning a correct answer plus NaN/Inf/True can receive falsely perfect procedural accuracy and calibration. In both direct and batch solver paths, require finite nonboolean numeric confidence *before* clamping; invalid confidence follows the existing per-row solver-error fallback (answer='', confidence=0, counted wrong) and cannot be credited as a correct answer. Preserve finite numeric and numeric-string inputs, finite out-of-range clamping, cancellation/deadline semantics, no extra model calls, existing store schema, and unchanged frozen AG12 scorer. Test nonfinite NaN/+Inf/-Inf, True/False, invalid numeric strings, valid controls, direct and batch path; verify error rows are not silently counted correct. Tests are software-only and must not alter original historical results.
+
+Test-first RED from exact original `generality.py` source; candidate GREEN for new tests plus existing `tests.test_growth.G12Eval`, compile, pin and privacy checks with original raw ZIP + SHA256SUMS, and independent review. Do not use a historical cohort or change the original registered scorer. No Age authority, native/Redmi proof, STEP2/B3/Body-JEPA/JEPA gate promotion. Existing full-suite historical RED remains.
+
+Next command: commit tests and pinned isolated workflow, observe original RED, patch confidence admission only, verify candidate GREEN and remote bytes, persist scoped checkpoint and continue other organs.

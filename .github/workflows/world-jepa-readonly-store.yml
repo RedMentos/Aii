@@ -1,0 +1,74 @@
+name: V13 offline read-only World-JEPA store adapter
+on:
+  push:
+    branches: [assistant/v13-world-jepa-local-store-20261027]
+    paths:
+      - '.github/workflows/world-jepa-readonly-store.yml'
+      - 'v13/code/scripts/world_jepa_readonly_store.py'
+      - 'v13/code/tests/test_world_jepa_readonly_store.py'
+  pull_request:
+    branches: [assistant/v13-world-jepa-digital-shadow-20261027]
+permissions:
+  contents: read
+concurrency:
+  group: v13-world-readonly-store-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Synthetic closed SQLite, no private store, raw evidence
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/world-readonly-store"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/scripts/world_jepa_readonly_store.py > "$evidence/SOURCE_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_digital_shadow.py > "$evidence/PARENT_BRIDGE_BLOB.txt"
+          python3 -m venv "$RUNNER_TEMP/world-readonly-venv"
+          py="$RUNNER_TEMP/world-readonly-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' > "$evidence/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 4m env PYTHONPATH=. "$py" -m unittest -v tests.test_world_jepa_readonly_store tests.test_world_jepa_digital_shadow tests.test_world_model
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          python3 -m py_compile v13/code/scripts/world_jepa_readonly_store.py v13/code/tests/test_world_jepa_readonly_store.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 3a14e9bc62e19a58d6fa4bad1fcddbb3e9c179b2 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 3a14e9bc62e19a58d6fa4bad1fcddbb3e9c179b2 HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-world-readonly-store-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/world-readonly-store/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce all exits and no utility promotion
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/world-readonly-store"
+          for name in INSTALL UNIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; original raw evidence retained"
+              tail -80 "$evidence/${name}_RAW.log"
+              exit 1
+            fi
+          done
+          echo 'WORLD_READONLY_STORE_SYNTHETIC_ONLY_NO_REAL_DB_OR_AGE_PROMOTION'

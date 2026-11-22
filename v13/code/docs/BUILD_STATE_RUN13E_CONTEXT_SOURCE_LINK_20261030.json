@@ -1,0 +1,51 @@
+{
+  "schema": "v13.run13e.context_source_link_jef.review_checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled review",
+  "branch": "assistant/v13-run13e-context-source-link-20261030-auto11",
+  "base_sha": "38e02285d4e27f9b4e27b5ad45ea1f7fa3b750f5",
+  "prereg_commit": "a4895e34dd65adefc834f160f4309f72028402ec",
+  "tested_head": "7c9d20bb7a0b0d37590fa2fb83bb3e5f7125c216",
+  "pr": 1292,
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "workflow_run": 41079017027,
+  "workflow_conclusion": "SUCCESS",
+  "artifact_id": 12988008494,
+  "artifact_zip_sha256": "53158a7726d76a163ab93d22e823648068b654933133fe498b86f9e2c1bb170b",
+  "artifact_entries": 16,
+  "artifact_crc": "CLEAN",
+  "artifact_inner_sha256": "15/15 verified, full coverage",
+  "tests": "40/40 PASS in 1.892s",
+  "stage_exits": {
+    "CANON": 0,
+    "VENV": 0,
+    "DEPS": 0,
+    "TEST": 0,
+    "COMPILE": 0,
+    "PRIVACY": 0,
+    "DIFF": 0
+  },
+  "privacy": "CLEAN",
+  "private_backup": "/V13-Checkpoints/2026-10-30/Run13E/RUN13E_41079017027.zip",
+  "private_backup_byte_identical": true,
+  "evidence": "SOFTWARE_REAL_STORE_CONTEXT_PLAN_POINTER_TO_SOURCE_JEF_NO_NATIVE",
+  "measured": "Original frozen Beacon211 source event was pointed out of bounded Context OS planned view as SOURCE_LINKS; persisted plan+event lineage rehydrated exact USER SourceRefs and generated 2/2 numeric plus correct faster option, zero native calls and zero new source rows.",
+  "negative_controls": "wrong/missing packet, nonpointer, cross-session, deleted source, duplicate pointer, tampered packet",
+  "original_native_run13a": "UTILITY_RED_UNCHANGED",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "ContextPlan packet is a provenance receipt not cryptographic authorization; this bridge is opt-in SHADOW and not active Runtime egress.",
+    "A real user UI would need dispatch-time revocation and C5 approval; no general semantic recall.",
+    "No native C3/Body inference, JEPA learning, Redmi measurements or full V13 acceptance."
+  ],
+  "exact_next_command": "Independently review source-link packet/event identity under Store concurrent revocation, then preregister any live integration with explicit human approval and C5 egress checks; otherwise continue separate Canon organ.",
+  "remaining_platform_budget": "UNKNOWN"
+}

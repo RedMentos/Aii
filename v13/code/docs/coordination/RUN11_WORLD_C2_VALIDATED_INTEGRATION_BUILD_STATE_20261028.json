@@ -1,0 +1,54 @@
+{
+  "schema": "v13.review_scoped_build_state.v1",
+  "date": "2026-10-28",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run11-world-c2-validated-integration-20261028",
+  "pr": 866,
+  "parent_pr": 865,
+  "sibling_source_pr": 859,
+  "prereg_commit": "8c4abb20de8ad395b5cbf2d6b50340d6b3e73a8a",
+  "world_source_blob": "3799f84fdf52a82efe70e0e5e73bcfe4a95f0ac7",
+  "c2_script_blob": "12fe792cacd2dc92c2b3c5c33e01424e20a148e4",
+  "c2_test_blob": "48554fd86c985fab520888af8bd7910236589683",
+  "green": {
+    "run": 40646415795,
+    "source_sha": "831d05fc817e5784831721810da19df68a7ee9f6",
+    "focused_pass": 29,
+    "full_pass": 2240,
+    "full_skipped": 1,
+    "artifact_id": 12798231379,
+    "zip_sha256": "42a451bfa2dc5cb9c4723560ffb720cc367e6bd9d818b19d89c2d2bf13ee952c",
+    "internal_hashes": 16,
+    "private_library_readback": true,
+    "stage_exits": {
+      "BLOBS": 0,
+      "INSTALL": 0,
+      "FOCUSED": 0,
+      "FULL": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    }
+  },
+  "evidence_kind": "LINUX_SOFTWARE_SYNTHETIC_ONLY",
+  "negative_gates": {
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3_heldout": "FAIL",
+    "jepa_weight": 0,
+    "age0": "RECORD_ONLY",
+    "phone_measured": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false
+  },
+  "open_questions": [
+    "Native route raw lacks full function-call traces; do not reinterpret original C2 native scores.",
+    "Runtime sibling #860 frozen-source full-suite RED; excluded.",
+    "Child #867 C3 prompt combined CI pending.",
+    "Redmi unavailable."
+  ],
+  "next_command": "git fetch origin assistant/v13-run11-world-c2-validated-integration-20261028 && cd v13/code && PYTHONPATH=.:tests python3 -m unittest -v tests.test_c2_benchmark tests.test_world_modulator_atomicity_run349 tests.test_world_corrupt_packet_recovery_run420 tests.test_world_receipt_binding_run424 tests.test_world_valid_recent_window_run431 tests.test_world_multiaction_recovery_20261028 tests.test_selfstate_session_unfinished_20261028",
+  "prerequisites": "Review, source-pinned paired native C2 trace collection, explicit owner coordination; no native job overlap.",
+  "platform_remaining_budget": "UNKNOWN"
+}

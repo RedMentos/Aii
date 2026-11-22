@@ -1,0 +1,15 @@
+# Run59 — heldout action-swap diagnostic for synthetic predicted-latent readout (2026-10-28)
+
+Owner GPT-6 continuation. Independent review-only child of Run56 exact source `e37fe520b924786001e3fa707ee5e9c0a17054ec`, conditional on Run56 source-only GREEN; disjoint from Run58 B2 integration. No main merge or source changes to WorldJEPA, Run50/51/54/55, no native/Redmi.
+
+## Motivation / preregistered hypothesis
+
+Run55 independently verified synthetic metrics (Actions 40758292446, original ZIP SHA256 `80d7f18cb556b60247dfc69c949a28381a9a78467aeecdfd991e598927951adb`, 36 focused/2589 full OK): observed predicted-latent supervised outcome readout MSE 0.0001889448312481991 vs shuffled-training-action 0.001016088804124525, but direct state+action linear baseline 0.00009126058431396172 is better. The latent holdout action-sensitivity diagnostic has negative wrong-minus-correct latent MSE, so the supervised readout gain alone cannot establish reliable action dependence.
+
+**New independent test**: fit exactly the same Run51 synthetic observed/shuffled WorldJEPA models on the same registered 128-row fixture, seed 11, 20 steps, 2 ensemble; train fixed ridge lambda 0.01 only on train predicted latents and train observed outcomes, with the shuffled model receiving its own exact Run51 shuffled train actions. On the 39 untouched heldout states, evaluate the *same fitted ridge weights* twice: once with actual heldout action, once with a deterministic cyclic one-hot **column rotation** so every action changes but remains in registered training support. Holdout outcome labels are used **only for scoring**, never for fitting or selecting hyperparameters. No alternate counterfactual outcome is fabricated. Compare per-target and overall MSE and wrong-minus-correct delta for each model; no directional success threshold or posthoc seed/step tuning. Cross-check correct-action readout metrics and exact Run51 permutation digest against Run55 report.
+
+Source/approval checks must reject real Store, unapproved inputs, tampered registered arrays, invalid/oversized inputs before fitting. Report aggregates and digests only; no weights, raw text or per-row outcomes published. Tests: exact match to Run55 correct metrics, every swapped one-hot differs, deterministic, caller unchanged, invalid/real refusal, no authority. New source/test/workflow/docs only; original model/source/cohort blobs unchanged. CI pinned NumPy, focused/full Linux software, raw metric ZIP SHA256SUMS, privacy/diff and frozen hashes.
+
+## Interpretation and gates
+
+A wrong-action MSE increase would show sensitivity under a synthetic heldout label comparison, not causal validity; a decrease or null is a negative observation, not something to hide. Direct linear baseline remains a strong simpler comparator. Supervised ridge readout is **not** JEPA-only utility. No Runtime, Store write, external tool, model publication, device or human-visible authority. Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 L1 FAIL; Body-JEPA UNAVAILABLE; LP3 FAIL; jepa_weight=0; Redmi UNMEASURED; V13 incomplete.

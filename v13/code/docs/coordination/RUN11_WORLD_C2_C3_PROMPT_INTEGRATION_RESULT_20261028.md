@@ -1,0 +1,9 @@
+# Run11 World F4 + C2 route + C3 numeric prompt — GREEN integration review (2026-10-28)
+
+**Owner:** GPT-6, draft PR #867 child of #866. Prereg `a5fb32a20a86fd92efe6a84259f6c63c69178eff` before import. Parent World F4 `3799f84fdf52a82efe70e0e5e73bcfe4a95f0ac7`, C2 scorer `12fe792cacd2dc92c2b3c5c33e01424e20a148e4` unchanged. Sibling PR #849 prompt `646c6f31b52ca2664c1952af7c7e842fc3e20885` and test `a27a41266ffe2dc9e0ec5504b418c97639a10864` imported byte-exact; no hard-coded numeric answer, no tool/learning/age bypass.
+
+**Original separate native context:** PR #849 native [40634460512](https://github.com/RedMentos/Aii/actions/runs/40634460512) returned 60 for one 120/2 German prompt via B1_DETAIL and passed JEF/STEP12; this was a single unpaired source cohort, **not** native proof of this combined branch or general arithmetic.
+
+**Combined exact-source Linux software GREEN:** [Actions 40646821943](https://github.com/RedMentos/Aii/actions/runs/40646821943) at `53885205b066b886fc914cdace7e67b956382e5e`: **35 focused PASS, 2241 full PASS (1 skipped)**, BLOBS/INSTALL/FOCUSED/FULL/COMPILE/PRIVACY/DIFF exit0, privacy CLEAN. Raw artifact `12798371676`, ZIP SHA256 `730f4e36c82f8fcafb3ed2320fa0af1869d7eb6a366500477dc0dddc2a5d5024`, CRC and 16/16 internal SHA256SUMS verified. Private Library `/V13-Checkpoints/2026-10-28/Run11-World-C2-C3-Integration/WORLD_C2_C3_INTEGRATION_GREEN_40646821943_sha730f4e36.zip` re-materialized byte-exact.
+
+**Next:** child PR #868 adds exact sibling #846 AG0 stale B-slot fail-closed source, pending combined CI; native JEF/STEP12/public arithmetic rerun only after #868 software GREEN and no other heavy native owner active. Sibling #860 runtime C2 route candidate remains excluded (frozen-source full-suite RED). No production/main merge, no Redmi, no STEP2/B3/Body-JEPA/LP3/jepa_weight/Age/whole-system promotion. Negative gates unchanged. Remaining platform budget UNKNOWN.

@@ -1,0 +1,95 @@
+name: V13 Automation11 World-JEPA concurrent fit generation software
+on:
+  push:
+    branches:
+      - assistant/v13-run11-world-jepa-stale-fit-guard-20261028
+    paths:
+      - '.github/workflows/automation11-world-jepa-stale-fit-20261028.yml'
+      - 'v13/code/v13/world_jepa.py'
+      - 'v13/code/tests/test_world_jepa_stale_fit_order.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: "1"
+      NO_MODEL_DOWNLOADS: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Deterministic stale-fit barrier, prior atomicity and full software
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-world-jepa-stale-fit"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          for p in v13/code/v13/world_jepa.py v13/code/tests/test_world_jepa_stale_fit_order.py v13/code/v13/world_jepa_shadow_checkpoint.py v13/code/v13/runtime.py v13/code/specs/models.json v13/code/v13/source_consumer.py; do
+            printf '%s %s\n' "$(git hash-object "$p")" "$p"
+          done > "$e/SOURCE_BLOBS_RAW.log"
+          if [ "$(git hash-object v13/code/v13/runtime.py)" = 68e7ed1352800174972558f1e0b0683a42c8689a ] && [ "$(git hash-object v13/code/specs/models.json)" = 7af05962af41d0bc3f7dd18ef01d4eba55eabf99 ]; then
+            echo 0 > "$e/PINS_EXIT.txt"
+          else
+            echo 1 > "$e/PINS_EXIT.txt"
+          fi
+          python3 -m venv "$RUNNER_TEMP/v13-world-jepa-stale-fit-venv"
+          py="$RUNNER_TEMP/v13-world-jepa-stale-fit-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu >> "$e/INSTALL_RAW.log" 2>&1
+          second=$?
+          "$py" -m pip install --no-input -q 'transformers==5.20.2' 'peft==0.21.2' >> "$e/INSTALL_RAW.log" 2>&1
+          third=$?
+          if [ "$first" = 0 ] && [ "$second" = 0 ] && [ "$third" = 0 ]; then echo 0 > "$e/INSTALL_EXIT.txt"; else echo 1 > "$e/INSTALL_EXIT.txt"; fi
+          if [ "$(cat "$e/PINS_EXIT.txt")" = 0 ] && [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 5m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_world_jepa_stale_fit_order tests.test_world_jepa_reader_snapshot tests.test_world_jepa_atomic_fit tests.test_world_jepa_fit_input_guard tests.test_world_jepa_coverage_integrity tests.test_world_jepa_shadow_checkpoint_20261028) > "$e/FOCUSED_RAW.log" 2>&1
+            echo "$?" > "$e/FOCUSED_EXIT.txt"
+          else
+            echo SKIPPED_PREREQ_RED > "$e/FOCUSED_RAW.log"
+            echo SKIPPED_RED > "$e/FOCUSED_EXIT.txt"
+          fi
+          if [ "$(cat "$e/FOCUSED_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q) > "$e/FULL_RAW.log" 2>&1
+            echo "$?" > "$e/FULL_EXIT.txt"
+          else
+            echo SKIPPED_FOCUSED_RED > "$e/FULL_RAW.log"
+            echo SKIPPED_RED > "$e/FULL_EXIT.txt"
+          fi
+          python3 -m compileall -q v13/code/v13/world_jepa.py v13/code/tests/test_world_jepa_stale_fit_order.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base b3586688c9d4ea88e1cfd05877f2dc8ce22ebeaa --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check b3586688c9d4ea88e1cfd05877f2dc8ce22ebeaa HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-automation11-world-jepa-stale-fit-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-world-jepa-stale-fit/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce full software proof or retain exact RED
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-world-jepa-stale-fit"
+          for name in PINS INSTALL FOCUSED FULL COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED; original raw retained, no World-JEPA gate promotion"
+              tail -80 "$e/${name}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'WORLD_JEPA_SHADOW_FIT_ORDER_SOFTWARE_ONLY_NO_NATIVE_OR_GATE_PROMOTION'

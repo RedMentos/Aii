@@ -1,0 +1,76 @@
+{
+  "schema": "v13.run14b.ag12_solver_confidence.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 hourly V13 continuation; isolated AG12 generality.py only",
+  "parent": {
+    "pr": 1317,
+    "commit": "7e7d57e1db88642f4fcd447eda2c012c1e625bfb"
+  },
+  "branch": "assistant/v13-run14b-ag12-nonfinite-eval-20261030-hourly11",
+  "pr": 1319,
+  "state": "ORIGINAL_TESTFIRST_RED_CANDIDATE_SOFTWARE_GREEN_PRIVATE_BYTE_VERIFIED",
+  "prereg_commit": "6f4796d07a58e456b393e447ad7aeec54b6b649f",
+  "test_first_commit": "f5411d3fba7b58dba2e02113643f72389ddc5d73",
+  "test_first_workflow_commit": "235534658a2ab7f36471b65a897e7bb9e5bf960e",
+  "candidate_commit": "5c8bfc98d5ed9ea67773f84d42f2241f2a4c6619",
+  "blobs": {
+    "original_module": "dec1b1555750cf19685a88ba89e09270acc8b868",
+    "candidate_module": "6f7906c9b9352b9d4ffe9cf9f237fba684942308",
+    "test": "ad1b97ef3ce9e136fd78e4795544d9985697fb39",
+    "candidate_workflow": "0ec286e7ceb32f1a064708ac0c7abf7350cdd48e",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "ci": {
+    "red_run": 41104149055,
+    "green_run": 41104211814,
+    "red_head": "235534658a2ab7f36471b65a897e7bb9e5bf960e",
+    "green_head": "5c8bfc98d5ed9ea67773f84d42f2241f2a4c6619",
+    "red_status": "completed/failure",
+    "green_status": "completed/success",
+    "red_tests": 8,
+    "red_failures": 10,
+    "green_tests": 8,
+    "green_failures": 0,
+    "red_original_zip_sha256": "2a268cd8d5ffd7db674aca98362e8fa7d6badd8c09b06f1cf1d5f885d36077d9",
+    "green_original_zip_sha256": "104e93fb2c01d4a8630fb9328cb8707f50f168d8ddf03222e98855d63a2d472b",
+    "red_inner_sha256": "12/12 PASS",
+    "green_inner_sha256": "12/12 PASS",
+    "red_crc": "PASS",
+    "green_crc": "PASS",
+    "green_stage_exits": {
+      "PINS": 0,
+      "TEST": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "red_stage_exits": {
+      "PINS": 0,
+      "TEST": 1,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run14B-AG12-SolverConfidence/",
+    "private_readback": "BYTE_IDENTICAL_SHA256"
+  },
+  "change": "AG12 direct/batch solver confidence must be finite nonboolean before existing clamp/scorer; invalid rows follow existing solver error path and count wrong. No scorer/cohort changes.",
+  "tests": "Original test-first 8 focused tests: 10 subtest failures; candidate same 8 focused tests PASS, including existing G12Eval. Original Actions ZIPs CRC/SHA256SUMS verified.",
+  "evidence_scope": "EXACT_GITHUB_ACTIONS_SOFTWARE_ONLY_VERIFIED",
+  "open_questions": [
+    "Independent unfiltered full-suite on combined AG9+AG12 chain required; historical RED not waived.",
+    "No model/native/Redmi evidence or Age calibration authority; no production merge.",
+    "Separate Run14A AG9 #1318 has independently verified software RED/GREEN and is not integrated."
+  ],
+  "gates": {
+    "learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Build disjoint combined review branch from verified Run14A and Run14B; run focused cross-organ tests and unfiltered full suite with original RED identities preserved, then independent review and checkpoint."
+}

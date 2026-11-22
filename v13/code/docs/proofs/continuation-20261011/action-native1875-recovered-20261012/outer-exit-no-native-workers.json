@@ -1,0 +1,35 @@
+{
+  "schema": "v13-native-capture-outer-exit-and-no-worker-check-v1",
+  "utc": "2026-10-11T21:44:11.174816+00:00",
+  "outer_execution_session": 41762,
+  "outer_process_exit_code": 0,
+  "driver_terminal_state": {
+    "schema": "v13-action-native-tap-progress-v1",
+    "status": "CAPTURED",
+    "updated_utc": "2026-10-11T21:32:11.107260+00:00",
+    "registry_sha256": "99912f23a599d090b556ba9f6317231290d1d477c57f5a5b1047f26d40231ffa",
+    "completed_rows": 1875,
+    "completed_batches": 118,
+    "taps_sha256": "09fde379793ea8c4a63268df729a33b4b98a3f4f90f3eeee2dec4a83a10b5843",
+    "native_extraction_observed": true,
+    "receiver_authority": 0,
+    "canonical_architecture_complete": false,
+    "expected_rows": 1875,
+    "worker_reaped": true,
+    "frozen70": {
+      "path": "/workspace/scratch/5a9214d3f329/v13-work/Aii/v13/code/docs/proofs/continuation-20261011/step2-webchat-70/report.json",
+      "sha256": "e32e18d50f590b35aef3c1dcd766ed1f06f4f96a143bf675b088d1b9b2b1b555",
+      "status": "UTILITY_FAIL",
+      "rows": 70,
+      "frozen_source_intact": true,
+      "utility_gate_inferred": false
+    }
+  },
+  "capture_log_sha256": "13d4af2561860c31d852914502a0aab788fac3c9119785bc5d4abc5ec0637093",
+  "owned_native_commands_still_present": [],
+  "all_owned_workers_reaped_assertion_executed_before_outer_exit": true,
+  "final_worker_observation_file_status": "STARTING",
+  "final_worker_observation_file_is_terminal": false,
+  "observation_note": "Final JSON observer retains stale STARTING state, preserved verbatim; bounded wrapper successful outer exit and explicit terminal CAPTURED log occur only after the owned-worker reaping check. No native owned command remains in /proc. Do not describe all per-worker observation files as terminal.",
+  "receiver_authority": 0
+}

@@ -1,0 +1,18 @@
+{
+  "tests_run": 102,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 1,
+  "patterns": [
+    "test_listarith.py",
+    "test_toolpath_integration_20261016.py",
+    "test_toolstep.py",
+    "test_toolforecast.py",
+    "test_transaction.py",
+    "test_broker.py",
+    "test_source_handoff_candidate.py",
+    "test_source_handoff_ablation.py",
+    "test_native_firing_merged_candidate.py"
+  ],
+  "native_model_runs": 0
+}

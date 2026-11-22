@@ -1,0 +1,149 @@
+name: V13 C2 native auto-route provenance three-call isolated pilot
+on:
+  push:
+    branches:
+      - assistant/v13-c2-native-route-launch-20261030-0445
+    paths:
+      - '.github/workflows/v13-c2-native-route-20261030.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-step2-budget-paired-native-20261030
+  cancel-in-progress: false
+jobs:
+  native-c2:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      V13_NO_AUTOSTART: '1'
+      NEEDLE_TELEMETRY: '0'
+      DO_NOT_TRACK: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Pinned three-call native C2 with closed raw and no gate promotion
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-c2-native-route"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          4d63ece77f38ca58fedde5f21296d354703c9270 v13/code/docs/C2_NATIVE_ROUTE_PROVENANCE_PREREG_20261030.md
+          fb34dba97ae3700ba5accdcb928bfb72afcf4fcb v13/code/scripts/c2_native_route_provenance_20261030.py
+          3d517b27ddcc8a2fb2fa966be88c8d7eb2984738 v13/code/tests/test_c2_native_route_provenance_20261030.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          7af05962af41d0bc3f7dd18ef01d4eba55eabf99 v13/code/specs/models.json
+          954a3f468f10195fbce12d27f68585ee7edee2c9 v13/code/specs/control_tools.json
+          BLOBS
+          red=0
+          : > "$e/PINS_RAW.log"
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then red=1; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          echo "$red" > "$e/PINS_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-c2-native-route-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-c2-native-route-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else
+            echo SKIPPED_VENV_RED > "$e/DEPS_RAW.log"
+            echo SKIPPED_RED > "$e/DEPS_EXIT.txt"
+          fi
+          if [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ] && [ "$(cat "$e/PINS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && timeout --signal=TERM --kill-after=5s 3m env PYTHONPATH=.:tests "$py" -m unittest -v tests.test_c2_native_route_provenance_20261030) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+          else
+            echo SKIPPED_DEPS_OR_PINS_RED > "$e/TEST_RAW.log"
+            echo SKIPPED_RED > "$e/TEST_EXIT.txt"
+          fi
+          export V13_HOME="$RUNNER_TEMP/v13-c2-native-route-installed"
+          if [ "$(cat "$e/TEST_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 15m env PYTHONPATH=v13/code "$py" -m v13.bootstrap --home "$V13_HOME" > "$e/BOOTSTRAP_RAW.log" 2>&1
+            echo "$?" > "$e/BOOTSTRAP_EXIT.txt"
+          else
+            echo SKIPPED_TEST_RED > "$e/BOOTSTRAP_RAW.log"
+            echo SKIPPED_RED > "$e/BOOTSTRAP_EXIT.txt"
+          fi
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 7m env PYTHONPATH=v13/code "$py" v13/code/scripts/c2_native_route_provenance_20261030.py --home "$V13_HOME" --out "$e/pilot" > "$e/NATIVE_RAW.log" 2>&1
+            echo "$?" > "$e/NATIVE_EXIT.txt"
+          else
+            echo SKIPPED_BOOTSTRAP_RED > "$e/NATIVE_RAW.log"
+            echo SKIPPED_RED > "$e/NATIVE_EXIT.txt"
+          fi
+          if [ -f "$e/pilot/report.json" ]; then
+            "$py" - "$e/pilot" > "$e/REPORT_CHECK_RAW.log" 2>&1 <<'PY'
+          import json,sys,hashlib
+          from pathlib import Path
+          p=Path(sys.argv[1]);j=json.loads((p/'report.json').read_text())
+          assert j['schema']=='v13.c2.native_route_provenance_pilot.v1'
+          assert j['seed']==43
+          assert j['prompt_sha256']=='c952103c6f36bff983659977783f2b6447264bc72e93f76412a69f91ca1fde25'
+          assert j['needle_model_sha256']=='c9d915eca282ed42d1a09b143b592adb4cc6744ffe2d294adf5cfc5548170c38'
+          assert j['needle_model_verified']=={'ok':True,'hash_checked':True}
+          assert len(j['rows'])==3 and len({x['event_id'] for x in j['rows']})==3
+          assert j['status']=='NATIVE_C2_INVOCATION_PROVEN_3_OF_3' and j['native_c2_proven'] is True
+          for i,row in enumerate(j['rows']):
+              raw=json.loads((p/'raw'/f'{i:02d}_C2_ROUTE.json').read_text())
+              assert row==raw and row['index']==i and row['prompt']==j['prompts'][i]
+              assert row['source_exact'] is True and row['native_c2_invocation_valid_before_release'] is True
+              assert row['needle_process_reaped'] is True and row['no_live_answer'] is True
+              assert row['c3_called'] is False and row['body_called'] is False
+              assert row['jepa_weight']==0
+              info=row['route_info'];m=info['native_control_metrics']
+              assert info['source'] in ('BOOT_SCAFFOLD','NATIVE_C2_ADVISORY')
+              assert m['role']=='C2_CONTROL' and m['operation']=='C' and m['status']=='FINAL'
+              assert m['memory']['measurement_status']=='MEASURED'
+              assert row['context_packet']['event_id']==row['event_id']
+              assert row['context_packet']['session_id']==row['session_id']
+              assert row['context_packet']['query_ref']==row['source_ref']
+          assert j['learning_mode']=='RECORD_ONLY' and j['jepa_weight']==0
+          assert j['integrated_c2_c3_proven'] is False and j['step2_gate_promoted'] is False
+          assert j['redmi_measured'] is False and j['whole_system_complete'] is False
+          print('ISOLATED_NATIVE_C2_INVOCATION_ONLY_NO_C3_BODY_STEP2_JEPA_REDMI_OR_AGE_PROMOTION')
+          PY
+            echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          else
+            echo NO_NATIVE_REPORT > "$e/REPORT_CHECK_RAW.log"
+            echo SKIPPED_NO_REPORT > "$e/REPORT_CHECK_EXIT.txt"
+          fi
+          "$py" -m py_compile v13/code/scripts/c2_native_route_provenance_20261030.py v13/code/tests/test_c2_native_route_provenance_20261030.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base e4174ce503f27c5a248ae81b3b0b5ef590e4c6d7 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check e4174ce503f27c5a248ae81b3b0b5ef590e4c6d7 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-c2-native-route-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-c2-native-route/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce original native evidence without gate promotion
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-c2-native-route"
+          for stage in PINS VENV DEPS TEST BOOTSTRAP NATIVE REPORT_CHECK COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original raw retained; no native C2 proof"
+              tail -80 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'ISOLATED_C2_NATIVE_ONLY_NO_C3_BODY_STEP2_B3_JEPA_REDMI_OR_AGE_PROMOTION'

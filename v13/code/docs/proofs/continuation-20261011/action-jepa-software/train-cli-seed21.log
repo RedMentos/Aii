@@ -1,0 +1,1 @@
+{"gates": {"analytic_gradient": true, "finite": true, "deterministic": true, "checkpoint_reload": true, "noncollapse": true, "predictive_gain_over_controls": false, "fixed_reference_retention": false, "observed_input_declared": false}, "candidate_gate_pass": false, "receiver_authority": 0}

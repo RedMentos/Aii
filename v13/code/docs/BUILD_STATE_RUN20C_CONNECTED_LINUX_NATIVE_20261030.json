@@ -1,0 +1,46 @@
+{
+  "schema": "v13.run20c.connected_linux_native.intermediate_green.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; latest-chain C2/C3/B1/B2 connected Linux native",
+  "branch": "assistant/v13-run20-resource-sensor-finite-20261030-hourly11",
+  "pr": 1347,
+  "native_source_head": "8672dbdd599b960c9c353c98853fb5d24b19fcf4",
+  "models_catalog_blob": "7af05962af41d0bc3f7dd18ef01d4eba55eabf99",
+  "control_tools_blob": "954a3f468f10195fbce12d27f68585ee7edee2c9",
+  "canon_blob": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+  "evidence": {
+    "run": 41132792731,
+    "artifact": 13013314573,
+    "sha256": "558f03f98a1f1c1d88719c91f3dba4edac22e0aeccd54da979e67615faee535c",
+    "crc": "PASS",
+    "inner_sha256": "27/27",
+    "stage_exits": "INSTALL/GUARDS/BOOTSTRAP/JEF_MODES/STEP12/ASK/REPORT_CHECK/COMPILE/PRIVACY/DIFF all 0",
+    "privacy": "CLEAN",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run20-SensorFinite/Run20_LINUX_NATIVE_CONNECTED_GREEN.zip",
+    "readback": "BYTE_IDENTICAL",
+    "proofs": {
+      "jef": "JEF_MODES_PASS; 8/8 checks; C2-only, C3-only, combined, restart, no-B manifest, integrity",
+      "step12": "VERTICAL_CHECKS_PASS; 8/8 checks; C2/C3 native, B1/B2 observed and released, role states, restart, integrity",
+      "model_hashes": "needle/language/body/gist verified deep, pinned catalog/control manifests",
+      "ask": "Native C3 returned a FINAL text on a budget-comparison prompt; correctness/utility NOT established"
+    }
+  },
+  "negative_gates": {
+    "phone_measured": false,
+    "full_runner_proof": false,
+    "complementarity_proven": false,
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "age0": "RECORD_ONLY",
+    "whole_system_complete": false
+  },
+  "limitations": [
+    "Linux GitHub Actions native vertical only, not Redmi or Android/Termux.",
+    "Native one-question answer is not a validated task-success benchmark; observed 110-euro preference not sufficient to establish utility.",
+    "Full-runner and complementarity gates explicitly false; no AGI claim.",
+    "Native run was pinned to pre-document head 8672dbd; later commits add only workflow/docs and do not alter source modules."
+  ],
+  "next_command": "Verify and preserve Run19/Run20 cumulative unfiltered raw, compare failures. Pursue registered STEP2 utility benchmark/real Redmi measurements and JEF/C3/Body learning gates only with explicit acceptance evidence; no auto-promotion."
+}

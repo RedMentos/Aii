@@ -1,0 +1,62 @@
+{
+  "schema": "V13_RUN12N_OBSERVER_OFF_SOURCE_PREFLIGHT_PENDING",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run12n-observer-off-c2body-20261030",
+  "pr": 1270,
+  "parent_pr": 1269,
+  "parent_head": "6e71ce356652ea06966a59937c09756d0b4e4c45",
+  "cohort": {
+    "seed": 197,
+    "fixtures": 4,
+    "arms": [
+      "A_C3_ONLY",
+      "B_B1_ONLY",
+      "C_B2_ONLY",
+      "F_NATIVE_AUTO"
+    ],
+    "turns": 16,
+    "fixture_sha256": "94cce591dcf9ade126cfdb2d32261543c8334523b6d268295759d9ef7b691df1",
+    "observer_mode": "off all arms",
+    "expected_offer_roles": [],
+    "frozen_scorer": "Run11V score_pair + score_primary",
+    "original_run12m_red_unchanged": true
+  },
+  "source_blobs": {
+    "fixture": "e8bbbaf04df479b32db40480e1fcc8bad223f48b",
+    "prereg": "cec2bf1c112774d6499ae6beaf44375bde0359b8",
+    "runner": "7911f1016abb8681e8c67f693c36cfe9128aec48",
+    "verifier": "a78f65b1c50f07bde3f845a492f8f41385e355c8",
+    "tests": "db9bb085132982b9ab7c02090c11abd40c75dab3",
+    "verifier_tests": "c083fcc67937b79445e6ae5fd0c4f34d9190c725",
+    "frozen_run11v_runner": "d274a66b8ceb801c741bbffe1456611b43603208",
+    "runtime": "22ed11e4a53d9eeae8fbc74a1753082b5785be2b",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "software": {
+    "status": "PENDING",
+    "run_id": 41055988171,
+    "tests": "UNKNOWN",
+    "privacy": "PENDING"
+  },
+  "native": {
+    "launched": false,
+    "utility_proven": false,
+    "redmi": false
+  },
+  "gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi": "UNMEASURED",
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Will observer-OFF F simple fallback produce no B1 offers, preserving strict source/process witness?",
+    "Does C2 route selection improve actual arithmetic answer quality over best single model on disjoint seed197?",
+    "Redmi sustained resource/thermal and §100 acceptance remain unavailable."
+  ],
+  "next_command": "Inspect Run12N source-only Actions 41055988171 and raw artifact. Fix any source/test errors with preserved original attempt. Only after GREEN trigger one serialized pinned four-model native job; audit original ZIP/16 raw+preclose+4 strict and private byte-exact backup. Never retune Run12M."
+}

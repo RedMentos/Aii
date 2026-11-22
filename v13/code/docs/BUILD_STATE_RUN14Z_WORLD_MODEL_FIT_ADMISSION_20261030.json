@@ -1,0 +1,93 @@
+{
+  "schema": "v13.run14z.world_model_fit_source_admission.software_green_fullsuite_in_progress.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; T8 World fit provenance and real SQLite source admission",
+  "parent": {
+    "pr": 1340,
+    "branch": "assistant/v13-run14y-worldmodel-strict-json-20261030-hourly11",
+    "head_sha": "9a69c3a6799091f2aaea34cd40f620614d8d3f51"
+  },
+  "branch": "assistant/v13-run14z-worldmodel-fit-admission-20261030-hourly11",
+  "production_merge": false,
+  "source_blobs": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "prereg": "3a7dfe70007114379929ba5c60ec63660de57191",
+    "test_first": "697d9ac16bcb532784f6ad1645e57955925325b7",
+    "world_model_original": "5825fe0c9a457314caa9461880ffc0b007af8d93",
+    "world_model_candidate2": "f5236f201ee90e16dae994d981e5d0ef67357722"
+  },
+  "change": "New T8 fit states record source_admission T8_JSON_UNIQUE_KEYS_V1; load and real-Store counterfactual require marker so old v3 cached weights from ambiguous JSON cannot be reused. Existing store=None synthetic/offline output-domain tests still score manually constructed states. Real SQLite duplicate expected/outcome/C5 packet bytes exclude T8 observations and restore correctly across restart.",
+  "evidence": {
+    "original_red": {
+      "run": 41128723022,
+      "head": "8885e12d3602057091141de53bce30c3601f15a7",
+      "artifact": 13011124472,
+      "zip_sha256": "417431782704670503986ac6e89ed664752beef8619f6a2cc4c25cdbdb95ced0",
+      "tests": 16,
+      "failures": 2,
+      "errors": 2,
+      "stage_exits": "PINS/VENV/DEPS/PIP_CHECK/COMPILE/PRIVACY/DIFF all 0; TEST 1",
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14Z-WorldModel/Run14Z_ORIGINAL_RED.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate1_regression": {
+      "run": 41128848423,
+      "head": "36d5a1a39e00249ebfea16177179a0a883f97f73",
+      "artifact": 13012810240,
+      "zip_sha256": "21fe49306cf6d1eec9ebb9cfa6bf303fbc90a4a7b2ce8e3c256ce6950c6c5876",
+      "tests": 54,
+      "failures": 6,
+      "errors": 0,
+      "reason": "Existing synthetic store=None output-domain tests bypass real Store by design; candidate1 rejected them and masked numeric assertions",
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14Z-WorldModel/Run14Z_CANDIDATE1_REGRESSION_RED.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate2_green": {
+      "run": 41129028092,
+      "head": "8d557754532b4876db581f51900c3726cfce1812",
+      "artifact": 13012097608,
+      "zip_sha256": "56ec20d08e74c0966ad11adfb28fafe7970c7b7040ae9f84ab1144c83633b4da",
+      "tests": 54,
+      "failures": 0,
+      "errors": 0,
+      "stage_exits": "PINS/VENV/DEPS/PIP_CHECK/COMPILE/PRIVACY/DIFF/TEST all 0",
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14Z-WorldModel/Run14Z_CANDIDATE2_GREEN.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "unfiltered_fullsuite": {
+      "run": 41129115843,
+      "head": "ad653af688341110fc3c9f03815aae9fd7e85815",
+      "status": "IN_PROGRESS_AT_CHECKPOINT",
+      "parent_run14w": {
+        "run": 41125663275,
+        "tests": 4154,
+        "failures": 4,
+        "errors": 66,
+        "skipped": 16,
+        "zip_sha256": "d0d3bfd31c7d7f236588fe1999b2a471c0af4f347ceeedcdceda44af300bea08",
+        "private_backup": "/V13-Checkpoints/2026-10-30/Run14W-CrossOrgan/Run14W_UNFILTERED_HISTORICAL_RED.zip"
+      }
+    }
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "limitations": [
+    "54 focused software tests only so far; full unfiltered pending. No native/Redmi proof.",
+    "No independent external agent available for review.",
+    "Review branch only; no production merge."
+  ],
+  "next_command": "Wait for GitHub Actions 41129115843 terminal, download original full ZIP, verify CRC+all SHA256SUMS+stage exits, compare exact failures with Run14W 4154/4/66/16; private byte-exact backup. Update checkpoint and PR. Then pursue another canonical utility organ; do not waive historical failures or promote negative gates."
+}

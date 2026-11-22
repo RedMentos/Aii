@@ -1,0 +1,277 @@
+{
+  "body_process_reaped_receipts": "16/16 (C3-only close not measured)",
+  "claim_limit": "Posthoc read-only lexical diagnostic; not original scorer, no gate or native re-run",
+  "comparative_step2_gate_promoted": false,
+  "diagnostic_rows": [
+    {
+      "arm": "A_C3_ONLY",
+      "fixture": "Vega",
+      "verdict": {
+        "a": {
+          "claims": [],
+          "correct": false,
+          "expected": 50,
+          "status": "MISSING"
+        },
+        "b": {
+          "claims": [],
+          "correct": false,
+          "expected": 20,
+          "status": "MISSING"
+        }
+      }
+    },
+    {
+      "arm": "B_DEFAULT_BOTH",
+      "fixture": "Vega",
+      "verdict": {
+        "a": {
+          "claims": [
+            45,
+            50
+          ],
+          "correct": false,
+          "expected": 50,
+          "status": "CONTRADICTORY"
+        },
+        "b": {
+          "claims": [
+            20,
+            105
+          ],
+          "correct": false,
+          "expected": 20,
+          "status": "CONTRADICTORY"
+        }
+      }
+    },
+    {
+      "arm": "C_ARITH_BOTH",
+      "fixture": "Vega",
+      "verdict": {
+        "a": {
+          "claims": [
+            50
+          ],
+          "correct": true,
+          "expected": 50,
+          "status": "CORRECT"
+        },
+        "b": {
+          "claims": [
+            20
+          ],
+          "correct": true,
+          "expected": 20,
+          "status": "CORRECT"
+        }
+      }
+    },
+    {
+      "arm": "A_C3_ONLY",
+      "fixture": "Lyra",
+      "verdict": {
+        "a": {
+          "claims": [],
+          "correct": false,
+          "expected": 60,
+          "status": "MISSING"
+        },
+        "b": {
+          "claims": [],
+          "correct": false,
+          "expected": 20,
+          "status": "MISSING"
+        }
+      }
+    },
+    {
+      "arm": "B_DEFAULT_BOTH",
+      "fixture": "Lyra",
+      "verdict": {
+        "a": {
+          "claims": [
+            60
+          ],
+          "correct": true,
+          "expected": 60,
+          "status": "CORRECT"
+        },
+        "b": {
+          "claims": [
+            20
+          ],
+          "correct": true,
+          "expected": 20,
+          "status": "CORRECT"
+        }
+      }
+    },
+    {
+      "arm": "C_ARITH_BOTH",
+      "fixture": "Lyra",
+      "verdict": {
+        "a": {
+          "claims": [
+            60
+          ],
+          "correct": true,
+          "expected": 60,
+          "status": "CORRECT"
+        },
+        "b": {
+          "claims": [
+            20
+          ],
+          "correct": true,
+          "expected": 20,
+          "status": "CORRECT"
+        }
+      }
+    },
+    {
+      "arm": "A_C3_ONLY",
+      "fixture": "Nadir",
+      "verdict": {
+        "a": {
+          "claims": [],
+          "correct": false,
+          "expected": 50,
+          "status": "MISSING"
+        },
+        "b": {
+          "claims": [],
+          "correct": false,
+          "expected": 15,
+          "status": "MISSING"
+        }
+      }
+    },
+    {
+      "arm": "B_DEFAULT_BOTH",
+      "fixture": "Nadir",
+      "verdict": {
+        "a": {
+          "claims": [
+            40
+          ],
+          "correct": false,
+          "expected": 50,
+          "status": "WRONG"
+        },
+        "b": {
+          "claims": [
+            45
+          ],
+          "correct": false,
+          "expected": 15,
+          "status": "WRONG"
+        }
+      }
+    },
+    {
+      "arm": "C_ARITH_BOTH",
+      "fixture": "Nadir",
+      "verdict": {
+        "a": {
+          "claims": [
+            30,
+            50
+          ],
+          "correct": false,
+          "expected": 50,
+          "status": "CONTRADICTORY"
+        },
+        "b": {
+          "claims": [
+            45,
+            135
+          ],
+          "correct": false,
+          "expected": 15,
+          "status": "CONTRADICTORY"
+        }
+      }
+    },
+    {
+      "arm": "A_C3_ONLY",
+      "fixture": "Orion",
+      "verdict": {
+        "a": {
+          "claims": [],
+          "correct": false,
+          "expected": 70,
+          "status": "MISSING"
+        },
+        "b": {
+          "claims": [],
+          "correct": false,
+          "expected": 25,
+          "status": "MISSING"
+        }
+      }
+    },
+    {
+      "arm": "B_DEFAULT_BOTH",
+      "fixture": "Orion",
+      "verdict": {
+        "a": {
+          "claims": [
+            70
+          ],
+          "correct": true,
+          "expected": 70,
+          "status": "CORRECT"
+        },
+        "b": {
+          "claims": [
+            125
+          ],
+          "correct": false,
+          "expected": 25,
+          "status": "WRONG"
+        }
+      }
+    },
+    {
+      "arm": "C_ARITH_BOTH",
+      "fixture": "Orion",
+      "verdict": {
+        "a": {
+          "claims": [
+            70
+          ],
+          "correct": true,
+          "expected": 70,
+          "status": "CORRECT"
+        },
+        "b": {
+          "claims": [
+            125
+          ],
+          "correct": false,
+          "expected": 25,
+          "status": "WRONG"
+        }
+      }
+    }
+  ],
+  "diagnostic_semantic_out_of_8": {
+    "A_C3_ONLY": 0,
+    "B_DEFAULT_BOTH": 3,
+    "C_ARITH_BOTH": 5
+  },
+  "inner_sha256_verified": "38/38",
+  "jepa_weight": 0,
+  "native_c2_control_proven_here": false,
+  "native_generated_raw_rows": "12/12",
+  "original_head": "c6a9de775c2e7f4f450472f75db0481458894386",
+  "original_report_valid_native": "0/12",
+  "original_status_unchanged": "PILOT_PARTIAL_RED",
+  "original_validator_route_native_control_missing": "12/12",
+  "original_zip_sha256": "fcc66cf5d0d2c59bfe3bbd7a8b5b3c140169ee5a05020d9e4df12e566c30d9ce",
+  "raw_crc_clean": true,
+  "raw_structural_checks": "156/156",
+  "redmi_measured": false,
+  "schema": "v13.step2.original_pilot_readonly_audit.v1"
+}

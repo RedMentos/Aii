@@ -1,0 +1,47 @@
+import json
+import numpy as np
+import pytest
+from v13.continuous_predictor import OnlinePredictor
+
+
+def rewrite(p, **changes):
+    with np.load(p.path,allow_pickle=False) as f:
+        payload={k:f[k].copy() for k in f.files}
+    payload.update(changes)
+    np.savez_compressed(p.path,**payload)
+
+
+def model(tmp_path):
+    p=OnlinePredictor(7,4,tmp_path)
+    p.observe(np.ones(7)*.1,1,np.ones(7)*.2)
+    p.checkpoint(metadata={'revision':'v13-online-world-v2','receipts':{'action-1':'0'*64}})
+    return p
+
+
+@pytest.mark.parametrize('bad',[np.array([.5,2.]),np.array([0,1]),np.array([1,0])])
+def test_counter(bad,tmp_path):
+    p=model(tmp_path);rewrite(p,counters=bad)
+    with pytest.raises(ValueError):OnlinePredictor(7,4,tmp_path)
+
+
+@pytest.mark.parametrize('key',['W','act'])
+def test_dtype(key,tmp_path):
+    p=model(tmp_path)
+    with np.load(p.path,allow_pickle=False) as f: bad=f[key].astype(float if key=='act' else np.int64)
+    rewrite(p,**{key:bad})
+    with pytest.raises(ValueError):OnlinePredictor(7,4,tmp_path)
+
+
+def test_invalid_rng_is_validated_before_assigning_live_fields(tmp_path):
+    p=model(tmp_path/'saved');rewrite(p,rng_state=np.array(json.dumps({'bit_generator':'PCG64','state':'broken'})))
+    live=OnlinePredictor(7,4,tmp_path/'live');before=(live.W.copy(),live.U.copy(),live.seen,live.updates,json.dumps(live.rng.bit_generator.state,sort_keys=True));live.path=p.path
+    with pytest.raises((ValueError,KeyError,TypeError)):live.restore()
+    np.testing.assert_array_equal(live.W,before[0]);np.testing.assert_array_equal(live.U,before[1]);assert (live.seen,live.updates)==before[2:4]
+    assert json.dumps(live.rng.bit_generator.state,sort_keys=True)==before[4]
+
+
+def test_valid_rng_resume_is_deterministic(tmp_path):
+    p=model(tmp_path);q=OnlinePredictor(7,4,tmp_path);x=np.arange(7)/10
+    for _ in range(5):p.observe(x,2,x*.7);q.observe(x,2,x*.7)
+    np.testing.assert_array_equal(p.W,q.W);np.testing.assert_array_equal(p.x,q.x)
+    assert p.seen==q.seen and p.updates==q.updates

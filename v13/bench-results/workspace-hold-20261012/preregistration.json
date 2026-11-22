@@ -1,0 +1,20 @@
+{
+ "schema": "ABLATION_WORKSPACE_HOLD_PREREG_V1",
+ "seeds": [
+  13,
+  14,
+  15,
+  16,
+  17
+ ],
+ "turns": 400,
+ "capacity": 6,
+ "reuse_per_turn": {
+  "MEMORY": 0.45,
+  "B1_DETAIL": 0.2,
+  "B2_GIST": 0.04
+ },
+ "horizon_turns": 8,
+ "primary": "restore losses in the second half of the turns (lower is better)",
+ "win_rule": "learned beats shadow, shuffled and hold_all in >=4/5 seeds -> SUPPORTED_SYNTHETIC; some -> PARTIAL; none -> NOT_SUPPORTED"
+}

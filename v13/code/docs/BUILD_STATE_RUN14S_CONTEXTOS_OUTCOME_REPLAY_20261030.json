@@ -1,0 +1,114 @@
+{
+  "schema": "v13.run14s.contextos_outcome_replay.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; independent ContextOS policy-learning integrity package; review-only",
+  "parent": {
+    "pr": 1334,
+    "head_sha": "7379befc9c475988f25a44771652449cbda3418f"
+  },
+  "branch": "assistant/v13-run14s-contextos-outcome-replay-20261030-hourly11",
+  "production_merge": false,
+  "source_blobs": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "prereg": "5b5da5926c662abd4ddb0693fb536fab5d53403a",
+    "test_first": "e24621931038b4392e82163aa2dd410ca0ead28f",
+    "context_os_original": "c515e9a432a1d912dab9cb551f74bb5f47d2e184",
+    "context_os_candidate": "40a77a9c3717db7899bfd8966acfa4b9e315e966",
+    "legacy_context_tests_original": "52563e1c838b5dc9955fa8739ff35c1de1eed707",
+    "legacy_context_tests_candidate": "a76cf2b62a4610795d1a382dd0139fefefe866a9"
+  },
+  "changes": [
+    "ContextOS.outcome now credits one rating per event; exact repeated ratings return a no-op even after controller restart.",
+    "Bounded 256-entry durable event-rowid receipts with high-water floor reject stale events after eviction while admitting recent out-of-order ratings.",
+    "Policy state and receipt are written in one existing Store optimistic mutation; neuromod signal only after newly credited outcome.",
+    "Existing 3-observation policy test now uses 3 independent rated events instead of 3 replays of one event; explicit learned ACTIVE approval unchanged."
+  ],
+  "evidence": {
+    "original_red": {
+      "run": 41123546831,
+      "head": "d3b4cd36a396221c6f235149127f21d003be90e3",
+      "artifact": 13010575113,
+      "zip_sha256": "9759babcc1d091af49c63f9b9ecda676d77a805323422dc6975fc7666af87a20",
+      "tests": 32,
+      "failures": 3,
+      "errors": 0,
+      "stage_exits": {
+        "PINS": 0,
+        "VENV": 0,
+        "DEPS": 0,
+        "PIP_CHECK": 0,
+        "TEST": 1,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14S-ContextOSReplay/Run14S_ContextOS_ORIGINAL_RED.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate1_red": {
+      "run": 41123720945,
+      "head": "20c2b33c71677e0d7fc2496e0b436893ab86ac26",
+      "artifact": 13009317494,
+      "zip_sha256": "2c7cd87f563895a36ea4e7ee92dcc6e870f1ef217aa6687e6fe6fd1bf324f292",
+      "tests": 80,
+      "failures": 0,
+      "errors": 1,
+      "note": "Existing warm-final test imports test_context_os as top-level module; workflow PYTHONPATH only '.' caused an isolated test-loader prerequisite error. Source and tests unchanged; corrected PYTHONPATH=.:tests.",
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14S-ContextOSReplay/Run14S_ContextOS_CANDIDATE1_IMPORT_RED.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate_green": {
+      "run": 41123841875,
+      "head": "aa6748cc8ef92670cb425f3866d6ef6b66b23bdc",
+      "artifact": 13010510630,
+      "zip_sha256": "ec1f0313779144f61077a2d5d135d57b2866a4bef5666f1c8e28a2f3e558d910",
+      "tests": 82,
+      "failures": 0,
+      "errors": 0,
+      "stage_exits": {
+        "PINS": 0,
+        "VENV": 0,
+        "DEPS": 0,
+        "PIP_CHECK": 0,
+        "TEST": 0,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "isolated_deps": [
+        "numpy==2.2.6"
+      ],
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14S-ContextOSReplay/Run14S_ContextOS_CANDIDATE_GREEN.zip",
+      "readback": "BYTE_IDENTICAL"
+    }
+  },
+  "review": [
+    "Preregistration committed before test-first RED and source changes.",
+    "Counterexamples cover same-event triple replay, restarted controller, independent events, out-of-order and evicted old events; real SQLite Runtime and neuromod test regressions.",
+    "No external independent agent available; source diff and raw CI reviewed by coordinator. No native inference, no model weight changes."
+  ],
+  "limitations": [
+    "Pre-upgrade historical ContextOS outcomes cannot be retroactively reconstructed into the new receipt list; an old event may be credited once after upgrading. Avoid learning-authority promotion until migration is assessed.",
+    "Event rowid floor is a bounded replay guard, not a global immutable exactly-once ledger; SQLite rowid renumbering or Store restoration requires separate review.",
+    "Neuromod signal follows persisted policy mutation; a crash between them may omit the signal, never double-credit policy.",
+    "Existing outcome API does not independently verify FINAL message status or whether planned ContextOS view was applied; future separate causal attribution gate needed.",
+    "Historical unfiltered full-suite Run14R remains RED 4140 tests, 4 failures, 66 errors, 16 skips; dominated by frozen source-handoff/native-firing candidate source pin mismatch. No waiver.",
+    "Redmi unavailable, no actual model/native inference, no production merge."
+  ],
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Review Run14S ContextOS replay PR against Run14R exact parent; do not auto-merge. Then continue an independent substantive C2/Body/ContextOS utility package or source-bound FINAL/applied outcome attribution, with preregistered tests and private raw. Inspect newer Run14S AG6 / Run14T C3 branches before integration; do not overwrite owners."
+}

@@ -1,0 +1,600 @@
+{
+ "suite_hash": "218bd5bd89de161fb75e0fdc24dfb63919f7ee0d5abcd58b5a0c638c6cde5375",
+ "items": 88,
+ "generation": "gen_f0cb2188677045e296524f3e5611fc8a",
+ "solvers": {
+  "c3": {
+   "status": "DONE",
+   "solver": "c3",
+   "roles": [
+    "C3_LANGUAGE"
+   ],
+   "overall": 0.2159,
+   "unseen": 0.1731,
+   "ece": 0.1843,
+   "stats": {
+    "C3_LANGUAGE": {
+     "items": 88,
+     "errors": 0,
+     "seconds": 56.017
+    }
+   },
+   "seconds": 56.1,
+   "summary": {
+    "calibration": {
+     "bins": [
+      {
+       "accuracy": 0.0,
+       "confidence": 0.0155,
+       "hi": 0.1,
+       "lo": 0.0,
+       "n": 28
+      },
+      {
+       "accuracy": 0.0,
+       "confidence": 0.153,
+       "hi": 0.2,
+       "lo": 0.1,
+       "n": 8
+      },
+      {
+       "accuracy": 0.1,
+       "confidence": 0.2512,
+       "hi": 0.3,
+       "lo": 0.2,
+       "n": 10
+      },
+      {
+       "accuracy": 0.0,
+       "confidence": 0.3445,
+       "hi": 0.4,
+       "lo": 0.3,
+       "n": 2
+      },
+      {
+       "accuracy": 0.125,
+       "confidence": 0.4552,
+       "hi": 0.5,
+       "lo": 0.4,
+       "n": 8
+      },
+      {
+       "accuracy": 0.0,
+       "confidence": 0.5556,
+       "hi": 0.6,
+       "lo": 0.5,
+       "n": 5
+      },
+      {
+       "accuracy": 0.25,
+       "confidence": 0.6555,
+       "hi": 0.7,
+       "lo": 0.6,
+       "n": 4
+      },
+      {
+       "accuracy": 0.2,
+       "confidence": 0.7726,
+       "hi": 0.8,
+       "lo": 0.7,
+       "n": 5
+      },
+      {
+       "accuracy": 0.3333,
+       "confidence": 0.8602,
+       "hi": 0.9,
+       "lo": 0.8,
+       "n": 3
+      },
+      {
+       "accuracy": 0.9333,
+       "confidence": 0.9917,
+       "hi": 1.0,
+       "lo": 0.9,
+       "n": 15
+      }
+     ],
+     "brier": 0.1259,
+     "ece": 0.1843
+    },
+    "families": {
+     "arith_add": 0.6667,
+     "arith_mul": 0.75,
+     "grid_path": 0.0,
+     "reverse_word": 0.0,
+     "rule_map": 0.0,
+     "seq_next": 0.1667,
+     "sort_letters": 0.0
+    },
+    "forgetting": {
+     "now_wrong": 0,
+     "previously_correct": 0,
+     "rate": null
+    },
+    "generalization_gap": 0.1047,
+    "overall": 0.2159,
+    "planning_depth": 0,
+    "seen": 0.2778,
+    "transfer": {
+     "arith_add->arith_mul": {
+      "ratio": 1.1249,
+      "source": 0.6667,
+      "target": 0.75
+     },
+     "reverse_word->sort_letters": {
+      "ratio": null,
+      "source": 0.0,
+      "target": 0.0
+     },
+     "seq_next->rule_map": {
+      "ratio": 0.0,
+      "source": 0.1667,
+      "target": 0.0
+     }
+    },
+    "unseen": 0.1731
+   },
+   "models": {
+    "C3_LANGUAGE": "657e078c94084481950a2d555a941481f715536b"
+   }
+  },
+  "b1": {
+   "status": "DONE",
+   "solver": "b1",
+   "roles": [
+    "B1_DETAIL"
+   ],
+   "overall": 0.1705,
+   "unseen": 0.1731,
+   "ece": 0.2244,
+   "stats": {
+    "B1_DETAIL": {
+     "items": 88,
+     "errors": 0,
+     "seconds": 139.645
+    }
+   },
+   "seconds": 139.7,
+   "summary": {
+    "calibration": {
+     "bins": [
+      {
+       "accuracy": 0.0,
+       "confidence": 0.0368,
+       "hi": 0.1,
+       "lo": 0.0,
+       "n": 15
+      },
+      {
+       "accuracy": 0.0526,
+       "confidence": 0.1489,
+       "hi": 0.2,
+       "lo": 0.1,
+       "n": 19
+      },
+      {
+       "accuracy": 0.0,
+       "confidence": 0.2477,
+       "hi": 0.3,
+       "lo": 0.2,
+       "n": 13
+      },
+      {
+       "accuracy": 0.0,
+       "confidence": 0.3497,
+       "hi": 0.4,
+       "lo": 0.3,
+       "n": 11
+      },
+      {
+       "accuracy": 0.0,
+       "confidence": 0.4243,
+       "hi": 0.5,
+       "lo": 0.4,
+       "n": 4
+      },
+      {
+       "accuracy": 0.0,
+       "confidence": 0.5737,
+       "hi": 0.6,
+       "lo": 0.5,
+       "n": 2
+      },
+      {
+       "accuracy": 0.0,
+       "confidence": 0.6618,
+       "hi": 0.7,
+       "lo": 0.6,
+       "n": 3
+      },
+      {
+       "accuracy": 0.0,
+       "confidence": 0.7338,
+       "hi": 0.8,
+       "lo": 0.7,
+       "n": 3
+      },
+      {
+       "accuracy": 0.25,
+       "confidence": 0.8745,
+       "hi": 0.9,
+       "lo": 0.8,
+       "n": 4
+      },
+      {
+       "accuracy": 0.9286,
+       "confidence": 0.9838,
+       "hi": 1.0,
+       "lo": 0.9,
+       "n": 14
+      }
+     ],
+     "brier": 0.1233,
+     "ece": 0.2244
+    },
+    "families": {
+     "arith_add": 0.4167,
+     "arith_mul": 0.75,
+     "grid_path": 0.0,
+     "reverse_word": 0.0,
+     "rule_map": 0.0,
+     "seq_next": 0.0833,
+     "sort_letters": 0.0
+    },
+    "forgetting": {
+     "now_wrong": 0,
+     "previously_correct": 0,
+     "rate": null
+    },
+    "generalization_gap": -0.0064,
+    "overall": 0.1705,
+    "planning_depth": 0,
+    "seen": 0.1667,
+    "transfer": {
+     "arith_add->arith_mul": {
+      "ratio": 1.7999,
+      "source": 0.4167,
+      "target": 0.75
+     },
+     "reverse_word->sort_letters": {
+      "ratio": null,
+      "source": 0.0,
+      "target": 0.0
+     },
+     "seq_next->rule_map": {
+      "ratio": 0.0,
+      "source": 0.0833,
+      "target": 0.0
+     }
+    },
+    "unseen": 0.1731
+   },
+   "models": {
+    "B1_DETAIL": "6767265158422fb8a19c62ceb45f16f05363615b"
+   }
+  },
+  "b2": {
+   "status": "DONE",
+   "solver": "b2",
+   "roles": [
+    "B2_GIST"
+   ],
+   "overall": 0.3523,
+   "unseen": 0.2308,
+   "ece": 0.1112,
+   "stats": {
+    "B2_GIST": {
+     "items": 88,
+     "errors": 0,
+     "seconds": 149.276
+    }
+   },
+   "seconds": 149.4,
+   "summary": {
+    "calibration": {
+     "bins": [
+      {
+       "accuracy": 0.0,
+       "confidence": 0.0503,
+       "hi": 0.1,
+       "lo": 0.0,
+       "n": 21
+      },
+      {
+       "accuracy": 0.0,
+       "confidence": 0.1498,
+       "hi": 0.2,
+       "lo": 0.1,
+       "n": 11
+      },
+      {
+       "accuracy": 0.0588,
+       "confidence": 0.2318,
+       "hi": 0.3,
+       "lo": 0.2,
+       "n": 17
+      },
+      {
+       "accuracy": 0.2,
+       "confidence": 0.3623,
+       "hi": 0.4,
+       "lo": 0.3,
+       "n": 5
+      },
+      {
+       "accuracy": 0.5,
+       "confidence": 0.4696,
+       "hi": 0.5,
+       "lo": 0.4,
+       "n": 6
+      },
+      {
+       "accuracy": 1.0,
+       "confidence": 0.5752,
+       "hi": 0.6,
+       "lo": 0.5,
+       "n": 1
+      },
+      {
+       "accuracy": 0.0,
+       "confidence": 0.6571,
+       "hi": 0.7,
+       "lo": 0.6,
+       "n": 1
+      },
+      {
+       "accuracy": 0.6667,
+       "confidence": 0.7581,
+       "hi": 0.8,
+       "lo": 0.7,
+       "n": 3
+      },
+      {
+       "accuracy": 1.0,
+       "confidence": 0.8462,
+       "hi": 0.9,
+       "lo": 0.8,
+       "n": 7
+      },
+      {
+       "accuracy": 1.0,
+       "confidence": 0.9552,
+       "hi": 1.0,
+       "lo": 0.9,
+       "n": 16
+      }
+     ],
+     "brier": 0.0669,
+     "ece": 0.1112
+    },
+    "families": {
+     "arith_add": 0.8333,
+     "arith_mul": 0.9167,
+     "grid_path": 0.0,
+     "reverse_word": 0.0,
+     "rule_map": 0.0833,
+     "seq_next": 0.75,
+     "sort_letters": 0.0
+    },
+    "forgetting": {
+     "now_wrong": 0,
+     "previously_correct": 0,
+     "rate": null
+    },
+    "generalization_gap": 0.297,
+    "overall": 0.3523,
+    "planning_depth": 0,
+    "seen": 0.5278,
+    "transfer": {
+     "arith_add->arith_mul": {
+      "ratio": 1.1001,
+      "source": 0.8333,
+      "target": 0.9167
+     },
+     "reverse_word->sort_letters": {
+      "ratio": null,
+      "source": 0.0,
+      "target": 0.0
+     },
+     "seq_next->rule_map": {
+      "ratio": 0.1111,
+      "source": 0.75,
+      "target": 0.0833
+     }
+    },
+    "unseen": 0.2308
+   },
+   "models": {
+    "B2_GIST": "8fea620810c4afa23dd6443f999a48574c1611a3"
+   }
+  },
+  "v13": {
+   "status": "DONE",
+   "solver": "v13",
+   "roles": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "C3_LANGUAGE"
+   ],
+   "overall": 0.3409,
+   "unseen": 0.2115,
+   "ece": 0.0728,
+   "stats": {
+    "B1_DETAIL": {
+     "items": 88,
+     "errors": 0,
+     "seconds": 78.073
+    },
+    "B2_GIST": {
+     "items": 88,
+     "errors": 0,
+     "seconds": 104.014
+    },
+    "C3_LANGUAGE": {
+     "items": 88,
+     "errors": 0,
+     "seconds": 32.518
+    }
+   },
+   "seconds": 214.7,
+   "summary": {
+    "calibration": {
+     "bins": [
+      {
+       "accuracy": 0.0,
+       "confidence": 0.0698,
+       "hi": 0.1,
+       "lo": 0.0,
+       "n": 15
+      },
+      {
+       "accuracy": 0.1429,
+       "confidence": 0.1471,
+       "hi": 0.2,
+       "lo": 0.1,
+       "n": 21
+      },
+      {
+       "accuracy": 0.1538,
+       "confidence": 0.249,
+       "hi": 0.3,
+       "lo": 0.2,
+       "n": 13
+      },
+      {
+       "accuracy": 0.4167,
+       "confidence": 0.3281,
+       "hi": 0.4,
+       "lo": 0.3,
+       "n": 12
+      },
+      {
+       "accuracy": 0.3333,
+       "confidence": 0.4354,
+       "hi": 0.5,
+       "lo": 0.4,
+       "n": 6
+      },
+      {
+       "accuracy": 0.3333,
+       "confidence": 0.5383,
+       "hi": 0.6,
+       "lo": 0.5,
+       "n": 3
+      },
+      {
+       "accuracy": 0.8333,
+       "confidence": 0.6329,
+       "hi": 0.7,
+       "lo": 0.6,
+       "n": 6
+      },
+      {
+       "accuracy": 1.0,
+       "confidence": 0.7431,
+       "hi": 0.8,
+       "lo": 0.7,
+       "n": 1
+      },
+      {
+       "accuracy": 1.0,
+       "confidence": 0.9739,
+       "hi": 1.0,
+       "lo": 0.9,
+       "n": 11
+      }
+     ],
+     "brier": 0.1241,
+     "ece": 0.0728
+    },
+    "families": {
+     "arith_add": 0.9167,
+     "arith_mul": 0.9167,
+     "grid_path": 0.0,
+     "reverse_word": 0.0,
+     "rule_map": 0.0,
+     "seq_next": 0.6667,
+     "sort_letters": 0.0
+    },
+    "forgetting": {
+     "now_wrong": 0,
+     "previously_correct": 0,
+     "rate": null
+    },
+    "generalization_gap": 0.3163,
+    "overall": 0.3409,
+    "planning_depth": 0,
+    "seen": 0.5278,
+    "transfer": {
+     "arith_add->arith_mul": {
+      "ratio": 1.0,
+      "source": 0.9167,
+      "target": 0.9167
+     },
+     "reverse_word->sort_letters": {
+      "ratio": null,
+      "source": 0.0,
+      "target": 0.0
+     },
+     "seq_next->rule_map": {
+      "ratio": 0.0,
+      "source": 0.6667,
+      "target": 0.0
+     }
+    },
+    "unseen": 0.2115
+   },
+   "models": {
+    "B1_DETAIL": "6767265158422fb8a19c62ceb45f16f05363615b",
+    "B2_GIST": "8fea620810c4afa23dd6443f999a48574c1611a3",
+    "C3_LANGUAGE": "657e078c94084481950a2d555a941481f715536b"
+   }
+  }
+ },
+ "metacog": {
+  "ag12:b1": {
+   "n": 176,
+   "raw": {
+    "ece": 0.1122,
+    "brier": 0.0617
+   },
+   "calibrated": {
+    "ece": 0.0395,
+    "brier": 0.0191
+   }
+  },
+  "ag12:b2": {
+   "n": 176,
+   "raw": {
+    "ece": 0.0556,
+    "brier": 0.0335
+   },
+   "calibrated": {
+    "ece": 0.0279,
+    "brier": 0.0267
+   }
+  },
+  "ag12:c3": {
+   "n": 176,
+   "raw": {
+    "ece": 0.0922,
+    "brier": 0.0629
+   },
+   "calibrated": {
+    "ece": 0.0343,
+    "brier": 0.0311
+   }
+  },
+  "ag12:v13": {
+   "n": 176,
+   "raw": {
+    "ece": 0.0364,
+    "brier": 0.0621
+   },
+   "calibrated": {
+    "ece": 0.0272,
+    "brier": 0.0591
+   }
+  }
+ }
+}

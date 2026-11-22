@@ -1,0 +1,866 @@
+[
+ {
+  "id": "simple-00",
+  "label": "simple",
+  "pred": "detail",
+  "latency_s": 0.12244473099997322,
+  "confidence": 1.0,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-01",
+  "label": "simple",
+  "pred": "gist",
+  "latency_s": 0.1041857719999939,
+  "confidence": 0.8409,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-02",
+  "label": "simple",
+  "pred": "gist",
+  "latency_s": 0.1286901260000377,
+  "confidence": 0.4094,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-03",
+  "label": "simple",
+  "pred": "detail",
+  "latency_s": 0.08543649400002096,
+  "confidence": 0.3929,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-04",
+  "label": "simple",
+  "pred": "gist",
+  "latency_s": 0.19540430900002548,
+  "confidence": 0.4205,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-05",
+  "label": "simple",
+  "pred": "detail",
+  "latency_s": 0.0877754439999876,
+  "confidence": 0.4349,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-06",
+  "label": "simple",
+  "pred": "detail",
+  "latency_s": 0.07455601800000977,
+  "confidence": 0.3579,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-07",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.14807491700003084,
+  "confidence": 1.0,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-08",
+  "label": "simple",
+  "pred": "detail",
+  "latency_s": 0.11899025999997548,
+  "confidence": 0.4778,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-09",
+  "label": "simple",
+  "pred": "gist",
+  "latency_s": 0.12527808699996967,
+  "confidence": 0.4438,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-10",
+  "label": "simple",
+  "pred": "gist",
+  "latency_s": 0.09177995599998212,
+  "confidence": 0.5135,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-11",
+  "label": "simple",
+  "pred": "simple",
+  "latency_s": 0.2013282800000411,
+  "confidence": 0.3504,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-12",
+  "label": "simple",
+  "pred": "gist",
+  "latency_s": 0.1134646770000245,
+  "confidence": 0.3318,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-13",
+  "label": "simple",
+  "pred": "detail",
+  "latency_s": 0.08249592700002495,
+  "confidence": 0.5678,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-14",
+  "label": "simple",
+  "pred": "detail",
+  "latency_s": 0.09018676599998798,
+  "confidence": 0.5375,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-15",
+  "label": "simple",
+  "pred": "detail",
+  "latency_s": 0.09767828600001849,
+  "confidence": 0.9619,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-16",
+  "label": "simple",
+  "pred": "gist",
+  "latency_s": 0.09579679899997018,
+  "confidence": 0.7419,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-17",
+  "label": "simple",
+  "pred": "detail",
+  "latency_s": 0.07518928000001779,
+  "confidence": 0.5168,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-18",
+  "label": "simple",
+  "pred": "detail",
+  "latency_s": 0.07999495199999274,
+  "confidence": 0.5805,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-19",
+  "label": "simple",
+  "pred": "gist",
+  "latency_s": 0.12376781699998674,
+  "confidence": 0.3193,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-20",
+  "label": "simple",
+  "pred": "gist",
+  "latency_s": 0.1036837129999526,
+  "confidence": 0.4894,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-21",
+  "label": "simple",
+  "pred": "gist",
+  "latency_s": 0.0864791779999905,
+  "confidence": 0.3439,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-22",
+  "label": "simple",
+  "pred": "detail",
+  "latency_s": 0.10468560499998603,
+  "confidence": 0.9567,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "simple-23",
+  "label": "simple",
+  "pred": "gist",
+  "latency_s": 0.12765601699999252,
+  "confidence": 0.4012,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-00",
+  "label": "detail",
+  "pred": "detail",
+  "latency_s": 0.08833241299998917,
+  "confidence": 0.4344,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-01",
+  "label": "detail",
+  "pred": "detail",
+  "latency_s": 0.1360874220000028,
+  "confidence": 0.4089,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-02",
+  "label": "detail",
+  "pred": "both",
+  "latency_s": 0.12692298100000698,
+  "confidence": 0.9931,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-03",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.09333834500000648,
+  "confidence": 0.2776,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-04",
+  "label": "detail",
+  "pred": "gist",
+  "latency_s": 0.07121007999995754,
+  "confidence": 0.3349,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-05",
+  "label": "detail",
+  "pred": "both",
+  "latency_s": 0.160687165000013,
+  "confidence": 0.986,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-06",
+  "label": "detail",
+  "pred": "detail",
+  "latency_s": 0.10399849999998878,
+  "confidence": 0.3436,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-07",
+  "label": "detail",
+  "pred": "gist",
+  "latency_s": 0.11915554099999781,
+  "confidence": 0.3743,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-08",
+  "label": "detail",
+  "pred": "detail",
+  "latency_s": 0.13737994000001663,
+  "confidence": 0.4662,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-09",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.1334054619999847,
+  "confidence": 0.9701,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-10",
+  "label": "detail",
+  "pred": "detail",
+  "latency_s": 0.11189852799998334,
+  "confidence": 0.3661,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-11",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.24229994600000282,
+  "confidence": 0.9849,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-12",
+  "label": "detail",
+  "pred": "gist",
+  "latency_s": 0.10665785899999491,
+  "confidence": 0.3876,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-13",
+  "label": "detail",
+  "pred": "both",
+  "latency_s": 0.17886581800001977,
+  "confidence": 1.0,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-14",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.11405862399999478,
+  "confidence": 0.5297,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-15",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.19585698899999215,
+  "confidence": 0.3452,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-16",
+  "label": "detail",
+  "pred": "gist",
+  "latency_s": 0.13415493999997352,
+  "confidence": 0.4493,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-17",
+  "label": "detail",
+  "pred": "gist",
+  "latency_s": 0.11974849699998913,
+  "confidence": 0.6813,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-18",
+  "label": "detail",
+  "pred": "both",
+  "latency_s": 0.18804173499995613,
+  "confidence": 0.5634,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-19",
+  "label": "detail",
+  "pred": "both",
+  "latency_s": 0.1438746560000368,
+  "confidence": 1.0,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-20",
+  "label": "detail",
+  "pred": "gist",
+  "latency_s": 0.08928815300004089,
+  "confidence": 0.5696,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-21",
+  "label": "detail",
+  "pred": "gist",
+  "latency_s": 0.0865098500000272,
+  "confidence": 0.3593,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-22",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.08880852199996525,
+  "confidence": 0.3505,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "detail-23",
+  "label": "detail",
+  "pred": "simple",
+  "latency_s": 0.08560780400000567,
+  "confidence": 0.3377,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-00",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.1033430300000191,
+  "confidence": 0.7898,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-01",
+  "label": "gist",
+  "pred": "gist",
+  "latency_s": 0.16973077600005126,
+  "confidence": 1.0,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-02",
+  "label": "gist",
+  "pred": "detail",
+  "latency_s": 0.12304549699996414,
+  "confidence": 0.3305,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-03",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.12405101100000593,
+  "confidence": 0.3948,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-04",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.10407813199998373,
+  "confidence": 1.0,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-05",
+  "label": "gist",
+  "pred": "gist",
+  "latency_s": 0.07916647700000112,
+  "confidence": 0.4323,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-06",
+  "label": "gist",
+  "pred": "gist",
+  "latency_s": 0.10012830599998779,
+  "confidence": 0.5767,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-07",
+  "label": "gist",
+  "pred": "detail",
+  "latency_s": 0.10160884099997247,
+  "confidence": 1.0,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-08",
+  "label": "gist",
+  "pred": "gist",
+  "latency_s": 0.13251001800000495,
+  "confidence": 0.9523,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-09",
+  "label": "gist",
+  "pred": "detail",
+  "latency_s": 0.20157848000002332,
+  "confidence": 0.1599,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-10",
+  "label": "gist",
+  "pred": "both",
+  "latency_s": 0.11723950399999694,
+  "confidence": 0.5812,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-11",
+  "label": "gist",
+  "pred": "both",
+  "latency_s": 0.08919177100000297,
+  "confidence": 0.7257,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-12",
+  "label": "gist",
+  "pred": "gist",
+  "latency_s": 0.09296255599997494,
+  "confidence": 0.349,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-13",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.14611395299999685,
+  "confidence": 0.5007,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-14",
+  "label": "gist",
+  "pred": "detail",
+  "latency_s": 0.10657395499998756,
+  "confidence": 1.0,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-15",
+  "label": "gist",
+  "pred": "detail",
+  "latency_s": 0.09335733199998231,
+  "confidence": 0.4727,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-16",
+  "label": "gist",
+  "pred": "gist",
+  "latency_s": 0.10276774499999419,
+  "confidence": 0.7528,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-17",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.18041363300000057,
+  "confidence": 0.7263,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-18",
+  "label": "gist",
+  "pred": "gist",
+  "latency_s": 0.11112208899999132,
+  "confidence": 0.5678,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-19",
+  "label": "gist",
+  "pred": "simple",
+  "latency_s": 0.11966198299995767,
+  "confidence": 0.9905,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-20",
+  "label": "gist",
+  "pred": "both",
+  "latency_s": 0.12301929700004166,
+  "confidence": 0.3472,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-21",
+  "label": "gist",
+  "pred": "detail",
+  "latency_s": 0.1072942449999914,
+  "confidence": 1.0,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-22",
+  "label": "gist",
+  "pred": "detail",
+  "latency_s": 0.1368929840000419,
+  "confidence": 1.0,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "gist-23",
+  "label": "gist",
+  "pred": "detail",
+  "latency_s": 0.09997583699998813,
+  "confidence": 1.0,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-00",
+  "label": "both",
+  "pred": "gist",
+  "latency_s": 0.09667026699997905,
+  "confidence": 0.3786,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-01",
+  "label": "both",
+  "pred": "detail",
+  "latency_s": 0.10994171400000141,
+  "confidence": 0.5108,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-02",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.11478069999998297,
+  "confidence": 0.3452,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-03",
+  "label": "both",
+  "pred": "gist",
+  "latency_s": 0.14004256499998746,
+  "confidence": 0.3633,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-04",
+  "label": "both",
+  "pred": "both",
+  "latency_s": 0.1042307579999715,
+  "confidence": 0.4116,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-05",
+  "label": "both",
+  "pred": "gist",
+  "latency_s": 0.12093448300004184,
+  "confidence": 0.2979,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-06",
+  "label": "both",
+  "pred": "detail",
+  "latency_s": 0.13761438899996392,
+  "confidence": 0.3906,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-07",
+  "label": "both",
+  "pred": "detail",
+  "latency_s": 0.1299916899999971,
+  "confidence": 0.3717,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-08",
+  "label": "both",
+  "pred": "gist",
+  "latency_s": 0.12114629399997057,
+  "confidence": 0.2658,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-09",
+  "label": "both",
+  "pred": "detail",
+  "latency_s": 0.10634332400002222,
+  "confidence": 0.4061,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-10",
+  "label": "both",
+  "pred": "gist",
+  "latency_s": 0.09398942000001398,
+  "confidence": 0.3039,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-11",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.23680769499998178,
+  "confidence": 0.9808,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-12",
+  "label": "both",
+  "pred": "gist",
+  "latency_s": 0.09677082900003597,
+  "confidence": 0.4344,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-13",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.14647211699997342,
+  "confidence": 0.4434,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-14",
+  "label": "both",
+  "pred": "gist",
+  "latency_s": 0.1315611160000003,
+  "confidence": 0.4664,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-15",
+  "label": "both",
+  "pred": "gist",
+  "latency_s": 0.14385417800002642,
+  "confidence": 0.6282,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-16",
+  "label": "both",
+  "pred": "detail",
+  "latency_s": 0.2028741980000177,
+  "confidence": 0.8257,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-17",
+  "label": "both",
+  "pred": "gist",
+  "latency_s": 0.09732969700002059,
+  "confidence": 0.4321,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-18",
+  "label": "both",
+  "pred": "detail",
+  "latency_s": 0.09484656299997596,
+  "confidence": 0.5466,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-19",
+  "label": "both",
+  "pred": "gist",
+  "latency_s": 0.14123512200001187,
+  "confidence": 0.3583,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-20",
+  "label": "both",
+  "pred": "gist",
+  "latency_s": 0.08154882999997426,
+  "confidence": 0.4043,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-21",
+  "label": "both",
+  "pred": "simple",
+  "latency_s": 0.1898251860000073,
+  "confidence": 0.5597,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-22",
+  "label": "both",
+  "pred": "both",
+  "latency_s": 0.11485363500003132,
+  "confidence": 0.9226,
+  "validated": true,
+  "error": null
+ },
+ {
+  "id": "both-23",
+  "label": "both",
+  "pred": "gist",
+  "latency_s": 0.13794643199997836,
+  "confidence": 0.4528,
+  "validated": true,
+  "error": null
+ }
+]

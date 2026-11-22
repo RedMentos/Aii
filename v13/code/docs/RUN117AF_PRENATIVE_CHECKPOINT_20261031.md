@@ -1,0 +1,9 @@
+# Run117AF pre-native verified checkpoint — 2026-10-31
+
+Parent Run117AE #1511 checkpoint `31fa3551a9c375e4fe09abc0e3e0eeb12ae26501`. New prereg committed first at `2e18d5030793cf1df18883c660c5744f6448ec9d`. Frozen seed1067 fixture Git blob `86edd23a22747a1a52773890e7663acb9aa6f3e1`, SHA256 `cbaa2e2f8e92c994a63f12fdb9ff165c5082dcd8a33ef2c7c311e512749f29cf`. Native runner Git blob `36d3fb04c844985bdc0668c8dd99af9167ae753e`; six fresh Orion/Petra/Quill/Rowan/Sable/Topaz rows and exact recipe oracles. No seed1065 or other registered source/model hashes changed.
+
+Model-free preflight Actions `41235052164` SUCCESS 21/21 tests, 7/7 exits zero; expanded runner structural preflight Actions `41235130120`, job `124637172327` SUCCESS **26/26** tests, compile/privacy/diff/fixture/blob/deps all zero. Artifact `13054754947`, uploaded ZIP SHA256 `85ff9082c5288bd33b3af373aba0ad1c09c2922b669d070f9653cb1ac48a8563`. No native calls in these runs.
+
+Native workflow is staged at `.github/workflows/v13-run117af-combined-c3-native.yml` behind the *absent* exact launch sentinel `v13/code/docs/RUN117AF_NATIVE_LAUNCH_20261031.md`. Same serialized concurrency group as original Run117Z `v13-native-c3-ag12-20261030`, `cancel-in-progress: false`. Native source/fixture pins are exact. Before creating sentinel, confirm no other active native owner. The native run may fail; preserve original raw and failures, do not relabel.
+
+**Current gates**: Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; `jepa_weight=0`; no Redmi and whole-system incomplete. Body offers in upcoming native C3 pilot are synthetic; JEF deterministic source recipe, no native Body/C2/JEF. Exact next action: create the launch sentinel on this review branch, monitor the workflow to terminal, verify source/fixture/model hashes, 12 FINAL/reaped and raw ZIP before any score claim, privately back up raw. Remaining platform budget UNKNOWN.

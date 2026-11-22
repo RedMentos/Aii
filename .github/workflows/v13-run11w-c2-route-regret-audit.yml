@@ -1,0 +1,131 @@
+name: V13 Run11W original C2 route regret read-only audit
+on:
+  push:
+    branches: [assistant/v13-run11w-c2-route-regret-audit-20261030]
+    paths:
+      - '.github/workflows/v13-run11w-c2-route-regret-audit.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Fetch original immutable native RED and audit C2 route regret read-only
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-run11w-audit"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          cat > "$e/EXPECTED_BLOBS.txt" <<'BLOBS'
+          ff2a96545eaa4280a68277179e788b129dd49917 v13/code/docs/C2_ROUTE_REGRET_AUDIT_PREREG_RUN11W_20261030.md
+          41e35e9b639b6926ca271eb96b871e4e0aaffbb6 v13/code/scripts/c2_route_regret_audit_run11w.py
+          95aba3754207f0f2a868835e9d79ab9b3e0dc393 v13/code/tests/test_c2_route_regret_audit_run11w.py
+          e3c4b93bc1dafe24c23747105cf654aa59de2937 v13/code/scripts/c2_body_observer_closed_run11r.py
+          9cef2f2edd8bbd2fae075f03690bd9f31b8c4c1e v13/code/scripts/c2_body_observer_closed_verify_run11r.py
+          d274a66b8ceb801c741bbffe1456611b43603208 v13/code/scripts/c2_body_disjoint_paired181_run11v.py
+          4f04236507d7f4c2ae70f62aef905eefe83389d6 v13/code/scripts/c2_body_disjoint_paired181_verify_run11v.py
+          218464b12a2d27d92524c751922fa8e1c3fb0ea7 v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md
+          BLOBS
+          bad=0
+          while read -r want path; do
+            got="$(git hash-object "$path" 2>/dev/null)"
+            echo "$want $got $path" >> "$e/PINS_RAW.log"
+            if [ "$want" != "$got" ]; then bad=1; fi
+          done < "$e/EXPECTED_BLOBS.txt"
+          echo "$bad" > "$e/PINS_EXIT.txt"
+          python3 - "$e" > "$e/FETCH_RAW.log" 2>&1 <<'PY'
+          import hashlib,os,pathlib,shutil,sys,urllib.error,urllib.parse,urllib.request,zipfile
+          e=pathlib.Path(sys.argv[1]);dest=e/'original_native.zip'
+          api="https://api.github.com/repos/RedMentos/Aii/actions/artifacts/12967698710/zip"
+          req=urllib.request.Request(api,headers={"Authorization":"Bearer "+os.environ["GH_TOKEN"],
+              "Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"})
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args,**kwargs):return None
+          opener=urllib.request.build_opener(NoRedirect)
+          try:
+              with opener.open(req,timeout=120) as response,dest.open('wb') as f:shutil.copyfileobj(response,f)
+          except urllib.error.HTTPError as exc:
+              if exc.code not in (301,302,303,307,308):raise
+              u=urllib.parse.urlsplit(exc.headers.get('Location',''))
+              if u.scheme!='https' or not u.hostname:raise ValueError('INVALID_REDIRECT')
+              with urllib.request.urlopen(urllib.request.Request(urllib.parse.urlunsplit(u)),timeout=120) as response,dest.open('wb') as f:shutil.copyfileobj(response,f)
+          blob=dest.read_bytes();sha=hashlib.sha256(blob).hexdigest()
+          expected="47493d719ac1d6dedcb0142106b29b96817c0d4a211a6a2219879dec93cc8c5e"
+          if sha!=expected:raise ValueError("ORIGINAL_ZIP_HASH_CHANGED:"+sha)
+          with zipfile.ZipFile(dest) as z:
+              names=z.namelist()
+              if len(names)!=73 or len(set(names))!=73 or z.testzip() is not None:raise ValueError('ORIGINAL_ZIP_CRC_OR_COUNT')
+              if z.read('HEAD.txt').decode().strip()!='3d76c8e28735cfef4d40c290baad4556b61e04a7':raise ValueError('ORIGINAL_HEAD_CHANGED')
+              lines=z.read('SHA256SUMS').decode().splitlines()
+              if len(lines)!=72:raise ValueError('ORIGINAL_MANIFEST_COUNT')
+              for line in lines:
+                  want,n=line.split(maxsplit=1);n=n.removeprefix('./')
+                  if n not in names or hashlib.sha256(z.read(n)).hexdigest()!=want:raise ValueError('ORIGINAL_INNER_HASH_CHANGED')
+              for n in names:
+                  p=pathlib.PurePosixPath(n)
+                  if p.is_absolute() or '..' in p.parts or '\\' in n:raise ValueError('UNSAFE_ARCHIVE_NAME')
+              z.extractall(e/'original')
+          (e/'ORIGINAL_SHA.txt').write_text(sha+'\n')
+          print('ORIGINAL_NATIVE_RED_VERIFIED',sha,'73 entries 72 hashes')
+          PY
+          echo "$?" > "$e/FETCH_EXIT.txt"
+          unset GH_TOKEN
+          python3 -m venv "$RUNNER_TEMP/v13-run11w-audit-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run11w-audit-venv/bin/python"
+          if [ "$(cat "$e/VENV_EXIT.txt")" = 0 ]; then
+            "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+            echo "$?" > "$e/DEPS_EXIT.txt"
+          else echo SKIPPED > "$e/DEPS_RAW.log"; echo SKIPPED > "$e/DEPS_EXIT.txt"; fi
+          if [ "$bad" = 0 ] && [ "$(cat "$e/FETCH_EXIT.txt")" = 0 ] && [ "$(cat "$e/DEPS_EXIT.txt")" = 0 ]; then
+            (cd v13/code && PYTHONPATH=.:tests:scripts "$py" -m unittest -v tests.test_c2_body_observer_closed_run11r tests.test_c2_body_observer_closed_verify_run11r tests.test_c2_body_disjoint_paired181_run11v tests.test_c2_body_disjoint_paired181_verify_run11v tests.test_c2_route_regret_audit_run11w) > "$e/TEST_RAW.log" 2>&1
+            echo "$?" > "$e/TEST_EXIT.txt"
+            (PYTHONPATH=v13/code "$py" v13/code/scripts/c2_route_regret_audit_run11w.py --zip "$e/original_native.zip" --sha256 47493d719ac1d6dedcb0142106b29b96817c0d4a211a6a2219879dec93cc8c5e --head 3d76c8e28735cfef4d40c290baad4556b61e04a7 --seed 163 --schema v13.c2_body.observer_closed.seed163.v1 --fixture-sha256 040e073bc1c544883a5d809d0883d6493366a8f241816c7e6dbefd30c87eaead --score-slot secondary_score --out "$e/route_regret.json" &&
+              "$py" -c 'import json,sys; r=json.load(open(sys.argv[1])); assert r["native_complete"] and len(r["per_fixture_deltas"])==4 and r["native_c2_invocations"]==4 and r["native_c2_selected"]==4; assert [r["secondary_totals_original"][a] for a in ("A_C3_ONLY","B_B1_ONLY","C_B2_ONLY","D_DISTINCT_BOTH","E_SHARED_DUAL_COLD","F_NATIVE_AUTO")]==[0,2,7,1,0,2]; print("ORIGINAL_163_ROUTE_REGRET_VERIFIED_NO_GATE")' "$e/route_regret.json") > "$e/AUDIT_RAW.log" 2>&1
+            echo "$?" > "$e/AUDIT_EXIT.txt"
+          else
+            for stage in TEST AUDIT; do echo SKIPPED > "$e/${stage}_RAW.log"; echo SKIPPED > "$e/${stage}_EXIT.txt"; done
+          fi
+          "$py" -m py_compile v13/code/scripts/c2_route_regret_audit_run11w.py v13/code/tests/test_c2_route_regret_audit_run11w.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base b8c225d122b970ae199ea36c6d712e9fa8d039f5 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check b8c225d122b970ae199ea36c6d712e9fa8d039f5 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -path './original/*' ! -name original_native.zip ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          rm -rf "$e/original" "$e/original_native.zip"
+          exit 0
+      - name: Preserve closed source-only route audit raw even on RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run11w-audit-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-run11w-audit/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Enforce source-only route audit without native promotion
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-run11w-audit"
+          for stage in PINS FETCH VENV DEPS TEST AUDIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/${stage}_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; original native RED retained, no gate promotion"
+              tail -80 "$e/${stage}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'RUN11W_ROUTE_REGRET_SOFTWARE_ONLY_ORIGINAL_NATIVE_WORKFLOW_REMAINS_RED'

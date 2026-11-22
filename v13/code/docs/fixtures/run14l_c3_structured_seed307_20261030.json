@@ -1,0 +1,87 @@
+{
+  "schema": "v13.run14l.c3_structured_native.fixture.v1",
+  "seed": 307,
+  "cases": [
+    {
+      "project": "Aster307",
+      "budget": 6800,
+      "a": "Lumen",
+      "a_cost": 2370,
+      "a_days": 9,
+      "b": "Coral",
+      "b_cost": 3185,
+      "b_days": 12
+    },
+    {
+      "project": "Birch307",
+      "budget": 9200,
+      "a": "Onyx",
+      "a_cost": 4860,
+      "a_days": 16,
+      "b": "Moss",
+      "b_cost": 3545,
+      "b_days": 8
+    },
+    {
+      "project": "Cedar307",
+      "budget": 11300,
+      "a": "Amber",
+      "a_cost": 5290,
+      "a_days": 13,
+      "b": "Quartz",
+      "b_cost": 6575,
+      "b_days": 17
+    },
+    {
+      "project": "Dune307",
+      "budget": 7800,
+      "a": "Slate",
+      "a_cost": 3045,
+      "a_days": 19,
+      "b": "Pearl",
+      "b_cost": 4205,
+      "b_days": 15
+    },
+    {
+      "project": "Echo307",
+      "budget": 12500,
+      "a": "Iris",
+      "a_cost": 6910,
+      "a_days": 7,
+      "b": "Flint",
+      "b_cost": 5725,
+      "b_days": 11
+    },
+    {
+      "project": "Fable307",
+      "budget": 10400,
+      "a": "Ruby",
+      "a_cost": 3960,
+      "a_days": 23,
+      "b": "Opal",
+      "b_cost": 5120,
+      "b_days": 18
+    },
+    {
+      "project": "Grove307",
+      "budget": 8900,
+      "a": "Cobalt",
+      "a_cost": 4375,
+      "a_days": 6,
+      "b": "Sable",
+      "b_cost": 2980,
+      "b_days": 14
+    },
+    {
+      "project": "Harbor307",
+      "budget": 14200,
+      "a": "Ash",
+      "a_cost": 7080,
+      "a_days": 21,
+      "b": "Jade",
+      "b_cost": 6340,
+      "b_days": 10
+    }
+  ],
+  "cases_sha256": "a598c5f6eed3c956c3aa2f1e6f9419b8054d155e1f145aa0ca58776b26f1ffd1"
+}

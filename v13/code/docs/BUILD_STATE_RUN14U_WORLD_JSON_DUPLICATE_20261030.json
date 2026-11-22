@@ -1,0 +1,97 @@
+{
+  "schema": "v13.run14u.world_duplicate_json.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; independent F4 World source-integrity package; review-only",
+  "parent": {
+    "pr": 1336,
+    "head_sha": "3c7ffab524dbb346d115e81067e5f5729dc5057a"
+  },
+  "branch": "assistant/v13-run14u-world-json-duplicate-20261030-hourly11",
+  "production_merge": false,
+  "source_blobs": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "prereg": "667fd1b6667b2e934dc8941749b58e59e46ef243",
+    "test_first": "5e39a749f57cc38a13417b45fd5a9658ece3262f",
+    "world_original": "3799f84fdf52a82efe70e0e5e73bcfe4a95f0ac7",
+    "world_candidate": "03c87501862eb773f80b3704f1e2b8f81b5cfc75"
+  },
+  "changes": [
+    "World F4 strict JSON parser now rejects duplicate object keys at every depth, including escaped key aliases; nonfinite rejection preserved.",
+    "SQL source-bound PredictionOutcome predicate now rejects duplicate keys in both receipt payload and authoritative action outcome using json_tree under json_valid CASE.",
+    "World forecast and transition source reads now use the same strict parser instead of silently accepting last-key-wins action, intent or corollary objects.",
+    "Malformed original packets and action outcome bytes are preserved; recovery may append a new valid receipt for an intact action."
+  ],
+  "evidence": {
+    "original_red": {
+      "run": 41124353597,
+      "head": "42adad095ea62e163d1f46224050930cfcdca5f6",
+      "artifact": 13009074104,
+      "zip_sha256": "7eb459ec4fe7fcde43d2aec7f2ddadab1f5f6c10f088e42e359b6340467ef7d0",
+      "tests": 8,
+      "failures": 5,
+      "errors": 0,
+      "stage_exits": {
+        "PINS": 0,
+        "VENV": 0,
+        "DEPS": 0,
+        "PIP_CHECK": 0,
+        "TEST": 1,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14U-WorldJSON/Run14U_World_ORIGINAL_RED.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate_green": {
+      "run": 41124499074,
+      "head": "7d9f00c2f64f0ff029ffe60b0079541229a983c2",
+      "artifact": 13009971776,
+      "zip_sha256": "9fa55167c44f1aacebdc307a08a467e8e3b5d71c0b8fa4d611ced15da2e1247c",
+      "tests": 45,
+      "failures": 0,
+      "errors": 0,
+      "stage_exits": {
+        "PINS": 0,
+        "VENV": 0,
+        "DEPS": 0,
+        "PIP_CHECK": 0,
+        "TEST": 0,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "isolated_deps": [
+        "numpy==2.2.6"
+      ],
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14U-WorldJSON/Run14U_World_CANDIDATE_GREEN.zip",
+      "readback": "BYTE_IDENTICAL"
+    }
+  },
+  "review": [
+    "Preregistration and original RED committed before World code change.",
+    "Real SQLite action with duplicate outcome previously yielded a forged observation; duplicate scored receipt previously remained materialized; candidate rejects both and recovers intact action.",
+    "45 World state, corruption, receipt binding, multi-action, modulator, timing and World-JEPA software regressions passed; privacy/diff/pins clean.",
+    "Independent agent not available; coordinator checked SQL json_tree duplicate parent/key semantics in isolated SQLite and inspected raw evidence."
+  ],
+  "limitations": [
+    "json_tree predicate adds SQLite JSON traversal overhead; not profiled on Redmi or large production corpus.",
+    "World JSON strictness is scoped to F4 source/receipt/forecast/transition; other organs have separate parsers and need independent audit.",
+    "Historical full-suite Run14R RED 4140 tests, 4 failures, 66 errors, 16 skips remains unwaived; many errors are frozen source-handoff/native-firing source pin mismatch.",
+    "No actual model/native inference, no Redmi measurements, no production merge."
+  ],
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Review Run14U World JSON PR and run targeted regression on current integration branch before merge. Continue next independent canonical organ package, preferably C2/Body/C3 utility or Sleep lifecycle, with preregistered disjoint evidence; do not alter frozen cohorts or promote gates. Inspect concurrent Run14S AG6/Run14T C3 owners before integration."
+}

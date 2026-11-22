@@ -1,0 +1,17 @@
+# Run117CU BUILD_STATE — Qwen0.8B/LFM350M source-only real-Store preflight
+
+2026-11-01 UTC. Review-only branch `assistant/v13-run117cu-qwen-c3-source-only-preflight-20261101-gpt6`, draft [PR #1573](https://github.com/RedMentos/Aii/pull/1573), exact verified Run117CS parent `720ac9595975f0f6946b23e3309a5e50f55b469b`. Prereg `PREREG_RUN117CU_QWEN_C3_SOURCE_ONLY_20261101.md` committed `56547ff4e01a49f9d12e1fec97b6d8077ed8a3a3` before code. No Canon/frozen cohort/model/seed/runner/source changes or production merge.
+
+## Concrete preflight
+
+Used original frozen Run117CN seed117041 nine-case disjoint A/B/NONE-balanced cohort, table SHA256 `fb5708c82f4d62338eb080264ec6c2cbf8234fc9b5845abc3c0e53e513597335`. For each case, opened a real SQLite Runtime/Store with exact USER event, archived human policy and option sheet, then built `jef_c3_source_only_shadow_candidate` messages after F1/F5/JEF source admission. Messages include verified current/policy/sheet source text and SourceRef hashes but **no typed JEF answer or oracle**; message digest rehashed and memory-order independence checked, source window closed and Store audit passed. Model specs verified unchanged: LFM2.5-350M Q4_0 SHA256 `3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d` (LFM Open License 1.0), Qwen3.5-0.8B Q4_0 SHA256 `57d1997790d1744fba5b40a7317df71ea5e2acee28c47e78f0cce39c0703f8cf` (Apache-2.0). Planned **18 serial native C3 calls**, actually **zero**. Adversarial tests reject changed model hash, missing model, stale message digest, injected oracle even if rehashed, and prohibit native model pool calls.
+
+## Original raw
+
+[Actions 41261162829](https://github.com/RedMentos/Aii/actions/runs/41261162829) **SUCCESS 24/24** source-only/fixture/real-Store tests in 1.591s. All nine `PINS/VENV/DEPS/PIP_CHECK/COMPILE/TEST/PREFLIGHT/PRIVACY/DIFF` exits zero, privacy CLEAN. Original artifact `13065451265` ZIP SHA256 `0214a1e31b6d4a922f5ef8a0c85a065a18c579271a492ea88f82a33df976dece`, independently CRC clean and **21/21** inner SHA verified. Original PR-event synthetic merge HEAD `a49043fa617f090153fdd7f73abb0dce7957aca2`, source/test/model/fixture blobs pinned. Private Library backup `/V13-Checkpoints/2026-11-01/Run117CU/RAW_GREEN_41261162829_sha0214a1e3.zip` re-materialized byte-identical SHA256.
+
+## Next work, limits
+
+Next: after Run117CT full-suite job terminal and native owner check, separately preregister and implement actual serial native Qwen0.8B vs LFM350M 9-case C3 comparison using pinned llama.cpp b10964 and exact model bytes, with no typed answer/oracle, original strict scorer, raw output, latency/reaped proof, private checkpoints and original failed attempts. The current preflight proves only source-bound prompt construction and negative gates; **not C3 independent reasoning or model utility**. Prior LFM350M native source-only 0/6 remains unchanged.
+
+Exact reproduction: `cd v13/code && PYTHONPATH=.:tests:scripts python -m unittest -v tests.test_run117cu_qwen_c3_source_only_preflight tests.test_run117cm_c3_source_only_candidate tests.test_run117cn_c3_source_independence_fixture tests.test_jef_range_policy_shadow` and `PYTHONPATH=.:tests:scripts python scripts/run117cu_qwen_c3_source_only_preflight.py`. Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, `jepa_weight=0`, no native/Redmi/learning/whole-system promotion. Remaining platform budget UNKNOWN.

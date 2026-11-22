@@ -1,0 +1,5 @@
+B2_BODY b10964_default {"rss_start_mib": 946.4, "rss_end_mib": 1611.1, "hwm_end_mib": 1611.1, "hwm_growth_mib": 664.7, "prompt_tokens_total": 1760, "cached_tokens_total": 18795, "prompt_ms_total": 24572.4, "wall_ms_total": 83638.0}
+B2_BODY v13_bounded {"rss_start_mib": 946.9, "rss_end_mib": 1110.5, "hwm_end_mib": 1110.5, "hwm_growth_mib": 163.6, "prompt_tokens_total": 1760, "cached_tokens_total": 18795, "prompt_ms_total": 17395.8, "wall_ms_total": 76989.9}
+B2_BODY b10964_default {"rss_start_mib": 946.9, "rss_end_mib": 2264.3, "hwm_end_mib": 2264.3, "hwm_growth_mib": 1317.4, "prompt_tokens_total": 1716, "cached_tokens_total": 5361, "prompt_ms_total": 14668.2, "wall_ms_total": 79394.5}
+B2_BODY v13_bounded {"rss_start_mib": 946.9, "rss_end_mib": 1139.2, "hwm_end_mib": 1152.4, "hwm_growth_mib": 205.5, "prompt_tokens_total": 7079, "cached_tokens_total": 0, "prompt_ms_total": 49126.8, "wall_ms_total": 106193.4}
+B2_BODY b2_cache320 {"rss_start_mib": 946.9, "rss_end_mib": 1362.6, "hwm_end_mib": 1400.3, "hwm_growth_mib": 453.4, "prompt_tokens_total": 5156, "cached_tokens_total": 1923, "prompt_ms_total": 37091.3, "wall_ms_total": 93529.3}

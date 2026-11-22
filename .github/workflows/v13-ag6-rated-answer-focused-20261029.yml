@@ -1,0 +1,56 @@
+name: V13 AG6 rated answer dependency isolated focused review
+on:
+  push:
+    branches: [codex/v13-ag6-rated-answer-dependency-20261029-auto10j]
+    paths: ['.github/workflows/v13-ag6-rated-answer-focused-20261029.yml']
+permissions:
+  contents: read
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 50
+      - name: Run focused real-Store regressions without optional model dependencies
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/ag6-rated-answer-focused"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git hash-object v13/code/v13/agi/weights.py v13/code/tests/test_ag6_rated_answer_dependencies_20261029.py v13/code/tests/test_ag6_rated_source_admission_20261029.py > "$e/SOURCE_BLOBS.txt"
+          (cd v13/code && PYTHONPATH=.:tests:scripts python3 -m unittest -v tests.test_ag6_rated_answer_dependencies_20261029 tests.test_ag6_rated_source_admission_20261029) > "$e/FOCUSED_RAW.log" 2>&1
+          echo "$?" > "$e/FOCUSED_EXIT.txt"
+          python3 -m compileall -q v13/code/v13/agi/weights.py v13/code/tests/test_ag6_rated_answer_dependencies_20261029.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base bfcb3861ee023a893b3b2a4a5f4df588f64b730a --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check bfcb3861ee023a893b3b2a4a5f4df588f64b730a HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - name: Preserve raw focused evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-ag6-rated-answer-focused-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/ag6-rated-answer-focused/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce focused tests, compile, privacy and diff
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/ag6-rated-answer-focused"
+          for n in FOCUSED COMPILE PRIVACY DIFF; do
+            printf '%s %s\n' "$n" "$(cat "$e/${n}_EXIT.txt" 2>/dev/null || echo MISSING)"
+            if [ "$(cat "$e/${n}_EXIT.txt")" != 0 ]; then
+              cat "$e/${n}_RAW.log"
+              exit 1
+            fi
+          done
+          echo AG6_FOCUSED_SOFTWARE_ONLY_NO_LEARNING_AUTHORITY

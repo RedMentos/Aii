@@ -1,0 +1,77 @@
+{
+  "schema": "v13.run14g.ag12_export_isolation.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 V13 hourly continuation; review-only AG12 language-scoped export",
+  "parent": {
+    "pr": 1323,
+    "commit": "22d5cfb1ea8adc4e40374d20ca05386154516751"
+  },
+  "branch": "assistant/v13-run14g-ag12-export-isolation-20261030-hourly11",
+  "state": "ENGLISH_EXPORT_UNCHANGED_GERMAN_EXPORT_SEPARATE_SQLITE_TESTFIRST_RED_CANDIDATE_GREEN_PRIVATE_BYTE_VERIFIED",
+  "prereg_commit": "82ee3443dc660940fb5b5ac5a5b653fe6673d0e5",
+  "test_commit": "36be6065c6539501f0010c1c618ba045e15b3275",
+  "original_red_workflow_commit": "3aefe5eb2472c1de0519205229ef1a18d49f03bf",
+  "candidate_source_commit": "e081c4487868644dce51befdf94cb648d826f4fe",
+  "candidate_workflow_commit": "ff06df58a8c7e3c5e714c066b3a00bdf4aaf79fd",
+  "source_blobs": {
+    "original_generality": "42a06579f8b01ae525b730cd36244e407c7eeef8",
+    "candidate_generality": "2b65c8f4b9a63a9207412e4939ac121c4124d9a4",
+    "test": "a930921349fd6472e8d8d3855154c3b2c58be56e",
+    "prereg": "d0dcd6039599d74ebf785287e8a3327e8e80bcf5",
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7"
+  },
+  "ci": {
+    "red_run": 41108300212,
+    "red_artifact": 13002821128,
+    "red_zip_sha256": "ef27301477387b79612a1458d4d30028cd1122066a04339a9591bbfdd244e479",
+    "red_tests": 8,
+    "red_failures": 2,
+    "red_stage_exits": {
+      "PINS": 0,
+      "TEST": 1,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "green_run": 41108423893,
+    "green_artifact": 13002492486,
+    "green_zip_sha256": "0097fe8d2f7542987f1dc358b3e40a78870ed7868435c78b499f8b5d6edcad0c",
+    "green_tests": 8,
+    "green_failures": 0,
+    "green_stage_exits": {
+      "PINS": 0,
+      "TEST": 0,
+      "COMPILE": 0,
+      "PRIVACY": 0,
+      "DIFF": 0
+    },
+    "crc": "BOTH_PASS",
+    "inner_sha256": "12/12_BOTH_PASS",
+    "private_backup": "/V13-Checkpoints/2026-10-30/Run14G-AG12Export/",
+    "private_readback": "BOTH_BYTE_IDENTICAL_SHA256"
+  },
+  "source_scope": "GeneralityEval.run writes en to unchanged exports/generality-last.json and de only to exports/generality-last-de.json; no solver or training activation",
+  "historical_fullsuite": {
+    "run14e_actions": 41106043575,
+    "top_level_tests": 4098,
+    "failures": 4,
+    "errors": 65,
+    "skipped": 16,
+    "status": "RED; exact original ZIP prerequisite repaired, historical failures remain"
+  },
+  "open_questions": [
+    "AG12 same-language suite hash/seed rotation currently leaves prior runs visible in curve and due; requires independent scoped suite-identity isolation.",
+    "AG9 feedback component names are not language scoped; no German calibration admission until separate review.",
+    "No native German learned transfer, Redmi or production merge."
+  ],
+  "negative_gates": {
+    "learning_mode": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Preregister Run14H same-language suite identity curve/due isolation on fresh synthetic seed and real SQLite, test-first RED and candidate GREEN; preserve original English suite and historical run records. Alternatively continue next independent canonical package."
+}

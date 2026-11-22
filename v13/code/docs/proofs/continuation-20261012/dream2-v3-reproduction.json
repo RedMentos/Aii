@@ -1,0 +1,76 @@
+{
+ "schema": "v13-dream2-v3-reproduction-v1",
+ "created_at": "2026-10-12T07:05Z",
+ "thread": "Naechste offene Pakete G (Claude)",
+ "why_fresh_run": "v2 --resume refused by design: run_binding.platform differs (new cloud container kernel string). Script unchanged, so a fresh complete 15-arm cohort was run in a new folder; v2 stays preserved unchanged.",
+ "binding_differences_vs_v2": {
+  "platform": {
+   "v2": "Linux-6.18.44-x86_64-with-glibc2.39",
+   "v3": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39"
+  }
+ },
+ "v2_report_sha256": "be0c2ed6d90d8d862bdd85d361e9c1f617dbc734dd3364cb299ba536fd5dd778",
+ "v3_report_sha256": "c4e4ee4a2b010677a3bdc31d74ed4fdd3ffa764633d4b1cd585077a7a2cdc1a2",
+ "base_evaluation_identical": true,
+ "base_raw_generations_identical": true,
+ "v2_completed_arms_vs_v3": [
+  {
+   "seed": 13,
+   "arm": "none",
+   "identical_fields": [
+    "seed",
+    "arm",
+    "phase_a",
+    "phase_b",
+    "rehearsal",
+    "raw_generations"
+   ],
+   "differences": {
+    "after_a": {
+     "kl_to_base": {
+      "v2": 1.1130312408010166,
+      "v3": 1.113029273847739
+     }
+    },
+    "after_b": {
+     "kl_to_base": {
+      "v2": 2.1980206072330475,
+      "v3": 2.1980350414911904
+     }
+    }
+   }
+  },
+  {
+   "seed": 13,
+   "arm": "replay_exact",
+   "identical_fields": [
+    "seed",
+    "arm",
+    "phase_a",
+    "phase_b",
+    "rehearsal",
+    "raw_generations"
+   ],
+   "differences": {
+    "after_a": {
+     "kl_to_base": {
+      "v2": 1.1130312408010166,
+      "v3": 1.113029273847739
+     }
+    },
+    "after_b": {
+     "kl_to_base": {
+      "v2": 1.8857491140564282,
+      "v3": 1.885774274667104
+     }
+    }
+   }
+  }
+ ],
+ "reading": "All generations, phase A/B training traces and recall/paraphrase/leak/probe metrics of the two v2 control arms reproduce exactly; only kl_to_base differs at ~1e-5 (CPU float nondeterminism).",
+ "python": "3.13.16",
+ "v3_seconds": 9971.1,
+ "threads": 1,
+ "phone_measured": false,
+ "canonical_gate_pass": false
+}

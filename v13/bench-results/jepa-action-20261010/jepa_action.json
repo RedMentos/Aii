@@ -1,0 +1,137 @@
+{
+ "schema": "v13-jepa-action-v1",
+ "experiment": "blueprint \u00a713 world model / \u00a799 JEPA predictor for action consequences",
+ "date": "2026-10-10",
+ "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+ "body": "Qwen3.5-0.8B-Q4_0.gguf",
+ "tap_dim": 1024,
+ "actions": [
+  "translate_de",
+  "question",
+  "negate",
+  "summarize"
+ ],
+ "topics": {
+  "train": [
+   "birthday parties",
+   "buying a car",
+   "camping",
+   "computer programming",
+   "cooking pasta",
+   "dentists",
+   "dogs",
+   "football",
+   "museums",
+   "winter weather"
+  ],
+  "test": [
+   "coffee",
+   "gardening",
+   "learning the guitar",
+   "space and planets",
+   "the ocean",
+   "train travel"
+  ]
+ },
+ "sentences": {
+  "train": 231,
+  "test": 144
+ },
+ "chance": {
+  "auroc": 0.5,
+  "inverse_acc": 0.25,
+  "forward_top1": 0.0069
+ },
+ "boot_cfg": {
+  "predictor_steps": 240,
+  "predictor_lr": 0.002,
+  "ema_decay": 0.99,
+  "max_update_norm": 0.02,
+  "seed": 13
+ },
+ "long_cfg": {
+  "predictor_steps": 3000,
+  "predictor_lr": 0.05,
+  "ema_decay": 0.99,
+  "max_update_norm": 0.5,
+  "seed": 13
+ },
+ "arms": {
+  "jepa_shared_boot_16": {
+   "verify_action_auroc": 0.6963855131172839,
+   "verify_content_auroc": 0.8966441213348766,
+   "inverse_acc": 0.849,
+   "forward_top1": 0.5122,
+   "steps": 240
+  },
+  "jepa_shared_long_16": {
+   "verify_action_auroc": 0.8271062403549383,
+   "verify_content_auroc": 0.8194082754629629,
+   "inverse_acc": 0.5799,
+   "forward_top1": 0.1233,
+   "steps": 3000
+  },
+  "jepa_shared_sigreg_16": {
+   "verify_action_auroc": 0.7949248890817902,
+   "verify_content_auroc": 0.9663206500771605,
+   "inverse_acc": 0.8125,
+   "forward_top1": 0.5938,
+   "steps": 3000
+  },
+  "no_predictor_16": {
+   "verify_action_auroc": 0.5029718846450617,
+   "verify_content_auroc": 0.7747034143518519,
+   "inverse_acc": 0.25,
+   "forward_top1": 0.4549
+  },
+  "mean_delta_16": {
+   "verify_action_auroc": 0.7823350694444444,
+   "verify_content_auroc": 0.9212993103780864,
+   "inverse_acc": 0.8889,
+   "forward_top1": 0.5365
+  },
+  "jepa_shared_sigreg_128": {
+   "verify_action_auroc": 0.8200352044753086,
+   "verify_content_auroc": 0.9852340133101852,
+   "inverse_acc": 0.9184,
+   "forward_top1": 0.75,
+   "steps": 3000
+  },
+  "no_predictor_128": {
+   "verify_action_auroc": 0.5057719666280864,
+   "verify_content_auroc": 0.7952805507330247,
+   "inverse_acc": 0.25,
+   "forward_top1": 0.559
+  },
+  "mean_delta_128": {
+   "verify_action_auroc": 0.8117314091435185,
+   "verify_content_auroc": 0.9689067322530864,
+   "inverse_acc": 0.9444,
+   "forward_top1": 0.7309
+  },
+  "jepa_per_action_long_16": {
+   "verify_action_auroc": 0.6625614872685185,
+   "verify_content_auroc": 0.8345449942129629,
+   "inverse_acc": 0.4115,
+   "forward_top1": 0.1997
+  },
+  "mean_delta_full": {
+   "verify_action_auroc": 0.8054500626929012,
+   "verify_content_auroc": 0.9706759982638888,
+   "inverse_acc": 0.9323,
+   "forward_top1": 0.7795
+  },
+  "ridge_full": {
+   "verify_action_auroc": 0.8767240547839507,
+   "verify_content_auroc": 0.8957640094521605,
+   "inverse_acc": 0.8264,
+   "forward_top1": 0.4826
+  },
+  "supervised_inv": {
+   "inverse_acc": 0.974,
+   "uses_labels": true
+  }
+ },
+ "seconds": 243.9,
+ "claim_limit": "one seed, 4 text actions whose outcomes C3 wrote, mean-pooled last-layer taps; actions are text edits, not tool or world effects"
+}

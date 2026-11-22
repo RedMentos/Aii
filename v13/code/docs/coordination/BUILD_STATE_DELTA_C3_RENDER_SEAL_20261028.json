@@ -1,0 +1,39 @@
+{
+  "owner_branch": "assistant/v13-c3-render-admission-seal-20261028",
+  "base_sha": "fb53c81e95e251f4d295da08b80dde64fe8a9565",
+  "prereg_commit": "126aa88e6c02f46cfee4cae6bc893cded9804cdb",
+  "source_ci_sha": "c09eeba33b04a35964402f4c9eb9a6fedba74ca8",
+  "source_blob": "609e85f7750df25256f1f5a86aa0a4b9da57945e",
+  "test_blob": "67f560ff193f0d323d11688c0668d03cb15e81e2",
+  "status": "SCOPED_SOFTWARE_GREEN_NOT_NATIVE_OR_RUNTIME_INTEGRATED",
+  "ci_run": 40661996939,
+  "ci_conclusion": "success",
+  "focused_tests": 27,
+  "full_tests": 2296,
+  "skipped": 1,
+  "artifact_id": 12803763240,
+  "artifact_zip_sha256": "755e16718e197536f0e589e4906ecbef733ad153ab2e2b7bc3cf7ba0f26ed996",
+  "artifact_crc": "CLEAN",
+  "internal_sha256_verified": 16,
+  "stage_exits_all_zero": true,
+  "privacy": "CLEAN",
+  "diff": "CLEAN",
+  "actual_change": "Process-local HMAC binds source-verified admit() to exact C3 render query/session/source/count; direct forged ADMITTED dictionaries now rejected.",
+  "limitations": [
+    "Direct render of a previously valid sealed admission does not by itself recheck later revocation; use verified_recall_messages immediately before native dispatch.",
+    "The render API has no explicit current-session argument; a copied sealed decision is not a durable session authorization.",
+    "No new native run on this source, no production integration."
+  ],
+  "gates": {
+    "stage11": "FAIL_ORIGINAL",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL_ORIGINAL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL_ORIGINAL",
+    "jepa_weight": 0,
+    "age": "RECORD_ONLY",
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Review CI raw ZIP 12803763240; add explicit dispatch-time session/source revalidation on a separate preregistered candidate, or continue independent opt-in C3 CLI #candidate after its software CI."
+}

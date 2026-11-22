@@ -1,0 +1,139 @@
+{
+  "schema": "v13.hb1b.c3_format_24native_review_result.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated native review",
+  "review_pr": 1057,
+  "parent_pr": 1056,
+  "source_pr": 1055,
+  "prereg_commit": "4b4978c4ed55b0397ca03ff930bf06477f8d5137",
+  "prereg_blob": "16f328584fb9678a034ee8fa9234460f4fbcfc4e",
+  "addendum_commit": "136be8933f99962bcae6d1d41fb46a66f465f541",
+  "addendum_blob": "e43c748f4822434365e11de6e0132bf36ff694b",
+  "run": {
+    "id": 40838569816,
+    "head_sha": "282f99dd3d45f203c895de01c7e63492c4eb4c57",
+    "status": "GREEN_CLOSED_LINUX_NATIVE_C3_FORMAT_DIAGNOSTIC_NO_GATE",
+    "artifact_id": 12881832082,
+    "zip_sha256": "7e0308577030b6ea2d45b17bb28ad2afe5da276bb06340ec682920613dd2cae2",
+    "zip_crc_clean": true,
+    "internal_sha256sums_verified": 98,
+    "stage_exit_zero": [
+      "SOURCE",
+      "PARENT_HB1A_DOWNLOAD",
+      "PARENT_SOURCE_DOWNLOAD",
+      "PARENT_MOCK_DOWNLOAD",
+      "PARENT_VERIFY",
+      "RESOURCE",
+      "DEPS",
+      "COMPILE",
+      "FOCUSED",
+      "INSTALL",
+      "NATIVE",
+      "VERIFY",
+      "PRIVACY",
+      "DIFF"
+    ],
+    "focused_tests": 12,
+    "private_backup": "/V13/RawEvidence/HB1B_40838569816_24call_linux_native_exact_head_raw.zip",
+    "private_backup_rematerialized_sha256": "7e0308577030b6ea2d45b17bb28ad2afe5da276bb06340ec682920613dd2cae2"
+  },
+  "parent_software": {
+    "source_run": 40837513227,
+    "full_tests": 2911,
+    "skipped": 11,
+    "mock_run": 40838049061,
+    "mock_tests": 18
+  },
+  "native_evidence": {
+    "kind": "LINUX_NATIVE_C3_FORMAT_PUBLIC_SYNTHETIC",
+    "c3_native_calls": 24,
+    "seed": 13,
+    "c3_sampling": "off",
+    "model_sha256_before_after": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+    "runner_sha256_before_after": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+    "parent_raw_sha256": "abbcacec1217e51dfc592d2e981db9597162b475ca01886151fa99c39a1df7e1",
+    "parent_score_sha256": "b7ba7c038d420cba7bb78dc62cba0b66ed7d41b50c8f5e7b4f9f85e3697c3c44",
+    "raw_sha256": "f68a33953fea8e8c7f959f50c1fd25d69e0002f5784ad068dc853df1a6a7d174",
+    "score_sha256": "47cb2a7cf3c7ba9f1b89600b1093f77da4c753e6cce09327737fa26414d8ac45",
+    "inputs_sha256": "9562732fd1efc0319a0e7be7f8578e8361c899b7739418c51746d830630db1de",
+    "process_reaped": true,
+    "weight_updates": false
+  },
+  "score_per_arm": {
+    "exact_schema": {
+      "exact": 0,
+      "wrong_committed": 6,
+      "unknown": 0,
+      "unparseable": 0
+    },
+    "exact_plain": {
+      "exact": 0,
+      "wrong_committed": 0,
+      "unknown": 6,
+      "unparseable": 0
+    },
+    "native_schema": {
+      "exact": 2,
+      "wrong_committed": 4,
+      "unknown": 0,
+      "unparseable": 0
+    },
+    "native_plain": {
+      "exact": 1,
+      "wrong_committed": 2,
+      "unknown": 3,
+      "unparseable": 0
+    }
+  },
+  "output_labels": {
+    "exact_schema": {
+      "A": 0,
+      "B": 2,
+      "NONE": 4,
+      "UNKNOWN": 0,
+      "UNPARSEABLE": 0
+    },
+    "exact_plain": {
+      "A": 0,
+      "B": 0,
+      "NONE": 0,
+      "UNKNOWN": 6,
+      "UNPARSEABLE": 0
+    },
+    "native_schema": {
+      "A": 0,
+      "B": 0,
+      "NONE": 6,
+      "UNKNOWN": 0,
+      "UNPARSEABLE": 0
+    },
+    "native_plain": {
+      "A": 0,
+      "B": 0,
+      "NONE": 3,
+      "UNKNOWN": 3,
+      "UNPARSEABLE": 0
+    }
+  },
+  "interpretation": "On the six reused public synthetic tasks, plain-token format with anti-echo disabled did not improve exact action accuracy relative to strict JSON schema: exact source 0/6 both formats; generated B1/B2 offers 1/6 plain vs 2/6 schema. Plain outputs increased UNKNOWN instead of recovering A/B decisions. The output-format restriction alone is not a demonstrated explanation for C3's failure to use split sources. Posthoc-motivated descriptive diagnostic only; no significance, no blind holdout, no runtime policy change.",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "claim_limits": [
+    "No C3 source-use improvement",
+    "No independent 150-row model-native holdout",
+    "No joint B1/B2/C3 learning",
+    "No Redmi or thermal/energy measurement",
+    "No gate promotion"
+  ],
+  "next_package": "Move to P0 independent source-dependent 150-row held-out tasks with oracle headroom and P2 default-off C3 receiver training against verified outcomes, with shuffled-offer and no-source controls. Do not tune original six-row score.",
+  "production_merge": false,
+  "remaining_platform_budget": "UNKNOWN"
+}

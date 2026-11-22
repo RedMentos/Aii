@@ -1,0 +1,11 @@
+# Prereg: C3 sourced-budget CLI without Runtime worker + exact pinned C3 provenance (2026-10-28)
+
+**Owner:** GPT-6 independent utility hardening child of source-query CLI candidate. Parent source `2c9bed20517d7204bbc8e7e21d263c1f38f173b2`, first test RED and intermediate stale-pin RED retained in parent. This successor does not alter `runtime.py`, `source_consumer.py`, models, native script, original Stage11 or any registered cohort.
+
+**Observed before code:** CLI main currently creates full `Runtime`, starting a coordinator worker and calling `sleep.cycle.set_policy('enabled','off')` on an existing operator home. That can change persistent sleep settings, contrary to an operator-only read-only preflight claim. It also trusts `ModelManager.verify(deep=True)` against the **installed manifest**, which may be an operator-imported model rather than the canonical pinned C3 catalog revision.
+
+**Fix candidate:** create minimal isolated CLI context using existing `initialize`, `Store`, `Memory`, `ModelManager`, `RunnerPool` only, no Runtime coordinator/sleep worker, no new session and no sleep-policy change. Existing-home Store may still create a lock, maintain WAL/operational metadata and Memory may create a key SourceRef: do **not** claim zero disk writes; no new human feedback, learning, tool or chat turn is authorized. Refuse if pending/running turns or queue paused. For native, require deep actual model file hash AND exact `models.json` catalog model ID/revision/main file/size/SHA256, refusing operator-imported alternatives. Keep source revalidation after model acquisition, strict bounded generation, reaped process and no unverified output.
+
+**Predeclared tests:** context opens preinitialized home without a worker/sleep-policy mutation; unknown/missing home refused; no source/other session/conflict refused without C3; imported self-hashed but non-catalog C3 refused; canonical manifest metadata passes only when deep hash is also reported; revocation during model acquisition prevents generation; full source-pinned software suite and raw audit. Native proof remains separate and serialized.
+
+**Next command:** implement no-worker `BudgetContext`, update CLI main, add tests, run focused and full software CI; do not mislabel software fake runner as native.

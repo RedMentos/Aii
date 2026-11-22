@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-10",
+  "owner": "GPT checkpoint retention worker",
+  "package": "JEPA_PRIVATE_TWO_GENERATION_ROLLBACK",
+  "branch": "codex/v13-jepa-checkpoint-retention-20261110",
+  "base_sha": "2ae9dba6377b09a88610108125b88d569efe1cd0",
+  "pr": 1656,
+  "source_paths": [
+    "v13/code/v13/world_jepa_runtime_checkpoint.py",
+    "v13/code/tests/test_jepa_checkpoint_retention_20261110.py",
+    ".github/workflows/v13-jepa-checkpoint-retention.yml"
+  ],
+  "status": "REVIEW_ONLY_PENDING_CI",
+  "implementation": "Private active and previous manifest generations; explicit rollback restores previous into experimental runtime without active model promotion; stale named NPZ cleanup after new manifest persistence.",
+  "tests": {
+    "local": "BLOCKED: container DNS cannot resolve github.com; clone failed",
+    "ci": "Workflow added; no run observed at checkpoint"
+  },
+  "negative_gates": [
+    "No runtime active promotion",
+    "SourceHandoff freeze unchanged",
+    "No Redmi native proof",
+    "STEP2/B3 remain FAIL"
+  ],
+  "next_exact_commands": [
+    "PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_jepa_checkpoint_retention_20261110.py v13/code/tests/test_runtime_jepa_integration_20261110.py",
+    "Inspect PR #1656 CI, fix failures; review retention cleanup against symlink and crash boundaries",
+    "Reconcile PR #1656 with #1655 only after focused CI and independent review; avoid editing protected runtime",
+    "Continue B1/B2 actual weight learning and retention proof on separate owner branch"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+ "schema": "APLANE_GATE_CANDIDATE_PREREG_V1",
+ "test_seeds": [
+  13,
+  14,
+  15,
+  16,
+  17
+ ],
+ "window": 100,
+ "retention": "newest 25 agreement >= GATE_AGREE - .15",
+ "worlds": {
+  "standard": "ablation world",
+  "stress": "three drops to .40 for 400 turns"
+ },
+ "pass": [
+  "standard: candidate > current in >=4/5",
+  "stress: candidate > always in >=4/5",
+  "stress: candidate < never in <=1/5"
+ ]
+}

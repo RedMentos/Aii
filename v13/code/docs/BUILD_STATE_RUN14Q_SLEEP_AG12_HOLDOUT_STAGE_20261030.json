@@ -1,0 +1,101 @@
+{
+  "schema": "v13.run14q.sleep_ag12_holdout_stage.checkpoint.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; review-only",
+  "parent": {
+    "pr": 1332,
+    "head_sha": "49e7eb3edbee83a7717a4d4356df086406a2a817"
+  },
+  "branch": "assistant/v13-run14q-sleep-ag12-holdout-stage-20261030-hourly11",
+  "production_merge": false,
+  "source_blobs": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "prereg": "1dda3f4adf8987f95be5a3c1358286254d3bf27b",
+    "tests_original": "13e46360bc4ea9583f16c2678bd1ee276149b2e0",
+    "tests_corrected": "42747a7128c372c5ca4f737fb2dbe7ec32a3283e",
+    "generality_parent": "43831251af47dbdd718fa9ee3289955fc7f84a87",
+    "generality_candidate": "84ca3580c37a00701286d0d9b00d535ee8c3153f",
+    "sleep_original": "e51766478fee915824853da7c8e73785b12e91b3",
+    "sleep_candidate": "622f3c202c70464c7426e590979428e41f6e50a6"
+  },
+  "changes": [
+    "Refactored AG12 registered EN/DE historical holdout digest union into a read-only helper reused by guard_training and Sleep staging.",
+    "Sleep TTT candidate staging now excludes source-valid FINAL inputs, targets and context items matching any registered historical EN/DE AG12 unseen prompt; no new AG12 suite registration.",
+    "Malformed/unknown-history AG12 registry vetoes staging before rewriting candidate export. Model-generated self labels remain staged only, never trained."
+  ],
+  "evidence": {
+    "original_red": {
+      "run": 41117321284,
+      "head": "5af3e03e5f2ccafde9dd4a5d3821fc0b13a9033c",
+      "artifact": 13005738844,
+      "zip_sha256": "0cc8beea4772907ea95c90e9240e0c168fb1415312d49e73c2b331318fedd41f",
+      "tests": 13,
+      "failures": 4,
+      "errors": 0,
+      "note": "3 true holdout staging failures plus one test fixture error: Runtime pre-registers English AG12; preserved unmodified.",
+      "crc": "PASS",
+      "inner_sha256": "12/12",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14Q-SleepAG12/Run14Q_ORIGINAL_RED_WITH_FIXTURE_DEFECT.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate_red1": {
+      "run": 41117528182,
+      "head": "d7c68cb5e7d564f870f3dbf701371e6715deb897",
+      "artifact": 13005518571,
+      "zip_sha256": "641b59c19081ce68849fd3a2d31917480563beda983b623e46fe97a6a7661cb3",
+      "tests": 44,
+      "failures": 1,
+      "errors": 1,
+      "note": "Corrected fixture still removed English AG12 before Runtime turns, which re-registered it. Context+World test lacked numpy; prerequisite resolved in isolated venv, not waived.",
+      "crc": "PASS",
+      "inner_sha256": "12/12",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14Q-SleepAG12/Run14Q_CANDIDATE_RED1_NUMPY_MISSING_FIXTURE.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate_green": {
+      "run": 41117744397,
+      "head": "d45adaa49a2b460abd22ff204530dba8c05594a5",
+      "artifact": 13006996217,
+      "zip_sha256": "0bfe3dd65fa93c57f6a6f64ea265cfd997bb463407700096021db86a5e79aca1",
+      "tests": 44,
+      "failures": 0,
+      "errors": 0,
+      "stage_exits": {
+        "PINS": 0,
+        "VENV": 0,
+        "DEPS": 0,
+        "PIP_CHECK": 0,
+        "TEST": 0,
+        "COMPILE": 0,
+        "PRIVACY": 0,
+        "DIFF": 0
+      },
+      "isolated_deps": [
+        "numpy==2.2.6"
+      ],
+      "crc": "PASS",
+      "inner_sha256": "19/19",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run14Q-SleepAG12/Run14Q_CANDIDATE_GREEN_V2.zip",
+      "readback": "BYTE_IDENTICAL"
+    }
+  },
+  "review": [
+    "Real SQLite/source-lineage tests include cross-language historical seed rotation and restart, exact candidate input/target/context leakage, no AG12 registry bootstrap, corrupt registry, Sleep digest revocation and Context/World interaction.",
+    "No independent agent available; source and original failed raw independently inspected. No native model tests."
+  ],
+  "limitations": [
+    "This filters candidate staging, not actual AG6 train-time/approval; consumer must recheck historical AG12 holdouts at use time.",
+    "Exact normalized prompt matches only, not paraphrases or unregistered future suites.",
+    "Historical unfiltered suite failures unwaived; Redmi unavailable."
+  ],
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Review Run14Q and continue with independent AG6 actual train-time and approval-time AG12 holdout revalidation: stage currently optionally guards only when self.g exists; train/approve do not recheck after suite rotation. Preregister tests before patch. Preserve all failed artifacts."
+}

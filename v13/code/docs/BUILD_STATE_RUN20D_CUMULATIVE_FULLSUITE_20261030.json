@@ -1,0 +1,85 @@
+{
+  "schema": "v13.run20d.cumulative_unfiltered.historical_red_no_new_failures.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; independent unfiltered regression closure",
+  "branch": "assistant/v13-run20-resource-sensor-finite-20261030-hourly11",
+  "pr": 1347,
+  "source_heads": {
+    "run15": "a35813a2cbf051d9bed004bca5be06fb8c81a079",
+    "run16": "6a5093a604b14e9d1bd288af504064ea29d72830",
+    "run19": "07b72767342308567cd32e562d3166fb397f56ce",
+    "run20": "7c76765ad3cf2a36513f013362135ce9917cd25b"
+  },
+  "unfiltered": [
+    {
+      "run": 41129755100,
+      "scope": "Run15 parent",
+      "tests": 4164,
+      "failures": 4,
+      "errors": 66,
+      "skipped": 16,
+      "sha256": "4643f362887c6ad27134f23a7c726a81ea2da068ff3ec28444046f43bee03c07",
+      "crc": "PASS",
+      "inner": "25/25",
+      "backup": "/V13-Checkpoints/2026-10-30/Run16-ContextOS/Run15_UNFILTERED_PARENT_RAW.zip"
+    },
+    {
+      "run": 41131035846,
+      "scope": "Run16 ContextOS",
+      "tests": 4168,
+      "failures": 4,
+      "errors": 66,
+      "skipped": 16,
+      "sha256": "e99ac521b3a8b57f8bed1a1e2e1431bac6bdcc769b74dcc619920bb41432768b",
+      "crc": "PASS",
+      "inner": "25/25",
+      "backup": "/V13-Checkpoints/2026-10-30/Run16-ContextOS/Run16_UNFILTERED_HISTORICAL_RED.zip"
+    },
+    {
+      "run": 41132298857,
+      "scope": "Run19 cumulative ContextOS Sleep Resource",
+      "tests": 4179,
+      "failures": 4,
+      "errors": 66,
+      "skipped": 16,
+      "sha256": "bfcef51a9382449c872f3f55430e8e1450df6cb214b073356d2ba310b3f07534",
+      "crc": "PASS",
+      "inner": "25/25",
+      "backup": "/V13-Checkpoints/2026-10-30/Run19-ResourceFinite/Run19_UNFILTERED_HISTORICAL_RED.zip"
+    },
+    {
+      "run": 41132648653,
+      "scope": "Run20 cumulative ContextOS Sleep Resource live sensor",
+      "tests": 4183,
+      "failures": 4,
+      "errors": 66,
+      "skipped": 16,
+      "sha256": "f2cdba8f25f404d3a1386fca3e35b19b4589df70b13e24d67d1963a84cddfd14",
+      "crc": "PASS",
+      "inner": "25/25",
+      "backup": "/V13-Checkpoints/2026-10-30/Run20-SensorFinite/Run20_UNFILTERED_HISTORICAL_RED.zip"
+    }
+  ],
+  "integrity": "All original ZIP CRC PASS, all 25/25 inner SHA256SUMS match, all Library readbacks BYTE_IDENTICAL; PINS/VENV/DEPS/TORCH/TRANSFORMERS/PEFT/PIP_CHECK/COMPILE/PRIVACY/DIFF 0 for each. FULL_EXIT=1 for each; no waiver.",
+  "comparison": "Run20 adds 19 tests over Run15. All 121 error/failure log labels (including duplicate suites) are identical, same order and counts across Run15, Run16, Run19, Run20. No new failure identity; not a full-suite GREEN.",
+  "blocker_analysis": {
+    "source_pin": "Historical tests expect exact frozen baseline or reviewed candidate; current review-chain source hashes intentionally differ and are refused, not evidence of runtime pass.",
+    "native_package": "Some legacy package tests require original native ZIP absent from this scratch runner. Do not synthesize, overwrite pins or turn failure into pass.",
+    "gate": "No full-suite pass, no STEP2 utility, B3, Body-JEPA or Redmi promotion."
+  },
+  "positive_evidence": {
+    "focused": "Run16 106/106, Run17 76/76, Run18 79/79, Run19 86/86, Run20 90/90",
+    "age0_e2e": "Run20B 32/32 Linux software",
+    "native": "Run20C connected C2/C3/B1/B2 Linux native 8/8 JEF + 8/8 STEP12 vertical, all stages 0, no phone/full-runner/complementarity proof"
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Do not rerun identical historical failures without new reason. For frozen source-pin cohorts, run exact frozen baseline/candidate separately with original ZIP and preserve RED. For current branch, extend end-to-end utility and registered STEP2 comparison; Android/Redmi measurement requires device. Continue JEF/C3/Body learning/ContextOS/JEPA blueprint packages under Age gates. No auto-merge."
+}

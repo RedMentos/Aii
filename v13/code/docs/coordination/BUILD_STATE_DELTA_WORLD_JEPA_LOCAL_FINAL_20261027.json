@@ -1,0 +1,57 @@
+{
+  "date_utc": "2026-10-27",
+  "package": "WP-Z12d offline closed SQLite observed digital World-JEPA runner",
+  "scope": "REVIEW_ONLY_SOFTWARE_FULL_PASS_REAL_STORE_NOT_RUN",
+  "repo": "RedMentos/Aii",
+  "branch": "assistant/v13-world-jepa-local-store-20261027",
+  "pr": 758,
+  "parent": "3a14e9bc62e19a58d6fa4bad1fcddbb3e9c179b2",
+  "exact_tested_source_head": "7b1f00bd5e508150c9ca29dd61fccf64912b2f02",
+  "prereg_initial": "def1dbc7fd6adae7b60809e48f3b1d3329909a24",
+  "prereg_nonfinite": "d257356aea5df6a6359a0de2ec7574129fc4eb3d",
+  "software": {
+    "initial_focused_run": 40563990900,
+    "initial_focused_tests": 26,
+    "nonfinite_red_run": 40565758399,
+    "nonfinite_red_expected_errors": 2,
+    "nonfinite_green_run": 40566095025,
+    "nonfinite_green_tests": 27,
+    "full_run": 40566360651,
+    "full_tests": 1947,
+    "full_skipped": 1,
+    "full_raw_sha256": "43d5d11fc1e5ff8aacb50aa933c162561edfdc91d28f360b6c409f643d6b9cdc",
+    "all_exits_zero": true,
+    "privacy": "CLEAN",
+    "private_backup_byte_verified": true
+  },
+  "prior_synthetic_negative": {
+    "direct_ridge_pooled_mae": 0.15255538955666423,
+    "jepa_seed3_pooled_mae": 0.20332050430921955,
+    "jepa_seed7_pooled_mae": 0.1926208878029889,
+    "incremental_utility_proven": false
+  },
+  "gates": {
+    "LP1": "NO_ATTRIBUTABLE_GAIN",
+    "LP2": "ALIGNS_NO_GAIN",
+    "BJ1": "NO_SIGNAL",
+    "STEP2": "UTILITY_FAIL",
+    "B3_L1": "FAIL",
+    "jepa_weight": 0,
+    "age_authority": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "owner": "GPT-6 review candidate; frozen runtime owner approval required",
+  "next_command": "cd v13/code && PYTHONPATH=. python scripts/world_jepa_readonly_store.py --db /path/to/closed.sqlite --ack-closed-store",
+  "prerequisites": [
+    "User-authorized local device/store access",
+    "V13 stopped, SQLite quiescent and checkpointed, no WAL/SHM/journal",
+    "Private preservation and independent comparison with direct ridge",
+    "No auto-merge or live hook"
+  ],
+  "blockers": [
+    "Actual private observed store not available in this automation",
+    "No native LFM2.5/Redmi measurement",
+    "Prior synthetic JEPA readout worse than direct ridge"
+  ]
+}

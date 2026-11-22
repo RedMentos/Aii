@@ -1,0 +1,77 @@
+name: V13 World-JEPA matched-action full software regression
+on:
+  push:
+    branches: [assistant/v13-world-matched-action-cohort-20261027]
+    paths:
+      - '.github/workflows/world-matched-action-fullsuite.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-heavy-lp3-gradient-350m
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 28
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Full source-wide regression and raw exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/world-matched-full"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/world_jepa.py > "$evidence/MODEL_BLOB.txt"
+          git hash-object v13/code/scripts/world_jepa_matched_action_cohort.py > "$evidence/COHORT_BLOB.txt"
+          git hash-object v13/code/tests/test_world_jepa_matched_action_cohort.py > "$evidence/TEST_BLOB.txt"
+          git merge-base --is-ancestor d00c35b4daddac7f30cadb9a1489f61c535872dc HEAD
+          echo "$?" > "$evidence/PREREG_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/world-matched-full-venv"
+          py="$RUNNER_TEMP/world-matched-full-venv/bin/python"
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$evidence/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'transformers==5.20.2' 'peft==0.21.2' >> "$evidence/INSTALL_RAW.log" 2>&1
+          second=$?
+          if [ "$first" -eq 0 ] && [ "$second" -eq 0 ]; then echo 0; else echo 1; fi > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/v13 v13/code/scripts/world_jepa_matched_action_cohort.py > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 3bf1b9a06b2eba573635880df67a5cddba650850 --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 3bf1b9a06b2eba573635880df67a5cddba650850 HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-world-matched-full-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/world-matched-full/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce genuine exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/world-matched-full"
+          for name in PREREG INSTALL UNIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; raw evidence retained"
+              tail -90 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'WORLD_MATCHED_FULL_SOFTWARE_ONLY_NO_UTILITY_PROMOTION'

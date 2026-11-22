@@ -1,0 +1,37 @@
+{
+  "branch": "assistant/v13-run117q-native-attribution-audit-20261031-hourly11",
+  "finding": {
+    "body_complementarity_proven": false,
+    "c3_reasoning_gain_proven": false,
+    "paired_raw_typed_improved": 5,
+    "paired_typed_body_improved": 0,
+    "raw": 1,
+    "typed": 6,
+    "typed_body": 6,
+    "typed_prompt_contains_deterministic_oracle": true
+  },
+  "negative_gates": {
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "step2": "UTILITY_FAIL",
+    "whole_system_complete": false
+  },
+  "next_command": "CI original artifact download and independent raw validation; preregister disjoint Body-complementarity cohort",
+  "original_native_sha256": "71de9bb7bc2899f5aee67f58b55d13514d0a9b0d870cd98ae5e8f2f1850d11c5",
+  "original_result_sha256": "124b8dc30279c3c855e2308321f9c907eeb55491916d25df0798de9f7d7c4bb5",
+  "owner": "hourly-gpt6-run11",
+  "parent": "60ab0f7f82173a0f451f893e746741f7a3eac694",
+  "raw_log_sha256": "836365743984c18afe2d1e34f7e9a4dc6f07dee450a839ffc8268e9d923a320b",
+  "schema": "v13.run117q.branch_build_state.v1",
+  "scope": "READ_ONLY_ORIGINAL_NATIVE_ATTRIBUTION",
+  "source_sha256": "976187d69801c6ba75d5134c25d82be15fe11df4b92714378fdcce038fe1d5f8",
+  "test_sha256": "3e72da45d5e1f9e056e68b74bde750b75aa706dfb2f10c24a55d2488a6e7191f",
+  "tests": {
+    "combined_failed": 0,
+    "combined_total": 64,
+    "compile_exit": 0,
+    "original_native_rerun": false
+  }
+}

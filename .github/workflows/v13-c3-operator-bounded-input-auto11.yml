@@ -1,0 +1,71 @@
+name: V13 C3 operator bounded source and error provenance software
+on:
+  push:
+    branches:
+      - 'codex/v13-c3-operator-bounded-input-20261030-auto11d'
+    paths:
+      - '.github/workflows/v13-c3-operator-bounded-input-auto11.yml'
+      - 'v13/code/scripts/listarith_de_operator_shadow.py'
+      - 'v13/code/tests/test_c3_operator_bounded_input_auto11.py'
+permissions:
+  contents: read
+jobs:
+  receipt-boundary:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - name: Native receipt boundary synthetic tests and raw receipts
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/c3-operator-bounded"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/c3-operator-bounded-venv" > "$e/VENV_RAW.log" 2>&1
+          echo "$?" > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/c3-operator-bounded-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input -q 'numpy==2.2.6' psutil PyYAML Pillow 'prompt-toolkit==3.0.52' > "$e/DEPS_RAW.log" 2>&1
+          echo "$?" > "$e/DEPS_EXIT.txt"
+          (cd v13/code && timeout 5m env PYTHONPATH=.:tests:scripts "$py" -m unittest -v \
+            tests.test_c3_operator_bounded_input_auto11 \
+            tests.test_c3_operator_receipt_boundary_auto11 \
+            tests.test_c3_de_operator_shadow_run11g_20261030 \
+            tests.test_listarith_de_closedworld_seed101_20261030) > "$e/TEST_RAW.log" 2>&1
+          echo "$?" > "$e/TEST_EXIT.txt"
+          "$py" -m py_compile v13/code/scripts/listarith_de_operator_shadow.py \
+            v13/code/tests/test_c3_operator_bounded_input_auto11.py > "$e/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$e/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py \
+            --base f9625470aa1ee67ea4356d36a3be8d16a84835e7 \
+            --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check f9625470aa1ee67ea4356d36a3be8d16a84835e7 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-c3-operator-bounded-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/c3-operator-bounded/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Gate and preserve original failures
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/c3-operator-bounded"
+          for stage in VENV DEPS TEST COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$e/"$stage"_EXIT.txt")" != 0 ]; then
+              echo "$stage RED; raw retained"
+              tail -100 "$e/"$stage"_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo "SOFTWARE_RECEIPT_BOUNDARY_ONLY_NO_NATIVE_PROMOTION"

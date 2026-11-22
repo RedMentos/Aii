@@ -1,0 +1,13 @@
+# Run38 prelaunch checkpoint — all-six-slot World-JEPA SHADOW
+
+2026-10-31 UTC. Owner GPT-6 scheduled continuation. Review-only branch `assistant/v13-run38-world-jepa-fullslot-training-20261031-hourly11` is child of Run37 PR #1364 at `9006c30437840383873136862e326b46ffa7abea`. The preregistration was saved **first**, at commit `cf56daa3fa2e7785ef0125fcd57975f25f25de0e`, before candidate code or real-file fit. Canon blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7` unchanged.
+
+**Scope:** new SHADOW `v13/world_jepa_fullslot_candidate.py` trains the original shared local 16D core on all six physical slots per transition (96D concat), vs frozen Run28 two-slot sampling. No production runtime, model replacement, store write or learning authority. New disjoint seeds401–403 train4000/cf150/attr300/steps3000, exact in-memory rows shared between arms, original W1–W6 and W7 thresholds unchanged. Difference in effective training example count explicitly recorded; not a global-96D capacity proof.
+
+**Source pin set before heavy:** prereg `a37bb2a7db068b21061bb56a3526b9a8c69c7b30`; candidate `51bc5260cde8db3bc6cf7924a7a089a5cdfe5fd0`; candidate test `909cc20adc014048d9c3bd51248eef2c4d611cf7`; real-file runner `d0da8727244f499694f12c1f99eafbbfc1179708`; runner tests `112fe5b55b93d3ca8cbd8939be486cf3297dcd69`; frozen WorldJEPA `99a686a131a1bdc89efe0d0cf9610ec54cbd853b`; original Run28 slot model `67e14e0d03c50c4767b74d5b02a819a95c6cc262`; collector `2fd1366dc1b6d8c02803ee3254020f70e5bf3eb4`; Run35 evaluator `219bf7233cb91c746c89a60f9b7789dc3b5ca9ef`. No registered source/seed/threshold mutations.
+
+Software CI `41151283958` at `997bb789227ae544f815b5cface2c4005684dcad` GREEN for candidate and original tests. Expanded runner mock tests CI `41151335779` at `cbd731624a0c980453b5a530d5f1bfcf14c1690c` GREEN. Final fail-closed numeric runner pin preflight `41151379355` pending terminal verification at checkpoint. **Do not launch heavy before final GREEN and confirming no active heavy owner.**
+
+**Next command:** inspect terminal Actions 41151379355, download its original software artifact, verify SHA256/CRC/inner manifest/stages and private backup, then add the separately pinned serialized real-file workflow and run the exact seeds401–403 cohort. Preserve raw including failed attempts and per-seed checkpoints. Check terminal native result and do not promote failed W4/W6/W7 or any other gate.
+
+Age0 RECORD_ONLY; STEP2 UTILITY_FAIL; B3 NO_PROMOTION; Body-JEPA UNAVAILABLE; jepa_weight=0; World-JEPA SHADOW; no Redmi, learned German transfer, JEF fusion or whole-system completion. Remaining platform budget UNKNOWN.

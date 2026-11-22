@@ -1,0 +1,7 @@
+# JEF operator SHADOW test restoration addendum — 2026-10-29
+
+Initial [Actions 40864859308](https://github.com/RedMentos/Aii/actions/runs/40864859308) is **RED**, with exact head `bbb2d0a6ef986638bef354734b2a197e8df1c670`. Source, venv, deps, pip, compile, privacy and diff stages passed. The focused suite ran 24 tests: 23 PASS, one test harness ERROR in `test_age0_gate_rejects_nonrecord_and_latents`. The real `Runtime.cfg` does not contain a `jepa_weight` key by default; after correctly testing the rejection for a temporary `jepa_weight=1`, the test tried to restore `original['jepa_weight']` and raised `KeyError`. This is a **test fixture cleanup defect**, not an observed Age0 gate bypass. Preserve original RED and do not relabel it GREEN.
+
+Original RED ZIP SHA256 `80201ebc8ee5d6c15b3599fef7a517550aa3c45dcb255dd2e16361132bf4f33c`, CRC CLEAN, retained privately at `/V13-Checkpoints/2026-10-29/JEF-Typed-Source/OPERATOR_SOURCE_RED_40864859308_sha80201ebc.zip`.
+
+**Prospective repair:** change only the test's temporary cfg restoration to distinguish an absent original key from an existing key (delete the injected `jepa_weight` key after that subtest). Do not change the operator handler, F1/F5 admission, source parser, preregistered cohorts or gate logic. Re-run focused CI and integrated full software regression on the corrected exact head. Preserve all original attempts, no model calls, no gate promotion.

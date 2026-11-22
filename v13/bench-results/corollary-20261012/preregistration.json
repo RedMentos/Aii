@@ -1,0 +1,28 @@
+{
+ "schema": "ABLATION_COROLLARY_PREREG_V1",
+ "seeds": [
+  13,
+  14,
+  15,
+  16,
+  17
+ ],
+ "win_rule": "v13 better than control on the primary metric in >=4/5 seeds, for every control",
+ "verdicts": {
+  "SUPPORTED_SYNTHETIC": "beats every control",
+  "PARTIAL": "beats at least one control",
+  "NOT_SUPPORTED": "beats none"
+ },
+ "attribution": {
+  "primary": "balanced accuracy over true SELF/MIXED/EXTERNAL (higher is better)",
+  "secondary": [
+   "false_self_rate",
+   "missed_failure_rate",
+   "abstention"
+  ]
+ },
+ "attenuation": {
+  "primary": "AUROC external-vs-own RAM salience (higher is better)",
+  "hard_check": "raw safety signals identical across arms"
+ }
+}

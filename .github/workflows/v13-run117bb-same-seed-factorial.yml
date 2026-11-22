@@ -1,0 +1,207 @@
+name: V13 Run117BB matched-seed native C3 2x2 token schema factorial
+on:
+  push:
+    branches:
+      - assistant/v13-run117bb-c3-same-seed-factorial-20261031-gpt6
+    paths:
+      - .github/workflows/v13-run117bb-same-seed-factorial.yml
+permissions:
+  contents: read
+concurrency:
+  group: v13-native-c3-ag12-20261030
+  cancel-in-progress: false
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      V13_NO_AUTOSTART: '1'
+      DO_NOT_TRACK: '1'
+      NEEDLE_TELEMETRY: '0'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONHASHSEED: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Run source, extracted phone and serial native C3 diagnostics with closed raw
+        shell: bash
+        run: |
+          set -uo pipefail
+          set +e
+          e="/tmp/v13-run117bb-native"
+          extracted="$RUNNER_TEMP/v13-run117bb-extracted/V13-Phone"
+          installed="$RUNNER_TEMP/v13-run117bb-installed"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          python3 -m venv "$RUNNER_TEMP/v13-run117bb-venv" > "$e/VENV_RAW.log" 2>&1
+          echo $? > "$e/VENV_EXIT.txt"
+          py="$RUNNER_TEMP/v13-run117bb-venv/bin/python"
+          "$py" -m pip install --disable-pip-version-check --no-input --timeout 90 --retries 2 -q \
+            'numpy==2.2.6' 'prompt-toolkit==3.0.52' psutil PyYAML Pillow > "$e/DEPS_RAW.log" 2>&1
+          echo $? > "$e/DEPS_EXIT.txt"
+          "$py" -m pip freeze > "$e/PIP_FREEZE_RAW.log" 2>&1
+          "$py" -m compileall -q v13/code/scripts/run117bb_native_same_seed_factorial.py \
+            v13/code/tests/test_run117bb_native_same_seed_factorial.py > "$e/COMPILE_RAW.log" 2>&1
+          echo $? > "$e/COMPILE_EXIT.txt"
+          python3 - <<'PY' > "$e/SOURCE_PIN_RAW.log" 2>&1
+          import subprocess
+          expected={
+            'v13/code/scripts/install_selftest_run117ay.py':'6df905451d126e4c1a1ca5577cee3eb28d4a8836',
+            'v13/code/tests/test_run117ay_phone_jef_route_smoke.py':'5461c97198937a4968c4f9842aa37e9d9defcd40',
+            'v13/code/scripts/run117bb_native_same_seed_factorial.py':'9eafbcbde6111db35e6d0debcc6c3029f46547aa',
+            'v13/code/tests/test_run117bb_native_same_seed_factorial.py':'cd3b91ea39cb0611524ffb95b2f40f17e5fad365',
+            'v13/code/scripts/jef_c3_c5_c6_operator_cli.py':'6ccff28a23c2106c917a197edbe0625f3bf62fb7',
+            'v13/code/tests/test_run117bb_cli_seed_override.py':'354f526ce947202fc58aa08b91efbe2ebec43e24'}
+          for path,want in expected.items():
+              got=subprocess.check_output(['git','hash-object',path],text=True).strip()
+              print(path,got,want)
+              assert got==want,path
+          PY
+          echo $? > "$e/SOURCE_PIN_EXIT.txt"
+          (cd v13/code && env PYTHONPATH=.:tests:scripts NO_MODEL_DOWNLOADS=1 "$py" -m unittest -v \
+            tests.test_run117bb_native_same_seed_factorial \
+            tests.test_run117bb_cli_seed_override \
+            tests.test_run117ba_native_schema_paired \
+            tests.test_run117ay_phone_jef_route_smoke \
+            tests.test_run117ax_jef_route_operator_cli \
+            tests.test_run117aw_jef_c2_c3_formatter_route_shadow) > "$e/SOFTWARE_RAW.log" 2>&1
+          echo $? > "$e/SOFTWARE_EXIT.txt"
+          if test "$(cat "$e/SOURCE_PIN_EXIT.txt")" -eq 0 && test "$(cat "$e/SOFTWARE_EXIT.txt")" -eq 0 && test "$(cat "$e/DEPS_EXIT.txt")" -eq 0; then
+            "$py" v13/code/scripts/package_source.py --root v13/code --out "$e/V13-Phone-Run117BB.zip" --phone-install > "$e/PACK_RAW.log" 2>&1
+            pack_rc=$?
+          else
+            pack_rc=125; echo 'SOURCE_OR_SOFTWARE_RED' > "$e/PACK_RAW.log"
+          fi
+          echo "$pack_rc" > "$e/PACK_EXIT.txt"
+          if test "$pack_rc" -eq 0; then
+            "$py" - "$e" "$RUNNER_TEMP/v13-run117bb-extracted" <<'PY' > "$e/ZIP_RAW.log" 2>&1
+          import hashlib,json,sys,zipfile
+          from pathlib import Path
+          e=Path(sys.argv[1]);dest=Path(sys.argv[2]);p=e/'V13-Phone-Run117BB.zip'
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              manifest=json.loads(z.read('V13-Phone/WORKSPACE_FILES.json'))
+              assert manifest['schema_version']==1
+              files=manifest['files']
+              assert set(z.namelist())=={'V13-Phone/'+x for x in files}|{'V13-Phone/WORKSPACE_FILES.json'}
+              for name,sha in files.items():
+                  assert not name.startswith('/') and '..' not in Path(name).parts
+                  assert hashlib.sha256(z.read('V13-Phone/'+name)).hexdigest()==sha,name
+              for name in ('scripts/run117bb_native_same_seed_factorial.py',
+                           'tests/test_run117bb_native_same_seed_factorial.py',
+                           'scripts/install_selftest_run117ay.py',
+                           'scripts/jef_c3_c5_c6_operator_cli.py',
+                           'v13/jef_c2_c3_formatter_route_shadow_candidate.py'):
+                  assert z.read('V13-Phone/'+name)==(Path('v13/code')/name).read_bytes()
+              z.extractall(dest)
+          print(json.dumps({'files':len(files),'phone_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                            'redmi_measured':False},sort_keys=True))
+          PY
+            zip_rc=$?
+          else
+            zip_rc=125; echo 'PACK_RED' > "$e/ZIP_RAW.log"
+          fi
+          echo "$zip_rc" > "$e/ZIP_EXIT.txt"
+          if test "$zip_rc" -eq 0; then
+            (cd "$extracted" && env PYTHONPATH=.:tests:scripts NO_MODEL_DOWNLOADS=1 "$py" -m unittest -v \
+              tests.test_run117bb_native_same_seed_factorial \
+              tests.test_run117ay_phone_jef_route_smoke) > "$e/EXTRACTED_SOFTWARE_RAW.log" 2>&1
+            extracted_rc=$?
+          else
+            extracted_rc=125; echo 'ZIP_RED' > "$e/EXTRACTED_SOFTWARE_RAW.log"
+          fi
+          echo "$extracted_rc" > "$e/EXTRACTED_SOFTWARE_EXIT.txt"
+          if test "$extracted_rc" -eq 0; then
+            (cd "$extracted" && env PYTHONPATH=.:tests:scripts "$py" scripts/run93_source_c3_native_e2e.py --home "$installed" --install) > "$e/INSTALL_C3_RAW.log" 2>&1
+            install_rc=$?
+          else
+            install_rc=125; echo 'EXTRACTED_SOFTWARE_RED' > "$e/INSTALL_C3_RAW.log"
+          fi
+          echo "$install_rc" > "$e/INSTALL_C3_EXIT.txt"
+          if test "$install_rc" -eq 0; then
+            (cd "$extracted" && env PYTHONPATH=.:tests:scripts "$py" scripts/run117bb_native_same_seed_factorial.py \
+              --native --installed "$installed" --work "$RUNNER_TEMP/v13-run117bb-work" \
+              --out "$e/NATIVE_CASE") > "$e/NATIVE_RAW.log" 2>&1
+            native_rc=$?
+          else
+            native_rc=125; echo 'INSTALL_RED' > "$e/NATIVE_RAW.log"
+          fi
+          echo "$native_rc" > "$e/NATIVE_EXIT.txt"
+          if test -f "$e/NATIVE_CASE/report.json"; then
+            "$py" - "$e" <<'PY' > "$e/VERIFY_RAW.log" 2>&1
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);r=json.loads((e/'NATIVE_CASE/report.json').read_text())
+          assert r['schema']=='v13.run117bb.same_seed_factorial_native.v1'
+          assert r['fixture_sha256']=='93ba613a9427db204a89c652ed60f4ef271181b780cb159e9e40659a1a5f5fd1'
+          assert r['native_requested'] is True and r['step2_promoted'] is False
+          assert r['independent_c3_reasoning_proven'] is False
+          assert r['native_body_calls']==r['native_c2_calls']==r['native_jef_calls']==0
+          assert r['age0']=='RECORD_ONLY' and r['step2']=='UTILITY_FAIL' and r['b3']=='NO_PROMOTION'
+          assert r['body_jepa']=='UNAVAILABLE' and r['jepa_weight']==0
+          assert r['redmi_measured'] is False and r['whole_system_complete'] is False
+          assert r['output_committed'] is False and r['tool_dispatches']==0
+          assert r['delivery_authority']==r['learning_authority']==0
+          assert r['status'] in ('STRUCTURAL_GREEN_NO_PROMOTION','STRUCTURAL_RED_NO_PROMOTION')
+          assert 0<=r['native_c3_calls']<=24 and len(r['rows'])<=6
+          if len(r['rows'])==6:
+              assert set(r.get('strict_scores',{}))=={'TOKEN_S13','SCHEMA_S13','TOKEN_S727','SCHEMA_S727'}
+              assert all(0<=x<=6 for x in r['strict_scores'].values())
+          for row in r['rows']:
+              assert len(row['arms'])==4
+              assert set(a['arm'] for a in row['arms'])=={'TOKEN_S13','SCHEMA_S13','TOKEN_S727','SCHEMA_S727'}
+              for a in row['arms']:
+                  c=a['cli'];audit=a['store_audit']
+                  assert c['delivery_authority']==0 and c['tool_dispatches']==0
+                  assert c['output_committed'] is False and audit['live_output_count']==0
+                  if c['status']=='SHADOW_DRAFT_PREFLIGHT_READY':
+                      assert audit['all_messages_source_action']
+                  else:
+                      assert a['kind']=='SCHEMA' and c['status']=='DRAFT_STAGE_RED'
+                      assert audit['assistant_messages']==0 and audit['action_kinds']==[]
+          print(json.dumps({'status':r['status'],'native_c3_calls':r['native_c3_calls'],
+                            'rows':len(r['rows']),'strict_scores':r.get('strict_scores'),
+                            'paired_schema_gains':r.get('paired_schema_gains'),
+                            'no_promotion':True},sort_keys=True))
+          PY
+            verify_rc=$?
+          else
+            verify_rc=125; echo 'NO_NATIVE_REPORT' > "$e/VERIFY_RAW.log"
+          fi
+          echo "$verify_rc" > "$e/VERIFY_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 2be536ec41184e0f6a99515eebf6350e598208d9 --head HEAD --no-worktree > "$e/PRIVACY_RAW.log" 2>&1
+          echo $? > "$e/PRIVACY_EXIT.txt"
+          git diff --check 2be536ec41184e0f6a99515eebf6350e598208d9 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo $? > "$e/DIFF_EXIT.txt"
+          "$py" - "$e" <<'PY' > "$e/RESULT_RAW.log" 2>&1
+          import json,sys
+          from pathlib import Path
+          e=Path(sys.argv[1]);names=('VENV','DEPS','COMPILE','SOURCE_PIN','SOFTWARE','PACK','ZIP',
+                                    'EXTRACTED_SOFTWARE','INSTALL_C3','NATIVE','VERIFY','PRIVACY','DIFF')
+          r={'schema':'v13.run117bb.native_workflow_raw.v1',
+             'head':(e/'HEAD.txt').read_text().strip(),
+             'exits':{n:int((e/(n+'_EXIT.txt')).read_text()) for n in names},
+             'redmi_measured':False,'step2_promoted':False,'b3_promoted':False,
+             'body_jepa_promoted':False,'jepa_weight':0,'whole_system_complete':False}
+          (e/'RESULT.json').write_text(json.dumps(r,sort_keys=True)+'\n')
+          print(json.dumps(r,sort_keys=True))
+          PY
+          echo $? > "$e/RESULT_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          cat "$e/RESULT_RAW.log"
+          tail -n 15 "$e/NATIVE_RAW.log"
+          cat "$e/VERIFY_RAW.log"
+          for stage in VENV DEPS COMPILE SOURCE_PIN SOFTWARE PACK ZIP EXTRACTED_SOFTWARE INSTALL_C3 NATIVE VERIFY PRIVACY DIFF RESULT; do
+            test "$(cat "$e/${stage}_EXIT.txt")" -eq 0 || exit 1
+          done
+      - name: Preserve original raw GREEN or RED, never model weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-run117bb-native
+          path: /tmp/v13-run117bb-native/
+          if-no-files-found: warn
+          retention-days: 90

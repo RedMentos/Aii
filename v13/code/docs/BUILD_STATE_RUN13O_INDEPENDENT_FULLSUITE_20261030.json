@@ -1,0 +1,49 @@
+{
+  "package": "RUN13O_INDEPENDENT_CURRENTCHAIN_RAW_REVIEW_20261030",
+  "owner": "GPT-6",
+  "branch": "assistant/v13-run13o-independent-raw-20261030-auto11",
+  "parent": "117bfdcd1a722c9ca883d3ad76971bb0c3453522",
+  "review_of_pr": 1305,
+  "original_run": 41088780210,
+  "original_artifact": 12994050614,
+  "original_head": "d883e8e9cc7b22966f862fad953939f112f8f6b9",
+  "original_zip_sha256": "4d4132478876762d14fd86d0acbd3632cdc4408988c81c363ceb8673f80c68fd",
+  "original_bytes": 16573,
+  "original_inner_hashes": "30/30",
+  "original_crc": "PASS",
+  "baseline_run": 41080416868,
+  "baseline_artifact": 12989104302,
+  "baseline_zip_sha256": "77906cc480e18a7695b833896730dded1e5f881278966259a7725440d766c27f",
+  "baseline_inner_hashes": "32/32",
+  "backup": "/V13-Checkpoints/2026-10-30/Run13N-Unfiltered-Independent",
+  "private_backup_byte_identical": true,
+  "comparison": {
+    "tests_baseline": 3987,
+    "tests_current": 4027,
+    "failures": 4,
+    "errors": 65,
+    "skipped": 15,
+    "nested_failure_identities": 120,
+    "unique_failure_identities": 86,
+    "added": 0,
+    "removed": 0,
+    "status": "HISTORICAL_RED_SAME_IDENTITIES",
+    "software_suite_gate_pass": false
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "open_questions": [
+    "Original SourceHandoff frozen cohort failures persist; do not change frozen pins without owner-scoped review.",
+    "Actual C2/C3/B1/B2 native utility and Body-JEPA learning benefit remain unproven.",
+    "Target Redmi thermal/RSS acceptance requires the device."
+  ],
+  "next_command": "Continue a new independent source-bound cross-organ utility package with prereg, focused tests and review; preserve Run13N original RED.",
+  "platform_remaining_budget": "UNKNOWN"
+}

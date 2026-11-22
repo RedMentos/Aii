@@ -1,0 +1,33 @@
+{
+  "schema": "v13.run51.f1f5_second_attempt_seed467.v1",
+  "seed": 467,
+  "fixtures": [
+    {
+      "id": "Cypress",
+      "first_query": "What is the budget for Project Cypress?",
+      "correction_event": "Human correction: Project Cypress budget is 64 Euro.",
+      "key": "Project Cypress budget",
+      "value": "64 Euro",
+      "followup": "Please state the budget for Project Cypress.",
+      "oracle_amount": 64
+    },
+    {
+      "id": "Lark",
+      "first_query": "What is the budget for Project Lark?",
+      "correction_event": "Human correction: Project Lark budget is 27 Euro.",
+      "key": "Project Lark budget",
+      "value": "27 Euro",
+      "followup": "Please state the budget for Project Lark.",
+      "oracle_amount": 27
+    },
+    {
+      "id": "Delta",
+      "first_query": "What is the budget for Project Delta?",
+      "correction_event": "Human correction: Project Delta budget is 91 Euro.",
+      "key": "Project Delta budget",
+      "value": "91 Euro",
+      "followup": "Please state the budget for Project Delta.",
+      "oracle_amount": 91
+    }
+  ]
+}

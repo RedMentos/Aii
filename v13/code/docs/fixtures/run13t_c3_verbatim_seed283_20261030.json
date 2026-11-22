@@ -1,0 +1,87 @@
+{
+  "cases": [
+    {
+      "a": "Cedar",
+      "a_cost": 1475,
+      "a_days": 11,
+      "b": "Mica",
+      "b_cost": 2310,
+      "b_days": 7,
+      "budget": 5400,
+      "project": "Alder283"
+    },
+    {
+      "a": "Quartz",
+      "a_cost": 3290,
+      "a_days": 18,
+      "b": "Birch",
+      "b_cost": 4175,
+      "b_days": 26,
+      "budget": 8700,
+      "project": "Brim283"
+    },
+    {
+      "a": "Iris",
+      "a_cost": 4060,
+      "a_days": 5,
+      "b": "Flint",
+      "b_cost": 5870,
+      "b_days": 8,
+      "budget": 9600,
+      "project": "Canto283"
+    },
+    {
+      "a": "Amber",
+      "a_cost": 2985,
+      "a_days": 13,
+      "b": "Slate",
+      "b_cost": 3110,
+      "b_days": 12,
+      "budget": 7350,
+      "project": "Dune283"
+    },
+    {
+      "a": "Garnet",
+      "a_cost": 5760,
+      "a_days": 21,
+      "b": "Pearl",
+      "b_cost": 4325,
+      "b_days": 19,
+      "budget": 11900,
+      "project": "Echo283"
+    },
+    {
+      "a": "Cedar",
+      "a_cost": 6995,
+      "a_days": 4,
+      "b": "Ruby",
+      "b_cost": 7590,
+      "b_days": 9,
+      "budget": 14800,
+      "project": "Fable283"
+    },
+    {
+      "a": "Opal",
+      "a_cost": 2140,
+      "a_days": 17,
+      "b": "Moss",
+      "b_cost": 1895,
+      "b_days": 16,
+      "budget": 6200,
+      "project": "Grove283"
+    },
+    {
+      "a": "Aspen",
+      "a_cost": 4725,
+      "a_days": 22,
+      "b": "Onyx",
+      "b_cost": 5930,
+      "b_days": 14,
+      "budget": 10750,
+      "project": "Harbor283"
+    }
+  ],
+  "cases_sha256": "c9a28de0e7fb198015b4b8845096d31f4af43f5c9679df7a8019a55ee4767b11",
+  "schema": "v13.run13t.c3_verbatim_heldout.fixture.v1",
+  "seed": 283
+}

@@ -1,0 +1,7 @@
+# Run100 first CI RED retained — 2026-10-31
+
+Actions **41204997472**, exact HEAD `3bdb66be49df41b03c600672c7262e846e9ea873`, workflow FAILURE. Original artifact **13044352026**, ZIP SHA256 `9e36237b872f86b4574ca490ab95702dd05dd48f70e04daac7b737499ad38d1b`, 5304 bytes, CRC PASS, 20/20 inner SHA256SUMS PASS, private Library original ZIP re-materialized byte-identical at `/V13-Checkpoints/2026-10-31/Run100-B2-Prior-Span/RUN100_ORIGINAL_SOURCE_HANDOFF_RED_41204997472_SHA9E36237B.zip`.
+
+New strict span candidate **9/9 PASS**; original Run87 frozen fixture **12/12 PASS**, original synthetic verifier **16/16 PASS**; compile, privacy CLEAN, diff all exit0. Added broad `test_source_handoff_candidate.py` suite **11/11 ERROR**: original Run87 parent source does not match the frozen or fully reviewed integrated SourceHandoff snapshot (`Runtime is neither exact frozen baseline nor complete reviewed candidate`). This is a known **branch-lineage incompatibility**, not evidence that the new candidate failed. The Run94/Run97 integration branch separately passed these tests; this Run87 child must not edit frozen Runtime or relax source checks to make them pass.
+
+Next: keep the failed original ZIP and all 11 errors; scope Run100 CI to the 9 new Store-backed tests and 12+16 original Run87 tests. Run `test_source_handoff_candidate.py` only in its compatible Run94/Run97 integration chain. Do not reclassify the original RED as GREEN or alter the registered Run87 scorer, seed or native results. No gate promotion.

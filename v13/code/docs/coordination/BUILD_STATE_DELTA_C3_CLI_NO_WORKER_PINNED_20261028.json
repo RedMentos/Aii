@@ -1,0 +1,40 @@
+{
+  "owner_branch": "assistant/v13-c3-cli-no-worker-pinned-20261028",
+  "base_sha": "4192179c88553884608a91d244ed4f6566c9129f",
+  "prereg_commit": "9d0695c449efa651c877ca619ace9040167e2be4",
+  "source_ci_sha": "4ee33a8d01418845f38b1344753e59a20f35d928",
+  "status": "SCOPED_SOFTWARE_GREEN_NATIVE_PENDING",
+  "cli_blob": "bd8d419820cb42cfaa2b3bd79f7322f77fbda9bf",
+  "existing_tests_blob": "5a0b3a129612787ddd2bd8a78ec91a98081f62ca",
+  "new_tests_blob": "be0770b06657f8f0869b26b21cc9b4715af07a65",
+  "software_run": 40663560689,
+  "software_conclusion": "success",
+  "focused_tests": 33,
+  "full_tests": 2302,
+  "skipped": 1,
+  "artifact_id": 12804099540,
+  "artifact_sha256": "5f97be3d60ed4306b83dede3c3fb4d75e80072b6b6bcdd2dfc30ff0db0a8aad0",
+  "artifact_crc": "CLEAN",
+  "internal_sha256_verified": 16,
+  "stage_exits_all_zero": true,
+  "privacy": "CLEAN",
+  "diff": "CLEAN",
+  "actual_change": "Existing-home BudgetContext uses Store/Memory/ModelManager/RunnerPool without coordinator/sleep worker; canonical C3 ID/revision/size/SHA256 plus deep actual hash required for native.",
+  "caveats": [
+    "Store initialization still performs lock/WAL/operational recovery and Memory may write key SourceRefs; not strictly read-only.",
+    "Native CLI model execution is not established by fake-runner software tests.",
+    "No source-consumer HMAC/live-render integration in this branch; separate #889/live candidate requires cross-branch integration."
+  ],
+  "gates": {
+    "stage11": "FAIL_ORIGINAL",
+    "step2": "UTILITY_FAIL",
+    "b3_l1": "FAIL_ORIGINAL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL_ORIGINAL",
+    "jepa_weight": 0,
+    "age": "RECORD_ONLY",
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "next_command": "Execute preregistered actual Linux-native 2-case CLI proof on child assistant/v13-c3-cli-native-two-turn-20261028 after source pin and exclusive native group; audit ZIP and preserve failures."
+}

@@ -1,0 +1,33 @@
+name: V13 inverse candidate exact source export
+on:
+  push:
+    branches:
+      - codex/v13-worldmodel-inverse-heldout-baseline-20261029-auto10z
+    paths:
+      - .github/workflows/v13-inverse-exact-source-export-20261029.yml
+      - v13/code/v13/world_model.py
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Pack exact runnable focused source and hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/inverse-export"
+          mkdir -p "$e"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          git archive --format=tar HEAD v13/code/v13/__init__.py v13/code/v13/common.py v13/code/v13/world_model.py v13/code/tests/test_worldmodel_inverse_heldout_baseline_20261029.py > "$e/EXACT_SOURCE.tar"
+          sha256sum "$e/EXACT_SOURCE.tar" > "$e/EXACT_SOURCE_SHA256.txt"
+          git hash-object v13/code/v13/world_model.py v13/code/tests/test_worldmodel_inverse_heldout_baseline_20261029.py > "$e/SOURCE_BLOBS.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - name: Export raw
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v13-inverse-source-${{ github.sha }}
+          path: ${{ runner.temp }}/inverse-export/
+          if-no-files-found: error

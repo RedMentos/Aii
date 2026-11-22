@@ -1,0 +1,125 @@
+name: V13 Run11 frozen C2 Needle native 96-route benchmark vs scaffold
+on:
+  push:
+    branches:
+      - codex/v13-run11-c2-route96-native-eval-20261028
+    paths:
+      - '.github/workflows/run11-c2-route96-native-20261028.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v13-run11-c2-route96-native
+  cancel-in-progress: false
+jobs:
+  c2-route96:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V13_NO_AUTOSTART: "1"
+      NEEDLE_TELEMETRY: "0"
+      DO_NOT_TRACK: "1"
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Bootstrap exact C2 worker and score 96 registered native route calls serially
+        shell: bash
+        run: |
+          set +e
+          e="$RUNNER_TEMP/v13-c2-route96-native"
+          mkdir -p "$e/bench"
+          git rev-parse HEAD > "$e/HEAD.txt"
+          for p in v13/code/specs/models.json v13/code/specs/control_tools.json v13/code/specs/c2-benchmark.json v13/code/scripts/c2_benchmark.py; do
+            git hash-object "$p"
+            echo "$p"
+          done > "$e/SOURCE_BLOBS_RAW.log"
+          python3 -m venv "$RUNNER_TEMP/v13-c2-route96-venv"
+          py="$RUNNER_TEMP/v13-c2-route96-venv/bin/python"
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'prompt-toolkit==3.0.52' > "$e/INSTALL_RAW.log" 2>&1
+          echo "$?" > "$e/INSTALL_EXIT.txt"
+          export V13_HOME="$RUNNER_TEMP/v13-c2-route96-home"
+          if [ "$(cat "$e/INSTALL_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 15m env PYTHONPATH=v13/code "$py" -m v13.bootstrap --home "$V13_HOME" > "$e/BOOTSTRAP_RAW.log" 2>&1
+            echo "$?" > "$e/BOOTSTRAP_EXIT.txt"
+          else
+            echo SKIPPED_INSTALL_RED > "$e/BOOTSTRAP_RAW.log"
+            echo SKIPPED_RED > "$e/BOOTSTRAP_EXIT.txt"
+          fi
+          if [ "$(cat "$e/BOOTSTRAP_EXIT.txt")" = 0 ]; then
+            timeout --signal=TERM --kill-after=10s 12m env PYTHONPATH=v13/code "$py" v13/code/scripts/c2_benchmark.py \
+              --home "$V13_HOME" --cache "$RUNNER_TEMP/v13-c2-route96-cache" \
+              --out "$e/bench" --only needle scaffold > "$e/BENCH_RAW.log" 2>&1
+            echo "$?" > "$e/BENCH_EXIT.txt"
+          else
+            echo SKIPPED_BOOTSTRAP_RED > "$e/BENCH_RAW.log"
+            echo SKIPPED_RED > "$e/BENCH_EXIT.txt"
+          fi
+          if [ "$(cat "$e/BENCH_EXIT.txt")" = 0 ]; then
+            PYTHONPATH=v13/code "$py" - "$e" "$V13_HOME" > "$e/REPORT_CHECK_RAW.log" 2>&1 <<'PY'
+          import hashlib,json,math,pathlib,sys
+          from v13.models import ModelManager
+          from scripts.step2_current_catalog_artifact_probe import git_blob_sha
+          from v13.common import APP
+          e=pathlib.Path(sys.argv[1]);home=pathlib.Path(sys.argv[2]);b=e/'bench'
+          assert git_blob_sha((APP/'specs/models.json').read_bytes())=='7af05962af41d0bc3f7dd18ef01d4eba55eabf99'
+          assert git_blob_sha((APP/'specs/control_tools.json').read_bytes())=='954a3f468f10195fbce12d27f68585ee7edee2c9'
+          assert git_blob_sha((APP/'specs/c2-benchmark.json').read_bytes())=='758c5a7dea93bfb178bc3778428ee262178b6a58'
+          spec=json.loads((APP/'specs/c2-benchmark.json').read_text())
+          assert spec['items_sha256']=='54f3da390fb79c3f966edd61d3390d94dc59d850987174c644ef45ef531a54e6'
+          items=spec['items'];assert len(items)==96
+          roles=('simple','detail','gist','both')
+          assert all(sum(x['label']==r for x in items)==24 for r in roles)
+          verified=ModelManager(home).verify(deep=True)
+          assert all(verified[r]['ok'] and verified[r]['hash_checked'] for r in ('needle','body','gist','language'))
+          j=json.loads((b/'report.json').read_text())
+          assert j['n']==96 and j['corpus_sha256']==spec['items_sha256']
+          assert set(j['candidates'])=={'needle','scaffold'}
+          for name in ('needle','scaffold'):
+              summary=j['candidates'][name]
+              assert summary['n']==96 and 'accuracy' in summary and 'macro_f1' in summary
+              rows=json.loads((b/(name+'.rows.json')).read_text())
+              assert len(rows)==96
+              assert [(r['id'],r['label']) for r in rows]==[(x['id'],x['label']) for x in items]
+              assert all(r['pred'] in (*roles,None) for r in rows)
+              assert all(math.isfinite(r['latency_s']) and r['latency_s']>=0 for r in rows)
+          needle=j['candidates']['needle']
+          assert needle['valid_rate']>0 and needle['validated_rate']>0
+          assert all(r['pred'] is None for r in json.loads((b/'needle.rows.json').read_text()) if not r['validated'])
+          print('PINNED_C2_NEEDLE_96_ROUTE_LINUX_NATIVE_BENCHMARK_NO_PROMOTION')
+          print('needle_accuracy',needle['accuracy'],'needle_macro_f1',needle['macro_f1'],'scaffold_accuracy',j['candidates']['scaffold']['accuracy'])
+          PY
+            echo "$?" > "$e/REPORT_CHECK_EXIT.txt"
+          else
+            echo SKIPPED_BENCH_RED > "$e/REPORT_CHECK_RAW.log"
+            echo SKIPPED_RED > "$e/REPORT_CHECK_EXIT.txt"
+          fi
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base af71f1ebc26d934a180db39f77a2978ced7b6261 --head HEAD > "$e/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$e/PRIVACY_EXIT.txt"
+          git diff --check af71f1ebc26d934a180db39f77a2978ced7b6261 HEAD > "$e/DIFF_RAW.log" 2>&1
+          echo "$?" > "$e/DIFF_EXIT.txt"
+          (cd "$e" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-c2-route96-native-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/v13-c2-route96-native/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce registered native route96 evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          e="$RUNNER_TEMP/v13-c2-route96-native"
+          for name in INSTALL BOOTSTRAP BENCH REPORT_CHECK PRIVACY DIFF; do
+            if [ "$(cat "$e/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name RED; raw retained, no native benchmark PASS"
+              tail -90 "$e/${name}_RAW.log" || true
+              exit 1
+            fi
+          done
+          echo 'C2_ROUTE96_NATIVE_AUTHOR_LABELLED_LINUX_ONLY_NO_REDM I_OR_GATE_PROMOTION'

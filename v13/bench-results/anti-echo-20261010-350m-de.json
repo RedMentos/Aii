@@ -1,0 +1,269 @@
+{
+  "proof_kind": "C3_ANTI_ECHO_COMPARISON",
+  "model": "LFM2.5-350M-QAD-Q4_0.gguf",
+  "lang": "de",
+  "modes": {
+    "legacy": {
+      "rows": [
+        {
+          "id": "de_greeting",
+          "output": "Hallo! Wie kann ich dir helfen?",
+          "metrics": {
+            "tokens": 6,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": true
+          },
+          "checks": {
+            "must_any": true
+          }
+        },
+        {
+          "id": "de_rewrite",
+          "output": "Test läuft lokal ohne Cloud.",
+          "metrics": {
+            "tokens": 5,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.3333333333333333,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": true
+          },
+          "checks": {
+            "must_all": true,
+            "forbid": true
+          }
+        },
+        {
+          "id": "de_grounded_report",
+          "output": "120 Euro",
+          "metrics": {
+            "tokens": 2,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": true
+          },
+          "checks": {
+            "must_all": true
+          }
+        },
+        {
+          "id": "de_abstain",
+          "output": "Es wird nicht belegt, wer Projekt Aurora leitet.",
+          "metrics": {
+            "tokens": 8,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {
+            "must_any": true
+          }
+        },
+        {
+          "id": "open_memory",
+          "output": "Ein lokaler Assistant kann Korrekturen durch wiederholte Gespräche mit dem Kunden oder durch die Analyse von Feedback und Bestellungen lernen. Unsicherheiten werden als unbestimmte Faktoren betrachtet, die sich im Laufe der Zeit entwickeln können.",
+          "metrics": {
+            "tokens": 34,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.9411764705882353,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        },
+        {
+          "id": "open_plan",
+          "output": "1. Wähle eine geeignete Standorte für die Pflanzen.\n2. Stelle sicher, dass der Platz gut belüftet ist.\n3. Bereite den Boden vor und füge nötige Kompost oder Dünger hinzu.",
+          "metrics": {
+            "tokens": 29,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        },
+        {
+          "id": "open_compare",
+          "output": "Train und Bus vergleichen: Bahn ist schneller, Bus langsamer.",
+          "metrics": {
+            "tokens": 9,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.8888888888888888,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        },
+        {
+          "id": "open_why",
+          "output": "Die Wärme entsteht durch die thermische Energie, die beim Betrieb des Geräts und der Software verbraucht wird.",
+          "metrics": {
+            "tokens": 17,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.8823529411764706,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        }
+      ],
+      "mean_query_echo": 0.041666666666666664,
+      "mean_repetition_rate": 0.0,
+      "mean_type_token_ratio": 0.9640522875816994,
+      "below_min_new": 3,
+      "checks_passed": 4,
+      "checked": 4
+    },
+    "anti_echo": {
+      "rows": [
+        {
+          "id": "de_greeting",
+          "output": "Hallo! Wie kann ich dir helfen?",
+          "metrics": {
+            "tokens": 6,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": true
+          },
+          "checks": {
+            "must_any": true
+          }
+        },
+        {
+          "id": "de_rewrite",
+          "output": "Test läuft lokal, keine Cloud",
+          "metrics": {
+            "tokens": 5,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.3333333333333333,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": true
+          },
+          "checks": {
+            "must_all": true,
+            "forbid": true
+          }
+        },
+        {
+          "id": "de_grounded_report",
+          "output": "120 Euro",
+          "metrics": {
+            "tokens": 2,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": true
+          },
+          "checks": {
+            "must_all": true
+          }
+        },
+        {
+          "id": "de_abstain",
+          "output": "Es handelt sich um einen Projekttransfer, daher kann der Leiter nicht angegeben werden.",
+          "metrics": {
+            "tokens": 13,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 1.0,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {
+            "must_any": true
+          }
+        },
+        {
+          "id": "open_memory",
+          "output": "Ein lokales Assistent kann Korrekturen durch direkte Rückmeldungen von Kunden oder durch das Erkennen wiederkehrender Probleme in der Arbeitsumgebung lernen. Es ist unsicher, ob diese Korrekturen tatsächlich implementiert wurden und ob sie die erwarteten Auswirkungen haben.",
+          "metrics": {
+            "tokens": 36,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.9166666666666666,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        },
+        {
+          "id": "open_plan",
+          "output": "1. **Standort bewerten**  \n2. **Bodenanalyse durchführen**  \n3. **Lichtverhältnisse bestimmen**  \n\nUnsicherheit: Das Licht kann variieren, besonders in der Nähe von Fenstern oder durch Schatten von Gebäuden.",
+          "metrics": {
+            "tokens": 25,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.96,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        },
+        {
+          "id": "open_compare",
+          "output": "Train vs. Bus: Kosten, Effizienz und Wahlmöglichkeiten. Train ist teurer, Bus günstiger.",
+          "metrics": {
+            "tokens": 12,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.8333333333333334,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        },
+        {
+          "id": "open_why",
+          "output": "Wärme entsteht durch die Verarbeitung von Daten, die im Hintergrund laufen, ohne dass ein Problem besteht.",
+          "metrics": {
+            "tokens": 16,
+            "repetition_rate": 0.0,
+            "type_token_ratio": 0.9375,
+            "query_echo": 0.0,
+            "self_citation": 0.0,
+            "abstention": false,
+            "below_min_new": false
+          },
+          "checks": {}
+        }
+      ],
+      "mean_query_echo": 0.041666666666666664,
+      "mean_repetition_rate": 0.0,
+      "mean_type_token_ratio": 0.9559375,
+      "below_min_new": 3,
+      "checks_passed": 4,
+      "checked": 4
+    }
+  }
+}

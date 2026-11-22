@@ -1,0 +1,113 @@
+name: V13 staged context and integrated regression
+on:
+  push:
+    # Phone updates require a result for the exact release SHA, including
+    # documentation-only checkpoints and after the draft PR is closed.
+    branches: ['codex/v13-integrated-continuation-20261110', 'gpt6/v13-private-remote-bridge-20261111']
+  pull_request:
+    paths:
+      - '.github/workflows/v13-integrated-context-stage-20261111.yml'
+      - 'v13/code/v13/**'
+      - 'v13/code/scripts/**'
+      - 'v13/code/candidates/**'
+      - 'v13/code/specs/**'
+      - 'v13/code/tests/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  staged-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 64
+      - name: Verify the history needed by the phone migration test
+        env:
+          V13_TEST_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          if ! git merge-base --is-ancestor 5d9a86176edb45565af482644ee80dbd622d5614 HEAD; then
+            if [ "$(git rev-parse --is-shallow-repository)" != true ]; then
+              echo 'The reviewed phone baseline is not an ancestor of this revision.' >&2
+              exit 1
+            fi
+            git fetch --no-tags --unshallow origin "$V13_TEST_HEAD"
+          fi
+          git merge-base --is-ancestor 5d9a86176edb45565af482644ee80dbd622d5614 HEAD
+          git merge-base --is-ancestor cbe1af572025c2984b5b0e47fe3f7f1b6080570d HEAD
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.2.6
+      - name: Stage, source recall, SQLite turn, revocation and JEPA restart
+        working-directory: v13/code
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: >-
+          python -m pytest -q -s
+          tests/test_stage_integrated_candidate.py
+          tests/test_integrated_stage_real_smoke.py
+          tests/test_pinned_stage_runtime_e2e_20261111.py
+          tests/test_context_source_recall_stage_20261111.py
+          tests/test_runtime_jepa_utility_integration_20261111.py
+          tests/test_world_jepa_training_resume_stage_20261111.py
+          tests/test_termux_probe_recovery_candidate_20261112.py
+          tests/test_termux_chat_recovery_candidate_20261112.py
+          tests/test_termux_idle_recovery_candidate_20261112.py
+          tests/test_termux_runtime_recovery_stage.py
+          tests/test_activate_termux_recovery.py
+          tests/test_unified_brain_delivery.py
+          tests/test_enlightened_space.py
+          tests/test_native_prompt_admission.py
+          tests/test_native_stream_integrity.py
+          tests/test_prompt_source_integrity_20261116.py
+          tests/test_context_offer_budget_20261116.py
+          tests/test_context_stage_composition_20261116.py
+          tests/test_postcommit_observer_20261116.py
+          tests/test_postcommit_stage_composition_20261116.py
+          tests/test_latewatch.py
+          tests/test_record_only_online_guard_20261116.py
+          tests/test_record_only_controller_guard_20261116.py
+          tests/test_runtime_deploy_integrated_20261116.py
+          tests/test_two_checkout_migration_20261116.py
+          tests/test_termux_anonymous_linkat.py
+          tests/test_termux_named_blob_fallback.py
+          tests/test_termux_chat_session_detection.py
+          tests/test_audio_pcm_a5_bridge.py
+          tests/test_exact_arithmetic.py
+          tests/test_latent_bridge.py
+          tests/test_numeric_sidecar.py
+          tests/test_measured_prefill.py
+          tests/test_native_prefill_profile.py
+          tests/test_prefill_route_gate.py
+          tests/test_prefill_timing_evidence.py
+          tests/test_mobile_prefill_admission.py
+          tests/test_native_turn_budget.py
+          tests/test_phone_offer_delivery_audit.py
+          tests/test_phone_runtime_diagnostics.py
+          tests/test_native_sampling_policy.py
+          tests/test_arithmetic_stage_20261116.py
+          tests/test_observer_fair_budget_stage_20261116.py
+      - name: Check recovery shell syntax
+        run: bash -n v13/code/scripts/termux_runtime_recovery.sh
+  integrated-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check torch==2.5.1+cpu --index-url https://download.pytorch.org/whl/cpu
+      - run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.2.6 pillow==13.0.0 transformers==4.44.2 peft==0.13.2
+      - name: Exercise the shared staged organ and memory paths
+        working-directory: v13/code
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python -m pytest -q -s tests/test_staged_integrated_regression_20261111.py

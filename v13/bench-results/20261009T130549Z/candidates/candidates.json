@@ -1,0 +1,1129 @@
+{
+ "purpose": "cloud_comparison_only_no_production_promotion",
+ "runner": "llama-b10964",
+ "platform": "x86_64",
+ "cpus": 4,
+ "langs": [
+  "en",
+  "de"
+ ],
+ "created_utc": "2026-10-09T13:10:11Z",
+ "results": [
+  {
+   "id": "lfm25_230m_c3",
+   "role": "C3",
+   "file": "LFM2.5-230M-QAD-Q4_0.gguf",
+   "size_mb": 149.1,
+   "load": "OK",
+   "en": {
+    "fixtures": [
+     {
+      "id": "en_greeting",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Hello! I'm here to help with any questions or tasks you'd like to discuss. What would you like to explore or discuss?",
+      "seconds": 0.24,
+      "prompt_tps": 804.0543833146533,
+      "gen_tps": 141.12481706042232
+     },
+     {
+      "id": "en_rewrite",
+      "pass": true,
+      "checks": {
+       "must_all": true,
+       "forbid": true
+      },
+      "text": "The test runs locally and uses no cloud.",
+      "seconds": 0.103,
+      "prompt_tps": 957.6459321812563,
+      "gen_tps": 172.5360887985737
+     },
+     {
+      "id": "en_grounded_report",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "The budget is 120 euros.",
+      "seconds": 0.094,
+      "prompt_tps": 1008.5497513007999,
+      "gen_tps": 148.74628134296643
+     },
+     {
+      "id": "en_abstain",
+      "pass": false,
+      "checks": {
+       "must_any": false
+      },
+      "text": "Project Aurora is led by the project manager.",
+      "seconds": 0.094,
+      "prompt_tps": 1218.3840617314593,
+      "gen_tps": 193.81096970088507
+     },
+     {
+      "id": "en_arith",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "17 plus 25 equals 42.",
+      "seconds": 0.09,
+      "prompt_tps": 1086.9143278599433,
+      "gen_tps": 138.9854065323141
+     },
+     {
+      "id": "en_fact",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "The capital of France is Paris.",
+      "seconds": 0.086,
+      "prompt_tps": 744.9483192103548,
+      "gen_tps": 144.28527259610428
+     },
+     {
+      "id": "en_list",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Sure! Here are three colors separated by commas:\n\n- Red\n- Blue\n- Green",
+      "seconds": 0.132,
+      "prompt_tps": 940.2234838896322,
+      "gen_tps": 210.61077123658612
+     },
+     {
+      "id": "en_grounded_date",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "The meeting is on Tuesday at 2 pm in room B.",
+      "seconds": 0.128,
+      "prompt_tps": 1158.6292129045546,
+      "gen_tps": 154.97591912641266
+     }
+    ],
+    "passed": 7,
+    "total": 8,
+    "mean_gen_tps": 163.1
+   },
+   "de": {
+    "fixtures": [
+     {
+      "id": "de_greeting",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Hallo! Ich freue mich, dir zu fragen. Was kann ich dir heute oder morgen tun?",
+      "seconds": 0.184,
+      "prompt_tps": 872.6560670880957,
+      "gen_tps": 173.6858400730991
+     },
+     {
+      "id": "de_rewrite",
+      "pass": true,
+      "checks": {
+       "must_all": true,
+       "forbid": true
+      },
+      "text": "Der Test läuft lokal und verwendet keine Cloud.",
+      "seconds": 0.118,
+      "prompt_tps": 988.3416031304207,
+      "gen_tps": 164.40608302507195
+     },
+     {
+      "id": "grounded_report",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Das Budget des Projekts Aurora beträgt 120 Euro.",
+      "seconds": 0.121,
+      "prompt_tps": 1019.6382323551605,
+      "gen_tps": 176.3357432551578
+     },
+     {
+      "id": "abstain",
+      "pass": false,
+      "checks": {
+       "must_any": false
+      },
+      "text": "Projekt Aurora wird von Projekt Aurora leiten.",
+      "seconds": 0.1,
+      "prompt_tps": 1248.0096397985972,
+      "gen_tps": 202.02428331885494
+     },
+     {
+      "id": "de_arith",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "17 plus 25 = 42",
+      "seconds": 0.071,
+      "prompt_tps": 1020.4775835090821,
+      "gen_tps": 184.61376163726032
+     },
+     {
+      "id": "de_fact",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Die Hauptstadt von Frankreich ist Paris.",
+      "seconds": 0.082,
+      "prompt_tps": 1017.589765954354,
+      "gen_tps": 135.58534128767334
+     },
+     {
+      "id": "de_list",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Die drei Farben sind Rot, Grün und Blau.",
+      "seconds": 0.1,
+      "prompt_tps": 1171.583768239429,
+      "gen_tps": 160.98110667193515
+     },
+     {
+      "id": "grounded_date",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Das Treffen ist am Dienstag um 14 Uhr im Raum B.",
+      "seconds": 0.132,
+      "prompt_tps": 1353.4173788816763,
+      "gen_tps": 173.4023860168316
+     }
+    ],
+    "passed": 7,
+    "total": 8,
+    "mean_gen_tps": 171.4
+   }
+  },
+  {
+   "id": "lfm25_1p2b_body",
+   "role": "B1/B2",
+   "file": "LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf",
+   "size_mb": 695.8,
+   "load": "OK",
+   "en": {
+    "fixtures": [
+     {
+      "id": "en_greeting",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Hello! You can ask me anything. What would you like to know?",
+      "seconds": 0.57,
+      "prompt_tps": 190.8419019419609,
+      "gen_tps": 38.138049569294296
+     },
+     {
+      "id": "en_rewrite",
+      "pass": true,
+      "checks": {
+       "must_all": true,
+       "forbid": true
+      },
+      "text": "The test runs on your local machine without using the cloud.",
+      "seconds": 0.584,
+      "prompt_tps": 173.00357802854558,
+      "gen_tps": 37.38841893723419
+     },
+     {
+      "id": "en_grounded_report",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "The budget is 120 euros.",
+      "seconds": 0.446,
+      "prompt_tps": 180.9292361085411,
+      "gen_tps": 36.50872297702558
+     },
+     {
+      "id": "en_abstain",
+      "pass": false,
+      "checks": {
+       "must_any": false
+      },
+      "text": "I don't have access to current organizational details about Project Aurora's leadership. You may need to check the official project documentation or website for this information.",
+      "seconds": 1.027,
+      "prompt_tps": 205.94808582695785,
+      "gen_tps": 39.63954440950292
+     },
+     {
+      "id": "en_arith",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "42",
+      "seconds": 0.287,
+      "prompt_tps": 128.56362292289398,
+      "gen_tps": 31.32537668765467
+     },
+     {
+      "id": "en_fact",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "The capital of France is Paris.",
+      "seconds": 0.331,
+      "prompt_tps": 167.5872326459929,
+      "gen_tps": 40.4584520596242
+     },
+     {
+      "id": "en_list",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Blue, Green, Red",
+      "seconds": 0.295,
+      "prompt_tps": 170.99750738248852,
+      "gen_tps": 37.00414446417999
+     },
+     {
+      "id": "en_grounded_date",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "The meeting is on Tuesday at 2 pm.",
+      "seconds": 0.536,
+      "prompt_tps": 167.0564650851988,
+      "gen_tps": 39.76870521049575
+     }
+    ],
+    "passed": 7,
+    "total": 8,
+    "mean_gen_tps": 37.5
+   },
+   "de": {
+    "fixtures": [
+     {
+      "id": "de_greeting",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Hallo! Wie kann ich dir helfen?",
+      "seconds": 0.487,
+      "prompt_tps": 167.12115468489512,
+      "gen_tps": 38.949573285786
+     },
+     {
+      "id": "de_rewrite",
+      "pass": true,
+      "checks": {
+       "must_all": true,
+       "forbid": true
+      },
+      "text": "Der Test läuft lokal ohne Cloud.",
+      "seconds": 0.417,
+      "prompt_tps": 221.42489177293555,
+      "gen_tps": 41.92718296498556
+     },
+     {
+      "id": "grounded_report",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Das Budget beträgt 120 Euro.",
+      "seconds": 0.382,
+      "prompt_tps": 238.66576291897778,
+      "gen_tps": 42.67876304750756
+     },
+     {
+      "id": "abstain",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Der Text enthält keine Informationen darüber, wer Projekt Aurora leitet.",
+      "seconds": 0.569,
+      "prompt_tps": 246.0222862257212,
+      "gen_tps": 40.2151821593078
+     },
+     {
+      "id": "de_arith",
+      "pass": false,
+      "checks": {
+       "must_all": false
+      },
+      "text": "22",
+      "seconds": 0.159,
+      "prompt_tps": 231.9073607396299,
+      "gen_tps": 49.41199723292816
+     },
+     {
+      "id": "de_fact",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Die Hauptstadt von Frankreich ist Paris.",
+      "seconds": 0.295,
+      "prompt_tps": 228.39430645621763,
+      "gen_tps": 42.134916001035315
+     },
+     {
+      "id": "de_list",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Blau, Rot, Grün",
+      "seconds": 0.315,
+      "prompt_tps": 215.24312689560708,
+      "gen_tps": 38.86690029992292
+     },
+     {
+      "id": "grounded_date",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Das Treffen ist am Dienstag um 14 Uhr im Raum B.",
+      "seconds": 0.625,
+      "prompt_tps": 198.5483906549891,
+      "gen_tps": 44.07642264000141
+     }
+    ],
+    "passed": 7,
+    "total": 8,
+    "mean_gen_tps": 42.3
+   }
+  },
+  {
+   "id": "lfm25_350m",
+   "role": "C3",
+   "file": "LFM2.5-350M-QAD-Q4_0.gguf",
+   "size_mb": 219.3,
+   "load": "OK",
+   "en": {
+    "fixtures": [
+     {
+      "id": "en_greeting",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Hello! What would you like to ask first?",
+      "seconds": 0.178,
+      "prompt_tps": 605.5934816119798,
+      "gen_tps": 87.00494188069882
+     },
+     {
+      "id": "en_rewrite",
+      "pass": true,
+      "checks": {
+       "must_all": true,
+       "forbid": true
+      },
+      "text": "The test runs locally without cloud access.",
+      "seconds": 0.171,
+      "prompt_tps": 561.5181408644827,
+      "gen_tps": 93.66584709050463
+     },
+     {
+      "id": "en_grounded_report",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "120 euros",
+      "seconds": 0.1,
+      "prompt_tps": 613.1378724115827,
+      "gen_tps": 87.26764988218868
+     },
+     {
+      "id": "en_abstain",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "The information provided does not specify who leads Project Aurora.",
+      "seconds": 0.184,
+      "prompt_tps": 739.8983324883876,
+      "gen_tps": 105.11027022894928
+     },
+     {
+      "id": "en_arith",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "42",
+      "seconds": 0.057,
+      "prompt_tps": 702.3176482391893,
+      "gen_tps": 88.4251481121231
+     },
+     {
+      "id": "en_fact",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Paris",
+      "seconds": 0.065,
+      "prompt_tps": 571.8370264474624,
+      "gen_tps": 100.02000400080017
+     },
+     {
+      "id": "en_list",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Blue, Green, Yellow",
+      "seconds": 0.089,
+      "prompt_tps": 646.4445549477872,
+      "gen_tps": 112.59993244004053
+     },
+     {
+      "id": "en_grounded_date",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Tuesday at 2 pm",
+      "seconds": 0.139,
+      "prompt_tps": 576.1696243374049,
+      "gen_tps": 107.0186390796397
+     }
+    ],
+    "passed": 8,
+    "total": 8,
+    "mean_gen_tps": 97.6
+   },
+   "de": {
+    "fixtures": [
+     {
+      "id": "de_greeting",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Hallo! Was kann ich dir als Erstes sagen?",
+      "seconds": 0.193,
+      "prompt_tps": 559.765171684074,
+      "gen_tps": 109.47207093790196
+     },
+     {
+      "id": "de_rewrite",
+      "pass": true,
+      "checks": {
+       "must_all": true,
+       "forbid": true
+      },
+      "text": "Test läuft lokal ohne Cloud.",
+      "seconds": 0.15,
+      "prompt_tps": 666.5125073112341,
+      "gen_tps": 100.00571461226357
+     },
+     {
+      "id": "grounded_report",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "120 Euro",
+      "seconds": 0.103,
+      "prompt_tps": 642.1865166518965,
+      "gen_tps": 91.66322929556809
+     },
+     {
+      "id": "abstain",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Es wird nicht belegt, wer Projekt Aurora leitet.",
+      "seconds": 0.202,
+      "prompt_tps": 694.5608698776136,
+      "gen_tps": 105.5529655985293
+     },
+     {
+      "id": "de_arith",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "42",
+      "seconds": 0.058,
+      "prompt_tps": 676.223965377333,
+      "gen_tps": 104.29703796412183
+     },
+     {
+      "id": "de_fact",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Die Hauptstadt von Frankreich ist Paris.",
+      "seconds": 0.155,
+      "prompt_tps": 492.3942671238899,
+      "gen_tps": 74.64516885803555
+     },
+     {
+      "id": "de_list",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Rot, Grün, Blau",
+      "seconds": 0.104,
+      "prompt_tps": 713.6678200692041,
+      "gen_tps": 111.9716338527573
+     },
+     {
+      "id": "grounded_date",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Der Treffen ist am Dienstag um 14 Uhr im Raum B.",
+      "seconds": 0.25,
+      "prompt_tps": 805.6575060424314,
+      "gen_tps": 83.60458376064565
+     }
+    ],
+    "passed": 8,
+    "total": 8,
+    "mean_gen_tps": 97.7
+   }
+  },
+  {
+   "id": "gemma3_270m_it",
+   "role": "C3",
+   "file": "gemma-3-270m-it-Q4_0.gguf",
+   "size_mb": 241.6,
+   "load": "OK",
+   "en": {
+    "fixtures": [
+     {
+      "id": "en_greeting",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Hello!\n\nI'm ready to help. What could I ask you first?",
+      "seconds": 0.2,
+      "prompt_tps": 513.3658465036118,
+      "gen_tps": 123.4379651614496
+     },
+     {
+      "id": "en_rewrite",
+      "pass": true,
+      "checks": {
+       "must_all": true,
+       "forbid": true
+      },
+      "text": "The test runs locally, but does not require cloud services.",
+      "seconds": 0.173,
+      "prompt_tps": 648.1676126410202,
+      "gen_tps": 115.76753878212548
+     },
+     {
+      "id": "en_grounded_report",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Project Aurora has a budget of 120 euros.",
+      "seconds": 0.177,
+      "prompt_tps": 663.8427008914458,
+      "gen_tps": 110.61946902654867
+     },
+     {
+      "id": "en_abstain",
+      "pass": false,
+      "checks": {
+       "must_any": false
+      },
+      "text": "Project Aurora has a budget of 120 euros.",
+      "seconds": 0.203,
+      "prompt_tps": 743.7709185570843,
+      "gen_tps": 105.65068632311231
+     },
+     {
+      "id": "en_arith",
+      "pass": false,
+      "checks": {
+       "must_all": false
+      },
+      "text": "17 + 25",
+      "seconds": 0.108,
+      "prompt_tps": 750.9311546317433,
+      "gen_tps": 116.91999331885754
+     },
+     {
+      "id": "en_fact",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Paris.",
+      "seconds": 0.047,
+      "prompt_tps": 764.9569208470891,
+      "gen_tps": 121.77301509985388
+     },
+     {
+      "id": "en_list",
+      "pass": false,
+      "checks": {
+       "must_any": false
+      },
+      "text": "Okay, I understand. I'm ready to answer your questions. Please provide me with your questions.",
+      "seconds": 0.23,
+      "prompt_tps": 799.6481548118828,
+      "gen_tps": 107.42622120593607
+     },
+     {
+      "id": "en_grounded_date",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "The meeting is on Tuesday at 2 pm in room B.",
+      "seconds": 0.192,
+      "prompt_tps": 536.6390297566343,
+      "gen_tps": 123.68230772158161
+     }
+    ],
+    "passed": 5,
+    "total": 8,
+    "mean_gen_tps": 115.7
+   },
+   "de": {
+    "fixtures": [
+     {
+      "id": "de_greeting",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Hallo! Was kann ich für dich als Erstes fragen?",
+      "seconds": 0.146,
+      "prompt_tps": 833.2702068025148,
+      "gen_tps": 129.43308309603935
+     },
+     {
+      "id": "de_rewrite",
+      "pass": true,
+      "checks": {
+       "must_all": true,
+       "forbid": true
+      },
+      "text": "Der Test läuft lokal und verwendet keine Cloud.",
+      "seconds": 0.156,
+      "prompt_tps": 655.1382646453874,
+      "gen_tps": 108.3919452741112
+     },
+     {
+      "id": "grounded_report",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "**Antwort:** 120 Euro\n\n**Erklärung:** Das Budget ist ein Ziel, das Projekt Aurora hat.",
+      "seconds": 0.352,
+      "prompt_tps": 592.295014421096,
+      "gen_tps": 92.92229466031327
+     },
+     {
+      "id": "abstain",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Ich habe keine Informationen darüber, wer leitet Projekt Aurora.",
+      "seconds": 0.231,
+      "prompt_tps": 561.8321858336568,
+      "gen_tps": 95.69606928395416
+     },
+     {
+      "id": "de_arith",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "17 + 25 = 42.",
+      "seconds": 0.148,
+      "prompt_tps": 753.6636427076064,
+      "gen_tps": 111.1818632058785
+     },
+     {
+      "id": "de_fact",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Die Hauptstadt von Frankreich ist Paris.",
+      "seconds": 0.101,
+      "prompt_tps": 765.2891462035004,
+      "gen_tps": 108.00802345317081
+     },
+     {
+      "id": "de_list",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Hier sind drei Farben, die durch Kommas getrennt sind:\n\n*   **Rot**\n*   **Gelb**\n*   **Grün**\n\n**Hinweise:** Die Farben sind in der Regel eine Mischung aus verschiedenen Farben, die in der Farbpalette von Farbenrezepten verwendet werden.",
+      "seconds": 0.57,
+      "prompt_tps": 711.5937063489972,
+      "gen_tps": 123.94172831973151
+     },
+     {
+      "id": "grounded_date",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Das Treffen ist am Dienstag um 14 Uhr im Raum B.",
+      "seconds": 0.211,
+      "prompt_tps": 727.9748057415056,
+      "gen_tps": 119.31572432101895
+     }
+    ],
+    "passed": 8,
+    "total": 8,
+    "mean_gen_tps": 111.1
+   }
+  },
+  {
+   "id": "qwen35_0p8b",
+   "role": "B2/C3",
+   "file": "Qwen3.5-0.8B-Q4_0.gguf",
+   "size_mb": 563.0,
+   "load": "OK",
+   "en": {
+    "fixtures": [
+     {
+      "id": "en_greeting",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Hello! How can I help you today?",
+      "seconds": 0.591,
+      "prompt_tps": 90.00136287778072,
+      "gen_tps": 45.983588968026076
+     },
+     {
+      "id": "en_rewrite",
+      "pass": true,
+      "checks": {
+       "must_all": true,
+       "forbid": true
+      },
+      "text": "The test executes entirely on local hardware without relying on cloud infrastructure.",
+      "seconds": 0.793,
+      "prompt_tps": 215.97753833601305,
+      "gen_tps": 44.38435485633125
+     },
+     {
+      "id": "en_grounded_report",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "The budget is 120 euros.",
+      "seconds": 0.741,
+      "prompt_tps": 232.6707756009079,
+      "gen_tps": 40.90276957197524
+     },
+     {
+      "id": "en_abstain",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "It is not supported in the text.",
+      "seconds": 0.732,
+      "prompt_tps": 241.14507123997615,
+      "gen_tps": 38.52952083724649
+     },
+     {
+      "id": "en_arith",
+      "pass": false,
+      "checks": {
+       "must_all": false
+      },
+      "text": "52",
+      "seconds": 0.455,
+      "prompt_tps": 229.1634838405022,
+      "gen_tps": 46.802237146935624
+     },
+     {
+      "id": "en_fact",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Paris.",
+      "seconds": 0.404,
+      "prompt_tps": 187.50130209237565,
+      "gen_tps": 47.88584015706556
+     },
+     {
+      "id": "en_list",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Red, blue, green",
+      "seconds": 0.479,
+      "prompt_tps": 216.37528128786568,
+      "gen_tps": 49.97850924102636
+     },
+     {
+      "id": "en_grounded_date",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Tuesday at 2 pm.",
+      "seconds": 0.544,
+      "prompt_tps": 281.26428295186867,
+      "gen_tps": 45.04166353877336
+     }
+    ],
+    "passed": 7,
+    "total": 8,
+    "mean_gen_tps": 44.9
+   },
+   "de": {
+    "fixtures": [
+     {
+      "id": "de_greeting",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Hallo! Wie kann ich dich heute unterstützen?",
+      "seconds": 0.68,
+      "prompt_tps": 230.8275718038625,
+      "gen_tps": 44.48288644507599
+     },
+     {
+      "id": "de_rewrite",
+      "pass": true,
+      "checks": {
+       "must_all": true,
+       "forbid": true
+      },
+      "text": "Der Test läuft lokal und verwendet keine Cloud.",
+      "seconds": 0.687,
+      "prompt_tps": 248.5127274018248,
+      "gen_tps": 43.510631097531494
+     },
+     {
+      "id": "grounded_report",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Das Budget beträgt 120 Euro.",
+      "seconds": 0.667,
+      "prompt_tps": 273.0977690013025,
+      "gen_tps": 45.351702452519284
+     },
+     {
+      "id": "abstain",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Es ist nicht belegt, wer Projekt Aurora leitet.",
+      "seconds": 0.823,
+      "prompt_tps": 233.57060533077043,
+      "gen_tps": 36.97056470857112
+     },
+     {
+      "id": "de_arith",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "42",
+      "seconds": 0.505,
+      "prompt_tps": 217.0111977778053,
+      "gen_tps": 41.692724619553886
+     },
+     {
+      "id": "de_fact",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Die Hauptstadt von Frankreich ist Paris.",
+      "seconds": 0.594,
+      "prompt_tps": 203.45479365746087,
+      "gen_tps": 40.378869160927096
+     },
+     {
+      "id": "de_list",
+      "pass": true,
+      "checks": {
+       "must_any": true
+      },
+      "text": "Grün, Rot, Blau.",
+      "seconds": 0.605,
+      "prompt_tps": 174.18188943804566,
+      "gen_tps": 43.69030129924033
+     },
+     {
+      "id": "grounded_date",
+      "pass": true,
+      "checks": {
+       "must_all": true
+      },
+      "text": "Das Treffen findet am Dienstag um 14 Uhr im Raum B statt.",
+      "seconds": 0.899,
+      "prompt_tps": 214.13981682809515,
+      "gen_tps": 41.41232596470013
+     }
+    ],
+    "passed": 8,
+    "total": 8,
+    "mean_gen_tps": 42.2
+   }
+  },
+  {
+   "id": "embeddinggemma_300m",
+   "role": "STEP3 retrieval",
+   "file": "embeddinggemma-300M-Q8_0.gguf",
+   "size_mb": 333.6,
+   "load": "OK",
+   "en": {
+    "triples": [
+     {
+      "anchor": "The budget of Project Aurora is 120 euros.",
+      "cos_para": 0.8723,
+      "cos_distract": 0.5055,
+      "pass": true
+     },
+     {
+      "anchor": "I left my keys in the car.",
+      "cos_para": 0.8117,
+      "cos_distract": 0.5751,
+      "pass": true
+     },
+     {
+      "anchor": "What time is it right now?",
+      "cos_para": 0.9411,
+      "cos_distract": 0.296,
+      "pass": true
+     },
+     {
+      "anchor": "The phone battery is almost empty.",
+      "cos_para": 0.8055,
+      "cos_distract": 0.5193,
+      "pass": true
+     },
+     {
+      "anchor": "It is supposed to rain heavily tomorrow.",
+      "cos_para": 0.8815,
+      "cos_distract": 0.5164,
+      "pass": true
+     },
+     {
+      "anchor": "Please remind me about my medication at eight.",
+      "cos_para": 0.7889,
+      "cos_distract": 0.4028,
+      "pass": true
+     },
+     {
+      "anchor": "The cat is sleeping on the sofa.",
+      "cos_para": 0.9322,
+      "cos_distract": 0.4057,
+      "pass": true
+     },
+     {
+      "anchor": "The train to Berlin is delayed.",
+      "cos_para": 0.7401,
+      "cos_distract": 0.6344,
+      "pass": true
+     }
+    ],
+    "passed": 8,
+    "total": 8,
+    "dim": 768,
+    "mean_margin": 0.3648,
+    "seconds": 0.38
+   },
+   "de": {
+    "triples": [
+     {
+      "anchor": "Das Budget von Projekt Aurora beträgt 120 Euro.",
+      "cos_para": 0.8779,
+      "cos_distract": 0.5412,
+      "pass": true
+     },
+     {
+      "anchor": "Ich habe meinen Schlüssel im Auto vergessen.",
+      "cos_para": 0.7413,
+      "cos_distract": 0.5466,
+      "pass": true
+     },
+     {
+      "anchor": "Wie spät ist es gerade?",
+      "cos_para": 0.8693,
+      "cos_distract": 0.3273,
+      "pass": true
+     },
+     {
+      "anchor": "Der Akku des Handys ist fast leer.",
+      "cos_para": 0.6833,
+      "cos_distract": 0.5613,
+      "pass": true
+     },
+     {
+      "anchor": "Morgen soll es stark regnen.",
+      "cos_para": 0.8844,
+      "cos_distract": 0.5876,
+      "pass": true
+     },
+     {
+      "anchor": "Bitte erinnere mich um acht an die Medikamente.",
+      "cos_para": 0.6703,
+      "cos_distract": 0.3616,
+      "pass": true
+     },
+     {
+      "anchor": "Die Katze schläft auf dem Sofa.",
+      "cos_para": 0.9148,
+      "cos_distract": 0.3597,
+      "pass": true
+     },
+     {
+      "anchor": "Der Zug nach Berlin hat Verspätung.",
+      "cos_para": 0.7043,
+      "cos_distract": 0.6998,
+      "pass": true
+     }
+    ],
+    "passed": 8,
+    "total": 8,
+    "dim": 768,
+    "mean_margin": 0.2951,
+    "seconds": 0.41
+   }
+  }
+ ]
+}

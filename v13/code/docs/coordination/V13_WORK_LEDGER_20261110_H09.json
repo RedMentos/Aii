@@ -1,0 +1,36 @@
+{
+  "schema": "v13-work-ledger-v1",
+  "date": "2026-11-10",
+  "owner": "GPT scheduled continuation",
+  "package_id": "B1-B2-ANCHOR-CI-FIX-H09",
+  "branch": "codex/v13-body-anchor-ci-fix-20261110-hour09",
+  "base": "PR #1662, 72eb6231f426bf6c6a0627eba430e35a7e95741e",
+  "files": [
+    ".github/workflows/v13-body-anchor-retention.yml"
+  ],
+  "dependencies": [
+    "PR #1662 body retention",
+    "PR #1661 JEPA receipt fixture"
+  ],
+  "status": "REVIEW_ONLY_CI_RUNNING",
+  "observed_failure": "Actions 42773609905: 11 passed, 1 failed, missing peft in existing MinorSubspaceTests",
+  "fix": "Install peft and transformers in CI dependency set",
+  "head_after_fix": "a9dbc976e8500a7d9ccc7656537b0193fce5ab5b",
+  "ci": "https://github.com/RedMentos/Aii/actions/runs/42779734780",
+  "negative_gates": [
+    "Body-JEPA UNAVAILABLE",
+    "No native Redmi evidence",
+    "No active model promotion",
+    "STEP2/B3 unchanged"
+  ],
+  "other_owners": [
+    "PR #1654 C3 LoRA resume",
+    "PR #1653 source lifecycle",
+    "PR #1659/#1660 JEPA runtime"
+  ],
+  "next_exact_command": "Inspect Actions 42779734780, fix any new failure on a separate branch; review B1/B2 anchor KL under pinned real model and compare independent holdout; integrate only after SourceHandoff release.",
+  "blockers": [
+    "Frozen SourceHandoff",
+    "Pinned B1/B2 weights and Redmi not available in this run"
+  ]
+}

@@ -1,0 +1,91 @@
+name: V13 HX134 Claude integration full software regression
+on:
+  push:
+    branches: [assistant/v13-hx134-c1-world-b3-integration-20261027]
+    paths:
+      - '.github/workflows/hx134-cross-fullsuite.yml'
+      - 'v13/code/v13/agi/harness.py'
+      - 'v13/code/v13/agi/experience.py'
+      - 'v13/code/v13/agi/blind_select.py'
+      - 'v13/code/v13/agi/__init__.py'
+      - 'v13/code/v13/agi/self_improve.py'
+permissions:
+  contents: read
+concurrency:
+  group: v13-hx134-cross-full
+  cancel-in-progress: false
+jobs:
+  software:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Preserve HX source-wide raw exits
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/hx134-full"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/HEAD.txt"
+          git hash-object v13/code/v13/agi/harness.py > "$evidence/HARNESS_BLOB.txt"
+          git hash-object v13/code/v13/agi/experience.py > "$evidence/EXPERIENCE_BLOB.txt"
+          git hash-object v13/code/v13/agi/blind_select.py > "$evidence/BLIND_BLOB.txt"
+          git hash-object v13/code/v13/agi/__init__.py > "$evidence/AGI_INIT_BLOB.txt"
+          git hash-object v13/code/v13/agi/self_improve.py > "$evidence/AG8_BLOB.txt"
+          git hash-object v13/code/tests/test_harness_hx.py > "$evidence/TEST_BLOB.txt"
+          git merge-base --is-ancestor ed0eb935135cf2824a236cb63f5752e5d27687a4 HEAD
+          a=$?
+          git merge-base --is-ancestor cf6b7adaac7416743a488e30564602630c52fb66 HEAD
+          b=$?
+          git merge-base --is-ancestor d0d1e2e909cfcacd66c39938853af869978023b2 HEAD
+          c=$?
+          if [ "$a" -eq 0 ] && [ "$b" -eq 0 ] && [ "$c" -eq 0 ]; then echo 0; else echo 1; fi > "$evidence/PARENTS_EXIT.txt"
+          if [ "$(cat "$evidence/HARNESS_BLOB.txt")" = "002d2d981314f3ffcbd8c02d7ec835a99abb0599" ] && [ "$(cat "$evidence/EXPERIENCE_BLOB.txt")" = "8908adb75ff859356bf0f4fb9ae62c8282581519" ] && [ "$(cat "$evidence/BLIND_BLOB.txt")" = "2ff30cb68ecded2a1853b39e07b1d9a2a8f571f2" ] && [ "$(cat "$evidence/AGI_INIT_BLOB.txt")" = "27a5f57885a2836d0a3fbd4cf1829c0a1ab4edce" ] && [ "$(cat "$evidence/AG8_BLOB.txt")" = "f18ec4494bbe17a92793aca081fdebfe897349f7" ] && [ "$(cat "$evidence/TEST_BLOB.txt")" = "aa39a8c5d0d5a4ffda1416738e84e364365e4963" ]; then echo 0; else echo 1; fi > "$evidence/FROZEN_EXIT.txt"
+          python3 -m venv "$RUNNER_TEMP/hx134-full-venv"
+          py="$RUNNER_TEMP/hx134-full-venv/bin/python"
+          "$py" -m pip install --no-input -q 'torch==2.14.1' --index-url https://download.pytorch.org/whl/cpu > "$evidence/INSTALL_RAW.log" 2>&1
+          first=$?
+          "$py" -m pip install --no-input -q 'numpy==2.2.6' 'psutil' 'PyYAML' 'Pillow' 'transformers==5.20.2' 'peft==0.21.2' >> "$evidence/INSTALL_RAW.log" 2>&1
+          second=$?
+          if [ "$first" -eq 0 ] && [ "$second" -eq 0 ]; then echo 0; else echo 1; fi > "$evidence/INSTALL_EXIT.txt"
+          (
+            cd v13/code
+            timeout --signal=TERM --kill-after=10s 18m env PYTHONPATH=.:tests "$py" -m unittest discover -s tests -p 'test_*.py' -q
+          ) > "$evidence/UNIT_RAW.log" 2>&1
+          echo "$?" > "$evidence/UNIT_EXIT.txt"
+          python3 -m compileall -q v13/code/v13 > "$evidence/COMPILE_RAW.log" 2>&1
+          echo "$?" > "$evidence/COMPILE_EXIT.txt"
+          python3 v13/code/scripts/public_repo_privacy_scan.py --base 1ab88aa30947e2f3da9905b1d3055f04b98a8bed --head HEAD > "$evidence/PRIVACY_RAW.log" 2>&1
+          echo "$?" > "$evidence/PRIVACY_EXIT.txt"
+          git diff --check 1ab88aa30947e2f3da9905b1d3055f04b98a8bed HEAD > "$evidence/DIFF_RAW.log" 2>&1
+          echo "$?" > "$evidence/DIFF_EXIT.txt"
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v13-hx134-full-${{ github.run_id }}-${{ github.sha }}
+          path: ${{ runner.temp }}/hx134-full/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce raw exits
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/hx134-full"
+          for name in PARENTS FROZEN INSTALL UNIT COMPILE PRIVACY DIFF; do
+            if [ "$(cat "$evidence/${name}_EXIT.txt")" != 0 ]; then
+              echo "$name failed; original raw evidence retained"
+              tail -100 "$evidence/${name}_RAW.log" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo 'HX134_SHADOW_FULL_SOFTWARE_ONLY_NO_PROMOTION'

@@ -1,0 +1,56 @@
+.....................................................................................................................................................................................................................................................................................................................................................usage: python3 -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                           [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                           [--cycles-per-batch CYCLES_PER_BATCH]
+                           [--batches BATCHES]
+                           [--duration-seconds DURATION_SECONDS]
+                           [--sample-seconds SAMPLE_SECONDS]
+                           [--max-samples MAX_SAMPLES] [--sensors-only]
+                           [--termux-battery] [--source-zip SOURCE_ZIP]
+python3 -m unittest: error: duration-seconds: 1..86400; sample-seconds: .25..60; max-samples: 10..100000
+usage: python3 -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                           [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                           [--cycles-per-batch CYCLES_PER_BATCH]
+                           [--batches BATCHES]
+                           [--duration-seconds DURATION_SECONDS]
+                           [--sample-seconds SAMPLE_SECONDS]
+                           [--max-samples MAX_SAMPLES] [--sensors-only]
+                           [--termux-battery] [--source-zip SOURCE_ZIP]
+python3 -m unittest: error: cycles-per-batch: 4..128; batches: 1..32
+usage: python3 -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                           [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                           [--cycles-per-batch CYCLES_PER_BATCH]
+                           [--batches BATCHES]
+                           [--duration-seconds DURATION_SECONDS]
+                           [--sample-seconds SAMPLE_SECONDS]
+                           [--max-samples MAX_SAMPLES] [--sensors-only]
+                           [--termux-battery] [--source-zip SOURCE_ZIP]
+python3 -m unittest: error: cycles-per-batch: 4..128; batches: 1..32
+usage: python3 -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                           [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                           [--cycles-per-batch CYCLES_PER_BATCH]
+                           [--batches BATCHES]
+                           [--duration-seconds DURATION_SECONDS]
+                           [--sample-seconds SAMPLE_SECONDS]
+                           [--max-samples MAX_SAMPLES] [--sensors-only]
+                           [--termux-battery] [--source-zip SOURCE_ZIP]
+python3 -m unittest: error: duration-seconds: 1..86400; sample-seconds: .25..60; max-samples: 10..100000
+.....INTERRUPTED
+Berichte: /tmp/tmpq0991bay/proof
+Fehlende Proofs: target_phone, native_sustained_batches, thermal_sensor_observed, battery_energy_intervals_observed, native_runner_rss_observed, native_kv_growth_measured, long_term_retention_proven
+COLLECTION_COMPLETE
+Berichte: /tmp/tmpq0991bay/proof
+Fehlende Proofs: target_phone, native_sustained_batches, thermal_sensor_observed, battery_energy_intervals_observed, native_runner_rss_observed, native_kv_growth_measured, long_term_retention_proven
+usage: python3 -m unittest [-h] --installed-home INSTALLED_HOME [--out OUT]
+                           [--resume RESUME] [--archive-dir ARCHIVE_DIR]
+                           [--cycles-per-batch CYCLES_PER_BATCH]
+                           [--batches BATCHES]
+                           [--duration-seconds DURATION_SECONDS]
+                           [--sample-seconds SAMPLE_SECONDS]
+                           [--max-samples MAX_SAMPLES] [--sensors-only]
+                           [--termux-battery] [--source-zip SOURCE_ZIP]
+python3 -m unittest: error: Stored sensor evidence changed; resume refused
+.................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 507 tests in 66.292s
+
+OK

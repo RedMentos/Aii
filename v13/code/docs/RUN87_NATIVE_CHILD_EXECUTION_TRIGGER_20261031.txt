@@ -1,0 +1,7 @@
+RUN87 seed877 B1/B2 native first execution trigger, 2026-10-31.
+Owner: GPT-6 Auto11; independent review-only child of original Run87 PR #1447 exact source parent f2b1ceceeceb6199ecd1bf2dac6cfaf786e56653. Original owner branch unmodified.
+Original Run87 prereg blob 2727afa5d8f791e87ade99deba92cc8f74144c23, TABLE SHA256 6466f5c146495209241e0ee1abf911b708774d00109383fd3c8f1fc48e27f39d, all 14/14 source blob pins checked against remote. New child prereg 1396d911293d755a774c659a311fed9509a5d1b0, remotely verified BEFORE workflow.
+Native child workflow a3fe9188b257f15f2052ecb58182d7f100d951a8 is byte-identical to original except workflow label, branch, marker, artifact prefix. Shared heavy-native concurrency group v13-step2-budget-paired-native-20261030.
+GitHub Actions query immediately before trigger: no queued/waiting/in-progress native/model jobs. Run93 full-suite 41199460706 terminal FAILURE (2 known historical source pin errors, no model calls). Run94 full-suite 41200093567 is software-only, NO_MODEL_DOWNLOADS=1, independent GitHub runner.
+Authorized original 48 serialized native B1/B2 calls, SHORT_96 vs LONG_160, strict frozen scoring; original Run77 scientific RED remains. Preserve all failures, native raw, hashes and negative gates; no automatic promotion.
+Age0 RECORD_ONLY, STEP2 UTILITY_FAIL, B3 NO_PROMOTION, Body-JEPA UNAVAILABLE, World-JEPA SHADOW, jepa_weight0, Redmi UNMEASURED, whole V13 INCOMPLETE.

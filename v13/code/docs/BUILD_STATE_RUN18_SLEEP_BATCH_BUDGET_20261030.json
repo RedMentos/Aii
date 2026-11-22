@@ -1,0 +1,70 @@
+{
+  "schema": "v13.run18.sleep_batch_budget.software_focused_green.fullsuite_pending.v1",
+  "date_utc": "2026-10-30",
+  "owner": "GPT-6 scheduled continuation; F9 Sleep explicit batch resource envelope",
+  "parent": {
+    "pr": 1344,
+    "branch": "assistant/v13-run17-sleep-replay-ttl-20261030-hourly11",
+    "head_sha": "760f4a4cfa0f26f65c1cbd29202c8c2633eab5a6",
+    "review_only": true
+  },
+  "branch": "assistant/v13-run18-sleep-batch-budget-20261030-hourly11",
+  "source_blobs": {
+    "canon": "218464b12a2d27d92524c751922fa8e1c3fb0ea7",
+    "prereg": "4a3518a50a6f26a0d77ee04928e02ab4b5c048ba",
+    "test_first": "7c2daeaaac8e4da33561f2b44d1df99fd8ee88bc",
+    "sleep_original": "5cca0688e40ba35fa4b25e51460fa2900b9dfbca",
+    "sleep_candidate": "cff2a44d0111fda6d74789ccc3aceac88e77fbbb"
+  },
+  "change": "SleepCycle.run validates explicit batch before policy/Store work: exact positive Python int, <=64 general or <=8 wake. Negative/zero/bool/float/string/oversized values fail closed; explicit valid count is respected instead of truthiness fallback. Age/resource gates, default batch and source provenance unchanged.",
+  "evidence": {
+    "original_red": {
+      "run": 41131598237,
+      "head": "e18bb84a05fe243211a65ca0df277dd8a5b85138",
+      "artifact": 13013157376,
+      "sha256": "3be7bd8d430728a1b9f02d620d3674008552b615410948c7691d90693170dd60",
+      "tests": 3,
+      "failures": 9,
+      "errors": 2,
+      "stage_exits": "PINS/VENV/DEPS/PIP_CHECK/COMPILE/PRIVACY/DIFF 0; TEST 1 expected",
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run18-SleepBatch/Run18_ORIGINAL_RED.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "candidate_green": {
+      "run": 41131635197,
+      "head": "c011ea96c295c5d43a04ef0769592fb0de318909",
+      "artifact": 13013048656,
+      "sha256": "4e0837fb8993b7fb848a25cef9b264663e1eed19b41a9b304490046a98450c2e",
+      "tests": 79,
+      "failures": 0,
+      "errors": 0,
+      "stage_exits": "PINS/VENV/DEPS/PIP_CHECK/TEST/COMPILE/PRIVACY/DIFF all 0",
+      "crc": "PASS",
+      "inner_sha256": "18/18",
+      "privacy": "CLEAN",
+      "private_backup": "/V13-Checkpoints/2026-10-30/Run18-SleepBatch/Run18_CANDIDATE_GREEN.zip",
+      "readback": "BYTE_IDENTICAL"
+    },
+    "parent_run16_unfiltered": {
+      "run": 41131035846,
+      "status": "IN_PROGRESS_AT_CHECKPOINT"
+    }
+  },
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "NO_PROMOTION",
+    "body_jepa": "UNAVAILABLE",
+    "jepa_weight": 0,
+    "redmi_measured": false,
+    "whole_system_complete": false
+  },
+  "limitations": [
+    "Linux software SQLite only, no native/Redmi/model proof.",
+    "No independent external agent available; test-first and code diff reviewed.",
+    "Historical unfiltered failures remain unwaived; no production merge."
+  ],
+  "next_command": "Verify terminal original raw for Run16 unfiltered Actions 41131035846 and compare against Run15; run unfiltered latest Run18 exact head (includes Run16/17/18) after predecessor completes; preserve SHA/CRC/inner hashes/negative gates. Continue next canonical organ package."
+}

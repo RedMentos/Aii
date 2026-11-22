@@ -1,0 +1,8231 @@
+{
+ "kind": "WP_T3B_UTILITY_BENCH",
+ "bench_cfg": {
+  "temperature": 0.0,
+  "c3_sampling": "legacy",
+  "deadline_seconds": 600,
+  "observer_seconds": 180
+ },
+ "fixtures": [
+  "summary00",
+  "summary01",
+  "summary02",
+  "summary03",
+  "summary04",
+  "summary05",
+  "summary06",
+  "summary07",
+  "summary08",
+  "summary09",
+  "summary10",
+  "summary11",
+  "summary12",
+  "summary13",
+  "summary14",
+  "long00",
+  "long01",
+  "long02",
+  "long03",
+  "long04",
+  "long05",
+  "long06",
+  "long07",
+  "long08",
+  "long09",
+  "long10",
+  "long11",
+  "long12",
+  "long13",
+  "long14",
+  "notes00",
+  "notes01",
+  "notes02",
+  "notes03",
+  "notes04",
+  "notes05",
+  "notes06",
+  "notes07",
+  "notes08",
+  "notes09",
+  "notes10",
+  "notes11",
+  "notes12",
+  "notes13",
+  "notes14",
+  "compare00",
+  "compare01",
+  "compare02",
+  "compare03",
+  "compare04",
+  "compare05",
+  "compare06",
+  "compare07",
+  "compare08",
+  "compare09",
+  "compare10",
+  "compare11",
+  "compare12",
+  "compare13",
+  "compare14"
+ ],
+ "summary": {
+  "baseline": {
+   "pass_rate": 0.567,
+   "assert_rate": 0.708,
+   "mean_turn_s": 14.6,
+   "offers_per_turn": 1.17,
+   "n": 60
+  },
+  "baseline_repeat": {
+   "pass_rate": 0.6,
+   "assert_rate": 0.725,
+   "mean_turn_s": 14.6,
+   "offers_per_turn": 1.17,
+   "n": 60
+  },
+  "effort_low": {
+   "pass_rate": 0.7,
+   "assert_rate": 0.825,
+   "mean_turn_s": 19.7,
+   "offers_per_turn": 2.0,
+   "n": 60
+  },
+  "no_inquisition": {
+   "pass_rate": 0.583,
+   "assert_rate": 0.717,
+   "mean_turn_s": 14.8,
+   "offers_per_turn": 1.17,
+   "n": 60
+  },
+  "no_coalition": {
+   "pass_rate": 0.6,
+   "assert_rate": 0.733,
+   "mean_turn_s": 15.1,
+   "offers_per_turn": 1.17,
+   "n": 60
+  }
+ },
+ "paired": {
+  "baseline_repeat": {
+   "n": 60,
+   "arm_only_pass": 5,
+   "baseline_only_pass": 3,
+   "sign_test_p": 0.7266,
+   "identical_output": 33
+  },
+  "effort_low": {
+   "n": 60,
+   "arm_only_pass": 14,
+   "baseline_only_pass": 6,
+   "sign_test_p": 0.1153,
+   "identical_output": 6
+  },
+  "no_inquisition": {
+   "n": 60,
+   "arm_only_pass": 4,
+   "baseline_only_pass": 3,
+   "sign_test_p": 1.0,
+   "identical_output": 33
+  },
+  "no_coalition": {
+   "n": 60,
+   "arm_only_pass": 4,
+   "baseline_only_pass": 2,
+   "sign_test_p": 0.6875,
+   "identical_output": 32
+  }
+ },
+ "by_kind": {
+  "baseline": {
+   "summary": 0.533,
+   "long": 1.0,
+   "notes": 0.6,
+   "compare": 0.133
+  },
+  "baseline_repeat": {
+   "summary": 0.533,
+   "long": 1.0,
+   "notes": 0.667,
+   "compare": 0.2
+  },
+  "effort_low": {
+   "summary": 0.467,
+   "long": 1.0,
+   "notes": 0.933,
+   "compare": 0.4
+  },
+  "no_inquisition": {
+   "summary": 0.6,
+   "long": 1.0,
+   "notes": 0.6,
+   "compare": 0.133
+  },
+  "no_coalition": {
+   "summary": 0.6,
+   "long": 1.0,
+   "notes": 0.6,
+   "compare": 0.2
+  }
+ },
+ "rows": [
+  {
+   "fixture": "summary00",
+   "arm": "baseline",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "134": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 17.47,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_b8b7d187c18c45ffb5c5123b0dd07f62"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The sum of the individual items (95 + 18 + 21) equals **134 euros**, not 114."
+  },
+  {
+   "fixture": "summary01",
+   "arm": "baseline",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "106": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.46,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_9f5268dcfeeb4817b79521e5df171a2a"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 16 + 23 + 67 = 106 euros. The stated total of 126 euros is wrong."
+  },
+  {
+   "fixture": "summary02",
+   "arm": "baseline",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "167": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.04,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_e0ee49d86070402e945e9a2f9b3601a6"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 82 + 66 + 19 = 167 euros. The stated total of 147 euros is wrong."
+  },
+  {
+   "fixture": "summary03",
+   "arm": "baseline",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "75": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.94,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c32bf1b7fe9d47cb89b6aed7759eed53"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 18 + 40 + 17 = 75 euros. The stated total of 65 euros is wrong."
+  },
+  {
+   "fixture": "summary04",
+   "arm": "baseline",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "193": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.14,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_b3e386efa23947ef97c07c2673f40fe4"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect. The correct total is **199 euros**.\n\nThe calculation is:\n- Coffee beans: 81 euros\n- Projector: 27 euros\n- Software licence: 85 euros\nTotal: 81 + 27 + 85 = 199 euros"
+  },
+  {
+   "fixture": "summary05",
+   "arm": "baseline",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "264": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.06,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_a7f4598817d34c378bae4cb9ea1df449"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 86 + 85 + 93 = 264 euros. The stated total of 254 euros is wrong."
+  },
+  {
+   "fixture": "summary06",
+   "arm": "baseline",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "194": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.84,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c17263af29f84bb092b37b1378a27abb"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 84 + 19 + 91 = 194 euros. The stated total of 184 euros is wrong."
+  },
+  {
+   "fixture": "summary07",
+   "arm": "baseline",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "209": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 14.54,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_a2d16267a0b141beb35bc4e4a4195d60"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect because it sums the individual item values (52 + 71 + 86 = 229) without accounting for the fact that cleaning service and postage are separate services with different costs, while the projector is a single item. The correct total should be 200 euros (52 + 71 + 86)."
+  },
+  {
+   "fixture": "summary08",
+   "arm": "baseline",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "100": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.06,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_ed9a7e80610440f2b91be77f4e98425e"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The sum of the individual items (35 + 43 + 22) equals **98 euros**, not 110."
+  },
+  {
+   "fixture": "summary09",
+   "arm": "baseline",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "206": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 12.94,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_b9a53cb8dde04e6daf2a99e7a6b97cd7"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 69 + 48 + 89 = 146 euros (not 186)."
+  },
+  {
+   "fixture": "summary10",
+   "arm": "baseline",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "119": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.79,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_82dbbaf11ecd4cb4855d77c1d97c74cd"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect because it sums the individual item values (33 + 55 + 31 = 139) without accounting for the fact that postage is not a train ticket or projector. The correct total is 128 euros (33 + 55 + 31)."
+  },
+  {
+   "fixture": "summary11",
+   "arm": "baseline",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "220": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 12.44,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_96febf39908a4e4c9ede14ece0697da3"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 83 + 85 + 52 = 180 euros. The stated total of 230 euros is wrong."
+  },
+  {
+   "fixture": "summary12",
+   "arm": "baseline",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "89": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.15,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_a4700759f0844f5dbafa40e8f99dfb43"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 20 + 23 + 46 = 89 euros. The stated total of 109 euros is wrong."
+  },
+  {
+   "fixture": "summary13",
+   "arm": "baseline",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "248": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.24,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_702da1d25acc42efb6558eac4b366378"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 94 + 85 + 69 = 248 euros. The stated total of 258 euros is wrong."
+  },
+  {
+   "fixture": "summary14",
+   "arm": "baseline",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "161": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.76,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_d0daf5cd3d1b438aaa79e0285f191faf"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect. The math checks out (71 + 57 + 33 = 141), but the text \"Total: 141 euros\" is missing the word \"EUR\". The correct line should be \"Total: \u20ac141 euros.\""
+  },
+  {
+   "fixture": "long00",
+   "arm": "baseline",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "180": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 18.96,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_5365ce1636ba4caa901aab9c0f7182ac"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded exactly 180 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long01",
+   "arm": "baseline",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "202": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.37,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_a9bde8c71167481ea36dbff668bd29cf"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 202 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long02",
+   "arm": "baseline",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "405": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.05,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_4d3a93f0d0d541a08fa4d91f649eefbf"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 405 bicycles parked at the station in Lyon."
+  },
+  {
+   "fixture": "long03",
+   "arm": "baseline",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "357": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.35,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_2da84030377d41669d28f0b5e4105de5"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 357 bicycles at the station in Bremen."
+  },
+  {
+   "fixture": "long04",
+   "arm": "baseline",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "124": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.45,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_7e397457078c445aaacbdb7e5b85a1c5"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 124 bicycles at the station in Malmo."
+  },
+  {
+   "fixture": "long05",
+   "arm": "baseline",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "752": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.05,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_6d9952d6cd1d4372a2e647c650d293df"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded 752 bicycles in Lyon."
+  },
+  {
+   "fixture": "long06",
+   "arm": "baseline",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "769": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.44,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 1,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 769 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long07",
+   "arm": "baseline",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "468": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.15,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_a31351c7f77c4e66aa2d82cf63f2a7e0"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The workshop counted 468 bicycles in Linz."
+  },
+  {
+   "fixture": "long08",
+   "arm": "baseline",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "492": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 35.32,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_27f715a9897f4cd9b2dc8bf3f571d291",
+     "pkt_b5cbcf76cfb4483a85c146808650fabe",
+     "pkt_c900a9735d924ceda543f0ccc3a97c67"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The workshop had 492 bicycles counted in Linz."
+  },
+  {
+   "fixture": "long09",
+   "arm": "baseline",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "769": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.05,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c4d4ba6bd7cd45b9a89aedf7a0888b6c"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted 769 bicycles in Bremen."
+  },
+  {
+   "fixture": "long10",
+   "arm": "baseline",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "611": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.27,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_a743547876b84ea189c329dc802d1d74"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded 611 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long11",
+   "arm": "baseline",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "968": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.35,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_f40abea0af374f288a882e0af5271ced"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "968 bicycles were counted in Turin."
+  },
+  {
+   "fixture": "long12",
+   "arm": "baseline",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "147": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.15,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_2706fdcac2ae4f28926aefabcc0d906c"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded 147 bicycles in Lyon."
+  },
+  {
+   "fixture": "long13",
+   "arm": "baseline",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "484": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 33.85,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_045557cedd26476f98bd08d4c1d8b735",
+     "pkt_71e9f00ae40f470e8d7ae2b4c8212010"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded exactly 484 bicycles parked at the station in Bremen."
+  },
+  {
+   "fixture": "long14",
+   "arm": "baseline",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "957": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.74,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 1,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 957 bicycles at the station in Porto."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "baseline",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "71": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 12.17,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_6b79c3a708f04ca7a2aa8cac9b7f158e"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The user's version wins."
+  },
+  {
+   "fixture": "notes01",
+   "arm": "baseline",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "49": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.14,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_81123480d37a4a32ba48e26d2ecc0e5c"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 49 members from the note dated 26 March."
+  },
+  {
+   "fixture": "notes02",
+   "arm": "baseline",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "25": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.04,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_aa4e1f2f5642492c87e06767d9077a92"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest update is from 8 March, stating 25 members."
+  },
+  {
+   "fixture": "notes03",
+   "arm": "baseline",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "41": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 10.96,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_89d77c3066be47baa64fe8869b945822"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 41 members according to the 27 March note."
+  },
+  {
+   "fixture": "notes04",
+   "arm": "baseline",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "56": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.25,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_75f07f744a9e47e5bb96a26dd936240c"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 56 members according to the 27 March note."
+  },
+  {
+   "fixture": "notes05",
+   "arm": "baseline",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "85": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 10.94,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_b1865ee5d45545bd8e91982094cdfe5a"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 85 members."
+  },
+  {
+   "fixture": "notes06",
+   "arm": "baseline",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "65": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 10.94,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_b7fd71a940f74041b1b772b7b183fb0a"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest record is from 21 March, showing 65 members."
+  },
+  {
+   "fixture": "notes07",
+   "arm": "baseline",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "54": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 10.33,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_07493651eee140f88a8b96e7bdf518bf"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 39 members from the 3 March note."
+  },
+  {
+   "fixture": "notes08",
+   "arm": "baseline",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "21": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 11.14,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_34f621f0d64c4c25853295aa4c972212"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest record is from the 5th of March, stating 18 members."
+  },
+  {
+   "fixture": "notes09",
+   "arm": "baseline",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "78": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 10.97,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_3e0bc356706c48709d987972436c12e0"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest data is from the 16 March note, stating 49 members."
+  },
+  {
+   "fixture": "notes10",
+   "arm": "baseline",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "39": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 10.76,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_5da135dab09a43bebe88c1c682c58563"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 39 members according to the March 18 note."
+  },
+  {
+   "fixture": "notes11",
+   "arm": "baseline",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "69": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 10.83,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_d7b157fb8f684827b60cd5d43d3a6506"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 43 members from the 5 March note."
+  },
+  {
+   "fixture": "notes12",
+   "arm": "baseline",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "26": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 10.65,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_b566d19e6c6e48ad96bdfff38fb7a280"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 26 members according to the note from 9 March."
+  },
+  {
+   "fixture": "notes13",
+   "arm": "baseline",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "79": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 10.64,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_043add70523343af8452bff07d02537f"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 79 members according to the note from 11 March."
+  },
+  {
+   "fixture": "notes14",
+   "arm": "baseline",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "39": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 10.95,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_2817df0f62194bbdb5433bc42792ce3e"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is from the 15 March note."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "baseline",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "389": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 14.06,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_f44478767a304aeda3106585216418b7"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Based on the provided source data (Lyon 644, Brno 255, Bremen 636), **Bremen** had the most rain at **636 mm**, while **Brno** had the least at **255 mm**.\n\nThe difference is **381 mm** (636 - 255)."
+  },
+  {
+   "fixture": "compare01",
+   "arm": "baseline",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "608": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 14.66,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_5dd1f027e0224f679cf7e92055d86f0b"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Based on the provided data:\n- **Lyon 895**: 895 mm\n- **Graz 287**: 287 mm\n- **Turin 723**: 723 mm\n\n**Most Rain City:** Lyon 895 (895 mm)\n**Difference:** 895 - 723 = 172 mm more than Turin 723."
+  },
+  {
+   "fixture": "compare02",
+   "arm": "baseline",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "489": true
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 12.36,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_5efd9157574440b5be1b87953136f2d2"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The city with the most rain is Lyon (733mm), and it is 489mm more than Bremen (584mm)."
+  },
+  {
+   "fixture": "compare03",
+   "arm": "baseline",
+   "assertions": {
+    "city": true,
+    "diff": true
+   },
+   "numbers": {
+    "365": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.87,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_36646b2130324d3eb5101c4628d8d6bb"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Linz had the most rain (433 mm) compared to Lyon's 798 mm. The difference is 365 mm."
+  },
+  {
+   "fixture": "compare04",
+   "arm": "baseline",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "687": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.96,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_61c102ba69a945c3b6fdffbf4f5f7c05"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Based on the provided data (Lyon 895, Cork 208, Turin 673), **Turin** had the most rain at **673 mm**, while **Cork** had the least at **208 mm**.\n\nThe difference is **465 mm** (673 - 208)."
+  },
+  {
+   "fixture": "compare05",
+   "arm": "baseline",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "747": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.75,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_f7df1aaf089449219605e1209fea4b65"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Lyon has the most rain (890mm) compared to Graz (383mm). The difference is 507mm.\n\n*Note: This answer is based on the provided data points.*"
+  },
+  {
+   "fixture": "compare06",
+   "arm": "baseline",
+   "assertions": {
+    "city": true,
+    "diff": true
+   },
+   "numbers": {
+    "750": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 15.47,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_36d3a22271a54b3eaebb452bf55e9663"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Based on the data provided (Linz: 675mm, Lyon: 128mm, Turin: 878mm), **Turin** has the most rain at **878mm**, while **Lyon** has the least at **128mm**.\n\nThe difference is 878 - 128 = **750 mm**."
+  },
+  {
+   "fixture": "compare07",
+   "arm": "baseline",
+   "assertions": {
+    "city": false,
+    "diff": false
+   },
+   "numbers": {
+    "110": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 13.67,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_9c1504c280164098bef062b4d8aa8b80"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The city with the most rain is **Ghent** (720 mm). The difference between the most and least cities is **10 mm**."
+  },
+  {
+   "fixture": "compare08",
+   "arm": "baseline",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "83": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.86,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_3533f9ce39f0472db284c67d36b66a55"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Based on the provided source data (Lyon 563, Porto 620, Malmo 646), **Malmo 646** has the highest rainfall.\n\nThe difference between the most and least is:\n646 - 620 = **20 millimetres**."
+  },
+  {
+   "fixture": "compare09",
+   "arm": "baseline",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "450": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.26,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_ed78d7312cf54a06a997ddd8ec544e80"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "**Turin** had the most rain (815mm). The difference is **180mm** (815 - 635 = 180).\n\n*Note: This answer is based on the provided data. The uncertainty in the original hypothesis was noted.*"
+  },
+  {
+   "fixture": "compare10",
+   "arm": "baseline",
+   "assertions": {
+    "city": false,
+    "diff": false
+   },
+   "numbers": {
+    "302": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 12.35,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_b99df1be72664abb83d40f076df3a07e"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Lyon has the most rain (240mm) while Turin has the least (224mm). The difference is 16mm."
+  },
+  {
+   "fixture": "compare11",
+   "arm": "baseline",
+   "assertions": {
+    "city": false,
+    "diff": false
+   },
+   "numbers": {
+    "613": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 29.11,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_17b54e8f523f4590b147a78ac1d6477e",
+     "pkt_9891e7b05d384611a94a17c7fe7086dd"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "status": null,
+   "output": "Brno had the most rain. The difference between Brno and the city with the least (Ghent) was 328 mm."
+  },
+  {
+   "fixture": "compare12",
+   "arm": "baseline",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "560": true
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 36.54,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_8504556777ca4de5913f40c580474359",
+     "pkt_63470619782445b7abc7fa31c73863ff",
+     "pkt_944c00ca34514eaaadb52af743af800d"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_B",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "status": null,
+   "output": "Brno received the highest rainfall at 785mm, while Porto had the least at 225mm. The difference is 560mm."
+  },
+  {
+   "fixture": "compare13",
+   "arm": "baseline",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "338": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 33.23,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_ad8f11e012cd4ba894fe4356a63fd57e",
+     "pkt_b77de9af3d8f44d3b0675bb2d417d1a5",
+     "pkt_f26031e2ca894fb0b510a0b07813bb06"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_B",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "status": null,
+   "output": "Bremen had the most rain with 359mm. Cork had the least at 578mm. That\u2019s a difference of 219mm."
+  },
+  {
+   "fixture": "compare14",
+   "arm": "baseline",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "517": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 16.3,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_0e369ed58aad4701aeec5a31541a6c65"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Based on the provided data:\n- **Porto**: 598 mm\n- **Linz**: 266 mm\n- **Brno**: 783 mm\n\nThe city with the most rain is **Brno** (783 mm). The difference between Brno and Porto is $783 - 598 = 185$ mm.\n\nTherefore, Brno has **185 millimetres more rain** than Porto."
+  },
+  {
+   "fixture": "summary00",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "134": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 16.86,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_627641cb4a0b49edbdb13d1caeb05ee8"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect. The correct total is **95 + 18 + 21 = 134 euros**.\n\nThe text explicitly states the sum as \"Total: 114 euros,\" which is mathematically wrong (95 + 18 + 21 = 134)."
+  },
+  {
+   "fixture": "summary01",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "106": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.86,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_bc1af7fccbfa4fce825549f880df1082"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect. The correct total is **126 euros**.\n\n*   **Cables:** 16 euros\n*   **Printer paper:** 23 euros\n*   **Office chairs:** 67 euros\n*   **Total:** 126 euros"
+  },
+  {
+   "fixture": "summary02",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "167": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.95,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_e5d1917d363c465b9fe9ea4ae3aa94a0"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 82 + 66 + 19 = 167 euros. The stated total of 147 euros is wrong."
+  },
+  {
+   "fixture": "summary03",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "75": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.16,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_372dd4f246ab48dbbd6d7f78ea8d01b5"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 18 + 40 + 17 = 75 euros. The stated total of 65 euros is wrong."
+  },
+  {
+   "fixture": "summary04",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "193": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.36,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_6e33fd4637dc4319b272471f30eb9ba1"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect. The correct total is **199 euros**.\n\nThe calculation is:\n- Coffee beans: 81 euros\n- Projector: 27 euros\n- Software licence: 85 euros\nTotal: 81 + 27 + 85 = 199 euros"
+  },
+  {
+   "fixture": "summary05",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "264": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.05,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_4c2dd66ac7224c19a76b287b005e359b"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 86 + 85 + 93 = 264 euros. The stated total of 254 euros is wrong."
+  },
+  {
+   "fixture": "summary06",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "194": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.15,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_8113fa92f9da41248f2202a2a64f148d"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 84 + 19 + 91 = 194 euros. The stated total of 184 euros is wrong."
+  },
+  {
+   "fixture": "summary07",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "209": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 14.06,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_3ac3dab3268e4042b737d6fd1ef015af"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect because it sums the individual item values (52 + 71 + 86 = 229) without accounting for the fact that cleaning service and postage are separate services with different costs, while the projector is a single item. The correct total should be 200 euros (52 + 71 + 86)."
+  },
+  {
+   "fixture": "summary08",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "100": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 12.26,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_8e8ecdac92df48f1bba987338b07963a"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 35 + 43 + 22 = 98 euros. The stated total of 110 euros is wrong."
+  },
+  {
+   "fixture": "summary09",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "206": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 12.74,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_af8e7110ea6840c6a5d1e06e30cd5697"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 69 + 48 + 89 = 146 euros (not 186)."
+  },
+  {
+   "fixture": "summary10",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "119": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 11.98,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_44570d2e38844c1f8904685859ab2e14"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect. The correct total is **129 euros** (33 + 55 + 31)."
+  },
+  {
+   "fixture": "summary11",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "220": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 12.06,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_89f2e926f56e45359e6fb7d4d627cd03"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 83 + 85 + 52 = 180 euros. The stated total of 230 euros is wrong."
+  },
+  {
+   "fixture": "summary12",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "89": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.46,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_33bc64e89db84f57a9da6441821ad5db"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 20 + 23 + 46 = 89 euros. The stated total of 109 euros is wrong."
+  },
+  {
+   "fixture": "summary13",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "248": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.83,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_8eeb64b409f443a4bd20506155200946"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The sum of the individual items (94 + 85 + 69) equals 248 euros, not 258. The extra 10 euros likely belongs to a third item not listed in the report."
+  },
+  {
+   "fixture": "summary14",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "161": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.35,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_407d2ca79d3e4e76973adc0bc72bd75c"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 71 + 57 + 33 = 161 euros. The stated total of 141 euros is wrong."
+  },
+  {
+   "fixture": "long00",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "180": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 18.87,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_a5097e8093964352a161121b8e1f9b78"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded exactly 180 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long01",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "202": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.45,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_8e43a8b8a4344bfd9cf0cc2fb01a0be8"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 202 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long02",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "405": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.85,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_f1bf9145916d46a8bbce5c1e3d9ab289"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 405 bicycles parked at the station in Lyon."
+  },
+  {
+   "fixture": "long03",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "357": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.25,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c6f8c35869be4e9bb784ba8f515d1f2a"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 357 bicycles in Bremen."
+  },
+  {
+   "fixture": "long04",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "124": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.86,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_05843aae1df64294a894756cde2bc070"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 124 bicycles at the station in Malmo."
+  },
+  {
+   "fixture": "long05",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "752": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.25,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_4dd6375e98b847829f70f0cadffa1c28"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded 752 bicycles in Lyon."
+  },
+  {
+   "fixture": "long06",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "769": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.54,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 1,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 769 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long07",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "468": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.27,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c069670cde2647a2b64b416b1a6ebacb"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The workshop had 468 bicycles counted in Linz."
+  },
+  {
+   "fixture": "long08",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "492": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 33.54,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_dad3e6c33c034a448ae80f26dfc38fdb",
+     "pkt_d91b4ac0b69640b091529a07c1d32ecd"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The workshop had 492 bicycles counted in Linz."
+  },
+  {
+   "fixture": "long09",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "769": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.15,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_9b9667669268453991410a26a17636a6"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted 769 bicycles in Bremen."
+  },
+  {
+   "fixture": "long10",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "611": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.75,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_d7fb373b0bf04b83a02c222b31b95956"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded 611 bicycles in Turin."
+  },
+  {
+   "fixture": "long11",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "968": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.55,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_1d4211c23fa64836afe3dd4de999d703"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "968 bicycles were counted in Turin."
+  },
+  {
+   "fixture": "long12",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "147": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.26,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_011873f605fc4566a98270f98c50623f"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded 147 bicycles in Lyon."
+  },
+  {
+   "fixture": "long13",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "484": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 32.25,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_d8aea0fbfe2d4f3d8ed00026486f01f8",
+     "pkt_3cb3421b9ae04db38d7e3a30cf0a86a3"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded 484 bicycles parked in Bremen."
+  },
+  {
+   "fixture": "long14",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "957": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.45,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 1,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 957 bicycles at the station in Porto."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "71": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 12.67,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_934ff319fcae4992a05063a3a7ef24c1"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The user's version wins."
+  },
+  {
+   "fixture": "notes01",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "49": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 10.33,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_76498ab362054e20912744570109aaad"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 49 members according to the note from 26 March."
+  },
+  {
+   "fixture": "notes02",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "25": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.45,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_07a6581549d845e4a00424ce209b95ba"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 25 members according to the note from 8 March."
+  },
+  {
+   "fixture": "notes03",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "41": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 10.94,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_f67164b4107c40e5b9ec9b7a08f7f353"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 41 members according to the 27 March note."
+  },
+  {
+   "fixture": "notes04",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "56": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.85,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_6f83b2ba73d6422d89a796614f2384b2"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 56 members according to the 27 March note."
+  },
+  {
+   "fixture": "notes05",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "85": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.05,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_a5c7f0f626fb46c094ebd34590d30a30"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 85 members."
+  },
+  {
+   "fixture": "notes06",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "65": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.54,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_b9d13d04ece4456e88424ff14af155aa"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest reported size is 65 members."
+  },
+  {
+   "fixture": "notes07",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "54": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 10.87,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_8f006f3ee3c7484b99ddee9f49c31820"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 39 members from the March 3 note."
+  },
+  {
+   "fixture": "notes08",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "21": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 10.84,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_f6d2b90a4af84caa85f214f7e3eb961b"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest record is from the 5th of March, stating 18 members."
+  },
+  {
+   "fixture": "notes09",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "78": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 11.14,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_0096fbbe60374929b55820284527183e"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest data is from the 16 March note, stating 49 members."
+  },
+  {
+   "fixture": "notes10",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "39": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.14,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_819d9625584b4f15865dc5ba2a15295a"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 39 members according to the March 18 note."
+  },
+  {
+   "fixture": "notes11",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "69": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 11.13,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_b1b33e0705234aca904b3050afe423eb"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 43 members from the 5 March note."
+  },
+  {
+   "fixture": "notes12",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "26": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 10.84,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_074e518b00f34fc29920a3bcd391b1f8"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 26 members according to the note from 9 March."
+  },
+  {
+   "fixture": "notes13",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "79": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 10.14,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_516a6452f4f24122822fc09b40fa1fee"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 79 members."
+  },
+  {
+   "fixture": "notes14",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "39": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 10.73,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_3a7cc7751f1745179057826ca2603e49"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 39 members from the 15 March note."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "389": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 15.06,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_0afb3256924340bd817437a5f9736cfa"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Based on the provided source data (Lyon 644, Brno 255, Bremen 636), **Bremen** had the most rain at **636 mm**, while **Brno** had the least at **255 mm**.\n\nThe difference is **381 mm** (636 - 255)."
+  },
+  {
+   "fixture": "compare01",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "608": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 15.36,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_0826214f09514a188e7d829aeee06c4e"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Based on the provided data:\n- **Lyon 895**: 895 mm\n- **Graz 287**: 287 mm\n- **Turin 723**: 723 mm\n\n**Most Rain City:** Lyon 895 (895 mm)\n**Difference:** 895 - 723 = 172 mm more than Turin 723."
+  },
+  {
+   "fixture": "compare02",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "city": true,
+    "diff": true
+   },
+   "numbers": {
+    "489": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.35,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_ac8a5a99561846ebbfadd8b5f8a32d7c"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The city with the most rain is **Lyon** (733 mm). The difference between the most and least cities is **489 mm** (733 - 244 = 489)."
+  },
+  {
+   "fixture": "compare03",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "city": false,
+    "diff": false
+   },
+   "numbers": {
+    "365": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 14.66,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_a9cef43444a747f38a593a52c26703f8"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The data provided shows **Linz** has the highest rainfall at **433 mm**, while **Graz** has the lowest at **630 mm**.\n\nTherefore, **Linz is 197 mm less than Graz** in terms of rainfall."
+  },
+  {
+   "fixture": "compare04",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "687": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 14.46,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_e7dcf6d5e3714f5fa421da76bff0fb68"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Based on the provided data (Lyon 895, Cork 208, Turin 673), **Turin** had the most rain at **673 mm**, while **Cork** had the least at **208 mm**.\n\nThe difference is **465 mm** (673 - 208)."
+  },
+  {
+   "fixture": "compare05",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "747": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 12.66,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_dabbb57abdcf4451b42ff9aae8e578d9"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Lyon had the most rain (890mm) and was 507mm more than Graz (890 - 383)."
+  },
+  {
+   "fixture": "compare06",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "750": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 14.46,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_03eec33d54ee4ae7b47c6c33c0b01a7d"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Linz had the most rain (675 mm) and was 547 mm more than Turin (878 - 675 = 203). Lyon had the least rain (128 mm) and was 547 mm less than Linz."
+  },
+  {
+   "fixture": "compare07",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "110": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.16,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_5d29f70e49ec4841a338d45bce122d9f"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The city with the most rain is **Linz** (727 mm). The city with the least rain is **Ghent** (720 mm). The difference is **7 mm**."
+  },
+  {
+   "fixture": "compare08",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "83": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 15.68,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_6fcf3307604d43b99787b44657faec36"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The actual values are Malmo (646mm) for the most rain and Porto (620mm) for the least. The difference is 26mm.\n\n*Note: The provided text report contains a factual error regarding the specific city names and values.*"
+  },
+  {
+   "fixture": "compare09",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "city": false,
+    "diff": false
+   },
+   "numbers": {
+    "450": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 13.25,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_976ff5a4c4dc46908daf0bd91e5fbee1"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "**Lyon** had the most rain (635 mm). The difference between the most-rain city (Lyon) and the least-rain city (Porto) is **270 mm**."
+  },
+  {
+   "fixture": "compare10",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "city": false,
+    "diff": false
+   },
+   "numbers": {
+    "302": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 12.66,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_65244ad653cc4dfc8ab399e5ed5847bf"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Lyon has the most rain (240mm) while Turin has the least (224mm). The difference is 16mm."
+  },
+  {
+   "fixture": "compare11",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "city": false,
+    "diff": false
+   },
+   "numbers": {
+    "613": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 31.12,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_edf4dbe6e5e846e6a2dbb288a921aa78",
+     "pkt_fe043dfac36646488957443131815174",
+     "pkt_6ad759b1b4ca4646a1b718dac8ce992d"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_B",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "status": null,
+   "output": "Brno had the most rain at 174 mm, which is 77 mm more than Ghent's 346 mm."
+  },
+  {
+   "fixture": "compare12",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "city": true,
+    "diff": true
+   },
+   "numbers": {
+    "560": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 34.44,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_0ecfe9bb96d2437faf8acc17ad80f460",
+     "pkt_40c1ede3fddb4843b5648405a29e21a8",
+     "pkt_bef6e006d312432785b2d90583b79e23"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Brno had the highest rainfall at 785 mm, while Porto had the least at 225 mm. That\u2019s a difference of 560 mm."
+  },
+  {
+   "fixture": "compare13",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "338": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 33.31,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_26d50b870e2649079748ee32504f7283",
+     "pkt_8f9e28b347c64227b1a1b333c740ac7d",
+     "pkt_f73b28ead10842cd9f7d8baf4d46e0f9"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "status": null,
+   "output": "Bremen had the most rain. Cork received the least at 578mm. The difference is 359mm."
+  },
+  {
+   "fixture": "compare14",
+   "arm": "baseline_repeat",
+   "assertions": {
+    "city": true,
+    "diff": true
+   },
+   "numbers": {
+    "517": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 17.48,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_a05088ea0ba7437294661ba7deb882bd"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Based on the provided data:\n- **Most Rain**: Brno (783 mm)\n- **Least Rain**: Linz (266 mm)\n- **Difference**: 783 - 266 = 517 mm more than Linz.\n\nThe most rain is in Brno, and it is 517 millimetres more than Linz."
+  },
+  {
+   "fixture": "summary00",
+   "arm": "effort_low",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "134": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 26.1,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The correct total is **30 euros** (95 + 18 + 21)."
+  },
+  {
+   "fixture": "summary01",
+   "arm": "effort_low",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "106": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 20.98,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The correct total is **126 euros**.\n\n*   Cables: 16\n*   Paper: 23\n*   Chairs: 67\n*   Sum: 105 + 67 = 172; 172 - 46 = 126."
+  },
+  {
+   "fixture": "summary02",
+   "arm": "effort_low",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "167": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 17.68,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 82 + 66 + 19 = 167 euros. The current total of 147 euros is wrong."
+  },
+  {
+   "fixture": "summary03",
+   "arm": "effort_low",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "75": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 18.28,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation should be: 18 + 40 + 17 = 75 euros. The current total of 65 euros is wrong."
+  },
+  {
+   "fixture": "summary04",
+   "arm": "effort_low",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "193": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 18.27,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation should be: 81 + 27 + 85 = 193 euros. The current total of 203 euros is wrong."
+  },
+  {
+   "fixture": "summary05",
+   "arm": "effort_low",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "264": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 20.59,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The correct total is **254 euros**.\n\n*   Postage: 86\n*   Software licence: 85\n*   Train tickets: 93\n*   **Total**: 254"
+  },
+  {
+   "fixture": "summary06",
+   "arm": "effort_low",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "194": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 20.98,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The correct total is **125 euros** (84 + 19 + 91).\n\nThe discrepancy arises because the user's list of items does not match the description in the header (\"cables 84 euros\" vs \"train tickets 19 euros\"). The item count and value are inconsistent with each other."
+  },
+  {
+   "fixture": "summary07",
+   "arm": "effort_low",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "209": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 18.16,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The correct total is 208 euros (52 + 71 + 86)."
+  },
+  {
+   "fixture": "summary08",
+   "arm": "effort_low",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "100": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 19.18,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The correct total is 100 euros (35 + 43 + 22)."
+  },
+  {
+   "fixture": "summary09",
+   "arm": "effort_low",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "206": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 19.88,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The correct total is **234 euros** (69 + 48 + 89)."
+  },
+  {
+   "fixture": "summary10",
+   "arm": "effort_low",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "119": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 19.89,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The correct total is 130 euros (33 + 55 + 31)."
+  },
+  {
+   "fixture": "summary11",
+   "arm": "effort_low",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "220": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 18.86,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 83 + 85 + 52 = 220 euros. The stated total of 230 euros is wrong."
+  },
+  {
+   "fixture": "summary12",
+   "arm": "effort_low",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "89": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 19.59,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The correct total is 99 euros (20 + 23 + 46)."
+  },
+  {
+   "fixture": "summary13",
+   "arm": "effort_low",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "248": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 18.56,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 94 + 85 + 69 = 248 euros. The stated total of 258 euros is wrong."
+  },
+  {
+   "fixture": "summary14",
+   "arm": "effort_low",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "161": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 20.28,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 71 + 57 + 33 = 161 euros. The current total of 141 euros is wrong."
+  },
+  {
+   "fixture": "long00",
+   "arm": "effort_low",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "180": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 21.88,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 180 bicycles at the station in Turin."
+  },
+  {
+   "fixture": "long01",
+   "arm": "effort_low",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "202": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 21.49,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 202 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long02",
+   "arm": "effort_low",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "405": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 22.88,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 405 bicycles parked at the station in Lyon."
+  },
+  {
+   "fixture": "long03",
+   "arm": "effort_low",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "357": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 21.97,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 357 bicycles in Bremen."
+  },
+  {
+   "fixture": "long04",
+   "arm": "effort_low",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "124": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 22.21,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 124 bicycles at the station in Malmo."
+  },
+  {
+   "fixture": "long05",
+   "arm": "effort_low",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "752": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 22.07,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 752 bicycles at the station in Lyon."
+  },
+  {
+   "fixture": "long06",
+   "arm": "effort_low",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "769": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 21.98,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 769 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long07",
+   "arm": "effort_low",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "468": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 20.97,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 468 bicycles in Linz."
+  },
+  {
+   "fixture": "long08",
+   "arm": "effort_low",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "492": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 24.28,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 492 bicycles parked at the station in Linz."
+  },
+  {
+   "fixture": "long09",
+   "arm": "effort_low",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "769": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 20.28,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 769 bicycles at the station in Bremen."
+  },
+  {
+   "fixture": "long10",
+   "arm": "effort_low",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "611": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 20.08,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 611 bicycles at the station in Turin."
+  },
+  {
+   "fixture": "long11",
+   "arm": "effort_low",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "968": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 21.17,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 968 bicycles at the station in Turin."
+  },
+  {
+   "fixture": "long12",
+   "arm": "effort_low",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "147": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 20.31,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 147 bicycles in Lyon."
+  },
+  {
+   "fixture": "long13",
+   "arm": "effort_low",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "484": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 21.69,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 484 bicycles at the station in Bremen."
+  },
+  {
+   "fixture": "long14",
+   "arm": "effort_low",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "957": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 20.77,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 957 bicycles at the station in Porto."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "effort_low",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "71": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 17.75,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The most recent number is 71 (from March 16)."
+  },
+  {
+   "fixture": "notes01",
+   "arm": "effort_low",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "49": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 16.46,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The most recent number is 49, according to the 26 March note."
+  },
+  {
+   "fixture": "notes02",
+   "arm": "effort_low",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "25": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 17.47,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The most recent number is 25, according to the note from 8 March."
+  },
+  {
+   "fixture": "notes03",
+   "arm": "effort_low",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "41": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 18.87,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The most recent number is 41, according to the 27 March note."
+  },
+  {
+   "fixture": "notes04",
+   "arm": "effort_low",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "56": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 18.07,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The most recent number is 56, according to the 27 March note."
+  },
+  {
+   "fixture": "notes05",
+   "arm": "effort_low",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "85": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 17.46,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The most recent number is 85, according to the 25 March note."
+  },
+  {
+   "fixture": "notes06",
+   "arm": "effort_low",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "65": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 18.98,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The most recent number is 65, according to the 21 March note."
+  },
+  {
+   "fixture": "notes07",
+   "arm": "effort_low",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "54": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 16.95,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The most recent number is 54, according to the 24 March note."
+  },
+  {
+   "fixture": "notes08",
+   "arm": "effort_low",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "21": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 19.16,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The most recent number is 21, according to the 19 March note."
+  },
+  {
+   "fixture": "notes09",
+   "arm": "effort_low",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "78": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 17.55,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The most recent number is 49, according to the note from 16 March."
+  },
+  {
+   "fixture": "notes10",
+   "arm": "effort_low",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "39": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 16.78,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The most recent number is 39, according to the 18 March note."
+  },
+  {
+   "fixture": "notes11",
+   "arm": "effort_low",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "69": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 17.56,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The most recent number is 69, according to the 14 March note."
+  },
+  {
+   "fixture": "notes12",
+   "arm": "effort_low",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "26": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 16.76,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The most recent number is 26, according to the 9 March note."
+  },
+  {
+   "fixture": "notes13",
+   "arm": "effort_low",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "79": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 15.77,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The most recent number is 79, according to the 11 March note."
+  },
+  {
+   "fixture": "notes14",
+   "arm": "effort_low",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "39": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 17.87,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The most recent number is 39, according to the 15 March note."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "effort_low",
+   "assertions": {
+    "city": true,
+    "diff": true
+   },
+   "numbers": {
+    "389": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 19.67,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Lyon has the highest rainfall at 644 mm (vs 255 mm for Brno). The difference is 389 mm."
+  },
+  {
+   "fixture": "compare01",
+   "arm": "effort_low",
+   "assertions": {
+    "city": true,
+    "diff": true
+   },
+   "numbers": {
+    "608": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 19.97,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Lyon has the highest rainfall at 895 mm (vs 287 and 723). The difference is 608 mm (895 - 287)."
+  },
+  {
+   "fixture": "compare02",
+   "arm": "effort_low",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "489": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 21.17,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The city with the most rain is Lyon (733 mm). The difference between Lyon and Bremen is 150 mm (733 - 584 = 150)."
+  },
+  {
+   "fixture": "compare03",
+   "arm": "effort_low",
+   "assertions": {
+    "city": true,
+    "diff": true
+   },
+   "numbers": {
+    "365": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 16.47,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Linz has the most rain (433 mm) compared to Lyon (798 mm) and Graz (630 mm). The difference is 365 mm."
+  },
+  {
+   "fixture": "compare04",
+   "arm": "effort_low",
+   "assertions": {
+    "city": true,
+    "diff": true
+   },
+   "numbers": {
+    "687": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 19.67,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Lyon has the highest rainfall at 895 mm (vs 208 in Cork and 673 in Turin). The difference is 687 mm."
+  },
+  {
+   "fixture": "compare05",
+   "arm": "effort_low",
+   "assertions": {
+    "city": true,
+    "diff": true
+   },
+   "numbers": {
+    "747": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 19.57,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Lyon had the most rain (890 mm) compared to Porto (143 mm). The difference is 747 mm."
+  },
+  {
+   "fixture": "compare06",
+   "arm": "effort_low",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "750": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 21.67,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Linz has the most rain (675 mm) compared to Lyon (128 mm) and Turin (878 mm). The city with the least rain is Lyon.\n\nDifference: 675 - 128 = 547 mm."
+  },
+  {
+   "fixture": "compare07",
+   "arm": "effort_low",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "110": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 18.18,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The city with the most rain is **Ghent** (720 mm). The city with the least rain is **Linz** (727 mm).\n\nTherefore, **Linz** had **77 mm less** than Ghent."
+  },
+  {
+   "fixture": "compare08",
+   "arm": "effort_low",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "83": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 20.96,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Lyon has the most rain (563 mm) compared to Porto (620 mm) and Malmo (646 mm). The city with the least rain is Porto.\n\nDifference: 620 - 563 = 57 mm.\n\nAnswer: Lyon had the most rain by 57 mm more than Porto."
+  },
+  {
+   "fixture": "compare09",
+   "arm": "effort_low",
+   "assertions": {
+    "city": false,
+    "diff": false
+   },
+   "numbers": {
+    "450": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 18.87,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The city with the most rain is Lyon (635 mm). The difference between Lyon and Porto is 270 mm."
+  },
+  {
+   "fixture": "compare10",
+   "arm": "effort_low",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "302": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 19.89,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Lyon has the highest rainfall at 240 mm (vs 526/224 for Porto/Turin). The difference is 286 mm."
+  },
+  {
+   "fixture": "compare11",
+   "arm": "effort_low",
+   "assertions": {
+    "city": false,
+    "diff": false
+   },
+   "numbers": {
+    "613": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 17.76,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Brno had the most rain at 174 mm, while Ghent had the least at 346 mm. That\u2019s a difference of 172 mm."
+  },
+  {
+   "fixture": "compare12",
+   "arm": "effort_low",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "560": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 22.82,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Brno had the most rain at 785 mm. Linz had the least at 410 mm. That means Brno was 375 mm more than Linz."
+  },
+  {
+   "fixture": "compare13",
+   "arm": "effort_low",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "338": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 19.27,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Bremen had the most rain at 359 mm. Cork had the least at 240 mm. That\u2019s 119 mm more than the city with the least."
+  },
+  {
+   "fixture": "compare14",
+   "arm": "effort_low",
+   "assertions": {
+    "city": true,
+    "diff": true
+   },
+   "numbers": {
+    "517": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 19.37,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 0,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The city with the most rain is **Brno** (783 mm). The difference between the highest and lowest cities is **517 mm** (783 - 266 = 517)."
+  },
+  {
+   "fixture": "summary00",
+   "arm": "no_inquisition",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "134": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 15.17,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_59059d5affdf4ad482749fe28fab0dfc"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation should be: 95 + 18 + 21 = 134 euros. The current total of 114 euros is wrong."
+  },
+  {
+   "fixture": "summary01",
+   "arm": "no_inquisition",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "106": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.06,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_4da2897a75c5469ab9f69af5fdea5c7d"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect. The correct total is **126 euros**.\n\n*   **Cables:** 16 euros\n*   **Printer paper:** 23 euros\n*   **Office chairs:** 67 euros\n*   **Total:** 126 euros"
+  },
+  {
+   "fixture": "summary02",
+   "arm": "no_inquisition",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "167": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.04,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_65c74d9d51dd47cf9ae3a5807767271c"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 82 + 66 + 19 = 167 euros. The stated total of 147 euros is wrong."
+  },
+  {
+   "fixture": "summary03",
+   "arm": "no_inquisition",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "75": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.85,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_5ae9df1816c249a0a2aa899387a9a279"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation should be: 18 (chairs) + 40 (paper) + 17 (projector) = 75 euros. The current total of 65 euros omits the projector item."
+  },
+  {
+   "fixture": "summary04",
+   "arm": "no_inquisition",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "193": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.25,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_de1a8f5be8724d92bd7d047e7dfadc0a"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect. The correct total is **199 euros**.\n\nHere is the breakdown:\n*   Coffee beans: 81 euros\n*   Projector: 27 euros\n*   Software licence: 85 euros\n*   **Total**: 81 + 27 + 85 = 199 euros"
+  },
+  {
+   "fixture": "summary05",
+   "arm": "no_inquisition",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "264": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.76,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_a14ab1660f1b46be838c1c94d01f021b"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 86 + 85 + 93 = 264 euros. The stated total of 254 euros is wrong."
+  },
+  {
+   "fixture": "summary06",
+   "arm": "no_inquisition",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "194": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.04,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_1ba6056e289c48b982f654d8eb690e99"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 84 + 19 + 91 = 194 euros. The stated total of 184 euros is wrong."
+  },
+  {
+   "fixture": "summary07",
+   "arm": "no_inquisition",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "209": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 11.34,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_12a7392dcb0d474eb197efa9e46adb76"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect. The correct total is **109 euros** (52 + 71 + 86)."
+  },
+  {
+   "fixture": "summary08",
+   "arm": "no_inquisition",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "100": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 12.06,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_4e46917e2a58484c9bc3f84bef0e5e07"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 35 + 43 + 22 = 98 euros. The stated total of 110 euros is wrong."
+  },
+  {
+   "fixture": "summary09",
+   "arm": "no_inquisition",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "206": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 11.35,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_5590b750f44a4c09aef57f2339978799"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect. The correct total is **236 euros** (69 + 48 + 89)."
+  },
+  {
+   "fixture": "summary10",
+   "arm": "no_inquisition",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "119": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.15,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_ebee8f31f0ef4afa96a633170f168145"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 33 + 55 + 31 = 119 euros. The stated total of 139 euros is wrong."
+  },
+  {
+   "fixture": "summary11",
+   "arm": "no_inquisition",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "220": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 12.14,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c6e120e614a7418c8c3543b4970d128c"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 83 + 85 + 52 = 180 euros. The stated total of 230 euros is wrong."
+  },
+  {
+   "fixture": "summary12",
+   "arm": "no_inquisition",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "89": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.26,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c3292e1370a34c33a1162a86e4aeb49a"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 20 + 23 + 46 = 89 euros. The stated total of 109 euros is wrong."
+  },
+  {
+   "fixture": "summary13",
+   "arm": "no_inquisition",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "248": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.75,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_23c831bb2b6648c1ac7c738dbb7965f0"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The sum of the individual items (94 + 85 + 69) equals 248 euros, not 258. The discrepancy of 10 euros likely stems from a missing item or an error in the calculation."
+  },
+  {
+   "fixture": "summary14",
+   "arm": "no_inquisition",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "161": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.95,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_59108cf65cc14ebd8915d80dbfcf78d1"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 71 + 57 + 33 = 161 euros. The stated total of 141 euros is wrong."
+  },
+  {
+   "fixture": "long00",
+   "arm": "no_inquisition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "180": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 18.97,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_1a27bf7c5e7846b18bf62a9473c21cf7"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded exactly 180 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long01",
+   "arm": "no_inquisition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "202": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.86,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_b120e32e3ecb46549377a88a286f8acc"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 202 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long02",
+   "arm": "no_inquisition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "405": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.85,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_5e1196695e69457a829e8d48ebc645bf"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 405 bicycles parked at the station in Lyon."
+  },
+  {
+   "fixture": "long03",
+   "arm": "no_inquisition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "357": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.95,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_eed7e8eba0c54c469f72ebacf83b4a7f"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 357 bicycles at the station in Bremen."
+  },
+  {
+   "fixture": "long04",
+   "arm": "no_inquisition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "124": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.45,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_501e2a5c41054476849f919d59b36bfc"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 124 bicycles at the station in Malmo."
+  },
+  {
+   "fixture": "long05",
+   "arm": "no_inquisition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "752": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.77,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_6bea21fe493c4f629ac07a464ad1adb3"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded 752 bicycles in Lyon."
+  },
+  {
+   "fixture": "long06",
+   "arm": "no_inquisition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "769": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.85,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 1,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 769 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long07",
+   "arm": "no_inquisition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "468": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.54,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_546ef5a90e8346238d2561f725670a59"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The workshop had 468 bicycles counted in Linz."
+  },
+  {
+   "fixture": "long08",
+   "arm": "no_inquisition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "492": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 34.92,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_dc88d9645f444748b5cefec19cb62676",
+     "pkt_8550aaa8462c43c099be770e95d6dbf0"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The workshop had 492 bicycles counted in Linz."
+  },
+  {
+   "fixture": "long09",
+   "arm": "no_inquisition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "769": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.55,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_d227d5524a2649e68a06255ced4258f0"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted 769 bicycles in Bremen."
+  },
+  {
+   "fixture": "long10",
+   "arm": "no_inquisition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "611": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.96,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_ea30573291a84a19a02a956d713d7d14"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded 611 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long11",
+   "arm": "no_inquisition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "968": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.45,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_50c91493a18c47a4918cff57c1211265"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "968 bicycles were counted in Turin."
+  },
+  {
+   "fixture": "long12",
+   "arm": "no_inquisition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "147": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.07,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_8786af572cb2413884cc7d346e655686"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded 147 bicycles in Lyon."
+  },
+  {
+   "fixture": "long13",
+   "arm": "no_inquisition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "484": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 35.22,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_986edfa752c24da0ada0ae00278a55a6",
+     "pkt_992c4bc452a24d169b2d37d0aaca4d89"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded exactly 484 bicycles parked at the station in Bremen."
+  },
+  {
+   "fixture": "long14",
+   "arm": "no_inquisition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "957": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.84,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [],
+    "cycles": 1,
+    "decision": "IGNORE",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 957 bicycles at the station in Porto."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "no_inquisition",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "71": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 12.36,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_1117798ed37e4b54a501e6c3d6ce8653"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The user's version wins."
+  },
+  {
+   "fixture": "notes01",
+   "arm": "no_inquisition",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "49": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.16,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_174a255e39a4441b9bc458fbad1dbe8a"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 49 members from the note dated 26 March."
+  },
+  {
+   "fixture": "notes02",
+   "arm": "no_inquisition",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "25": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.94,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_818028c0d7d84a5e9c01461d8353136e"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 25 members according to the note from 8 March."
+  },
+  {
+   "fixture": "notes03",
+   "arm": "no_inquisition",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "41": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.35,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_872c1cb8bbee47189688c2765fb8d127"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 41 members according to the 27 March note."
+  },
+  {
+   "fixture": "notes04",
+   "arm": "no_inquisition",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "56": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.85,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_57e25aee66c045919b9f1c2017f658e8"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 56 members according to the 27 March note."
+  },
+  {
+   "fixture": "notes05",
+   "arm": "no_inquisition",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "85": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.56,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_2ca1325a6f1d4f8191d2785a5133b2aa"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 85 members."
+  },
+  {
+   "fixture": "notes06",
+   "arm": "no_inquisition",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "65": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.54,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c7c0822d90204e35941aff6679525db2"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest record is from 21 March, showing 65 members."
+  },
+  {
+   "fixture": "notes07",
+   "arm": "no_inquisition",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "54": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 11.64,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_892cbfb0d7144b8c8032ba2808d4f51f"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest data points are from March 3rd, showing 39 members."
+  },
+  {
+   "fixture": "notes08",
+   "arm": "no_inquisition",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "21": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 12.15,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_7979bd03e7564ace9264a80778d0f519"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest record is from the 5th of March, stating 18 members."
+  },
+  {
+   "fixture": "notes09",
+   "arm": "no_inquisition",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "78": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 11.15,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_25e468b3c6c141eaaf7f2c471f706459"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest data is from the 16 March note."
+  },
+  {
+   "fixture": "notes10",
+   "arm": "no_inquisition",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "39": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.14,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_383af72152bb4305a7a2c9a61c10c687"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 39 members according to the March 18 note."
+  },
+  {
+   "fixture": "notes11",
+   "arm": "no_inquisition",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "69": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 11.66,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_7ecb5729931349e1bd7d658fabe46616"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 43 members from the 5 March note."
+  },
+  {
+   "fixture": "notes12",
+   "arm": "no_inquisition",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "26": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.05,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_fe37aaa6a0c544ef9aeadf1f91952404"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 26 members according to the note from 9 March."
+  },
+  {
+   "fixture": "notes13",
+   "arm": "no_inquisition",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "79": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 10.95,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_473575c9cfbd4fdf9983e857c4edad3d"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 79 members."
+  },
+  {
+   "fixture": "notes14",
+   "arm": "no_inquisition",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "39": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 12.46,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c5f445103c0040c1af92727f3686e13b"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest record is from the 15 March note."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "no_inquisition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "389": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 15.96,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_078934fdb4934a3ea49c4a3f14ab059a"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Based on the provided source data (Lyon 644, Brno 255, Bremen 636), **Bremen** had the most rain at **636 mm**, while **Brno** had the least at **255 mm**.\n\nThe difference is **381 mm** (636 - 255)."
+  },
+  {
+   "fixture": "compare01",
+   "arm": "no_inquisition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "608": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 17.07,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_03d453a303bb4f099ac5283840285c9a"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Based on the provided data:\n- **Lyon 895**: 895 mm\n- **Graz 287**: 287 mm\n- **Turin 723**: 723 mm\n\n**Most Rain City:** Lyon 895 (895 mm)\n**Difference:** 895 - 723 = 172 mm more than Turin 723."
+  },
+  {
+   "fixture": "compare02",
+   "arm": "no_inquisition",
+   "assertions": {
+    "city": true,
+    "diff": true
+   },
+   "numbers": {
+    "489": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.95,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_98b5d55e20704509b65fc14f8196593c"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The city with the most rain is **Lyon** (733 mm). The difference between the most and least cities is **489 mm** (733 - 244 = 489)."
+  },
+  {
+   "fixture": "compare03",
+   "arm": "no_inquisition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "365": true
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 15.78,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_38c0b9cb992e404c934599e187602d21"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Linz has the least rain (433mm), while Lyon has the most rain (798mm). The difference is **365mm** (798 - 433)."
+  },
+  {
+   "fixture": "compare04",
+   "arm": "no_inquisition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "687": true
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 14.98,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_ada0cd8fb611463b8cf9c73172dbbfe8"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The most rain is Lyon (895mm), and the least is Cork (208mm). The difference is **687mm**."
+  },
+  {
+   "fixture": "compare05",
+   "arm": "no_inquisition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "747": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 12.77,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_861e883a99004fab840c95dfb8841794"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Lyon had the most rain (890mm) and was 507mm more than Graz (890 - 383)."
+  },
+  {
+   "fixture": "compare06",
+   "arm": "no_inquisition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "750": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.36,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_d9edc7e674a04dda907644386a95f093"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Linz had the most rain (675 mm) and Turin had the least (128 mm). The difference is **547 mm** (675 - 128 = 547)."
+  },
+  {
+   "fixture": "compare07",
+   "arm": "no_inquisition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "110": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.89,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_0015e97a99104739a7a7563534774f68"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The city with the most rain is **Linz** (727mm). The city with the least rain is **Ghent** (720mm). The difference is **7mm**."
+  },
+  {
+   "fixture": "compare08",
+   "arm": "no_inquisition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "83": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 14.46,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_6ed3eb4327d448c0bf0a2709952f9666"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Based on the provided source data (Lyon 563, Porto 620, Malmo 646), **Malmo 646** has the highest rainfall.\n\nThe difference between the most and least is:\n646 - 620 = **20 millimetres**."
+  },
+  {
+   "fixture": "compare09",
+   "arm": "no_inquisition",
+   "assertions": {
+    "city": false,
+    "diff": false
+   },
+   "numbers": {
+    "450": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 12.15,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_64a4efcd539a42bc8363e4550fb5a2b8"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "**Lyon** had the most rain (635 mm). The difference between the most-rain city (Lyon) and the least-rain city (Porto) is **270 mm**."
+  },
+  {
+   "fixture": "compare10",
+   "arm": "no_inquisition",
+   "assertions": {
+    "city": false,
+    "diff": false
+   },
+   "numbers": {
+    "302": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 12.85,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_dd8e1d27f22d48d1a975148eb877f30c"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Lyon has the most rain (240mm) while Turin has the least (224mm). The difference is 16mm."
+  },
+  {
+   "fixture": "compare11",
+   "arm": "no_inquisition",
+   "assertions": {
+    "city": false,
+    "diff": false
+   },
+   "numbers": {
+    "613": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 31.52,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_912e6f17f66843f192c5e7814ce24e89",
+     "pkt_ef11cbfbab61492f836a9548bd7f8e70",
+     "pkt_466fe92b3e5f4092902b8f9dddb9744a"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Brno had the most rain at 174 mm, which was 87 mm higher than Ghent's 346 mm."
+  },
+  {
+   "fixture": "compare12",
+   "arm": "no_inquisition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "560": true
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 33.74,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_49c46c5887b74366b9a7a367db00f20f",
+     "pkt_fccfd506d8124ac1969e2b6eb6227ae7",
+     "pkt_c45d3ca51e62413d890ccc535b73e124"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Brno had the highest rainfall at 785mm, while Porto had the least at 225mm. That\u2019s a difference of 560mm."
+  },
+  {
+   "fixture": "compare13",
+   "arm": "no_inquisition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "338": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 32.73,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_7334393cf0054ce8b012ad4857fbf78f",
+     "pkt_260a9807051a4be2ba86bc9bce77a2c9",
+     "pkt_ff1b6651286640299804c9ae9b80b93a"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Bremen had the most rain with 359 mm. Cork had the least at 240 mm. That\u2019s a difference of 119 mm."
+  },
+  {
+   "fixture": "compare14",
+   "arm": "no_inquisition",
+   "assertions": {
+    "city": true,
+    "diff": true
+   },
+   "numbers": {
+    "517": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.96,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_dccae6d553cf4453854c75a7965ba3fa"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The city with the most rain is **Brno** (783 mm). The difference between the most and least cities is **517 mm** (783 - 266 = 517)."
+  },
+  {
+   "fixture": "summary00",
+   "arm": "no_coalition",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "134": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.96,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_9c769b7bb55d48bdac3f321700a37d71"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect. The sum of the individual items (95 + 18 + 21) equals 134 euros, not 114."
+  },
+  {
+   "fixture": "summary01",
+   "arm": "no_coalition",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "106": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.85,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_d4f074e8dc954a48a251a6223df0bd0e"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect. The correct total is **126 euros**.\n\n*   **Cables:** 16 euros\n*   **Printer paper:** 23 euros\n*   **Office chairs:** 67 euros\n*   **Total:** 126 euros"
+  },
+  {
+   "fixture": "summary02",
+   "arm": "no_coalition",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "167": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.06,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_87e17055e711457fa9ee987b439030f5"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 82 + 66 + 19 = 167 euros. The stated total of 147 euros is wrong."
+  },
+  {
+   "fixture": "summary03",
+   "arm": "no_coalition",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "75": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.05,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c3896d15c245443ca84cdc3dd6285a52"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation should be: 18 (chairs) + 40 (paper) + 17 (projector) = 75 euros. The current total of 65 euros omits the projector item."
+  },
+  {
+   "fixture": "summary04",
+   "arm": "no_coalition",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "193": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.66,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_9f24e131dd8542ab9a99eba6f92e74fb"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect. The correct total is **199 euros**.\n\nThe calculation is:\n- Coffee beans: 81 euros\n- Projector: 27 euros\n- Software licence: 85 euros\nTotal: 81 + 27 + 85 = 199 euros"
+  },
+  {
+   "fixture": "summary05",
+   "arm": "no_coalition",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "264": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.85,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c28f51d78ec04f44a6ab4679dbcb5322"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 86 + 85 + 93 = 264 euros. The stated total of 254 euros is wrong."
+  },
+  {
+   "fixture": "summary06",
+   "arm": "no_coalition",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "194": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.37,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c6bdc6cf8e18407db6772f508f9c7ea6"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 84 + 19 + 91 = 194 euros. The stated total of 184 euros is wrong."
+  },
+  {
+   "fixture": "summary07",
+   "arm": "no_coalition",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "209": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 14.36,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_48b0a9fb80ad4b7082a96cd094b8893f"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect because it sums the individual item values (52 + 71 + 86 = 229) without accounting for the fact that cleaning service and postage are separate services with different costs, while the projector is a single item. The correct total should be 200 euros (52 + 71 + 86)."
+  },
+  {
+   "fixture": "summary08",
+   "arm": "no_coalition",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "100": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 12.75,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_07d95ce24c1242ca93ba76c26665380b"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 35 + 43 + 22 = 98 euros. The stated total of 110 euros is wrong."
+  },
+  {
+   "fixture": "summary09",
+   "arm": "no_coalition",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "206": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.36,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_ca9a7252f3324870a0ca28ce71f1929e"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 69 + 48 + 89 = 186. Therefore, the total is **186 euros**, not 186000 euros."
+  },
+  {
+   "fixture": "summary10",
+   "arm": "no_coalition",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "119": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.35,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_d8661284eb104c32882f658d83a63b85"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect. The calculation is: 33 + 55 + 31 = 119 euros. The stated total of 139 euros is wrong."
+  },
+  {
+   "fixture": "summary11",
+   "arm": "no_coalition",
+   "assertions": {
+    "total": false,
+    "flags_error": true
+   },
+   "numbers": {
+    "220": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 12.36,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_bbb55934a7b0479fa00b1d2e29353d74"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary line is incorrect. The correct total is 230 euros (83 + 85 + 52)."
+  },
+  {
+   "fixture": "summary12",
+   "arm": "no_coalition",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "89": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.45,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_496128a922be4712bb0e3c82a3a72e7e"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 20 + 23 + 46 = 89 euros. The stated total of 109 euros is wrong."
+  },
+  {
+   "fixture": "summary13",
+   "arm": "no_coalition",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "248": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.25,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_0c0e35c12ab14cb8a6f4811622b38a0b"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 94 + 85 + 69 = 248 euros. The stated total of 258 euros is wrong."
+  },
+  {
+   "fixture": "summary14",
+   "arm": "no_coalition",
+   "assertions": {
+    "total": true,
+    "flags_error": true
+   },
+   "numbers": {
+    "161": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.74,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_04bcc28dfbd840e7b8724e47ff08d133"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "No, the summary is incorrect. The calculation is: 71 + 57 + 33 = 161 euros. The stated total of 141 euros is wrong."
+  },
+  {
+   "fixture": "long00",
+   "arm": "no_coalition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "180": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 19.38,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_0ff90316b48d48c5a545ccb9f2bdcdd3"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded exactly 180 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long01",
+   "arm": "no_coalition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "202": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.25,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_82459b63cb75489a8d59495fca0eac13"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 202 bicycles parked at the station in Turin."
+  },
+  {
+   "fixture": "long02",
+   "arm": "no_coalition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "405": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.57,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_e84078202fec4773bd8602e126189c1d"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 405 bicycles parked at the station in Lyon."
+  },
+  {
+   "fixture": "long03",
+   "arm": "no_coalition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "357": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.26,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_10d5eccf55dd4b8c8ed0ef267b5c6094"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 357 bicycles in Bremen."
+  },
+  {
+   "fixture": "long04",
+   "arm": "no_coalition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "124": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.64,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_1259ff3af76e4f9882ce9b9682794b1b"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 124 bicycles at the station in Malmo."
+  },
+  {
+   "fixture": "long05",
+   "arm": "no_coalition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "752": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.97,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_ad01db446c5b49a595f9f8a3144e6ad5"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded 752 bicycles in Lyon."
+  },
+  {
+   "fixture": "long06",
+   "arm": "no_coalition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "769": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.75,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c236079deab2460eb5516a5a79b2d854"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 769 bicycles in Turin."
+  },
+  {
+   "fixture": "long07",
+   "arm": "no_coalition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "468": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.55,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_3b2891012f854e3dbd62ef4b9defda4f"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The workshop had 468 bicycles counted in Linz."
+  },
+  {
+   "fixture": "long08",
+   "arm": "no_coalition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "492": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 34.63,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_9c78d02386d04bfc86a1136e5ecbad12",
+     "pkt_96247f09a1bc4bb4962ac3918d9dc6c2",
+     "pkt_8c5b566f1ed04ca987619062f1bcc255"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The workshop had 492 bicycles counted in Linz."
+  },
+  {
+   "fixture": "long09",
+   "arm": "no_coalition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "769": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.95,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_08e74c7079f3435b9cc24009402bbe21"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted 769 bicycles in Bremen."
+  },
+  {
+   "fixture": "long10",
+   "arm": "no_coalition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "611": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.45,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_854546077ca04a2fb13c39df48a2d0e8"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded 611 bicycles in Turin."
+  },
+  {
+   "fixture": "long11",
+   "arm": "no_coalition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "968": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.46,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_f60e09f40abd48e892932a52bec79da8"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "968 bicycles were counted in Turin."
+  },
+  {
+   "fixture": "long12",
+   "arm": "no_coalition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "147": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 14.25,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_422be82a7bd540b6a99d8d261cc8a669"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded 147 bicycles in Lyon."
+  },
+  {
+   "fixture": "long13",
+   "arm": "no_coalition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "484": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 34.15,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_9d407fb0b6af4ede96f1f442875b1904",
+     "pkt_a88663b634da44a4a524e38541f3fba7",
+     "pkt_d43b8cb157024896b9460c238fd96642"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey recorded 484 bicycles parked at the station in Bremen."
+  },
+  {
+   "fixture": "long14",
+   "arm": "no_coalition",
+   "assertions": {
+    "count": true,
+    "city": true
+   },
+   "numbers": {
+    "957": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 13.67,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_a43e0bd1d4294158b11beaf3fb9fc185"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The survey counted exactly 957 bicycles at the station in Porto."
+  },
+  {
+   "fixture": "notes00",
+   "arm": "no_coalition",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "71": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 12.45,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_7e34d99dbf464b33b706715d06f3f36e"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The user's version wins."
+  },
+  {
+   "fixture": "notes01",
+   "arm": "no_coalition",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "49": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.65,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_184a318e279d40e988b43ff4e8c3fff7"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 49 members from the note dated 26 March."
+  },
+  {
+   "fixture": "notes02",
+   "arm": "no_coalition",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "25": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.07,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_ad6f452e5c5d47d7bf4cd94455ea58ca"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest update is from 8 March, stating 25 members."
+  },
+  {
+   "fixture": "notes03",
+   "arm": "no_coalition",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "41": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.63,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_e466dc1aa81a4c40a988b4c373b1f5cb"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 41 members according to the 27 March note."
+  },
+  {
+   "fixture": "notes04",
+   "arm": "no_coalition",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "56": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.74,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c7825d4fe4064f9eaf954641d5f44a64"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 56 members according to the 27 March note."
+  },
+  {
+   "fixture": "notes05",
+   "arm": "no_coalition",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "85": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.34,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c05c9806d56d4939b1f865a49c9cc3ec"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 85 members."
+  },
+  {
+   "fixture": "notes06",
+   "arm": "no_coalition",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "65": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 12.96,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_a44e76bcb5c7411590f44e05c5af1e1d"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 65 members according to the 21 March note."
+  },
+  {
+   "fixture": "notes07",
+   "arm": "no_coalition",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "54": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 11.26,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_08e73453e33546878af34b56ec86ec50"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 39 members from the 3 March note."
+  },
+  {
+   "fixture": "notes08",
+   "arm": "no_coalition",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "21": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 11.35,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_6f21a1d4eed74d7f9ac53757de841e29"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is from the 5th March entry, showing 18 members."
+  },
+  {
+   "fixture": "notes09",
+   "arm": "no_coalition",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "78": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 11.34,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_827d2d1258ee44d8916595c128300218"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest data is from the 16 March note."
+  },
+  {
+   "fixture": "notes10",
+   "arm": "no_coalition",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "39": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.44,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_edb332a073a649f1ad4bd3df02fe4543"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 39 members according to the March 18 note."
+  },
+  {
+   "fixture": "notes11",
+   "arm": "no_coalition",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "69": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 12.04,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_f86c2dff3c034be8b098a90df1985f7c"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 43 members from the 5 March note."
+  },
+  {
+   "fixture": "notes12",
+   "arm": "no_coalition",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "26": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 11.84,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_bacbf7f2ffef45b4950559632ca8a5e0"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 26 members according to the note from 9 March."
+  },
+  {
+   "fixture": "notes13",
+   "arm": "no_coalition",
+   "assertions": {
+    "recent": true
+   },
+   "numbers": {
+    "79": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 10.64,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_288ebb9d02c546bba3981aff3a1bf595"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest figure is 79 members."
+  },
+  {
+   "fixture": "notes14",
+   "arm": "no_coalition",
+   "assertions": {
+    "recent": false
+   },
+   "numbers": {
+    "39": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 11.45,
+   "offers": [
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c4c09044653d4d65a8d65aee94b6909f"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_A",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The latest record is from the 15 March note."
+  },
+  {
+   "fixture": "compare00",
+   "arm": "no_coalition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "389": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 15.41,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_7f2e58c2fad64e38a462ebaab78bbe55"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Based on the provided source data (Lyon 644, Brno 255, Bremen 636), **Bremen** had the most rain at **636 mm**, while **Brno** had the least at **255 mm**.\n\nThe difference is **381 mm** (636 - 255)."
+  },
+  {
+   "fixture": "compare01",
+   "arm": "no_coalition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "608": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 15.66,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_3cded4a846b942bcb56cd9d98450c28c"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Based on the provided data:\n- **Lyon 895**: 895 mm\n- **Graz 287**: 287 mm\n- **Turin 723**: 723 mm\n\n**Most Rain City:** Lyon 895 (895 mm)\n**Difference:** 895 - 723 = 172 mm more than Turin 723."
+  },
+  {
+   "fixture": "compare02",
+   "arm": "no_coalition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "489": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 12.46,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_b406a975a5ec47c18d55b797bd1f1763"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The city with the most rain is **Bremen** (584 mm). The difference between Bremen and Lyon is **169 mm**."
+  },
+  {
+   "fixture": "compare03",
+   "arm": "no_coalition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "365": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 17.58,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_a2410c16266142bead5082762de1f593"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The city with the most rain is **Lyon** (798 mm). The city with the least rain is **Graz** (630 mm).\n\nDifference: 798 - 630 = **168 mm**.\n\n*Note: This answer is based on the provided data points. The original query text contains a typo (\"Linz\" instead of \"Lyon\").*"
+  },
+  {
+   "fixture": "compare04",
+   "arm": "no_coalition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "687": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 14.57,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_830e363c3839427da299580e02d7162d"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Based on the provided data (Lyon 895, Cork 208, Turin 673), **Turin** had the most rain at **673 mm**, while **Cork** had the least at **208 mm**.\n\nThe difference is **465 mm** (673 - 208)."
+  },
+  {
+   "fixture": "compare05",
+   "arm": "no_coalition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "747": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 12.87,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_371b89bc75a040959b551ce50483a46b"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Lyon had the most rain (890mm) and was 507mm more than Graz."
+  },
+  {
+   "fixture": "compare06",
+   "arm": "no_coalition",
+   "assertions": {
+    "city": true,
+    "diff": true
+   },
+   "numbers": {
+    "750": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 16.68,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_532a6ac180a84d3eaea898532081ba93"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Based on the data provided (Linz: 675mm, Lyon: 128mm, Turin: 878mm), **Turin** has the most rain at **878mm**, while **Lyon** has the least at **128mm**.\n\nThe difference is 878 - 128 = **750 mm**."
+  },
+  {
+   "fixture": "compare07",
+   "arm": "no_coalition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "110": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 15.68,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_43d5d8fb7a6241a295739d57d2de2afc"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "**Ghent** had the most rain (720 mm). The difference is **90 mm** (720 - 617).\n\n*Note: This answer is based on the provided data. The uncertainty in the source text indicates high confidence that Linz's specific figure of 727 mm is likely an outlier or error, but the clear majority for the most rain is Ghent.*"
+  },
+  {
+   "fixture": "compare08",
+   "arm": "no_coalition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "83": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 16.27,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_17e725ace97544c18a833a873b87dd79"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "The actual values are Malmo (646mm) for the most rain and Porto (620mm) for the least. The difference is 26mm.\n\n*Note: The provided text report contains a factual error regarding the specific city names and values.*"
+  },
+  {
+   "fixture": "compare09",
+   "arm": "no_coalition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "450": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 13.59,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_c08f3a888d2f4be794389e11a0eb2e92"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "**Turin** had the most rain (815mm). The difference is **280mm** (815 - 635)."
+  },
+  {
+   "fixture": "compare10",
+   "arm": "no_coalition",
+   "assertions": {
+    "city": false,
+    "diff": false
+   },
+   "numbers": {
+    "302": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 13.15,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_aca613990876470b8985baef376f48a5"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Lyon has the most rain (240mm) while Turin has the least (224mm). The difference is 16mm."
+  },
+  {
+   "fixture": "compare11",
+   "arm": "no_coalition",
+   "assertions": {
+    "city": false,
+    "diff": false
+   },
+   "numbers": {
+    "613": false
+   },
+   "pass": false,
+   "assert_rate": 0.0,
+   "turn_s": 31.82,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_5dbd02c6dbe84656936050acabf4099e",
+     "pkt_e1c5be3612c34eba815f1fae0e853ac5",
+     "pkt_563b1a651a0143ad91dd8e64593cebb7"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "status": null,
+   "output": "Brno received the most rain, 87 mm higher than the city with the least."
+  },
+  {
+   "fixture": "compare12",
+   "arm": "no_coalition",
+   "assertions": {
+    "city": true,
+    "diff": true
+   },
+   "numbers": {
+    "560": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 37.08,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_163227ef0d0e48719d7d6c92786e975d",
+     "pkt_634ad764ab69470295798bd17e4e1ce8",
+     "pkt_07de4581c16140b8a8b31678faf6bbc7"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_B",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "status": null,
+   "output": "Brno had the highest rainfall at 785 mm, while Porto had the least at 225 mm. That\u2019s a difference of 560 mm."
+  },
+  {
+   "fixture": "compare13",
+   "arm": "no_coalition",
+   "assertions": {
+    "city": true,
+    "diff": false
+   },
+   "numbers": {
+    "338": false
+   },
+   "pass": false,
+   "assert_rate": 0.5,
+   "turn_s": 34.02,
+   "offers": [
+    "B1_DETAIL",
+    "B2_GIST",
+    "B1_DETAIL"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_95cd746998264d1cb853a058d73423be",
+     "pkt_28f9ba97c15741b9b73de4140d83a7fc",
+     "pkt_01d287964e0d46fa8e3e1b0199c492a7"
+    ],
+    "cycles": 1,
+    "decision": "QUERY_A",
+    "inquisition": [
+     "PROPOSED",
+     "CONTESTED"
+    ]
+   },
+   "status": null,
+   "output": "Bremen had the most rain with 359 mm. Cork had the least at 240 mm, making it 119 mm less than Bremen."
+  },
+  {
+   "fixture": "compare14",
+   "arm": "no_coalition",
+   "assertions": {
+    "city": true,
+    "diff": true
+   },
+   "numbers": {
+    "517": true
+   },
+   "pass": true,
+   "assert_rate": 1.0,
+   "turn_s": 16.46,
+   "offers": [
+    "B2_GIST"
+   ],
+   "focal": {
+    "coalition": [
+     "pkt_8a6535ae42674044a901b8c0ac53f355"
+    ],
+    "cycles": 1,
+    "decision": "INCORPORATE_B",
+    "inquisition": []
+   },
+   "status": null,
+   "output": "Based on the provided data:\n- **Most Rain**: Brno (783 mm)\n- **Least Rain**: Linz (266 mm)\n- **Difference**: 783 - 266 = 517 mm more than Linz.\n\nThe most rain is in Brno, and it is 517 millimetres more than Linz."
+  }
+ ],
+ "claim_limit": "deterministic bench decoding (not the shipped anti_echo sampling), generated English tasks, regex checks on the final answer",
+ "verdict": {
+  "deterministic": false,
+  "focal_coalition_helps": false,
+  "inquisition_helps": false,
+  "adaptive_effort_beats_low": false,
+  "noise_band_discordant": 8
+ }
+}

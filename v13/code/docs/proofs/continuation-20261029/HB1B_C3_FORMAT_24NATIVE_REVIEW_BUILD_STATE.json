@@ -1,0 +1,72 @@
+{
+  "schema": "v13.hb1b.c3_format_24native_review_build_state.v1",
+  "date_utc": "2026-10-29",
+  "owner": "GPT-6 isolated native execution child",
+  "branch": "codex/v13-hb1b-c3-format-24native-20261029",
+  "parent_pr": 1056,
+  "parent_head_sha": "4446c3fc82b857745fec0d04673f2307f2b43559",
+  "source_pr": 1055,
+  "source_ci": {
+    "run_id": 40837513227,
+    "head": "47945604cb21b442108b131d1b7c160bd7c79202",
+    "artifact_id": 12881124014,
+    "zip_sha256": "3a48536ef4b01189c40f3a463137993ad6b7f6af5bad4092cf6adc84e379b7a8",
+    "focused_tests": 17,
+    "full_tests": 2911,
+    "skipped": 11
+  },
+  "native_mock_ci": {
+    "run_id": 40838049061,
+    "head": "43321c26b77d26655ec286fb465ab434252613d8",
+    "artifact_id": 12881158513,
+    "zip_sha256": "edb3871558ff709d4aff75b4eb3b8fcd1e205a52e9c890d746975efe201fd903",
+    "focused_tests": 18
+  },
+  "parent_hb1a_native": {
+    "run_id": 40836705747,
+    "head": "f7db8dcfa3297061c1cdc9d234f3097c6a417e96",
+    "artifact_id": 12881321580,
+    "zip_sha256": "7d180436ab64165f867a80902add7b23f8dae19cbbfd72b8b266ac48c47b4552",
+    "raw_sha256": "abbcacec1217e51dfc592d2e981db9597162b475ca01886151fa99c39a1df7e1",
+    "score_sha256": "b7ba7c038d420cba7bb78dc62cba0b66ed7d41b50c8f5e7b4f9f85e3697c3c44"
+  },
+  "prereg_blob": "16f328584fb9678a034ee8fa9234460f4fbcfc4e",
+  "addendum_blob": "e43c748f4822434365e11de6e0132bf36ff694b3",
+  "source_plan_blob": "cb5ac831b9675dc3b71c8757fc0742881db7e5d2",
+  "native_executor_blob": "9791ad1a7b10692d4e75810856bd93fc4dcb44ea",
+  "native_verifier_blob": "535fbd5b1b6c16d88e6d4f5edc979e86117e0788",
+  "native_mock_tests_blob": "d1fb8312fddb45d25a0db0a6114026138e0082e9",
+  "status": "PRE_NATIVE_EXACT_HEAD_NO_HB1B_CALLS",
+  "native_started": false,
+  "expected_calls": 24,
+  "c3_sampling": "off",
+  "seed": 13,
+  "model_sha256": "3d10b6ab8fc91a919534b9558e266255aca0bbc7f6d015963599aa9e74e05b1d",
+  "runner_sha256": "79e312188dc1d75c28201771f106e91de470b5cebdd838d31bb4db25eecf5d39",
+  "negative_gates": {
+    "age0": "RECORD_ONLY",
+    "step2": "UTILITY_FAIL",
+    "b3": "FAIL",
+    "body_jepa": "UNAVAILABLE",
+    "lp3": "FAIL",
+    "jepa_weight": 0,
+    "v13": "INCOMPLETE",
+    "redmi_measured": false
+  },
+  "prerequisites": [
+    "Rehash three exact parent raw CI artifacts",
+    "Linux x86_64 fresh isolated home with 2.5GB MemAvailable and 3GB disk",
+    "No other native owner",
+    "Pinned C3 GGUF and llama-server hashes before and after",
+    "24 serial calls, independent verifier, preserve RED"
+  ],
+  "exact_next_command": "python -m scripts.hb1b_c3_format_native_executor --home \"$HOME_DIR\" --install; python -m scripts.hb1b_c3_format_native_executor --home \"$HOME_DIR\" --out \"$FRESH_EVIDENCE\" --parent-evidence-dir \"$HB1A_PARENT_EVIDENCE\"; python -m scripts.hb1b_c3_format_native_verifier --evidence-dir \"$FRESH_EVIDENCE\" --parent-evidence-dir \"$HB1A_PARENT_EVIDENCE\"",
+  "private_backup": "Permitted private Library /V13/RawEvidence; do not retry rejected Drive destination",
+  "open_questions": [
+    "Does plain C3 format improve exact source use?",
+    "Is any improvement only format-dependent?",
+    "No independent 150-row holdout"
+  ],
+  "production_merge": false,
+  "remaining_platform_budget": "UNKNOWN"
+}

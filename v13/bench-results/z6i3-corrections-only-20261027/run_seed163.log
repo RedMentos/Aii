@@ -1,0 +1,46 @@
+{"policy": "fixed+words+rel+rec", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.275}
+{"policy": "fixed+words+rel+rec", "phase": "p1", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.925}
+{"policy": "fixed+words+rel+rec", "phase": "p1", "batch": 2, "shadow": true, "status": "PENDING_APPROVAL", "acc": 1.0}
+{"policy": "fixed+words+rel+rec", "phase": "p1", "batch": 3, "shadow": true, "status": "EVALUATED_FAIL", "acc": 1.0}
+{"policy": "fixed+words+rel+rec", "phase": "p1", "batch": 4, "shadow": true, "status": "EVALUATED_FAIL", "acc": 1.0}
+{"policy": "fixed+words+rel+rec", "phase": "p1", "batch": 5, "shadow": true, "status": "EVALUATED_FAIL", "acc": 1.0}
+{"policy": "fixed+words+rel+rec", "phase": "p2", "batch": 0, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.8}
+{"policy": "fixed+words+rel+rec", "phase": "p2", "batch": 1, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.8}
+{"policy": "fixed+words+rel+rec", "phase": "p2", "batch": 2, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.8}
+{"policy": "fixed+words+rel+rec", "phase": "p2", "batch": 3, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.8}
+{"policy": "adaptive+words+rel+rec", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.275}
+{"policy": "adaptive+words+rel+rec", "phase": "p1", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.925}
+{"policy": "adaptive+words+rel+rec", "phase": "p1", "batch": 2, "shadow": false, "status": null, "acc": 0.925}
+{"policy": "adaptive+words+rel+rec", "phase": "p1", "batch": 3, "shadow": false, "status": null, "acc": 0.925}
+{"policy": "adaptive+words+rel+rec", "phase": "p1", "batch": 4, "shadow": false, "status": null, "acc": 0.925}
+{"policy": "adaptive+words+rel+rec", "phase": "p1", "batch": 5, "shadow": false, "status": null, "acc": 0.925}
+{"policy": "adaptive+words+rel+rec", "phase": "p2", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.725}
+{"policy": "adaptive+words+rel+rec", "phase": "p2", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.975}
+{"policy": "adaptive+words+rel+rec", "phase": "p2", "batch": 2, "shadow": false, "status": null, "acc": 0.975}
+{"policy": "adaptive+words+rel+rec", "phase": "p2", "batch": 3, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.975}
+{"policy": "fixed+words+rel", "phase": "p1", "batch": 0, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.275}
+{"policy": "fixed+words+rel", "phase": "p1", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.925}
+{"policy": "fixed+words+rel", "phase": "p1", "batch": 2, "shadow": true, "status": "PENDING_APPROVAL", "acc": 1.0}
+{"policy": "fixed+words+rel", "phase": "p1", "batch": 3, "shadow": true, "status": "EVALUATED_FAIL", "acc": 1.0}
+{"policy": "fixed+words+rel", "phase": "p1", "batch": 4, "shadow": true, "status": "EVALUATED_FAIL", "acc": 1.0}
+{"policy": "fixed+words+rel", "phase": "p1", "batch": 5, "shadow": true, "status": "EVALUATED_FAIL", "acc": 1.0}
+{"policy": "fixed+words+rel", "phase": "p2", "batch": 0, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.8}
+{"policy": "fixed+words+rel", "phase": "p2", "batch": 1, "shadow": true, "status": "PENDING_APPROVAL", "acc": 0.85}
+{"policy": "fixed+words+rel", "phase": "p2", "batch": 2, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.85}
+{"policy": "fixed+words+rel", "phase": "p2", "batch": 3, "shadow": true, "status": "EVALUATED_FAIL", "acc": 0.85}
+{
+ "verdict": null,
+ "criteria": null,
+ "verdict_z6i": null,
+ "criteria_z6i": null,
+ "verdict_z6i2": null,
+ "criteria_z6i2": null,
+ "verdict_z6i3": "Z6I3_FAIL",
+ "criteria_z6i3": {
+  "R1_head_half_ge_80pct": false,
+  "R2_retention_ge_90pct": true,
+  "R3_no_false_promotion": true,
+  "R4_rollback_restores": true,
+  "R5_control_without_recency_lt_50pct": true
+ }
+}

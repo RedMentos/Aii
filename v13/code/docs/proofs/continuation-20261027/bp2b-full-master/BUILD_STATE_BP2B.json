@@ -1,0 +1,41 @@
+{
+  "schema": "v13-bp2b-public-master-preflight-v1",
+  "owner": "GPT-6 independent reviewer",
+  "branch": "assistant/v13-bp2b-full-master-preflight-20261027",
+  "parent": "ac3a6294c316e58ba0e5f8ea1f1f1f5b1fc82b22",
+  "run_id": 40505391672,
+  "head": "1baf024286fa1caaaead24e853b329543cf4e1fb",
+  "source_revision": "8c1348a4aac046a3a5d7698e7fcaaa8a3b7d9cdf",
+  "master_sha256": "1ba63d9adb03ae43581db0e136e4416febe0441aff7296397bd455fb6017f73a",
+  "master_size_bytes": 2340697936,
+  "metadata_files_verified": 7,
+  "preflight_status": "FULL_FILE_HASH_PASS",
+  "model_loaded": false,
+  "training_performed": false,
+  "evidence_class": "LINUX_PUBLIC_SOURCE_HASH_ONLY",
+  "raw_artifact_id": 12734881225,
+  "raw_zip_sha256": "2025a4b4d2f9794bff71e9f15f557d125586cb38a9f3c7b969a79f278aff8c30",
+  "raw_zip_crc": "PASS",
+  "private_backup": "/V13-Checkpoints/2026-10-27/BP2b-Full-Master-Preflight/bp2b-full-master-evidence-40505391672.zip",
+  "private_readback": "BYTE_EXACT_PASS",
+  "download_exit": 0,
+  "verify_exit": 0,
+  "compile_exit": 0,
+  "privacy": "CLEAN",
+  "jepa_weight": 0,
+  "age_authority": 0,
+  "negative_gates": [
+    "STEP2_UTILITY_FAIL",
+    "B3_L1_FAIL",
+    "BJ1_NO_SIGNAL",
+    "REDMI_UNMEASURED",
+    "FULL_V13_INCOMPLETE"
+  ],
+  "next_command": "cd v13/code && PYTHONPATH=. python scripts/bp2b_native_runner.py --seed 41 --arm legacy --out <isolated-output> --master-dir <verified-master-dir> --attempt <unique-id> --execute-native",
+  "next_prerequisites": [
+    "Heavy owner clearance",
+    "Compatible isolated torch/transformers/peft/gguf environment",
+    "Exact public model re-download in same native job",
+    "Linux cgroup memory budget verified"
+  ]
+}
