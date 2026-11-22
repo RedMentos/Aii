@@ -34,7 +34,7 @@ The current `native_latent_receiver.py` path receives per-token final output emb
 Next step: Core should implement same-model input parity and a separate target-generation utility gate before anyone claims native latent communication.
 
 
-## Adjacent RAW EAR signed ingress review — PR #2312 (2026-11-22)
+## R-092 — Adjacent RAW EAR signed ingress review — PR #2312 (2026-11-22)
 
 The audio path is not the same as the MediaProjection UI adapter in #2375. The current Perception signed one-shot audio consumer is [PR #2312](https://github.com/RedMentos/Aii/pull/2312), exact code head `5221314d3c01ab6d874ecc0a8b8ff72c34e504a2`, stacked on QA PR #2286. It builds a one-second-or-less mono 44.1-kHz PCM16 request (88,200-byte cap / 117,600 Base64 chars), verifies the pinned P-256 companion receipt, request/nonce replay, source, Runtime generation, PCM digest, sample geometry, monotonic interval, Android RECORD_AUDIO status, local consent and FINAL provenance, then submits to the existing RAW EAR `audio_input.submit_audio_only` consumer. It persists replay metadata only. It does not open AudioRecord, request permission, run in the background, transcribe, identify speakers, update weights, grant T8 learning or authorize actions.
 
