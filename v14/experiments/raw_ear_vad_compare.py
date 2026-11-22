@@ -17,6 +17,7 @@ import ctypes
 import ctypes.util
 import hashlib
 import importlib.util
+from functools import lru_cache
 import json
 import math
 import platform
@@ -127,7 +128,7 @@ def _load_temporal_class(source_path: Path):
 def _load_v3_extractor(source_path: Path):
     raw = source_path.read_bytes()
     tree = ast.parse(raw, filename=str(source_path))
-    wanted_functions = {"_estimate_pitch", "_percentile", "validate_voice_cues", "extract_voice_cues"}
+    wanted_functions = {"_estimate_pitch", "_voice_decimator_coefficients", "_anti_alias_decimate", "_percentile", "validate_voice_cues", "extract_voice_cues"}
     selected = []
     found = set()
     for node in tree.body:
@@ -142,7 +143,7 @@ def _load_v3_extractor(source_path: Path):
     missing = wanted_functions - found
     if missing:
         raise RuntimeError("V3 source is missing functions: " + ", ".join(sorted(missing)))
-    namespace = {"math": math, "struct": struct, "median": statistics.median}
+    namespace = {"math": math, "struct": struct, "median": statistics.median, "lru_cache": lru_cache}
     isolated = ast.Module(body=selected, type_ignores=[])
     exec(compile(isolated, str(source_path), "exec"), namespace)
     extractor = namespace["extract_voice_cues"]

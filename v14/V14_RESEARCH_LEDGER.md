@@ -901,6 +901,19 @@ This correction supersedes older branch-level status claims without deleting the
 **Decision:** RESEARCH_ONLY / NOT_SELECTED / NOT_DOWNLOADED. No model, dependency or weight was installed. ARM latency/RSS, quantization, accuracy on local conversational audio and data-license suitability remain unmeasured.
 
 
+## R-077 — symmetric RAW EAR FIR decimation on constrained CPU (2026-11-22)
+
+**Primary method reference:** SciPy's official `signal.decimate` documentation specifies anti-alias filtering before downsampling and documents a Hamming-window FIR option: https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.decimate.html . The V14 implementation does not import SciPy or copy its implementation; it uses a small standard-library Hamming-windowed sinc filter to avoid a SciPy/NumPy Android dependency.
+
+**Implementation:** the RAW EAR pitch/voicing feature view now applies a cached centered odd-tap low-pass FIR before integer decimation. Symmetric-pair convolution preserves the same linear-phase output while reducing coefficient multiplications. The cutoff, tap count, endpoint reflection, sample geometry and timestamps are unchanged. This is only a pitch/voicing feature decimator, not a calibrated VAD, speaker-embedding resampler or playback resampler.
+
+**LOCAL_LINUX evidence:** CPython 3.13.5 x86_64, isolated algorithm reproduction. Direct-reference parity passed 36 seeded/random rate-length cases across 16, 22.05, 44.1 and 48 kHz with maximum absolute difference below 2e-11. Warm-cache 11-run medians on one second of 140-Hz full-scale PCM improved 12.1–19.5% in the isolated decimator. These are host-only timings, not whole-pipeline or Redmi measurements.
+
+**Exact-head CI boundary:** the Perception producer and comparator pins are internally aligned, and the producer's A5→A4→C3 regressions pass on the Perception candidate. Staged/integrated CI on that candidate fails at the Core-owned composer source pin; the recovery/stage/deployer chain must be rebound and rerun on the combined candidate before merge. No Android AudioRecord, ARM runtime, Termux or Redmi test is claimed.
+
+**Decision:** CANDIDATE_FOR_INTEGRATION / NO_DEPENDENCY / NO_DEVICE_CLAIM. Keep deterministic acoustic labels heuristic and retain the calibrated-probability limitation. Do not infer device speedup or production deployment from x86 timings.
+
+
 ## R-078 — llama.cpp native input-embedding API and license check (2026-11-22)
 
 **Primary source/revision:** [ggml-org/llama.cpp revision b29c606e28a01b1bc8c1351026a0fa6e616bf6c4](https://github.com/ggml-org/llama.cpp/tree/b29c606e28a01b1bc8c1351026a0fa6e616bf6c4). The exact-revision [LICENSE](https://github.com/ggml-org/llama.cpp/blob/b29c606e28a01b1bc8c1351026a0fa6e616bf6c4/LICENSE) is MIT (ggml authors, 2023–2026). The pinned [include/llama.h](https://github.com/ggml-org/llama.cpp/blob/b29c606e28a01b1bc8c1351026a0fa6e616bf6c4/include/llama.h) defines `llama_batch.embd` as the float embedding input when `token == NULL`, documents `llama_decode` over that batch, and exposes `llama_get_embeddings_ith` for output embeddings.
