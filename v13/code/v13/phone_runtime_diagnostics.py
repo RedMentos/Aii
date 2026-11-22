@@ -43,8 +43,8 @@ RUNNER_BOUNDS = {
 RUNNER_STAGES = ("load_s", "template_s", "prefill_to_first_token_s", "stream_s")
 SERVER_VERSION_STATUSES = frozenset({"VERIFIED_REVISION_PREFIX", "REVISION_ONLY", "VERSION_ONLY",
                                      "UNAVAILABLE", "TIMEOUT", "NONZERO_EXIT", "UNPARSEABLE"})
-SERVER_VERSION_PATTERN = re.compile(r"[0-9][A-Za-z0-9._+-]{0,63}\\Z")
-SERVER_REVISION_PATTERN = re.compile(r"[0-9a-f]{7,40}\\Z")
+SERVER_VERSION_PATTERN = re.compile(r"[0-9][A-Za-z0-9._+-]{0,63}\Z")
+SERVER_REVISION_PATTERN = re.compile(r"[0-9a-f]{7,40}\Z")
 PROMPT_CACHE_POLICY_REVISION = "v13.llama-prompt-cache-policy/1"
 ADMISSION_STATES = frozenset({"ADMITTED", "PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET"})
 ADMISSION_OMISSIONS = frozenset({
@@ -109,8 +109,9 @@ def _project(status, metadata):
             runner["last_phase"] = source["last_phase"]
         if isinstance(source.get("status"), str) and source["status"] in STATUSES:
             runner["status"] = source["status"]
-        if source.get("server_version_status") in SERVER_VERSION_STATUSES:
-            runner["server_version_status"] = source["server_version_status"]
+        version_status=source.get("server_version_status")
+        if isinstance(version_status,str) and version_status in SERVER_VERSION_STATUSES:
+            runner["server_version_status"] = version_status
         version=source.get("server_version")
         if isinstance(version,str) and SERVER_VERSION_PATTERN.fullmatch(version):
             runner["server_version"] = version
