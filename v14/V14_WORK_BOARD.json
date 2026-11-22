@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T18:00:05.009Z",
-  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4 after documentation-only #2340 merge; 37 exact push checks queued. Redmi remains authenticated-installed at c4eb82 with runtime/dashboard UP_TO_DATE; no new update request.",
+  "updated_at": "2026-11-22T18:02:28.124Z",
+  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4 after documentation-only #2340 merge; exact push workflows remain queued. Redmi remains authenticated-installed at c4eb82; functional acceptance open.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -108,10 +108,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "CI failure evidence; no accepted native/weight proof",
-      "next_step": "JEPA/Boss: #2331 current head 535eba6f668b3990416c361368f36e3e8f1e599e on base b3b92 has 9 failed / 4 in progress / 2 queued / 4 success / 1 skipped. Six immediate-consumer source pins mismatch exact file bytes (memory_world→feedback, feedback→context, lifecycle→memory_world, memory.py→lifecycle, recovery21→stage, stage→deployer); full hashes are in the Boss review comment 7077507340. Recompute bottom-up after the final source edits, rerun Python 3.13/3.14, staged/integrated, optimizer, Lab-Age, migration and source-forget tests. Keep DRAFT and learning promotion OFF.",
+      "proof_environment": "GitHub CI only; no Redmi weight update or native temporal-learning proof",
+      "next_step": "JEPA/QA/Boss: #2331 is CLOSED on stale base b3b92. Current #2351 has 9 failed / 4 passed / 1 skipped: NONCONTIGUOUS_HISTORY and RETENTION_GATE_REJECTED (128 receipts, 144 windows). #2359 has 9 failures / 4 passed due memory.py cleanup anchor/source pin and Body/World builder hash. #2355 has 6 failures / 1 passed. Rebuild one bottom-up staged tree; never weaken retention or rebind only one leaf.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-22T18:02:28.124Z",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -163,7 +163,7 @@
         "ci": "PR_HEAD_STAGED_249_10SKIP_47_INTEGRATED_424_3SKIP_58_PY313_314_64_EACH; MERGED_PUSH_30_OF_30_SUCCESS",
         "scope": "production Runtime/SleepRuntime Store-backed WorldJEPA numeric consumer with persistent Adam/inverse/RNG optimizer state, gated legacy optimizer bootstrap, per-role held-out-vs-mean/zero/shuffled Planner receiver gate, Android no-clobber renameat2 checkpoint publication"
       },
-      "proof": "JEPA PR #2311 exact head ad3b278d has 11 failures; dominant staged failure is stale integrated OnlineWorld SHA at integrated_predictor_stream_guard_20261110.py:45, with additional observer runtime/source pin failures. It also removes current #2323 diagnostic receiver files. No accepted persistent weight update."
+      "proof": "JEPA PR #2311 exact head ad3b278d has 11 failures; dominant staged failure is stale integrated OnlineWorld SHA at integrated_predictor_stream_guard_20261110.py:45, with additional observer runtime/source pin failures. It also removes current #2323 diagnostic receiver files. No accepted persistent weight update.; 2026-11-22T18:02:28.124Z: #2331 closed; #2351/#2359/#2355 current heads and exact failure counts in latest_checkpoint; no accepted numeric update or retention proof."
     },
     {
       "id": "V14-005",
@@ -196,10 +196,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Perception: preserve the #2327 RAW EAR FIR anti-alias feature path and its staged A5/A4/C3 regression; do not equate caller-supplied PCM with Android microphone capture. Next, reconcile the signed one-shot consumer with QA's companion provider and measure Android lifecycle/route/silence/revocation only after explicit device permission.",
+      "proof_environment": "Synthetic Linux CI only; no Android camera/MediaProjection/vision runtime proof",
+      "next_step": "Perception/Core: #2363 has 11/12 checks green but is stale-base and lacks the normal Runtime call site; keep WIRED_SYNTHETIC/DRAFT until actual image turn invokes the bridge and C3 consumes its envelope. #2362 date guard has 4 failures; do not merge. Preserve raw image source and consent; no camera/screen provider is claimed.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-22T18:02:28.124Z",
       "latest_candidate_pr": {
         "pr": 2312,
         "head_sha": "5221314d3c01ab6d874ecc0a8b8ff72c34e504a2",
@@ -208,7 +208,7 @@
         "scope": "signed one-shot RAW EAR consumer; Android-guaranteed 44.1 kHz mono PCM16; 88,200-byte / 117,600-character one-second cap; exact source/generation/signature/consent/replay checks; no microphone provider or learning/action authority",
         "ci": "RUN_44992975596_PENDING; RUN_44992975599_QUEUED"
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture."
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture.; 2026-11-22T18:02:28.124Z: #2363 11 success/1 skipped, no runtime call-site, base c4eb82; #2362 4 failures."
     },
     {
       "id": "V14-007",
@@ -220,10 +220,10 @@
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
       "proof_environment": "GitHub merge + CI; no full local checkout",
-      "next_step": "Boss: maintain b3b92 as the single release-development base, review current #2331 exact-head failures, rebase stale #2311/#2313/#2312 stacks without copying stale Boss-owned docs, and keep the clause-level Canon ledger tied to real consumers/tests/platform/rollback.",
+      "next_step": "Boss: #2340 merged documentation-only as aed1d2; exact release push CI still queued and phone remains c4eb82. #2343 anchor correction is queued; #2346 has two paired-capture failures; JEPA stack #2351/#2359/#2355 is red; #2363 green only on stale base and not runtime-wired. Review/integrate only after source chain, base and exact matrix reconcile.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
-      "proof": "Boss merged Core #2325 and combined Perception/Core #2327 on the fixed release branch; exact candidate and post-merge evidence are tracked by SHA. Master and historical Canon are unchanged. #2329 merged as b3b92f41; exact push CI pending; phone still 283ac1. #519 update request pending."
+      "last_checkpoint": "2026-11-22T18:02:28.124Z",
+      "proof": "Boss merged Core #2325 and combined Perception/Core #2327 on the fixed release branch; exact candidate and post-merge evidence are tracked by SHA. Master and historical Canon are unchanged. #2329 merged as b3b92f41; exact push CI pending; phone still 283ac1. #519 update request pending.; 2026-11-22T18:02:28.124Z: #2340 merged docs-only; release aed1d2 push CI pending; phone c4eb82; current PR matrix recorded in latest_checkpoint."
     },
     {
       "id": "V14-008",
@@ -806,7 +806,7 @@
     }
   ],
   "latest_checkpoint": {
-    "timestamp": "2026-11-22T18:00:05.009Z",
+    "timestamp": "2026-11-22T18:02:28.124Z",
     "release_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "exact_sha_ci": "53/53 SUCCESS",
     "device": "AUTHENTICATED_INSTALLED; auto-update enabled; runtime/dashboard UP_TO_DATE; last_error NONE",
@@ -836,25 +836,45 @@
     "prs": {
       "2343": {
         "head": "8e5cabb661ba3bada4fa63af24935f2a7a0bf0b2",
-        "status": "DRAFT; new push workflow 45051950747 QUEUED; source-anchor correction committed; local isolated anchor simulation PASS"
+        "status": "DRAFT; source-anchor correction committed; exact push workflow 45051950747 QUEUED"
       },
       "2346": {
         "head": "d2c459288c99a5b4e4fa43fce32bd028c142e0c3",
-        "status": "DRAFT; paired-capture 2 failures; 21 queued; 1 skipped"
+        "status": "DRAFT; paired-capture 2 failures, 21 queued, 1 skipped"
+      },
+      "2351": {
+        "head": "3f4277e303f19e442c3e9563c8322f0afca12f64",
+        "status": "DRAFT; 9 failures, 4 success, 1 skipped; temporal history/retention gate failures"
+      },
+      "2355": {
+        "head": "f9c9c187eb3870fa9bdd3015e9ef89de61f17b02",
+        "status": "DRAFT; 6 failures, 1 success; stacked on #2351"
+      },
+      "2359": {
+        "head": "7aa82b10917bb183f82eb886dfeff7663a2f2b80",
+        "status": "DRAFT; 9 failures, 4 success; source-lifecycle pin/anchor failures"
+      },
+      "2362": {
+        "head": "4629249a27134ae1aa651b8bccf11357614aec1d",
+        "status": "DRAFT; 4 failures, 1 success, 2 skipped"
+      },
+      "2363": {
+        "head": "035eae7805d100a8de9c2ea9e3b1210fd6db4af7",
+        "status": "DRAFT; 11 success, 1 skipped; no Runtime call-site; base stale c4eb82"
       },
       "2364": {
         "head": "73b30a0a04eef676afc0f5b843aaeb98fe0470ea",
         "status": "DRAFT; 12 checks queued"
       },
       "2365": {
-        "status": "DRAFT documentation/research handoff; exact-head CI pending (use PR's current head as authority)"
+        "status": "DRAFT evidence/research handoff; exact-head CI pending (use PR current head)"
       }
     },
     "local_full_suite": "BLOCKED_NO_CHECKOUT_AND_GITHUB_DNS",
     "redmi_functional_acceptance": "OPEN_P0_1904",
     "user_action_required": false,
     "release_branch_head": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
-    "release_branch_push_ci": "37 CHECKS QUEUED",
+    "release_branch_push_ci": "37 exact check-runs queued at last check; 26 workflow runs queued and 1 cancelled",
     "device_installed_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "potential_prompt_cache_privacy_risk": "P0_INVESTIGATION_OPEN; not reproduced on V13; no cache setting changed",
     "upstream_llama_cpp_issue": "#27148 OPEN; #27624 OPEN; #30295 MERGED for distinct busy-pinned-slot path",
