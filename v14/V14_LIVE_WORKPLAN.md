@@ -1235,3 +1235,14 @@ The 679f audio run showed that rebinding only Context-source recall was insuffic
 ### Next integration step
 
 Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, migration, owner-read and deployer workflows. Fix only measured current-head failures. Keep the PR DRAFT and NOT_RELEASED. The #2280 C4 receipt, #2281 Age-rights, #2282 shared-blob race, #2283 rollback, #2285 audio QA and #2275 RAW EAR changes must be rebased and tested on this same base; old-base green results are not accepted. Private PIPELINE_STATUS #453 is still unanswered, so REDMI_UNVERIFIED. User action: none.
+
+
+## Research & Perception — RAW EYE source revocation atomicity — 2026-11-22T17:57Z
+
+- **Candidate:** PR [#2366](https://github.com/RedMentos/Aii/pull/2366), branch `research-perception/v14-vision-source-revocation-atomic-20261122`, code head `ce5b07da720c4d8751bc4fa09042337996a1081d` at the time of PR creation. Base is the current release-development head `aed1d2b826290c95c70356b5d8b864b5ef382be4`; this is not a release.
+- **Defect:** stored IMAGE reads/A5 feature extraction and `:image forget` were not serialized. A forget could unlink a blob during in-flight visual context construction; concurrent same-hash re-ingest could publish a live row between the final refcount check and unlink.
+- **Code:** `vision.ingest/read_image/forget` now share Store RLock; the complete ephemeral `consume_visual_source` A5/A4/admission path holds that same re-entrant lock. Text path, Age, learning authority, camera/screen providers and Runtime dispatch are unchanged.
+- **LOCAL_LINUX:** CPython 3.13.5 isolated two-interleaving harness **2/2 PASS** (fake Store; not full Aii integration). Full local checkout is blocked by GitHub DNS; no repository pytest claim.
+- **CI:** exact PR Python 3.13/3.14 RAW EAR/RAW EYE, staged-runtime, integrated-regression, privacy and offline bridge checks were queued at last read. Do not promote until exact-head CI finishes.
+- **REDMI:** NOT_RUN / REDMI_UNVERIFIED. The visual adapter is still not invoked by normal Runtime; no Android camera/screen capture, teacher/VLM, trained projector, semantic recognition or phone result.
+- **Next:** review exact CI and the two committed barrier regressions; then hand the source-lifecycle contract to Core for normal Runtime invocation. No user action or deployment requested.
