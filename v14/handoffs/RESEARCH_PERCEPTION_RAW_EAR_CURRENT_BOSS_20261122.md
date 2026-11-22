@@ -37,3 +37,25 @@ Owner: Research & Perception
 Wait for this exact PR head's Python 3.13/3.14 audio, VAD, staged/integrated, migration, owner-read, privacy and deployer checks; fix only exact reproduced failures. Boss/QA then review integration. Keep microphone, model, speaker decision and learning gates OFF until separate evidence and authorization.
 
 Status: DRAFT / NOT_RELEASED / REDMI_UNVERIFIED. User action: none.
+
+
+## Exact-head CI checkpoint (2026-11-22T04:21:17.255Z)
+
+- Tested code-bearing commit: `5010ba083f0480d4e2249a4246cb13d453827f93`; PR #2304; all **15/15** check-runs SUCCESS.
+- RAW EAR fastpath: `py_compile` plus 73 tests on Python 3.13.18 and 73 tests on Python 3.14.10. CI benchmark only: Python autocorrelation median 115.48 ms (3.13) / 189.67 ms (3.14); NumPy median 5.38/8.99 ms; speaker-evidence consumer median 0.617/1.042 ms. NumPy remains opt-in; these are hosted-runner figures, not Redmi measurements.
+- VAD comparison: 8 tests PASS on each Python version; exact workflow source hash equals `596d14487b9f2b28609eea79fb8b1b39f8da009c`.
+- Staged runtime: 252 passed, 10 skipped, 47 subtests; staged ContextOS source recall 15 passed; arithmetic/output policy 39 passed and 17 subtests. Integrated regression: 424 passed, 3 skipped, 58 subtests. Composed C4/C3 consumer: 10 focused tests PASS on each Python version. CI also passed runtime-deployment-integrity, two-checkout migration, owner-read, lab-age E2E, and offline bridge security. These are CI/synthetic checks, not Android proof.
+- Current Boss base head `6e6f15322c9fa1931dcf733105d2a32d5372edeb`: 29 success, 0 failure, 1 skipped. The code-bearing parent `483ef6ddc7140bf76f197d538ec973df42dd95e0`: 26 success, 0 failure, 1 skipped.
+- Local full suite remains BLOCKED because the runner has no repository checkout and GitHub DNS cannot resolve. No current local test PASS is claimed.
+
+## Private device status
+- Private V13OBS issue #115 last receipt updated 2026-11-18: auto-update enabled and dashboard says UPDATED, but runtime is ERROR and last result PARTIAL; the observation is stale.
+- Private V13READ issue #461 remains open with no device_status comment/receipt. Status: `NO_LIVE_RECEIPT`; current install, updater operation and runtime response are not verified. No update request or device action was sent.
+
+## R-071 model research
+- FASTDIAR (arXiv:2610.02941, 2026-10-02): 80-ms embeddings, 2-s past context, 960-ms delay; code MIT, checkpoint license unresolved; desktop CPU evidence only.
+- Nemotron 3 Diarization (arXiv:2611.12246, 2026-11-09): 99M params, 8 speakers, 0.32–1.04-s buffer, OpenMDW-1.1 weights; GPU results only; teacher reference, not Redmi candidate.
+- eDIAR (arXiv:2611.18529, 2026-11-13): Apache-2.0 code/no weights, 99.2M+6.6M models, 90-s bounded clustering, 10-s revision, 1.9–3.8 GiB CPU RSS, English-only/no far-field. Algorithm reference only; no cross-recording identity linking in V14 without explicit consent.
+- No model or weights were downloaded, selected, or swapped.
+
+Status remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED. Next: Boss/QA review and separate consent-gated Android AudioRecord provider, then real Redmi measurements.

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T04:13:21Z",
+  "updated_at": "2026-11-22T04:21:17.255Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -142,10 +142,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Registry, licensing, alternatives for C3/B1/B2 and controller",
       "acceptance": "Dated candidate matrix, reproducible local/Redmi timing-quality comparisons, isolated try/rollback, UI proposal without replacing active models",
-      "proof_environment": "Perception #2299 current head fa53e3a54fa1600f3ed881f75ef6ce5ab6cc3a16 has only offline-bridge-security on a stale base; QA audio/date-ambiguity #2285 has 5/5 focused checks on old base 9922cf. No current Boss full audio matrix or native microphone evidence.",
-      "next_step": "Perception: rebase RAW EAR temporal/speaker evidence and the audio lease QA onto 483ef; keep pre-batch history frozen, derive age from timestamps, refresh every audio→recovery→stage→deployer pin and preserve calibrated-model DEFER.",
+      "proof_environment": "Research-only model comparison R-071 (2026-11-22): FASTDIAR Small 2.4M (repo MIT; checkpoint license unresolved; 80-ms embeddings/2-s context/960-ms delay; desktop Threadripper CPU only); Nemotron 3 99M (OpenMDW-1.1 weights, 0.32–1.04-s buffers, RTX PRO 5000 GPU results; too large for Redmi); eDIAR Apache-2.0 code/no weights, 99.2M+6.6M models, 90-s clustering window/10-s revisions, 1.9–3.8 GiB CPU RSS in paper. No candidate downloaded, no phone comparison, no active model changed.",
+      "next_step": "Do not select or download a model yet. If the user later approves an isolated experiment, first verify FASTDIAR checkpoint license/provenance and compare it against current pitch/prosody cues on source-disjoint audio; measure CPU RSS, chunk latency, overlap, EER/DER, false speaker-change and rollback. Redmi-native test before any recommendation or productive swap.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T03:55:43.537Z",
+      "last_checkpoint": "2026-11-22T04:21:17.255Z",
       "latest_candidate_pr": {
         "pr": 2142,
         "head_sha": "67c1300093dd99ffcf818f370fff29b58fd7fc3b",
@@ -153,7 +153,33 @@
         "ci": "PASS_44861145442_23_TESTS",
         "scope": "read-only sequential C3 candidate lab; native inference NOT_RUN"
       },
-      "proof": "Perception PR #2256 head 08fce3420ff2fc548276c421e99e79390d78e910 failed the RAW EAR speaker-evidence tests on Python 3.13 and 3.14: test_low_similarity_without_voiced_activity_is_not_speaker_change expected confidence_gate_passed=false but got true; test_missing_threshold_emits_score_without_a_decision expected change_score=0.5 but got 0.0. Inspection shows later frames in the same incoming batch are added to the look-back state and then reused as their own reference, overwriting the earlier cross-window score. No model/dependency download or swap occurred."
+      "proof": "Perception PR #2256 head 08fce3420ff2fc548276c421e99e79390d78e910 failed the RAW EAR speaker-evidence tests on Python 3.13 and 3.14: test_low_similarity_without_voiced_activity_is_not_speaker_change expected confidence_gate_passed=false but got true; test_missing_threshold_emits_score_without_a_decision expected change_score=0.5 but got 0.0. Inspection shows later frames in the same incoming batch are added to the look-back state and then reused as their own reference, overwriting the earlier cross-window score. No model/dependency download or swap occurred.",
+      "candidate_matrix": [
+        {
+          "name": "FASTDIAR Small",
+          "parameters": "2.4M repo / 2.7M paper",
+          "license": "MIT code; checkpoint license unresolved",
+          "latency": "80 ms frame, 2 s past context, 960 ms fixed delay",
+          "evidence": "RTF 0.05–0.19 on Threadripper PRO 5995WX; not Android",
+          "status": "RESEARCH_ONLY"
+        },
+        {
+          "name": "Nemotron 3 Diarization",
+          "parameters": "99M",
+          "license": "OpenMDW-1.1 weights; NeMo code",
+          "latency": "0.32–1.04 s buffer; GPU benchmark",
+          "evidence": "RTX PRO 5000 Blackwell; 64×A100 training",
+          "status": "TEACHER_ONLY_NOT_REDMI"
+        },
+        {
+          "name": "eDIAR",
+          "parameters": "99.2M head + 6.6M embedding model",
+          "license": "Apache-2.0 code; no weights included",
+          "latency": "0.64/1.04 s buffer; 90 s cluster window; 10 s revision",
+          "evidence": "1.9–3.8 GiB CPU RSS, English-only, no far-field evaluation",
+          "status": "ALGORITHM_REFERENCE_ONLY"
+        }
+      ]
     },
     {
       "id": "V14-006",
@@ -337,19 +363,19 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Caller-supplied mono PCM16 audio-only ingress into staged Runtime; source/generation-bound bounded speaker-similarity diagnostics; process-local vectors; A5 PerceptPacket → A4 decision → C3 scalar summary; NumPy pitch explicit opt-in; no identity labels or microphone capture.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "Perception PR #2304 head 5127fa0c1f40eae139cab32dd2b3dd116a6d3227, code commit cfccb91ac9a3ff49f8aae259f92ad8118eaf19c5, based on Boss head 6e6f15322c9fa1931dcf733105d2a32d5372edeb. Exact GitHub blob/source-pin readback PASS: audio_voice_cues 596d1448..., speaker evidence 37aa9c39..., integrated audio builder f79f5c2e..., recovery SHA-256 0ad300e4..., stage SHA-256 c24fae1a..., deployer pin matches. Full LOCAL_LINUX suite BLOCKED (no checkout; github.com DNS unavailable); exact-head CI not yet observed. No microphone/model/Redmi proof; NOT_RELEASED.",
-      "next_step": "Perception/Core/QA: wait for exact-head Python 3.13/3.14 audio, VAD, staged/integrated, migration, owner-read, privacy and deployer CI; fix only reproduced failures. Then Boss review/integration. Keep uncalibrated speaker evidence DEFER and microphone/model/learning gates OFF.",
+      "proof_environment": "PR #2304 code-tested head 5010ba083f0480d4e2249a4246cb13d453827f93; Perception code commit cfccb91ac9a3ff49f8aae259f92ad8118eaf19c5; current Boss base 6e6f15322c9fa1931dcf733105d2a32d5372edeb (29 checks success, 0 fail, 1 expected skip). Exact PR code head: 15/15 check-runs SUCCESS. RAW EAR focused tests: 73 passed on Python 3.13 and 73 on 3.14; VAD comparison 8 passed on each; staged runtime 252 passed/10 skipped/47 subtests; staged context recall 15 passed; arithmetic/output policy 39 passed/17 subtests; integrated regression 424 passed/3 skipped/58 subtests; composed C4/C3 consumer suites 10 focused tests per Python 3.13/3.14. LOCAL_LINUX full suite BLOCKED (no checkout; github.com DNS unavailable). No Android microphone, native speaker encoder, native model, install or Redmi receipt. Private device status: last V13OBS issue #115 receipt is stale (2026-11-18; auto_enabled true but runtime ERROR / last_result PARTIAL); V13READ #461 has no device_status receipt: NO_LIVE_RECEIPT. NOT_RELEASED.",
+      "next_step": "Boss/QA review PR #2304 and integrate only after the current Boss base and exact-head checks remain green. Then implement an explicit-consent Android AudioRecord provider and prove source/revocation/lifecycle on the Redmi; keep mic OFF until user/OS consent. Keep speaker similarity diagnostic-only DEFER; no model download or swap.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T04:13:21Z",
+      "last_checkpoint": "2026-11-22T04:21:17.255Z",
       "latest_candidate_pr": {
         "pr": 2304,
-        "head_sha": "5127fa0c1f40eae139cab32dd2b3dd116a6d3227",
+        "head_sha": "5010ba083f0480d4e2249a4246cb13d453827f93",
         "code_commit_sha": "cfccb91ac9a3ff49f8aae259f92ad8118eaf19c5",
         "base_sha": "6e6f15322c9fa1931dcf733105d2a32d5372edeb",
-        "ci": "NOT_YET_OBSERVED",
+        "ci": "PASS_15_OF_15_ON_5010BA",
         "status": "DRAFT_NOT_RELEASED"
       },
-      "proof": "The staged audio overlay patches Runtime.submit to accept audio_window; audio_input.submit_audio_only submits a fixed no-transcript marker plus caller PCM16 with source/consent guard, two-phase revocation subscription and PROVISIONAL/FINAL provenance. Speaker embeddings remain caller-supplied and process-local; unverified thresholds yield raw cosine diagnostics only and A4/C3 DEFER. GitHub source-pin readback PASS. No current-head Python test or CI PASS is claimed; prior branch scratch results are historical. No microphone, native speaker encoder, native B1/B2/C3 inference, Android install or Redmi receipt."
+      "proof": "Exact source pins read back: audio_voice_cues 596d14487b9f2b28609eea79fb8b1b39f8da009c; audio_speaker_evidence 37aa9c392bbb68d60ccff9749c75b41b8783c539; integrated audio builder f79f5c2e36b396fbea2d5d9177729f72c0250c3d; recovery SHA-256 0ad300e467ecaa0befca6749a1ad9995fe9a715dc49c3556dd0462212a28ca6e; stage SHA-256 c24fae1a4cb9b1bc36c3e6064afd15cff432e65833940b46796a41ad697d0623; deployer STAGER_SHA256 matches. CI is synthetic/Linux only: 73 RAW EAR tests per Python 3.13/3.14, 8 VAD tests per version, 252 staged tests/10 skips/47 subtests, 424 integrated tests/3 skips/58 subtests, 10 composed C4/C3 tests per Python version; all 15 check-runs success. Benchmark medians: Python autocorrelation ~115.5 ms (3.13) / 189.7 ms (3.14), NumPy ~5.4/9.0 ms, speaker evidence consumer ~0.62/1.04 ms on CI runner only. No Android/Redmi or local full-suite evidence."
     },
     {
       "id": "V14-019",
@@ -923,6 +949,13 @@
       "status": "CODE_COMMITTED_PIN_READBACK_PASS_LOCAL_SUITE_BLOCKED_EXACT_CI_NOT_YET_OBSERVED",
       "primary": "PR #2304; R-058–R-069 in V14_RESEARCH_LEDGER.md; FASTDIAR arXiv:2610.02941; PACT-Check arXiv:2611.06976",
       "next": "Run exact 3.13/3.14 audio/VAD/staged/integrated/migration/privacy/deployer CI; keep calibration, microphone and model gates OFF until separate proof/consent."
+    },
+    {
+      "id": "R-071",
+      "topic": "FASTDIAR vs Nemotron 3 vs eDIAR: speaker cue model feasibility",
+      "status": "FULL_PAPER_AND_REPO_REVIEWED_RESEARCH_ONLY_NO_DOWNLOAD",
+      "primary": "arXiv:2610.02941; arXiv:2611.12246; arXiv:2611.18529; Microsoft/FASTDIAR; KyuDan1/eDIAR",
+      "next": "No swap. Verify FASTDIAR checkpoint license, then only with explicit approval run an isolated source-disjoint small-encoder benchmark and Redmi native memory/latency test."
     }
   ]
 }

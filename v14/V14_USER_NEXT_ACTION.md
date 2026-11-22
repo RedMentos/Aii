@@ -1442,3 +1442,11 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - Local full Aii suite: BLOCKED (no checkout; GitHub DNS unavailable). Previous scratch tests belong to an older code head and are not carried forward as current-head PASS. Exact-head GitHub CI will run only after the new PR is opened; no current-head CI PASS is claimed.
 - Android microphone, native speaker encoder, native model execution, Redmi performance and installation remain UNVERIFIED. No model/weight download or swap, permission, updater, device or user-data change.
 - Next: review exact-head 3.13/3.14 audio, VAD, staged, integrated, migration, privacy and deployer CI; fix only reproduced failures, then Boss/QA review. **User action: none.**
+
+## Research & Perception — 2026-11-22 (CI checkpoint)
+
+- Current PR: [#2304](https://github.com/RedMentos/Aii/pull/2304), draft, not merged/released. Code-bearing head tested: `5010ba083f0480d4e2249a4246cb13d453827f93`; implementation commit `cfccb91ac9a3ff49f8aae259f92ad8118eaf19c5`; base `6e6f15322c9fa1931dcf733105d2a32d5372edeb` (29 checks success, 0 fail, 1 skip).
+- Exact PR code head: 15/15 GitHub checks PASS. RAW EAR: 73 tests each on Python 3.13/3.14; VAD: 8 each; staged runtime: 252 passed/10 skipped/47 subtests; integrated regression: 424 passed/3 skipped/58 subtests; composed C4/C3 consumer: 10 focused tests each on Python 3.13/3.14. All CI/Linux/synthetic; no Redmi proof.
+- Local full suite remains BLOCKED: no Aii checkout and GitHub DNS failure. No phone receipt: private V13OBS #115 last receipt is stale (2026-11-18; auto-update enabled but runtime ERROR/PARTIAL); private V13READ #461 has no device_status: NO_LIVE_RECEIPT. No deployment was performed.
+- Research R-071: FASTDIAR Small is a plausible size candidate but its checkpoint license is unresolved; Nemotron 3 is a 99M-parameter OpenMDW-1.1 teacher candidate with GPU-only benchmarks; eDIAR is Apache-2.0 code but requires 99.2M+6.6M models and reports 1.9–3.8 GiB CPU RSS. None is selected or downloaded. Keep current model unchanged.
+- Next: Boss/QA review #2304, then separate consent-gated Android AudioRecord implementation and real Redmi test. Speaker similarity remains diagnostic-only DEFER. **User action: none.**
