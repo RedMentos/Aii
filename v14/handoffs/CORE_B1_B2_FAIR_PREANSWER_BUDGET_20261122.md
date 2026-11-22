@@ -1,23 +1,24 @@
 # Core handoff — fair same-turn B1/B2 pre-answer budget (2026-11-22)
 
-## Ownership and base
+## Ownership and current base
 
 - Owner: Core & Harness
 - Branch: `core/v14-fair-b1-b2-preanswer-budget-20261122`
-- Base: release-development HEAD `4af423e8f802918ae17cee4352d89dcb0df92e00`
+- Current release-development base: `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`
+- Rebased by a non-force merge commit; the intervening base commit changed only the JEPA Runtime-port test, not these Core files.
 - Scope: keep sequential B1_DETAIL and B2_GIST both eligible inside the existing C3-reserved whole-turn budget, then run a missing peer post-commit when only one body produced an offer. This is a software/runtime candidate; no Redmi effect is claimed.
 
 ## Defect and hypothesis
 
 The current `native_turn_budget.plan()` can reserve the minimum C3 window after repeated real zero-token C3 prefill deadlines, but `Cognition.offer()` then blanket-defers every pre-answer B1/B2 pass. The scheduler also gives the first sequential body the whole remaining observer deadline, and the post-commit observer path runs only when `offers` is completely empty. Consequently, one successful body can prevent its missing peer from receiving a later observation.
 
-The fix keeps the existing C3 reserve formula and Age/permission policy. It does not relax the C3 reserve, switch to parallel native loading, remove either body, or alter the official Age.
+The fix keeps the existing C3 reserve formula and Age/permission policy. It does not relax the C3 reserve, switch to parallel native loading, remove either body, or alter official Age.
 
 ## Runtime changes
 
 1. `native_turn_budget.plan()` accepts an optional per-role observer deadline, caps the role's available slice against the existing C3 reserve, requires strict integer token evidence for failures/successes, and exposes the minimum role slice.
-2. The Runtime caps the short-turn pre-answer observer window at the measured C3 reserve boundary.
-3. Sequential `observer_schedule.run()` allocates the remaining window fairly among remaining roles. The Runtime passes each role's individual deadline into `Cognition.offer()`.
+2. Runtime caps the short-turn pre-answer observer window at the measured C3 reserve boundary.
+3. Sequential `observer_schedule.run()` allocates the remaining window fairly among remaining roles. Runtime passes each role's individual deadline into `Cognition.offer()`.
 4. `Cognition.offer()` defers only if that role's slice is below 1.0 s; otherwise it logs `PREANSWER_BUDGETED` and attempts the source-bound offer.
 5. After a FINAL answer, the background path schedules only body roles that did not produce an offer. A missing peer is not suppressed merely because the other body succeeded.
 6. Store telemetry allows the bounded budget measurements and statuses without recording user text.
@@ -32,28 +33,16 @@ The fix keeps the existing C3 reserve formula and Age/permission policy. It does
 ## Verification status
 
 - LOCAL_FULL_REPOSITORY: BLOCKED — no Aii checkout is present; container GitHub DNS resolution fails. No local full-suite result is claimed.
-- CI: PENDING exact branch head.
-- SYNTHETIC_RUNTIME: pending CI. Tests use a real Runtime/Store with a fake C3 generator and bounded offer seams; they do not execute native GGUF inference.
-- TERMUX/REDMI: REDMI_UNVERIFIED for this change. The latest private read-only DIAGNOSTICS receipt reports installed commit `9c7a0ec2d58538be8b7fde9476db299f2a5dd7b8`, while current release-development HEAD is `4af423e8f802918ae17cee4352d89dcb0df92e00`. It records B1/B2 `TIME_BUDGET` 53.2/54.2 s and a prior 63.22 s turn / 42.48 s TTFT / 34.96 s prefill / 2 tokens. That is historical telemetry, not a new post-update user turn or proof of useful offers.
+- CI: PENDING exact current-base PR head.
+- Runtime tests use a real Runtime/Store with a fake C3 generator and bounded offer seams; they do not execute native GGUF inference.
+- Redmi: REDMI_UNVERIFIED for this change. Latest private read-only DIAGNOSTICS reports installed commit `9c7a0ec2d58538be8b7fde9476db299f2a5dd7b8`, not current release HEAD `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`. It records B1/B2 `TIME_BUDGET` 53.2/54.2 s and a prior 63.22 s turn / 42.48 s TTFT / 34.96 s prefill / 2 tokens. That is historical telemetry, not a new post-update user turn or proof of useful offers.
 - No model, weights, permissions, Age, user data or updater setting was changed. No phone command or device action was sent.
-
-## Acceptance still required
-
-On the exact installed Redmi build, use an owner-approved normal user turn to measure:
-- B1 and B2 native start/end, model revision, input/prompt tokens and valid source-bound offers
-- each body's actual allotted/elapsed slice and whether the peer re-enters
-- C4/JEF selected offer IDs and the exact offers consumed by C3
-- C3 TTFT, prefill, generated tokens, final correctness and total turn latency
-- PSS/RSS, model residency, cold/warm state and resource mode
-- negative controls: no recent C3 failures, one body disabled by resource mode, parallel mode, cancellation, and no remaining slice
-
-A post-commit offer is useful learning evidence but must never be counted as a contribution to the already committed answer. Keep B3 production OFF and do not promote any learning from these scheduling tests.
 
 ## Coordination
 
 - PR #1920 is an older, stale first-body half-slice candidate with an incompatible historical base; this current-head package is the replacement review candidate, not an automatic merge.
-- JEPA PR #2311 touches different Runtime hunks (worker preemption); this branch only changes the pre-answer scheduling and post-commit missing-peer regions. Re-run exact combined integration after any JEPA rebase.
-- Boss/Integrator owns shared board, workplan and `V14_USER_NEXT_ACTION.md`; this handoff is the Core-owned evidence path for that update.
+- JEPA PR #2311 touches different Runtime hunks (worker preemption); this branch only changes pre-answer scheduling and post-commit missing-peer regions. Re-run exact combined integration after any JEPA rebase.
+- Boss/Integrator owns shared board, workplan and `V14_USER_NEXT_ACTION.md`; this is the Core-owned evidence path for that update.
 
 ## Next action
 

@@ -843,3 +843,99 @@ def test_source_forget_guard_shares_training_file_lock(tmp_path):
     finally:
         store.close()
 
+
+
+def test_memory_forget_refuses_source_retained_by_rollback_world_jepa(tmp_path):
+    home = tmp_path / "brain-forget-rollback"
+    store, session = _make_store(home)
+    try:
+        _add_transitions(store, session, 0, 256)
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=120
+        )
+        result = consume_after_commit(store, home, limit=256)
+        assert result["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+
+        state, version = store.state("v14.world_jepa.store_consumer", None)
+        retained = state["active"]
+        source_id = retained["experience_rows"][0]["source_id"]
+        state = dict(state)
+        state["active"] = None
+        state["previous"] = retained
+        state["scan_cursor"] = 0
+        store.set_state(
+            "v14.world_jepa.store_consumer", state, expected=version
+        )
+
+        with pytest.raises(ValueError, match="rollback checkpoint"):
+            _memory_forget_source(store, source_id)
+
+        source = store.one("SELECT deleted FROM sources WHERE id=?", (source_id,))
+        assert source is not None and source["deleted"] == 0
+        current, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert current["previous"]["checkpoint_sha256"] == retained["checkpoint_sha256"]
+    finally:
+        store.close()
+
+
+def _hold_world_jepa_file_lock(lock_path, ready, release):
+    import fcntl
+
+    with open(lock_path, "a+b") as lock:
+        fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+        ready.set()
+        release.wait(5.0)
+        fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
+
+
+def test_source_forget_guard_waits_for_cross_process_training_lock(tmp_path):
+    import multiprocessing
+    import time
+    from threading import Event, Thread
+    from v13.world_jepa_consumer import source_forget_guard
+
+    home = tmp_path / "brain-forget-cross-process"
+    store, _session = _make_store(home)
+    process = None
+    release = None
+    try:
+        consumer = WorldJEPAStoreConsumer(
+            store, home / "world_jepa", learning_enabled=False
+        )
+        context = multiprocessing.get_context("spawn")
+        ready, release = context.Event(), context.Event()
+        process = context.Process(
+            target=_hold_world_jepa_file_lock,
+            args=(str(consumer.lock_path), ready, release),
+        )
+        process.start()
+        assert ready.wait(3.0), "separate process did not acquire WorldJEPA lock"
+
+        timer_fired = Event()
+
+        def release_after_delay():
+            time.sleep(0.25)
+            release.set()
+            timer_fired.set()
+
+        timer = Thread(target=release_after_delay, daemon=True)
+        timer.start()
+        started = time.monotonic()
+        with source_forget_guard(store, "qa-cross-process-lock-source"):
+            pass
+        elapsed = time.monotonic() - started
+
+        timer.join(2.0)
+        process.join(3.0)
+        assert timer_fired.is_set()
+        assert elapsed >= 0.15, "source forget bypassed the other process's training lock"
+        assert process.exitcode == 0
+    finally:
+        if release is not None:
+            release.set()
+        if process is not None:
+            process.join(3.0)
+            if process.is_alive():
+                process.terminate()
+                process.join(1.0)
+        store.close()
