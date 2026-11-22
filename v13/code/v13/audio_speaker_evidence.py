@@ -1,8 +1,9 @@
-"""Bounded source-bound speaker-change evidence from local frame embeddings.
+"""Bounded source-bound speaker-similarity diagnostics from local frame embeddings.
 
-This consumes optional embeddings supplied by a local teacher/encoder. It is not
-speaker recognition or a full diarizer. Embeddings stay in RAM; persisted packets
-contain only similarity evidence and model/source provenance, never vectors.
+Caller-supplied thresholds are unverified and cannot produce speaker decisions.
+A separately validated, model-bound calibration artifact is required first.
+This is not speaker recognition or a full diarizer. Embeddings stay in RAM;
+persisted packets contain similarity evidence and provenance, never vectors.
 """
 from __future__ import annotations
 
@@ -13,7 +14,7 @@ import re
 import threading
 
 SCHEMA = "v14.raw-ear-speaker-embeddings/1"
-METHOD = "FASTDIAR_COSINE_LOOKBACK_V1"
+METHOD = "COSINE_LOOKBACK_DIAGNOSTIC_V1"
 _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 _ACTIVITY = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}
 
