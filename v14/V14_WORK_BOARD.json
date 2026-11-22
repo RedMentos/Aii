@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T21:10:30.220Z",
+  "updated_at": "2026-11-22T21:11:36.118Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; exact SHA readback 30/30 observed check-runs SUCCESS. Authenticated private PIPELINE_STATUS #619 confirms the same SHA installed, auto-update enabled, runtime/dashboard UP_TO_DATE and last_error NONE. DIAGNOSTICS #620 still shows a slow 2-token stored turn and B1/B2 TIME_BUDGET. Current candidates remain DRAFT / CI pending; functional and whole-Canon acceptance remain open.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -250,7 +250,7 @@
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
       "proof_environment": "CI only; no APK install, pairing or Redmi OS action",
-      "next_step": "Core/QA: Android companion still has no AudioRecord/RECORD_AUDIO provider or MediaProjection provider. Perception #2312 only verifies a signed one-shot result in Termux; implement visible foreground provider, AudioRecordingCallback, exact sample/route/silence checks and explicit consent before any mic test. #2375 remains a synthetic frame consumer only.",
+      "next_step": "Core/QA: current companion ref 7650ae0 has no RECORD_AUDIO manifest permission; CapabilityRegistry marks audio_capture unavailable and AudioCaptureDefaultOffTest confirms default-OFF. PR #2312 is only a signed Termux consumer and still has historical base 58666dd. Implement visible foreground AudioRecord provider after QA/Boss parent reconciliation; no mic capture authorized.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T11:38:04.785Z",
       "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance."
@@ -387,7 +387,7 @@
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
       "proof_environment": "LOCAL_LINUX isolated + CI candidate; no Android audio",
-      "next_step": "Perception: #2312 44.1-kHz signed one-shot consumer has dedicated CI PASS but is not an Android microphone provider; staged migration still fails. #2310 16-kHz predecessor must not merge. FASTDIAR/speaker calibration remains diagnostic-only; require consented continuous PCM provider, source-disjoint real corpus and target-device measurement before speaker-change promotion.",
+      "next_step": "Perception: #2312 44.1-kHz signed one-shot consumer has dedicated CI PASS but is not an Android microphone provider; staged migration still fails and historical base 58666dd needs rebase. QA ref 7650ae0 explicitly leaves audio_capture unavailable / RECORD_AUDIO absent. #2310 16-kHz predecessor must not merge. FASTDIAR/speaker calibration remains diagnostic-only.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T09:58:33.516Z",
       "latest_candidate_pr": {
@@ -1009,7 +1009,7 @@
       "topic": "Android AudioRecord capture geometry and signed RAW EAR ingress",
       "status": "OFFICIAL_API_REVIEWED; SIGNED_TERMUX_CONSUMER_CI_PASS; STAGED_MIGRATION_FAIL; ANDROID_PROVIDER_ABSENT",
       "primary": "Android AudioRecord / AudioFormat / Sharing audio input API docs; Perception PR #2312 exact head 5221314d",
-      "next": "Core/QA: visible foreground AudioRecord provider; check getState/getSampleRate, register AudioRecordingCallback before capture, reject silence/route/preprocessing/format changes, bind exact client PCM and clear one-shot buffer. Perception: rebase #2312 and deduplicate #2304 after QA parent is integrated."
+      "next": "QA companion ref 7650ae0: manifest has no RECORD_AUDIO; CapabilityRegistry says audio_capture unavailable; default-off test confirms. PR #2312 dedicated CI green but staged migration fails and still has historical base 58666dd. Core/QA must add visible provider and reconcile parent chain before Perception rebases."
     }
   ],
   "current_evidence_overlay": {
