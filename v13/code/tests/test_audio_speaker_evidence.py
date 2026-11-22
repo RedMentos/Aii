@@ -75,7 +75,7 @@ def speaker_batch(source_id, generation_id, start_ms, end_ms, vector_at,
     }
 
 
-def test_same_speaker_embedding_stays_confident_and_has_no_identity_label():
+def test_same_speaker_embedding_remains_unclassified_without_calibration():
     registry = SpeakerChangeEvidenceRegistry()
     warmup = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
     first = registry.update(
@@ -113,7 +113,7 @@ def test_same_speaker_embedding_stays_confident_and_has_no_identity_label():
     assert evidence["action_authority"] is False
 
 
-def test_embedding_shift_is_only_a_change_candidate_during_voiced_activity():
+def test_embedding_shift_remains_similarity_only_until_calibrated():
     registry = SpeakerChangeEvidenceRegistry()
     first = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
     registry.update(
@@ -271,7 +271,7 @@ def test_runtime_reset_clears_in_memory_embedding_history(tmp_path):
         runtime.store.close()
 
 
-def test_a5_a4_c3_consumer_uses_change_evidence_without_persisting_vectors(tmp_path):
+def test_a5_a4_c3_consumer_preserves_unverified_similarity_without_vectors(tmp_path):
     runtime, event = make_runtime(tmp_path)
     generation = event["brain_generation_id"]
     try:
@@ -341,8 +341,8 @@ def test_batch_similarity_diagnostic_does_not_trigger_a4_interrupt_or_c3_candida
             finality="FINAL", speaker_embeddings=first,
         )
         # The batch contains a brief B interval followed by a return to A.
-        # The last measured frame is stable, but the earlier transition must
-        # remain visible to A4 and the bounded C3 summary.
+        # The raw per-frame delta remains diagnostic; without verified
+        # calibration it must not become a speaker decision or attention gain.
         second = speaker_batch(
             SOURCE, generation, 1100, 2100,
             lambda end: (0.0, 1.0, 0.0) if 1660 <= end < 1820 else (1.0, 0.0, 0.0),
