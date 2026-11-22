@@ -1,3 +1,16 @@
+# Current Perception handoff — 2026-11-22T17:27:21.690Z
+
+**Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein UPDATE_REQUEST, kein Modell-/Gewichtsdownload, keine Kamera-/Mikrofonfreigabe und kein Rechtewechsel.
+
+- **Release / Gerät:** aktueller Entwicklungs-HEAD `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; privater V13OBS #115 (Receipt 2026-11-22T16:54:57Z) bestätigt denselben installierten Commit, Auto-Update EIN und Runtime/Dashboard UP_TO_DATE. GitHub-Push/CI ist nicht gleich Deployment.
+- **Letzter echter Redmi-Turn:** 57.74 s total, C3 TTFT 41.63 s, Prefill 38.95 s, Prompt 751 Tokens, 2 generierte Tokens; B1/B2 weiter TIME_BUDGET (53.2/54.2 s), keine gültigen Offers. C3-Prompt-Inclusion/Semantic-Use und native Latent-Kopplung sind nicht bewiesen. Kein neuer Mikrofon- oder Bildcapture-Test.
+- **Audio Perception:** PR #2361 bleibt DRAFT / NOT_RELEASED. Code commit `9428380b4d47e7297e42774c0eefdedb34effe33`, Test commit `114c971ee37a9ff81f86db9cb87fad389c83c10b`. Der Adapter hasht jetzt die tatsächlichen lokalen Checkpoint-Bytes unter einem vertrauenswürdigen Model-Root; caller-supplied Embeddings bleiben nicht kryptografisch attestiert. LOCAL_LINUX isolierte Hash-Helper-Reproduktion 7/7 PASS; vollständiger A5/A4/C3-Test und exakte CI noch nicht bestätigt. FASTDIAR-Gewichtslizenz ungeklärt, kein Download.
+- **Visual Perception:** PR #2363, Branch `research-perception/v14-vision-a5-ingress-20261122`, aktueller Head `a77b841f250dab597c127d9ddecd86278c4d0ef4`, Code `f2ae689950357e51692f644f77f4eb0ca5ab0bc2`, Test `fd26b886710af75af5e3211c688cb5731b5531fe`. Source-bound local IMAGE SourceRef -> RAW EYE global+16 tiles -> ephemeral A5 PerceptPacket -> A4 salience -> bounded C3 candidate envelope. LOCAL_LINUX isolierte Reproduktion 3/3 PASS; 20 synthetische 64x64 Läufe median 5.852 ms / p95 7.870 ms. Kombinierte Python-3.13/3.14-Perception-CI ist PENDING.
+- **Wirkungsgrenze:** PR #2363 ändert nicht `runtime.py`; normaler Runtime-Turn ruft den Adapter noch nicht auf. Kein Android Screen-/Camera-Provider, kein VLM/Teacher/Student-Projector, keine native visuelle Embedding-Kopplung, keine B1/B2-Verbrauchsmessung, kein Redmi-Nachweis. Der A5-Packet/Context bleibt ephemeral; keine derived-data Persistenz.
+- **Nächster interner Schritt:** exakte CI und unabhängiges Core/QA-Review; danach Core-Integration in den aktiven Runtime-Turn und Source-Revocation-Test, bevor abgeleitete visuelle Daten persistent werden. Default-Textpfad unverändert lassen.
+
+---
+
 # JEPA-Statuskorrektur — 2026-11-22T10:00:40.871Z
 
 PR #2331 steht inzwischen auf `535eba6f668b3990416c361368f36e3e8f1e599e`, hat aber **9 fehlgeschlagene Checks** (4 laufen, 2 queued, 4 erfolgreich, 1 übersprungen). Die Fehler liegen weiter in der verschachtelten Source-Pin-Kette: sechs direkte Consumer-Pins stimmen nicht mit den aktuellen Datei-Bytes überein. Die vollständigen Hashes stehen im Boss-Review-Kommentar [7077507340](https://github.com/RedMentos/Aii/pull/2331#issuecomment-7077507340). Das ist noch kein JEPA-Lern-/Unlearning-Erfolg; PR bleibt DRAFT, Promotion OFF.
