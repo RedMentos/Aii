@@ -1,3 +1,21 @@
+### JEPA & Memory Run 22 — 2026-11-22T23:34:44.485Z
+
+**Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein UPDATE_REQUEST, kein Modell-/Gewichtswechsel und keine Rechteänderung.
+
+- **Code-Kandidat:** PR [#2372](https://github.com/RedMentos/Aii/pull/2372), Branch `jepa-memory/v14-temporal-exact-forget-retention-20261122-run14`, exakter aktueller Head `e697883dd5e36cc4b667ca966a6ec657ea470bf7`. DRAFT / NOT_RELEASED; nicht auf dem Handy installiert.
+- **Neue durchgängige SHADOW-Funktion:** committed T8 ActionOutcomes → source-/session-disjunkte Zeitfenster → trainierbarer WorldJEPA-Encoder/Predictor + EMA-Target → persistierter Optimizer/Checkpoint → Replay/Retention → Restart/Retry/Rollback. Der aktivierte SleepRuntime-Test führt den Postcommit-Pfad aus. B1_DETAIL/B2_GIST-Readouts erreichen den echten `Cognition.offer`-Prompt-Consumer nur nach gemessenem `receiver_utility_gate` auf disjunkten Holdouts; kein erfundener „accepted“-Fixture.
+- **Letzter vollständig gemessener CI-Stand:** Parent `bc0d18c9d8f451b7bc0ababf7dde782cc25caf11`: Temporal-T8/JEPA **20/20 PASS auf Python 3.13 und 3.14** (Workflow 45082646579), zusätzlich Incremental WorldJEPA 45082646529 PASS und Combined Online JEPA 45082646600 PASS. Das sind GitHub-CI-Tests mit synthetischen Store-/ActionOutcome-Daten, keine lokalen Geräte- oder nativen GGUF-Tests.
+- **Aktueller Head e697883:** neue Workflows 45083725560 (Combined Online JEPA), 45083725501 (Training-resume/source-forget 3.13/3.14), 45083725543 (Incremental WorldJEPA), 45083725503 (staged/integrated), 45083725516 (owner-read) sind QUEUED; 45083725525 (Temporal T8 Windows) läuft. Für diesen Head ist noch kein finaler PASS belegt.
+- **Pin-Fix:** Commit `e697883` korrigiert den JEPA-eigenen Training-resume-Builder auf die mit SHA-256 verifizierten aktuellen Bytes: `world_jepa.py=1436b6bc…`, `world_jepa_shadow_checkpoint.py=560653e1…`, `world_jepa_training_state.py=94a785e7…`. Der Builder selbst hat SHA-256 `c03de6503c75972923e26374f6382fcaab8f1727a5d7018b224653b5c149a71b`. Erst die neue exakte CI kann bestätigen, dass dieser Fix die erste Staging-Barriere beseitigt.
+- **Offene Team-Abhängigkeit:** Auf dem JEPA-Branch erwartet `source_lifecycle_lock_integration_candidate.py` für `memory.py` noch SHA-256 `61e881ad…`, während die tatsächliche JEPA-Datei `33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701` hat. Das ist QA-Ownership; JEPA hat die QA-Dateien nicht verändert. QA #2383 muss auf den aktuellen JEPA-Head rebasen und die komplette Builder-Kette bottom-up neu berechnen. Boss-/Fair-Budget-Integration ist ebenfalls noch nicht als grün oder integriert bestätigt.
+- **LOCAL_LINUX:** vollständige Aii-Checkout-/Pytest-Ausführung BLOCKED / NOT_RUN (kein Checkout; GitHub-DNS-Auflösung scheitert). CI ist kein lokaler Test.
+- **Gerät:** privater V13OBS #115, zuletzt aktualisiert 2026-11-22T23:19:27Z, bestätigt weiterhin installiertes Release `aed1d2b826290c95c70356b5d8b864b5ef382be4`, Auto-Update EIN, Runtime/Dashboard UP_TO_DATE. B1 4/4 und B2 2/2 native Versuche fehlgeschlagen, null gültige Offers; letzter gespeicherter Turn 57,74 s / TTFT 41,63 s / 751 Prompt-Tokens / 2 generierte Tokens, Korrektheit unbekannt. #2372 ist nicht installiert: **REDMI_UNVERIFIED**.
+- Neue private Owner-Read-Anfragen #649–#652 (PIPELINE_STATUS, DIAGNOSTICS, HEALTH, LEARNING_STATUS) waren beim letzten Readback noch ohne `device_status`: **NO_LIVE_RECEIPT**. Keine LOG_PAGE-Abfrage, kein CHAT_SEND und keine Geräteänderung.
+
+**Nächster interner Schritt:** aktuelle e697883-CI vollständig abwarten; den JEPA-Pin-Fix anhand des exakten Optimizer-resume-Laufs bestätigen, danach QA die verbleibende Lifecycle-/Builder-Pin-Kette übergeben. Keine Rebase-/Release-Aktion, solange QA oder Boss rot/queued sind. Anschließend matched-step Replay-on/off, persistent-vs-reset und A→B→C→A-Retention mit exakten Parameter-/EMA-/Checkpoint-Diffs ausführen.
+  
+---
+
 
 
 ### Run20 CI poll (2026-11-22T21:45:50Z)
