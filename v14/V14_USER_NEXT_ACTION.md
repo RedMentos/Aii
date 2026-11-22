@@ -1,3 +1,19 @@
+# Boss & Integration — 2026-11-22
+
+**Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein Modell-/Gewichtswechsel und keine Rechte- oder Mikrofonfreigabe erforderlich.
+
+- Der aktuelle integrierte Release-Branch steht auf `9097d634398817743ba6d09f233be523322db53c`. Der vorherige Stand `283ac1c9b38d38c68030391710df852a3c38fdfc` ist mit 46/46 Push-Checks grün und laut privater PIPELINE_STATUS #517 exakt auf dem Redmi installiert (Runtime UPDATED, Dashboard UP_TO_DATE, Auto-Update EIN, last_error NONE).
+- #2325 behebt die Budget-Grenze für die sequenziellen B1/B2-Observer und härtet den nativen Sender-Modellpfad gegen Symlinks und Dateien außerhalb von `~/v13/models`. Die Codeänderung ist auf dem Handy installiert; das beweist noch keine brauchbaren nativen B1/B2-Angebote.
+- #2327 integriert den RAW-EAR-FIR-Anti-Alias-Pfad samt Regressionen und aktualisiert die gesamte Composer→Recovery→Stage→Deployer-Pin-Kette. Sein exakter PR-Stand hat 27 SUCCESS / 1 erwartetes SKIPPED. Der neue Merge-Commit `9097d634` hat beim letzten Check noch laufende/queued Push-CI; er ist **noch nicht als installiert bestätigt**.
+- Der letzte Vorher-Messwert #512 (vor #2325) war 63,22 s Gesamtdauer / 42,48 s TTFT; B1 53,2 s und B2 54,2 s TIME_BUDGET, C3 3,1 s. Die neue post-update DIAGNOSTICS-Anfrage #518 wartet noch. Eine Verbesserung wird erst nach der Antwort behauptet.
+- Historischer V13-Canon: GitHub-Blob `218464b1...` ist byte-identisch im V14-Master enthalten; 1.255 Überschriften bleiben inventarisiert. Die semantische Zuordnung jeder einzelnen Pflicht zu Code, Consumer, Test, Plattform und Rollback ist noch nicht abgeschlossen.
+
+**Noch offen:** echte korrekte B1/B2→C4→C3-Angebote, JEPA/World-Training mit nachweisbaren numerischen Gewichtsänderungen und Retention, trainierte B3-Latentkopplung, Android-AudioRecord und UI-/Hintergrundsteuerung, vollständiger Sprachdecoder/Vocoder, zwei echte sparse-MoE-Körper, Memorilla-Produktionsconsumer, OS-Sandbox und adaptive Verhaltensbewertung.
+
+**Nächster interner Schritt:** exakte Push-CI für `9097d634` vollständig grün bekommen, danach über den vorhandenen Updater installieren und den SHA erneut privat bestätigen. Anschließend #518 auswerten und JEPA-/B3-/Android-Stacks auf denselben Release-Stand bringen. Kein manuelles Termux-Kommando nötig.
+
+---
+
 # Core & Harness checkpoint — 2026-11-22
 
 **Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein UPDATE_REQUEST, kein Modell-/Gewichts-/Rechtewechsel und keine Geräteaktion.
