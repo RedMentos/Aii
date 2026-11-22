@@ -13,7 +13,7 @@ import subprocess
 import time
 import xml.etree.ElementTree as ET
 
-from process_restart_ui import button_center, poll_delay, transient_overlay_action, visible_labels
+from process_restart_ui import button_center, parse_hierarchy, poll_delay, transient_overlay_action, visible_labels
 
 PACKAGE = "com.redmentos.v14.companion"
 COMPONENT = PACKAGE + "/.MainActivity"
@@ -55,7 +55,7 @@ def hierarchy_xml() -> str:
 
 
 def hierarchy() -> ET.Element:
-    return ET.fromstring(hierarchy_xml())
+    return parse_hierarchy(hierarchy_xml())
 
 
 def foreground_diagnostic() -> str:
