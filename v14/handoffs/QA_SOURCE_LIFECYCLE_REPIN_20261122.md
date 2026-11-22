@@ -1,44 +1,76 @@
-# QA — source-lifecycle builder rebind for promotion/forget serialization
+# QA & Android — Store/source-forget integration and exact staged-runtime pins
 
 Date: 2026-11-22  
-Stacked base: Boss Store-generation/source-forget branch, head 1dfdd856daa3c16679f5466e168dadf43a384f29  
-Status: candidate fix; exact Python 3.13/3.14 workflow pending
+Owner: QA & Android  
+Candidate branch: `qa/v14-source-lifecycle-repin-final-20261122`  
+PR: #2359  
+Base: JEPA/Memory #2351 at `ffb81c435ce02bc0a7477e28cfcefecc464baa75`  
+Code head before this handoff-only refresh: `ad1832f9938154f5a9ad2767b33f0b43b4bb2474`
 
-## Reproduced failure
+## Scope and ownership
 
-On #2355 exact merge head e9cf9529e21494ac03ea83578b1a01bc1923df03, workflow run 45044319345, Python 3.14 job 137275483658 failed:
+This is a combined stacked candidate. It carries Boss #2355's Store generation/rollback serialization and Memory source-forget lifecycle integration, including the three later #2355 follow-up commits:
 
-- 17 passed, 5 subtests passed, 1 failed
-- test: test_v14_store_source_blob_serialization.py::test_staged_store_read_open_is_linearized_with_revocation
-- failure: source_lifecycle_lock_integration_candidate.py rejected the changed Store source at its exact SHA pin.
+- `3c410d560e657cf4b5efaaa9e2f66bc09fb0c848` — lifecycle composition against JEPA source-forget and Store promotion locks
+- `a73b279179cd00b7eed69ad12fc32d11fde20c63` — memory/world lifecycle pin
+- `f9c9c187eb3870fa9bdd3015e9ef89de61f17b02` — Python 3.13/3.14 workflow selectors
 
-## Exact source hashes (SHA-256)
+The QA portion binds the source lifecycle, archive guard, online-world, C3 resume, memory/world, feedback, context recall, WorldJEPA resume, Termux recovery, integrated stage and runtime deployer to exact current bytes.
 
-- Store.py at #2355: bc7ab8edfd26bf0222ebcccbf57c95612f3fe305646eb46571b35b6f72942bd1
-- Memory.py at #2355: b205901627af857fc4465204ebc12518d9955d2d62b8ce20f1a83731ef560799
-- archive_reader_guard_integration_candidate.py after its Store pin update: 313f2dc078366fa851c3ef76b425fb800e7369c73ed5cb69ea93f96cc95f0596
+**Do not merge #2355 and #2359 independently.** #2359 currently carries the Store/Memory code from #2355. After exact CI, the integrator should either merge #2359 as the consolidated #2351-dependent stack and close #2355 as superseded, or merge #2355 first and retarget/rebase #2359 as a pure QA pin-rebind. #2351 remains a required dependency. No release approval is implied.
 
-All other existing source pins in the outer source-lifecycle builder were checked against the #2355 branch and matched.
+## Defects observed
 
-## Fix
+1. The earlier A5 UI-lease/source-lifecycle run rejected the updated Store SHA in the source-lifecycle composer before the staged read/revoke regression could run.
+2. The first integrated retry then exposed a second stale pin in `integrated_online_world_candidate_20261110.py`: it still expected the pre-Store-lock `v13/store.py` SHA. This blocked JEPA optimizer-resume, Python 3.14 staged startup, Lab-Age staged consumption and two-checkout migration. The migration harness fast-forwarded both checkouts but correctly reported PARTIAL/ERROR because runtime staging failed.
 
-- Rebound the nested archive guard integration builder's Store SHA to the exact #2355 Store source.
-- Rebound the outer source-lifecycle builder's Store and Memory SHA pins.
-- Updated the outer builder's GUARD_SCRIPT_SHA to the exact new nested builder bytes.
-- Kept the old Store SHA as a separate OLD_STORE_SHA for the guard/stream candidate replacements, because those downstream candidates still contain the pre-composition Store pin.
-- Updated MEMORY_OLD to the exact #2355 Memory cleanup block, preserving the Store RLock/JEPA guard while replacing only the final blob cleanup with source_lifecycle_candidate.cleanup_unreferenced.
-- Verified the Store source-publication, recovery, event-publication and read_source replacement anchors each occur exactly once.
+## Changes now present
 
-## Proof boundary
+- Keep Store's RLock across generation promotion/rollback preflight and final SQLite transaction. Recheck the exact pending update, base generation, path/hash/manifest, parent lineage and declared live source rows before commit.
+- Keep Memory source-forget's JEPA-file-lock → Store-RLock ordering through tombstone, dependent artifact cleanup and final refcount/unlink.
+- Use the latest #2355 source-lifecycle composer, with its exact Store/Memory pins and the current nested archive-guard SHA.
+- Preserve the distinct old Store SHA where downstream guard/stream candidates still need to replace their pre-composition pin.
+- Carry the latest Python 3.13/3.14 JEPA/source-forget workflow selector and the QA A5 path filter.
+- Rebind the full consumer chain:
+  `archive guard/source lifecycle → online-world → C3 resume → memory/world → feedback bootstrap → context recall → WorldJEPA resume → Termux recovery-12 → recovery-21 → integrated stage → runtime deployer`.
 
-The original failing CI result is a confirmed regression. This candidate rebind has not yet been run on the full A5/source-lifecycle workflow; the next exact-head CI run must prove that the builder composes successfully and that the staged Store read/revoke test passes on Python 3.13 and 3.14. No local Aii checkout, full Python test, native Linux integration, Redmi or Android proof is claimed. The change is test-builder-only; it does not activate source lifecycle in the installed runtime or alter weights, memories, models or phone data.
+No Age permission, tool permission, training mode, model selection or installed-phone setting is changed by the QA pin work.
 
+## Static readback verification
 
-## CI trigger correction
+At code head `ad1832f9938154f5a9ad2767b33f0b43b4bb2474`, the fetched GitHub branch bytes verified **14/14 direct SHA-256/Git-blob edges**:
 
-The A5 workflow's path filter also omitted both source-lifecycle composition scripts, so a future builder-only change could bypass the very regression that consumes it. The workflow now watches the outer source-lifecycle builder, nested archive-guard builder, lifecycle candidate modules and the relevant archive/Memory/Vision sources on pull requests and QA branch pushes. This PR changes the workflow file itself, so the existing base-branch path filter will select the exact A5 run for this stacked candidate.
+1. archive/source-lifecycle Store SHA
+2. source-lifecycle Memory SHA
+3. source-lifecycle nested archive-guard SHA
+4. online-world Store SHA
+5. C3-resume → online-world SHA
+6. memory/world → C3-resume SHA
+7. memory/world → source-lifecycle SHA
+8. feedback → memory/world SHA
+9. context recall → feedback SHA
+10. WorldJEPA resume → context SHA
+11. Termux recovery-12 → WorldJEPA SHA
+12. recovery-21 → recovery-12 Git blob SHA
+13. integrated stage → recovery-21 SHA
+14. runtime deployer → integrated-stage SHA
 
+The readback is a source-integrity check, **not** an execution test.
 
-## Lock-preserving indentation check
+## Test and release boundary
 
-The rebased Memory cleanup anchor is nested 16 spaces inside the existing JEPA-file-lock -> Store-RLock section. The generated cleanup_unreferenced call is kept at the same 16-space indentation, so the source/blob cleanup remains inside the Store critical section; it is not dedented to the outer method body.
+- **Previous exact-head CI:** on the earlier head `92b26f81...`, JEPA optimizer-resume, staged Python 3.14, Lab-Age and migration failed from the stale online-world Store pin. Those failures are not hidden or counted as passing.
+- **Current exact-head CI:** the runs for `ad1832f9938154f5a9ad2767b33f0b43b4bb2474` are queued/pending: JEPA source-forget, staged/integrated, Lab-Age, owner-read Python 3.14, migration, runtime deployment, A5 and private bridge. No current CI PASS is claimed.
+- **LOCAL_LINUX:** no Aii checkout is mounted in this execution container; full local pytest/compile is BLOCKED/NOT_RUN.
+- **REDMI/ANDROID:** the candidate is not installed or exercised. The release branch remains `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; PIPELINE_STATUS #582 reports it up to date, while the newer HEALTH #581 reported runtime UNAVAILABLE. Existing read-only `:status` request #583 remains open; no duplicate request or CHAT_SEND was issued. No post-candidate or 20-turn device acceptance is claimed. REDMI_UNVERIFIED.
+
+A previous private diagnostics snapshot still shows slow C3 prefill and B1/B2 TIME_BUDGET/zero valid offers. That remains the whole-system P0 acceptance gap; this source-composition repair does not claim to fix response quality, native latent exchange or live learning.
+
+## Next executable QA step
+
+1. Wait for all exact-head workflows to finish.
+2. If the source-forget or staged jobs fail, inspect the first exact pin/traceback and fix the upstream consumer chain once; do not relax release gates.
+3. If green, ask Boss/Integrator to choose the #2355/#2359 consolidation route and rerun the exact release-base matrix.
+4. Only after a CI-green release commit may the existing authorized private owner-read path request an update; then obtain a separate PIPELINE_STATUS receipt. Do not claim Redmi PASS without a real device receipt and live 20-turn acceptance.
+
+No user action is required at this stage.
