@@ -4,7 +4,7 @@ Date: 2026-11-22
 Base: `gpt6/v13-private-remote-bridge-20261111` at `aed1d2b826290c95c70356b5d8b864b5ef382be4`  
 Branch: `research-perception/v14-media-projection-raw-eye-20261122-run7`  
 PR: [#2375](https://github.com/RedMentos/Aii/pull/2375)  
-Current code head: `f1aae4cf55cbf8b1f42b93f9e404c77285d2d0bc`.
+Code/test checkpoint: `fb6779188f97d50e1cbe6d4fbeda9cc9c9403743`; subsequent commits update only research/handoff evidence. Current PR head is shown in #2375.
 
 ## Product gap and implementation
 
