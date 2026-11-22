@@ -77,9 +77,9 @@ def setup_runtime(tmp_path):
         "files": {"sender.gguf": {"path": str(sender_path.relative_to(runtime.home)), "sha256": sender_digest, "size": sender_path.stat().st_size}},
     }
     runtime.models.path_for = lambda role: sender_path if role == "B2_GIST" else model_path
-    runtime.models.revision = lambda role: runtime.models.installed[
-        model_key(role, runtime.models.b2_control)
-    ]["exact_revision"]
+    runtime.models.revision = lambda role: runtime.models.installed.get(
+        model_key(role, runtime.models.b2_control), {}
+    ).get("exact_revision", "unavailable")
     return runtime, event, model_path, digest, sender_path, sender_digest
 
 
