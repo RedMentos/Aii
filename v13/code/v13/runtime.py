@@ -443,10 +443,12 @@ class Runtime:
                     else:route=meta['skill']['prior_route']
             mark('preanswer_observers')
             # WP-D reasoning effort (G5B): one bounded plan decides wake/re-entry/focal budgets.
+            native_budget=None;native_min_slice_s=None
             observer_end=start+self.cfg['deadline_seconds']*.45
             if not direct and self.cfg['observer_mode']=='background':
                 try:
-                    from .native_turn_budget import plan,recent_proof
+                    from .native_turn_budget import plan,recent_proof,MIN_ROLE_SLICE_S
+                    native_min_slice_s=MIN_ROLE_SLICE_S
                     native_budget=plan(start,deadline,time.monotonic(),
                                        recent=recent_proof(self.store),
                                        background_enabled=True)
@@ -462,7 +464,7 @@ class Runtime:
             age_lim=effort.age_limits(agectl.controller(self),rmode)
             effort_sig=effort.signals(text,route,meta.get('route'),memories,**self.executive.effort_context(self.session,e))
             effort_sig=agi_live.before_effort(self,e,meta,effort_sig)  # WP-N13 AG9 -> effort, AG11 -> C1
-            effort_plan=effort.decide(effort_mode,effort_sig,direct=direct,observers=self.cfg['observer_mode']!='off',resource_state=state,resource_mode=rmode,observer_window_s=observer_end-time.monotonic(),cfg=self.cfg,age=age_lim)
+            effort_plan=effort.decide(effort_mode,effort_sig,direct=direct,observers=self.cfg['observer_mode']!='off',resource_state=state,resource_mode=rmode,observer_window_s=observer_end-time.monotonic(),min_body_seconds=(native_min_slice_s if native_budget and native_budget.get('recovery') else None),cfg=self.cfg,age=age_lim)
             wake_route=effort_plan['wake'];wake_source='EFFORT_POLICY'
             if not direct and rpol['learned_wake'] and self.cfg['observer_mode']!='off':
                 wake_decision=self.learner.decide('wake',e,wake_route,min(deadline,time.monotonic()+self.cfg['control_seconds']),enabled=self.cfg['route_override']=='auto' and effort_plan['learned_wake_allowed'])
