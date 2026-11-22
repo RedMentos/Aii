@@ -44,8 +44,13 @@ class PinValidation(unittest.TestCase):
         for source in sources:
             with self.subTest(source=hashlib.sha256(source).hexdigest()):
                 result = patch.apply_source(source)
-                self.assertNotEqual(result, source)
+                # Exact pinned sources may already contain some/all reviewed
+                # post-commit replacements; applying the overlay is idempotent.
                 self.assertEqual(result, patch.apply_source(source))
+                self.assertEqual(result.count(b'foreground_body_attempts=set()'), 1)
+                self.assertEqual(result.count(b'deferred_wake_route=None'), 1)
+                if b'foreground_body_attempts=set()' not in source:
+                    self.assertNotEqual(result, source)
         self.assertEqual((CODE / 'v13/runtime.py').read_bytes(), raw)
 
     def test_changed_unknown_and_wrong_type_fail_closed(self):

@@ -34,6 +34,18 @@ class ObserverStageTests(unittest.TestCase):
         self.assertEqual(budget.count(b'data=row.get("metadata")'), 1)
         self.assertIn(b'native["generated_tokens"] > 0', budget)
 
+    def test_existing_cognition_fair_slice_is_recognized_without_rewrite(self):
+        module = load(HELPER, 'observer_existing_cognition')
+        original = (CODE / 'v13/cognition.py').read_bytes()
+        result = module.apply_sources(CODE, {})
+        cognition = result['v13/cognition.py']
+        self.assertEqual(cognition, original)
+        for marker in (b'observer_deadline=deadline', b'minimum_role_slice_s',
+                       b'native_body_budgeted_for_c3', b'preanswer_seconds_available',
+                       b'native_body_deferred_for_c3'):
+            self.assertIn(marker, cognition)
+        self.assertEqual(cognition.count(b'observer_deadline=deadline'), 1)
+
     def test_final_composed_runtime_and_native_success_contract(self):
         module = load(HELPER, 'observer_pins')
         before = {name: hashlib.sha256((CODE/name).read_bytes()).hexdigest() for name in module.PINS}
