@@ -191,6 +191,68 @@ class RemoteChatTests(unittest.TestCase):
         with self.assertRaises(bridge.Denied):
             owner.validate_owner_read(invalid,self.cfg,now=self.now)
 
+    def test_native_receiver_probe_requires_exact_explicit_confirmation_and_owner_relay(self):
+        command = ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source --confirm"
+        self.assertTrue(remote_chat.is_safe_operator_command(command))
+        self.assertTrue(remote_chat.is_safe_operator_command(
+            ":callosum native-probe B2_GIST B1_DETAIL --last-source --confirm"
+        ))
+        invalid = (
+            ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source",
+            ":callosum native-probe B1_DETAIL B1_DETAIL --last-source --confirm",
+            ":callosum native-probe C3_LANGUAGE B1_DETAIL --last-source --confirm",
+            ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source --confirm --force",
+            ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source --confirm && rm -rf ~",
+            " :callosum native-probe B1_DETAIL C3_LANGUAGE --last-source --confirm",
+        )
+        for value in invalid:
+            with self.subTest(command=value):
+                self.assertFalse(remote_chat.is_safe_operator_command(value))
+                with self.assertRaises(remote_chat.ChatDenied):
+                    remote_chat.send("f" * 32, value, operator=True)
+        with self.assertRaises(remote_chat.ChatDenied):
+            remote_chat.send("f" * 32, command, operator=False)
+
+        self.cfg["permissions"]["agent-owner"].append("CHAT_OPERATOR")
+
+        def rpc(method, **kw):
+            if method == "state":
+                return {"running": True, "last_session": self.session}
+            if method == "send":
+                self.assertEqual(kw["line"], command)
+                receipt = self.receipt()
+                with self.path.open("a", encoding="utf8") as out:
+                    out.write(
+                        "[du> " + command + "]\\n"
+                        "assistant> {\\"native_receiver_probe\\":{\\"status\\":\\"NATIVE_INPUT_CONSUMED\\","
+                        "\\"production_route\\":false,\\"semantic_use_proven\\":false,"
+                        "\\"training_authority\\":0,\\"native_receiver_authority\\":0}}\\n\\ndu>\\n"
+                    )
+                return receipt
+            raise AssertionError("Unexpected RPC " + method)
+
+        ident = "e" * 32
+        issue = self.make_issue("CHAT_OPERATOR", {"command": command},
+                                number=9, ident=ident)
+        client = FakeGitHub([issue])
+        with mock.patch("v13.chat_service.call", side_effect=rpc):
+            self.assertEqual(owner.poll_once(client, self.cfg, now=self.now)["processed"], 1)
+        self.assertEqual(
+            client.comments_sent[0][1]["device_status"]["status"], "SENT"
+        )
+        result = remote_chat.result(ident)
+        self.assertEqual(result["status"], "ANSWER_VISIBLE")
+        self.assertIn("NATIVE_INPUT_CONSUMED", result["output"])
+        self.assertNotIn("private question", result["output"])
+
+        bad = self.make_issue(
+            "CHAT_OPERATOR",
+            {"command": ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source"},
+            number=10, ident="f" * 32,
+        )
+        with self.assertRaises(bridge.Denied):
+            owner.validate_owner_read(bad, self.cfg, now=self.now)
+
     def test_owner_can_revoke_and_enable_explicit_private_log_diagnostics(self):
         from v13 import mobile_dashboard as ui
         self.cfg["permissions"]["agent-owner"].extend(["LOG_SHARING_ON","LOG_SHARING_OFF"])
