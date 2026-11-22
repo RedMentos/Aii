@@ -22,7 +22,7 @@ CHUNK = 1024 * 1024
 SOURCE_PINS = {
     'archive.py': {'adbdd844c2275d527a689eda789a3f247759967677e573b92bf7af7ad68404bf',
                    '3f421423ce890b90033470e15150b1ba9830642e6b5e92e61b654801602e90b4'},
-    'store.py': {'fe66f92533b20738b5ec384e9d7c0b5ac8b4b4f658c6c1ad23792d813ff29980'},
+    'store.py': {'40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb'},
     'common.py': {'0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a'},
 }
 

@@ -325,24 +325,30 @@ def create_read_request(command, *, now=None, session=0, page=0, text=None, requ
 
 
 def _run_pending_migration_after_reload(pipeline):
-    """One consent-bound retry when the old worker just updated both checkouts.
+    """Recover one consent-bound old-worker migration, including PARTIAL.
 
-    The old process could only install the RAW runtime; its new dashboard code
-    is loaded after relay exec. Normal CI and graceful-stop checks still apply.
+    The old worker may update both source checkouts but be unable to activate
+    the new integrated runtime. A PARTIAL/UPDATE receipt is therefore a valid
+    recovery trigger, not proof of deployment. The new worker rechecks consent,
+    exact-commit CI, source state and graceful stop before completing the cycle.
     """
     if not pipeline.enabled():
         return None
     state = pipeline.snapshot()
-    if (state.get("last_result") != "UPDATED"
-            or state.get("runtime") != "UPDATED"
-            or state.get("dashboard") != "UPDATED"
-            or state.get("last_error") != "NONE"):
+    if (state.get("last_result") not in ("UPDATED", "PARTIAL")
+            or state.get("last_error") not in ("NONE", "UPDATE")
+            or state.get("runtime") not in ("UPDATED", "UP_TO_DATE", "ERROR")
+            or state.get("dashboard") not in ("UPDATED", "UP_TO_DATE", "ERROR")):
         return None
     from . import runtime_deploy
-    try:
-        pending = runtime_deploy.needs_deploy(Path.home() / ".v13-runtime-source")
-    except (OSError, ValueError, TypeError, runtime_deploy.RuntimeDeployError):
-        return None
+    pending = state.get("last_result") == "PARTIAL"
+    if not pending:
+        try:
+            pending = runtime_deploy.needs_deploy(Path.home() / ".v13-runtime-source")
+        except (OSError, ValueError, TypeError, runtime_deploy.RuntimeDeployError):
+            # Let the normal updater prepare/revalidate a missing or stale
+            # source checkout; it still fails closed on origin, branch and CI.
+            pending = True
     if not pending:
         return None
     # manual=False rechecks consent. The normal cycle also rechecks CI and stop.

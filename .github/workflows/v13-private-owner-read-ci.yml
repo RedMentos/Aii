@@ -29,6 +29,9 @@ on:
       - 'v13/code/tests/test_lab_native_cycle.py'
       - 'v13/code/v13/effort.py'
       - 'v13/code/tests/test_lab_age.py'
+      - 'v13/code/v13/agi/goals.py'
+      - 'v13/code/v13/scheduler.py'
+      - 'v13/code/tests/test_goal_wake_atomicity_20261121.py'
       - 'v13/code/tests/test_chat_service.py'
       - 'v13/code/tests/test_lifecycle.py'
       - 'v13/code/tests/test_pipeline_agent.py'
@@ -148,10 +151,11 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: |
-          python -m py_compile v13/runtime_deploy.py v13/source_lifecycle_candidate.py tests/test_termux_anonymous_linkat.py
+          python -m py_compile v13/runtime_deploy.py v13/source_lifecycle_candidate.py v13/agi/goals.py v13/scheduler.py tests/test_goal_wake_atomicity_20261121.py tests/test_termux_anonymous_linkat.py
           python -m unittest discover -s tests -p 'test_termux_anonymous_linkat.py' -v
           python -m unittest discover -s tests -p 'test_termux_named_blob_fallback.py' -v
           python -m unittest discover -s tests -p 'test_termux_chat_session_detection.py' -v
+          python -m unittest discover -s tests -p 'test_goal_wake_atomicity_20261121.py' -v
           python - <<'PY'
           from pathlib import Path
           from tempfile import TemporaryDirectory

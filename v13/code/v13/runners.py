@@ -621,6 +621,19 @@ class CausalStreamRunner:
                 ids=self.template._json('POST','/tokenize',{'content':prompt,'add_special':True},deadline)['tokens']
                 if not isinstance(ids,list) or not 1<=len(ids)<=512:
                     raise Limits('Same-causal prompt exceeds512 native tokens; shorten context or use server decode mode')
+                from .native_offer_prompt_receipt import inspect as inspect_native_offer_prompt
+                from .prompts import text as prompt_text
+                try:
+                    offer_witness=inspect_native_offer_prompt(
+                        messages,prompt,prompt_text(self.cfg,'hypotheses'))
+                except Exception as exc:
+                    offer_witness={'status':'RECEIPT_UNAVAILABLE','reason':type(exc).__name__,
+                        'offers':[],'native_semantic_use_proven':False}
+                self.last_metrics['native_offer_prompt_receipt']={
+                    **offer_witness,'native_completion_http_200':False,
+                    'native_template_submitted':False,'native_prompt_prefill_verified':False,
+                    'native_stream_completed':False,
+                    'native_attention_or_semantic_use_proven':False}
                 context={'messages':messages,'prompt':prompt,'token_ids':ids,'history_trimmed':False}
             finally:
                 self.last_metrics['template_release']=self.template.unload();self.template=None
@@ -634,6 +647,27 @@ class CausalStreamRunner:
             prefill_started=time.monotonic()
             with self.session as active:
                 observed=active.pause()
+                offer_receipt=self.last_metrics.get('native_offer_prompt_receipt')
+                native_binding=observed.get('native_context_binding') if type(observed) is dict else None
+                prefill_verified=bool(
+                    type(offer_receipt) is dict
+                    and offer_receipt.get('status')=='RENDERED_WITH_QUOTES'
+                    and type(native_binding) is dict
+                    and native_binding.get('scope')=='EXACT_SAME_CAUSAL_PREFILL'
+                    and native_binding.get('live_generation_kv_tap') is True
+                    and native_binding.get('context_source_sha256')==getattr(active,'context_sha',None)
+                    and type(native_binding.get('pid')) is int and native_binding.get('pid')>0
+                    and type(native_binding.get('handle_id')) is str
+                    and len(native_binding.get('handle_id'))==64
+                    and all(ch in '0123456789abcdef' for ch in native_binding.get('handle_id'))
+                    and type(native_binding.get('features_sha256')) is str
+                    and len(native_binding.get('features_sha256'))==64
+                    and all(ch in '0123456789abcdef' for ch in native_binding.get('features_sha256'))
+                    and observed.get('native_prompt_token_ids')==ids
+                    and observed.get('prompt_sha256')==digest(prompt))
+                if type(offer_receipt) is dict:
+                    offer_receipt.update(native_prompt_prefill_verified=prefill_verified,
+                        native_template_submitted=prefill_verified)
                 atomic_write(out/'observed.json',dumps(observed))
                 self.last_metrics['observed_sha256']=digest(dumps(observed))
                 self.last_metrics.update(prompt_tokens=len(ids),history_trimmed=False,
@@ -656,6 +690,9 @@ class CausalStreamRunner:
                             yield event['text']
                     elif event['event']=='COMPLETE':complete=event
             if complete is None:raise Unavailable('Same-causal stream ended without verified completion')
+            offer_receipt=self.last_metrics.get('native_offer_prompt_receipt')
+            if type(offer_receipt) is dict:
+                offer_receipt['native_stream_completed']=True
             raw=complete['raw_result']
             self.last_metrics.update(native_token_ids=complete['native_token_ids'],
                 stop_reason=raw['stop_reason'],resume_prefill_calls=raw['resume_prefill_calls'],

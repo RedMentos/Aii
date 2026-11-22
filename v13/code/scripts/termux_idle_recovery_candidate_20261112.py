@@ -3,8 +3,8 @@ import hashlib
 from pathlib import Path
 
 PINS = {
-    'v13/scheduler.py': 'e44512b92b66cb63902645f73128d4063f3afc51367052e7e81491035bda17fb',
-    'v13/operator.py': '67f2118efce0495ea144b11e8853cbf949d56e53e141fe7f801b31c56406f9a3',
+    'v13/scheduler.py': '1e6f55d5348e83411c98d3f5d197aa2853e4fd3093b2c2164d6caa69acd6f783',
+    'v13/operator.py': 'b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186',
     'v13/idle_cycle_candidate.py': '7e6cd00b1fee3d098f0dcbeedb79b9128e78e2cdd1bd841a52c1fe59144d00a4',
 }
 SCHEDULER_OLD = b'''            from .inputs import background_blocked

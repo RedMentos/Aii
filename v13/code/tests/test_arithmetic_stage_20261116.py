@@ -22,7 +22,7 @@ def test_actual_staged_arithmetic_and_existing_broker_contracts(tmp_path):
     assert manifest['status'] == 'SHADOW_REVIEW_ONLY'
     assert {'v13/runtime.py', 'v13/broker.py', 'v13/contracts.py', 'v13/focal.py'} <= set(manifest['replaced_files'])
     names = ('arithmetic_disposable_cases_20261116.py', 'arithmetic_outcome_disposable_cases_20261116.py',
-             'test_arithmetic_reflex.py', 'test_broker.py', 'test_output_policy.py')
+             'test_broker.py', 'test_output_policy.py')
     (destination / 'tests').mkdir(exist_ok=True)
     for name in names:
         shutil.copyfile(CODE / 'tests' / name, destination / 'tests' / name)

@@ -1,0 +1,118 @@
+name: V14 Core same-turn B1 B2 C4 C3 and source-read revocation
+on:
+  push:
+    branches:
+      - core/v14-c4-c3-consumption-rebase-20261122
+      - core/v14-c4-c3-consumption-rebase-20261122-run2
+      - core/v14-fair-budget-diagnostic-20261122
+      - boss/v14-recall-store-pin-rebind-20261122
+    paths:
+      - 'v13/code/scripts/source_lifecycle_lock_integration_candidate.py'
+      - 'v13/code/scripts/termux_runtime_recovery_candidate_20261112.py'
+      - 'v13/code/scripts/integrated_context_recall_candidate_20261111.py'
+      - 'v13/code/scripts/integrated_feedback_bootstrap_candidate_20261111.py'
+      - 'v13/code/scripts/integrated_memory_world_candidate_20261111.py'
+      - 'v13/code/scripts/integrated_world_training_resume_candidate_20261111.py'
+      - 'v13/code/tests/test_v14_store_source_blob_serialization.py'
+      - 'v13/code/scripts/integrated_c4_c3_receipt_candidate_20261122.py'
+      - 'v13/code/scripts/run_c4_c3_current_candidate_test_20261122.py'
+      - 'v13/code/scripts/termux_runtime_recovery_candidate_20261121.py'
+      - 'v13/code/scripts/stage_integrated_candidate.py'
+      - 'v13/code/v13/runtime_deploy.py'
+      - 'v13/code/tests/test_v14_same_turn_c4_c3_consumption.py'
+      - 'v13/code/tests/test_termux_runtime_recovery_stage.py'
+      - 'v13/code/tests/test_observer_fair_budget_stage_20261116.py'
+      - 'v13/code/v13/brain_panel.py'
+      - 'v13/code/v13/native_offer_prompt_receipt.py'
+      - 'v13/code/v13/runners.py'
+      - 'v13/code/tests/test_v14_causal_stream_offer_receipt.py'
+      - 'v14/V14_USER_NEXT_ACTION.md'
+      - 'v13/code/scripts/run_c4_c3_current_candidate_test_20261122.py'
+      - 'v13/code/tests/test_termux_runtime_recovery_stage.py'
+      - 'v14/V14_WORK_BOARD.json'
+      - 'v14/V14_LIVE_WORKPLAN.md'
+      - 'v14/V14_CANON_COVERAGE_INDEX.md'
+      - '.github/workflows/v14-core-c4-c3-consumption.yml'
+  pull_request:
+    branches:
+      - boss/v14-recall-store-pin-rebind-20261122
+      - gpt6/v13-private-remote-bridge-20261111
+    paths:
+      - 'v13/code/scripts/integrated_c4_c3_receipt_candidate_20261122.py'
+      - 'v13/code/scripts/run_c4_c3_current_candidate_test_20261122.py'
+      - 'v13/code/scripts/termux_runtime_recovery_candidate_20261121.py'
+      - 'v13/code/scripts/stage_integrated_candidate.py'
+      - 'v13/code/v13/runtime_deploy.py'
+      - 'v13/code/tests/test_v14_same_turn_c4_c3_consumption.py'
+      - 'v13/code/v13/brain_panel.py'
+      - 'v13/code/v13/native_offer_prompt_receipt.py'
+      - 'v13/code/v13/runners.py'
+      - 'v13/code/tests/test_v14_causal_stream_offer_receipt.py'
+      - 'v14/V14_USER_NEXT_ACTION.md'
+      - 'v13/code/tests/test_termux_runtime_recovery_stage.py'
+      - 'v14/V14_WORK_BOARD.json'
+      - 'v14/V14_LIVE_WORKPLAN.md'
+      - 'v14/V14_CANON_COVERAGE_INDEX.md'
+      - '.github/workflows/v14-core-c4-c3-consumption.yml'
+
+jobs:
+  consumer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.13', '3.14']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install focused Runtime test dependencies
+        run: python -m pip install pytest==9.2.0 numpy==2.2.6 psutil PyYAML
+      - name: Compile exact source, overlay and consumer
+        run: |
+          python -m py_compile \
+            v13/code/v13/cognition.py \
+            v13/code/v13/runtime.py \
+            v13/code/v13/native_turn_budget.py \
+            v13/code/v13/observer_schedule.py \
+            v13/code/v13/focal.py \
+            v13/code/v13/brain_panel.py \
+            v13/code/v13/native_offer_prompt_receipt.py \
+            v13/code/v13/runners.py \
+            v13/code/tests/test_v14_causal_stream_offer_receipt.py \
+            v13/code/scripts/integrated_c4_c3_receipt_candidate_20261122.py \
+            v13/code/scripts/run_c4_c3_current_candidate_test_20261122.py \
+            v13/code/scripts/termux_runtime_recovery_candidate_20261121.py \
+            v13/code/scripts/stage_integrated_candidate.py \
+            v13/code/v13/runtime_deploy.py \
+            v13/code/scripts/source_lifecycle_lock_integration_candidate.py \
+            v13/code/scripts/termux_runtime_recovery_candidate_20261112.py \
+            v13/code/scripts/integrated_context_recall_candidate_20261111.py \
+            v13/code/scripts/integrated_feedback_bootstrap_candidate_20261111.py \
+            v13/code/scripts/integrated_memory_world_candidate_20261111.py \
+            v13/code/scripts/integrated_world_training_resume_candidate_20261111.py \
+            v13/code/tests/test_v14_store_source_blob_serialization.py
+      - name: Exercise final staged fair-budget composition
+        env:
+          PYTHONPATH: v13/code
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python -m pytest -q \
+            v13/code/tests/test_termux_runtime_recovery_stage.py \
+            v13/code/tests/test_observer_fair_budget_stage_20261116.py \
+            v13/code/tests/test_v14_store_source_blob_serialization.py
+      # The script below stages the observer and C4 receipt overlays before running the same-turn test.
+      - name: Exercise source-pinned composed Runtime and negative control
+        env:
+          PYTHONPATH: v13/code
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python v13/code/scripts/run_c4_c3_current_candidate_test_20261122.py
+      - name: Verify same-causal native C3 offer prefill receipt
+        env:
+          PYTHONPATH: v13/code
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python -m pytest -q v13/code/tests/test_v14_causal_stream_offer_receipt.py

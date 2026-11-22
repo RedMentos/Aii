@@ -11,6 +11,7 @@ from unittest.mock import Mock, patch
 
 from v13 import effort, native_turn_budget as native_budget, observer_schedule as obs
 from v13 import runtime as runtime_module
+from v13 import cognition as cognition_module
 from v13.common import Cancelled, Limits
 from v13.runtime import Runtime
 
@@ -77,6 +78,21 @@ class SchedulingTests(unittest.TestCase):
             'role': 'C3_LANGUAGE', 'generated_tokens': 3}}}
         self.assertFalse(native_budget.plan(100, 130, 104,
             recent=[good, good, failed, failed])['recovery'])
+        for count in (False, 0.0, '0', None):
+            malformed = {'status': 'DEADLINE', 'metadata': {'runner': {
+                'role': 'C3_LANGUAGE', 'generated_tokens': count, 'last_phase': 'prefill'}}}
+            self.assertFalse(native_budget.zero_token_prefill_failure(malformed))
+        fair = native_budget.plan(100, 130, 104, recent=[failed, failed],
+                                  background_enabled=True, observer_deadline=113.5)
+        self.assertTrue(fair['recovery'])
+        self.assertEqual(fair['preanswer_end_monotonic'], 113.5)
+        self.assertAlmostEqual(fair['preanswer_seconds_available'], 9.5, places=2)
+        self.assertAlmostEqual(fair['c3_reserved_seconds'], 16.5, places=2)
+        self.assertEqual(fair['minimum_role_slice_s'], 1.0)
+        first_slot = native_budget.plan(100, 130, 104, recent=[failed, failed],
+                                        background_enabled=True, observer_deadline=106.75)
+        self.assertAlmostEqual(first_slot['preanswer_seconds_available'], 2.75, places=2)
+        self.assertAlmostEqual(first_slot['c3_reserved_seconds'], 16.5, places=2)
 
 
 class RuntimeObserverTests(unittest.TestCase):
@@ -146,6 +162,132 @@ class RuntimeObserverTests(unittest.TestCase):
                 self.assertIn(offer['packet_id'], meta['focal']['coalition'])
                 self.assertIn(offer['packet_id'], json.dumps(sent))
                 self.assertIn('MODEL_HYPOTHESIS_NOT_FACT', json.dumps(sent))
+                self.assertEqual(r.cfg['learning_mode'], 'RECORD_ONLY')
+                self.assertFalse(r.pool.pids())
+            finally:
+                r.close()
+
+
+    # Include Runtime routing/budget telemetry in failures; this protects the same-turn B1/B2 gate.
+    def test_two_recent_c3_prefill_failures_keep_b1_and_b2_in_same_turn_c4_to_c3(self):
+        with tempfile.TemporaryDirectory() as folder:
+            r = Runtime(Path(folder))
+            try:
+                r.sleep.cycle.set_policy('enabled', 'off')
+                r.cfg.update(deadline_seconds=30, observer_seconds=35, max_reentry=0)
+                effort.set_mode(r.store, 'max')
+                r._route = Mock(return_value=('both', {'source': 'SYNTHETIC_RECOVERY_TEST'}))
+                r.learner.output_delta = Mock(return_value=None)
+                for index in range(2):
+                    previous = r.store.event(r.session, f'previous failed C3 {index}')
+                    r.store.message(r.session, previous['event_id'], 'assistant',
+                        status='DEADLINE',
+                        metadata={'runner': {'role': 'C3_LANGUAGE', 'generated_tokens': 0,
+                                             'last_phase': 'prefill', 'duration_s': 29.1}})
+                now = [time.monotonic()]
+                start = now[0]
+                calls, sent = [], []
+                source = 'Compare Cedar train options: option A costs 11 and option B costs 17. Which costs less?'
+                offers_by_role = {
+                    'B1_DETAIL': ('Cedar option A costs 11.', 'option A costs 11'),
+                    'B2_GIST': ('Cedar option B costs 17.', 'option B costs 17'),
+                }
+
+                def get_runner(role, *_args, **_kwargs):
+                    runner = SimpleNamespace(role=role, last_metrics={})
+
+                    def generate(messages, cancel, end, *_args, **_kwargs):
+                        calls.append((role, end))
+                        now[0] += .2
+                        if role in offers_by_role:
+                            summary, quote = offers_by_role[role]
+                            schema = _args[1] if len(_args) > 1 else _kwargs.get('schema', {})
+                            pointer = (isinstance(schema, dict)
+                                and schema.get('properties', {}).get('quotes', {})
+                                    .get('items', {}).get('type') == 'integer')
+                            runner.last_metrics = {'role': role, 'status': 'FINAL',
+                                                   'generated_tokens': 20, 'prompt_tokens': 60}
+                            yield json.dumps({'summary': summary,
+                                'quotes': [1] if pointer else [quote],
+                                'uncertainty': 'none', 'needs_reentry': False})
+                        elif role == 'C3_LANGUAGE':
+                            sent.append(copy.deepcopy(messages))
+                            runner.last_metrics = {'role': role, 'status': 'FINAL',
+                                                   'generated_tokens': 5, 'prompt_tokens': 80}
+                            yield 'Option A costs less, at 11.'
+                        else:
+                            raise AssertionError(f'unexpected runner {role}')
+
+                    runner.generate = generate
+                    return runner
+
+                r.pool.get = Mock(side_effect=get_runner)
+                fake_time = SimpleNamespace(monotonic=lambda: now[0],
+                                            monotonic_ns=lambda: int(now[0] * 1e9))
+                event = r.store.event(r.session, source)
+                real_run = obs.run
+
+                def run_with_clock(*args, **kwargs):
+                    return real_run(*args, **dict(kwargs, clock=lambda: now[0]))
+
+                with patch.object(runtime_module, 'time', fake_time), \
+                     patch.object(cognition_module, 'time', fake_time), \
+                     patch.object(obs, 'run', run_with_clock), \
+                     patch.object(obs, 'background', return_value=[]):
+                    r._turn(event)
+
+                answer = r.last_answer()
+                self.assertEqual(answer['status'], 'FINAL', answer)
+                diagnostic = json.loads(answer['metadata'])
+                offer_diagnostics = [
+                    {'kind': row['kind'], 'metrics': json.loads(row['metrics'])}
+                    for row in r.store.rows(
+                        "SELECT kind,metrics FROM telemetry WHERE event_id=? AND kind IN "
+                        "('offer_rejected','native_body_deferred_for_c3','native_body_budgeted_for_c3') ORDER BY id",
+                        (event['event_id'],))
+                ]
+                self.assertEqual([role for role, _ in calls],
+                                 ['B1_DETAIL', 'B2_GIST', 'C3_LANGUAGE'],
+                                 json.dumps({
+                                     'route': diagnostic.get('route'),
+                                     'resource_mode': diagnostic.get('resource_mode'),
+                                     'observer_schedule': diagnostic.get('observer_schedule'),
+                                     'fast_forward': diagnostic.get('fast_forward'),
+                                     'reflex': diagnostic.get('reflex'),
+                                     'reasoning_effort': diagnostic.get('reasoning_effort'),
+                                     'stage_marks_s': diagnostic.get('stage_marks_s'),
+                                     'focal': diagnostic.get('focal'),
+                                     'offers': offer_diagnostics,
+                                 }, sort_keys=True))
+                rows = r.store.rows(
+                    "SELECT id,payload FROM packets WHERE event_id=? AND kind='OfferPacket' ORDER BY created",
+                    (event['event_id'],))
+                self.assertEqual(len(rows), 2)
+                packets = [json.loads(row['payload']) for row in rows]
+                self.assertEqual({item['role'] for item in packets}, {'B1_DETAIL', 'B2_GIST'})
+                self.assertTrue(all(len(item['evidence_refs']) == 1 for item in packets))
+                for item in packets:
+                    self.assertEqual(r.store.read_source(item['evidence_refs'][0]), source)
+
+                metadata = json.loads(answer['metadata'])
+                packet_ids = {item['packet_id'] for item in packets}
+                self.assertEqual(set(metadata['selected_offer_ids']), packet_ids)
+                self.assertEqual(set(metadata['focal']['coalition']), packet_ids)
+                self.assertEqual(len(sent), 1)
+                c3_view = json.dumps(sent)
+                self.assertIn('Cedar option A costs 11.', c3_view)
+                self.assertIn('Cedar option B costs 17.', c3_view)
+                self.assertIn('MODEL_HYPOTHESIS_NOT_FACT', c3_view)
+
+                budget_rows = r.store.rows(
+                    "SELECT metrics FROM telemetry WHERE event_id=? AND kind='native_body_budgeted_for_c3' ORDER BY id",
+                    (event['event_id'],))
+                self.assertEqual(len(budget_rows), 2)
+                budgets = [json.loads(row['metrics']) for row in budget_rows]
+                self.assertEqual({item['role'] for item in budgets}, {'B1_DETAIL', 'B2_GIST'})
+                self.assertTrue(all(item['status'] == 'PREANSWER_BUDGETED' for item in budgets))
+                self.assertTrue(all(abs(item['c3_reserved_seconds'] - 16.5) < .01 for item in budgets))
+                self.assertTrue(all(item['recent_real_prefill_failures'] == 2 for item in budgets))
                 self.assertEqual(r.cfg['learning_mode'], 'RECORD_ONLY')
                 self.assertFalse(r.pool.pids())
             finally:

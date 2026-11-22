@@ -12,8 +12,10 @@ from pathlib import Path
 import shutil
 import tempfile
 
-BUILDER = 'scripts/termux_runtime_recovery_candidate_20261112.py'
-BUILDER_SHA = '751e32f17db5199d80f1315f589ff12775a978c2ca56eb7d4d08468c7c1f9e77'
+BUILDER = 'scripts/termux_runtime_recovery_candidate_20261121.py'
+BUILDER_SHA = '771f7c5b18f4e519a581149397462481542faca55382f9ea1595508427ff9c1c'
+ARITHMETIC_OVERLAY = 'scripts/integrated_arithmetic_guard_candidate_20261121.py'
+ARITHMETIC_OVERLAY_GIT_BLOB = '88c179a71387c5caba7bbd645f868a7cccf39d30'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 
@@ -77,12 +79,44 @@ def stage(code_dir: Path, destination: Path) -> dict:
             target = staging / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(payload)
+        arithmetic_overlay_path = code_dir / ARITHMETIC_OVERLAY
+        if arithmetic_overlay_path.is_symlink() or not arithmetic_overlay_path.is_file():
+            raise ValueError('arithmetic guard overlay missing or unsafe')
+        arithmetic_overlay_raw = arithmetic_overlay_path.read_bytes()
+        arithmetic_overlay_blob = hashlib.sha1(
+            b'blob ' + str(len(arithmetic_overlay_raw)).encode('ascii') + b'\0' + arithmetic_overlay_raw
+        ).hexdigest()
+        if arithmetic_overlay_blob != ARITHMETIC_OVERLAY_GIT_BLOB:
+            raise ValueError('arithmetic guard overlay source changed')
+        arithmetic_overlay_spec = importlib.util.spec_from_file_location(
+            'v14_checked_arithmetic_guard', arithmetic_overlay_path)
+        if arithmetic_overlay_spec is None or arithmetic_overlay_spec.loader is None:
+            raise RuntimeError('arithmetic guard overlay is not loadable')
+        arithmetic_overlay_module = importlib.util.module_from_spec(arithmetic_overlay_spec)
+        arithmetic_overlay_spec.loader.exec_module(arithmetic_overlay_module)
+        arithmetic_files = arithmetic_overlay_module.apply_staged_arithmetic(code_dir, staging)
+        if not isinstance(arithmetic_files, dict) or not arithmetic_files:
+            raise ValueError('arithmetic guard overlay produced no staged files')
+        for relative, payload in arithmetic_files.items():
+            target = staging / relative
+            if target.is_symlink() or not target.is_file() or not isinstance(payload, bytes):
+                raise ValueError('unsafe arithmetic guard output')
+            target.write_bytes(payload)
+        replaced_files = sorted(set(replacements) | set(arithmetic_files))
+        arithmetic_overlay_manifest = {
+            'name': ARITHMETIC_OVERLAY,
+            'git_blob_sha1': ARITHMETIC_OVERLAY_GIT_BLOB,
+            'status': 'SHADOW_REVIEW_ONLY',
+            'source_pins': arithmetic_overlay_module.SOURCE_PINS,
+            'replaced_files': sorted(arithmetic_files),
+        }
         manifest = {
             'status': 'SHADOW_REVIEW_ONLY',
             'source': str(code_dir),
             'builder': BUILDER,
             'builder_sha256': BUILDER_SHA,
-            'replaced_files': sorted(replacements),
+            'replaced_files': replaced_files,
+            'arithmetic_overlay': arithmetic_overlay_manifest,
             'files_sha256': {str(path.relative_to(staging)): hashlib.sha256(path.read_bytes()).hexdigest()
                              for path in sorted(staging.rglob('*')) if path.is_file()},
             'limitations': ['not a production Runtime promotion', 'no Android evidence',

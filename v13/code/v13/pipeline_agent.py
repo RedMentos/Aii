@@ -11,6 +11,7 @@ import fcntl
 from contextlib import contextmanager
 import json
 import os
+import re
 from pathlib import Path
 import time
 import tempfile
@@ -134,7 +135,7 @@ def _state_raw():
 
 
 def snapshot():
-    """Only safe enums/short commit identifiers; no log, paths, user inputs."""
+    """Only safe enums, commit identifiers and whitelisted exception-class tokens; no paths or user inputs."""
     data = _state_raw()
     result = {"schema": "v13.pipeline-status/1", "auto_enabled": enabled(),
               "last_check_utc": data.get("last_check_utc", 0),
@@ -143,16 +144,21 @@ def snapshot():
               "runtime": data.get("runtime", "NOT_YET_CHECKED"),
               "dashboard": data.get("dashboard", "NOT_YET_CHECKED"),
               "last_error": data.get("last_error", "NONE"),
+              "last_error_detail": data.get("last_error_detail", ""),
               "updated_commit": data.get("updated_commit", "")}
+    if (not isinstance(result["last_error_detail"], str)
+            or not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,63}", result["last_error_detail"])):
+        result["last_error_detail"] = ""
     if not isinstance(result["last_check_utc"], int):
         result["last_check_utc"] = 0
     if not isinstance(result["last_success_utc"], int):
         result["last_success_utc"] = 0
     allowed = {
         "last_result": {"NOT_YET_RUN", "AUTO_OFF", "UP_TO_DATE", "UPDATED", "CI_WAIT",
-                        "BUSY", "BLOCKED_RUNNING", "PARTIAL", "ERROR", "CHECKING"},
+                        "BUSY", "BLOCKED_RUNNING", "PARTIAL", "ERROR", "CHECKING",
+                        "ROLLED_BACK_RUNTIME_ONLY"},
         "runtime": {"NOT_YET_CHECKED", "UP_TO_DATE", "UPDATED", "CI_WAIT", "AUTO_OFF",
-                    "BLOCKED_RUNNING", "NOT_INSTALLED", "ERROR"},
+                    "BLOCKED_RUNNING", "NOT_INSTALLED", "ERROR", "ROLLED_BACK"},
         "dashboard": {"NOT_YET_CHECKED", "UP_TO_DATE", "UPDATED", "CI_WAIT", "AUTO_OFF",
                       "BLOCKED_RUNNING", "NOT_INSTALLED", "ERROR"},
         "last_error": {"NONE", "GITHUB", "CI", "GIT", "RUNNING", "UPDATE", "STATE"}
@@ -259,6 +265,32 @@ def _do_update(name, root, state, *, runtime_busy, tested_commits, manual):
         state[name] = "ERROR"
         return
     key = (commit, name)
+    # An interrupted two-file activation is a recovery operation, not a new
+    # source install. Recover it only after the runtime is stopped and the
+    # existing automatic-update consent (or an explicit manual request) allows
+    # the worker to act. This rollback/finalize must precede CI gating so a red
+    # candidate cannot strand a mixed launcher/marker pair.
+    if name == "runtime" and must_deploy and not runtime_busy and (manual or enabled()):
+        state["runtime_activation_recovery"] = "STARTED"
+        try:
+            state["runtime_activation_recovery"] = runtime_deploy.recover_pending_activation()
+        except BaseException as exc:
+            # Also fail closed on KeyboardInterrupt/SystemExit during recovery:
+            # finally must not restart a possibly half-recovered launcher pair.
+            # Disable future automatic mutations and let the operator inspect it.
+            state["runtime_activation_recovery"] = "ERROR"
+            state["runtime_activation_recovery_error"] = type(exc).__name__
+            try:
+                set_enabled(False)
+                state["runtime_activation_auto_update"] = "DISABLED"
+            except Exception as disable_exc:
+                state["runtime_activation_auto_update"] = "DISABLE_FAILED"
+                state["runtime_activation_auto_update_error"] = type(disable_exc).__name__
+            raise
+        must_deploy = runtime_deploy.needs_deploy(root)
+        if probe["status"] == "UP_TO_DATE" and not must_deploy:
+            state[name] = "UP_TO_DATE"
+            return
     # The first check may have happened before a graceful chat stop.
     # Re-read the exact-commit workflow results immediately before mutation so
     # a newer failed/queued run cannot be hidden by the pre-stop success.
@@ -336,7 +368,7 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
         prior_status = snapshot()
         state = {"last_check_utc": clock, "last_success_utc": int(previous.get("last_success_utc", 0)),
                  "last_result": "CHECKING", "runtime": prior_status["runtime"],
-                 "dashboard": prior_status["dashboard"], "last_error": "NONE",
+                 "dashboard": prior_status["dashboard"], "last_error": "NONE", "last_error_detail": "",
                  "updated_commit": previous.get("updated_commit", "")}
         _atomic(STATE, state)
         roots = {"runtime": Path.home() / ".v13-runtime-source",
@@ -354,9 +386,10 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
                     # activation below still requires CI and a stopped model.
                     runtime_deploy.prepare_source(roots["runtime"])
                 except (OSError, ValueError, TimeoutError,
-                        runtime_deploy.RuntimeDeployError, subprocess.TimeoutExpired):
+                        runtime_deploy.RuntimeDeployError, subprocess.TimeoutExpired) as exc:
                     state["runtime"] = "ERROR"
                     state["last_error"] = "UPDATE"
+                    state["last_error_detail"] = type(exc).__name__
                     failed.add("runtime")
             busy = updates._runtime_active()
             # Fetch/check CI BEFORE asking to interrupt a running chat; if CI
@@ -373,9 +406,10 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
                         if report["status"] != "UPDATE_AVAILABLE":
                             if name != "runtime" or not runtime_deploy.needs_deploy(roots[name]):
                                 continue
-                    except runtime_deploy.RuntimeDeployError:
+                    except runtime_deploy.RuntimeDeployError as exc:
                         state[name] = "ERROR"
                         state["last_error"] = "UPDATE"
+                        state["last_error_detail"] = type(exc).__name__
                         failed.add(name)
                         continue
                     sha = report["available"]
@@ -395,8 +429,9 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
                     try:
                         was_running = lifecycle.request_stop(timeout=35,
                                                               runtime_active=updates._runtime_active)
-                    except lifecycle.LifecycleError:
+                    except lifecycle.LifecycleError as exc:
                         state["last_error"] = "RUNNING"
+                        state["last_error_detail"] = type(exc).__name__
                     busy = updates._runtime_active()
             for name in selected:
                 if name in failed:
@@ -407,11 +442,12 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
                 except AutoUpdateDisabled:
                     state[name] = "AUTO_OFF"
                 except (OSError, ValueError, TimeoutError, updates.UpdateDenied,
-                        runtime_deploy.RuntimeDeployError, subprocess.TimeoutExpired):
+                        runtime_deploy.RuntimeDeployError, subprocess.TimeoutExpired) as exc:
                     # A broken runtime install must not strand CHECKING or
                     # prevent the independent control panel repairing itself.
                     state[name] = "ERROR"
                     state["last_error"] = "UPDATE"
+                    state["last_error_detail"] = type(exc).__name__
                 _atomic(STATE, state)
             values = {state[name] for name in selected}
             if values == {"ERROR"}:
@@ -444,24 +480,103 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
             state["last_result"] = "ERROR"
             state["last_error"] = ("RUNNING" if isinstance(exc,lifecycle.LifecycleError)
                                    else "UPDATE")
-        except Exception:
+            state["last_error_detail"] = type(exc).__name__
+        except Exception as exc:
             # Preserve a terminal, sanitized state even for an unexpected
             # Python/import error; the supervising worker can log its class.
             state["last_result"] = "ERROR"
             state["last_error"] = "UPDATE"
+            state["last_error_detail"] = type(exc).__name__
             raise
         finally:
             # Restart the UI-managed V13 chat whether an update succeeded or
             # failed. This cannot restart arbitrary Termux programs.
-            if was_running:
+            if was_running and state.get("runtime_activation_recovery") != "ERROR":
                 try:
                     lifecycle.request_resume(reason="UPDATED" if any(state[n] == "UPDATED" for n in selected)
                                              else "RESTORE")
-                except (OSError, ValueError, lifecycle.LifecycleError):
+                except (OSError, ValueError, lifecycle.LifecycleError) as exc:
                     state["last_error"] = "STATE"
+                    state["last_error_detail"] = type(exc).__name__
                     state["last_result"] = "ERROR"
+            elif was_running:
+                # Do not boot an unknown launcher/marker pair after failed
+                # crash recovery. The chat stays stopped for manual inspection.
+                state["resume_suppressed"] = "ACTIVATION_RECOVERY_FAILED"
             _atomic(STATE, state)
         return snapshot()
+    finally:
+        os.close(fd)
+
+
+
+def rollback_runtime():
+    """Disable auto-update, stop only a managed V13 chat, then restore the runtime pair."""
+    _private()
+    if LOCK.is_symlink():
+        raise RuntimeError("unsafe pipeline lock")
+    fd = os.open(LOCK, os.O_CREAT | os.O_RDWR | getattr(os, "O_NOFOLLOW", 0), 0o600)
+    was_running = False
+    try:
+        os.fchmod(fd, 0o600)
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return {"status": "BUSY", "auto_enabled": enabled()}
+        # A rollback is an explicit owner action. Disable future automatic
+        # mutation before asking the lifecycle to stop the current managed chat.
+        set_enabled(False)
+        try:
+            if updates._runtime_active():
+                was_running = lifecycle.request_stop(
+                    timeout=35, runtime_active=updates._runtime_active)
+            if updates._runtime_active():
+                raise RuntimeError("V13 chat is still active; runtime rollback deferred")
+            receipt = runtime_deploy.rollback()
+            if receipt.get("status") not in ("ROLLED_BACK", "ROLLED_BACK_LEGACY"):
+                raise RuntimeError("runtime rollback was not confirmed")
+            state = _state_raw()
+            state.update({
+                "last_result": "ROLLED_BACK_RUNTIME_ONLY",
+                "runtime": "ROLLED_BACK",
+                "last_error": "NONE",
+                "last_error_detail": "",
+                "updated_commit": receipt.get("restored_commit") or "",
+                "last_success_utc": int(time.time()),
+            })
+            _atomic(STATE, state)
+        except Exception as exc:
+            # Keep the chat stopped and auto-update disabled if the transaction
+            # cannot prove a complete launcher/marker pair.
+            state = _state_raw()
+            state.update({
+                "last_result": "ERROR", "runtime": "ERROR",
+                "last_error": "UPDATE", "last_error_detail": type(exc).__name__,
+            })
+            _atomic(STATE, state)
+            raise
+
+        resume = "NOT_NEEDED"
+        resume_confirmation = "NOT_REQUIRED"
+        if was_running:
+            try:
+                lifecycle.request_resume(reason="RESTORE")
+                resume = "REQUESTED"
+                resume_confirmation = "PENDING_UI_CONSUMPTION"
+            except (OSError, ValueError, lifecycle.LifecycleError) as exc:
+                resume = "FAILED"
+                resume_confirmation = type(exc).__name__
+        return {
+            "status": "ROLLED_BACK_RUNTIME_ONLY",
+            "runtime": receipt["status"],
+            "restored_commit": receipt.get("restored_commit"),
+            "dashboard": "UNCHANGED",
+            "auto_enabled": False,
+            "resume": resume,
+            "resume_confirmation": resume_confirmation,
+            "models_untouched": True,
+            "sqlite_untouched": True,
+        }
     finally:
         os.close(fd)
 
@@ -540,11 +655,13 @@ def main(argv=None):
             report = pending_updates(fetch=True)
             ok = report["status"] in ("UP_TO_DATE", "UPDATE_AVAILABLE")
         elif args.action == "rollback":
-            # The legacy rollback restored a Git tree only, not the installed
-            # launcher. Never falsely report a runtime rollback as complete.
-            report = {"status": "REFUSED",
-                      "reason": "A launcher-safe runtime rollback is not yet implemented"}
-            ok = False
+            if args.target not in ("all", "runtime"):
+                report = {"status": "REFUSED",
+                          "reason": "Dashboard source rollback is not yet implemented"}
+                ok = False
+            else:
+                report = rollback_runtime()
+                ok = report.get("status") == "ROLLED_BACK_RUNTIME_ONLY"
         elif args.action == "auto" and not enabled():
             report = {"status": "AUTO_OFF", "auto_enabled": False}
             ok = False

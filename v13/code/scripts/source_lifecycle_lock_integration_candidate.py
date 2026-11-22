@@ -5,24 +5,25 @@ from pathlib import Path
 
 PINS = {
     'archive.py': 'adbdd844c2275d527a689eda789a3f247759967677e573b92bf7af7ad68404bf',
-    'store.py': 'fe66f92533b20738b5ec384e9d7c0b5ac8b4b4f658c6c1ad23792d813ff29980',
+    'store.py': '40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb',
     'common.py': '0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a',
     'memory.py': '391668fff0b4ad3d7c36d5d7a9823055ff74821c10f71b945e87edaa62597484',
     'vision.py': '758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5',
-    'archive_reader_guard_candidate.py': '8771f937ed58dc010ebdf42ab8efcacf3e4c86875eb89609d2118d51d3cea6fb',
-    'archive_stream_range_candidate.py': 'e869eaa278bf567463f7f4bbf41b2b5f5bae51c52f7034c2edcd9250d4f917e8',
+    'archive_reader_guard_candidate.py': '84c06a9f5c0b6054f836615023822ff577984d3efe9ddfb07cae569ec124f438',
+    'archive_stream_range_candidate.py': 'd2d021adcc844c1f321312cbfa60a4affb0a6b7fddc09e41a234cdf83f1eec98',
     'source_lifecycle_candidate.py': '3ace74b802d3e3e7340eabcccb03275d348deae2297fe8a1b4d2e1eab17d62b0',
 }
-GUARD_SCRIPT_SHA = 'a825149f711dead291890458a30c014652cfed26a8dbe85c60ea350e86a83a72'
+GUARD_SCRIPT_SHA = '69a20b1c9e10882f80086c0620e8f87575c4559e7113ed19fd53002330be8747'
 OLD_ARCHIVE_INTEGRATED_SHA = '3f421423ce890b90033470e15150b1ba9830642e6b5e92e61b654801602e90b4'
 
-STORE_OLD = b'''        if not p.exists():atomic_write(p,b)
-        with self.tx() as c:c.execute("INSERT INTO sources VALUES (?,?,?,?,?,?,0)",(sid,h,kind,len(b),len(text),now()))
+STORE_OLD = b'''        with self.mutex:
+            if not p.exists():atomic_write(p,b)
+            with self.tx() as c:c.execute("INSERT INTO sources VALUES (?,?,?,?,?,?,0)",(sid,h,kind,len(b),len(text),now()))
 '''
-STORE_NEW = b'''        with self.tx() as c:
+STORE_NEW = b'''        with self.mutex:
             from .source_lifecycle_candidate import verify_or_create_blob
             verify_or_create_blob(p,b,h)
-            c.execute("INSERT INTO sources VALUES (?,?,?,?,?,?,0)",(sid,h,kind,len(b),len(text),now()))
+            with self.tx() as c:c.execute("INSERT INTO sources VALUES (?,?,?,?,?,?,0)",(sid,h,kind,len(b),len(text),now()))
 '''
 RECOVER_OLD = b'''    def _recover(self):
         with self.tx() as c:
@@ -41,6 +42,60 @@ EVENT_OLD = b'''        path=self.home/'data/blobs'/h
 EVENT_NEW = b'''        path=self.home/'data/blobs'/h
         from .source_lifecycle_candidate import verify_or_create_blob
         verify_or_create_blob(path,b,h)
+'''
+READ_SOURCE_OLD = b'''    def read_source(self,ref):
+        r=self.one("SELECT * FROM sources WHERE id=?",(ref.get("source_id"),))
+        if not r or r["deleted"] or r["hash"]!=ref.get("sha256"):raise ValueError("Dangling/gel\xc3\xb6schter SourceRef")
+        b=self.blob_bytes(r["hash"])
+        if digest(b)!=r["hash"]:raise ValueError("Source-Hash falsch")
+        txt=b.decode()
+        if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef au\xc3\x9ferhalb Text")
+        return txt[ref["char_start"]:ref["char_end"]]
+'''
+READ_SOURCE_NEW = b'''    def read_source(self,ref):
+        # Linearize the read against forget: validate the row and acquire the
+        # exact file descriptor under the same Store lock used by revocation.
+        # The potentially large read/decompression then happens outside the lock.
+        with self.mutex:
+            r=self.one("SELECT * FROM sources WHERE id=?",(ref.get("source_id"),))
+            if not r or r["deleted"] or r["hash"]!=ref.get("sha256"):raise ValueError("Dangling/deleted SourceRef")
+            if not all(hasattr(os,name) for name in ("O_DIRECTORY","O_NOFOLLOW","O_NONBLOCK")):
+                raise OSError("safe source read primitives unavailable")
+            directory=self.home/"data/blobs"
+            dir_fd=os.open(directory,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+            fd=None
+            try:
+                try:
+                    fd=os.open(r["hash"],os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=dir_fd)
+                    compressed=False
+                except FileNotFoundError:
+                    try:
+                        fd=os.open(r["hash"]+".z",os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=dir_fd)
+                        compressed=True
+                    except FileNotFoundError:
+                        raise FileNotFoundError(str(directory/r["hash"]))
+                import stat
+                if not stat.S_ISREG(os.fstat(fd).st_mode):
+                    raise ValueError("Source blob is not a regular file")
+                source_file=os.fdopen(fd,"rb")
+                fd=None
+            finally:
+                if fd is not None:os.close(fd)
+                os.close(dir_fd)
+        with source_file:
+            raw=source_file.read()
+        if compressed:
+            import zlib
+            d=zlib.decompressobj()
+            try:b=d.decompress(raw,64*1024*1024)
+            except zlib.error as exc:raise ValueError("Archive blob corrupt") from exc
+            if d.unconsumed_tail or not d.eof:raise ValueError("Archive blob corrupt or too large")
+        else:
+            b=raw
+        if digest(b)!=r["hash"]:raise ValueError("Source-Hash falsch")
+        txt=b.decode()
+        if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef out of bounds")
+        return txt[ref["char_start"]:ref["char_end"]]
 '''
 MEMORY_OLD = b'''        src=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
         if not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(src['hash'],)):(self.s.home/'data/blobs'/src['hash']).unlink(missing_ok=True);(self.s.home/'data/blobs'/(src['hash']+'.z')).unlink(missing_ok=True)
@@ -129,6 +184,7 @@ def build_sources(source_dir):
             ('store.py', STORE_OLD, STORE_NEW),
             ('store.py', RECOVER_OLD, RECOVER_NEW),
             ('store.py', EVENT_OLD, EVENT_NEW),
+            ('store.py', READ_SOURCE_OLD, READ_SOURCE_NEW),
             ('memory.py', MEMORY_OLD, MEMORY_NEW),
             ('vision.py', VISION_OLD, VISION_NEW),
             ('vision.py', VISION_FORGET_OLD, VISION_FORGET_NEW),

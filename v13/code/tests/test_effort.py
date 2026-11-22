@@ -86,18 +86,23 @@ class EffortPolicy(unittest.TestCase):
         p=effort.decide('max',s,cfg={'max_reentry':0,'focal_slots':2})
         self.assertEqual((p['max_reentry'],p['focal_slots']),(0,2))
         p=effort.decide('max',s,cfg=CFG)
-        self.assertEqual((p['tool_steps'],p['verify'],p['focal_cycles']),(0,False,1))
-        for reason in ('AGE_NO_TOOLS','AGE_NO_DELIBERATION_MODES','AGE_FOCAL_DEPTH'):self.assertIn(reason,p['constraints'])
+        self.assertEqual((p['tool_steps'],p['verify'],p['focal_cycles']),(0,False,3))
+        for reason in ('AGE_NO_TOOLS','AGE_NO_DELIBERATION_MODES'):self.assertIn(reason,p['constraints'])
 
-    def test_age_bounds_autonomous_escalation_but_older_stage_opens_it(self):
+    def test_age_does_not_cap_compute_effort_but_rights_remain_separate(self):
         hot=sig('Vergleiche A und B','both')|{'uncertainty':1.,'conflict':1.,'novelty':1.,'salience':1.}
         young=effort.decide('adaptive',hot,cfg=CFG)
-        self.assertEqual(young['requested_effort'],1.);self.assertLessEqual(young['effort'],.79)
-        self.assertEqual(young['band'],'FOCAL_TARGETED');self.assertEqual(young['wake'],'both')
-        self.assertIn('AGE_AUTONOMOUS_EFFORT_MAX_LOW',young['constraints'])
-        old={'stage':5,'autonomous_effort_max':'max','focal_depth':5,'deliberation':True,'tools':True,'long_loops':True,'resource_mode':'GREEN'}
-        mature=effort.decide('adaptive',hot,cfg=CFG,age=old)
-        self.assertEqual((mature['band'],mature['verify'],mature['tool_steps'],mature['focal_cycles']),('DEEP_FOCAL',True,1,3))
+        self.assertEqual(young['requested_effort'],1.)
+        self.assertEqual(young['effort'],1.)
+        self.assertEqual((young['band'],young['wake'],young['focal_cycles']),('DEEP_FOCAL','both',3))
+        self.assertFalse(young['verify'])  # official Age-0 rights remain separate
+        self.assertEqual(young['tool_steps'],0)
+        mature={'stage':5,'autonomous_effort_max':'max','focal_depth':5,'deliberation':True,'tools':True,'long_loops':True,'resource_mode':'GREEN'}
+        tested=effort.decide('adaptive',hot,cfg=CFG,age=mature)
+        self.assertEqual(tested['effort'],young['effort'])
+        self.assertEqual(tested['focal_cycles'],young['focal_cycles'])
+        self.assertTrue(tested['verify'])
+        self.assertEqual(tested['tool_steps'],1)
 
     def test_age_limits_are_read_from_age_module(self):
         from v13.age import AgeControl
@@ -107,10 +112,12 @@ class EffortPolicy(unittest.TestCase):
             home=Path(tmp);cfg=initialize(home);store=Store(home)
             try:
                 limits=effort.age_limits(AgeControl(store,cfg),'NORMAL')
-                # Age 10 is a laboratory feature gate, NOT CPU budget escalation.
+                # Official Age stays 0; the staged LaboratoryAgeControl supplies separate X10 rights.
                 self.assertEqual((limits['stage'],limits['autonomous_effort_max'],
                                   limits['deliberation'],limits['tools']),
-                                 (0,'low',False,False))
+                                 (0,'max',False,False))
+                self.assertEqual(limits['focal_depth'],3)
+                self.assertFalse(limits['long_loops'])
                 self.assertEqual(limits['lab_stage'],10)
                 self.assertFalse(limits['lab_compute_active'])
                 self.assertEqual(limits['lab_compute_gate'],'NOT_A_COMPUTE_SETTING')

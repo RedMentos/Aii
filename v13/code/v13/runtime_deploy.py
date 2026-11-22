@@ -44,15 +44,17 @@ STAGE_COPY_IGNORES = ("__pycache__", "*.pyc", "*.db", "*.sqlite", "*.sqlite3",
 CANON_COPY_IGNORES = ("__pycache__", "*.pyc", "*.pyo")
 HEX40 = re.compile(r"[a-f0-9]{40}\Z")
 MARKER_NAME = "runtime-active.json"
+ACTIVATION_JOURNAL_NAME = ".runtime-activation.json"
+# This journal coordinates only the launcher/marker pair; models and user data stay outside the transaction.
 BUILD_PROFILE = "integrated-runtime-source-pinned-v2"
 STAGER = "scripts/stage_integrated_candidate.py"
-STAGER_SHA256 = "f430d8e8ea5fe182c98c6d04522cec7aee1f03158ce12be5c1ddbfbed3670ef6"
+STAGER_SHA256 = "48a8b5c959947f36f420e83f772213189bfbff4e6c96916df6e93fd34b1a0aa6"
 STAGE_MANIFEST = "INTEGRATION_STAGE.json"
 UI_SOURCE = "v13/ui.py"
 UI_SOURCE_SHA256 = "ad1c495b1a09989ca307ae7b34f045abe60b390996787ee604e20273c975d4e8"
 UI_DERIVED_SHA256 = "0c2e5fb15a78b37017f2b2c296afd0275705e70276a47dc9b47429d38aeac5a1"
 UI_BUILDER = "scripts/termux_chat_recovery_candidate_20261112.py"
-UI_BUILDER_SHA256 = "e0885ebc04ae16826f2a8d5cc3210ddc2f76d1ef40d22824190deaafaa13ffa8"
+UI_BUILDER_SHA256 = "befbaca164fd5453d4c93017eca1b556f2d771b1b7cf54879c6764e4716587c7"
 
 
 class RuntimeDeployError(RuntimeError):
@@ -320,6 +322,11 @@ def needs_deploy(source, *, home=None, private=None):
     _, code, commit = _source(source)
     home = Path(home or Path.home() / "v13")
     private = Path(private or Path.home() / ".v13-private")
+    journal = private / ACTIVATION_JOURNAL_NAME
+    if journal.exists() or journal.is_symlink():
+        # A partially written pair must force the worker through deploy(),
+        # whose first operation is the journal recovery transaction.
+        return True
     target = _marker(private)
     try:
         launcher = _launcher(home)
@@ -645,7 +652,19 @@ def _launcher_bytes(code, home):
             "exec " + command + shlex.quote(str(home)) + ' "$@"\n').encode("utf-8")
 
 
+
+def _fsync_directory(path):
+    fd = os.open(str(path), os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
 def _atomic_file(dest, data, mode=0o600):
+    dest = Path(dest)
+    if dest.parent.is_symlink() or not dest.parent.is_dir():
+        raise RuntimeDeployError("Atomic destination parent is missing or unsafe")
     fd, name = tempfile.mkstemp(prefix=".v13-deploy-", dir=str(dest.parent))
     try:
         os.fchmod(fd, mode)
@@ -654,9 +673,246 @@ def _atomic_file(dest, data, mode=0o600):
             out.flush()
             os.fsync(out.fileno())
         os.replace(name, dest)
+        _fsync_directory(dest.parent)
     finally:
         if os.path.exists(name):
             os.unlink(name)
+
+
+def _remove_private_file(path, private):
+    path, private = Path(path), Path(private)
+    if path.is_symlink():
+        raise RuntimeDeployError("Private transaction file is a symbolic link")
+    if not path.exists():
+        return
+    if path.parent.resolve(strict=True) != private.resolve(strict=True):
+        raise RuntimeDeployError("Private transaction file escapes its directory")
+    info = path.stat()
+    if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid()
+            or info.st_mode & 0o077 or info.st_nlink != 1
+            or info.st_size > 65536):
+        raise RuntimeDeployError("Private transaction file permissions or size invalid")
+    path.unlink()
+    _fsync_directory(path.parent)
+
+
+def _read_current_marker(path):
+    path = Path(path)
+    if path.is_symlink():
+        raise RuntimeDeployError("Existing runtime marker is unsafe")
+    if not path.exists():
+        return None
+    info = path.stat()
+    if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid()
+            or info.st_mode & 0o077 or info.st_nlink != 1
+            or info.st_size > 4096):
+        raise RuntimeDeployError("Existing runtime marker is unsafe")
+    return path.read_bytes()
+
+
+def _private_backup_bytes(value, private, pattern, max_bytes):
+    if not isinstance(value, str) or not value:
+        raise RuntimeDeployError("Runtime transaction backup path missing")
+    private = Path(private)
+    candidate = Path(value)
+    if not candidate.is_absolute():
+        candidate = private / candidate
+    if candidate.is_symlink() or not re.fullmatch(pattern, candidate.name):
+        raise RuntimeDeployError("Runtime transaction backup path invalid")
+    if candidate.parent.resolve(strict=True) != private.resolve(strict=True):
+        raise RuntimeDeployError("Runtime transaction backup escapes private directory")
+    info = candidate.stat()
+    if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid()
+            or info.st_mode & 0o077 or info.st_nlink != 1
+            or info.st_size > max_bytes):
+        raise RuntimeDeployError("Runtime transaction backup permissions or size invalid")
+    return candidate.read_bytes()
+
+
+def _read_activation_journal(private):
+    private = Path(private)
+    path = private / ACTIVATION_JOURNAL_NAME
+    if path.is_symlink():
+        raise RuntimeDeployError("Runtime activation journal is a symbolic link")
+    if not path.exists():
+        return None
+    info = path.stat()
+    if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid()
+            or info.st_mode & 0o077 or info.st_nlink != 1
+            or info.st_size > 8192):
+        raise RuntimeDeployError("Runtime activation journal permissions or size invalid")
+    try:
+        record = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, UnicodeError) as exc:
+        raise RuntimeDeployError("Runtime activation journal is invalid") from exc
+    fields = {
+        "schema", "transaction_id", "phase", "backup_launcher",
+        "backup_launcher_sha256", "old_marker_present", "backup_marker",
+        "backup_marker_sha256", "new_launcher_sha256",
+        "new_marker_present", "new_marker_sha256",
+    }
+    if (not isinstance(record, dict) or set(record) != fields
+            or record.get("schema") != "v13.runtime-activation/1"
+            or not isinstance(record.get("transaction_id"), str)
+            or not re.fullmatch(r"[a-f0-9]{32}", record["transaction_id"])
+            or record.get("phase") not in ("PREPARED", "LAUNCHER_SWITCHED", "COMMITTED")
+            or type(record.get("old_marker_present")) is not bool
+            or type(record.get("new_marker_present")) is not bool):
+        raise RuntimeDeployError("Runtime activation journal schema invalid")
+    for key in ("backup_launcher_sha256", "new_launcher_sha256"):
+        if not isinstance(record.get(key), str) or not re.fullmatch(r"[a-f0-9]{64}", record[key]):
+            raise RuntimeDeployError("Runtime activation journal hash invalid")
+    if record["old_marker_present"]:
+        if (not isinstance(record.get("backup_marker"), str)
+                or not isinstance(record.get("backup_marker_sha256"), str)
+                or not re.fullmatch(r"[a-f0-9]{64}", record["backup_marker_sha256"])):
+            raise RuntimeDeployError("Runtime activation journal old marker invalid")
+    elif record.get("backup_marker") is not None or record.get("backup_marker_sha256") is not None:
+        raise RuntimeDeployError("Runtime activation journal old marker is inconsistent")
+    if record["new_marker_present"]:
+        if not isinstance(record.get("new_marker_sha256"), str) or not re.fullmatch(r"[a-f0-9]{64}", record["new_marker_sha256"]):
+            raise RuntimeDeployError("Runtime activation journal new marker invalid")
+    elif record.get("new_marker_sha256") is not None:
+        raise RuntimeDeployError("Runtime activation journal new marker is inconsistent")
+    return record
+
+
+def _recover_activation(home, private):
+    """Idempotently finish a committed pair or restore the previous pair."""
+    private = Path(private)
+    record = _read_activation_journal(private)
+    if record is None:
+        return "NONE"
+    launcher = _launcher(Path(home))
+    marker_path = private / MARKER_NAME
+    old_launcher = _private_backup_bytes(
+        record["backup_launcher"], private, r"launcher-backup-[a-f0-9]{16}\.sh", 65536)
+    if hashlib.sha256(old_launcher).hexdigest() != record["backup_launcher_sha256"]:
+        raise RuntimeDeployError("Runtime activation launcher backup hash mismatch")
+    old_marker = None
+    if record["old_marker_present"]:
+        old_marker = _private_backup_bytes(
+            record["backup_marker"], private, r"marker-backup-[a-f0-9]{16}\.json", 4096)
+        if hashlib.sha256(old_marker).hexdigest() != record["backup_marker_sha256"]:
+            raise RuntimeDeployError("Runtime activation marker backup hash mismatch")
+    current_launcher = launcher.read_bytes()
+    current_launcher_sha = hashlib.sha256(current_launcher).hexdigest()
+    if current_launcher_sha not in (record["backup_launcher_sha256"], record["new_launcher_sha256"]):
+        raise RuntimeDeployError("Runtime activation found an unknown launcher; refusing recovery")
+    current_marker = _read_current_marker(marker_path)
+    current_marker_sha = hashlib.sha256(current_marker).hexdigest() if current_marker is not None else None
+    allowed_marker_hashes = set()
+    if record["old_marker_present"]:
+        allowed_marker_hashes.add(record["backup_marker_sha256"])
+    if record["new_marker_present"]:
+        allowed_marker_hashes.add(record["new_marker_sha256"])
+    if current_marker is None:
+        if record["old_marker_present"] and record["new_marker_present"]:
+            raise RuntimeDeployError("Runtime activation marker disappeared unexpectedly")
+    elif current_marker_sha not in allowed_marker_hashes:
+        raise RuntimeDeployError("Runtime activation found an unknown marker; refusing recovery")
+    new_pair_is_durable = (
+        current_launcher_sha == record["new_launcher_sha256"]
+        and ((record["new_marker_present"] and current_marker_sha == record["new_marker_sha256"])
+             or (not record["new_marker_present"] and current_marker is None))
+    )
+    journal_path = private / ACTIVATION_JOURNAL_NAME
+    if record["phase"] == "COMMITTED" and new_pair_is_durable:
+        _remove_private_file(journal_path, private)
+        return "COMMITTED"
+    if current_launcher_sha != record["backup_launcher_sha256"]:
+        _atomic_file(launcher, old_launcher, 0o700)
+    if record["old_marker_present"]:
+        if current_marker != old_marker:
+            _atomic_file(marker_path, old_marker, 0o600)
+    elif current_marker is not None:
+        _remove_private_file(marker_path, private)
+    _remove_private_file(journal_path, private)
+    return "ROLLED_BACK_INCOMPLETE"
+
+
+def recover_pending_activation(*, home=None, private=None):
+    """Recover only an existing activation journal; never stage or install code."""
+    home = Path(home or Path.home() / "v13").expanduser().resolve()
+    private = _protected_dir(private or Path.home() / ".v13-private")
+    journal = private / ACTIVATION_JOURNAL_NAME
+    if not journal.exists() and not journal.is_symlink():
+        return "NONE"
+    _check_stopped(home)
+    return _recover_activation(home, private)
+
+
+def _activation_transaction(home, private, *, old_launcher, old_marker,
+                            new_launcher, new_marker, backup_launcher,
+                            backup_marker=None):
+    """Durably switch launcher + marker as one recoverable transaction."""
+    home, private = Path(home), _protected_dir(private)
+    launcher = _launcher(home)
+    marker_path = private / MARKER_NAME
+    if launcher.read_bytes() != old_launcher or _read_current_marker(marker_path) != old_marker:
+        raise RuntimeDeployError("Installed runtime changed before activation transaction")
+    if (not isinstance(old_launcher, bytes) or not isinstance(new_launcher, bytes)
+            or (old_marker is not None and not isinstance(old_marker, bytes))
+            or (new_marker is not None and not isinstance(new_marker, bytes))):
+        raise RuntimeDeployError("Runtime activation transaction payload invalid")
+    backup_launcher_path = Path(backup_launcher)
+    backup_launcher_bytes = _private_backup_bytes(
+        str(backup_launcher_path), private, r"launcher-backup-[a-f0-9]{16}\.sh", 65536)
+    if backup_launcher_bytes != old_launcher:
+        raise RuntimeDeployError("Runtime activation launcher backup does not match")
+    backup_marker_name = None
+    backup_marker_sha = None
+    if old_marker is not None:
+        if backup_marker is None:
+            raise RuntimeDeployError("Runtime activation marker backup missing")
+        backup_marker_path = Path(backup_marker)
+        backup_marker_bytes = _private_backup_bytes(
+            str(backup_marker_path), private, r"marker-backup-[a-f0-9]{16}\.json", 4096)
+        if backup_marker_bytes != old_marker:
+            raise RuntimeDeployError("Runtime activation marker backup does not match")
+        backup_marker_name = backup_marker_path.name
+        backup_marker_sha = hashlib.sha256(old_marker).hexdigest()
+    elif backup_marker is not None:
+        raise RuntimeDeployError("Unexpected runtime activation marker backup")
+    journal_path = private / ACTIVATION_JOURNAL_NAME
+    if journal_path.exists() or journal_path.is_symlink():
+        raise RuntimeDeployError("Unrecovered runtime activation journal already exists")
+    record = {
+        "schema": "v13.runtime-activation/1",
+        "transaction_id": secrets.token_hex(16),
+        "phase": "PREPARED",
+        "backup_launcher": backup_launcher_path.name,
+        "backup_launcher_sha256": hashlib.sha256(old_launcher).hexdigest(),
+        "old_marker_present": old_marker is not None,
+        "backup_marker": backup_marker_name,
+        "backup_marker_sha256": backup_marker_sha,
+        "new_launcher_sha256": hashlib.sha256(new_launcher).hexdigest(),
+        "new_marker_present": new_marker is not None,
+        "new_marker_sha256": hashlib.sha256(new_marker).hexdigest() if new_marker is not None else None,
+    }
+
+    def write_journal():
+        _atomic_file(journal_path, json.dumps(record, sort_keys=True).encode("utf-8"), 0o600)
+
+    try:
+        write_journal()
+        _atomic_file(launcher, new_launcher, 0o700)
+        record["phase"] = "LAUNCHER_SWITCHED"
+        write_journal()
+        if new_marker is None:
+            _remove_private_file(marker_path, private)
+        else:
+            _atomic_file(marker_path, new_marker, 0o600)
+        record["phase"] = "COMMITTED"
+        write_journal()
+        _remove_private_file(journal_path, private)
+        return "COMMITTED"
+    except BaseException:
+        recovered = _recover_activation(home, private)
+        if recovered == "COMMITTED":
+            return recovered
+        raise
+
 
 
 def deploy(source, *, home=None, private=None, builds=None, ci_verified=False,
@@ -667,8 +923,9 @@ def deploy(source, *, home=None, private=None, builds=None, ci_verified=False,
     home = Path(home or Path.home() / "v13").expanduser().resolve()
     private = _protected_dir(private or Path.home() / ".v13-private")
     builds = _protected_dir(builds or Path.home() / ".v13-runtime-builds")
-    launcher = _launcher(home)
     _check_stopped(home)
+    recover_pending_activation(home=home, private=private)
+    launcher = _launcher(home)
     if not ci_verified:
         from .source_updater import ci_passed
         if not ci_passed(commit, scope="runtime"):
@@ -677,53 +934,161 @@ def deploy(source, *, home=None, private=None, builds=None, ci_verified=False,
         return {"status": "UP_TO_DATE", "commit": commit,
                 "launcher_verified": True}
     before = launcher.read_bytes()
-    backup = private / ("launcher-backup-" + secrets.token_hex(8) + ".sh")
-    _atomic_file(backup, before, stat.S_IMODE(launcher.stat().st_mode))
+    marker_path = private / MARKER_NAME
+    marker_before = _read_current_marker(marker_path)
+    if marker_before is not None:
+        try:
+            previous = json.loads(marker_before)
+        except (ValueError, UnicodeError) as exc:
+            raise RuntimeDeployError("Existing runtime marker is invalid") from exc
+        if (not isinstance(previous, dict)
+                or previous.get("schema") != "v13.runtime-deploy/1"
+                or previous.get("launcher_sha256") != hashlib.sha256(before).hexdigest()):
+            raise RuntimeDeployError("Existing runtime marker does not match launcher")
     stage = builds / ("v13-" + commit[:12] + "-" + secrets.token_hex(4))
     if stage.exists() or stage.is_symlink():
         raise RuntimeDeployError("Runtime staging collision")
     stage.mkdir(mode=0o700)
     target = stage / "code"
     manifest_sha256 = _stage_integrated_runtime(code, target, expected_commit=commit)
-    # A moving checkout must not be recorded under the earlier CI result.
     if _source(root)[2] != commit:
         raise RuntimeDeployError("Runtime source changed during staging")
     _selftest(target)
     if _verify_stage(target) != manifest_sha256:
         raise RuntimeDeployError("Integrated runtime changed during selftest")
     with (activation_guard() if activation_guard is not None else nullcontext()):
+        _check_stopped(home)
+        if launcher.read_bytes() != before or _read_current_marker(marker_path) != marker_before:
+            raise RuntimeDeployError("Installed runtime changed during staging")
+        next_launcher = _launcher_bytes(target, home)
+        backup = private / ("launcher-backup-" + secrets.token_hex(8) + ".sh")
+        _atomic_file(backup, before, 0o600)
+        backup_marker = None
+        if marker_before is not None:
+            backup_marker = private / ("marker-backup-" + secrets.token_hex(8) + ".json")
+            _atomic_file(backup_marker, marker_before, 0o600)
+        record = {"schema": "v13.runtime-deploy/1", "commit": commit,
+                  "code": str(target), "backup_launcher": str(backup),
+                  "backup_launcher_sha256": hashlib.sha256(before).hexdigest(),
+                  "backup_marker": str(backup_marker) if backup_marker else None,
+                  "backup_marker_sha256": hashlib.sha256(marker_before).hexdigest() if marker_before is not None else None,
+                  "build_profile": BUILD_PROFILE,
+                  "source_ui_sha256": UI_SOURCE_SHA256,
+                  "derived_ui_sha256": UI_DERIVED_SHA256,
+                  "ui_builder_sha256": UI_BUILDER_SHA256,
+                  "stage_manifest_sha256": manifest_sha256,
+                  "launcher_sha256": hashlib.sha256(next_launcher).hexdigest(),
+                  "installed_at": int(time.time()),
+                  "models_untouched": True, "sqlite_untouched": True}
+        marker_after = json.dumps(record, sort_keys=True).encode("utf-8")
+        _activation_transaction(
+            home, private, old_launcher=before, old_marker=marker_before,
+            new_launcher=next_launcher, new_marker=marker_after,
+            backup_launcher=backup, backup_marker=backup_marker)
+        return {"status": "DEPLOYED", "commit": commit, "code": str(target),
+                "launcher_verified": True}
+
+
+def _verified_stage_from_marker(record, builds):
+    commit = record.get("commit")
+    code_value = record.get("code")
+    manifest_sha = record.get("stage_manifest_sha256")
+    if (not isinstance(commit, str) or not HEX40.fullmatch(commit)
+            or not isinstance(code_value, str)
+            or not isinstance(manifest_sha, str)
+            or not re.fullmatch(r"[a-f0-9]{64}", manifest_sha)):
+        raise RuntimeDeployError("Rollback marker fields invalid")
+    code = Path(code_value)
+    if code.is_symlink() or not code.is_dir():
+        raise RuntimeDeployError("Rollback code snapshot missing or unsafe")
+    resolved = code.resolve(strict=True)
+    if builds.resolve(strict=True) not in resolved.parents:
+        raise RuntimeDeployError("Rollback code snapshot escapes runtime builds")
+    if _verify_stage(code) != manifest_sha:
+        raise RuntimeDeployError("Rollback code snapshot integrity mismatch")
+    return commit
+
+
+def rollback(*, home=None, private=None, builds=None, activation_guard=None):
+    """Restore the exact previous launcher/marker using the same crash journal."""
+    home = Path(home or Path.home() / "v13").expanduser().resolve()
+    private = _protected_dir(private or Path.home() / ".v13-private")
+    builds = _protected_dir(builds or Path.home() / ".v13-runtime-builds")
+    _check_stopped(home)
+    recover_pending_activation(home=home, private=private)
+    launcher = _launcher(home)
+    marker_path = private / MARKER_NAME
+    current_marker_bytes = _read_current_marker(marker_path)
+    if current_marker_bytes is None:
+        raise RuntimeDeployError("Current runtime marker missing or unsafe")
+    try:
+        current = json.loads(current_marker_bytes)
+    except (ValueError, UnicodeError) as exc:
+        raise RuntimeDeployError("Current runtime marker invalid") from exc
+    current_launcher_bytes = launcher.read_bytes()
+    if (not isinstance(current, dict) or current.get("schema") != "v13.runtime-deploy/1"
+            or current.get("launcher_sha256") != hashlib.sha256(current_launcher_bytes).hexdigest()):
+        raise RuntimeDeployError("Current launcher does not match runtime marker")
+    _verified_stage_from_marker(current, builds)
+    backup_launcher_bytes = _private_backup_bytes(
+        current.get("backup_launcher"), private, r"launcher-backup-[a-f0-9]{16}\.sh", 65536)
+    expected_launcher_sha = current.get("backup_launcher_sha256")
+    if (not isinstance(expected_launcher_sha, str)
+            or not re.fullmatch(r"[a-f0-9]{64}", expected_launcher_sha)
+            or hashlib.sha256(backup_launcher_bytes).hexdigest() != expected_launcher_sha):
+        raise RuntimeDeployError("Previous launcher backup integrity mismatch")
+    backup_marker_value = current.get("backup_marker")
+    backup_marker_sha = current.get("backup_marker_sha256")
+    previous_marker_bytes = None
+    restored_commit = None
+    legacy = backup_marker_value is None
+    if backup_marker_value is not None:
+        previous_marker_bytes = _private_backup_bytes(
+            backup_marker_value, private, r"marker-backup-[a-f0-9]{16}\.json", 4096)
+        if (not isinstance(backup_marker_sha, str)
+                or not re.fullmatch(r"[a-f0-9]{64}", backup_marker_sha)
+                or hashlib.sha256(previous_marker_bytes).hexdigest() != backup_marker_sha):
+            raise RuntimeDeployError("Previous runtime marker backup integrity mismatch")
         try:
-            _check_stopped(home)
-            next_launcher = _launcher_bytes(target, home)
-            _atomic_file(launcher, next_launcher, 0o700)
-            record = {"schema": "v13.runtime-deploy/1", "commit": commit,
-                      "code": str(target), "backup_launcher": str(backup),
-                      "build_profile": BUILD_PROFILE,
-                      "source_ui_sha256": UI_SOURCE_SHA256,
-                      "derived_ui_sha256": UI_DERIVED_SHA256,
-                      "ui_builder_sha256": UI_BUILDER_SHA256,
-                      "stage_manifest_sha256": manifest_sha256,
-                      "launcher_sha256": hashlib.sha256(next_launcher).hexdigest(),
-                      "installed_at": int(time.time()),
-                      "models_untouched": True, "sqlite_untouched": True}
-            _atomic_file(private / MARKER_NAME,
-                         json.dumps(record, sort_keys=True).encode("utf-8"))
-            return {"status": "DEPLOYED", "commit": commit, "code": str(target),
-                    "launcher_verified": True}
-        except BaseException:
-            # Restore the previous launcher if its receipt cannot be published.
-            if launcher.read_bytes() != before:
-                _atomic_file(launcher, before, 0o700)
-            raise
+            previous = json.loads(previous_marker_bytes)
+        except (ValueError, UnicodeError) as exc:
+            raise RuntimeDeployError("Previous runtime marker backup invalid") from exc
+        if (not isinstance(previous, dict)
+                or previous.get("schema") != "v13.runtime-deploy/1"
+                or previous.get("launcher_sha256") != hashlib.sha256(backup_launcher_bytes).hexdigest()):
+            raise RuntimeDeployError("Previous marker does not match launcher backup")
+        restored_commit = _verified_stage_from_marker(previous, builds)
+        legacy = False
+    elif backup_marker_sha is not None:
+        raise RuntimeDeployError("Previous runtime marker receipt is inconsistent")
+    transaction_backup = private / ("launcher-backup-" + secrets.token_hex(8) + ".sh")
+    transaction_marker_backup = private / ("marker-backup-" + secrets.token_hex(8) + ".json")
+    with (activation_guard() if activation_guard is not None else nullcontext()):
+        _check_stopped(home)
+        if (launcher.read_bytes() != current_launcher_bytes
+                or _read_current_marker(marker_path) != current_marker_bytes):
+            raise RuntimeDeployError("Installed runtime changed during rollback")
+        _atomic_file(transaction_backup, current_launcher_bytes, 0o600)
+        _atomic_file(transaction_marker_backup, current_marker_bytes, 0o600)
+        _activation_transaction(
+            home, private, old_launcher=current_launcher_bytes,
+            old_marker=current_marker_bytes, new_launcher=backup_launcher_bytes,
+            new_marker=previous_marker_bytes, backup_launcher=transaction_backup,
+            backup_marker=transaction_marker_backup)
+    return {"status": "ROLLED_BACK_LEGACY" if legacy else "ROLLED_BACK",
+            "restored_commit": restored_commit,
+            "models_untouched": True, "sqlite_untouched": True}
 
 
 def main(argv=None):
-    p = argparse.ArgumentParser(description="Activate complete CI-verified V13 runtime without touching models or memory")
+    p = argparse.ArgumentParser(description="Activate or roll back the installed V13 runtime without touching models or memory")
     p.add_argument("--source", default=str(Path.home() / ".v13-runtime-source"))
     p.add_argument("--home", default=str(Path.home() / "v13"))
+    p.add_argument("--rollback", action="store_true", help="restore the previous verified launcher and marker")
     a = p.parse_args(argv)
     try:
-        print(json.dumps(deploy(a.source, home=a.home), ensure_ascii=False, sort_keys=True), flush=True)
+        result = rollback(home=a.home) if a.rollback else deploy(a.source, home=a.home)
+        print(json.dumps(result, ensure_ascii=False, sort_keys=True), flush=True)
     except (OSError, ValueError, RuntimeDeployError) as exc:
         p.exit(2, "V13 RUNTIME DEPLOY FAILED: " + str(exc) + "\n")
 
