@@ -76,3 +76,10 @@ Latest owner-authenticated private V13OBS issue #115, updated 2026-11-22 15:38:2
 **Coordination:** Boss PR #2343 currently points at `863e751ff5410dc555006c8aeb9ef6c7b28d2a88`; its CI was queued at last read. The one-step B1/B2 bodyview receiver from #2345 is present on that integration branch, but the temporal receiver is not yet connected. The source-republish race fix above is on #2351 only until integration. Boss must add the same Store RLock around generation promotion and recheck source/update liveness under the final transaction. The central research ledger is concurrently owned/edited by the integrator; this handoff supplies the R-084 evidence for append after #2343/#2345/#2346 are reconciled rather than overwriting their shared ledger.
 
 **Next:** read exact Python 3.13/3.14 CI for `e8b1286`, fix any failures, then stack this branch on the accepted Boss integration base. Next functional milestone is temporal readout into the real B1/B2 bodyview consumer, followed by A→B→C→A matched-step replay/retention and source/action negative controls. No deployment request or user action is needed.
+
+
+## Superseding branch readback — 2026-11-22 16:10:08 UTC
+
+- Boss PR #2343 moved from `863e751ff5410dc555006c8aeb9ef6c7b28d2a88` to `9a1424bbf11f3306ce1a50f1e88cbb5c3765bca2`. Exact `store.py` readback at the new head still shows `Store.switch_generation()` doing update-row/manifest/artifact preflight before `with self.tx()`; it still does not acquire `Store.mutex` and still does not re-read the quarantined update/source liveness inside the final transaction. The promotion-vs-forget race therefore remains OPEN; the latest Boss-head Python 3.13/3.14 workflow run 45042303309 is queued, not a pass.
+- JEPA PR #2351 remains at `042b935ae0ab92f674d6bf4f0696bccea19e7506`; exact focused temporal workflow 45042289493 and training-resume/source-forget workflow 45042289497 are still queued. No CI PASS is available yet.
+- The coordination comment was posted on #2343 with the lock-order requirement and R-084 research summary. No shared Boss-owned `store.py` changes were made by JEPA.
