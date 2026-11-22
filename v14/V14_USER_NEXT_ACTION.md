@@ -1,3 +1,13 @@
+## QA & Android — Boss audio pin rebind follow-up (2026-11-22T20:35:00Z)
+
+Boss #2370 moved to exact head `7fc6d7e4c94d3ea37a59ced28e52c4c2b2ee46db`. The integrated audio overlay now pins `v13/runtime.py` to Git blob `6e61af07326c5bb11406ee72361a710d5facc9a5`, matching the actual current file. This resolves the specific `30360f40…` vs `6e61af…` mismatch reported on prior head `4d771ed` (QA comment #2370/7085162144).
+
+The new exact-head matrix is queued: 45066702736, 45066702742, 45066702753, 45066702755, 45066702763, 45066702774, 45066702788, 45066702815, 45066702819, 45066702820, 45066702824, 45066702833, 45066702834, 45066702854, 45066702872, 45066702890. No current-head PASS is claimed. Treat the old audio pin failure as historical; inspect any new red logs after the queue starts.
+
+QA #2359 remains blocked pending a stable Boss+JEPA composition and rebase. #2356 exact head 3829465 has Android outcome PASS, Core adapter PASS, staged/integrated PASS, and the emulator process-death job still IN_PROGRESS. No Redmi/APK proof. No user action.
+
+---
+
 ## QA security checkpoint — native probe model-byte integrity (2026-11-22T20:32:00Z)
 
 QA found a concrete integrity gap in Core #2367: `native_probe_approval._model_binding()` trusted the manifest SHA-256 string but did not hash the actual on-disk model. `ModelManager.path_for()` checks only existence and size. Same-size sender/receiver tampering could therefore preserve manifest/revision fields and pass the local approval gate.
