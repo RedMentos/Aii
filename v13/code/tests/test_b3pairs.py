@@ -115,6 +115,11 @@ class PairedNativeTapTests(unittest.TestCase):
 
     def test_b3_pairs_command_reports_collection_not_training_authority(self):
         pair = self._capture()
+        duplicate_capture = self._capture()
+        self.assertEqual(pair["body_pair_id"], duplicate_capture["body_pair_id"])
+        self.assertEqual(load_pair(self.r.cognition, pair["packet"])["body_pair_id"], pair["body_pair_id"])
+        with self.assertRaisesRegex(ValueError, "duplicate body_pair_id"):
+            training_batch(self.r.cognition, [pair["packet"], duplicate_capture["packet"]], [1, 1])
         report = json.loads(Operator(self.r).run(":b3 pairs"))
         self.assertEqual(report["paired_native_samples"], 1)
         self.assertEqual(report["required_for_l1_training"], 64)
