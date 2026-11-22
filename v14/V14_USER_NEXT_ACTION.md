@@ -1,3 +1,17 @@
+# Current next action — 2026-11-22 01:39 CET (full staged CI readback)
+
+Current Boss HEAD remains `f586a92392b521c073e7a72340bf7adb72f87198`. The common pin-ordering defect now reaches every major staged consumer:
+
+- PASS: runtime-deploy integrity `44969265127`; A5 UI lease `44969265049`; privacy scan `44969265111`; combined JEPA `44969265077`.
+- FAIL: Lab-Age `44969265116`; controller guard `44969265012`; private owner-read/Python 3.14 staged startup `44969265009`; two-checkout migration `44969265114`; staged/integrated regression `44969264997`; audio/arithmetic Python 3.13 `44969265142`.
+- The staged-runtime suite reports **19 failed, 231 passed, 10 skipped, 2 errors, 41 subtests**; integrated-regression reports one failed test. Audio/arithmetic Python 3.13 reports **8 failed, 44 passed, 26 subtests**. Each failure is the same `local-error pre-rebind semantic binding mismatch`, not independent arithmetic/audio defects.
+- Audio/arithmetic Python 3.14 `44969265142` was still running at the latest poll. The exact-head gate is NOT GREEN.
+- Private owner-read and migration failures are downstream of the same staging failure; migration returns PARTIAL rather than UPDATED. Do not treat them as separate device failures.
+
+The required fix remains: capture the semantic SHA and matching local-error pin immediately after the Record-Only guard output, then rebind that saved pin to the final semantic SHA after the Store pin update. The current implementation captures too late. QA has posted this exact ordering on #2288 and recorded it on #1984.
+
+---
+
 # Current next action — 2026-11-22 01:39 CET (private relay receipt check)
 
 Private owner-read verification was attempted through the connected private repository only. The newest V13READ issues **#453 through #440** in `RedMentos/Aiiii` are all still open with **zero comments**. No authenticated phone receipt exists in that range. No new relay request, LOG_PAGE query, UPDATE_REQUEST, replay or remote action was issued. Installed SHA, running service state and current updater consent remain UNKNOWN. **REDMI_UNVERIFIED.**
