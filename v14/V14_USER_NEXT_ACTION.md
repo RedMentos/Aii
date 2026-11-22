@@ -1401,3 +1401,15 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - **Updater/device:** private V13OBS #115 is the last available device snapshot (updated 2026-11-18T11:30:53Z) and reports `auto_enabled=true`, `last_result=PARTIAL`, `last_success_utc=2026-11-18T07:54:05Z`, `updated_commit=89333289b8cd50da92cbf7074c9ef689a2972dbf`; it is stale. A read-only `PIPELINE_STATUS` request (#454) received no device receipt; status is `NO_LIVE_RECEIPT`. No release created, no update requested, no device mutation. `RELEASE_SHA=NOT_RELEASED`; `REDMI_UNVERIFIED`.
 - **Research:** R-061 full-paper review of eDIAR arXiv:2611.18529: bounded 90-s revision is interesting but its 99.2M+6.6M models, CUDA path and ~1.9-GiB CPU RSS are not a Redmi candidate. R-062 records the synthetic CI benchmark; no weights were downloaded.
 - **Next action:** Core repairs the baseline semantic pre-rebind pin mismatch; Perception rebases #2293 onto the verified Core head and reruns staged/integrated. **No user action required.**
+
+
+## Research/Perception status — 2026-11-22 02:35 CET
+
+- PR #2293 remains DRAFT / NOT_RELEASED on Boss base f0d3c848; current head e85b7398b1fce84423583abf01e1389507612818.
+- New v13/code/v13/audio_input.py API accepts caller-supplied PCM16 without requiring a transcript. It requires live consent, a linearizable guard and two-phase revocation; it never opens a microphone or downloads weights.
+- Exact local isolated test: py_compile PASS; pytest tests/test_audio_input.py PASS 7/7. This is module/API proof only, not a normal Runtime E2E. Full local repo tests are blocked because this environment cannot resolve github.com.
+- Current focused GitHub workflow #44972070097 was pending at checkpoint. The previous speaker-evidence code head passed 57 tests on Python 3.13/3.14, but staged/integrated remains blocked by Core's pre-rebind semantic pin mismatch on the unmodified Boss base.
+- No Android microphone, AudioRecord, speech effector, full-duplex/barge-in or Redmi test. No model/weight change, release, update request or device mutation. RELEASE_SHA=NOT_RELEASED, REDMI_UNVERIFIED.
+- Research R-063: FASTDIAR paper fully reviewed; code MIT but checkpoint license unclear. speech-core Apache-2.0 C++17/Android is a possible low-level VAD/AEC/cancel reuse, not a replacement for V14 organs. No download.
+
+**Next internal action:** Core fixes the exact Boss source-pin blocker; Perception rebases #2293, obtains green staged/integrated proof, then wires the audio-only API into the Android caller. **User action: none.**
