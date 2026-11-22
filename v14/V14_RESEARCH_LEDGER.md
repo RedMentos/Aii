@@ -941,3 +941,18 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
+
+
+## R-080 — RAW EYE IMAGE source lifecycle and revocation atomicity (2026-11-22)
+
+**Evidence type:** code-derived concurrency review plus an isolated local interleaving harness; not a scientific-paper result.
+
+**Observed gap:** the WP-N15 vision lab had three unsynchronized operations: IMAGE blob publication in `vision.ingest`, liveness/read/hash/decode in `vision.read_image`, and tombstone/refcount/unlink in `vision.forget`. The new A5 adapter also performed multiple tile feature extractions and A4 admission after the initial read. Without one shared lock, source revocation could complete during that derived-context window. A second interleaving could publish a new same-hash source after forget's refcount check and before unlink, leaving a live DB row without its blob.
+
+**Implementation candidate:** PR [#2366](https://github.com/RedMentos/Aii/pull/2366). It serializes ingest, read, forget and the full ephemeral visual A5/A4/admission operation under the existing Store RLock. The lock is re-entrant for nested Store transactions; the existing exclusive coordinator lock prevents a second Runtime process from opening the same home. No new dependency, model, weight or permission is introduced.
+
+**Local evidence:** CPython 3.13.5 isolated harness, 2/2 PASS: (1) in-flight visual processing holds the lock until completion, then forget tombstones/unlinks and later reads fail; (2) same-hash re-ingest blocks through forget's final refcount/unlink, then republishes a live source and readable blob. This uses a fake Store and is not a full Aii Store/A5 integration test.
+
+**CI / platform boundary:** exact PR CI is pending at the last read. The committed Store/A5 barrier tests run in the RAW EAR/RAW EYE workflow on Python 3.13 and 3.14. No full local checkout, Termux, Android, Redmi, camera, screen capture or semantic vision result is claimed. The adapter remains unhooked from normal Runtime.
+
+**Decision:** keep source-bound visual admission SHADOW/candidate-only. Do not call it Android visual perception or normal chat integration until Core wires the consumer and QA verifies source-forget/restart behavior on the integrated runtime.
