@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T06:15:00Z",
+  "updated_at": "2026-11-22T06:17:05Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at 39b175521f50048f13ca14372b316de47527f531; V14 master and historical V13 appendix preserved.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -167,7 +167,7 @@
       "proof_environment": "LOCAL_LINUX algorithm-level P-256/signature/sample-geometry smoke PASS on CPython 3.13.5 x86_64; full Aii checkout/repository suite BLOCKED. PR #2312 exact head 5221314d3c01ab6d874ecc0a8b8ff72c34e504a2: signed-consumer workflow PENDING and staged/integrated workflow QUEUED at last read. No Android AudioRecord provider or Redmi capture.",
       "next_step": "Recheck exact-head CI; rebase #2312 onto release-development 39b1755 only after QA companion verifier/provider base is reconciled; repair the inherited raw-runtime-plain-ui-history-recovery-v1 migration failure (PARTIAL / runtime ERROR / last_error UPDATE). Keep signed capture at 44.1 kHz; do not add AudioRecord until visible provider, permission/lifecycle, zeroization, route/silence callbacks and revocation are tested.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T06:15:00Z",
+      "last_checkpoint": "2026-11-22T06:17:05Z",
       "latest_candidate_pr": {
         "pr": 2312,
         "head_sha": "5221314d3c01ab6d874ecc0a8b8ff72c34e504a2",
