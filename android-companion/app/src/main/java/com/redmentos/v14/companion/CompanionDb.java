@@ -69,11 +69,30 @@ final class CompanionDb extends SQLiteOpenHelper {
         }
     }
 
-    synchronized List<Action> pending() {
+    synchronized int expirePending(long nowMillis) {
+        ContentValues values = new ContentValues();
+        values.put("status", "EXPIRED");
+        return getWritableDatabase().update("actions", values,
+                "status='PENDING_USER_APPROVAL' AND expires_at<=?",
+                new String[]{Long.toString(nowMillis)});
+    }
+
+    synchronized boolean expire(String actionId, long nowMillis) {
+        ContentValues values = new ContentValues();
+        values.put("status", "EXPIRED");
+        int changed = getWritableDatabase().update("actions", values,
+                "action_id=? AND status='PENDING_USER_APPROVAL' AND expires_at<=?",
+                new String[]{actionId, Long.toString(nowMillis)});
+        return changed == 1;
+    }
+
+    synchronized List<Action> pending(long nowMillis) {
+        expirePending(nowMillis);
         List<Action> out = new ArrayList<>();
         try (Cursor c = getReadableDatabase().rawQuery(
                 "SELECT action_id,request_json,package_name,status,receipt_json,expires_at "
-                        + "FROM actions WHERE status='PENDING_USER_APPROVAL' ORDER BY expires_at", null)) {
+                        + "FROM actions WHERE status='PENDING_USER_APPROVAL' AND expires_at>? ORDER BY expires_at",
+                new String[]{Long.toString(nowMillis)})) {
             while (c.moveToNext()) out.add(new Action(c.getString(0), c.getString(1), c.getString(2),
                     c.getString(3), c.isNull(4) ? null : c.getString(4), c.getLong(5)));
         }
