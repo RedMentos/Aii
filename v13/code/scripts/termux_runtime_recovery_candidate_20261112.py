@@ -127,7 +127,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             ):
         raise ValueError('base-composer downstream source pins are inconsistent')
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
-                     'ed8b0e0bec5d1a929e2956af8e76f7bb039254fa04318010b2db12c6831465f4')
+                     '1f3c94bd226cc9490973e629506e847c3f419624')
     result = observers.apply_sources(code_dir, result)
     # Apply only the reviewed ContextOS input and the exact checked builder.
     # The dependent recall module pins ContextOS, so rebind that one pin.
@@ -220,7 +220,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             raise ValueError('LateWatch output changed')
         result['v13/latewatch.py'] = late
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
-                             '86ad7838d15eb9a038fec629c340936edde78d65d921507e10cec29fed74b9d9')
+                             '765bac1b10af2a26e37eec433c59915ca629012b67a45a822c4dfbb5631490e2')
         result = control_guard.apply_sources(code_dir, result)
         # The guard rewrites the semantic module and its local-error consumer as
         # one reviewed generation. Snapshot that exact pair before Store overlays.
