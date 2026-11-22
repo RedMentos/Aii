@@ -60,12 +60,12 @@ jobs:
               print(f"SOURCE_PIN {name} sha256={hashlib.sha256(raw).hexdigest()} git_blob={blob}")
           PY
       - name: Compile staged receiver and deploy chain
-        run: python -m py_compile v13/code/v13/native_latent_receiver.py v13/code/v13/native_probe_approval.py v13/code/v13/cognition.py v13/code/v13/callosum.py v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py v13/code/scripts/termux_runtime_recovery_candidate_20261121.py v13/code/scripts/stage_integrated_candidate.py v13/code/v13/runtime_deploy.py v13/code/tests/test_native_latent_receiver.py v13/code/tests/test_native_latent_receiver_runtime.py v13/code/tests/test_native_latent_receiver_stage.py v13/code/tests/test_native_latent_receiver_approval.py
+        run: python -m py_compile v13/code/v13/native_latent_receiver.py v13/code/v13/native_probe_approval.py v13/code/v13/cognition.py v13/code/v13/callosum.py v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py v13/code/scripts/termux_runtime_recovery_candidate_20261121.py v13/code/scripts/stage_integrated_candidate.py v13/code/v13/runtime_deploy.py v13/code/tests/test_native_latent_receiver.py v13/code/tests/test_native_latent_receiver_runtime.py v13/code/tests/test_native_latent_receiver_stage.py v13/code/tests/test_native_latent_receiver_approval.py v13/code/tests/test_native_latent_receiver_token_rows.py
       - name: Test source tap identity and exact staged Runtime
         env:
           PYTHONPATH: v13/code
           PYTHONDONTWRITEBYTECODE: "1"
-        run: python -m pytest -q v13/code/tests/test_native_taps.py v13/code/tests/test_native_latent_receiver_stage.py
+        run: python -m pytest -q v13/code/tests/test_native_taps.py v13/code/tests/test_native_latent_receiver_stage.py v13/code/tests/test_native_latent_receiver_token_rows.py
       - name: Scan public diff for private data and secrets
         run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/gpt6/v13-private-remote-bridge-20261111 --head HEAD --no-worktree
   linux-pinned-api:
