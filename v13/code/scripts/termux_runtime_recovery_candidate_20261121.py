@@ -76,4 +76,19 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
         raise ValueError("Runtime-wide A5 consent lease was not composed")
     if "v13/audio_context_store.py" not in composed:
         raise ValueError("consent-bound audio context store was not produced")
+    tap_path = code_dir / "scripts/integrated_latent_tap_provenance_candidate_20261122.py"
+    if tap_path.is_symlink() or not tap_path.is_file():
+        raise ValueError("Core latent tap provenance overlay missing or unsafe")
+    tap_raw = tap_path.read_bytes()
+    if _git_blob_sha1(tap_raw) != "2505e92063effdbef2e521043fb9279e8361e3eb":
+        raise ValueError("Core latent tap provenance overlay source changed")
+    tap_spec = importlib.util.spec_from_file_location("v14_core_latent_tap_provenance", tap_path)
+    if tap_spec is None or tap_spec.loader is None:
+        raise RuntimeError("Core latent tap provenance overlay is not loadable")
+    tap_module = importlib.util.module_from_spec(tap_spec)
+    tap_spec.loader.exec_module(tap_module)
+    composed = tap_module.apply_sources(code_dir, composed)
+    if (b"sender_model_sha256" not in composed.get("v13/cognition.py", b"")
+            or b"tokenizer_revision" not in composed.get("v13/contracts.py", b"")):
+        raise ValueError("Core latent tap provenance was not composed")
     return composed
