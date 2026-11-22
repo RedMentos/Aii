@@ -28,7 +28,7 @@ The caller must hold the same UI lease through every downstream read and C3 gene
 
 - LOCAL_LINUX: CPython 3.13.5 x86_64. `py_compile` passed for the new module and test file.
 - LOCAL_LINUX isolated harness: 8/8 PASS. The harness executes the new module against small local stubs for the existing UI lease, vision and packet contracts; it is not the full Aii repository or exact dependency implementation.
-- Exact repository CI: run [45065003518](https://github.com/RedMentos/Aii/actions/runs/45065003518) is QUEUED at the last read; Python 3.13/3.14 result pending. Privacy scan [45065003638](https://github.com/RedMentos/Aii/actions/runs/45065003638) and staged/integrated regression [45065003537](https://github.com/RedMentos/Aii/actions/runs/45065003537) were also queued at the last read.
+- Exact repository push CI: [45065181398](https://github.com/RedMentos/Aii/actions/runs/45065181398) PASS on Python 3.13 and 3.14; both exact-repository test jobs passed. Private-bridge regression [45065181405](https://github.com/RedMentos/Aii/actions/runs/45065181405) PASS. PR-specific rerun [45065185183](https://github.com/RedMentos/Aii/actions/runs/45065185183), staged/integrated regression [45065185185](https://github.com/RedMentos/Aii/actions/runs/45065185185), and privacy scan [45065185198](https://github.com/RedMentos/Aii/actions/runs/45065185198) were QUEUED at the last read.
 - Full local Aii checkout / full repository suite: NOT_RUN (repository checkout is not mounted in this worker).
 - TERMUX / Android / Redmi: NOT_RUN / REDMI_UNVERIFIED. No MediaProjection provider, APK install, OS consent, device capture, normal Runtime dispatch or C3 turn was exercised.
 
@@ -47,3 +47,12 @@ The caller must hold the same UI lease through every downstream read and C3 gene
 3. QA runs exact staged/integrated and revocation/restart negatives, then an explicitly authorized Android API/lifecycle test. Redmi remains unverified until a real device receipt and measured user-visible result exist.
 
 User action: none. No Termux command or model download is required for this candidate.
+
+
+## Latest private Redmi acceptance boundary
+
+The latest private V13OBS aggregate snapshot was updated 2026-11-22 20:08:59Z. It reports installed commit `aed1d2b826290c95c70356b5d8b864b5ef382be4`, auto-update enabled, runtime/dashboard `UP_TO_DATE`, and last error `NONE`. That is installation status, not functional acceptance. The last observed turn took 57.74 s with 41.63 s TTFT, 751 prompt tokens and 2 generated tokens; B1/B2 ended `TIME_BUDGET` at 53.2/54.2 s. Native process mapping showed zero mapped processes with child readability unknown; native latent exchange and C3 semantic use were not proven. PR #2375 is not a release and has not been sent to the device. No update request or CHAT_SEND was issued.
+
+## Model research candidate (R-084)
+
+Full-text review of MobileCLIP2 (TMLR August 2025 Featured) and SmolVLM (arXiv preprint 2025-04-07) is recorded in `v14/V14_RESEARCH_LEDGER.md` as R-084. MobileCLIP2-S0 is a compact image/text dual encoder, but official weights are under Apple ML Research Model TOU (code MIT; data CC-BY-NC-ND), and its 1.5 ms image / 3.3 ms text figures are iPhone 12 Pro Max results. SmolVLM2-256M Video Instruct declares Apache-2.0 weights; its card reports 1.38 GB GPU RAM for video inference, while the SmolVLM paper reports 0.8 GB VRAM for single-image inference. Neither result is an Android/Termux benchmark. SmolVLM2 is a candidate for a later serial/on-demand semantic vision experiment, not a replacement or approved download. No weights were downloaded and no model was swapped.
