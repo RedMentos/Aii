@@ -14,7 +14,7 @@ The companion's existing Robolectric tests exercise the process-start reset meth
 - Added `android-companion/scripts/test_process_restart.py`, executed from the GitHub host so the test harness survives termination of the app under test.
 - The script launches the debug APK, checks the visible STOPPED state and persisted preference, enables/stops/re-enables through the real UI, and checks each synchronous SharedPreferences value.
 - It then runs `am force-stop`, waits until `pidof com.redmentos.v14.companion` is empty, relaunches MainActivity, and verifies both the visible state and persisted preference are OFF.
-- Added a separate API-35 Google APIs emulator job to `.github/workflows/v14-android-companion.yml`.
+- Added a separate API-35 Google APIs emulator job to `.github/workflows/v14-android-companion.yml`. The CI-only `ReactiveCircus/android-emulator-runner` action is pinned to immutable commit `a421e43855164a8197daf9d8d40fe71c6996bb0d` (tag v2; Apache-2.0), verified from the upstream tag and LICENSE.
 - The probe does not pair Termux, submit a launch request, invoke an external app, request OS permissions, or enable any unimplemented capability.
 
 ## Verification
