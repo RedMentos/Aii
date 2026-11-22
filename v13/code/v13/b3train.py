@@ -144,7 +144,7 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
             "shuffled_latent_accuracy": accuracy(shuffled_logits),
             "random_norm_matched_accuracy": accuracy(random_logits),
             "ood_rate": ood_rate, "reload_identical": reload_identical,
-            "last_training_loss": float(history["loss"][-1]) if history.get("loss") else None,
+            "last_training_metrics": history[-1] if history else {},
         })
 
     report = {
@@ -163,6 +163,6 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
         "body_learning_authority": 0,
     }
     report_path = output_dir / "report.json"
-    atomic_write(report_path, dumps(report))
     report["report_path"] = str(report_path.relative_to(cognition.r.home))
+    atomic_write(report_path, dumps(report))
     return report
