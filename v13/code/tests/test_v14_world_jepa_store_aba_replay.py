@@ -640,9 +640,18 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
     if replay_projection:
         assert projection_metrics.get("steps") == metrics.get("optimizer_steps_added")
         assert projection_metrics.get("constraint_count") == metrics.get("replay_constraint_session_count")
-        assert projection_metrics.get("active_constraint_count", 0) >= 1
-        assert projection_metrics.get("replay_target_anchor") == "prior_ema_snapshot"
         assert projection_metrics.get("post_constraint_violation_steps") == 0
+        if metrics.get("replay_projection_enabled") is True:
+            assert projection_metrics.get("enabled") is True
+            assert projection_metrics.get("active_constraint_count", 0) >= 1
+            assert projection_metrics.get("replay_target_anchor") == "prior_ema_snapshot"
+            assert metrics.get("replay_projection_fallback_reason") is None
+        else:
+            assert projection_metrics.get("enabled") is False
+            assert projection_metrics.get("active_constraint_count", 0) == 0
+            assert metrics.get("replay_projection_fallback_reason") in {
+                "NO_PRIOR_CHECKPOINT", "NO_ELIGIBLE_REPLAY_ROWS"
+            }
     assert type(drift_metrics) is dict
     assert drift_metrics.get("enabled") is (drift_control is not None)
     if drift_control is not None and before is not None:
