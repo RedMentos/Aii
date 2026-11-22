@@ -29,18 +29,34 @@ final class ReceiptFactory {
         }
 
         JSONObject request = new JSONObject(action.requestJson);
-        if (!"v14.android-action-request/1".equals(request.optString("schema"))
-                || !action.actionId.equals(request.optString("action_id"))
-                || !"launch_app".equals(request.optString("capability"))
-                || !request.optBoolean("companion_local_consent_required", false)
-                || request.optBoolean("android_os_permission_required", true)
-                || request.optBoolean("permission_bypass", true)
-                || request.optBoolean("model_authority", true)
-                || !"CALLER_ASSERTED_LOCAL_UI_CONFIRMATION".equals(request.optString("local_approval"))) {
-            throw new IllegalArgumentException("action request scope is not receipt-eligible");
+        if (!"v14.android-action-request/1".equals(request.optString("schema"))) {
+            throw new IllegalArgumentException("action request schema mismatch");
+        }
+        if (!action.actionId.equals(request.optString("action_id"))) {
+            throw new IllegalArgumentException("action request ID mismatch");
+        }
+        if (!"launch_app".equals(request.optString("capability"))) {
+            throw new IllegalArgumentException("action request capability mismatch");
+        }
+        if (!request.optBoolean("companion_local_consent_required", false)) {
+            throw new IllegalArgumentException("action request lacks local consent boundary");
+        }
+        if (request.optBoolean("android_os_permission_required", true)) {
+            throw new IllegalArgumentException("action request asks for an unsupported OS permission");
+        }
+        if (request.optBoolean("permission_bypass", true)) {
+            throw new IllegalArgumentException("action request asks to bypass OS permissions");
+        }
+        if (request.optBoolean("model_authority", true)) {
+            throw new IllegalArgumentException("action request grants model authority");
+        }
+        if (!"CALLER_ASSERTED_LOCAL_UI_CONFIRMATION".equals(request.optString("local_approval"))) {
+            throw new IllegalArgumentException("action request local approval marker mismatch");
         }
 
-        String packageName = request.getJSONObject("args").getString("package");
+        JSONObject args = request.getJSONObject("args");
+        if (args.length() != 1) throw new IllegalArgumentException("action request args are not exact");
+        String packageName = args.getString("package");
         String digest = request.getString("digest");
         if (!packageName.equals(action.packageName)
                 || !packageName.matches("[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)+")
