@@ -17,7 +17,7 @@ from typing import Callable
 
 URI = "content://com.redmentos.v14.companion"
 MAX_FRAME_BYTES = 8 * 1024 * 1024
-_FRAME_URI = re.compile(r"content://com\\.redmentos\\.v14\\.companion/ui-frame/([0-9a-f]{32})\\Z")
+_FRAME_URI = re.compile(r"content://com\.redmentos\.v14\.companion/ui-frame/([0-9a-f]{32})\Z")
 _PAYLOAD = re.compile(r"payload_b64=([A-Za-z0-9+/=]+)")
 
 
@@ -63,7 +63,7 @@ class AndroidCompanionTransport:
             raise CompanionTransportError(type(exc).__name__) from exc
         if result.returncode != 0:
             raise CompanionTransportError("Android content call failed")
-        output = (result.stdout or "") + "\\n" + (result.stderr or "")
+        output = (result.stdout or "") + "\n" + (result.stderr or "")
         if len(output) > 65536:
             raise CompanionTransportError("companion response too large")
         match = _PAYLOAD.search(output)
