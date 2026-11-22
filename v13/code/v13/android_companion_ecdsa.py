@@ -168,6 +168,8 @@ class ECDSAReceiptVerifier:
                                 "ANDROID_COMPANION_USER_DENIAL"),
                 "FAILED_TO_DISPATCH": (True, "COMPANION_DISPATCH_FAILED",
                                        "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"),
+                "OUTCOME_UNKNOWN": (True, "COMPANION_DISPATCH_UNKNOWN",
+                                    "ANDROID_COMPANION_RECOVERY_UNKNOWN"),
             }
             mapped = status_map.get(body["status"])
             if (body["schema"] != SCHEMA or mapped is None
