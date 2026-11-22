@@ -40,6 +40,8 @@ public final class MainActivity extends Activity {
         addButton("Pair installed Termux", v -> pairTermux());
         addButton("Enable / Stop companion", v -> toggleEnabled());
         addButton("Review pending action", v -> reviewPending());
+        addButton("Capture one screen frame (OS consent each time)", v -> captureOneFrame());
+        addButton("Discard captured frame", v -> MediaProjectionCaptureService.discard(this));
         addButton("Enable approval notifications", v -> requestNotifications());
         addButton("Refresh capability status", v -> refresh());
         refresh();
@@ -75,7 +77,7 @@ public final class MainActivity extends Activity {
                     + "Companion key ID: " + key.getString("key_id") + "\n"
                     + "Key storage: " + key.getString("key_storage_status") + "\n\n"
                     + capabilities.toString(2) + "\n\n"
-                    + "A successful app launch is DISPATCHED_UNVERIFIED; this app does not observe foreground state.");
+                    + "Screen capture is one frame per Android OS consent; no continuous recording or disk persistence.");
         } catch (Exception e) {
             status.setText("Companion status unavailable: " + e.getClass().getSimpleName());
         }
@@ -96,28 +98,34 @@ public final class MainActivity extends Activity {
                                 getSharedPreferences(CompanionProvider.PREFS, MODE_PRIVATE);
                         String previousPackage = prefs.getString("paired_package", null);
                         String previousDigest = prefs.getString("paired_cert_sha256", null);
-                        PairingPersistence.Result result = PairingPersistence.persistWithStatus(
-                                packageName, digest,
-                                (pairedPackage, certificateSha256) -> prefs.edit()
-                                        .putString("paired_package", pairedPackage)
-                                        .putString("paired_cert_sha256", certificateSha256)
-                                        .commit(),
-                                () -> {
-                                    // A failed SharedPreferences commit may still mutate its
-                                    // in-memory map. Restore the old pair durably and verify
-                                    // both values before allowing the provider to trust it.
-                                    SharedPreferences.Editor rollback = prefs.edit();
-                                    if (previousPackage == null) rollback.remove("paired_package");
-                                    else rollback.putString("paired_package", previousPackage);
-                                    if (previousDigest == null) rollback.remove("paired_cert_sha256");
-                                    else rollback.putString("paired_cert_sha256", previousDigest);
-                                    boolean durable = rollback.commit();
-                                    return durable
-                                            && java.util.Objects.equals(previousPackage,
-                                                    prefs.getString("paired_package", null))
-                                            && java.util.Objects.equals(previousDigest,
-                                                    prefs.getString("paired_cert_sha256", null));
-                                });
+                        PairingPersistence.Result result;
+                        synchronized (CompanionProvider.ACTION_GATE_LOCK) {
+                            // Lock order is ACTION_GATE_LOCK -> PairingPersistence.TRUST_LOCK,
+                            // matching provider admission. A pair rotation also revokes any
+                            // outstanding screen frame before the trusted identity changes.
+                            CompanionProvider.clearScreenFrame();
+                            result = PairingPersistence.persistWithStatus(
+                                    packageName, digest,
+                                    (pairedPackage, certificateSha256) -> prefs.edit()
+                                            .putString("paired_package", pairedPackage)
+                                            .putString("paired_cert_sha256", certificateSha256)
+                                            .commit(),
+                                    () -> {
+                                        // A failed commit may still mutate the in-memory map.
+                                        // Restore and verify the old pair before releasing the gate.
+                                        SharedPreferences.Editor rollback = prefs.edit();
+                                        if (previousPackage == null) rollback.remove("paired_package");
+                                        else rollback.putString("paired_package", previousPackage);
+                                        if (previousDigest == null) rollback.remove("paired_cert_sha256");
+                                        else rollback.putString("paired_cert_sha256", previousDigest);
+                                        boolean durable = rollback.commit();
+                                        return durable
+                                                && java.util.Objects.equals(previousPackage,
+                                                        prefs.getString("paired_package", null))
+                                                && java.util.Objects.equals(previousDigest,
+                                                        prefs.getString("paired_cert_sha256", null));
+                                    });
+                        }
                         if (result != PairingPersistence.Result.PERSISTED) {
                             String message = result == PairingPersistence.Result.RESTORED
                                     ? "Pairing was not changed; the previous identity was restored"
@@ -169,6 +177,21 @@ public final class MainActivity extends Activity {
                     intent.putExtra("action_id", pending.get(which).actionId);
                     startActivity(intent);
                 }).setNegativeButton("Close", null).show();
+    }
+
+    private void captureOneFrame() {
+        if (!CompanionProvider.isEnabled(this)
+                || !CapabilityRegistry.isCurrentTermuxTrusted(this)) {
+            Toast.makeText(this, "Pair and enable the companion first", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= 33
+                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestNotifications();
+            Toast.makeText(this, "Enable notifications, then retry the one-frame capture", Toast.LENGTH_LONG).show();
+            return;
+        }
+        startActivity(new Intent(this, ScreenCaptureActivity.class));
     }
 
     private void requestNotifications() {
