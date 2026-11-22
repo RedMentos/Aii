@@ -1,4 +1,4 @@
-## Research/Perception follow-up — 2026-11-22 06:08Z
+## Research/Perception follow-up — 2026-11-22 06:17Z
 
 - Current release-development integration head: `39b175521f50048f13ca14372b316de47527f531`; Boss PR #2288 is merged as integration only. Candidate-head CI was 20 success / 0 failure / 1 expected skipped / 1 cancelled; post-merge push CI remains not independently verified. Private phone receipt #480 says `CI_WAIT` on installed SHA `89333289b8cd50da92cbf7074c9ef689a2972dbf`, auto-update enabled; no update request or device mutation.
 - Perception #2312 latest head `5221314d3c01ab6d874ecc0a8b8ff72c34e504a2` now uses 44.1-kHz signed mono PCM16 because Android documents 44.1 kHz as the only AudioRecord rate guaranteed across devices. The Base64 cap is derived from the one-second 88,200-byte maximum. `audio_input`, `audio_ear` and `audio_voice_cues` accept 8–48 kHz. The consumer still does not open a microphone or request permission.
