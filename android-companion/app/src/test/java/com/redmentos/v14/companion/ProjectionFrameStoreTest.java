@@ -114,6 +114,62 @@ public final class ProjectionFrameStoreTest {
         assertTrue(Arrays.equals(new byte[frame.length], frame));
     }
 
+    @Test public void cancelZeroizesFrameBeforeAStalledPipeCloseReturns() throws Exception {
+        byte[] frame = new byte[32 * 1024];
+        Arrays.fill(frame, (byte) 6);
+        String token = "b".repeat(32);
+        ProjectionFrameStore.publish(frame, receipt(frame, token), 600L);
+        FrameReadLease lease = ProjectionFrameStore.consumeLease(token, 601L);
+        assertNotNull(lease);
+
+        SlowCloseOutputStream output = new SlowCloseOutputStream();
+        lease.start(() -> {}, output);
+        assertTrue(output.writeEntered.await(2, TimeUnit.SECONDS));
+
+        Thread revoker = new Thread(ProjectionFrameStore::clear, "v14-frame-revoker");
+        revoker.start();
+        assertTrue(output.closeEntered.await(2, TimeUnit.SECONDS));
+        assertTrue("buffer must be zero before descriptor close completes",
+                Arrays.equals(new byte[frame.length], frame));
+
+        output.allowClose.countDown();
+        revoker.join(2_000L);
+        assertFalse(revoker.isAlive());
+        assertTrue(lease.awaitWriterExitForTest(2_000L));
+        assertTrue(lease.isZeroizedForTest());
+    }
+
+    private static final class SlowCloseOutputStream extends OutputStream {
+        final CountDownLatch writeEntered = new CountDownLatch(1);
+        final CountDownLatch closeEntered = new CountDownLatch(1);
+        final CountDownLatch allowClose = new CountDownLatch(1);
+
+        @Override public void write(int value) throws IOException {
+            write(new byte[]{(byte) value}, 0, 1);
+        }
+
+        @Override public void write(byte[] bytes, int offset, int length) throws IOException {
+            writeEntered.countDown();
+            try {
+                allowClose.await();
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                throw new IOException("test writer interrupted", interrupted);
+            }
+            throw new IOException("test pipe closed");
+        }
+
+        @Override public void close() throws IOException {
+            closeEntered.countDown();
+            try {
+                allowClose.await();
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                throw new IOException("test close interrupted", interrupted);
+            }
+        }
+    }
+
     private static final class BlockingOutputStream extends OutputStream {
         final CountDownLatch entered = new CountDownLatch(1);
         final CountDownLatch closed = new CountDownLatch(1);

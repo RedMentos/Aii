@@ -83,9 +83,11 @@ final class FrameReadLease {
 
     void cancel() {
         if (!cancelled.compareAndSet(false, true)) return;
+        // Erase the in-process screenshot bytes before descriptor close can block.
+        // A concurrent writer may emit a partial/zeroed stream; the signed hash rejects it.
+        Arrays.fill(frame, (byte) 0);
         closeQuietly(writer);
         closeQuietly(reader);
-        Arrays.fill(frame, (byte) 0);
         Thread thread = worker;
         if (thread != null && thread != Thread.currentThread()) thread.interrupt();
         if (!started.get()) writerExited.countDown();
