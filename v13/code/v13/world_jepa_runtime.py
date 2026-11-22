@@ -7,7 +7,7 @@ The booleans in Store state are not an OS/security boundary.
 """
 from pathlib import Path
 
-from .world_jepa_consumer import WorldJEPAStoreConsumer
+from .world_jepa_consumer import WorldJEPAStoreConsumer, record_world_outcome_packets
 from v13 import world_jepa_replay
 from v13 import world_jepa_drift
 
@@ -84,8 +84,7 @@ def consume_after_commit(store, home=None, *, limit=64, cancel_check=None, drift
         "native_body_weights_changed": False,
     }
     try:
-        recorder = _consumer(store, home, learning_enabled=False)
-        neuromod_record = recorder.record_outcomes(limit=limit)
+        neuromod_record = record_world_outcome_packets(store, limit=limit)
         if neuromod is None:
             from .neuromod import Neuromod
             neuromod = Neuromod(store)
