@@ -465,24 +465,24 @@
       "proof": "c4eb82 installed and exact CI green; no physical process-death/reboot or rollback test."
     }
   ],
-  "current_redmi_status": "Private #579: installed c4eb82deec915f65894c20d6ebbaf0ebf58fa335; auto-update ENABLED; pipeline runtime/dashboard UP_TO_DATE; last_error NONE. HEALTH #581: status OK but runtime UNAVAILABLE; 1414 MiB available RAM, 1568 MiB free disk. DIAGNOSTICS #580: last recorded turn 57.74s total / 41.63s TTFT / 38.95s prefill / 751 prompt tokens / 2 generated; B1/B2 TIME_BUDGET. No fresh turn.",
+  "current_redmi_status": "Private HEALTH #597: status OK but runtime UNAVAILABLE; 1218 MiB available RAM, 1412 MiB free disk. Newer V13OBS #115: auto-update ENABLED, pipeline/dashboard/runtime CI_WAIT, last_error NONE; last known installed SHA c4eb82deec915f65894c20d6ebbaf0ebf58fa335. DIAGNOSTICS #596: B1/B2 TIME_BUDGET, 41.63 s TTFT, 2 generated tokens. No fresh turn or device update. V14 candidate NOT_DEPLOYED; REDMI_UNVERIFIED.",
   "last_code_release_head": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
   "latest_integrated_head": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
   "latest_integrated_head_verified_at": "2026-11-22T16:02:01Z",
-  "release_gate_status": "Release HEAD c4eb82deec915f65894c20d6ebbaf0ebf58fa335: exact GitHub workflow matrix 21/21 SUCCESS; private #579 confirms installed. #581 HEALTH says runtime UNAVAILABLE despite pipeline/dashboard UP_TO_DATE. Boss PR #2343 863e751ff5410dc555006c8aeb9ef6c7b28d2a88 is DRAFT; 15 queued, 0 success, 0 failures, 2 skipped, 2 cancelled.",
+  "release_gate_status": "Last known installed release c4eb82deec915f65894c20d6ebbaf0ebf58fa335. Newer private V13OBS #115 reports pipeline/dashboard/runtime CI_WAIT (auto-update enabled, last_error NONE); HEALTH #597 reports runtime UNAVAILABLE. No V14 candidate deployed. Boss PR #2343 remains open; JEPA #2360 is stacked and not release-ready.",
   "phone_receipt": {
-    "state": "AUTHENTICATED_INSTALLED_C4EB82_ONLY; HEALTH_RUNTIME_UNAVAILABLE",
-    "issue": 579,
-    "diagnostics_issue": 580,
-    "health_issue": 581,
+    "state": "AUTHENTICATED_C4EB82_LAST_KNOWN_INSTALLED; LATEST_PIPELINE_CI_WAIT; HEALTH_RUNTIME_UNAVAILABLE",
+    "issue": 596,
+    "diagnostics_issue": 596,
+    "health_issue": 597,
+    "pipeline_source_issue": 115,
     "installed_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "auto_update": "ENABLED",
-    "runtime": "PIPELINE_UP_TO_DATE / HEALTH_UNAVAILABLE",
-    "dashboard": "UP_TO_DATE",
-    "last_result": "UP_TO_DATE",
+    "runtime": "CI_WAIT / HEALTH_UNAVAILABLE",
+    "dashboard": "CI_WAIT",
     "last_error": "NONE",
-    "redmi_status": "C4EB82_INSTALLED; P0_CHAT_QUALITY_UNVERIFIED",
-    "note": "#580 is the last recorded turn, not a fresh post-update turn. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE or shell action was issued."
+    "redmi_status": "C4EB82_LAST_KNOWN_INSTALLED; V14_CANDIDATE_NOT_DEPLOYED; P0_CHAT_QUALITY_UNVERIFIED",
+    "note": "Private DIAGNOSTICS #596 is the last authenticated detailed turn read (B1/B2 TIME_BUDGET; 41.63 s TTFT; 2 generated tokens). Newer V13OBS #115 reports pipeline CI_WAIT and auto-update enabled with last_error NONE. HEALTH #597 reports status OK but runtime UNAVAILABLE, 1218 MiB available RAM and 1412 MiB free disk. No fresh user turn, UPDATE_REQUEST, CHAT_SEND, LOG_PAGE or shell action."
   },
   "capability_snapshot": [
     {
@@ -1040,7 +1040,7 @@
     "release_ci": "21_OF_21_WORKFLOW_RUNS_SUCCESS",
     "boss_candidate_ci": "19_WORKFLOWS_15_QUEUED_0_SUCCESS_0_FAILURE_2_SKIPPED_2_CANCELLED",
     "device_receipts": "PRIVATE #579 PIPELINE_STATUS; #580 DIAGNOSTICS; #581 HEALTH",
-    "device_acceptance": "C4EB82_INSTALLED_ONLY; HEALTH_RUNTIME_UNAVAILABLE; LAST_TURN_57.74S_2_TOKENS; B1_B2_TIME_BUDGET",
+    "device_acceptance": "Last known c4eb82 installed only; auto-update enabled; latest V13OBS #115 CI_WAIT; HEALTH #597 runtime UNAVAILABLE; DIAGNOSTICS #596 B1/B2 TIME_BUDGET, 41.63s TTFT, 2 tokens. No fresh user turn; V14 candidate not deployed; REDMI_UNVERIFIED.",
     "active_blockers": [
       "P0_NATIVE_B1_B2_OFFER_DELIVERY_C4_CONSUMPTION_C3_CORRECTNESS_TTFT",
       "P0_BOSS_45_55_SCHEDULER_NEEDS_EXACT_CI_AND_CONSENTED_REDM I_AB",
