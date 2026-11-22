@@ -10,6 +10,7 @@ import pytest
 from v13.audio_speaker_evidence import (
     SCHEMA, SpeakerChangeEvidenceRegistry, SpeakerEvidenceError,
 )
+from v13 import audio_voice_cues as audio_voice_module
 from v13.audio_voice_cues import (
     _runtime_speaker_evidence_registry,
     consume_pcm16_voice_window,
@@ -281,6 +282,64 @@ def test_a5_a4_c3_consumer_uses_change_evidence_without_persisting_vectors(tmp_p
         assert '"vector"' not in persisted
         assert '"speaker_label": null' in persisted
         assert result["packet"]["segments"][0]["acoustic"]["speaker_change_evidence"]["threshold_status"] == "CALLER_ASSERTED_UNVERIFIED"
+    finally:
+        runtime.store.close()
+
+
+def test_batch_peak_change_survives_return_to_prior_speaker_for_a4_and_c3(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    generation = event["brain_generation_id"]
+    captured = {}
+
+    class CapturingAttention:
+        def modulate(self, event_id, sal):
+            captured["sal"] = dict(sal)
+            return {"sal": dict(sal)}
+
+    monkeypatch.setattr(
+        audio_voice_module.attctl,
+        "controller",
+        lambda current_runtime: CapturingAttention(),
+    )
+    try:
+        first = speaker_batch(SOURCE, generation, 100, 1100, lambda _: (1.0, 0.0, 0.0))
+        consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=generation,
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL", speaker_embeddings=first,
+        )
+        # The batch contains a brief B interval followed by a return to A.
+        # The last measured frame is stable, but the earlier transition must
+        # remain visible to A4 and the bounded C3 summary.
+        second = speaker_batch(
+            SOURCE, generation, 1100, 2100,
+            lambda end: (0.0, 1.0, 0.0) if 1660 <= end < 1820 else (1.0, 0.0, 0.0),
+        )
+        result = consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=1100,
+            event_id=event["event_id"], generation_id=generation,
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL", speaker_embeddings=second,
+        )
+        evidence = result["speaker_change_evidence"]
+        assert evidence["speaker_change_candidate"] is False
+        assert evidence["peak_speaker_change_candidate"] is True
+        assert evidence["candidate_count"] >= 1
+        assert evidence["peak_candidate_change_score"] == 0.5
+        assert any(frame["speaker_change_candidate"] is True for frame in evidence["frame_evidence"])
+        assert result["a4"]["speaker_change_evidence"]["peak_speaker_change_candidate"] is True
+        assert captured["sal"]["external_interrupt"] >= 0.125
+        summary = result["c3_admission"].selected[0].summary
+        assert "speaker_change_candidate=1" in summary
+        assert "speaker_change_score=0.50" in summary
+        assert "speaker_change_latest_candidate=0" in summary
+        assert "speaker_change_kind=CHANGE_OR_OVERLAP" in summary
+        persisted = json.dumps(result["packet"], sort_keys=True)
+        assert '"vector"' not in persisted
+        assert '"speaker_label": null' in persisted
     finally:
         runtime.store.close()
 
