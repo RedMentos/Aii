@@ -1034,6 +1034,7 @@ def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path):
         prompts = {}
         for messages in runner.calls:
             body_state = json.loads(messages[1]["content"])["body_state"]
+            assert body_state["authority"] == "STATE_NOT_FACT"
             prompts[body_state["role"]] = body_state["world_jepa"]
         assert set(prompts) == {"B1_DETAIL", "B2_GIST"}
         detail = prompts["B1_DETAIL"]
@@ -1043,6 +1044,8 @@ def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path):
         assert detail["native_body_consumed"] is gist["native_body_consumed"] is False
         assert detail["decision_authority"] == gist["decision_authority"] == "NONE"
         assert detail["action_horizon"] == gist["action_horizon"] == "NEXT_ACTION"
+        assert "not fact" in detail["note"] and "not source evidence" in detail["note"]
+        assert "not fact" in gist["note"] and "not source evidence" in gist["note"]
         assert detail["checkpoint_id"] == gist["checkpoint_id"] == trained["checkpoint_sha256"][:16]
         assert detail["predictions"]["columns"] == [
             "action", "duration_s", "output_characters", "uncertainty"
