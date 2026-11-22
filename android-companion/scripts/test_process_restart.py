@@ -101,6 +101,20 @@ def handle_transient_overlay(root: ET.Element) -> bool:
     return True
 
 
+def failure_logcat() -> str:
+    try:
+        result = adb("logcat", "-d", "-t", "500", "-v", "brief", timeout=15, check=False)
+    except Exception as exc:
+        return "logcat unavailable: " + type(exc).__name__
+    needles = ("AndroidRuntime", "FATAL EXCEPTION", "ANR in ",
+               "Application Not Responding", "ActivityTaskManager",
+               "WindowManager", "InputDispatcher", "uiautomator",
+               "UIAutomator", "chromium", "WebView", "V14")
+    selected = [line for line in result.stdout.splitlines()
+                if any(token in line for token in needles)]
+    return "\\n".join(selected[-80:]) or "(no matching logcat lines)"
+
+
 def wait_for_text(needle: str, timeout: float = 45.0) -> str:
     deadline = time.monotonic() + timeout
     last = ""
@@ -133,7 +147,8 @@ def wait_for_text(needle: str, timeout: float = 45.0) -> str:
     raise AssertionError("UI did not show expected state: " + needle
                          + "; visible labels=" + last[:1200]
                          + "; " + foreground_diagnostic()
-                         + "; hierarchy=" + xml)
+                         + "; hierarchy=" + xml
+                         + "; relevant logcat=" + failure_logcat()[:10000])
 
 
 def tap_button(label: str, timeout: float = 30.0) -> None:
