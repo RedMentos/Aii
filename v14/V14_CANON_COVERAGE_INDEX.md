@@ -2259,3 +2259,15 @@ JEPA transactional update, combined online JEPA, JEPA receipt integrity, role-sp
 | Whole-Canon | Historical Canon remains preserved; current release and companion CI are only partial paths | Correct B1/B2→C4→C3, B3 learned latent coupling, numeric weights/retention, full voice, Android UI/background executor, sparse MoE, self-edit and semantic coverage remain open | WHOLE_SYSTEM_ACCEPTANCE_OPEN |
 
 No private transcript or sensitive user content was copied into public artifacts. No LOG_PAGE, CHAT_SEND, shell, UPDATE_REQUEST, model/weight/permission change or device mutation occurred.
+
+## QA evidence overlay — 2026-11-22 Run 8
+
+| Requirement family | Exact evidence | Remaining acceptance | Classification |
+|---|---|---|---|
+| Android companion stop/process-death/restart | PR #2356 head a03bf594 adds bounded UIAutomator polling backoff and 4-core/4-GB TCG emulator settings after predecessor 985c55 reached MainActivity but System UI ANR prevented app assertions; copied helper tests 6/6 PASS; exact-head workflows queued | Exact emulator script must pass, then separately authorized physical Redmi/APK/pairing lifecycle test | CODE_PRESENT / LOCAL_HELPER_PASS / CI_PENDING / NOT_ANDROID_VERIFIED |
+| Android pairing trust and receipt recovery | PR #2356 carries signer-bound Termux pairing status, trust lock/latch, receipt-only recovery for EXECUTING/DENYING, no redispatch; prior exact-head Gradle/Robolectric and staged tests pass | Current head must pass full exact CI and receive independent Core review; no physical APK proof | CI_PREDECESSOR_PASS / CURRENT_HEAD_PENDING / NOT_RELEASED |
+| Store source-forget and JEPA lifecycle | PR #2359 head 661696c; 8/8 static pins; exact staged/Python3.14/Lab-Age fail at RECORD_ONLY semantic dependency 609c expected vs 461650 actual; migration PARTIAL | Reconcile Boss-owned guard and JEPA #2372 composition; then barrier-driven forget/promotion, positive rollback, SleepRuntime postcommit and restart tests | CODE_PRESENT / CI_FAIL / NOT_RELEASED |
+| Same-turn native receiver / B1-B2-C4-C3 | Core #2367 head 06113c60 run16 reports Python 3.13/3.14, Linux API, Android ARM64 cross-compile, local approval staged path and same-turn consumer CI green | Exact integration into a code-bearing release, real native model receiver and Redmi correctness/20-turn tests | CI_AND_CROSS_COMPILE / NOT_RELEASED / REDMI_UNVERIFIED |
+| Device chat and whole Canon | Private #603 repeats 57.739 s / 41.627 s TTFT / 38.945 s prefill / 2 generated tokens; B1/B2 TIME_BUDGET 53.2/54.2 s; correctness UNKNOWN | Correct native output, offers delivered and consumed by C4/C3, 20-turn latency/RSS and all clause-to-consumer mappings | REDMI_OBSERVATION / WHOLE_CANON_OPEN |
+
+No local full repository, Android SDK/emulator, or real-device test was available in this run. Synthetic helper checks, CI, Android emulator and Redmi evidence remain distinct.
