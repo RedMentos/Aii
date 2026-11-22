@@ -1426,3 +1426,10 @@ Read-only aggregate V13OBS issue #115 is now newer than the earlier #602/#603 sn
 Commit 3f015a7442c6950d5ce0dce3a9bbbcc4517e863d adds a Store-backed regression for the exact cold-start continuation: 32 verified ActionOutcomes from one session produce WAITING and remain in pending_rows; the Store is closed and reopened; a second independent 32-outcome session is added; the consumer must then proceed to a valid disjoint train/holdout evaluation rather than waiting forever or losing the first cohort. The expected result may be UPDATED or a measured RETENTION/UTILITY rejection; ERROR and another insufficient-session WAITING are failures. The test checks the cursor advanced and that 64 unique IDs remain represented in active experience or pending state.
 
 Exact-head workflows: 45070697371 optimizer-resume 3.13/3.14; 45070697433 temporal WorldJEPA 3.13/3.14; 45070697455 owner-read/staged startup — all QUEUED. No exact staged/integrated run visible for this latest test-only commit. No exact staged/integrated workflow is visible for 3f015a; the earlier dbb7 staged run is not the current SHA. Local full suite remains BLOCKED / NOT_RUN; Redmi remains REDMI_UNVERIFIED. Next: poll exact runs and obtain exact staged/integrated coverage before merge.
+
+
+### Run 19 continuation telemetry addendum (2026-11-22T21:17:00Z)
+
+Commits c759dece9c3f5d2cbf7c6c0448ba658955e05210 and aae0330e24279ed2782451e7effe78ee005ac490 add explicit scheduler completion metadata for the two independent cursors: learning_has_more, temporal_has_more and continuation_reason (BASE_PAGE, TEMPORAL_PAGE or BASE_AND_TEMPORAL). The temporal-only regression asserts TEMPORAL_PAGE while base has_more is false. This makes a queued temporal backlog distinguishable from a caught-up base learner in persisted scheduler history.
+
+Exact head aae0330e24279ed2782451e7effe78ee005ac490 has no workflow run or commit status visible yet. Parent 3f015a runs 45070697371 / 45070697433 / 45070697455 remain QUEUED and do not validate the later sleep.py change. Require exact staged/integrated and Python 3.13/3.14 tests before merge. Local full suite BLOCKED / NOT_RUN; Redmi REDMI_UNVERIFIED.
