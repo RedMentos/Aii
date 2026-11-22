@@ -111,8 +111,17 @@ def _validate_batch(value, source_id, generation_id, start_ms, end_ms):
 class _Stream:
     def __init__(self, metadata, max_frames):
         self.metadata = dict(metadata)
-        self.frames = deque(maxlen=max_frames)
+        self.max_frames = max_frames
+        self.frames = deque()
         self.last_end_ms = None
+
+    def extend(self, frames):
+        for item in frames:
+            if len(self.frames) >= self.max_frames:
+                _, oldest = self.frames.popleft()
+                if isinstance(oldest, array):
+                    oldest[:] = array(oldest.typecode, [0]) * len(oldest)
+            self.frames.append(item)
 
     def clear(self):
         """Overwrite retained in-memory embedding vectors before releasing them."""
@@ -240,7 +249,7 @@ class SpeakerChangeEvidenceRegistry:
 
             # Publish the new frames only after all comparisons used the same
             # pre-batch snapshot. The next call may then use this batch as history.
-            state.frames.extend(batch["frames"])
+            state.extend(batch["frames"])
             state.last_end_ms = batch["frames"][-1][0]
 
             self._states.pop(key, None)
