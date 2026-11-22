@@ -1006,3 +1006,12 @@ This correction supersedes older branch-level status claims without deleting the
 **OSS/license:** no author-linked code repository or code license was verified in the checked primary arXiv page. No external code, dataset, model or weight was imported.
 
 **Decision:** RESEARCH_ONLY / ADDITIVE_UPDATE_ACCEPTANCE_GATE / NO_RUNTIME_CHANGE.
+
+
+## R-087 — cross-model activation alignment is not receiver-side causal utility (2026-11-22)
+
+**Primary paper:** Peiyan Zhang, *A Negative Result on Cross-Model Activation Transfer in a Pythia Multi-Hop Setting*, arXiv:2606.03280 (2026-06-02): https://arxiv.org/abs/2606.03280 . In the tested Pythia-160M → Pythia-410M pair, a learned linear translator achieved high offline alignment (normalized cosine ≈0.97; normalized R² ≈0.88), yet injecting the translated activations did not improve downstream answering over no-injection or the natural-language relay. Low-strength additive injection stayed near baseline; replacement injection was destructive, and receiver-norm rescaling did not rescue it. The authors scope this negative result to one model family/pair, one task family, one injection layer and one linear bridge; it is not a general impossibility result.
+
+**V14 mapping:** B3 / Enlightened Space must not be accepted from cosine similarity, CKA, retrieval or reconstruction alone. Require a receiver-side causal-use test: identical receiver input with (1) no message, (2) correctly paired sender state, (3) zero state, (4) shuffled/wrong-source state, (5) same-model parity, (6) role-mismatched state and (7) OOD state. Measure held-out task/plan utility and harm relative to no-injection, plus source/generation/role provenance, activation norm/distribution, layer/sequence compatibility and rollback. A translated vector that is reconstructable but dispensable to the receiver is not a working communication channel. This strengthens the existing #2346/#2350 paired-tap requirements; it does not authorize activation injection or production B3.
+
+**Decision:** RESEARCH_ONLY / ADDITIVE_B3_CAUSAL_RECEIVER_ACCEPTANCE_GATE / NO_RUNTIME_CHANGE / NO_MODEL_OR_WEIGHT_IMPORT.
