@@ -170,6 +170,48 @@ def test_selected_model_route_change_after_arm_invalidates_approval(tmp_path, mo
         runtime.close()
 
 
+@pytest.mark.parametrize(
+    ("model_name", "role"),
+    [("sender", "B2_GIST"), ("receiver", "C3_LANGUAGE")],
+)
+def test_joint_manifest_and_router_redirect_after_arm_invalidates_approval(
+    tmp_path, model_name, role,
+):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    manifest_path = sender_path if model_name == "sender" else receiver_path
+    key = model_key(role, runtime.models.b2_control)
+    entry = runtime.models.installed[key]["files"][manifest_path.name]
+    alternate = runtime.home / "models" / (model_name + "-same-bytes-copy.gguf")
+    alternate.write_bytes(manifest_path.read_bytes())
+    calls = []
+    runtime.cognition.native_receive = lambda *args: calls.append(args)
+    operator = Operator(runtime)
+    try:
+        armed = json.loads(operator.run(
+            ":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm"
+        ))
+        record, _ = runtime.store.state(approval.KEY, None)
+        original_binding = record["models"][role]
+        assert original_binding["canonical_path"] == str(manifest_path.resolve())
+        assert len(original_binding["file_identity"]) == 5
+
+        # Redirect both the installed manifest and the live router after arm.
+        # The bytes, size and revision stay identical; only path/inode change.
+        entry["path"] = str(alternate.relative_to(runtime.home))
+        runtime.models.router = lambda selected_role: alternate if selected_role == role else None
+        with pytest.raises(PermissionError, match="model revision/hash changed"):
+            operator.run(
+                ":callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm"
+            )
+        assert calls == []
+        pending, _ = runtime.store.state(approval.KEY, None)
+        assert pending["status"] == "PENDING"
+        assert pending["models"][role] == original_binding
+        assert armed["status"] == "ARMED"
+    finally:
+        runtime.close()
+
+
 def test_arm_ttl_starts_after_model_hash_verification(tmp_path, monkeypatch):
     runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
     clock = [1000.0]
