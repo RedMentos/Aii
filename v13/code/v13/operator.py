@@ -44,7 +44,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :focal (JEF-Fokusschleife: Workspace-Slots, letzte Runden, Inquisition P1/P2, C5-Auswahl)
 :import causal-output <dataset.json> <offline-trained-directory>
 :channel NO_MESSAGE|SOURCE_EXACT|CONTROL|SYMBOLIC
-:tap B1_DETAIL|B2_GIST [Start:Ende] | :tap pair (beide native Zustände derselben Quelle, read-only)
+:tap B1_DETAIL|B2_GIST [Start:Ende] | :tap pair (beide native Zustände derselben Quelle, read-only)\n:b3 pairs (gespeicherte gepaarte native Zustände und L1-Sammelstand)
 :feedback output <gewünschter Referenztext> [--learn] (erster nativer Token)
 :budget [Name Wert] / :learning record|shadow|commit / :learn [route|wake|halt|b1_predictor|b2_predictor|a3_student|world_predictor|control_calibration|memory_retrieval|output_adapter]
 :requests / :approve <ID> / :reject <ID> / :rollback <Update-ID>
@@ -410,6 +410,18 @@ class Operator:
             if len(args)==1 and args[0] in {'semantic','procedural'}:return dumps(r.consolidation.stage(r.session,args[0]))
             if len(args)==2 and args[0]=='rollback':return r.consolidation.rollback(args[1])
             raise ValueError(':consolidate semantic|procedural|status / :consolidate rollback <ID>')
+        if cmd=='b3' and args==['pairs']:
+            from .b3order import MIN_PAIRED
+            rows=s.rows("SELECT payload FROM packets WHERE kind='B3PairedTapPacket' ORDER BY rowid")
+            pairs=[json.loads(x['payload']) for x in rows]
+            ids={p['body_pair_id'] for p in pairs}
+            revisions={(p['model_revisions']['B1_DETAIL'],p['model_revisions']['B2_GIST']) for p in pairs}
+            return dumps({'paired_native_samples':len(ids),'required_for_l1_training':MIN_PAIRED,
+                          'remaining':max(0,MIN_PAIRED-len(ids)),
+                          'pinned_revision_pairs':[list(x) for x in sorted(revisions)],
+                          'single_revision_set':len(revisions)==1,
+                          'task_labels_and_L0_baselines_required':True,
+                          'latent_injection_authority':0,'body_learning_authority':0})
         if cmd=='tap':
             if args==['pair']:
                 last=r.last_answer()
