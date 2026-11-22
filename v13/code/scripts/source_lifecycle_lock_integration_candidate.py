@@ -5,7 +5,7 @@ from pathlib import Path
 
 PINS = {
     'archive.py': 'adbdd844c2275d527a689eda789a3f247759967677e573b92bf7af7ad68404bf',
-    'store.py': '3f5a5dd32f27d36672e31c1b21e5765ddb6c6cc0f8a74ec5c88f96091f272f67',
+    'store.py': 'c413e135c765876263835140541a253a6494ebe57714ee43e18ace0c31548521',
     'common.py': '0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a',
     'memory.py': '61e881ad8b3f8cb60a96339599a1627cd5af7b5a5bfd29fe5f371c17f5a29ebc',
     'vision.py': '758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5',
