@@ -38,6 +38,7 @@ class Segment:
             isinstance(self.token_count, bool)
             or not isinstance(self.token_count, int)
             or self.token_count < 0
+            or (bool(self.text) and self.token_count == 0)
         ):
             raise ValueError("invalid token count")
         if self.role == "USER_EXACT" and (
