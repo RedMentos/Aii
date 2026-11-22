@@ -3,7 +3,7 @@
 **Timestamp:** 2026-11-22T20:55:00Z
 **Code PR:** [#2372](https://github.com/RedMentos/Aii/pull/2372)
 **Code branch:** jepa-memory/v14-temporal-exact-forget-retention-20261122-run14
-**Exact code HEAD:** 3f015a7442c6950d5ce0dce3a9bbbcc4517e863d
+**Exact code HEAD:** aae0330e24279ed2782451e7effe78ee005ac490
 **Status:** DRAFT / NOT_RELEASED / REDMI_UNVERIFIED
 
 ## Implemented in this run
@@ -19,6 +19,8 @@ Commits:
 - ebd58266d6d864a372759f66311bc045d67ed28b — temporal paging continuation in SleepRuntime.job.
 - dbb7b143a336ef946985cf3cad9185af3782d734 — temporal-only continuation regression.
 - 3f015a7442c6950d5ce0dce3a9bbbcc4517e863d — pending-row Store close/reopen and second-session continuation regression.
+- c759dece9c3f5d2cbf7c6c0448ba658955e05210 — scheduler continuation telemetry.
+- aae0330e24279ed2782451e7effe78ee005ac490 — TEMPORAL_PAGE reason regression.
 
 ## Run 19 continuation addendum
 
@@ -30,9 +32,9 @@ The new test first writes 32 outcomes in one session and expects WAITING with al
 
 ## Tests and environment
 
-- No exact staged/integrated workflow is visible for 3f015a; earlier dbb7 run 45070190046 is not current-head proof.
-- Exact-head 3f015a temporal WorldJEPA Python 3.13/3.14: 45070697433 — QUEUED.
-- Exact-head 3f015a optimizer-resume Python 3.13/3.14: 45070697371 — QUEUED. Owner-read / staged startup 45070697455 — QUEUED.
+- No exact staged/integrated workflow is visible for aae0330e; parent 3f015a run 45070697455 is not current-head proof.
+- Parent 3f015a temporal WorldJEPA Python 3.13/3.14: 45070697433 — QUEUED.
+- Parent 3f015a optimizer-resume Python 3.13/3.14: 45070697371 — QUEUED. Owner-read / staged startup 45070697455 — QUEUED.
 - LOCAL_LINUX full suite: BLOCKED / NOT_RUN. Python 3.13.5, NumPy 2.3.5 and pytest 9.0.2 exist, but no Aii checkout is mounted; git ls-remote failed because github.com DNS could not resolve.
 - TERMUX/REDMI: NOT TESTED. Private V13OBS #115 reports installed base aed1d2b, updater UP_TO_DATE; B1 4/4 and B2 2/2 native attempts failed, zero valid offers, C3 prefill ~38.945 s / 2 generated tokens. #2372 is not installed.
 
