@@ -54,14 +54,15 @@ public final class MainActivity extends Activity {
 
     private void refresh() {
         try {
+            boolean enabled = CompanionProvider.isEnabled(this);
             SharedPreferences prefs = getSharedPreferences(CompanionProvider.PREFS, MODE_PRIVATE);
-            boolean enabled = prefs.getBoolean("enabled", false);
             String paired = prefs.getString("paired_package", "not paired");
             String fingerprint = prefs.getString("paired_cert_sha256", "—");
             JSONObject key = signer.publicKeyInfo();
             JSONObject capabilities = CapabilityRegistry.snapshot(this);
             status.setText("V14 Android Companion 0.1.0\n"
-                    + "State: " + (enabled ? "ENABLED — per-action consent still required" : "STOPPED (default)") + "\n"
+                    + "State: " + (enabled ? "ENABLED FOR THIS PROCESS — per-action consent still required"
+                            : "STOPPED (restart requires explicit re-enable)") + "\n"
                     + "Paired caller: " + paired + "\n"
                     + "Termux signing certificate SHA-256: " + fingerprint + "\n"
                     + "Companion key ID: " + key.getString("key_id") + "\n"
@@ -99,15 +100,21 @@ public final class MainActivity extends Activity {
     }
 
     private void toggleEnabled() {
-        SharedPreferences prefs = getSharedPreferences(CompanionProvider.PREFS, MODE_PRIVATE);
-        boolean enabled = prefs.getBoolean("enabled", false);
-        prefs.edit().putBoolean("enabled", !enabled).apply();
-        Toast.makeText(this, enabled ? "Companion stopped" : "Companion enabled", Toast.LENGTH_SHORT).show();
+        try {
+            boolean enabled = CompanionProvider.toggleEnabled(this);
+            Toast.makeText(this, enabled ? "Companion enabled for this process"
+                    : "Companion stopped", Toast.LENGTH_SHORT).show();
+        } catch (IllegalStateException e) {
+            Toast.makeText(this,
+                    "Could not save companion state; it remains stopped in this process",
+                    Toast.LENGTH_LONG).show();
+        }
         refresh();
     }
 
     private void reviewPending() {
-        java.util.List<CompanionDb.Action> pending = db.pending();
+        java.util.List<CompanionDb.Action> pending = CompanionProvider.pendingActions(
+                this, db, System.currentTimeMillis());
         if (pending.isEmpty()) {
             Toast.makeText(this, "No pending actions", Toast.LENGTH_SHORT).show();
             return;

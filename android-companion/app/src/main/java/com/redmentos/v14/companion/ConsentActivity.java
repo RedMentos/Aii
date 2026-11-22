@@ -25,17 +25,21 @@ public final class ConsentActivity extends Activity {
         String actionId = getIntent().getStringExtra("action_id");
         action = actionId == null ? null : db.get(actionId);
         if (action == null || !"PENDING_USER_APPROVAL".equals(action.status)) {
+            CompanionProvider.cancelApprovalNotification(this, actionId);
             Toast.makeText(this, "Action is no longer pending", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+        long nowMillis = System.currentTimeMillis();
+        if (nowMillis >= action.expiresAt) {
+            db.expire(action.actionId, nowMillis);
+            CompanionProvider.cancelApprovalNotification(this, action.actionId);
+            Toast.makeText(this, "Action expired", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
         try {
             request = new JSONObject(action.requestJson);
-            if (System.currentTimeMillis() >= action.expiresAt) {
-                Toast.makeText(this, "Action expired", Toast.LENGTH_LONG).show();
-                finish();
-                return;
-            }
             showConsent();
         } catch (Exception e) {
             Toast.makeText(this, "Invalid action request", Toast.LENGTH_LONG).show();
@@ -65,7 +69,10 @@ public final class ConsentActivity extends Activity {
     }
 
     private void deny() {
-        if (!db.claimForDenial(action.actionId, System.currentTimeMillis())) {
+        long nowMillis = System.currentTimeMillis();
+        if (!db.claimForDenial(action.actionId, nowMillis)) {
+            db.expire(action.actionId, nowMillis);
+            CompanionProvider.cancelApprovalNotification(this, action.actionId);
             Toast.makeText(this, "Action was cancelled, expired or already decided", Toast.LENGTH_LONG).show();
             finish();
             return;
@@ -74,34 +81,42 @@ public final class ConsentActivity extends Activity {
     }
 
     private void launch() {
-        SharedPreferences prefs = getSharedPreferences(CompanionProvider.PREFS, MODE_PRIVATE);
-        if (!prefs.getBoolean("enabled", false)) {
+        Intent launch = null;
+        try {
+            launch = getPackageManager().getLaunchIntentForPackage(action.packageName);
+        } catch (RuntimeException ignored) {
+            // The action is still claimed once; a failed lookup becomes a signed failure receipt.
+        }
+        final Intent launchIntent = launch;
+        if (launchIntent != null) launchIntent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+
+        final String dispatchResult;
+        try {
+            dispatchResult = CompanionProvider.claimAndDispatch(
+                    this, db, action.actionId, System::currentTimeMillis, () -> {
+                        if (launchIntent == null) throw new IllegalStateException("No launch intent");
+                        startActivity(launchIntent);
+                    });
+        } catch (RuntimeException e) {
+            Toast.makeText(this, "Action claim unavailable: " + e.getClass().getSimpleName(),
+                    Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        if ("COMPANION_STOPPED".equals(dispatchResult)) {
             Toast.makeText(this, "Companion is stopped", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
-        if (System.currentTimeMillis() >= action.expiresAt) {
-            Toast.makeText(this, "Action expired", Toast.LENGTH_LONG).show();
+        if ("NOT_CLAIMED".equals(dispatchResult)) {
+            Toast.makeText(this, "Action was cancelled, expired or already claimed",
+                    Toast.LENGTH_LONG).show();
             finish();
             return;
         }
-        if (!db.claimForExecution(action.actionId, System.currentTimeMillis())) {
-            Toast.makeText(this, "Action was cancelled or already claimed", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-        try {
-            Intent launch = getPackageManager().getLaunchIntentForPackage(action.packageName);
-            if (launch == null) {
-                finishWithReceipt("FAILED_TO_DISPATCH", true, "EXECUTING");
-                return;
-            }
-            launch.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            startActivity(launch);
-            finishWithReceipt("DISPATCHED_UNVERIFIED", true, "EXECUTING");
-        } catch (Exception e) {
-            finishWithReceipt("FAILED_TO_DISPATCH", true, "EXECUTING");
-        }
+        finishWithReceipt("DISPATCHED".equals(dispatchResult)
+                ? "DISPATCHED_UNVERIFIED" : "FAILED_TO_DISPATCH", true, "EXECUTING");
     }
 
     private void finishWithReceipt(String status, boolean localConsent) {
@@ -119,7 +134,7 @@ public final class ConsentActivity extends Activity {
             body.put("digest", request.getString("digest"));
             long nowSeconds = System.currentTimeMillis() / 1000L;
             body.put("issued_at", nowSeconds);
-            body.put("expires_at", Math.min(action.expiresAt / 1000L, nowSeconds + 60L));
+            body.put("expires_at", receiptExpiresAt(nowSeconds));
             body.put("status", status);
             body.put("local_consent", localConsent);
             body.put("observed", false);
@@ -132,8 +147,17 @@ public final class ConsentActivity extends Activity {
         } catch (Exception e) {
             Toast.makeText(this, "Receipt signing failed: " + e.getClass().getSimpleName(), Toast.LENGTH_LONG).show();
         } finally {
+            // The decision claim is terminal even if signing/Store finalization
+            // fails; do not leave a notification advertising a pending action.
+            CompanionProvider.cancelApprovalNotification(this, action.actionId);
             finish();
         }
+    }
+
+    static long receiptExpiresAt(long issuedAtSeconds) {
+        // The request expiry gates the one-shot decision claim. Once claimed
+        // while live, the signed outcome gets its own short verification window.
+        return issuedAtSeconds + 60L;
     }
 
     private String randomHex(int bytes) {

@@ -194,3 +194,59 @@ def test_keystore_receipt_persists_source_bound_non_authoritative_outcome(tmp_pa
     store.close()
     broker.close()
     receipt_verifier.close()
+
+
+def test_store_failure_keeps_signed_receipt_retryable_until_durable_commit(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "2" * (size * 2))
+    home = tmp_path / "runtime"
+    (home / "data" / "db").mkdir(parents=True)
+    (home / "data" / "blobs").mkdir(parents=True)
+    store = Store(home)
+    session = store.new_session()
+    event = store.event(session, "open the approved app")
+    broker = android_control.AndroidControlBroker(tmp_path / "retry-broker.sqlite", clock=lambda: 1000.0)
+    receipt_verifier = verifier(tmp_path / "retry-ecdsa.sqlite")
+    broker.start()
+    proposal = broker.propose(
+        "launch_app", {"package": "com.example.app"}, ttl=30,
+        event_id=event["event_id"], source_ref=event["source_ref"],
+    )
+    broker.approve(proposal.action_id, confirmed_by_local_ui=True)
+    broker.dispatch_approved(proposal.action_id)
+
+    original_tx = store.tx
+    calls = {"count": 0}
+
+    def fail_once():
+        if calls["count"] == 0:
+            calls["count"] += 1
+            raise OSError("simulated Store write failure")
+        return original_tx()
+
+    monkeypatch.setattr(store, "tx", fail_once)
+    with pytest.raises(OSError, match="simulated Store write failure"):
+        accept_and_persist_companion_receipt(
+            store, broker, receipt_verifier, proposal.action_id, RECEIPT
+        )
+
+    assert broker.action_state(proposal.action_id) == "RECEIPT_CONSUMED"
+
+    outcome, packet = accept_and_persist_companion_receipt(
+        store, broker, receipt_verifier, proposal.action_id, RECEIPT
+    )
+    assert outcome.status == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert broker.action_state(proposal.action_id) == "RECEIPT_VERIFIED"
+    stored_count = store.one(
+        "SELECT COUNT(*) AS count FROM packets WHERE kind=? AND event_id=?",
+        ("ActionOutcome", event["event_id"]),
+    )
+    assert stored_count["count"] == 1
+    stored = store.one("SELECT payload FROM packets WHERE id=?", (packet["packet_id"],))
+    actual = json.loads(stored["payload"])["actual"]
+    assert actual["receipt_nonce"] == BODY["nonce"]
+    assert actual["t8_authoritative"] is False
+    assert actual["world_learning_eligible"] is False
+
+    store.close()
+    broker.close()
+    receipt_verifier.close()

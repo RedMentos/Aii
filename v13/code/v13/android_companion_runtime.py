@@ -148,16 +148,26 @@ class AndroidCompanionController:
             if (response.get("status") != "PENDING_USER_APPROVAL"
                     or response.get("action_id") != proposal.action_id):
                 raise ControlDenied("companion did not acknowledge the exact action id")
-        except Exception:
+        except Exception as submit_exc:
+            # A timeout can happen after Android committed the request. Only a
+            # matching, explicit remote CANCELLED receipt permits local finalization.
             try:
-                self.transport.cancel(proposal.action_id)
-            except Exception:
-                pass
-            try:
+                remote_cancel = self.transport.cancel(proposal.action_id)
+            except Exception as cancel_exc:
+                remote_cancel = {"status": "UNAVAILABLE", "error": type(cancel_exc).__name__}
+            if (remote_cancel.get("status") == "CANCELLED"
+                    and remote_cancel.get("action_id") == proposal.action_id):
                 self.broker.cancel(proposal.action_id)
-            except Exception:
-                pass
-            raise
+                raise
+            self.broker.mark_submit_uncertain(proposal.action_id)
+            return dumps({
+                "status": "SUBMIT_UNCERTAIN",
+                "action_id": proposal.action_id,
+                "package": package,
+                "submit_error": type(submit_exc).__name__,
+                "companion_cancel": remote_cancel,
+                "next": ":android poll " + proposal.action_id,
+            })
         return dumps({
             "status": "PENDING_USER_APPROVAL",
             "action_id": proposal.action_id,
@@ -177,6 +187,13 @@ class AndroidCompanionController:
         self.broker.start()
         response = self.transport.outcome(action_id)
         if response.get("status") != "READY":
+            if state == "SUBMIT_UNCERTAIN":
+                return dumps({
+                    "status": "SUBMIT_UNCERTAIN",
+                    "action_id": action_id,
+                    "companion_status": response.get("status", "UNKNOWN"),
+                    "next": ":android cancel " + action_id + " after checking the companion",
+                })
             return dumps(response)
         receipt = response.get("receipt")
         verifier = ECDSAReceiptVerifier(
@@ -199,13 +216,28 @@ class AndroidCompanionController:
         })
 
     def cancel(self, action_id):
-        local = False
-        try:
-            local = self.broker.cancel(action_id)
-        except ControlDenied:
-            pass
-        remote = self.transport.cancel(action_id)
-        return dumps({"status": "CANCEL_REQUESTED", "local_cancelled": local, "companion": remote})
+        state = self.broker.action_state(action_id)
+        if state == "RECEIPT_CONSUMED":
+            return dumps({
+                "status": "RECEIPT_PENDING_STORE",
+                "action_id": action_id,
+                "next": "retry :android poll; the signed receipt has already been consumed",
+            })
+        if state in {"DISPATCHED", "SUBMIT_UNCERTAIN"}:
+            try:
+                remote = self.transport.cancel(action_id)
+            except Exception as exc:
+                remote = {"status": "UNAVAILABLE", "error": type(exc).__name__}
+            if (remote.get("status") == "CANCELLED"
+                    and remote.get("action_id") == action_id):
+                local = self.broker.cancel(action_id)
+                return dumps({"status": "CANCELLED", "local_cancelled": local, "companion": remote})
+            self.broker.mark_submit_uncertain(action_id)
+            return dumps({"status": "SUBMIT_UNCERTAIN", "action_id": action_id,
+                          "local_cancelled": False, "companion": remote})
+        local = self.broker.cancel(action_id)
+        return dumps({"status": "CANCELLED_LOCAL_ONLY", "local_cancelled": local,
+                      "companion": "NOT_DISPATCHED"})
 
     def pending(self):
         return dumps(self.transport.pending())
@@ -215,20 +247,41 @@ class AndroidCompanionController:
         try:
             pending_response = self.transport.pending()
             if pending_response.get("status") != "OK":
-                remote = pending_response
+                remote = {"status": "UNAVAILABLE", "reason": "PENDING_STATUS_UNCONFIRMED"}
             else:
                 results = []
                 for item in pending_response.get("pending", []):
                     action_id = item.get("action_id")
-                    if type(action_id) is str and re.fullmatch(r"[0-9a-f]{32}", action_id):
-                        results.append(self.transport.cancel(action_id))
+                    if type(action_id) is not str or re.fullmatch(r"[0-9a-f]{32}", action_id) is None:
+                        continue
+                    try:
+                        result = self.transport.cancel(action_id)
+                    except Exception as exc:
+                        result = {"status": "UNAVAILABLE", "error": type(exc).__name__}
+                    results.append(result)
+                    if (result.get("status") == "CANCELLED"
+                            and result.get("action_id") == action_id):
+                        try:
+                            self.broker.cancel(action_id)
+                        except ControlDenied:
+                            pass
+                    else:
+                        try:
+                            self.broker.mark_submit_uncertain(action_id)
+                        except ControlDenied:
+                            pass
                 remote = {"status": "CANCEL_ATTEMPTED", "results": results}
-        except CompanionTransportError as exc:
-            remote = {"status": "UNAVAILABLE", "reason": str(exc)}
+        except Exception as exc:
+            remote = {"status": "UNAVAILABLE", "reason": type(exc).__name__}
         self.broker.stop()
+        uncertain = sorted(
+            action_id for action_id in self.broker.dispatched
+            if self.broker.action_state(action_id) == "SUBMIT_UNCERTAIN"
+        )
         return dumps({
             "status": "LOCAL_BROKER_STOPPED",
             "companion_cancellations": remote,
+            "uncertain_action_ids": uncertain,
             "companion_app_stop_switch": "separate; open the Android companion UI if needed",
         })
 

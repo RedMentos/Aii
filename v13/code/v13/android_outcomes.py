@@ -74,13 +74,15 @@ def accept_companion_receipt(
     *,
     on_outcome: Callable[[ActionOutcome], None] | None = None,
     clock: Callable[[], float] = time.time,
+    finalize_broker: bool = True,
 ) -> ActionOutcome:
     """Consume a dispatched request using an authenticated companion receipt.
 
-    The broker approval is consumed before verification; any malformed, stale,
-    replayed or unauthenticated receipt therefore fails closed and requires a
-    new local approval. A valid receipt is still only a companion attestation,
-    not independent device observation or T8 learning authority.
+    The broker dispatch is consumed before verification; malformed, stale,
+    replayed or unauthenticated receipts fail closed. The combined persistence
+    path may defer successful broker finalization until the source-bound
+    ActionOutcome and nonce are durably committed. A valid receipt remains only
+    a companion attestation, not independent device observation or T8 authority.
     """
     if not isinstance(action_id, str) or not action_id:
         raise ControlDenied("invalid action identifier")
@@ -103,7 +105,6 @@ def accept_companion_receipt(
         with broker.lock:
             if broker.stopped:
                 raise ControlDenied("broker stopped during companion verification")
-            broker.record_companion_receipt(action_id, proposal.digest, verified=True)
     except Exception:
         broker.record_companion_receipt(action_id, proposal.digest, verified=False)
         raise
@@ -134,6 +135,8 @@ def accept_companion_receipt(
             "source_ref": dict(proposal.source_ref) if proposal.source_ref is not None else None,
         },
     )
+    if finalize_broker:
+        broker.record_companion_receipt(action_id, proposal.digest, verified=True)
     if on_outcome is not None:
         on_outcome(outcome)
     return outcome
@@ -289,9 +292,20 @@ def accept_and_persist_companion_receipt(
 ):
     """One C5 receipt-consumer call: authenticate, persist, then notify downstream."""
     outcome = accept_companion_receipt(
-        broker, verifier, action_id, receipt, on_outcome=None, clock=clock
+        broker, verifier, action_id, receipt, on_outcome=None, clock=clock,
+        finalize_broker=False,
     )
-    packet_value = persist_companion_outcome(store, outcome)
+    try:
+        packet_value = persist_companion_outcome(store, outcome)
+    except InvalidOutcome:
+        # A permanent provenance/replay rejection is terminal; transient Store
+        # failures leave RECEIPT_CONSUMED so the exact signed receipt can retry.
+        broker.record_companion_receipt(action_id, outcome.details["digest"], verified=False)
+        raise
+    # Store transaction commits the nonce and ActionOutcome together. Only
+    # then may the broker make this receipt terminal; a failed write stays
+    # RECEIPT_CONSUMED and can be retried idempotently.
+    broker.record_companion_receipt(action_id, outcome.details["digest"], verified=True)
     if on_outcome is not None:
         on_outcome(outcome)
     return outcome, packet_value

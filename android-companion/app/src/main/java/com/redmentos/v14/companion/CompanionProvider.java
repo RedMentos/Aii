@@ -24,6 +24,8 @@ import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class CompanionProvider extends ContentProvider {
     static final String PREFS = "v14-companion";
@@ -35,6 +37,7 @@ public final class CompanionProvider extends ContentProvider {
     @Override public boolean onCreate() {
         Context context = getContext();
         if (context == null) return false;
+        resetProcessStateForProviderStartup(context);
         db = new CompanionDb(context);
         signer = new ReceiptSigner();
         ensureChannel(context);
@@ -50,25 +53,151 @@ public final class CompanionProvider extends ContentProvider {
             if ("public_key".equals(method)) return result(signer.publicKeyInfo());
             if ("submit".equals(method)) return result(submit(context, decode(arg)));
             if ("outcome".equals(method)) return result(outcome(decode(arg)));
-            if ("cancel".equals(method)) return result(cancel(decode(arg)));
-            if ("pending".equals(method)) return result(pending());
+            if ("cancel".equals(method)) return result(cancel(context, decode(arg)));
+            if ("pending".equals(method)) return result(pending(context));
             return result(error("UNKNOWN_METHOD"));
         } catch (Exception e) {
             return result(error("REJECTED:" + e.getClass().getSimpleName()));
         }
     }
 
+    // The provider and both Activities use the app's default process. This
+    // gate linearizes stop/enable with request insertion and the final dispatch.
+    static final Object ACTION_GATE_LOCK = new Object();
+    // Enabling is a per-process session grant. A process restart always starts
+    // stopped; the user must explicitly enable the companion again.
+    private static volatile boolean processEnabled = false;
+
+    interface MillisClock {
+        long nowMillis();
+    }
+
+    interface EnabledWriter {
+        boolean commit(Context context, boolean enabled);
+    }
+
+    static boolean resetProcessStateForProviderStartup(Context context) {
+        synchronized (ACTION_GATE_LOCK) {
+            // The in-process grant is always revoked first. Persist OFF as a
+            // best effort; if storage fails, every runtime gate still sees OFF.
+            processEnabled = false;
+            try {
+                return context != null && commitEnabled(context, false);
+            } catch (RuntimeException ignored) {
+                return false;
+            }
+        }
+    }
+
+    static boolean setEnabled(Context context, boolean enabled) {
+        return setEnabled(context, enabled, CompanionProvider::commitEnabled);
+    }
+
+    static boolean setEnabled(Context context, boolean enabled, EnabledWriter writer) {
+        synchronized (ACTION_GATE_LOCK) {
+            return setEnabledLocked(context, enabled, writer);
+        }
+    }
+
+    private static boolean setEnabledLocked(Context context, boolean enabled, EnabledWriter writer) {
+        // Drop in-process authority before attempting persistence. If commit
+        // fails or throws, an old enabled state must not remain usable.
+        processEnabled = false;
+        if (context == null || writer == null) return false;
+        try {
+            if (!writer.commit(context, enabled)) return false;
+            processEnabled = enabled;
+            return true;
+        } catch (RuntimeException ignored) {
+            processEnabled = false;
+            return false;
+        }
+    }
+
+    private static boolean commitEnabled(Context context, boolean enabled) {
+        return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .edit().putBoolean("enabled", enabled).commit();
+    }
+
+    static boolean toggleEnabled(Context context) {
+        synchronized (ACTION_GATE_LOCK) {
+            boolean enabled = !isEnabledLocked(context);
+            if (!setEnabledLocked(context, enabled, CompanionProvider::commitEnabled)) {
+                throw new IllegalStateException("Could not persist companion state");
+            }
+            return enabled;
+        }
+    }
+
+    static boolean isEnabled(Context context) {
+        synchronized (ACTION_GATE_LOCK) {
+            return isEnabledLocked(context);
+        }
+    }
+
+    private static boolean isEnabledLocked(Context context) {
+        if (!processEnabled || context == null) return false;
+        try {
+            boolean stored = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                    .getBoolean("enabled", false);
+            if (!stored) processEnabled = false;
+            return processEnabled && stored;
+        } catch (RuntimeException ignored) {
+            processEnabled = false;
+            return false;
+        }
+    }
+
+    static String claimAndDispatch(Context context, CompanionDb db, String actionId,
+                                   MillisClock clock, Runnable dispatch) {
+        synchronized (ACTION_GATE_LOCK) {
+            if (!isEnabledLocked(context)) return "COMPANION_STOPPED";
+            long nowMillis = clock.nowMillis();
+            if (!db.claimForExecution(actionId, nowMillis)) {
+                db.expire(actionId, nowMillis);
+                cancelApprovalNotification(context, actionId);
+                return "NOT_CLAIMED";
+            }
+            try {
+                dispatch.run();
+                return "DISPATCHED";
+            } catch (RuntimeException ignored) {
+                return "FAILED_TO_DISPATCH";
+            }
+        }
+    }
+
+    static boolean isImplementedCapability(String capability) {
+        return "launch_app".equals(capability);
+    }
+
+    static boolean isValidLaunchScope(boolean companionConsentRequired,
+                                      boolean osPermissionRequired,
+                                      boolean permissionBypass,
+                                      boolean modelAuthority,
+                                      String localApproval) {
+        return companionConsentRequired && !osPermissionRequired && !permissionBypass
+                && !modelAuthority
+                && "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION".equals(localApproval);
+    }
+
     private JSONObject submit(Context context, String json) throws Exception {
-        SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        if (!prefs.getBoolean("enabled", false)) return error("COMPANION_STOPPED");
+        synchronized (ACTION_GATE_LOCK) {
+            return submitLocked(context, json);
+        }
+    }
+
+    private JSONObject submitLocked(Context context, String json) throws Exception {
+        if (!isEnabledLocked(context)) return error("COMPANION_STOPPED");
         JSONObject request = new JSONObject(json);
         if (!"v14.android-action-request/1".equals(request.optString("schema"))
-                || !"launch_app".equals(request.optString("capability"))
-                || !request.optBoolean("companion_local_consent_required", false)
-                || !request.optBoolean("android_os_permission_required", false)
-                || request.optBoolean("permission_bypass", true)
-                || request.optBoolean("model_authority", true)
-                || !"CALLER_ASSERTED_LOCAL_UI_CONFIRMATION".equals(request.optString("local_approval"))) {
+                || !isImplementedCapability(request.optString("capability"))
+                || !isValidLaunchScope(
+                        request.optBoolean("companion_local_consent_required", false),
+                        request.optBoolean("android_os_permission_required", true),
+                        request.optBoolean("permission_bypass", true),
+                        request.optBoolean("model_authority", true),
+                        request.optString("local_approval"))) {
             return error("INVALID_REQUEST_SCOPE");
         }
         String actionId = request.getString("action_id");
@@ -116,17 +245,43 @@ public final class CompanionProvider extends ContentProvider {
         return out;
     }
 
-    private JSONObject cancel(String actionId) throws Exception {
+    private JSONObject cancel(Context context, String actionId) throws Exception {
         if (!isHex(actionId, 32)) return error("INVALID_ACTION_ID");
+        boolean cancelled = cancelAction(context, db, actionId);
         JSONObject out = new JSONObject();
-        out.put("status", db.cancel(actionId) ? "CANCELLED" : "NOT_CANCELLABLE");
+        out.put("status", cancelled ? "CANCELLED" : "NOT_CANCELLABLE");
         out.put("action_id", actionId);
         return out;
     }
 
-    private JSONObject pending() throws Exception {
+    static boolean cancelAction(Context context, CompanionDb db, String actionId) {
+        // Serialize cancellation with submit's insert+notification publication.
+        // Otherwise a concurrent pending()/stop() can discover the new row,
+        // cancel it before submit posts its notification, and leave a stale
+        // approval notification visible after the action is already terminal.
+        synchronized (ACTION_GATE_LOCK) {
+            boolean cancelled = db.cancel(actionId);
+            cancelApprovalNotification(context, actionId);
+            return cancelled;
+        }
+    }
+
+    static List<CompanionDb.Action> pendingActions(Context context, CompanionDb db, long nowMillis) {
+        // Expiry is a state transition plus notification cleanup. Serialize
+        // both with submit's insert+publish so an almost-expired request
+        // cannot be expired before its notification is posted, leaving a
+        // stale approval visible after the row is already terminal.
+        synchronized (ACTION_GATE_LOCK) {
+            List<String> expired = new ArrayList<>();
+            List<CompanionDb.Action> pending = db.pending(nowMillis, expired);
+            for (String actionId : expired) cancelApprovalNotification(context, actionId);
+            return pending;
+        }
+    }
+
+    private JSONObject pending(Context context) throws Exception {
         org.json.JSONArray values = new org.json.JSONArray();
-        for (CompanionDb.Action action : db.pending()) {
+        for (CompanionDb.Action action : pendingActions(context, db, System.currentTimeMillis())) {
             JSONObject item = new JSONObject();
             item.put("action_id", action.actionId);
             item.put("package", action.packageName);
@@ -140,24 +295,48 @@ public final class CompanionProvider extends ContentProvider {
     }
 
     private boolean isPairedCaller(Context context) {
+        // ContentProvider exposes the exact IPC caller package on supported
+        // Android versions. Bind it to Binder's UID package set as well as the
+        // pinned signing certificate; never infer caller identity from UID alone.
+        String callingPackage = getCallingPackage();
         String[] packages = context.getPackageManager().getPackagesForUid(Binder.getCallingUid());
         SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         String pairedPackage = prefs.getString("paired_package", "");
         String pairedDigest = prefs.getString("paired_cert_sha256", "");
-        // A shared UID makes Binder identity ambiguous: another package in the
-        // same UID could otherwise inherit Termux's paired status.
-        if (!isOnlyPairedPackage(packages, pairedPackage) || pairedDigest.isEmpty()) return false;
+        if (!isExactPairedCaller(callingPackage, packages, pairedPackage) || pairedDigest.isEmpty()) {
+            return false;
+        }
         try {
-            return pairedDigest.equals(packageCertificateDigest(context, pairedPackage));
+            return pairedDigest.equals(packageCertificateDigest(context, callingPackage));
         } catch (Exception ignored) {
             return false;
         }
+    }
+
+    static boolean isExactPairedCaller(String callingPackage, String[] packages, String pairedPackage) {
+        return callingPackage != null && !callingPackage.isEmpty()
+                && callingPackage.equals(pairedPackage)
+                && isOnlyPairedPackage(packages, pairedPackage);
     }
 
     static boolean isOnlyPairedPackage(String[] packages, String pairedPackage) {
         return packages != null && packages.length == 1
                 && pairedPackage != null && !pairedPackage.isEmpty()
                 && pairedPackage.equals(packages[0]);
+    }
+
+    static String approvalNotificationTag(String actionId) {
+        if (actionId == null || !actionId.matches("[0-9a-f]{32}")) {
+            throw new IllegalArgumentException("invalid action id");
+        }
+        return actionId;
+    }
+
+    static void cancelApprovalNotification(Context context, String actionId) {
+        if (context == null || actionId == null || !actionId.matches("[0-9a-f]{32}")) return;
+        NotificationManager manager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (manager != null) manager.cancel(approvalNotificationTag(actionId), 0);
     }
 
     static Intent approvalIntent(Context context, String actionId) {
@@ -200,7 +379,7 @@ public final class CompanionProvider extends ContentProvider {
                 .setAutoCancel(true)
                 .build();
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(actionId.hashCode(), notification);
+        manager.notify(approvalNotificationTag(actionId), 0, notification);
     }
 
     private void ensureChannel(Context context) {

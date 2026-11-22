@@ -5,6 +5,7 @@ on:
     branches:
       - core/v14-android-companion-native-20261121
       - qa/v14-companion-single-use-approval-20261121
+      - qa/v14-companion-os-permission-contract-20261122
     paths:
       - "android-companion/**"
       - ".github/workflows/v14-android-companion.yml"
@@ -12,6 +13,7 @@ on:
     branches:
       - gpt6/v14-core-companion-outcome-20261121
       - core/v14-android-companion-native-20261121
+      - qa/v14-companion-single-use-approval-20261121
     paths:
       - "android-companion/**"
       - ".github/workflows/v14-android-companion.yml"
