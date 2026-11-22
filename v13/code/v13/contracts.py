@@ -13,7 +13,7 @@ FIELDS={
  "WorldTransition":{"action_id":str,"source_ref":dict,"outcome_source_ref":dict,"action_role":str,"corollary_packet_id":str,"teacher_truth_authority":bool},
  "StudentEvaluation":{"percept_packet_id":str,"source_ref":dict,"student_route":str,"teacher_route":str,"agreement":bool,"routing_authority":int},
  "LatentTapPacket":{"role":str,"source_ref":dict,"tap_id":str,"model_revision":str,"token_ids":list,"feature_path":str,"feature_sha256":str,"shape":list},
- "B3PairedTapPacket":{"schema":str,"body_pair_id":str,"source_ref":dict,"sender_roles":list,"tap_packet_ids":dict,"tap_ids":dict,"model_revisions":dict,"feature_bindings":dict,"token_counts":dict,"dimensions":dict,"token_alignment":str,"receiver_pooling":str,"injection_authority":int,"learning_authority":int},
+ "B3PairedTapPacket":{"packet_schema":str,"body_pair_id":str,"source_ref":dict,"sender_roles":list,"tap_packet_ids":dict,"tap_ids":dict,"model_revisions":dict,"feature_bindings":dict,"token_counts":dict,"dimensions":dict,"token_alignment":str,"receiver_pooling":str,"injection_authority":int,"learning_authority":int},
  "ExecutiveDecision":{"component":str,"context_ref":dict,"baseline":str,"action":str,"learned":bool,"context_revision":str,"trajectory_offer_ids":list},
  "ActionPrediction":{"action_type":str,"profile_id":str,"prediction":dict},
  "PredictionOutcome":{"action_id":str,"observation":dict},
@@ -97,7 +97,7 @@ def validate(kind,obj):
             if name in obj and not isinstance(obj[name],types):raise ValueError('ExecState.'+name+': falscher Typ')
     if kind=="B3PairedTapPacket":
         roles=("B1_DETAIL","B2_GIST")
-        if obj["schema"]!="v13.b3-paired-native-taps/1" or obj["sender_roles"]!=list(roles):raise ValueError("B3 pair schema/roles")
+        if obj["packet_schema"]!="v13.b3-paired-native-taps/1" or obj["sender_roles"]!=list(roles):raise ValueError("B3 pair schema/roles")
         if obj["source_ref"] not in obj["provenance"]:raise ValueError("B3 pair source provenance")
         for field in ("tap_packet_ids","tap_ids","model_revisions","feature_bindings","token_counts","dimensions"):
             if not isinstance(obj[field],dict) or set(obj[field])!=set(roles):raise ValueError("B3 pair "+field)
