@@ -1,8 +1,36 @@
 # V14 / Inquisition-JEPA — LEBENDER ARBEITSPLAN
 
-**Fassung:** 2026-11-21 · **Rolle:** operativer Einstiegspunkt für ALLE V14-Agenten.  
+**Fassung:** 2026-11-22 (live Boss integration checkpoint) · **Rolle:** operativer Einstiegspunkt für ALLE V14-Agenten.  
 **Kanon:** [V14 Master](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md) (aktive Gesamtarchitektur mit ALLEN historischen Anhängen), [Architekturfassung](V14_ARCHITECTURE_AND_RESEARCH_ONLY_20261119.md), [Forschungsjournal](V14_RESEARCH_LEDGER.md), [Backups](backups/).  
 **Wichtig:** Nicht als Implementierungsbeweis lesen. Funktionale Ziele sind verbindlich; Status erfordert reale Laufzeit-, Lern- und Geräteevidenz.
+
+## 0A. Latest Boss integration checkpoint — 22/11/2026 04:55 CET
+
+**Current verified candidate:** `483ef6ddc7140bf76f197d538ec973df42dd95e0` on `boss/v14-recall-store-pin-rebind-20261122`; PR #2288 remains DRAFT / NOT_RELEASED. Release-development base is still `bdcad466ffea75a2b41f7d23be168f53c7197d20`; last accepted code release remains `f279286a4453248004c670fcaabecd85da6ab299`.
+
+### New integrated runtime slice
+
+QA #2298 was reviewed and merged into this Boss branch. It adds a durable owner-only `.runtime-activation.json` journal for the launcher + `runtime-active.json` pair, hash-checked backup files, fsync around atomic replacement, crash recovery only while the runtime is stopped, and explicit runtime-only rollback through the pipeline worker. Rollback disables future auto-update first, takes the exclusive lock, stops only a managed V13 chat and resumes only after a confirmed safe result. The QA head `f415d83187b948f7a654c2a2babf595576c350ab` passed 11/11 exact checks; merge commit is `483ef6ddc7140bf76f197d538ec973df42dd95e0`. Dashboard rollback is still OPEN.
+
+The current Boss exact head has **26 SUCCESS, 0 FAILURE, 0 pending, 1 expected SKIPPED** check-runs (18 successful and one skipped associated workflow). The same-turn synthetic B1/B2 OfferPacket→C4→C3 receipt, Store source-read/revocation regression, A5 UI lease, audio/arithmetic, Lab-Age, owner-read, migration, privacy and source-contract workflows pass on this exact candidate. No Redmi deployment is inferred.
+
+### Hard release blocker: Age is not a resource budget
+
+QA #2281's head `31a9cbc69e56a9e77f9f24bf1ab6f5d574df3384` passed 9/9 checks on stale base `9922cf86...`, but its branch diverges from current Boss. Current Boss `effort.py`, `sleep.py` and `agi/goals.py` still derive focal-depth/replay caps from Age. Recompose only the Age-rights changes onto current Boss, preserve GoalWake atomicity, and move CPU/RAM/wall-time/replay budgets to independent ResourceGuard/runtime policy. Age controls developmental/tool/learning rights only. Do not merge #2288 until this is corrected and re-tested.
+
+### Current cross-lane evidence
+
+- **Core:** same-turn synthetic B1/B2→C4→C3 and source-read/revocation workflow PASS; #2300 native input-embedding probe is 7/18 pass, 11 fail and remains diagnostic-only. Next: repair its pin chain and rebase onto this Boss head; no production route.
+- **JEPA & Memory:** #2247 current head 9b1f has 7/15 pass and 8 fail, including optimizer resume 3.13/3.14 and staged integration. No accepted per-session retention, production weight diff or cross-organ gradients.
+- **QA & Android:** #2298 activation journal is merged into Boss integration; exact Boss CI pass. Native process-death/reboot and phone rollback remain unverified. #2286 companion is 8/12 pass, 4 pending on a stacked old base; default OFF.
+- **Research & Perception:** #2299 RAW EAR branch is stale with only one check; #2285 audio/date QA is 5/5 on old base. R-052 MobileMoE and R-053 LARS/phone-NPU LoRA were added to the Research Ledger as research-only candidates with license/hardware caveats.
+- **Boss & Integration:** keep the historical V13 appendix unchanged; review all PR bases and exact heads; no release push until Age rights and full current-head CI are green.
+
+### Whole-system proof boundaries
+
+A0–A5 remain partial; audio is caller-supplied PCM16 and A5 UI is metadata-only. B1/B2 offers and C4/C3 receipt are synthetic, not native useful model contributions. B3 is symbolic/diagnostic, not trained latent coupling. World/Self/Memory/JEPA/Sleep remain partial shadow; no accepted permanent weights. Voice has no microphone, ASR, trainable decoder/vocoder or full duplex. Android background/UI control is OFF; no OS executor. Sparse MoE, cross-organ gradients, OS sandbox, behavior judge, production Memorilla consumer and controlled self-edit remain OPEN. The 1,255-heading Canon inventory is preserved, but clause→consumer→test→environment→rollback mapping is incomplete.
+
+**Device/local boundary:** private PIPELINE_STATUS #461 has no authenticated reply; installed SHA/updater consent UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, shell or device mutation. No local Aii checkout or GitHub DNS in the container, so LOCAL_LINUX tests are BLOCKED. `REDMI_UNVERIFIED / NOT_RELEASED`. User action: NONE.
 
 ## 0. Nutzerabsicht und unverhandelbare Korrekturen (20.11.2026)
 

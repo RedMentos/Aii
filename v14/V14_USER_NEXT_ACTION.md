@@ -1,3 +1,53 @@
+# Current next action — 22/11/2026 04:55 CET (Boss integration run 11)
+
+**User action: none.** No Termux command, model/weight download or swap, permission change, Age change, updater toggle, device action or user-data mutation is required.
+
+## Current candidate and release boundary
+
+- Release-development branch `gpt6/v13-private-remote-bridge-20261111` remains at `bdcad466ffea75a2b41f7d23be168f53c7197d20`. The last accepted code-bearing release remains `f279286a4453248004c670fcaabecd85da6ab299`.
+- Boss integration branch `boss/v14-recall-store-pin-rebind-20261122` is at `483ef6ddc7140bf76f197d538ec973df42dd95e0`. PR [#2288](https://github.com/RedMentos/Aii/pull/2288) remains DRAFT / NOT_RELEASED, 237 commits ahead / 0 behind its release-development base, 76 changed files.
+- QA [#2298](https://github.com/RedMentos/Aii/pull/2298) adds the owner-only crash-consistent launcher/marker activation journal, hash-checked backups, fsync/recovery and explicit runtime-only rollback. Its exact head `f415d83187b948f7a654c2a2babf595576c350ab` passed 11/11 check-runs and was merged into the Boss integration branch at `483ef6ddc7140bf76f197d538ec973df42dd95e0`. This is not a release or phone deployment.
+- Exact current Boss head `483ef6ddc7140bf76f197d538ec973df42dd95e0`: **26 check-runs SUCCESS, 0 FAILURE, 0 pending, 1 expected SKIPPED**; associated Actions workflows: 18 SUCCESS, 1 expected SKIPPED. This is GitHub CI, not local Linux or Redmi proof.
+
+## What the current candidate can newly do
+
+1. Recover a partially replaced launcher + `runtime-active.json` pair after process death using a durable owner-only journal and verified backups, while the managed runtime is stopped.
+2. Perform explicit runtime-only rollback through the pipeline CLI, disable future auto-updates first, stop only the managed V13 chat, and resume only after a confirmed safe result.
+3. Exercise a source-bound synthetic B1/B2 OfferPacket → C4 → C3 same-turn receipt and Store source-read/revocation regression in the staged integration suite.
+4. Exercise A5 UI metadata leases and caller-supplied PCM16 audio-context leases in synthetic CI, with explicit revocation and no microphone/screen provider.
+
+These are candidate/CI capabilities. They are not installed on the phone, and they do not establish native model quality, learned latent transfer or real voice/UI operation.
+
+## Remaining blockers
+
+- **Age/X10 rights — P0:** QA #2281 head `31a9cbc69e56a9e77f9f24bf1ab6f5d574df3384` passes 9/9 checks only on stale base `9922cf86...`; it diverges from current Boss. Current Boss `effort.py`, `sleep.py` and `agi/goals.py` still contain Age-derived focal-depth/replay resource caps. Recompose only the rights changes onto `483ef6ddc7140bf76f197d538ec973df42dd95e0`, preserve GoalWake atomicity, and make CPU/RAM/time/replay resource budgets independent of Age. Age governs developmental/tool/learning rights only.
+- **JEPA / numeric learning:** #2247 head `9b1f319af750e42f47aa399089abe16df8afce85` has 7/15 checks pass and 8 fail, including Python 3.13/3.14 optimizer resume, staged runtime, Lab-Age, integrated regression, Python 3.14 source/SQLite startup and old-phone migration. No per-session retention or production weight update is accepted.
+- **B3 / native receiver:** #2300 head `767a8006760498c63f7a1f81bd9e4c5e003fd57c` has 7/18 checks pass and 11 fail. Linux pinned API and ARM64 cross-compile pass, but staged/consumer/Lab-Age/migration fail. It remains diagnostic-only; no trained latent receiver.
+- **RAW EAR / perception:** #2299 is on stale base and has only one offline-bridge check; #2285's 5/5 audio/date QA is on the old base. Rebase and run the complete audio→recovery→stage→deployer matrix.
+- **Android companion:** #2286 has 8/12 checks pass and 4 in progress on a stacked old base. It remains default-OFF, with no installed APK or OS action executor.
+- **Whole Canon:** no distinct sparse B1/B2 MoE bodies, accepted cross-organ gradients, permanent B1/B2/C3 updates, full microphone/ASR/vocoder/full-duplex path, Android background/UI executor, independent OS sandbox, production behavior judge or production Memorilla overflow consumer.
+
+## Environment and phone evidence
+
+- No full Aii checkout exists in the local container: no `/workspace`, no `.git` under `/workspace`, `/mnt/data` or `/home`; `getent hosts github.com` returned no result. Full LOCAL_LINUX repository tests are BLOCKED, not passed.
+- Private read-only PIPELINE_STATUS request [RedMentos/Aiiii #461](https://github.com/RedMentos/Aiiii/issues/461) has no authenticated reply at latest poll. Installed SHA and updater consent remain UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, shell command or device mutation was attempted.
+- **REDMI_UNVERIFIED / NOT_RELEASED.** The last public device evidence still includes the 2026-11-13 wrong 2+2 result; no newer phone receipt exists.
+
+## New research intake
+
+- R-052: MobileMoE suggests moderate sparsity with fine-grained/shared experts, but no author-linked code/weight license was found in the checked primary page; architecture reference only.
+- R-053: LARS targets activation memory, while first-order phone-NPU LoRA offloads frozen-weight products; both are research candidates, not target-device proof. QVAC Fabric MIT and HexaTrain Apache-2.0 were checked, but their documented GPU/NPU hardware scopes do not establish compatibility with the target.
+
+## Next internal work
+
+1. QA: recompose Age rights on current Boss, remove Age-derived compute/replay caps, preserve GoalWake, rebind every overlay pin and rerun the exact 3.13/3.14 matrix.
+2. Core: rebase #2300 only after its failure chain is fixed; keep the receiver diagnostic-only and focus on actual native B1/B2 contributions.
+3. JEPA: fix #2247 current-head failures without weakening per-seed old-session retention or checkpoint-change gates.
+4. Research/Perception: rebase RAW EAR and audio QA, preserve frozen pre-batch history and calibrated-model DEFER.
+5. Boss: keep #2288 draft until Age rights and all exact-head checks are reviewed; release only after a separate authorized device receipt.
+
+---
+
 # Current next action — 2026-11-22 01:39 CET (full staged CI readback)
 
 Current Boss HEAD remains `f586a92392b521c073e7a72340bf7adb72f87198`. The common pin-ordering defect now reaches every major staged consumer:
