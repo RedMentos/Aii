@@ -306,7 +306,7 @@ def test_nonvoiced_first_window_does_not_seed_speaker_history():
     state = registry._states[(SOURCE, "gen-empty")]
     assert suppressed["status"] == "SUPPRESSED_NON_VOICED"
     assert suppressed["history_frame_count"] == 0
-    assert state.frames == deque()
+    assert len(state.frames) == 0
     assert state.last_voiced_end_ms is None
     assert state.last_end_ms == first["frames"][-1]["end_ms"]
 
