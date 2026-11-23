@@ -180,6 +180,8 @@ class ArrayDataset:
 
     def split_stats(self, split: str, *, batch_size: int = 4096) -> SplitStats:
         """Scan candidates without materializing windows; report exact monthly rejection counts."""
+        if type(batch_size) is not int or batch_size < 1 or batch_size > 8192:
+            raise ValueError("batch_size must be an integer in [1, 8192]")
         origins_range = self._candidate_origins(split)
         accepted_by_month: dict[str, int] = {}
         rejected_by_month: dict[str, int] = {}
