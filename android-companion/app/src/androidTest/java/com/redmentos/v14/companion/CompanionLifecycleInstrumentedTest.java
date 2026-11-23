@@ -194,8 +194,7 @@ public final class CompanionLifecycleInstrumentedTest {
                 .getBoolean("enabled", true);
     }
 
-    @Test
-    public void testCenterVisibilityUsesRootViewCoordinates() {
+    private static void assertRootCoordinateVisibilityPredicate() {
         Rect visibleRoot = new Rect(0, 0, 320, 480);
         Point viewOriginInRoot = new Point(20, 40);
         assertTrue(centerWithinVisibleRootRect(
@@ -208,6 +207,9 @@ public final class CompanionLifecycleInstrumentedTest {
 
     @Test
     public void testVisibleStopButtonPersistsOff() {
+        // The host driver invokes this exact method by name; keep the
+        // coordinate-space positive/negative assertions on the executed path.
+        assertRootCoordinateVisibilityPredicate();
         try (ActivityScenario<MainActivity> scenario =
                      ActivityScenario.launch(MainActivity.class)) {
             scenario.onActivity(activity ->
