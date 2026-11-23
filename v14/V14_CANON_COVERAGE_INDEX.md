@@ -1,3 +1,9 @@
+## QA latest-head source-forget blocker — 2026-11-23T01:20:02.363Z
+
+QA #2391 latest head is `076aa21e6b8c13a2a48d63d70f530ba6eba73072`; its nested training-resume pin chain is repaired, but its source-lifecycle composer still pins old `vision.py` SHA-256 `758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5` and omits `vision_source_lineage.py`. Seven exact-head workflows are queued. It is not yet composed with JEPA #2397; do not mark A3 source-forget accepted until the combined staged/integrated chain passes.
+
+---
+
 ## FASTDIAR model/weight license evidence — 2026-11-23T01:17:55.055Z
 
 R-104 reviewed the full arXiv paper (submitted to ICASSP 2027) and the exact upstream release. FASTDIAR code is MIT at signed v0.1.0 commit `e7f9bbccf98865216f48a04868d74f1d53c8734e`; checkpoint weights have no separate license statement in the inspected README/release. The 192-D/80 ms encoder and 960 ms diarization delay are paper results on a Threadripper CPU, not Android. Current V14 adapter accepts caller-supplied embeddings only; it does not load or execute weights. PyTorch/torchaudio/torchcodec/pyannote dependency closure is not proven on Termux/Bionic. No weights downloaded; REDMI_UNVERIFIED.
