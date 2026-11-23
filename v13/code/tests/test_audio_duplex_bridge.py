@@ -15,6 +15,7 @@ from v13.audio_duplex_bridge import (
     consume_pcm16_voice_window_with_duplex,
     decide_audio_overlap,
     on_audio_input,
+    _persist_temporal_voice_receipt,
 )
 from v13.audio_voice_cues import audio_consent_lease, consume_pcm16_voice_window
 from v13.common import Cancelled
@@ -123,6 +124,13 @@ def test_provisional_raw_ear_onset_interrupts_only_in_explicit_interrupt_mode(tm
             )
             assert result["a4"]["voice_cues"]["activity_hint"] == "VOICED"
             assert result["a4"]["temporal_voice"]["voice_onset"] is True
+            persisted = runtime.store.one(
+                "SELECT payload FROM packets WHERE id=? AND kind='PerceptPacket'",
+                (result["packet"]["packet_id"],),
+            )
+            persisted_packet = json.loads(persisted["payload"])
+            assert persisted_packet["segments"][0]["acoustic"]["temporal_voice_receipt"]["evidence"] == result["a4"]["temporal_voice"]
+            assert result["a4"]["temporal_receipt_id"] == result["temporal_receipt_id"]
             assert result["duplex"]["decision"] == "INTERRUPT"
             assert result["duplex"]["relation"] == "AUDIO_BARGE_IN"
             assert result["duplex"]["bridge_revision"] == "V14_RAW_EAR_AUDIO_DUPLEX_BRIDGE_V2"
@@ -209,5 +217,99 @@ def test_bridge_rejects_mutated_persisted_audio_packet_before_cancel(tmp_path):
             with pytest.raises(ValueError, match="differs from its persisted"):
                 on_audio_input(runtime, result, lease)
             assert not runtime.cancel_event.is_set()
+    finally:
+        runtime.close()
+
+
+def test_bridge_rejects_forged_temporal_voice_not_bound_to_persisted_receipt(tmp_path):
+    runtime, started = make_runtime(tmp_path, "interrupt")
+    try:
+        first = runtime.submit("Tell me a long story about the history of Rome")
+        assert started.wait(10)
+        _audio_event, generation, pcm, kwargs = make_audio(runtime)
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+        ) as lease:
+            result = consume_pcm16_voice_window(
+                runtime, pcm, consent_lease=lease, **kwargs,
+            )
+            _persist_temporal_voice_receipt(runtime, result, lease)
+            persisted = runtime.store.one(
+                "SELECT payload FROM packets WHERE id=? AND kind='PerceptPacket'",
+                (result["packet"]["packet_id"],),
+            )
+            evidence = json.loads(persisted["payload"])["segments"][0]["acoustic"]["temporal_voice_receipt"]["evidence"]
+            forged = dict(result["a4"]["temporal_voice"])
+            forged["voice_onset"] = not evidence["voice_onset"]
+            result["a4"]["temporal_voice"] = forged
+            with pytest.raises(ValueError, match="differs from persisted temporal receipt"):
+                on_audio_input(runtime, result, lease)
+            assert not runtime.cancel_event.is_set()
+        wait_idle(runtime)
+        assert answer(runtime, first)["status"] == "FINAL"
+    finally:
+        runtime.close()
+
+
+@pytest.mark.parametrize(("mode", "expected_decision"), [
+    ("interrupt", "INTERRUPT"),
+    ("auto", "CONTINUE"),
+])
+def test_audio_temporal_receipt_is_one_use_across_later_turns_including_continue(
+    tmp_path, mode, expected_decision,
+):
+    runtime, started = make_runtime(tmp_path, mode)
+    try:
+        first = runtime.submit("Tell me a long story about the history of Greece")
+        assert started.wait(10)
+        _audio_event, generation, pcm, kwargs = make_audio(runtime)
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+        ) as lease:
+            result = consume_pcm16_voice_window(
+                runtime, pcm, consent_lease=lease, **kwargs,
+            )
+            _persist_temporal_voice_receipt(runtime, result, lease)
+            first_decision = on_audio_input(runtime, result, lease)
+            assert first_decision["decision"] == expected_decision
+            wait_idle(runtime)
+
+            started.clear()
+            second = runtime.submit("Tell me a long story about the history of Portugal")
+            assert started.wait(10)
+            with pytest.raises(ValueError, match="already consumed"):
+                on_audio_input(runtime, result, lease)
+            assert not runtime.cancel_event.is_set()
+            wait_idle(runtime)
+            assert answer(runtime, second)["status"] == "FINAL"
+            assert duplex.status(runtime)["counters"][expected_decision] == 1
+    finally:
+        runtime.close()
+
+
+def test_audio_receipt_is_consumed_even_when_duplex_mode_is_off(tmp_path):
+    runtime, started = make_runtime(tmp_path, "off")
+    try:
+        first = runtime.submit("Tell me a long story about the history of Spain")
+        assert started.wait(10)
+        _audio_event, generation, pcm, kwargs = make_audio(runtime)
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+        ) as lease:
+            result = consume_pcm16_voice_window(
+                runtime, pcm, consent_lease=lease, **kwargs,
+            )
+            _persist_temporal_voice_receipt(runtime, result, lease)
+            assert on_audio_input(runtime, result, lease) is None
+            wait_idle(runtime)
+            started.clear()
+            second = runtime.submit("Tell me a long story about the history of Portugal")
+            assert started.wait(10)
+            runtime.cfg["duplex_mode"] = "interrupt"
+            with pytest.raises(ValueError, match="already consumed"):
+                on_audio_input(runtime, result, lease)
+            assert not runtime.cancel_event.is_set()
+            wait_idle(runtime)
+            assert answer(runtime, second)["status"] == "FINAL"
     finally:
         runtime.close()
