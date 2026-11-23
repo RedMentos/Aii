@@ -941,3 +941,28 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
+
+
+## R-081 — Prompt Compression in the Wild: measure end-to-end break-even (2026-11-23)
+
+**Primary source:** Cornelius Kummer, Lena Jurkschat, Michael Färber and Sahar Vahdati, “Prompt Compression in the Wild: Measuring Latency, Rate Adherence, and Quality for Faster LLM Inference,” arXiv:2604.02985, 2026-04-03; https://arxiv.org/abs/2604.02985. The abstract reports a large evaluation (30,000 queries, multiple open models and three GPU classes) and separates compression overhead from model prefill/decode latency. It reports up to 18% end-to-end speed-up in a matched operating window, while compression overhead cancels gains outside that window.
+
+**Knowledge status:** ABSTRACT_VERIFIED / FULLTEXT_PENDING / REPRO_NOT_ATTEMPTED. The paper page and abstract were checked; the full paper, appendix and code were not inspected in this run.
+
+**V14 mapping:** this supports measuring the complete path, not optimizing prompt token count alone. For the new C3 admission policy, separately measure reducer CPU time, token count before/after, native prefill, TTFT, decode time, total latency, answer correctness and peak RSS. Compare no reduction, current exact structural omission, and any future reusable learned compressor. Do not compress exact B1/B2 source evidence, selected peer content or trusted tool output. A compressor is not useful if its per-turn preprocessing costs more than the prefill it saves.
+
+**License/reuse:** paper metadata is cited through arXiv. No code or model was imported; no implementation/license review was performed. The result is not Redmi evidence.
+
+**Next hard test:** on the same installed model and task cohort, run matched no-reduction vs structural-reduction trials with source-exactness checks and a negative control where no removable layer exists. Measure the whole turn, not only prompt length.
+
+## R-082 — TAKE: Task-Aware Chunked KV Cache Eviction (2026-11-23)
+
+**Primary source:** Rui Wang, Nan Jia, Jiahui Li, Qingyi Yang, Yixue Hao and Long Hu, “TAKE: Task-Aware Chunked KV Cache Eviction for Efficient Long-Context LLM Prefill,” Findings of EMNLP 2026, pages 5449–5463, DOI 10.18653/2026.findings-emnlp.260; https://aclanthology.org/2026.findings-emnlp.260/. The ACL Anthology abstract reports chunked KV eviction with accumulated task-aware probe tokens and delayed eviction; reported results include >60% TTFT improvement and 59.53% peak-memory versus baseline at 128K tokens.
+
+**Knowledge status:** ABSTRACT_VERIFIED / FULLTEXT_PENDING / CODE_LICENSE_UNVERIFIED / REPRO_NOT_ATTEMPTED. The ACL Anthology metadata and abstract were checked. The full paper and linked source repository were not audited. ACL publication metadata indicates post-2016 Anthology material is CC BY 4.0; that does not establish the linked implementation's code license.
+
+**V14 mapping:** potentially relevant only if long-context prefill/KV construction becomes a measured bottleneck beyond prompt-text admission. The reported 128K setting is not comparable to V13's current 2K context and must not be translated into a phone speed claim. Integration would require compatible attention/KV access in the actual llama.cpp runner, bounded CPU/ARM memory, source-retrieval negatives and exact cache-position semantics.
+
+**Decision:** RESEARCH_ONLY; no code, dependency or model imported; no runtime default changed.
+
+**Next hard test:** inspect the full method and exact repository revision/license; verify whether the target native backend exposes the required layer-wise KV hooks. If not, reject for the current phone runner rather than adding a heavyweight PyTorch/GPU dependency.
