@@ -1232,17 +1232,28 @@ def source_forget_guard(store, source_id):
                 return True
             if any(row["id"] not in pending_ids for row in scanned):
                 return True
-            # Also inspect every committed ActionSelection provenance list.
-            # This catches recalled/observer context sources whose identity is
-            # not the event's primary source_id, even after replay-row eviction.
+            # Inspect every source-bearing pre-dispatch C4 cycle. The T8
+            # verifier carries the same bounded union into receipt/source-disjoint
+            # holdout provenance, so forgetting and learning share one causal set.
+            # Final FocalItem and event-only C5 ActionSelection provenance remain
+            # part of the scan. Incomplete or cap-ambiguous cycles fail closed.
             selected = store.rows(
                 """SELECT DISTINCT a.id FROM actions a
                    JOIN events e ON e.id=a.event_id
-                   JOIN packets p ON p.kind='ActionSelection'
+                   JOIN packets sel ON sel.kind='ActionSelection'
+                     AND sel.event_id=a.event_id AND sel.generation_id=e.generation_id
+                     AND COALESCE(json_extract(sel.payload,'$.stage'),'COMMIT')!='PREDICTION'
+                     AND sel.rowid=(
+                         SELECT MIN(sel2.rowid) FROM packets sel2
+                         WHERE sel2.kind='ActionSelection'
+                           AND sel2.event_id=a.event_id AND sel2.generation_id=e.generation_id
+                           AND COALESCE(json_extract(sel2.payload,'$.stage'),'COMMIT')!='PREDICTION'
+                     )
+                   JOIN packets p ON p.kind IN ('ActionSelection','FocalCycle','FocalItem')
                      AND p.event_id=a.event_id AND p.generation_id=e.generation_id
                    WHERE a.rowid<=? AND a.outcome IS NOT NULL AND a.expected LIKE ?
                      AND a.status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED')
-                     AND p.created<=a.created
+                     AND p.rowid<=sel.rowid
                      AND COALESCE(json_extract(p.payload,'$.stage'),'COMMIT')!='PREDICTION'
                      AND EXISTS (
                          SELECT 1 FROM json_each(p.payload,'$.provenance') AS source_ref

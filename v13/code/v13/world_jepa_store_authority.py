@@ -18,6 +18,7 @@ _TERMINAL = {"FINAL", "FAILED", "CANCELLED", "ERROR", "DEADLINE", "INTERRUPTED",
 _OBSERVED_LEARNING_STATUSES = {"FINAL", "FAILED", "ERROR", "DEADLINE", "REJECTED"}
 MAX_ACTION_OUTCOMES_PER_EVENT = 4096
 MAX_ACTION_SOURCE_REFS = 64
+MAX_FOCAL_CYCLE_SOURCE_REFS = 16
 _SOURCE_REF_KEYS = {"source_id", "sha256", "char_start", "char_end", "modality"}
 
 
@@ -79,12 +80,171 @@ def _validated_source_ref(store, value):
     }
 
 
-def _selection_source_refs(store, event_id, generation_id, action_created, event_source_ref):
+def _focal_cycle_source_refs(store, event_id, generation_id, before_packet_rowid):
+    """Return the bounded union of all source refs in the pre-action C4 trajectory.
+
+    The final cycle is checked against its persisted FocalItem members. Earlier
+    cycles have only their FocalCycle provenance list; because the producer caps
+    that list at 16, an earlier cycle at the cap is ambiguous and fails closed.
+    """
+    if type(before_packet_rowid) is not int or before_packet_rowid < 1:
+        raise ValueError("ActionSelection packet boundary")
     rows = store.rows(
-        """SELECT payload FROM packets
-           WHERE kind='ActionSelection' AND event_id=? AND generation_id=? AND created<=?
-           ORDER BY created DESC LIMIT 17""",
-        (event_id, generation_id, action_created),
+        """SELECT rowid AS packet_rowid,payload FROM packets
+           WHERE kind='FocalCycle' AND event_id=? AND generation_id=? AND rowid<?
+             AND COALESCE(json_extract(payload,'$.stage'),'COMMIT')!='PREDICTION'
+           ORDER BY rowid DESC LIMIT 17""",
+        (event_id, generation_id, before_packet_rowid),
+    )
+    if type(rows) is not list or len(rows) >= 17:
+        raise ValueError("FocalCycle source scan bound")
+    if not rows:
+        return []
+
+    cycles = []
+    for offset, raw in enumerate(rows):
+        cycle_row = _mapping(raw, "FocalCycle source row")
+        cycle = _object(cycle_row.get("payload"), "FocalCycle source payload")
+        if (cycle.get("event_id") != event_id
+                or cycle.get("brain_generation_id") != generation_id):
+            raise ValueError("FocalCycle source binding")
+        if cycle.get("stage") not in (None, "COMMIT"):
+            raise ValueError("FocalCycle source stage")
+        cycle_index = cycle.get("cycle")
+        coalition = cycle.get("coalition")
+        if (type(cycle_index) is not int or cycle_index < 1
+                or cycle_index != len(rows) - offset
+                or type(coalition) is not list or len(coalition) > 64
+                or any(type(item_id) is not str or not item_id or len(item_id) > 256
+                       for item_id in coalition)
+                or len(set(coalition)) != len(coalition)):
+            raise ValueError("FocalCycle trajectory/coalition")
+        raw_refs = cycle.get("provenance")
+        if (type(raw_refs) is not list
+                or len(raw_refs) > MAX_FOCAL_CYCLE_SOURCE_REFS
+                or bool(coalition) != bool(raw_refs)):
+            raise ValueError("FocalCycle source refs")
+        if offset > 0 and len(raw_refs) >= MAX_FOCAL_CYCLE_SOURCE_REFS:
+            # Earlier cycles do not persist per-item FocalItem packets. At the
+            # producer cap we cannot prove that their source list is complete.
+            raise ValueError("historical FocalCycle provenance may be truncated")
+
+        refs = []
+        seen = set()
+        source_hashes = {}
+        for raw_ref in raw_refs:
+            ref = _validated_source_ref(store, raw_ref)
+            key = (ref["source_id"], ref["sha256"], ref["char_start"],
+                   ref["char_end"], ref["modality"])
+            prior = source_hashes.get(ref["source_id"])
+            if prior is not None and prior != ref["sha256"]:
+                raise ValueError("FocalCycle source digest changed")
+            source_hashes[ref["source_id"]] = ref["sha256"]
+            if key not in seen:
+                seen.add(key)
+                refs.append(ref)
+        cycles.append((cycle, refs))
+
+    # Only the final coalition has per-item receipts in the current producer.
+    # Verify that its packet-level source list is the exact union of those
+    # receipts; this catches the 16-ref producer cap rather than certifying a
+    # truncated final coalition.
+    final_cycle, final_refs = cycles[0]
+    coalition = final_cycle["coalition"]
+    if coalition:
+        item_rows = store.rows(
+            """SELECT payload FROM packets
+               WHERE kind='FocalItem' AND event_id=? AND generation_id=? AND rowid<?
+               ORDER BY rowid DESC LIMIT 65""",
+            (event_id, generation_id, before_packet_rowid),
+        )
+        if type(item_rows) is not list or len(item_rows) >= 65:
+            raise ValueError("FocalItem source scan bound")
+        by_id = {}
+        for raw in item_rows:
+            item_row = _mapping(raw, "FocalItem source row")
+            item = _object(item_row.get("payload"), "FocalItem source payload")
+            if (item.get("event_id") != event_id
+                    or item.get("brain_generation_id") != generation_id):
+                raise ValueError("FocalItem source binding")
+            item_id = item.get("item_id")
+            if item_id not in coalition:
+                continue
+            if item_id in by_id:
+                raise ValueError("duplicate FocalItem coalition member")
+            raw_item_refs = item.get("source_refs")
+            if (type(raw_item_refs) is not list
+                    or not 1 <= len(raw_item_refs) <= MAX_ACTION_SOURCE_REFS
+                    or item.get("provenance") != raw_item_refs):
+                raise ValueError("FocalItem source refs")
+            item_refs = []
+            item_seen = set()
+            item_hashes = {}
+            for raw_ref in raw_item_refs:
+                ref = _validated_source_ref(store, raw_ref)
+                key = (ref["source_id"], ref["sha256"], ref["char_start"],
+                       ref["char_end"], ref["modality"])
+                prior = item_hashes.get(ref["source_id"])
+                if prior is not None and prior != ref["sha256"]:
+                    raise ValueError("FocalItem source digest changed")
+                item_hashes[ref["source_id"]] = ref["sha256"]
+                if key not in item_seen:
+                    item_seen.add(key)
+                    item_refs.append(ref)
+            if not item_refs:
+                raise ValueError("empty FocalItem source refs")
+            by_id[item_id] = item_refs
+        if set(by_id) != set(coalition):
+            raise ValueError("FocalCycle coalition member missing FocalItem")
+
+        coalition_keys = set()
+        coalition_hashes = {}
+        for item_id in coalition:
+            for ref in by_id[item_id]:
+                key = (ref["source_id"], ref["sha256"], ref["char_start"],
+                       ref["char_end"], ref["modality"])
+                prior = coalition_hashes.get(ref["source_id"])
+                if prior is not None and prior != ref["sha256"]:
+                    raise ValueError("FocalItem source digest changed")
+                coalition_hashes[ref["source_id"]] = ref["sha256"]
+                coalition_keys.add(key)
+        final_keys = {
+            (ref["source_id"], ref["sha256"], ref["char_start"],
+             ref["char_end"], ref["modality"])
+            for ref in final_refs
+        }
+        if final_keys != coalition_keys:
+            raise ValueError("FocalCycle provenance does not cover its coalition")
+    elif final_refs:
+        raise ValueError("empty final FocalCycle coalition has source refs")
+
+    # Earlier-cycle provenance is part of the same causal trajectory as the
+    # final coalition. Merge it into the immutable T8 receipt so source-disjoint
+    # holdouts and the source-forget checkpoint guard see the same influence set.
+    union = []
+    union_seen = set()
+    union_hashes = {}
+    for _cycle, cycle_refs in cycles:
+        for ref in cycle_refs:
+            key = (ref["source_id"], ref["sha256"], ref["char_start"],
+                   ref["char_end"], ref["modality"])
+            prior = union_hashes.get(ref["source_id"])
+            if prior is not None and prior != ref["sha256"]:
+                raise ValueError("FocalCycle trajectory source digest changed")
+            union_hashes[ref["source_id"]] = ref["sha256"]
+            if key not in union_seen:
+                if len(union) >= MAX_ACTION_SOURCE_REFS:
+                    raise ValueError("FocalCycle trajectory source ref bound")
+                union_seen.add(key)
+                union.append(ref)
+    return union
+
+def _selection_source_refs(store, event_id, generation_id, event_source_ref):
+    rows = store.rows(
+        """SELECT rowid AS packet_rowid,payload FROM packets
+           WHERE kind='ActionSelection' AND event_id=? AND generation_id=?
+           ORDER BY rowid DESC LIMIT 17""",
+        (event_id, generation_id),
     )
     if type(rows) is not list or len(rows) >= 17:
         raise ValueError("ActionSelection source scan bound")
@@ -99,10 +259,13 @@ def _selection_source_refs(store, event_id, generation_id, action_created, event
         if stage not in (None, "PREDICTION", "COMMIT"):
             raise ValueError("ActionSelection source stage")
         if stage != "PREDICTION":
-            committed.append(selection)
+            committed.append((selection, packet_row.get("packet_rowid")))
     if len(committed) != 1:
         raise ValueError("ActionSelection source cardinality")
-    raw_refs = committed[0].get("provenance")
+    selection, selection_rowid = committed[0]
+    if type(selection_rowid) is not int or selection_rowid < 1:
+        raise ValueError("ActionSelection packet boundary")
+    raw_refs = selection.get("provenance")
     if type(raw_refs) is not list or not 1 <= len(raw_refs) <= MAX_ACTION_SOURCE_REFS:
         raise ValueError("ActionSelection source refs")
     refs, seen, source_hashes = [], set(), {}
@@ -120,6 +283,26 @@ def _selection_source_refs(store, event_id, generation_id, action_created, event
         refs.append(ref)
     if event_source_ref not in refs:
         raise ValueError("ActionSelection omitted event source")
+
+    # The current C5 producer can still write only the event SourceRef. The
+    # bounded union of all pre-action C4 cycles is part of the deliberation
+    # trajectory; final-cycle FocalItems verify the final coalition, while
+    # earlier cycles contribute their capped source refs. Merge it without
+    # changing Core-owned packet production.
+    for ref in _focal_cycle_source_refs(
+            store, event_id, generation_id, selection_rowid):
+        key = (ref["source_id"], ref["sha256"], ref["char_start"],
+               ref["char_end"], ref["modality"])
+        prior = source_hashes.get(ref["source_id"])
+        if prior is not None and prior != ref["sha256"]:
+            raise ValueError("FocalCycle source digest conflicts with ActionSelection")
+        source_hashes[ref["source_id"]] = ref["sha256"]
+        if key not in seen:
+            if len(refs) >= MAX_ACTION_SOURCE_REFS:
+                raise ValueError("merged action source ref bound")
+            seen.add(key)
+            refs.append(ref)
+
     refs.sort(key=lambda item: (
         item["source_id"], item["sha256"], item["char_start"],
         item["char_end"], item["modality"],
@@ -129,7 +312,6 @@ def _selection_source_refs(store, event_id, generation_id, action_created, event
          item["char_end"], item["modality"])
         for item in refs
     )
-
 
 @dataclass(frozen=True)
 class Provenance:
@@ -294,11 +476,12 @@ def _verify_one(store, row):
     # Store.read_source verifies source row, blob digest and span; text is discarded.
     if type(store.read_source(source_ref)) is not str:
         raise ValueError("source read")
-    # ActionSelection records the full admitted context lineage. Legacy
-    # single-source packets remain valid; newer producers may supply up to 64
-    # complete SourceRefs, all of which must still be live and hash-valid.
+    # ActionSelection refs are authoritative when present. The current C5 producer
+    # can still be event-only, so also verify the final C4 FocalCycle against its
+    # FocalItem members and merge that coalition lineage. Truncation or revocation
+    # fails closed rather than certifying an incomplete JEPA training row.
     selected_source_refs = _selection_source_refs(
-        store, meta["event_id"], meta["generation_id"], created, source_ref
+        store, meta["event_id"], meta["generation_id"], source_ref
     )
     # Scan the complete event history up to a hard bound. A small LIMIT could
     # hide an older duplicate and incorrectly certify the remaining packet as
