@@ -192,14 +192,32 @@ class NativePrefillAdmissionTests(unittest.TestCase):
         self.assertIsNone(admission.reduce_once(messages,"B1_DETAIL",cfg))
         self.assertIn("UNVERIFIED",messages[1]["content"])
 
-    def test_long_deadline_keeps_all_context_when_native_window_accepts_it(self):
+    def test_c3_long_deadline_keeps_context_when_under_prefill_ceiling(self):
         r=fake_runner()
         system=stable(r.cfg)+"\n"+prompt(r.cfg,"task_context")+json.dumps({"detail":"x"*350})
         messages=[{"role":"system","content":system},{"role":"user","content":"Hello."}]
         out,_,removed=r._prompt(messages,threading.Event(),time.monotonic()+90,48)
         self.assertIn("detail",out)
         self.assertFalse(removed)
-        self.assertIsNone(r._prompt_admission["target_tokens"])
+        self.assertEqual(r._prompt_admission["target_tokens"],520)
+
+    def test_c3_long_deadline_reduces_only_removable_layer_before_prefill(self):
+        r=fake_runner()
+        source="What is 120 minus 20?"
+        approved=[{"role":"B1_DETAIL","quote":"The exact budget is 120 euros.","source_bound":True}]
+        system=(stable(r.cfg)+"\n"+prompt(r.cfg,"hypotheses")+json.dumps(approved)+
+                "\n"+prompt(r.cfg,"task_context")+json.dumps({"debug_control_state":"x"*5000}))
+        messages=[{"role":"system","content":system},{"role":"user","content":source}]
+        rendered,n,removed=r._prompt(messages,threading.Event(),time.monotonic()+90,48)
+        self.assertIn(source,rendered)
+        self.assertIn("The exact budget is 120 euros.",rendered)
+        self.assertIn(prompt(r.cfg,"conduct"),rendered)
+        self.assertNotIn("debug_control_state",rendered)
+        self.assertIn("C3_LAYER_TASK_CONTEXT",r._prompt_admission["removed_layers"])
+        self.assertLessEqual(n,520)
+        self.assertTrue(removed)
+        self.assertEqual(r._prompt_admission["status"],"ADMITTED")
+        self.assertFalse(r._prompt_admission["source_text_rewritten"])
 
     def test_c3_never_edits_user_lookalike_heading_or_unknown_system_rules(self):
         r=fake_runner()
