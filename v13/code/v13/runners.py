@@ -139,6 +139,7 @@ class LlamaRunner:
                 break
             if (not isinstance(slots,list) or len(slots)!=1
                     or not isinstance(slots[0],dict)
+                    or type(slots[0].get("id")) is not int
                     or slots[0].get("id")!=0
                     or type(slots[0].get("is_processing")) is not bool):
                 reason="INVALID_SLOT_STATE"
@@ -147,6 +148,9 @@ class LlamaRunner:
             if slots[0]["is_processing"] is False:
                 if self.proc is not proc or proc.poll() is not None:
                     reason="PROCESS_CHANGED_OR_EXITED"
+                    break
+                if self._loaded_stamp is None or self._lifecycle_stamp()!=self._loaded_stamp:
+                    reason="LIFECYCLE_BINDING_CHANGED"
                     break
                 # Avoid reusing a possibly partial KV prefix after interruption.
                 self._clear_next_prompt_cache=True
@@ -157,7 +161,6 @@ class LlamaRunner:
                     "slot_idle":True,
                     "next_request_cache_prompt":False,
                     "request_status":status,
-                    "process_pid":proc.pid,
                     "elapsed_s":time.monotonic()-started,
                 }
             time.sleep(min(WARM_RECOVERY_POLL_SECONDS,max(0.0,deadline-time.monotonic())))
