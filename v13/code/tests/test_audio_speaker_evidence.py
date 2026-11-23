@@ -749,6 +749,10 @@ def test_speaker_history_does_not_cross_consent_receipt_epochs():
     assert len(registry) == 1
 
 
+def test_speaker_embedding_schema_v2_requires_consent_epoch():
+    assert SCHEMA == "v14.raw-ear-speaker-embeddings/2"
+
+
 def test_speaker_embedding_batch_without_consent_receipt_is_rejected():
     registry = SpeakerChangeEvidenceRegistry()
     legacy = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
