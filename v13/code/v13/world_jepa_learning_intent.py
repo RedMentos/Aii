@@ -148,6 +148,274 @@ def _head_sha(head):
     })
 
 
+
+
+def _validate_receiver_retention_holdout(record):
+    required = {
+        "schema", "created_checkpoint_sha256", "window_ids", "action_ids",
+        "source_ids", "source_sha256s", "lineage_source_ids",
+        "lineage_source_sha256s", "X", "A", "Y", "cohort_sha256",
+    }
+    if type(record) is not dict or set(record) != required:
+        raise ValueError("receiver retention cohort shape")
+    if record["schema"] != "v14.receiver-retention-holdout/1":
+        raise ValueError("receiver retention cohort schema")
+    _sha(record["created_checkpoint_sha256"])
+    _sha(record["cohort_sha256"])
+    X = np.asarray(record["X"], dtype=np.float64)
+    A = np.asarray(record["A"], dtype=np.float64)
+    Y = np.asarray(record["Y"], dtype=np.float64)
+    if (
+        X.ndim != 2 or X.shape[1] != 10 or len(X) < 2
+        or A.shape != (len(X), 4) or Y.shape != (len(X), 3)
+        or not all(np.isfinite(value).all() for value in (X, A, Y))
+    ):
+        raise ValueError("receiver retention cohort arrays")
+    for key in ("window_ids", "action_ids", "source_ids", "source_sha256s",
+                "lineage_source_ids", "lineage_source_sha256s"):
+        value = record[key]
+        if type(value) is not list or not value:
+            raise ValueError("receiver retention cohort provenance")
+        if any(type(item) is not str or not item or len(item) > 256 for item in value):
+            raise ValueError("receiver retention cohort provenance")
+        if len(value) != len(set(value)):
+            raise ValueError("receiver retention cohort duplicate provenance")
+    if len(record["window_ids"]) != len(X):
+        raise ValueError("receiver retention cohort window count")
+    for value in record["source_sha256s"] + record["lineage_source_sha256s"]:
+        _sha(value)
+    if (
+        not set(record["source_ids"]) <= set(record["lineage_source_ids"])
+        or not set(record["source_sha256s"]) <= set(record["lineage_source_sha256s"])
+    ):
+        raise ValueError("receiver retention cohort lineage")
+    payload = {key: value for key, value in record.items() if key != "cohort_sha256"}
+    if _digest(payload) != record["cohort_sha256"]:
+        raise ValueError("receiver retention cohort digest")
+    return True
+
+
+def pack_receiver_retention_holdout(holdout_arrays, holdout_rows, checkpoint_sha256):
+    """Persist one fixed raw-feature/outcome cohort for B1/B2 adapter retention."""
+    _sha(checkpoint_sha256)
+    if type(holdout_arrays) not in (tuple, list) or len(holdout_arrays) != 3:
+        raise ValueError("receiver retention holdout arrays")
+    X, A, _X2 = holdout_arrays
+    X = np.asarray(X, dtype=np.float64)
+    A = np.asarray(A, dtype=np.float64)
+    Y = np.asarray([row["y"] for row in holdout_rows], dtype=np.float64)
+    if (
+        X.ndim != 2 or A.shape != (len(X), 4) or Y.shape != (len(X), 3)
+        or len(X) < 2 or not all(np.isfinite(value).all() for value in (X, A, Y))
+    ):
+        raise ValueError("receiver retention holdout data")
+    payload = {
+        "schema": "v14.receiver-retention-holdout/1",
+        "created_checkpoint_sha256": checkpoint_sha256,
+        "window_ids": _window_ids(holdout_rows),
+        "action_ids": _window_field_ids(holdout_rows, "action_ids"),
+        "source_ids": _window_field_ids(holdout_rows, "source_ids"),
+        "source_sha256s": _window_field_ids(holdout_rows, "source_sha256s", sha256=True),
+        "lineage_source_ids": _window_lineage_field_ids(
+            holdout_rows, "lineage_source_ids", "source_ids"
+        ),
+        "lineage_source_sha256s": _window_lineage_field_ids(
+            holdout_rows, "lineage_source_sha256s", "source_sha256s", sha256=True
+        ),
+        "X": X.tolist(),
+        "A": A.tolist(),
+        "Y": Y.tolist(),
+    }
+    record = dict(payload)
+    record["cohort_sha256"] = _digest(payload)
+    _validate_receiver_retention_holdout(record)
+    return record
+
+
+def prepare_receiver_retention_baseline(active_record, model, train_rows):
+    """Measure each current B1/B2 adapter on its persisted old cohort before training."""
+    if active_record is None:
+        return {"status": "NOT_MEASURED", "reason": "NO_PRIOR_CHECKPOINT",
+                "source_disjoint": False, "cohort_sha256": None, "roles": {}}
+    cohorts = active_record.get("receiver_retention_holdouts", [])
+    if type(cohorts) is not list or not cohorts:
+        return {"status": "NOT_MEASURED", "reason": "NO_PRIOR_COHORT",
+                "source_disjoint": False, "cohort_sha256": None, "roles": {}}
+    cohort = cohorts[-1]
+    _validate_receiver_retention_holdout(cohort)
+    train_source_ids = set(_window_lineage_field_ids(
+        train_rows, "lineage_source_ids", "source_ids"
+    ))
+    train_source_hashes = set(_window_lineage_field_ids(
+        train_rows, "lineage_source_sha256s", "source_sha256s", sha256=True
+    ))
+    train_action_ids = set(_window_field_ids(train_rows, "action_ids"))
+    if (
+        train_source_ids & set(cohort["lineage_source_ids"])
+        or train_source_hashes & set(cohort["lineage_source_sha256s"])
+        or train_action_ids & set(cohort["action_ids"])
+    ):
+        return {
+            "status": "NOT_MEASURED",
+            "reason": "RETENTION_COHORT_OVERLAPS_CURRENT_TRAIN",
+            "source_disjoint": False,
+            "cohort_sha256": cohort["cohort_sha256"],
+            "roles": {},
+        }
+    X = np.asarray(cohort["X"], dtype=np.float64)
+    A = np.asarray(cohort["A"], dtype=np.float64)
+    Y = np.asarray(cohort["Y"], dtype=np.float64)
+    z, _ = model.predict(X, A)
+    z = np.asarray(z, dtype=np.float64)
+    if z.ndim != 2 or len(z) != len(Y) or not np.isfinite(z).all():
+        raise ValueError("receiver retention baseline latent shape")
+    old_heads = active_record.get("receiver_heads", {})
+    old_metrics = active_record.get("metrics", {}).get("receiver_gates", {})
+    roles = {}
+    for role, indices in ROLE_TARGETS.items():
+        if role not in TARGET_ROLES:
+            continue
+        head = old_heads.get(role)
+        weights, bias = _head_parameters(head)
+        if (
+            head.get("target_indices") != list(indices)
+            or weights.shape != (z.shape[1], len(indices))
+        ):
+            raise ValueError("receiver retention prior head shape")
+        before = _mse(z @ weights + bias, Y[:, indices])
+        gate = old_metrics.get(role, {})
+        roles[role] = {
+            "mse_before": float(before),
+            "prior_utility_pass": gate.get("accepted") is True,
+            "old_parameter_sha256": _head_sha(head),
+        }
+    return {
+        "status": "BASELINE_READY",
+        "reason": "PERSISTED_SOURCE_DISJOINT_COHORT",
+        "source_disjoint": True,
+        "cohort_sha256": cohort["cohort_sha256"],
+        "baseline_checkpoint_sha256": active_record["checkpoint_sha256"],
+        "cohort": cohort,
+        "roles": roles,
+    }
+
+
+def evaluate_receiver_retention(baseline, model, receiver_heads):
+    """Compare the updated encoder+receiver pair against the same old outcomes."""
+    if type(baseline) is not dict or baseline.get("status") != "BASELINE_READY":
+        return {
+            "status": "NOT_MEASURED",
+            "reason": (baseline.get("reason", "NO_PRIOR_COHORT")
+                       if type(baseline) is dict else "INVALID_BASELINE"),
+            "source_disjoint": False,
+            "cohort_sha256": None,
+            "roles": {},
+        }
+    cohort = baseline["cohort"]
+    _validate_receiver_retention_holdout(cohort)
+    X = np.asarray(cohort["X"], dtype=np.float64)
+    A = np.asarray(cohort["A"], dtype=np.float64)
+    Y = np.asarray(cohort["Y"], dtype=np.float64)
+    z, _ = model.predict(X, A)
+    z = np.asarray(z, dtype=np.float64)
+    if z.ndim != 2 or len(z) != len(Y) or not np.isfinite(z).all():
+        raise ValueError("receiver retention updated latent shape")
+    roles = {}
+    for role, indices in ROLE_TARGETS.items():
+        if role not in TARGET_ROLES:
+            continue
+        head = receiver_heads.get(role)
+        weights, bias = _head_parameters(head)
+        if (
+            head.get("target_indices") != list(indices)
+            or weights.shape != (z.shape[1], len(indices))
+        ):
+            raise ValueError("receiver retention updated head shape")
+        target = Y[:, indices]
+        prediction = z @ weights + bias
+        mean_prediction = np.tile(target.mean(axis=0), (len(target), 1))
+        zero_prediction = np.tile(bias, (len(target), 1))
+        shuffled_prediction = np.roll(z, 1, axis=0) @ weights + bias
+        mse_after = _mse(prediction, target)
+        mean_mse = _mse(mean_prediction, target)
+        zero_mse = _mse(zero_prediction, target)
+        shuffled_mse = _mse(shuffled_prediction, target)
+        prior = baseline["roles"][role]
+        mse_before = float(prior["mse_before"])
+        margin = max(1e-12, max(
+            abs(mse_after), abs(mean_mse), abs(zero_mse), abs(shuffled_mse)
+        ) * 1e-9)
+        retention_pass = mse_after <= mse_before * 1.05 + 1e-9
+        negative_controls_pass = (
+            not prior["prior_utility_pass"]
+            or all(mse_after + margin < value for value in (mean_mse, zero_mse, shuffled_mse))
+        )
+        accepted = retention_pass and negative_controls_pass
+        roles[role] = {
+            "status": "MEASURED_PASS" if accepted else "MEASURED_FAIL",
+            "reason": (
+                "RETENTION_AND_CONTROLS_PASS" if accepted and prior["prior_utility_pass"]
+                else "RETENTION_PASS_CONTROLS_NOT_REQUIRED" if accepted
+                else "OLD_COHORT_RETENTION_REGRESSED" if not retention_pass
+                else "OLD_COHORT_NEGATIVE_CONTROL_FAILED"
+            ),
+            "mse_before": mse_before,
+            "mse_after": float(mse_after),
+            "mean_baseline_mse": float(mean_mse),
+            "zero_latent_mse": float(zero_mse),
+            "shuffled_latent_mse": float(shuffled_mse),
+            "prior_utility_pass": bool(prior["prior_utility_pass"]),
+            "retention_pass": bool(retention_pass),
+            "negative_controls_pass": bool(negative_controls_pass),
+            "old_parameter_sha256": prior["old_parameter_sha256"],
+            "new_parameter_sha256": _head_sha(head),
+        }
+    accepted = all(item["status"] == "MEASURED_PASS" for item in roles.values())
+    return {
+        "status": "MEASURED_PASS" if accepted else "MEASURED_FAIL",
+        "reason": "ALL_ROLE_RETENTION_PASS" if accepted else "ONE_OR_MORE_ROLE_RETENTION_FAILED",
+        "source_disjoint": True,
+        "cohort_sha256": cohort["cohort_sha256"],
+        "baseline_checkpoint_sha256": baseline["baseline_checkpoint_sha256"],
+        "roles": roles,
+    }
+
+
+def _receipt_receiver_retention(role_result, overall):
+    if type(overall) is not dict or overall.get("status") != "MEASURED_PASS":
+        reason = overall.get("reason", "NO_PRIOR_COHORT") if type(overall) is dict else "NO_PRIOR_COHORT"
+        return {
+            "status": "NOT_MEASURED",
+            "reason": reason,
+            "cohort_sha256": None,
+            "source_disjoint": False,
+            "mse_before": None,
+            "mse_after": None,
+            "mean_baseline_mse": None,
+            "zero_latent_mse": None,
+            "shuffled_latent_mse": None,
+            "prior_utility_pass": None,
+            "retention_pass": None,
+            "negative_controls_pass": None,
+        }
+    if type(role_result) is not dict or role_result.get("status") != "MEASURED_PASS":
+        raise ValueError("committed receiver retention requires a passing role receipt")
+    return {
+        "status": "MEASURED_PASS",
+        "reason": role_result["reason"],
+        "cohort_sha256": overall["cohort_sha256"],
+        "source_disjoint": overall["source_disjoint"] is True,
+        "mse_before": float(role_result["mse_before"]),
+        "mse_after": float(role_result["mse_after"]),
+        "mean_baseline_mse": float(role_result["mean_baseline_mse"]),
+        "zero_latent_mse": float(role_result["zero_latent_mse"]),
+        "shuffled_latent_mse": float(role_result["shuffled_latent_mse"]),
+        "prior_utility_pass": role_result["prior_utility_pass"] is True,
+        "retention_pass": role_result["retention_pass"] is True,
+        "negative_controls_pass": role_result["negative_controls_pass"] is True,
+    }
+
+
 def _adam_head(z, target, initial_weights, initial_bias, *, steps,
                learning_rate, max_gradient_norm, anchor_strength,
                beta1=ADAM_BETA1, beta2=ADAM_BETA2, epsilon=ADAM_EPSILON):
@@ -730,9 +998,14 @@ def fit_role_receivers_with_intents(intents, model, train_arrays, holdout_arrays
 
 
 def finalize_weight_delta_receipts(intents, delta_meta, receiver_metrics,
-                                   receiver_gates, checkpoint_sha256, world_metrics):
-    """Bind the target adapter diffs to the exact persisted WorldJEPA checkpoint."""
+                                   receiver_gates, checkpoint_sha256, world_metrics,
+                                   receiver_retention=None):
+    """Bind target-adapter diffs and any old-cohort retention result to one checkpoint."""
     _sha(checkpoint_sha256)
+    retention = receiver_retention or {
+        "status": "NOT_MEASURED", "reason": "NO_PRIOR_COHORT",
+        "source_disjoint": False, "cohort_sha256": None, "roles": {},
+    }
     receipts = {}
     finalized = {}
     for role in TARGET_ROLES:
@@ -775,8 +1048,11 @@ def finalize_weight_delta_receipts(intents, delta_meta, receiver_metrics,
                 "status": "SHADOW_RECEIPT",
             }
         else:
+            retention_metrics = _receipt_receiver_retention(
+                retention.get("roles", {}).get(role), retention
+            )
             payload = {
-                "schema": "v14.weight_delta_receipt.v2",
+                "schema": "v14.weight_delta_receipt.v3",
                 "intent_id": intent["intent_id"],
                 "producer_organ": intent["producer_organ"],
                 "target_organ": role,
@@ -800,7 +1076,8 @@ def finalize_weight_delta_receipts(intents, delta_meta, receiver_metrics,
                 "world_retention_pass": world_metrics.get("retention_pass") is True,
                 "world_retention_mse_before": world_metrics.get("retention_mse_before", []),
                 "world_retention_mse_after": world_metrics.get("retention_mse_after", []),
-                "target_adapter_retention": "NOT_MEASURED",
+                "target_adapter_retention": retention_metrics["status"],
+                "target_adapter_retention_metrics": retention_metrics,
                 "optimizer_revision": intent["optimizer_revision"],
                 "checkpoint_sha256": checkpoint_sha256,
                 "consumer": intent["consumer"],
@@ -819,8 +1096,6 @@ def finalize_weight_delta_receipts(intents, delta_meta, receiver_metrics,
         receipts[role] = receipt
         finalized[role] = intent
     return finalized, receipts
-
-
 def validate_weight_delta_receipt(receipt):
     base_required = {
         "schema", "receipt_id", "intent_id", "producer_organ", "target_organ",
@@ -835,6 +1110,7 @@ def validate_weight_delta_receipt(receipt):
         "approval_id", "decision_authority", "status",
     }
     gradient_fields = {"gradient_steps", "gradient_clip_count"}
+    retention_fields = {"target_adapter_retention_metrics"}
     if type(receipt) is not dict:
         raise ValueError("weight delta receipt shape")
     legacy = (
@@ -842,12 +1118,17 @@ def validate_weight_delta_receipt(receipt):
         and set(receipt) == base_required
         and receipt.get("optimizer_revision") == LEGACY_OPTIMIZER_REVISION
     )
-    gradient = (
+    gradient_v2 = (
         receipt.get("schema") == "v14.weight_delta_receipt.v2"
         and set(receipt) == base_required | gradient_fields
         and receipt.get("optimizer_revision") == OPTIMIZER_REVISION
     )
-    if not (legacy or gradient):
+    gradient_v3 = (
+        receipt.get("schema") == "v14.weight_delta_receipt.v3"
+        and set(receipt) == base_required | gradient_fields | retention_fields
+        and receipt.get("optimizer_revision") == OPTIMIZER_REVISION
+    )
+    if not (legacy or gradient_v2 or gradient_v3):
         raise ValueError("weight delta receipt shape")
     role = receipt["target_organ"]
     if (
@@ -856,7 +1137,8 @@ def validate_weight_delta_receipt(receipt):
         or receipt["target_model_revision"] != TARGET_ADAPTER_REVISION
         or receipt["target_parameter_scope"] != role + ".temporal_receiver_head.weights+bias"
         or receipt["consumer"] != CONSUMER
-        or receipt["target_adapter_retention"] != "NOT_MEASURED"
+        or (legacy or gradient_v2) and receipt["target_adapter_retention"] != "NOT_MEASURED"
+        or gradient_v3 and receipt["target_adapter_retention"] not in {"NOT_MEASURED", "MEASURED_PASS"}
         or receipt["approval_id"] is not None
         or receipt["native_body_weights_changed"] is not False
         or receipt["decision_authority"] != "NONE"
@@ -898,6 +1180,44 @@ def validate_weight_delta_receipt(receipt):
         value = receipt[key]
         if type(value) is not list or any(not _finite(item, minimum=0.0) for item in value):
             raise ValueError("weight delta receipt retention")
+    if gradient_v3:
+        retention = receipt["target_adapter_retention_metrics"]
+        retention_required = {
+            "status", "reason", "cohort_sha256", "source_disjoint",
+            "mse_before", "mse_after", "mean_baseline_mse",
+            "zero_latent_mse", "shuffled_latent_mse",
+            "prior_utility_pass", "retention_pass", "negative_controls_pass",
+        }
+        if (
+            type(retention) is not dict or set(retention) != retention_required
+            or retention["status"] != receipt["target_adapter_retention"]
+            or retention["status"] not in {"NOT_MEASURED", "MEASURED_PASS"}
+            or type(retention["reason"]) is not str or not retention["reason"]
+            or type(retention["source_disjoint"]) is not bool
+        ):
+            raise ValueError("weight delta receipt receiver retention shape")
+        metric_keys = (
+            "mse_before", "mse_after", "mean_baseline_mse",
+            "zero_latent_mse", "shuffled_latent_mse",
+        )
+        flag_keys = ("prior_utility_pass", "retention_pass", "negative_controls_pass")
+        if retention["status"] == "NOT_MEASURED":
+            if (
+                retention["cohort_sha256"] is not None
+                or retention["source_disjoint"] is not False
+                or any(retention[key] is not None for key in metric_keys + flag_keys)
+            ):
+                raise ValueError("unmeasured receiver retention carries metrics")
+        else:
+            _sha(retention["cohort_sha256"])
+            if (
+                retention["source_disjoint"] is not True
+                or any(not _finite(retention[key], minimum=0.0) for key in metric_keys)
+                or type(retention["prior_utility_pass"]) is not bool
+                or retention["retention_pass"] is not True
+                or retention["negative_controls_pass"] is not True
+            ):
+                raise ValueError("measured receiver retention contract")
     payload = {key: value for key, value in receipt.items() if key != "receipt_id"}
     if _digest(payload) != receipt["receipt_id"]:
         raise ValueError("weight delta receipt digest")
