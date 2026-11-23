@@ -1969,10 +1969,16 @@ def combined_source_forget_guard(store, source_id):
             clean_path = _temporal_checkpoint_path(store, previous)
             if clean_path is None:
                 raise ValueError("clean previous temporal checkpoint is missing")
+            world_jepa_shadow_checkpoint.load(
+                clean_path, previous["source_sha256"], previous["checkpoint_sha256"]
+            )
         elif not active_uses and active is not None:
             clean_path = _temporal_checkpoint_path(store, active)
             if clean_path is None:
                 raise ValueError("active temporal checkpoint is missing")
+            world_jepa_shadow_checkpoint.load(
+                clean_path, active["source_sha256"], active["checkpoint_sha256"]
+            )
 
         next_active = active
         next_previous = previous
@@ -2034,9 +2040,20 @@ def combined_source_forget_guard(store, source_id):
         for path in affected_paths.values():
             path.unlink(missing_ok=True)
 
-        yield dict(base_report) | {
+        report = dict(base_report) | {
             "temporal_pending_rows_removed": removed_pending,
             "temporal_checkpoints_invalidated": len(affected),
             "temporal_fallback": fallback,
             "temporal_rows_requeued": requeued,
         }
+        yield report
+        # The caller's Memory transaction completed successfully. Record only
+        # bounded identifiers/counts; never copy source text or packet payloads.
+        store.log("temporal_source_forget", None, {
+            "component": "world_predictor",
+            "count": len(affected),
+            "retained_cases_saved": requeued,
+            "source_id": source_id,
+            "status": "PASS",
+            "mode": "shadow",
+        })
