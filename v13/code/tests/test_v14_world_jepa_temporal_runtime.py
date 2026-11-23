@@ -1120,6 +1120,8 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_mea
             state = payload["body_state"]
             assert state["authority"] == "STATE_NOT_FACT"
             assert "world_jepa_temporal" in state, state
+            assert "mode" in state["world"] and "observed_actions" in state["world"]
+            assert "scope" not in state["world"]
             prior = state["world_jepa_temporal"]
             assert prior["status"] == "SHADOW_READOUT_ONLY"
             assert prior["native_body_consumed"] is False
