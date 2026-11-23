@@ -7,6 +7,7 @@ on:
       - "v13/code/v13/sleep.py"
       - "v13/code/v13/memory.py"
       - "v13/code/tests/test_v14_world_jepa_temporal_runtime.py"
+      - "v13/code/tests/test_v14_world_jepa_postcommit_runtime.py"
       - ".github/workflows/v14-temporal-world-jepa.yml"
   pull_request:
     paths:
@@ -43,7 +44,12 @@ jobs:
             v13/code/v13/sleep.py \
             v13/code/v13/memory.py \
             v13/code/tests/test_v14_world_jepa_temporal_runtime.py
+            v13/code/tests/test_v14_world_jepa_postcommit_runtime.py
       - name: Run temporal T8 / JEPA / source-forget regressions
         env:
           PYTHONPATH: v13/code
         run: python -m pytest -q v13/code/tests/test_v14_world_jepa_temporal_runtime.py
+      - name: Run postcommit JEPA worker / continuation / restart / rollback regressions
+        env:
+          PYTHONPATH: v13/code
+        run: python -m pytest -q v13/code/tests/test_v14_world_jepa_postcommit_runtime.py
