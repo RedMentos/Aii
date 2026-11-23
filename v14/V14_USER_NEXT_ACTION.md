@@ -241,3 +241,13 @@ JEPA #2396's Temporal WorldJEPA T8 Windows workflow has now completed SUCCESS. I
 The last confirmed private V13OBS #115 receipt before this checkpoint reported installed release aed1d2b826290c95c70356b5d8b864b5ef382be4, updater enabled and Runtime/Dashboard UP_TO_DATE; that receipt is not a current-run install proof. Fresh read-only relay requests #671 HEALTH, #672 PIPELINE_STATUS and #673 DIAGNOSTICS were issued; no device comments/receipts had arrived at the last poll. Do not infer new installation or health from the old receipt.
 
 **Next internal action:** poll exact #2401 CI, repair only a Perception-owned failing consumer test if observed, and coordinate QA to compose #2397/#2395 into the lifecycle builder before integration. Core must combine the MediaProjection provider with this same UI lease and a real C3 consumer. Continue whole-Canon work; no model or permission change is requested from the user.
+
+## PR #2401 exact-head CI correction — 2026-11-23
+
+The provider-entrypoint test file required by the inherited workflow was missing from the first stacked branch head. The first focused run failed at py_compile before pytest; Perception copied the exact existing test file from #2375 (blob fcf8337b36472ce19cbcaddfb9f2ad17dab55f52) and read it back on the new head.
+
+- Exact PR #2401 head: 21b0c05219629fa6b29833ba60647e133cd0acda.
+- Focused MediaProjection/RAW EYE CI run 45095844550: PASS on Python 3.13.18 (30 passed) and Python 3.14.10 (30 passed), including py_compile and both UI ingress/provider test files.
+- Exact staged/integrated run 45095844653: FAIL. Staged runtime 19 failed / 231 passed / 10 skipped / 2 errors / 41 subtests; integrated regression 1 failed. Dominant blocker: QA-owned source_lifecycle_lock_integration_candidate.py still rejects the current vision.py digest as an unsupported lifecycle source; two migration checks report PARTIAL rather than UPDATED. This is the same cross-lane source-pin problem present in #2397/#2391, not a Perception focused-test failure.
+- LOCAL_LINUX isolated lineage guard remains 6/6 PASS. Full local repository test remains BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS fails. REDMI_UNVERIFIED.
+- Next owner action: QA must preserve its training-resume repair, compose on JEPA #2397 / Perception #2395, pin vision.py plus vision_source_lineage.py and recompute all staged/deployer hashes; rerun staged/integrated and migration gates. Perception did not modify QA/JEPA source files.
