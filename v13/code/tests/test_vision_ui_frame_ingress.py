@@ -873,3 +873,19 @@ def test_temporal_visual_evidence_rejects_out_of_order_and_malformed_tiles():
     result = state.update(start_ms=133, end_ms=166, tile_luminance=frame)
     assert result["status"] == "MEASURED"
     assert result["change_score"] == 0.0
+
+
+def test_end_of_stream_erases_temporal_visual_history(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation()
+    frame = image_buffer()
+    with lease_for(runtime, obs) as lease:
+        with consume_projected_frame_scope(
+            runtime, obs, frame, consent_lease=lease,
+            frame_verifier=provider_verifier(lease, obs, frame),
+            current_source="Observe one screen frame.", end_of_stream=True,
+        ) as result:
+            assert result["temporal_visual_evidence"]["status"] == "WARMUP"
+            assert len(runtime._a5_temporal_visual_registry) == 1
+        assert len(runtime._a5_temporal_visual_registry) == 0
+    assert not any(frame)
