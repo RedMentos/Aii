@@ -166,7 +166,7 @@ def validate_receiver_retention_holdout(record):
     A = np.asarray(record["A"], dtype=np.float64)
     Y = np.asarray(record["Y"], dtype=np.float64)
     if (
-        X.ndim != 2 or X.shape[1] != 10 or len(X) < 2
+        X.ndim != 2 or X.shape[1] != 10 or not 2 <= len(X) <= MAX_IDS
         or A.shape != (len(X), 4) or Y.shape != (len(X), 3)
         or not all(np.isfinite(value).all() for value in (X, A, Y))
     ):
@@ -174,7 +174,7 @@ def validate_receiver_retention_holdout(record):
     for key in ("window_ids", "action_ids", "source_ids", "source_sha256s",
                 "lineage_source_ids", "lineage_source_sha256s"):
         value = record[key]
-        if type(value) is not list or not value:
+        if type(value) is not list or not value or len(value) > MAX_IDS:
             raise ValueError("receiver retention cohort provenance")
         if any(type(item) is not str or not item or len(item) > 256 for item in value):
             raise ValueError("receiver retention cohort provenance")
