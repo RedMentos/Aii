@@ -234,6 +234,7 @@ class ProbeOutputPrivacy(unittest.TestCase):
         runtime.current = None
         runtime.status = 'Bereit'
         runtime.store = Store()
+        runtime._session_local = threading.local()
         runtime.notice = lambda value: (notices.append(value), runtime.stop.set())
 
         with patch('v13.verification.probe', side_effect=RuntimeError(secret)):
