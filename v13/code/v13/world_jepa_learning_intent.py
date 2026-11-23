@@ -18,7 +18,15 @@ from .world_jepa_consumer import ROLE_TARGETS, _mse, _ridge_head, receiver_utili
 REVISION = "v14-learning-intent-v1"
 TARGET_ADAPTER_REVISION = "v14-temporal-receiver-adapter-v1"
 OBJECTIVE_REVISION = "v14-temporal-receiver-outcome-mse-v1"
-OPTIMIZER_REVISION = "RIDGE_CLOSED_FORM_V1"
+OPTIMIZER_REVISION = "ADAM_MSE_V1"
+LEGACY_OPTIMIZER_REVISION = "RIDGE_CLOSED_FORM_V1"
+MAX_ADAPTER_STEPS = 64
+MAX_GRADIENT_NORM = 1.0
+BASE_ADAPTER_LEARNING_RATE = 0.01
+ANCHOR_STRENGTH = 0.01
+ADAM_BETA1 = 0.9
+ADAM_BETA2 = 0.999
+ADAM_EPSILON = 1e-8
 TARGET_ROLES = ("B1_DETAIL", "B2_GIST")
 CONSUMER = "bodyview._temporal_world_jepa_body_readout"
 MAX_IDS = 8192
@@ -140,6 +148,91 @@ def _head_sha(head):
     })
 
 
+def _adam_head(z, target, initial_weights, initial_bias, *, steps,
+               learning_rate, max_gradient_norm, anchor_strength,
+               beta1=ADAM_BETA1, beta2=ADAM_BETA2, epsilon=ADAM_EPSILON):
+    """Bounded full-batch Adam update for one small B1/B2 float receiver head.
+
+    The prior adapter is the anchor. Only source-disjoint T8 training rows are
+    passed here; holdout rows are evaluated after the final parameter update.
+    """
+    X = np.asarray(z, dtype=np.float64)
+    Y = np.asarray(target, dtype=np.float64)
+    weights = np.asarray(initial_weights, dtype=np.float64).copy()
+    bias = np.asarray(initial_bias, dtype=np.float64).copy()
+    if (
+        X.ndim != 2 or Y.ndim != 2 or len(X) < 1 or len(X) != len(Y)
+        or weights.shape != (X.shape[1], Y.shape[1])
+        or bias.shape != (Y.shape[1],)
+        or not np.isfinite(X).all() or not np.isfinite(Y).all()
+        or not np.isfinite(weights).all() or not np.isfinite(bias).all()
+        or type(steps) is not int or not 1 <= steps <= MAX_ADAPTER_STEPS
+        or not _finite(learning_rate, minimum=0.0, maximum=0.1)
+        or not _finite(max_gradient_norm, minimum=0.01, maximum=10.0)
+        or not _finite(anchor_strength, minimum=0.0, maximum=1.0)
+        or not _finite(beta1, minimum=0.0, maximum=0.999)
+        or not _finite(beta2, minimum=0.0, maximum=0.9999)
+        or not _finite(epsilon, minimum=1e-12, maximum=1e-4)
+    ):
+        raise ValueError("invalid bounded Adam receiver inputs")
+
+    anchor_weights = weights.copy()
+    anchor_bias = bias.copy()
+    first_w = np.zeros_like(weights)
+    second_w = np.zeros_like(weights)
+    first_b = np.zeros_like(bias)
+    second_b = np.zeros_like(bias)
+    gradient_norm_max = 0.0
+    clip_count = 0
+    train_mse_before = _mse(X @ weights + bias, Y)
+
+    for step in range(1, steps + 1):
+        residual = X @ weights + bias - Y
+        grad_w = (2.0 / len(X)) * (X.T @ residual)
+        grad_b = (2.0 / len(X)) * np.sum(residual, axis=0)
+        grad_w += anchor_strength * (weights - anchor_weights)
+        grad_b += anchor_strength * (bias - anchor_bias)
+        gradient_norm = math.sqrt(
+            float(np.sum(grad_w * grad_w)) + float(np.sum(grad_b * grad_b))
+        )
+        if not math.isfinite(gradient_norm):
+            raise ValueError("nonfinite receiver gradient")
+        gradient_norm_max = max(gradient_norm_max, gradient_norm)
+        if gradient_norm > max_gradient_norm:
+            scale = max_gradient_norm / gradient_norm
+            grad_w *= scale
+            grad_b *= scale
+            clip_count += 1
+
+        first_w = beta1 * first_w + (1.0 - beta1) * grad_w
+        second_w = beta2 * second_w + (1.0 - beta2) * (grad_w * grad_w)
+        first_b = beta1 * first_b + (1.0 - beta1) * grad_b
+        second_b = beta2 * second_b + (1.0 - beta2) * (grad_b * grad_b)
+        corrected_first_w = first_w / (1.0 - beta1 ** step)
+        corrected_second_w = second_w / (1.0 - beta2 ** step)
+        corrected_first_b = first_b / (1.0 - beta1 ** step)
+        corrected_second_b = second_b / (1.0 - beta2 ** step)
+        if learning_rate > 0.0:
+            weights -= learning_rate * corrected_first_w / (
+                np.sqrt(corrected_second_w) + epsilon
+            )
+            bias -= learning_rate * corrected_first_b / (
+                np.sqrt(corrected_second_b) + epsilon
+            )
+        if not np.isfinite(weights).all() or not np.isfinite(bias).all():
+            raise ValueError("nonfinite receiver adapter parameters")
+
+    train_mse_after = _mse(X @ weights + bias, Y)
+    return weights, bias, {
+        "gradient_norm": gradient_norm_max,
+        "steps_executed": steps,
+        "gradient_clip_count": clip_count,
+        "effective_learning_rate": float(learning_rate),
+        "train_mse_before": train_mse_before,
+        "train_mse_after": train_mse_after,
+    }
+
+
 def create_learning_intents(train_windows, holdout_windows, active_record,
                             permissions, modulation, *, now=None):
     """Create one source-disjoint intent per B1/B2 adapter before its target fit."""
@@ -223,6 +316,7 @@ def create_learning_intents(train_windows, holdout_windows, active_record,
             "target_model_revision": TARGET_ADAPTER_REVISION,
             "target_parameter_scope": target_scope,
             "provenance_sha256": provenance_sha,
+            "optimizer_revision": OPTIMIZER_REVISION,
         }
         intent = {
             "schema": "v14.learning_intent.v1",
@@ -265,11 +359,16 @@ def create_learning_intents(train_windows, holdout_windows, active_record,
                 "applied": modulation.get("applied") is True,
             },
             "gradient_budget": {
-                "method": "CLOSED_FORM_RIDGE",
+                "method": "BOUNDED_ADAM_MSE",
                 "gradient_norm": None,
-                "max_gradient_norm": None,
-                "max_steps": 1,
+                "max_gradient_norm": MAX_GRADIENT_NORM,
+                "max_steps": min(MAX_ADAPTER_STEPS, consent_snapshot["steps"]),
                 "learning_rate_scale": float(modulation["learning_rate_scale"]),
+                "base_learning_rate": BASE_ADAPTER_LEARNING_RATE,
+                "anchor_strength": ANCHOR_STRENGTH,
+                "beta1": ADAM_BETA1,
+                "beta2": ADAM_BETA2,
+                "epsilon": ADAM_EPSILON,
             },
             "age_capability": "SHADOW_ONLY_NO_NATIVE_BODY_RIGHT",
             "approval_id": None,
@@ -317,7 +416,7 @@ def validate_learning_intent(intent):
         or intent["target_model_revision"] != TARGET_ADAPTER_REVISION
         or intent["target_parameter_scope"] != role + ".temporal_receiver_head.weights+bias"
         or intent["objective_revision"] != OBJECTIVE_REVISION
-        or intent["optimizer_revision"] != OPTIMIZER_REVISION
+        or intent["optimizer_revision"] not in {OPTIMIZER_REVISION, LEGACY_OPTIMIZER_REVISION}
         or intent["age_capability"] != "SHADOW_ONLY_NO_NATIVE_BODY_RIGHT"
         or intent["approval_id"] is not None
         or intent["authority"] != "NONE"
@@ -366,6 +465,8 @@ def validate_learning_intent(intent):
         "target_parameter_scope": role + ".temporal_receiver_head.weights+bias",
         "provenance_sha256": intent["provenance_sha256"],
     }
+    if intent["optimizer_revision"] == OPTIMIZER_REVISION:
+        identity["optimizer_revision"] = OPTIMIZER_REVISION
     if _digest(identity) != intent["intent_id"]:
         raise ValueError("learning intent identity digest")
     _unique(intent["old_retention_cohort_ids"], "old retention cohort ids") if intent["old_retention_cohort_ids"] else None
@@ -400,13 +501,47 @@ def validate_learning_intent(intent):
         or not _finite(modulation.get("meta_plasticity"), minimum=0.0, maximum=1.0)
         or type(modulation.get("applied")) is not bool
         or type(budget) is not dict
-        or budget.get("method") != "CLOSED_FORM_RIDGE"
-        or budget.get("gradient_norm") is not None
-        or budget.get("max_gradient_norm") is not None
-        or budget.get("max_steps") != 1
         or not _finite(budget.get("learning_rate_scale"), minimum=0.0, maximum=1.0)
     ):
         raise ValueError("learning intent learning signals")
+    if intent["optimizer_revision"] == LEGACY_OPTIMIZER_REVISION:
+        if (
+            budget.get("method") != "CLOSED_FORM_RIDGE"
+            or budget.get("gradient_norm") is not None
+            or budget.get("max_gradient_norm") is not None
+            or budget.get("max_steps") != 1
+        ):
+            raise ValueError("learning intent legacy optimizer budget")
+    else:
+        if (
+            budget.get("method") != "BOUNDED_ADAM_MSE"
+            or (budget.get("gradient_norm") is not None
+                and not _finite(budget.get("gradient_norm"), minimum=0.0))
+            or not _finite(budget.get("max_gradient_norm"), minimum=0.01, maximum=10.0)
+            or type(budget.get("max_steps")) is not int
+            or not 1 <= budget["max_steps"] <= MAX_ADAPTER_STEPS
+            or not _finite(budget.get("base_learning_rate"), minimum=0.000001, maximum=0.1)
+            or not _finite(budget.get("anchor_strength"), minimum=0.0, maximum=1.0)
+            or not _finite(budget.get("beta1"), minimum=0.0, maximum=0.999)
+            or not _finite(budget.get("beta2"), minimum=0.0, maximum=0.9999)
+            or not _finite(budget.get("epsilon"), minimum=1e-12, maximum=1e-4)
+        ):
+            raise ValueError("learning intent gradient optimizer budget")
+        if "steps_executed" in budget and (
+            type(budget["steps_executed"]) is not int
+            or not 0 <= budget["steps_executed"] <= budget["max_steps"]
+        ):
+            raise ValueError("learning intent gradient steps")
+        if "gradient_clip_count" in budget and (
+            type(budget["gradient_clip_count"]) is not int
+            or budget["gradient_clip_count"] < 0
+            or budget["gradient_clip_count"] > budget.get("steps_executed", budget["max_steps"])
+        ):
+            raise ValueError("learning intent gradient clip count")
+        if "effective_learning_rate" in budget and not _finite(
+            budget["effective_learning_rate"], minimum=0.0, maximum=budget["base_learning_rate"]
+        ):
+            raise ValueError("learning intent effective learning rate")
     if "applied_credit_scale" in intent and not _finite(intent["applied_credit_scale"], minimum=0.0, maximum=1.0):
         raise ValueError("learning intent applied credit")
     if "old_parameter_sha256" in intent and intent["old_parameter_sha256"] is not None:
@@ -476,40 +611,59 @@ def fit_role_receivers_with_intents(intents, model, train_arrays, holdout_arrays
     for role, indices in ROLE_TARGETS.items():
         target_train = y_train[:, indices]
         target_holdout = y_holdout[:, indices]
-        weights, bias = _ridge_head(z_train, target_train)
+        ridge_weights, ridge_bias = _ridge_head(z_train, target_train)
         old_head = old_heads.get(role)
-        old_mse = None
         if old_head is not None:
             old_weights, old_bias = _head_parameters(old_head)
-            if old_weights.shape != weights.shape or old_bias.shape != bias.shape:
+            if old_weights.shape != ridge_weights.shape or old_bias.shape != ridge_bias.shape:
                 raise ValueError("prior receiver adapter shape mismatch")
             old_prediction = z_holdout @ old_weights + old_bias
             old_mse = _mse(old_prediction, target_holdout)
+            old_sha = _head_sha(old_head)
+        else:
+            old_weights = np.zeros_like(ridge_weights)
+            old_bias = np.zeros_like(ridge_bias)
+            old_mse = _mse(
+                np.tile(target_train.mean(axis=0), (len(target_holdout), 1)),
+                target_holdout,
+            )
+            old_sha = None
+
+        gradient = None
         if role in TARGET_ROLES:
             intent = intents[role]
+            if intent["optimizer_revision"] != OPTIMIZER_REVISION:
+                raise ValueError("new target optimizer requires ADAM_MSE_V1 intent")
             credit_scale = (
                 1.0 if modulation["mode"] == "SHADOW"
                 else max(0.0, min(1.0, float(intent["neuromodulation"]["proposed_scale"])))
             )
-            if old_head is None:
-                weights = weights * credit_scale
-                bias = bias * credit_scale
-                old_weights = np.zeros_like(weights)
-                old_bias = np.zeros_like(bias)
-                old_mse = _mse(
-                    np.tile(target_train.mean(axis=0), (len(target_holdout), 1)),
-                    target_holdout,
-                )
-                old_sha = None
-            else:
-                weights = old_weights + credit_scale * (weights - old_weights)
-                bias = old_bias + credit_scale * (bias - old_bias)
-                old_sha = _head_sha(old_head)
+            budget = intent["gradient_budget"]
+            effective_lr = (
+                float(budget["base_learning_rate"])
+                * float(budget["learning_rate_scale"])
+                * credit_scale
+            )
+            weights, bias, gradient = _adam_head(
+                z_train, target_train, old_weights, old_bias,
+                steps=int(budget["max_steps"]),
+                learning_rate=effective_lr,
+                max_gradient_norm=float(budget["max_gradient_norm"]),
+                anchor_strength=float(budget["anchor_strength"]),
+                beta1=float(budget["beta1"]),
+                beta2=float(budget["beta2"]),
+                epsilon=float(budget["epsilon"]),
+            )
+            budget["gradient_norm"] = float(gradient["gradient_norm"])
+            budget["steps_executed"] = int(gradient["steps_executed"])
+            budget["gradient_clip_count"] = int(gradient["gradient_clip_count"])
+            budget["effective_learning_rate"] = float(gradient["effective_learning_rate"])
             intent["applied_credit_scale"] = credit_scale
         else:
-            old_weights = np.asarray(old_head["weights"], dtype=np.float64) if old_head else np.zeros_like(weights)
-            old_bias = np.asarray(old_head["bias"], dtype=np.float64) if old_head else np.zeros_like(bias)
-            old_sha = _head_sha(old_head) if old_head else None
+            # SELF keeps its prior closed-form shadow readout; B1/B2 alone use
+            # the explicit gradient-backed target-organ optimizer.
+            weights, bias = ridge_weights, ridge_bias
+
         prediction = z_holdout @ weights + bias
         mean_prediction = np.tile(target_train.mean(axis=0), (len(target_holdout), 1))
         zero_latent_prediction = np.tile(bias, (len(target_holdout), 1))
@@ -529,6 +683,15 @@ def fit_role_receivers_with_intents(intents, model, train_arrays, holdout_arrays
         }
         heads[role] = head
         if role in TARGET_ROLES:
+            metrics[prefix + "_prior_adapter_mse"] = float(old_mse)
+            metrics[prefix + "_ridge_control_mse"] = _mse(
+                z_holdout @ ridge_weights + ridge_bias, target_holdout
+            )
+            metrics[prefix + "_gradient_norm"] = float(gradient["gradient_norm"])
+            metrics[prefix + "_gradient_steps"] = int(gradient["steps_executed"])
+            metrics[prefix + "_gradient_clip_count"] = int(gradient["gradient_clip_count"])
+            metrics[prefix + "_train_mse_before"] = float(gradient["train_mse_before"])
+            metrics[prefix + "_train_mse_after"] = float(gradient["train_mse_after"])
             new_params = np.concatenate((weights.reshape(-1), bias.reshape(-1)))
             old_params = np.concatenate((old_weights.reshape(-1), old_bias.reshape(-1)))
             delta_norm = float(np.linalg.norm(new_params - old_params))
@@ -546,6 +709,9 @@ def fit_role_receivers_with_intents(intents, model, train_arrays, holdout_arrays
                 "parameter_count": int(new_params.size),
                 "holdout_mse_before": float(old_mse),
                 "holdout_mse_after": float(metrics[prefix + "_holdout_mse"]),
+                "gradient_norm": float(gradient["gradient_norm"]),
+                "gradient_steps": int(gradient["steps_executed"]),
+                "gradient_clip_count": int(gradient["gradient_clip_count"]),
             }
     gates = {role: receiver_utility_gate(metrics, role) for role in ROLE_TARGETS}
     for role in TARGET_ROLES:
@@ -574,39 +740,76 @@ def finalize_weight_delta_receipts(intents, delta_meta, receiver_metrics,
         validate_learning_intent(intent)
         meta = delta_meta[role]
         prefix = role.lower()
-        payload = {
-            "schema": "v14.weight_delta_receipt.v1",
-            "intent_id": intent["intent_id"],
-            "producer_organ": intent["producer_organ"],
-            "target_organ": role,
-            "target_model_revision": intent["target_model_revision"],
-            "target_parameter_scope": intent["target_parameter_scope"],
-            "source_provenance_sha256": intent["provenance_sha256"],
-            "old_parameter_sha256": meta["old_parameter_sha256"],
-            "new_parameter_sha256": meta["new_parameter_sha256"],
-            "parameter_delta_norm": meta["parameter_delta_norm"],
-            "parameter_count": meta["parameter_count"],
-            "gradient_norm": None,
-            "gradient_measured": False,
-            "holdout_mse_before": meta["holdout_mse_before"],
-            "holdout_mse_after": meta["holdout_mse_after"],
-            "mean_baseline_mse": float(receiver_metrics[prefix + "_mean_baseline_mse"]),
-            "zero_latent_mse": float(receiver_metrics[prefix + "_zero_latent_mse"]),
-            "shuffled_latent_mse": float(receiver_metrics[prefix + "_shuffled_latent_mse"]),
-            "receiver_utility_pass": receiver_gates[role]["accepted"] is True,
-            "world_retention_pass": world_metrics.get("retention_pass") is True,
-            "world_retention_mse_before": world_metrics.get("retention_mse_before", []),
-            "world_retention_mse_after": world_metrics.get("retention_mse_after", []),
-            "target_adapter_retention": "NOT_MEASURED",
-            "optimizer_revision": intent["optimizer_revision"],
-            "checkpoint_sha256": checkpoint_sha256,
-            "consumer": intent["consumer"],
-            "target_adapter_parameters_changed": intent["target_adapter_parameters_changed"],
-            "native_body_weights_changed": False,
-            "approval_id": None,
-            "decision_authority": "NONE",
-            "status": "SHADOW_RECEIPT",
-        }
+        if intent["optimizer_revision"] == LEGACY_OPTIMIZER_REVISION:
+            payload = {
+                "schema": "v14.weight_delta_receipt.v1",
+                "intent_id": intent["intent_id"],
+                "producer_organ": intent["producer_organ"],
+                "target_organ": role,
+                "target_model_revision": intent["target_model_revision"],
+                "target_parameter_scope": intent["target_parameter_scope"],
+                "source_provenance_sha256": intent["provenance_sha256"],
+                "old_parameter_sha256": meta["old_parameter_sha256"],
+                "new_parameter_sha256": meta["new_parameter_sha256"],
+                "parameter_delta_norm": meta["parameter_delta_norm"],
+                "parameter_count": meta["parameter_count"],
+                "gradient_norm": None,
+                "gradient_measured": False,
+                "holdout_mse_before": meta["holdout_mse_before"],
+                "holdout_mse_after": meta["holdout_mse_after"],
+                "mean_baseline_mse": float(receiver_metrics[prefix + "_mean_baseline_mse"]),
+                "zero_latent_mse": float(receiver_metrics[prefix + "_zero_latent_mse"]),
+                "shuffled_latent_mse": float(receiver_metrics[prefix + "_shuffled_latent_mse"]),
+                "receiver_utility_pass": receiver_gates[role]["accepted"] is True,
+                "world_retention_pass": world_metrics.get("retention_pass") is True,
+                "world_retention_mse_before": world_metrics.get("retention_mse_before", []),
+                "world_retention_mse_after": world_metrics.get("retention_mse_after", []),
+                "target_adapter_retention": "NOT_MEASURED",
+                "optimizer_revision": intent["optimizer_revision"],
+                "checkpoint_sha256": checkpoint_sha256,
+                "consumer": intent["consumer"],
+                "target_adapter_parameters_changed": intent["target_adapter_parameters_changed"],
+                "native_body_weights_changed": False,
+                "approval_id": None,
+                "decision_authority": "NONE",
+                "status": "SHADOW_RECEIPT",
+            }
+        else:
+            payload = {
+                "schema": "v14.weight_delta_receipt.v2",
+                "intent_id": intent["intent_id"],
+                "producer_organ": intent["producer_organ"],
+                "target_organ": role,
+                "target_model_revision": intent["target_model_revision"],
+                "target_parameter_scope": intent["target_parameter_scope"],
+                "source_provenance_sha256": intent["provenance_sha256"],
+                "old_parameter_sha256": meta["old_parameter_sha256"],
+                "new_parameter_sha256": meta["new_parameter_sha256"],
+                "parameter_delta_norm": meta["parameter_delta_norm"],
+                "parameter_count": meta["parameter_count"],
+                "gradient_norm": float(meta["gradient_norm"]),
+                "gradient_measured": True,
+                "gradient_steps": int(meta["gradient_steps"]),
+                "gradient_clip_count": int(meta["gradient_clip_count"]),
+                "holdout_mse_before": meta["holdout_mse_before"],
+                "holdout_mse_after": meta["holdout_mse_after"],
+                "mean_baseline_mse": float(receiver_metrics[prefix + "_mean_baseline_mse"]),
+                "zero_latent_mse": float(receiver_metrics[prefix + "_zero_latent_mse"]),
+                "shuffled_latent_mse": float(receiver_metrics[prefix + "_shuffled_latent_mse"]),
+                "receiver_utility_pass": receiver_gates[role]["accepted"] is True,
+                "world_retention_pass": world_metrics.get("retention_pass") is True,
+                "world_retention_mse_before": world_metrics.get("retention_mse_before", []),
+                "world_retention_mse_after": world_metrics.get("retention_mse_after", []),
+                "target_adapter_retention": "NOT_MEASURED",
+                "optimizer_revision": intent["optimizer_revision"],
+                "checkpoint_sha256": checkpoint_sha256,
+                "consumer": intent["consumer"],
+                "target_adapter_parameters_changed": intent["target_adapter_parameters_changed"],
+                "native_body_weights_changed": False,
+                "approval_id": None,
+                "decision_authority": "NONE",
+                "status": "SHADOW_RECEIPT",
+            }
         receipt = dict(payload)
         receipt["receipt_id"] = _digest(payload)
         validate_weight_delta_receipt(receipt)
@@ -619,7 +822,7 @@ def finalize_weight_delta_receipts(intents, delta_meta, receiver_metrics,
 
 
 def validate_weight_delta_receipt(receipt):
-    required = {
+    base_required = {
         "schema", "receipt_id", "intent_id", "producer_organ", "target_organ",
         "target_model_revision", "target_parameter_scope", "source_provenance_sha256",
         "old_parameter_sha256", "new_parameter_sha256", "parameter_delta_norm",
@@ -631,20 +834,29 @@ def validate_weight_delta_receipt(receipt):
         "consumer", "target_adapter_parameters_changed", "native_body_weights_changed",
         "approval_id", "decision_authority", "status",
     }
-    if type(receipt) is not dict or set(receipt) != required:
+    gradient_fields = {"gradient_steps", "gradient_clip_count"}
+    if type(receipt) is not dict:
+        raise ValueError("weight delta receipt shape")
+    legacy = (
+        receipt.get("schema") == "v14.weight_delta_receipt.v1"
+        and set(receipt) == base_required
+        and receipt.get("optimizer_revision") == LEGACY_OPTIMIZER_REVISION
+    )
+    gradient = (
+        receipt.get("schema") == "v14.weight_delta_receipt.v2"
+        and set(receipt) == base_required | gradient_fields
+        and receipt.get("optimizer_revision") == OPTIMIZER_REVISION
+    )
+    if not (legacy or gradient):
         raise ValueError("weight delta receipt shape")
     role = receipt["target_organ"]
     if (
-        receipt["schema"] != "v14.weight_delta_receipt.v1"
-        or role not in TARGET_ROLES
+        role not in TARGET_ROLES
         or receipt["producer_organ"] != "WORLD_JEPA_TEMPORAL"
         or receipt["target_model_revision"] != TARGET_ADAPTER_REVISION
         or receipt["target_parameter_scope"] != role + ".temporal_receiver_head.weights+bias"
-        or receipt["optimizer_revision"] != OPTIMIZER_REVISION
         or receipt["consumer"] != CONSUMER
         or receipt["target_adapter_retention"] != "NOT_MEASURED"
-        or receipt["gradient_norm"] is not None
-        or receipt["gradient_measured"] is not False
         or receipt["approval_id"] is not None
         or receipt["native_body_weights_changed"] is not False
         or receipt["decision_authority"] != "NONE"
@@ -656,6 +868,19 @@ def validate_weight_delta_receipt(receipt):
         or not _finite(receipt["parameter_delta_norm"], minimum=0.0)
     ):
         raise ValueError("weight delta receipt contract")
+    if legacy:
+        if receipt["gradient_norm"] is not None or receipt["gradient_measured"] is not False:
+            raise ValueError("legacy receipt gradient contract")
+    else:
+        if (
+            not _finite(receipt["gradient_norm"], minimum=0.0)
+            or receipt["gradient_measured"] is not True
+            or type(receipt["gradient_steps"]) is not int
+            or not 1 <= receipt["gradient_steps"] <= MAX_ADAPTER_STEPS
+            or type(receipt["gradient_clip_count"]) is not int
+            or not 0 <= receipt["gradient_clip_count"] <= receipt["gradient_steps"]
+        ):
+            raise ValueError("gradient receipt contract")
     _sha(receipt["receipt_id"])
     _sha(receipt["intent_id"])
     _sha(receipt["source_provenance_sha256"])
