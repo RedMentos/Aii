@@ -3,7 +3,9 @@
 **Date:** 2026-11-23  
 **Release-development base:** `gpt6/v13-private-remote-bridge-20261111` @ `fb563d771fe2d493c4ec25abe94280981d24ef5c`  
 **Branch:** `research-perception/v14-vision-lifecycle-current-20261123-run19`  
-**Code commit:** `f2fef9be34e2147e424a153114226c548cbda359`  
+**Base implementation commit:** `f2fef9be34e2147e424a153114226c548cbda359`  
+**Temporal extension commits:** `b63377bdbaf42ffa5afc0496e1c428ed3111412d` (module), `9c324c650e7b8d4bcd69db5e99bc83d89d7b9b50` (A4 wiring), `0a6bcd87c6253ede049b84a315b13cd7920f1547` (tests), `25512ff5b16fe3b762926c3ac1caa89346e7f3d0` (revision), `a0d11c715f217f4b6a6d9ec4884c7eea27bddb3e` (end-of-stream cleanup test).  
+**Current branch head:** `a0d11c715f217f4b6a6d9ec4884c7eea27bddb3e`  
 **Status:** candidate branch only; no merge, release or device deployment.
 
 ## Rebase and scope
@@ -34,6 +36,24 @@ These values were printed by the previous PR's Python 3.13/3.14 jobs. Recompute 
 - **LOCAL_LINUX full Aii suite:** BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS resolution failed for `git ls-remote`. No local compile or pytest result is claimed.
 - **REDMI_UNVERIFIED:** no connected authorized phone, Android MediaProjection, Termux or native instrumentation was available. No screen capture or device mutation was performed.
 - **Release:** NOT_RELEASED. No UPDATE_REQUEST, manual command, model/weight swap or permission change.
+
+
+## Added temporal RAW EYE → A4 path
+
+- Added vision_temporal_evidence.py: a pure-Python bounded process-local registry (maximum eight capture sessions) keyed by capture session, brain generation and consent receipt. It stores only the previous 4×4 tile luminance summaries (16 values per tile), never raw frame bytes or text.
+- On each subsequent frame it computes per-tile mean absolute luminance deltas, a top-four/global pooled change score, changed-tile IDs and source/time metadata. First frame is WARMUP; out-of-order frames are rejected; a gap above 1500 ms resets the baseline. The 0.08 changed-tile threshold and pooled score are deterministic heuristics, not calibrated probabilities or learned perception.
+- vision_ui_frame_ingress.py now attaches numeric deltas and the exact frame source reference to the A5 PerceptPacket and, when a nonzero measured change exists, calls the existing A4 modulate(..., sal={"novelty": change_score}) before A4 perception. It does not assign object identity, OCR truth, action confidence, learning authority or model-weight updates.
+- reset_temporal_visual_evidence() erases a capture session's history; consume_projected_frame_scope(..., end_of_stream=True) invokes it on the final frame. The provider must call this reset helper on session revocation/end when it does not use the final-frame scope. Automatic provider-revocation wiring is still pending Core/QA integration.
+- Exact current Git blob IDs (SHA-1, not Core guard SHA-256): vision_temporal_evidence.py 433230672f5dae663a8647dbe3c7f31a6ced27d2; vision_ui_frame_ingress.py 0d280f01e2b95123979f81cdccaae90c5e84a012; test_vision_ui_frame_ingress.py dad2a5f39482e02ca8cb4a0048dee7ac3cfc7882. Core must recompute its SHA-256 source pins on this exact branch head; the prior values below are historical and now stale for the modified frame-ingress source.
+
+## New verification state
+
+- LOCAL_LINUX isolated module harness: python3 -m pytest -q /tmp/v14-temporal-visual/test_temporal_visual_evidence.py → 12 PASS. This exercised the pure temporal registry copy (warm-up, stable frames, localized changes, stale ordering, gap reset, receipt/session isolation, bounds and malformed numeric inputs); it is not the full Aii repository suite or the integration test.
+- Current exact-head CI on a0d11c7: source-lineage and public privacy workflows completed SUCCESS; RAW EYE frame-ingress and staged/integrated workflows were still IN_PROGRESS at handoff time. No exact-head frame-ingress PASS or integrated PASS is claimed until those runs finish.
+- LOCAL_LINUX full Aii suite: BLOCKED / NOT_RUN because no repository checkout is mounted and git ls-remote failed due github.com DNS resolution. The integrated frame test has not been executed locally.
+- REDMI_UNVERIFIED: no authorized connected Redmi, real MediaProjection provider, Termux or Android native run. No device was contacted or mutated.
+- NOT_RELEASED: no update request, manual command, model/weight swap or permission change.
+
 
 ## Required owners
 
