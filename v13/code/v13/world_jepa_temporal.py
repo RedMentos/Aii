@@ -1896,8 +1896,15 @@ def consume_temporal_after_commit(store, home=None, *, limit=PAGE_SIZE, max_page
     return result
 
 
-def _record_references_source(record, source_id):
-    """Check every retained temporal artifact that can encode one source."""
+def _record_references_source(store, record, source_id, pending_action_ids=()):
+    """Check retained artifacts and the full scanned T8 prefix for one source.
+
+    experience_rows is a bounded replay window (MAX_ROWS), not a complete
+    provenance ledger. Older training examples can therefore disappear from
+    that list while their influence remains in the active/rollback parameters.
+    The per-checkpoint scan cursor lets source-forget conservatively inspect
+    the durable ActionOutcome ledger for every eligible row in that prefix.
+    """
     if record is None:
         return False
     if any(row.get("source_id") == source_id for row in record.get("experience_rows", [])):
@@ -1909,6 +1916,27 @@ def _record_references_source(record, source_id):
         if (source_id in intent.get("source_ids", [])
                 or source_id in intent.get("validation_source_ids", [])):
             return True
+
+    cursor = record.get("scan_cursor")
+    if type(cursor) is int and cursor > 0:
+        pending = set(pending_action_ids)
+        # The Store state caps pending rows at MAX_ROWS. Reading one more than
+        # that bound guarantees that an eligible scanned row outside the
+        # pending set is found without a large SQLite NOT IN parameter list.
+        rows = store.rows(
+            """SELECT a.id FROM actions a
+               JOIN events e ON e.id=a.event_id
+               WHERE a.rowid<=? AND e.source_id=?
+                 AND a.outcome IS NOT NULL AND a.expected LIKE ?
+                 AND a.status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED')
+               ORDER BY a.rowid ASC LIMIT ?""",
+            (cursor, source_id, '%"forecast"%', MAX_ROWS + 1),
+        )
+        if type(rows) is not list:
+            raise ValueError("temporal source-forget history query")
+        for row in rows:
+            if _mapping(row).get("id") not in pending:
+                return True
     return False
 
 
