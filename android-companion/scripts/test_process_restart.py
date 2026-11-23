@@ -289,7 +289,7 @@ def wait_for_stopped_ui_or_prove_durable(timeout: float = 60.0) -> str:
     """Keep visible UI strict; record independent durable state if UI is blocked."""
     try:
         return wait_for_text(STOPPED_TEXT, timeout=timeout)
-    except (AssertionError, subprocess.SubprocessError, OSError) as ui_failure:
+    except (AssertionError, subprocess.SubprocessError, OSError, RuntimeError) as ui_failure:
         # uiautomator may report an ANR as an assertion, an adb timeout/nonzero
         # exit, or an OS-level transport error. All are UI-observation failures;
         # preserve the original failure but still attempt the independent OFF
@@ -301,6 +301,26 @@ def wait_for_stopped_ui_or_prove_durable(timeout: float = 60.0) -> str:
                   + ": " + str(durable_failure)[:1000])
         else:
             print("PARTIAL_PASS: durable OFF/process-death proof passed; "
+                  "visible STOPPED UI confirmation remains BLOCKED")
+        raise ui_failure
+
+
+def wait_for_restarted_stopped_ui_or_report_durable(timeout: float = 60.0) -> str:
+    """Keep the restarted UI gate strict while reporting independently verified OFF state."""
+    try:
+        return wait_for_text(STOPPED_TEXT, timeout=timeout)
+    except (AssertionError, subprocess.SubprocessError, OSError, RuntimeError) as ui_failure:
+        try:
+            marker = STOP_PROOF_MARKER.read_text(encoding="utf-8").strip()
+            if marker != "STOP_ACTION_PERSISTED_OFF":
+                raise AssertionError("visible Stop action marker is invalid")
+            if persisted_enabled() != "false":
+                raise AssertionError("provider startup did not preserve OFF")
+        except Exception as durable_failure:
+            print("DURABLE_STOP_PROOF_FAILED: " + type(durable_failure).__name__
+                  + ": " + str(durable_failure)[:1000])
+        else:
+            print("PARTIAL_PASS: force-stop/PID disappearance and provider startup persisted OFF; "
                   "visible STOPPED UI confirmation remains BLOCKED")
         raise ui_failure
 
@@ -336,12 +356,7 @@ def main() -> None:
     launch_companion()
     wait_for_process(absent=False)
     assert persisted_enabled() == "false"
-    try:
-        restarted = wait_for_text(STOPPED_TEXT, timeout=60.0)
-    except AssertionError:
-        print("PARTIAL_PASS: force-stop/PID disappearance and provider startup persisted OFF; "
-              "visible STOPPED UI confirmation remains BLOCKED")
-        raise
+    restarted = wait_for_restarted_stopped_ui_or_report_durable(timeout=60.0)
     assert ENABLED_TEXT not in restarted
     STOP_PROOF_MARKER.unlink(missing_ok=True)
 
