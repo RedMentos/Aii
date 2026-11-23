@@ -730,7 +730,7 @@ def _memory_forget_source(store, source_id):
     return memory._forget_source(source_id, None)
 
 
-def test_memory_forget_refuses_source_used_by_active_world_jepa(tmp_path):
+def test_memory_forget_rebuilds_after_source_used_by_active_world_jepa(tmp_path):
     home = tmp_path / "brain-forget-active"
     store, session = _make_store(home)
     try:
@@ -743,21 +743,24 @@ def test_memory_forget_refuses_source_used_by_active_world_jepa(tmp_path):
         state, _ = store.state("v14.world_jepa.store_consumer", None)
         active = state["active"]
         source_id = active["experience_rows"][0]["source_id"]
+        checkpoint_path = home / "world_jepa" / active["checkpoint"]
         before = store.one("SELECT deleted FROM sources WHERE id=?", (source_id,))
         assert before is not None and before["deleted"] == 0
 
-        with pytest.raises(ValueError, match="WorldJEPA"):
-            _memory_forget_source(store, source_id)
+        _memory_forget_source(store, source_id)
 
         after = store.one("SELECT deleted FROM sources WHERE id=?", (source_id,))
-        assert after is not None and after["deleted"] == 0
+        assert after is not None and after["deleted"] == 1
         current, _ = store.state("v14.world_jepa.store_consumer", None)
-        assert current["active"]["checkpoint_sha256"] == active["checkpoint_sha256"]
+        assert current["active"] is None
+        assert current["previous"] is None
+        assert current["scan_cursor"] == 0
+        assert current["pending_rows"] == []
+        assert not checkpoint_path.exists()
     finally:
         store.close()
 
-
-def test_memory_forget_detects_source_after_replay_row_eviction(tmp_path):
+def test_memory_forget_rebuilds_after_source_replay_row_eviction(tmp_path):
     home = tmp_path / "brain-forget-evicted"
     store, session = _make_store(home)
     try:
@@ -781,15 +784,18 @@ def test_memory_forget_detects_source_after_replay_row_eviction(tmp_path):
         state = dict(state)
         state["active"] = active
         store.set_state("v14.world_jepa.store_consumer", state, expected=version)
+        checkpoint_path = home / "world_jepa" / active["checkpoint"]
 
-        with pytest.raises(ValueError, match="evicted replay rows"):
-            _memory_forget_source(store, source_id)
+        _memory_forget_source(store, source_id)
 
         after = store.one("SELECT deleted FROM sources WHERE id=?", (source_id,))
-        assert after is not None and after["deleted"] == 0
+        assert after is not None and after["deleted"] == 1
+        current, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert current["active"] is None and current["previous"] is None
+        assert current["scan_cursor"] == 0
+        assert not checkpoint_path.exists()
     finally:
         store.close()
-
 
 def test_memory_forget_discards_untrained_pending_world_jepa_source(tmp_path):
     home = tmp_path / "brain-forget-pending"
@@ -845,7 +851,7 @@ def test_source_forget_guard_shares_training_file_lock(tmp_path):
 
 
 
-def test_memory_forget_refuses_source_retained_by_rollback_world_jepa(tmp_path):
+def test_memory_forget_invalidates_source_retained_only_by_rollback_world_jepa(tmp_path):
     home = tmp_path / "brain-forget-rollback"
     store, session = _make_store(home)
     try:
@@ -859,6 +865,7 @@ def test_memory_forget_refuses_source_retained_by_rollback_world_jepa(tmp_path):
         state, version = store.state("v14.world_jepa.store_consumer", None)
         retained = state["active"]
         source_id = retained["experience_rows"][0]["source_id"]
+        checkpoint_path = home / "world_jepa" / retained["checkpoint"]
         state = dict(state)
         state["active"] = None
         state["previous"] = retained
@@ -867,16 +874,17 @@ def test_memory_forget_refuses_source_retained_by_rollback_world_jepa(tmp_path):
             "v14.world_jepa.store_consumer", state, expected=version
         )
 
-        with pytest.raises(ValueError, match="rollback checkpoint"):
-            _memory_forget_source(store, source_id)
+        _memory_forget_source(store, source_id)
 
         source = store.one("SELECT deleted FROM sources WHERE id=?", (source_id,))
-        assert source is not None and source["deleted"] == 0
+        assert source is not None and source["deleted"] == 1
         current, _ = store.state("v14.world_jepa.store_consumer", None)
-        assert current["previous"]["checkpoint_sha256"] == retained["checkpoint_sha256"]
+        assert current["active"] is None
+        assert current["previous"] is None
+        assert current["scan_cursor"] == 0
+        assert not checkpoint_path.exists()
     finally:
         store.close()
-
 
 def _hold_world_jepa_file_lock(lock_path, ready, release):
     import fcntl
@@ -938,4 +946,119 @@ def test_source_forget_guard_waits_for_cross_process_training_lock(tmp_path):
             if process.is_alive():
                 process.terminate()
                 process.join(1.0)
+        store.close()
+
+
+def test_memory_forget_restores_clean_previous_checkpoint_and_replays_remaining_t8(tmp_path):
+    home = tmp_path / "brain-forget-clean-previous"
+    store, session = _make_store(home)
+    try:
+        first_events = _add_transitions(store, session, 0, 256)
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=120
+        )
+        first = consume_after_commit(store, home, limit=256)
+        assert first["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+
+        second_events = _add_transitions(store, session, 256, 32)
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=24
+        )
+        second = consume_after_commit(store, home, limit=64)
+        assert second["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+
+        state, _ = store.state("v14.world_jepa.store_consumer", None)
+        active, previous = state["active"], state["previous"]
+        source_row = store.one(
+            "SELECT source_id FROM events WHERE id=?", (second_events[-1],)
+        )
+        source_id = source_row["source_id"]
+        assert source_id in {row["source_id"] for row in active["experience_rows"]}
+        assert source_id not in {row["source_id"] for row in previous["experience_rows"]}
+        tainted_path = home / "world_jepa" / active["checkpoint"]
+        clean_path = home / "world_jepa" / previous["checkpoint"]
+        clean_sha = previous["checkpoint_sha256"]
+        clean_cursor = previous["scan_cursor"]
+
+        _memory_forget_source(store, source_id)
+
+        restored, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert restored["active"]["checkpoint_sha256"] == clean_sha
+        assert restored["previous"] is None
+        assert restored["scan_cursor"] == clean_cursor
+        assert restored["pending_rows"] == []
+        assert not tainted_path.exists() and clean_path.is_file()
+
+        _add_transitions(store, session, 288, 64)
+        from v13.world_jepa_consumer import WorldJEPAStoreConsumer
+        consumer = WorldJEPAStoreConsumer(
+            store, home / "world_jepa", learning_enabled=True
+        )
+        replay = consumer.update(
+            limit=128, steps=24, optimizer_permission=True, replay_mode="uniform"
+        )
+        assert replay["rejected_receipts"] >= 1
+        final, _ = consumer._read_state()
+        active_rows = final["active"]["experience_rows"] if final["active"] else []
+        assert source_id not in {row["source_id"] for row in active_rows}
+        assert source_id not in {row["source_id"] for row in final["pending_rows"]}
+        assert final["scan_cursor"] > clean_cursor
+        assert second["checkpoint_sha256"] != first["checkpoint_sha256"]
+    finally:
+        store.close()
+
+
+def test_memory_forget_invalidates_both_tainted_checkpoints_then_replays(tmp_path):
+    home = tmp_path / "brain-forget-both-tainted"
+    store, session = _make_store(home)
+    try:
+        first_events = _add_transitions(store, session, 0, 256)
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=120
+        )
+        first = consume_after_commit(store, home, limit=256)
+        assert first["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+
+        _add_transitions(store, session, 256, 32)
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=24
+        )
+        second = consume_after_commit(store, home, limit=64)
+        assert second["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+
+        state, _ = store.state("v14.world_jepa.store_consumer", None)
+        active, previous = state["active"], state["previous"]
+        source_row = store.one(
+            "SELECT source_id FROM events WHERE id=?", (first_events[0],)
+        )
+        source_id = source_row["source_id"]
+        assert source_id in {row["source_id"] for row in active["experience_rows"]}
+        assert source_id in {row["source_id"] for row in previous["experience_rows"]}
+        active_path = home / "world_jepa" / active["checkpoint"]
+        previous_path = home / "world_jepa" / previous["checkpoint"]
+
+        _memory_forget_source(store, source_id)
+
+        reset, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert reset["active"] is None and reset["previous"] is None
+        assert reset["scan_cursor"] == 0 and reset["pending_rows"] == []
+        assert not active_path.exists() and not previous_path.exists()
+
+        from v13.world_jepa_consumer import WorldJEPAStoreConsumer
+        consumer = WorldJEPAStoreConsumer(
+            store, home / "world_jepa", learning_enabled=True
+        )
+        replay = consumer.update(
+            limit=512, steps=120, optimizer_permission=True, replay_mode="uniform"
+        )
+        assert replay["rejected_receipts"] >= 1
+        after, _ = consumer._read_state()
+        rows = (
+            after["active"]["experience_rows"]
+            if after["active"] is not None else after["pending_rows"]
+        )
+        assert source_id not in {row["source_id"] for row in rows}
+        assert after["scan_cursor"] > 0
+        assert second["checkpoint_sha256"] != first["checkpoint_sha256"]
+    finally:
         store.close()
