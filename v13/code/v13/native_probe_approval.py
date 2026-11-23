@@ -46,14 +46,17 @@ def _roles(sender_role, receiver_role):
 
 
 
-def _verify_model_file(path, expected_size, expected_digest):
-    """Stream the actual model bytes and bind them to the installed manifest."""
+def _verify_model_file(path, expected_size, expected_digest, *, verify_bytes=True, expected_identity=None):
+    """Verify a regular, non-symlink model file without following a mutable path.
+
+    Full SHA-256 is done when arming the local approval. Consume/recheck uses
+    the pinned inode metadata only; the receiver still opens and hashes its
+    own model descriptor before native use.
+    """
     nofollow = getattr(os, "O_NOFOLLOW", None)
     nonblock = getattr(os, "O_NONBLOCK", None)
     if nofollow is None or nonblock is None:
         raise PermissionError("native probe platform lacks safe no-follow/nonblocking model open")
-    # O_NOFOLLOW prevents a final symlink; O_NONBLOCK prevents a FIFO/device
-    # from hanging the approval path before fstat can reject non-regular files.
     flags = os.O_RDONLY | nofollow | nonblock | getattr(os, "O_CLOEXEC", 0)
     try:
         fd = os.open(str(path), flags)
@@ -63,13 +66,14 @@ def _verify_model_file(path, expected_size, expected_digest):
         before = os.fstat(fd)
         if not stat.S_ISREG(before.st_mode) or before.st_size != expected_size:
             raise PermissionError("native probe model file type or size differs from its manifest")
-        digest = hashlib.sha256()
-        with os.fdopen(os.dup(fd), "rb") as stream:
-            while True:
-                chunk = stream.read(1024 * 1024)
-                if not chunk:
-                    break
-                digest.update(chunk)
+        digest = hashlib.sha256() if verify_bytes else None
+        if verify_bytes:
+            with os.fdopen(os.dup(fd), "rb") as stream:
+                while True:
+                    chunk = stream.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    digest.update(chunk)
         after = os.fstat(fd)
         identity = lambda value: (
             value.st_dev, value.st_ino, value.st_size,
@@ -79,18 +83,23 @@ def _verify_model_file(path, expected_size, expected_digest):
             path_stat = os.stat(path, follow_symlinks=False)
         except OSError as exc:
             raise PermissionError("native probe model path changed during verification") from exc
+        observed = identity(after)
         if (not stat.S_ISREG(path_stat.st_mode)
-                or identity(before) != identity(after)
-                or identity(after) != identity(path_stat)):
-            raise PermissionError("native probe model changed while hashing")
-        actual = digest.hexdigest()
-        if not secrets.compare_digest(actual, expected_digest):
-            raise PermissionError("native probe model file hash differs from its manifest")
-        return identity(after)
+                or identity(before) != observed
+                or observed != identity(path_stat)):
+            raise PermissionError("native probe model changed while verifying its identity")
+        if expected_identity is not None and list(observed) != list(expected_identity):
+            raise PermissionError("native probe model file identity changed after local approval")
+        if verify_bytes:
+            actual = digest.hexdigest()
+            if not secrets.compare_digest(actual, expected_digest):
+                raise PermissionError("native probe model file hash differs from its manifest")
+        return observed
     finally:
         os.close(fd)
 
-def _model_binding(runtime, role):
+
+def _model_binding(runtime, role, *, expected=None, verify_bytes=True):
     key = model_key(role, runtime.models.b2_control)
     installed = runtime.models.installed.get(key)
     if not isinstance(installed, dict) or installed.get("download_complete") is not True:
@@ -113,20 +122,29 @@ def _model_binding(runtime, role):
     relative = Path(relative_path)
     if relative.is_absolute() or ".." in relative.parts:
         raise PermissionError("native probe model manifest path is unsafe")
-    path = Path(runtime.home) / relative
-    if path.is_symlink() or not path.is_file():
-        raise PermissionError("native probe model is missing or linked")
+    home = Path(runtime.home).resolve(strict=True)
+    path = home / relative
+    current = home
+    for part in relative.parts:
+        current = current / part
+        if current.is_symlink():
+            raise PermissionError("native probe model path contains a symlink")
+    if not path.is_file():
+        raise PermissionError("native probe model is missing or not a regular file")
     resolved = path.resolve(strict=True)
-    models_root = (Path(runtime.home) / "models").resolve(strict=True)
+    models_root = (home / "models").resolve(strict=True)
     if not resolved.is_relative_to(models_root):
         raise PermissionError("native probe model escaped home/models")
     size = entry.get("size")
     if type(size) is not int or size < 1:
         raise PermissionError("native probe model size is missing or invalid")
-    verified_identity = _verify_model_file(resolved, size, digest)
-    # The native receiver later opens ModelManager.path_for(role), which may be
-    # redirected by an online model router. Bind approval to that exact route,
-    # not merely to another manifest file with matching bytes.
+    expected_identity = expected.get("file_identity") if isinstance(expected, dict) else None
+    verified_identity = _verify_model_file(
+        resolved, size, digest, verify_bytes=verify_bytes,
+        expected_identity=expected_identity,
+    )
+    # Bind approval to the exact ModelManager route, not a different file
+    # with the same bytes or a routed candidate.
     try:
         selected_path = Path(runtime.models.path_for(role))
         if selected_path.is_symlink():
@@ -143,19 +161,25 @@ def _model_binding(runtime, role):
     )
     if (not stat.S_ISREG(selected_stat.st_mode)
             or selected_resolved != resolved
-            or selected_identity != verified_identity):
+            or list(selected_identity) != list(verified_identity)):
         raise PermissionError("native probe selected model path differs from verified manifest file")
     return {
         "model_key": key,
         "revision": revision,
         "sha256": digest,
-        # Persist both the canonical route and the identity of the exact inode
-        # whose bytes were hashed. Recomputing only at consume would miss a
-        # coordinated manifest+router redirect to a byte-identical copy.
+        "size": size,
         "canonical_path": str(resolved),
         "file_identity": list(verified_identity),
     }
 
+
+def _require_distinct_models(models, sender_role, receiver_role):
+    sender = models.get(sender_role, {})
+    receiver = models.get(receiver_role, {})
+    if (sender.get("sha256") == receiver.get("sha256")
+            or sender.get("canonical_path") == receiver.get("canonical_path")
+            or sender.get("file_identity") == receiver.get("file_identity")):
+        raise PermissionError("native probe requires distinct installed sender and receiver model files")
 
 def _current_event(runtime):
     last = runtime.last_answer()
@@ -191,6 +215,7 @@ def arm(runtime, sender_role, receiver_role, *, now=None):
         sender_role: _model_binding(runtime, sender_role),
         receiver_role: _model_binding(runtime, receiver_role),
     }
+    _require_distinct_models(models, sender_role, receiver_role)
     # Start the short approval window only after the full model-byte verification.
     clock = _clock(now)
     runtime_nonce = _runtime_nonce(runtime)
@@ -262,9 +287,16 @@ def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None)
             or record.get("source_ref") != current_ref):
         raise PermissionError("native probe source/session/event changed after local approval")
     models = {
-        sender_role: _model_binding(runtime, sender_role),
-        receiver_role: _model_binding(runtime, receiver_role),
+        sender_role: _model_binding(
+            runtime, sender_role, expected=record.get("models", {}).get(sender_role),
+            verify_bytes=False,
+        ),
+        receiver_role: _model_binding(
+            runtime, receiver_role, expected=record.get("models", {}).get(receiver_role),
+            verify_bytes=False,
+        ),
     }
+    _require_distinct_models(models, sender_role, receiver_role)
     if record.get("models") != models:
         raise PermissionError("native probe model revision/hash changed after local approval")
     # Hashing can be slow for large GGUFs; re-check expiry after verification.
@@ -276,12 +308,63 @@ def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None)
     runtime.store.set_state(KEY, consumed, expected=version)
     return {
         "approval_id": record["nonce"][:12],
+        "approval_token": record["nonce"],
         "sender_role": sender_role,
         "receiver_role": receiver_role,
         "event_id": record["event_id"],
         "consumed": True,
     }
 
+
+
+def require_consumed(runtime, sender_role, receiver_role, event, source_ref, approval_token, *, now=None):
+    """Require the exact consumed local approval before native receiver work."""
+    runtime.require_idle()
+    _roles(sender_role, receiver_role)
+    clock = _clock(now)
+    record, _ = runtime.store.state(KEY, None)
+    if (not isinstance(record, dict) or record.get("schema") != SCHEMA
+            or record.get("status") != "CONSUMED"):
+        raise PermissionError("native receiver requires a consumed local TTY approval")
+    nonce = record.get("nonce")
+    if (not isinstance(approval_token, str) or not isinstance(nonce, str)
+            or not secrets.compare_digest(nonce, approval_token)
+            or record.get("runtime_nonce") != _runtime_nonce(runtime)):
+        raise PermissionError("native receiver local approval token is invalid or from another Runtime")
+    expires = record.get("expires_at")
+    consumed_at = record.get("consumed_at")
+    if (isinstance(expires, bool) or not isinstance(expires, (int, float))
+            or not math.isfinite(expires) or isinstance(consumed_at, bool)
+            or not isinstance(consumed_at, (int, float)) or not math.isfinite(consumed_at)
+            or clock < consumed_at or clock >= expires or clock - consumed_at > TTL_SECONDS):
+        raise PermissionError("native receiver local approval expired")
+    if (record.get("sender_role") != sender_role
+            or record.get("receiver_role") != receiver_role):
+        raise PermissionError("native receiver role pair differs from local approval")
+    current_event, current_ref = _current_event(runtime)
+    if (not isinstance(event, dict)
+            or event.get("event_id") != current_event.get("event_id")
+            or event.get("brain_generation_id") != current_event.get("brain_generation_id")
+            or source_ref != current_ref
+            or record.get("session_id") != runtime.session
+            or record.get("event_id") != current_event.get("event_id")
+            or record.get("brain_generation_id") != current_event.get("brain_generation_id")
+            or record.get("source_ref") != current_ref):
+        raise PermissionError("native receiver source/session/event changed after local approval")
+    models = {
+        sender_role: _model_binding(
+            runtime, sender_role, expected=record.get("models", {}).get(sender_role),
+            verify_bytes=False,
+        ),
+        receiver_role: _model_binding(
+            runtime, receiver_role, expected=record.get("models", {}).get(receiver_role),
+            verify_bytes=False,
+        ),
+    }
+    _require_distinct_models(models, sender_role, receiver_role)
+    if record.get("models") != models:
+        raise PermissionError("native receiver model binding changed after local approval")
+    return dict(record)
 
 def revoke(runtime, *, now=None):
     """Revoke a pending local probe approval without invoking the native runner."""
