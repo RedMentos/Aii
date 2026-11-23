@@ -953,14 +953,14 @@ def test_memory_forget_restores_clean_previous_checkpoint_and_replays_remaining_
     home = tmp_path / "brain-forget-clean-previous"
     store, session = _make_store(home)
     try:
-        first_events = _add_transitions(store, session, 0, 256)
+        first_actions = _add_transitions(store, session, 0, 256)
         _set_runtime_permissions(
             store, learning_enabled=True, optimizer_permission=True, steps=120
         )
         first = consume_after_commit(store, home, limit=256)
         assert first["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
 
-        second_events = _add_transitions(store, session, 256, 32)
+        second_actions = _add_transitions(store, session, 256, 32)
         _set_runtime_permissions(
             store, learning_enabled=True, optimizer_permission=True, steps=24
         )
@@ -970,7 +970,8 @@ def test_memory_forget_restores_clean_previous_checkpoint_and_replays_remaining_
         state, _ = store.state("v14.world_jepa.store_consumer", None)
         active, previous = state["active"], state["previous"]
         source_row = store.one(
-            "SELECT source_id FROM events WHERE id=?", (second_events[-1],)
+            "SELECT e.source_id FROM actions a JOIN events e ON e.id=a.event_id WHERE a.id=?",
+            (second_actions[-1],),
         )
         source_id = source_row["source_id"]
         assert source_id in {row["source_id"] for row in active["experience_rows"]}
@@ -1029,7 +1030,8 @@ def test_memory_forget_invalidates_both_tainted_checkpoints_then_replays(tmp_pat
         state, _ = store.state("v14.world_jepa.store_consumer", None)
         active, previous = state["active"], state["previous"]
         source_row = store.one(
-            "SELECT source_id FROM events WHERE id=?", (first_events[0],)
+            "SELECT e.source_id FROM actions a JOIN events e ON e.id=a.event_id WHERE a.id=?",
+            (first_actions[0],),
         )
         source_id = source_row["source_id"]
         assert source_id in {row["source_id"] for row in active["experience_rows"]}
