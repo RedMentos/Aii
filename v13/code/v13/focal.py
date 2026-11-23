@@ -537,6 +537,103 @@ class ActionGate:
     """
     PRIOR={'simple':'C3_LANGUAGE','detail':'B1_DETAIL','gist':'B2_GIST','both':'B1_DETAIL'}
     def __init__(self,store):self.s=store
+    def _action_provenance(self,e,coalition,direct):
+        """Bind C5 to every source actually admitted through the active coalition."""
+        refs=[];seen=set();source_hashes={}
+        keys={"source_id","sha256","char_start","char_end","modality"}
+        def add(ref):
+            if type(ref) is not dict or set(ref)!=keys:
+                raise ValueError("ActionSelection source ref shape")
+            source_id,sha=ref.get("source_id"),ref.get("sha256")
+            start,end,modality=ref.get("char_start"),ref.get("char_end"),ref.get("modality")
+            if (type(source_id) is not str or not source_id or len(source_id)>256
+                    or type(sha) is not str or not re.fullmatch(r"[0-9a-f]{64}",sha)
+                    or type(start) is not int or type(end) is not int or not 0<=start<=end
+                    or type(modality) is not str or not modality or len(modality)>64):
+                raise ValueError("ActionSelection source ref identity")
+            try:source_text=self.s.read_source(ref)
+            except (ValueError,OSError,KeyError,TypeError) as exc:
+                raise ValueError("ActionSelection source ref unreadable") from exc
+            if type(source_text) is not str:
+                raise ValueError("ActionSelection source ref read")
+            key=(source_id,sha,start,end,modality)
+            prior=source_hashes.get(source_id)
+            if prior is not None and prior!=sha:
+                raise ValueError("ActionSelection source digest changed")
+            source_hashes[source_id]=sha
+            if key in seen:return
+            if len(refs)>=64:raise ValueError("ActionSelection source ref bound")
+            seen.add(key);refs.append(dict(ref))
+        add(e.get("source_ref"))
+        for item in coalition:
+            if type(item) is not dict:
+                raise ValueError("ActionSelection coalition item")
+            raw_refs=item.get("source_refs")
+            if type(raw_refs) is not list or not raw_refs:
+                raise ValueError("ActionSelection coalition source refs")
+            for ref in raw_refs:add(ref)
+            kind=item.get("source_kind")
+            if kind not in BODY:continue
+            packet_id=item.get("item_id")
+            if type(packet_id) is not str or not packet_id:
+                raise ValueError("ActionSelection offer identity")
+            row=self.s.one("SELECT payload FROM packets WHERE id=? AND kind='OfferPacket'",(packet_id,))
+            if not row:
+                raise ValueError("ActionSelection offer packet missing")
+            try:offer=json.loads(row["payload"])
+            except (TypeError,ValueError,KeyError) as exc:
+                raise ValueError("ActionSelection offer packet malformed") from exc
+            if (type(offer) is not dict or offer.get("packet_id")!=packet_id
+                    or offer.get("event_id")!=item.get("origin_event_id")
+                    or offer.get("brain_generation_id")!=e.get("brain_generation_id")
+                    or offer.get("role")!=kind):
+                raise ValueError("ActionSelection offer binding")
+            for field in ("provenance","evidence_refs","context_source_refs","enlightened_source_refs"):
+                values=offer.get(field,[])
+                if type(values) is not list:
+                    raise ValueError("ActionSelection offer "+field)
+                for ref in values:add(ref)
+            query_id=offer.get("query_packet_id")
+            if query_id is not None:
+                if type(query_id) is not str or not query_id:
+                    raise ValueError("ActionSelection query identity")
+                query_row=self.s.one("SELECT payload FROM packets WHERE id=? AND kind='QueryPacket'",(query_id,))
+                if not query_row:
+                    raise ValueError("ActionSelection query packet missing")
+                try:query=json.loads(query_row["payload"])
+                except (TypeError,ValueError,KeyError) as exc:
+                    raise ValueError("ActionSelection query packet malformed") from exc
+                if (type(query) is not dict or query.get("packet_id")!=query_id
+                        or query.get("event_id")!=offer.get("event_id")
+                        or query.get("brain_generation_id")!=offer.get("brain_generation_id")
+                        or query.get("target_role")!=kind
+                        or query.get("based_on_state_version")!=offer.get("based_on_state_version")):
+                    raise ValueError("ActionSelection query binding")
+                for field in ("provenance","source_refs","context_source_refs","enlightened_source_refs"):
+                    values=query.get(field,[])
+                    if type(values) is not list:
+                        raise ValueError("ActionSelection query "+field)
+                    for ref in values:add(ref)
+        if direct:
+            rows=self.s.rows(
+                "SELECT payload FROM packets WHERE kind='OutputPolicyDecision' AND event_id=? AND generation_id=? ORDER BY rowid DESC LIMIT 2",
+                (e.get("event_id"),e.get("brain_generation_id")))
+            if type(rows) is not list or len(rows)>1:
+                raise ValueError("ActionSelection output-policy cardinality")
+            for raw in rows:
+                try:policy=json.loads(raw["payload"])
+                except (TypeError,ValueError,KeyError) as exc:
+                    raise ValueError("ActionSelection output-policy packet malformed") from exc
+                if (type(policy) is not dict or policy.get("event_id")!=e.get("event_id")
+                        or policy.get("brain_generation_id")!=e.get("brain_generation_id")
+                        or policy.get("producer_component")!="C5_REPORT_BROKER"):
+                    raise ValueError("ActionSelection output-policy binding")
+                values=policy.get("provenance",[])
+                if type(values) is not list:raise ValueError("ActionSelection output-policy provenance")
+                for ref in values:add(ref)
+                for field in ("query_ref","answer_ref"):
+                    if field in policy:add(policy[field])
+        return refs
     def candidates(self,route,direct,coalition,view,age,tool=None):
         total=sum(x['priority'] for x in coalition) or 1.
         support={r:round(sum(x['priority'] for x in coalition if x['source_kind']==r)/total,4) for r in BODY}
@@ -555,7 +652,7 @@ class ActionGate:
         else:add('EXTERNAL_TOOL',0.,.5,'external_tool',0.,'TOOL_CALL')
         return out
     def select(self,e,*,route,direct,resource_state,coalition=(),view=None,age=None,predicted=False,effort=None,gain_action=None,tool=None,clarify=None):
-        age=age or {'tools':False};g_act=BOOT['gain_action'] if gain_action is None else BOOT['gain_action']*clip(gain_action)/ATT_BASE['action'];coalition=list(coalition);cands=self.candidates(route,direct,coalition,view,age,tool);suppressed=[]  # WP-N5: caution lowers action coupling
+        age=age or {'tools':False};g_act=BOOT['gain_action'] if gain_action is None else BOOT['gain_action']*clip(gain_action)/ATT_BASE['action'];coalition=list(coalition);provenance=self._action_provenance(e,coalition,direct);cands=self.candidates(route,direct,coalition,view,age,tool);suppressed=[]  # WP-N5: caution lowers action coupling
         for c in cands:
             why=None
             if c['action_type']=='TOOL_CALL' and tool:why='EXACT_OR_FIXED_OUTPUT' if direct else (None if tool['status']=='APPROVED' else 'TOOL_POLICY:'+str(tool['reason']))  # IH-H29 decided
@@ -574,7 +671,7 @@ class ActionGate:
             learning,_=learned_c5(self.s,cands,route,effort)  # WP-N4: learned promote/suppress pathways (scores shift only in ACTIVE)
         live=sorted((c for c in cands if 'suppressed' not in c),key=lambda c:(-c['score'],c['action_id']))
         chosen=live[0];alternates=[c['action_id'] for c in live[1:]]
-        p=packet('ActionSelection','C5_ACTION_GATE',e['event_id'],e['brain_generation_id'],[e['source_ref']],selected={k:chosen[k] for k in ('action_id','action_type','score','permission_class','focal_support')},
+        p=packet('ActionSelection','C5_ACTION_GATE',e['event_id'],e['brain_generation_id'],provenance,selected={k:chosen[k] for k in ('action_id','action_type','score','permission_class','focal_support')},
                  candidates=[{k:c[k] for k in ('action_id','action_type','score','expected_utility','expected_cost','focal_support','permission_class')} for c in cands],
                  suppressed=[{'action_id':c['action_id'],'reason':c['suppressed']} for c in suppressed],permission_class=chosen['permission_class'],
                  alternates=alternates,route_prior=self.PRIOR.get(route),stage='PREDICTION' if predicted else 'COMMIT',parameter_status='BOOT_REPRODUCES_ROUTE_TABLE',learning=learning,route_hint=route,action_gain=round(g_act,6),clarify=clarify)
