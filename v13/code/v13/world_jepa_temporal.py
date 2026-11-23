@@ -2232,7 +2232,7 @@ def _record_references_source(store, record, source_id, pending_action_ids=()):
                       e.generation_id,e.packet
                FROM actions a
                JOIN events e ON e.id=a.event_id
-               WHERE a.rowid<=? AND a.outcome IS NOT NULL AND a.expected LIKE ?
+               WHERE e.rowid<=? AND a.outcome IS NOT NULL AND a.expected LIKE ?
                  AND a.status IN (
                    'FINAL','FAILED','ERROR','DEADLINE','REJECTED',
                    'CANCELLED','ABORTED','INTERRUPTED'
