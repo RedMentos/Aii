@@ -63,7 +63,7 @@ def _valid_sha256(value):
 
 
 def _temporal_world_jepa_body_readout(r, e, role):
-    """Read source-bound temporal T8 predictions for B1/B2 without blocking a turn."""
+    """Read source-bound temporal T8 predictions only from an already-warm checkpoint."""
     if role not in ("B1_DETAIL", "B2_GIST"):
         return None, None
     history_length = 2 if role == "B1_DETAIL" else 3
