@@ -1150,14 +1150,20 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_mea
             "SELECT payload FROM packets WHERE kind='QueryPacket' AND event_id=? ORDER BY created",
             (event["event_id"],),
         )
-        assert len(query_rows) == 2
+        temporal_query_rows = []
         for row in query_rows:
             query_packet = json.loads(row["payload"])
-            role = query_packet["target_role"]
             ref = query_packet["bodyview"]["body_state_ref"]
-            assert ref in query_packet["provenance"]
             stored = json.loads(store.read_source(ref))
-            assert stored["schema"] == "V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/2"
+            if stored.get("schema") == "V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/2":
+                temporal_query_rows.append((query_packet, ref, stored))
+        # The cold B1 negative-control offer also emits a QueryPacket, but its
+        # body state correctly has no temporal readout. Count only the two warm
+        # source-backed B1/B2 receiver queries here.
+        assert len(temporal_query_rows) == 2
+        for query_packet, ref, stored in temporal_query_rows:
+            role = query_packet["target_role"]
+            assert ref in query_packet["provenance"]
             audit = stored["temporal_world_jepa_audit"]
             assert audit["body_state_created"] is True
             # The source record is created before Cognition.offer consumes it.
