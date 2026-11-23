@@ -100,6 +100,18 @@ class Broker:
         return self.s.message(self.r.session,e['event_id'],'broker',text,'FINAL',{'model_generated':False,'output_owner':'C7_OUTPUT_BROKER','late_of':mid}|meta)
     def finalize(self,e,mid,meta,status,output,*,direct=False,exact_requested=False,clarify=False,tool_result=None,pending=None):
         """After finish_message: decision packet, C6 check of the visible output, late CORRECTION / ACTION_PREVIEW."""
+        from .transaction import has_output_commit
+        committed=has_output_commit(self.s,mid,e['event_id'])
+        if (output or status=='FINAL') and not committed:
+            blocked_conflicts=['OUTPUT_NOT_COMMITTED']
+            p=self.s.add_packet('OutputBrokerDecision',packet(
+                'OutputBrokerDecision','C7_OUTPUT_BROKER',e['event_id'],e['brain_generation_id'],[e['source_ref']],
+                authority='NONE',egress_type='TEXT_REPORT',status=status,overridden=[],conflicts=blocked_conflicts,
+                committed=False,late=[],message_id=mid,rewrites=0,
+            ))
+            self.s.log('output_egress_blocked',e['event_id'],{'reason':'OUTPUT_NOT_COMMITTED','message_id':mid})
+            return {'packet_id':p['packet_id'],'authority':None,'egress_type':'TEXT_REPORT',
+                    'egress_ok':False,'conflicts':blocked_conflicts,'late':[]}
         cands=[]
         if meta.get('output_authority')=='APPROVED_FIXED_RULE' or meta.get('exact_policy_matched'):cands.append('APPROVED_FIXED_RULE')
         if exact_requested or (direct and not cands):cands.append('EXPLICIT_EXACT_COPY')
@@ -130,7 +142,7 @@ class Broker:
             if chk['ok']:item['message_id']=self._late(e,mid,text,{'output_authority':'RULE_NOTICE','user_rules':item['rules']})
             late.append(item)
         p=self.s.add_packet('OutputBrokerDecision',packet('OutputBrokerDecision','C7_OUTPUT_BROKER',e['event_id'],e['brain_generation_id'],[e['source_ref']],
-            authority=d['selected'] or 'NONE',egress_type=kind,status=status,overridden=d['overridden'],conflicts=cf,committed=bool(meta.get('output_committed')),late=late,
+            authority=d['selected'] or 'NONE',egress_type=kind,status=status,overridden=d['overridden'],conflicts=cf,committed=committed,late=late,
             message_id=mid,rewrites=0))
         return {'packet_id':p['packet_id'],'authority':d['selected'],'egress_type':kind,'egress_ok':eg['ok'] if eg else None,'conflicts':cf,'late':late}
     def _tools(self):
