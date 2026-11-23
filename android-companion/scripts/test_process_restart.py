@@ -332,7 +332,12 @@ def main() -> None:
     launch_companion()
     wait_for_process(absent=False)
     assert persisted_enabled() == "false"
-    restarted = wait_for_stopped_ui_or_prove_durable(timeout=60.0)
+    try:
+        restarted = wait_for_text(STOPPED_TEXT, timeout=60.0)
+    except AssertionError:
+        print("PARTIAL_PASS: force-stop/PID disappearance and provider startup persisted OFF; "
+              "visible STOPPED UI confirmation remains BLOCKED")
+        raise
     assert ENABLED_TEXT not in restarted
     STOP_PROOF_MARKER.unlink(missing_ok=True)
 
