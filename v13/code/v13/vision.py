@@ -282,9 +282,8 @@ def train(runtime,encoder=None,cfg=DEFAULTS):
     X,caps,T,ids=dataset(runtime.store,cfg)
     if len(X)<cfg['min_train']:raise ValueError('Zu wenig beschriebene Bilder (%d < %d); erst :image describe'%(len(X),cfg['min_train']))
     name,enc=encoder or text_encoder(runtime,cfg);Y=enc(caps);cv=crossval(X,Y,T,ridge=cfg['ridge'])
+    st=load(runtime.store);training_sources=source_lineage(st['images'],ids);old=st.get('projector')
     p=Projector(cfg['ridge']).fit(X,Y);path=runtime.home/'data/vision'/('projector-'+uid('vis')[4:]+'.npz');sha=p.save(path)
-    st=load(runtime.store);old=st.get('projector')
-    training_sources=source_lineage(st['images'],ids)
     st['projector']={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,'metrics':cv,'created':now(),
                      'captions':{sid:c for sid,c in zip(ids,caps)},'training_sources':training_sources,'authority':'LAB_SHADOW_ONLY'}
     save(runtime.store,st)
@@ -328,9 +327,8 @@ def train_tiles(runtime,encoder=None,cfg=DEFAULTS):
     X,texts,keys=tile_dataset(runtime.store,cfg)
     if len(set(texts)-{BACKGROUND})<2 or len(X)<cfg['min_train']:raise ValueError('Zu wenig beschriebene Bildbereiche für Kacheln; erst :image describe (g, Hälften, Quadranten)')
     name,enc=encoder or text_encoder(runtime,cfg);uniq=sorted(set(texts));E=dict(zip(uniq,enc(uniq)));Y=_np().stack([E[t] for t in texts])
+    st=load(runtime.store);training_sources=source_lineage(st['images'],keys);old=st.get('tile_projector')
     p=Projector(cfg['ridge']).fit(X,Y);path=runtime.home/'data/vision'/('tiles-'+uid('vis')[4:]+'.npz');sha=p.save(path)
-    st=load(runtime.store);old=st.get('tile_projector')
-    training_sources=source_lineage(st['images'],keys)
     st['tile_projector']={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,'created':now(),
                           'salient_tiles':sum(t!=BACKGROUND for t in texts),'training_sources':training_sources,'authority':'LAB_SHADOW_ONLY'}
     save(runtime.store,st)
