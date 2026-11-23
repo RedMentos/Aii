@@ -16,9 +16,6 @@ from pathlib import Path
 from typing import Iterable, Mapping, Sequence
 
 UCI_TIMESTAMP_FORMAT = "%d/%m/%Y %H:%M:%S"
-UCI_MISSING = {"", "?"}
-
-
 def _parse_measurement(token: str | None, *, context: str) -> float | None:
     """Parse one measurement; missing markers become None, non-finite values fail closed."""
     value = (token or "").strip()
@@ -297,15 +294,26 @@ def make_split(
     return windows, stats
 
 
+def _validate_rows(rows: Sequence[MinuteRow], channels: Sequence[str]) -> None:
+    if not channels or len(set(channels)) != len(channels):
+        raise ValueError("channel names must be non-empty and unique")
+    if not rows:
+        raise ValueError("dataset contains no rows")
+    for index, row in enumerate(rows):
+        if len(row.values) != len(channels):
+            raise ValueError(f"row {index} channel count does not match channel names")
+        if any(value is not None and not math.isfinite(value) for value in row.values):
+            raise ValueError(f"row {index} contains a non-finite measurement")
+        if index and row.timestamp - rows[index - 1].timestamp != timedelta(minutes=1):
+            raise ValueError(f"timestamps must be contiguous at one-minute resolution (row {index})")
+
+
 def build_dataset(
     rows: Sequence[MinuteRow],
     channels: Sequence[str],
     config: DataConfig,
 ) -> tuple[dict[str, list[Window]], dict[str, SplitStats], dict[str, object]]:
-    if any(len(row.values) != len(channels) for row in rows):
-        raise ValueError("row channel count does not match channel names")
-    if any(rows[i + 1].timestamp - rows[i].timestamp != timedelta(minutes=1) for i in range(len(rows) - 1)):
-        raise ValueError("timestamps must be contiguous at one-minute resolution")
+    _validate_rows(rows, channels)
     bounds = build_chronological_boundaries(len(rows), config)
     datasets: dict[str, list[Window]] = {}
     stats: dict[str, SplitStats] = {}
@@ -380,6 +388,7 @@ def load_test_split(
       data_config_sha256, split_boundaries_sha256, dataset_sha256.
     The supplied preregistration hash is checked against the exact file bytes.
     """
+    _validate_rows(rows, channels)
     path = Path(preregistration_path)
     raw = path.read_bytes()
     actual_prereg_hash = hashlib.sha256(raw).hexdigest()
