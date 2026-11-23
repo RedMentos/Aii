@@ -5,6 +5,7 @@ capability or integrated model-weight learning. Keep IDs stable for Termux UI.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 
@@ -162,6 +163,106 @@ def _latest_native_evidence(r):
 
 
 
+def _latest_native_receiver(r):
+    """Read a persisted B3 probe and its exact sender tap without exposing tokens."""
+    try:
+        row = r.store.one(
+            "SELECT p.payload,p.event_id,p.generation_id,e.session_id "
+            "FROM packets p JOIN events e ON e.id=p.event_id "
+            "WHERE p.kind='LatentReceiverPacket' AND e.session_id=? "
+            "ORDER BY p.created DESC LIMIT 1",
+            (r.session,),
+        )
+    except Exception as exc:
+        return {"status": "UNAVAILABLE", "reason": type(exc).__name__}
+    if not row:
+        return {"status": "NOT_RUN"}
+    try:
+        from .native_latent_receiver import validate_packet
+        receiver = validate_packet(_mapping(row.get("payload")))
+    except Exception as exc:
+        return {"status": "INVALID_RECEIVER_PACKET", "reason": type(exc).__name__}
+    if (row.get("session_id") != r.session
+            or receiver.get("event_id") != row.get("event_id")
+            or receiver.get("brain_generation_id") != row.get("generation_id")):
+        return {"status": "RECEIVER_BINDING_MISMATCH"}
+
+    tap_packet_id = receiver.get("sender_tap_packet_id")
+    if type(tap_packet_id) is not str or not tap_packet_id:
+        return {"status": "TAP_PACKET_UNAVAILABLE"}
+    try:
+        tap_row = r.store.one(
+            "SELECT p.payload,p.event_id,p.generation_id,e.session_id "
+            "FROM packets p JOIN events e ON e.id=p.event_id "
+            "WHERE p.id=? AND p.kind='LatentTapPacket' LIMIT 1",
+            (tap_packet_id,),
+        )
+    except Exception as exc:
+        return {"status": "UNAVAILABLE", "reason": type(exc).__name__}
+    if not tap_row:
+        return {"status": "TAP_PACKET_UNAVAILABLE"}
+    tap = _mapping(tap_row.get("payload"))
+    if (tap_row.get("session_id") != r.session
+            or tap_row.get("event_id") != row.get("event_id")
+            or tap_row.get("generation_id") != row.get("generation_id")
+            or tap.get("packet_id") != tap_packet_id
+            or tap.get("event_id") != receiver.get("event_id")
+            or tap.get("brain_generation_id") != receiver.get("brain_generation_id")
+            or tap.get("role") != receiver.get("sender_role")
+            or tap.get("tap_id") != receiver.get("sender_tap_id")
+            or tap.get("model_revision") != receiver.get("sender_model_revision")
+            or tap.get("source_ref") != receiver.get("source_ref")
+            or receiver.get("source_ref") not in tap.get("provenance", [])):
+        return {"status": "TAP_BINDING_MISMATCH"}
+
+    token_ids = tap.get("token_ids")
+    if (type(token_ids) is not list or not 1 <= len(token_ids) <= 64
+            or any(type(value) is not int or not 0 <= value <= 0xFFFFFFFF
+                   for value in token_ids)):
+        return {"status": "INVALID_SENDER_TOKEN_IDS"}
+    positions = receiver.get("position_ids")
+    if (len(token_ids) != receiver.get("input_rows")
+            or positions != list(range(len(token_ids)))):
+        return {"status": "TOKEN_POSITION_MISMATCH"}
+
+    # Hash the sender token sequence in a versioned, fixed-width encoding.
+    # Raw token IDs and source text never leave the local Store.
+    encoded = (b"v14.native-latent-sender-token-ids/1:"
+               + b"".join(value.to_bytes(4, "big") for value in token_ids))
+    token_digest = hashlib.sha256(encoded).hexdigest()
+    row_cosine = receiver.get("row_shuffle_control_cosine")
+    return {
+        "status": receiver["status"],
+        "sender_role": receiver["sender_role"],
+        "receiver_role": receiver["receiver_role"],
+        "sender_tap_id": receiver["sender_tap_id"],
+        "sender_tap_packet_id": tap_packet_id,
+        "sender_model_revision": receiver["sender_model_revision"],
+        "sender_model_sha256": receiver["sender_model_sha256"],
+        "receiver_model_revision": receiver["receiver_model_revision"],
+        "receiver_model_sha256": receiver["receiver_model_sha256"],
+        "sender_token_count": len(token_ids),
+        "sender_token_ids_sha256": token_digest,
+        "receiver_input_kind": "EMBEDDING_ROWS_NOT_TOKEN_IDS",
+        "receiver_input_rows": receiver["input_rows"],
+        "receiver_input_dim": receiver["input_dim"],
+        "receiver_input_sha256": receiver["input_sha256"],
+        "position_ids": positions,
+        "decode_status": receiver["decode_status"],
+        "native_input_consumed": receiver["native_input_consumed"] is True,
+        "input_effect_detected": receiver["input_effect_detected"] is True,
+        "input_effect_rms": round(float(receiver["input_effect_rms"]), 6),
+        "row_shuffle_control_applicable": receiver["row_shuffle_control_applicable"] is True,
+        "row_shuffle_control_cosine": None if row_cosine is None else round(float(row_cosine), 6),
+        "production_route": False,
+        "semantic_use_proven": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+        "consumption_scope": "llama_decode accepted the embedding batch; attention/semantic use is not proven",
+    }
+
+
+
 def _entry(record):
     key, aliases, name, technical, purpose, limit = record
     return {"id":key, "name":name, "technical":technical,
@@ -190,8 +291,9 @@ def status(r):
             "t8_learner_instantiated":hasattr(r, "_online_world"),
             "world_jepa_instantiated":hasattr(r, "_world_jepa_online"),
             "latest_turn":_latest_native_evidence(r),
+            "native_latent_receiver":_latest_native_receiver(r),
             "native_model_training_proven":False,
-            "meaning":"Geladen heißt nicht, dass ein Modell nachweislich etwas gelernt hat; ein nativer Prompt-Receipt beweist keine semantische Nutzung.",
+            "meaning":"Geladen heißt nicht, dass ein Modell nachweislich etwas gelernt hat; ein nativer Prompt-Receipt oder ein akzeptierter Embedding-Batch beweist keine semantische Nutzung.",
             "checks":":doctor und :gates summary; Lernmessung auf echten Gewichten separat."}
 
 def operator_command(r,args):
