@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "v13/code/v13/world_jepa_temporal.py"
+      - "v13/code/v13/bodyview.py"
       - "v13/code/v13/sleep.py"
       - "v13/code/v13/memory.py"
       - "v13/code/tests/test_v14_world_jepa_temporal_runtime.py"
@@ -12,9 +13,11 @@ on:
   pull_request:
     paths:
       - "v13/code/v13/world_jepa_temporal.py"
+      - "v13/code/v13/bodyview.py"
       - "v13/code/v13/sleep.py"
       - "v13/code/v13/memory.py"
       - "v13/code/tests/test_v14_world_jepa_temporal_runtime.py"
+      - "v13/code/tests/test_v14_world_jepa_postcommit_runtime.py"
       - ".github/workflows/v14-temporal-world-jepa.yml"
   workflow_dispatch:
 
@@ -41,6 +44,7 @@ jobs:
         run: |
           python -m py_compile \
             v13/code/v13/world_jepa_temporal.py \
+            v13/code/v13/bodyview.py \
             v13/code/v13/sleep.py \
             v13/code/v13/memory.py \
             v13/code/tests/test_v14_world_jepa_temporal_runtime.py \
