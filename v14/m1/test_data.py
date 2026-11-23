@@ -7,6 +7,8 @@ These tests validate pipeline logic only. They are not a UCI real-data run.
 """
 from __future__ import annotations
 
+import hashlib
+import json
 import tempfile
 import unittest
 from datetime import datetime, timedelta
@@ -20,6 +22,10 @@ from v14.m1.data import (
     make_split,
     parse_uci,
     write_manifest,
+    data_config_sha256,
+    split_boundaries_sha256,
+    dataset_sha256,
+    load_test_split,
 )
 
 
@@ -108,9 +114,72 @@ class WindowTests(unittest.TestCase):
     def test_manifest_contains_fixed_split_and_rejection_statistics(self):
         _, stats, manifest = build_dataset(self.rows, self.channels, self.cfg)
         self.assertEqual(manifest["effective_gap"], self.cfg.effective_gap)
-        self.assertEqual(set(manifest["split_stats"]), {"train", "validation", "test"})
-        self.assertEqual(manifest["test_access"], "NOT_ACCESSED_BY_DATA_PIPELINE")
+        self.assertEqual(set(manifest["split_stats"]), {"train", "validation"})
+        self.assertEqual(manifest["test_access"], "LOCKED_REQUIRES_HASH_BOUND_PREREGISTRATION")
         self.assertEqual(manifest["split_stats"]["train"]["accepted_windows"], stats["train"].accepted_windows)
+
+
+    def test_test_split_is_not_materialized_by_default(self):
+        datasets, stats, manifest = build_dataset(self.rows, self.channels, self.cfg)
+        self.assertEqual(set(datasets), {"train", "validation"})
+        self.assertNotIn("test", stats)
+        self.assertNotIn("test", manifest["split_stats"])
+
+    def test_test_loader_requires_exact_prereg_hash_and_matching_config(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            prereg = {
+                "data_config_sha256": data_config_sha256(self.cfg),
+                "split_boundaries_sha256": split_boundaries_sha256(self.rows, self.cfg),
+                "dataset_sha256": dataset_sha256(self.rows, self.channels),
+            }
+            raw = json.dumps(prereg, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            prereg_path = root / "prereg.json"
+            prereg_path.write_bytes(raw)
+            digest = hashlib.sha256(raw).hexdigest()
+            log_path = root / "test-access.jsonl"
+            with self.assertRaises(PermissionError):
+                load_test_split(
+                    self.rows, self.channels, self.cfg,
+                    preregistration_path=prereg_path,
+                    preregistration_sha256="0" * 64,
+                    access_log_path=log_path,
+                )
+            windows, stats = load_test_split(
+                self.rows, self.channels, self.cfg,
+                preregistration_path=prereg_path,
+                preregistration_sha256=digest,
+                access_log_path=log_path,
+            )
+            self.assertTrue(windows)
+            self.assertEqual(stats.split, "test")
+            events = log_path.read_text(encoding="utf-8").splitlines()
+            self.assertEqual(len(events), 1)
+            self.assertEqual(json.loads(events[0])["preregistration_sha256"], digest)
+
+    def test_test_loader_rejects_config_drift_even_with_valid_file_hash(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            prereg = {
+                "data_config_sha256": data_config_sha256(self.cfg),
+                "split_boundaries_sha256": split_boundaries_sha256(self.rows, self.cfg),
+                "dataset_sha256": dataset_sha256(self.rows, self.channels),
+            }
+            raw = json.dumps(prereg, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            path = root / "prereg.json"
+            path.write_bytes(raw)
+            digest = hashlib.sha256(raw).hexdigest()
+            changed = DataConfig(
+                input_length=4, horizon=2, max_candidate_input_length=5,
+                seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
+            )
+            with self.assertRaises(PermissionError):
+                load_test_split(
+                    self.rows, self.channels, changed,
+                    preregistration_path=path,
+                    preregistration_sha256=digest,
+                    access_log_path=root / "log.jsonl",
+                )
 
     def test_manifest_hash_is_stable(self):
         _, _, manifest = build_dataset(self.rows, self.channels, self.cfg)
