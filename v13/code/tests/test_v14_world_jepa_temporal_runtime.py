@@ -1151,16 +1151,22 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_mea
             (event["event_id"],),
         )
         temporal_query_rows = []
+        non_temporal_query_count = 0
         for row in query_rows:
             query_packet = json.loads(row["payload"])
             ref = query_packet["bodyview"]["body_state_ref"]
             stored = json.loads(store.read_source(ref))
-            if stored.get("schema") == "V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/2":
+            audit = stored.get("temporal_world_jepa_audit")
+            if (stored.get("schema") == "V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/2"
+                    and isinstance(audit, dict)
+                    and audit.get("status") == "READOUT_CREATED"):
                 temporal_query_rows.append((query_packet, ref, stored))
-        # The cold B1 negative-control offer also emits a QueryPacket, but its
-        # body state correctly has no temporal readout. Count only the two warm
-        # source-backed B1/B2 receiver queries here.
+            else:
+                non_temporal_query_count += 1
+        # The cold B1 negative-control offer also emits a QueryPacket and a
+        # source-bound OMITTED audit; only the two warm readouts are receivers.
         assert len(temporal_query_rows) == 2
+        assert non_temporal_query_count >= 1
         for query_packet, ref, stored in temporal_query_rows:
             role = query_packet["target_role"]
             assert ref in query_packet["provenance"]
