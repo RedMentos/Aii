@@ -10,6 +10,7 @@ import csv
 import hashlib
 import json
 import math
+import os
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -411,18 +412,19 @@ def load_test_split(
     for key, value in expected.items():
         if prereg.get(key) != value:
             raise PermissionError(f"preregistration mismatch: {key}")
-    bounds = build_chronological_boundaries(len(rows), config)
-    windows, stats = make_split(rows, channels, config, "test", bounds["test"])
+    # Persist the access event before touching the test-window builder.
     event = {
         "event": "TEST_SPLIT_OPENED",
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "preregistration_sha256": actual_prereg_hash,
         **expected,
-        "accepted_windows": stats.accepted_windows,
-        "rejected_windows": stats.rejected_windows,
     }
     log_path = Path(access_log_path)
     log_path.parent.mkdir(parents=True, exist_ok=True)
     with log_path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(event, sort_keys=True, separators=(",", ":")) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+    bounds = build_chronological_boundaries(len(rows), config)
+    windows, stats = make_split(rows, channels, config, "test", bounds["test"])
     return windows, stats
