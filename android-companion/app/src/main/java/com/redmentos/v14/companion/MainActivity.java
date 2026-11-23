@@ -127,9 +127,6 @@ public final class MainActivity extends Activity {
                                                         prefs.getString("paired_cert_sha256", null));
                                     });
                         }
-                                    // A failed SharedPreferences commit may still mutate its
-                                    // in-memory map. Restore the old pair durably and verify
-                                    // both values before allowing the provider to trust it.
                         if (result != PairingPersistence.Result.PERSISTED) {
                             String message = result == PairingPersistence.Result.RESTORED
                                     ? "Pairing was not changed; the previous identity was restored"
