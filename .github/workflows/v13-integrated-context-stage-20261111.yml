@@ -42,6 +42,11 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.2.6
+      - name: Compile console probe privacy implementation
+        working-directory: v13/code
+        run: python -m py_compile v13/public_probe.py scripts/integrated_console_probe_privacy_overlay_20261123.py tests/test_public_probe_privacy.py
+      - name: Scan public diff for private data and secrets
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base 8d93236c753f0194224c19edc7411d8d7082b1d6 --head HEAD
       - name: Stage, source recall, SQLite turn, revocation and JEPA restart
         working-directory: v13/code
         env:
@@ -62,6 +67,8 @@ jobs:
           tests/test_unified_brain_delivery.py
           tests/test_enlightened_space.py
           tests/test_native_prompt_admission.py
+          tests/test_prompts.py
+          tests/test_public_probe_privacy.py
           tests/test_native_stream_integrity.py
           tests/test_prompt_source_integrity_20261116.py
           tests/test_context_offer_budget_20261116.py
