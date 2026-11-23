@@ -1852,3 +1852,16 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - **Redmi:** REDMI_UNVERIFIED. No device command, UPDATE_REQUEST, CHAT_SEND, model swap, or deployment was attempted. Latest authenticated private status remains the last #115 receipt only; no new device proof was requested.
 - **Architecture boundary:** PR #2454 implements persistent trusted T8/ActionOutcome → temporal WorldJEPA/EMA → optimizer/checkpoint/replay/rollback → source-bound numeric B1/B2 SHADOW receivers. This is not native learned latent injection and not GGUF body-weight training.
 - **Next concrete action:** verify at least one email address on the GitHub identity used by the connector (or provide a commit path with a verified committer identity). Then rebuild the same QA-based stack, rebind the exact immutable chain, and run exact-head temporal-JEPA, staged/integrated, optimizer-resume Python 3.13/3.14 and RuntimeDeploy checks. No phone action is needed.
+
+
+## JEPA & Memory — run 15, 2026-11-23
+
+**Code-bearing JEPA commit:** `05ec1f4527860960677bda93d7736ad0c1a289a1` on draft PR #2454. Rollback now verifies the previous checkpoint bytes/source/digest before changing the persistent state pointer, invalidates same-Store warm caches after a successful rollback, and warms the restored model. The temporal test suite now covers missing/corrupt rollback checkpoints and warm-cache identity.
+
+**Test status:** exact Aii project tests were NOT_RUN/BLOCKED locally (CPython 3.13.5, NumPy 2.3.5 and pytest 9.0.0 are available, but no Aii checkout is mounted and GitHub DNS fails). PR #2454 remains stacked on an older #2443 ancestor, DRAFT, mergeable=false; no exact-head workflow run is attached to code commit `05ec1f4`. Do not treat this as CI- or device-tested.
+
+**Redmi:** authenticated private owner receipts #840/#841/#842 confirm installed release `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled, dashboard/service up to date, but AI runtime `STOPPED_BY_USER`, autostart false and model process stopped. B1/B2 remain TIME_BUDGET 53.2/54.2 s; correctness is UNKNOWN. Preserve the stopped state. No UPDATE_REQUEST, restart, CHAT_SEND, LOG_PAGE, shell, model/weight/permission change or data mutation was performed. Candidate #2454 is NOT_RELEASED / NOT_INSTALLED.
+
+**Next internal action:** wait for the complete combined Boss #2443 matrix; then rebase #2454 onto that exact green head, recompute JEPA-owned nested pins from read-back bytes, coordinate Core stage/deployer pins, and run Python 3.13/3.14 temporal, postcommit, staged/integrated, source-forget, restart and rollback regressions. Research note R-115 on stratified retention is in `v14/handoffs/JEPA_MEMORY_RUN15_ROLLBACK_GUARD_20261123.md` for Research/Boss ledger sync.
+
+**User action required: NONE.** The installed runtime is intentionally stopped; no user or device action is needed for this code-only candidate.
