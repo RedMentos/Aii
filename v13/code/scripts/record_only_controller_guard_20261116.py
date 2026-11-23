@@ -198,7 +198,13 @@ def apply_sources(code_dir, sources):
             raise ValueError('semantic dependency changed: ' + name + ' expected=' + expected + ' actual=' + actual)
     if hashlib.sha256(checked['v13/actionlearn.py']).hexdigest() != action_pin:
         raise ValueError('guarded ActionLearn output changed')
-    old_action_pin, = PINS['v13/actionlearn.py']
+    action_pin_candidates = sorted(
+        pin for pin in PINS['v13/actionlearn.py']
+        if result[semantic_name].count(pin.encode('ascii')) == 1
+    )
+    if len(action_pin_candidates) != 1:
+        raise ValueError('semantic ActionLearn dependency is missing or ambiguous')
+    old_action_pin = action_pin_candidates[0]
     semantic = _replace(result[semantic_name], old_action_pin.encode('ascii'),
                         action_pin.encode('ascii'), 'semantic ActionLearn dependency')
     result[semantic_name] = semantic
