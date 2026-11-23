@@ -1,3 +1,34 @@
+## Current evidence overlay — 2026-11-23T00:05:08.222Z
+
+This overlay supplements the complete historical heading inventory below; it does not replace, renumber or reduce the Canon. Inventory count remains 1,255 headings. The historical V13 appendix and master architecture were not edited in this run.
+
+| Canon family | Current executable state | Acceptance boundary |
+|---|---|---|
+| A0–A5 perception, segmentation, salience, source/clock | RAW EAR feature path is partial; RAW EYE Python adapter/provider verifier is on draft #2375 | No Android AudioRecord or MediaProjection capture receipt; no accepted A3/A4/C3 visual consumer |
+| B1_DETAIL / B2_GIST | Distinct role models and source-bound OfferPacket→C4→C3 candidate exist in #2370 | Current exact CI pending; Redmi B1/B2 still TIME_BUDGET 53.2/54.2 s; no accepted native offers, peer re-entry or correct answer |
+| B3 / Enlightened Space | Symbolic exchange and diagnostic receiver experiments only | No trained cross-family latent adapter, paired native tap utility, semantic transfer or retention |
+| B4/B5 and C4 coalition | Partial source-span/context contracts and staged synthetic consumer | No accepted full coalition or native same-turn consumer proof |
+| C1/JEF/C2/C3 language/output | C3 runtime and exact arithmetic guard; fair-budget candidate pending | Last stored Redmi turn 57.74 s, TTFT 41.63 s, prefill 38.95 s, 2 tokens; correctness UNKNOWN |
+| Attention / curiosity / salience | Partial A4/RAW EAR and RAW EYE features | No measured online attention learning or Android multimodal feedback |
+| World / Self / episodic, semantic, procedural memory / Context OS / Memorilla | Partial Store, retrieval and additive companion research | No accepted overflow consumer, durable per-session retention or complete source-forget/revocation |
+| JEPA / EMA / T8 / temporal prediction | Shadow candidate and research; #2372/#2390 source/optimizer stacks remain failing | No verified gradient, optimizer-moment restart, persistent parameter diff, retention or rollback |
+| Eligibility × error × modulator × plasticity / cross-organ learning | No accepted end-to-end sender→receiver gradient path | No numeric cross-organ update or ablation |
+| Sleep / Dream / Replay | Partial cancellable postcommit worker | No accepted native replay, retention and restart proof |
+| RAW EAR / audio / voice | Feature extraction and optional teacher research | No Android AudioRecord provider, trainable decoder/vocoder, full duplex or nonverbal learning |
+| RAW EYE / vision | Bounded Python adapter and provider verifier entrypoint merged into #2375 | No Android capture or real Runtime/C3 consumer; Core #2379 still has stale-base import failures |
+| Android background / UI control | Companion contracts and action-intent prototypes | #2356 process restart remains blocked by emulator System UI ANR; no accepted OS executor or Redmi UI action |
+| Tools / permissions / goal agency | Typed contracts and partial companion broker | No end-to-end OS-authenticated action with audit, stop and rollback on Redmi |
+| Age 0–5 / X10 / ResourceGuard | Official Age 0 separated from lab selector; diagnostic says request 10/effective 5 | Physical feature execution false; SHADOW required; Age remains rights, not resource budget |
+| Self-optimization / cross-organ weight edits | JEPA SHADOW prototypes | No accepted B1/B2/C3 master update, cross-organ gradients or structural self-edit |
+| Sparse MoE B1/B2 | Research only | No two distinct measured sparse MoE bodies or licensed imported implementation |
+| Technical OS sandbox / adaptive behavior Judge / memory egress | Prototypes and contracts | No independent Android OS enforcement or accepted production judge/egress registry |
+| Install / update / diagnostics / rollback | Existing CI-gated updater and private owner-read are operational | aed1d2 installed and up-to-date; candidate #2370 not released; process-death/reboot/rollback unverified |
+| Canon traceability | 1,255 historical headings retained | Semantic clause→code→consumer→test→platform→rollback mapping remains incomplete |
+
+**Current candidate:** Boss PR #2370 exact head 11c4ffea182a6bfbb729fbf176b0c1b1f6541189, 29 pending / 1 skipped / 0 completed; NOT_GREEN and NOT_RELEASED. **Current phone:** installed aed1d2b826290c95c70356b5d8b864b5ef382be4; private receipts #653/#655. No new turn or device mutation. Full local checkout unavailable; no local full-suite or native proof.
+
+---
+
 # V14 Canon-Coverage-Index — vollständiger historischer Heading-Inventarstand
 
 **Stand:** 2026-11-22 · **Basis:** `v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md` · **Master-BLOB-SHA:** `9748ad5ba9a4d4f5c3d004a0577141f6779fcbca`  
