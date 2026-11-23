@@ -86,7 +86,7 @@ class BaseArchitectureTests(unittest.TestCase):
 
     def test_invalid_model_config_is_rejected(self):
         with self.assertRaises(ValueError):
-            BaseConfig(channels=2, horizon=3, latent_dim=15)
+            BaseConfig(channels=2, horizon=3, predictor_steps=3)
 
 
 if __name__ == "__main__":
