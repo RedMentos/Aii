@@ -5,9 +5,9 @@
 - Base: gpt6/v13-private-remote-bridge-20261111 at 4dc7595f383e7ba932ee8e9fcf52c5541210ed5e
 - Branch: jepa-memory/v14-base-jepa-safe-forget-replay-20261123-run11
 - PR: https://github.com/RedMentos/Aii/pull/2429 (DRAFT / NOT_RELEASED)
-- Latest branch head: 395067061cb776f10ad833ae804f0ebd10ced08f
+- Latest branch head at this handoff update: 32837cc647476b222b5792d62887c0aa33098740
 - Code blob: 26f7d2eec3799689fdea7afeebd9b59150a8f138
-- Test blob: 27941a44530702564cb65b819890f0215f96eba8
+- Test blob: a8c078d10ca4eadbfb9fbd87a8c63b8e8dac65a8
 - Run start/end timestamps: UNKNOWN (no wall-clock execution trace exposed by the runtime).
 
 ## Implemented path
@@ -47,10 +47,10 @@ First run on initial PR head a89bd88c7de0b36d32c721df470bab3a968e6fc8:
 - optimizer-resume / source-forget Python 3.13 and 3.14: FAIL.
 - The source-forget step ran 20 staged optimizer-resume tests, 14 additional tests and 1 smoke test successfully, then failed 3 pre-existing tests that still expected the old guard to raise ValueError. The implementation intentionally changes those expectations to safe rollback/replay.
 - The three old tests were updated to assert deletion + checkpoint invalidation. Two integration cases were added for clean-previous rollback/replay and both-tainted reset/replay.
-- New exact-head run on 395067061cb776f10ad833ae804f0ebd10ced08f:
-  - workflow 45145241673 — IN_PROGRESS at last poll;
-  - staged context/integrated regression 45145241722 — IN_PROGRESS at last poll.
-- No exact-head PASS is claimed until those runs complete.
+- Run 45145241673 on code/test head 395067061cb776f10ad833ae804f0ebd10ced08f: FAIL on both Python versions with one NameError in the new both-tainted test (the test assigned first_events but later referenced first_actions). The other 7 selected source-forget tests passed on both Python versions.
+- Test fixture corrected in commit 32837cc647476b222b5792d62887c0aa33098740.
+- Exact workflow readback for 32837cc had not appeared at the time of this handoff update; no exact-head PASS is claimed.
+- Staged context/integrated run 45145241722 was still IN_PROGRESS at the previous poll.
 
 ## Current installed-device evidence (private, read-only)
 
