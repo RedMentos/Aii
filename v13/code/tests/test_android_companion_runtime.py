@@ -480,13 +480,15 @@ def test_android_action_history_rejects_unbounded_or_non_integer_limits(tmp_path
 
 
 
-def _signed_receipt_for_request(transport, action_id, nonce):
+def _signed_receipt_for_request(transport, action_id, nonce, *, status="DISPATCHED_UNVERIFIED"):
     request = transport.submitted[-1]
     body = {
         **BODY,
         "action_id": action_id,
         "digest": request["digest"],
         "nonce": nonce,
+        "status": status,
+        "local_consent": status != "USER_DENIED",
     }
     return {
         "body": body,
@@ -671,3 +673,78 @@ def test_action_intent_persistence_failure_cancels_before_dispatch(tmp_path, mon
     finally:
         controller.broker.close()
         runtime.store.close()
+
+
+@pytest.mark.parametrize(
+    ("signed_status", "forged_status"),
+    [
+        ("DISPATCHED_UNVERIFIED", "USER_DENIED"),
+        ("USER_DENIED", "DISPATCHED_UNVERIFIED"),
+    ],
+)
+def test_committed_receipt_recovery_rejects_signed_status_forgery_without_remote_retry(
+    tmp_path, monkeypatch, signed_status, forged_status
+):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "5" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+    pending = json.loads(controller.launch("com.example.app", True))
+    action_id = pending["action_id"]
+    transport.receipt = _signed_receipt_for_request(
+        transport, action_id, "a" * 32, status=signed_status
+    )
+    outcome_calls = []
+    original_outcome = transport.outcome
+
+    def counted_outcome(selected_action_id):
+        outcome_calls.append(selected_action_id)
+        return original_outcome(selected_action_id)
+
+    transport.outcome = counted_outcome
+    original_record = controller.broker.record_companion_receipt
+
+    def crash_after_store_commit(selected_action_id, digest, *, verified):
+        if verified:
+            raise OSError("simulated process death after Store commit")
+        return original_record(selected_action_id, digest, verified=verified)
+
+    monkeypatch.setattr(controller.broker, "record_companion_receipt", crash_after_store_commit)
+    with pytest.raises(OSError, match="after Store commit"):
+        controller.poll(action_id)
+    assert controller.broker.action_state(action_id) == "RECEIPT_CONSUMED"
+    controller.broker.close()
+
+    with runtime.store.mutex:
+        row = runtime.store.db.execute(
+            "SELECT id,payload FROM packets WHERE kind='ActionOutcome' AND json_extract(payload,'$.action_id')=?",
+            (action_id,),
+        ).fetchone()
+        assert row is not None
+        payload = json.loads(row["payload"])
+        actual = payload["actual"]
+        assert actual["signed_receipt"]["body"]["status"] == signed_status
+        if forged_status == "USER_DENIED":
+            payload["status"] = "COMPANION_USER_DENIED"
+            actual["receipt_status"] = "USER_DENIED"
+            actual["companion_local_consent_claim"] = False
+            actual["local_approval_evidence"] = "ANDROID_COMPANION_USER_DENIAL"
+        else:
+            payload["status"] = "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+            actual["receipt_status"] = "DISPATCHED_UNVERIFIED"
+            actual["companion_local_consent_claim"] = True
+            actual["local_approval_evidence"] = "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
+        runtime.store.db.execute(
+            "UPDATE packets SET payload=? WHERE id=?",
+            (json.dumps(payload, sort_keys=True), row["id"]),
+        )
+
+    restarted = AndroidCompanionController(runtime, transport=transport, clock=lambda: 5000.0)
+    with pytest.raises(android_control.ControlDenied, match="signature does not authenticate"):
+        restarted.poll(action_id)
+    assert restarted.broker.action_state(action_id) == "RECEIPT_CONSUMED"
+    assert len(outcome_calls) == 1
+    assert len(transport.submitted) == 1
+    restarted.broker.close()
+    runtime.store.close()
