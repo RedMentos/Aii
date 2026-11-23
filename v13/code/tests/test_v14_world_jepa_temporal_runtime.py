@@ -316,6 +316,56 @@ def test_temporal_source_forget_detects_evicted_action_selection_context_and_cen
         store.close()
 
 
+def test_temporal_source_forget_scan_cursor_uses_action_rowid_not_event_rowid(tmp_path):
+    store = _make_store(tmp_path / "temporal-source-forget-rowid-cursor")
+    try:
+        context_before = store.source("C4 source before the action cursor", "MEMORY")
+        filler_session = store.new_session("unacted-event-prefix")
+        for index in range(12):
+            store.event(filler_session, f"unacted event {index:02d}")
+
+        _first_session, _first_events = _add_session(
+            store, "cursor-before", 0, event_count=1,
+            focal_context_source_refs_factory=lambda _session, _offset: [context_before],
+        )
+        context_after = store.source("C4 source after the action cursor", "MEMORY")
+        _second_session, _second_events = _add_session(
+            store, "cursor-after", 0, event_count=1,
+            focal_context_source_refs_factory=lambda _session, _offset: [context_after],
+        )
+
+        actions = store.rows(
+            "SELECT a.id AS action_id, a.rowid AS scan_seq, e.rowid AS event_rowid "
+            "FROM actions a JOIN events e ON e.id=a.event_id ORDER BY a.rowid"
+        )
+        assert len(actions) == 2
+        assert actions[0]["event_rowid"] > actions[0]["scan_seq"]
+        assert actions[1]["scan_seq"] > actions[0]["scan_seq"]
+
+        _receipts, rejected, cursor, _scanned, _censored, _more = verify_committed_temporal_page(
+            store, after_seq=0, limit=1
+        )
+        assert rejected == 0
+        assert cursor == actions[0]["scan_seq"]
+
+        from v13.world_jepa_temporal import _record_references_source
+        record = {
+            "scan_cursor": cursor,
+            "experience_rows": [],
+            "retention_holdouts": [],
+            "receiver_retention_holdouts": [],
+            "learning_intents": {},
+            "revoked_source_ids": [],
+        }
+        # The first C4 source is inside the persisted T8 action-rowid prefix
+        # even though its event.rowid is greater than the action scan cursor.
+        assert _record_references_source(store, record, context_before["source_id"]) is True
+        # The second action is newer than the cursor and must remain outside it.
+        assert _record_references_source(store, record, context_after["source_id"]) is False
+    finally:
+        store.close()
+
+
 def test_single_session_waits_for_disjoint_temporal_holdout_without_error(tmp_path):
     home = tmp_path / "single-session-temporal-wait"
     store = _make_store(home)
