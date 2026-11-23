@@ -5,8 +5,8 @@
 - Release-development base branch: `gpt6/v13-private-remote-bridge-20261111`
 - Verified base SHA at branch creation: `4dc7595f383e7ba932ee8e9fcf52c5541210ed5e`
 - Working branch: `research-perception/v14-speaker-history-nonvoiced-20261123-run4`
-- Code head before this handoff: `7a5aa48f63242cfc281addc62be0d39b7ad54582`
-- Pull request: pending creation; this handoff is not a release or merge claim.
+- Current branch head after this handoff update: `0b5fff121828363fd1bea5fd96e0fcaefabeaf22`
+- Pull request: [#2433](https://github.com/RedMentos/Aii/pull/2433), DRAFT / NOT_RELEASED.
 
 ## Concrete runtime change
 
@@ -28,7 +28,8 @@ The tests add four non-voiced activity negatives, history non-poisoning, long-ga
 - `v13/code/v13/audio_voice_cues.py` — blob `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`
 - `v13/code/v13/audio_teacher_ear.py` — blob `5a26193c94c864e6ad3af55def59bae040e59f35`
 - `v13/code/v13/audio_fastdiar_adapter.py` — blob `f2ebf6d4629777162c04d8f981b7b8c7e11c727e`
-- `v13/code/tests/test_audio_speaker_evidence.py` — blob `9cc95cfff3625965d8c881d4347a048a21246ebe`
+- `v13/code/tests/test_audio_speaker_evidence.py` — blob `5b2cddd3b30a98c5d13ee463fb9934f97bb31d99`
+- `v13/code/tests/test_audio_fastdiar_adapter.py` — blob `32486cb34b655f76133b0c1e157e3c60d1442cd6`
 - `.github/workflows/v14-fastdiar-adapter.yml` — blob `3bfe443cfeb1187f6171c4981f2c12691b07a003`
 
 ## Test and platform boundary
@@ -74,3 +75,16 @@ Both failures were corrected and read back. Current branch head: `86620113afceb5
 - `v13/code/experiments/benchmark_raw_ear_backends.py` blob: `99833db447768198b85541f99dce6e2ce34abeb6`.
 - `.github/workflows/v14-raw-ear-vad-comparison.yml` blob: `d9f29037f3eef15bde87d10a684ff872ed53c571`.
 - New exact-head CI after these two fixes: QUEUED/IN_PROGRESS at this readback. Do not count either fix as tested until the rerun completes.
+
+
+
+## Run 4 follow-up — current exact checkpoint
+
+- Branch head after the test, ledger and handoff updates: `0b5fff121828363fd1bea5fd96e0fcaefabeaf22`.
+- New integration regression: `test_impulsive_non_speech_reaches_a4_novelty_without_speaker_or_interrupt`. It sends one exact-hash-bound synthetic PCM impulse through `consume_pcm16_voice_window`, supplies a matching caller embedding batch, and asserts IMPULSIVE A4 novelty, no external interrupt, `SUPPRESSED_NON_VOICED`, zero accepted/history frames, `DEFER`, C3 activity visibility and no vector persistence.
+- Exact previous-head workflow results at `0d97e9faec926992acc6b513381fa15edc93b08a`: FASTDIAR adapter, NumPy backend, WebRTC/libfvad comparator, RAW EAR consent-revocation, RAW EAR prosody-to-attention and public privacy scan all **SUCCESS**. The shared staged/integrated workflow **FAILED** because Core's `integrated_audio_context_candidate_20261121.py` still expects `audio_voice_cues.py` Git blob `b18e450162b062b09368a12b1ca18924ed8c5025`, while this branch's exact blob is `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`. The failure fan-out is 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; both migration cases return PARTIAL downstream. No Perception-owned file was changed to hide or bypass this pin.
+- Fresh exact-head CI for `0b5fff121828363fd1bea5fd96e0fcaefabeaf22` is required because the impulse test and ledger/handoff updates were committed after that previous run. No PASS is claimed for the new test yet.
+- LOCAL_LINUX full Aii checkout remains BLOCKED: no repository checkout is mounted and GitHub DNS lookup fails in the execution container. A CPython 3.13.5 isolated numerical check of the synthetic impulse yielded 32,000 bytes, RMS 0.007905, crest 126.49 and the expected 0.35 A4 novelty floor; this is not a repository test.
+- REDMI remains `REDMI_UNVERIFIED`: no AudioRecord provider, microphone capture, native speaker inference, Android RSS/latency or new installed SHA. No model/weight/permission/data change and no UPDATE_REQUEST.
+- Research ledger appended as R-083 with full-paper FASTDIAR confidence-gate details, reported conditions, license/weight caveats and the explicit distinction between voiced-only history and calibrated confidence gating. `V14_USER_NEXT_ACTION.md` was updated with the verified current checkpoint and no-user-action boundary.
+- **Next:** poll exact-head CI; Core must rebind both current audio source blobs and recompute dependent recovery/stage/deployer pins bottom-up; QA review the non-voiced and A4 impulse path. No user action is required.
