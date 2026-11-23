@@ -6,6 +6,7 @@ on:
       - core/v14-c4-c3-consumption-rebase-20261122-run2
       - core/v14-fair-budget-diagnostic-20261122
       - boss/v14-recall-store-pin-rebind-20261122
+      - boss/v14-c3-prefill-cap-20261123-run1
     paths:
       - 'v13/code/scripts/source_lifecycle_lock_integration_candidate.py'
       - 'v13/code/scripts/termux_runtime_recovery_candidate_20261112.py'
@@ -26,6 +27,8 @@ on:
       - 'v13/code/v13/brain_panel.py'
       - 'v13/code/v13/native_offer_prompt_receipt.py'
       - 'v13/code/v13/runners.py'
+      - 'v13/code/v13/native_prompt_admission.py'
+      - 'v13/code/tests/test_native_prompt_admission.py'
       - 'v13/code/tests/test_v14_causal_stream_offer_receipt.py'
       - 'v14/V14_USER_NEXT_ACTION.md'
       - 'v13/code/scripts/run_c4_c3_current_candidate_test_20261122.py'
@@ -48,6 +51,8 @@ on:
       - 'v13/code/v13/brain_panel.py'
       - 'v13/code/v13/native_offer_prompt_receipt.py'
       - 'v13/code/v13/runners.py'
+      - 'v13/code/v13/native_prompt_admission.py'
+      - 'v13/code/tests/test_native_prompt_admission.py'
       - 'v13/code/tests/test_v14_causal_stream_offer_receipt.py'
       - 'v14/V14_USER_NEXT_ACTION.md'
       - 'v13/code/tests/test_termux_runtime_recovery_stage.py'
@@ -86,6 +91,8 @@ jobs:
             v13/code/v13/brain_panel.py \
             v13/code/v13/native_offer_prompt_receipt.py \
             v13/code/v13/runners.py \
+            v13/code/v13/native_prompt_admission.py \
+            v13/code/tests/test_native_prompt_admission.py \
             v13/code/tests/test_v14_causal_stream_offer_receipt.py \
             v13/code/tests/test_same_turn_body_delivery_qa.py \
             v13/code/scripts/integrated_c4_c3_receipt_candidate_20261122.py \
@@ -109,6 +116,11 @@ jobs:
             v13/code/tests/test_termux_runtime_recovery_stage.py \
             v13/code/tests/test_observer_fair_budget_stage_20261116.py \
             v13/code/tests/test_v14_store_source_blob_serialization.py
+      - name: Exercise source-preserving C3 prompt admission
+        env:
+          PYTHONPATH: v13/code
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python -m pytest -q v13/code/tests/test_native_prompt_admission.py
       # The script below stages the observer and C4 receipt overlays before running the same-turn test.
       - name: Exercise source-pinned composed Runtime and negative control
         env:
