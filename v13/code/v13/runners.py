@@ -304,7 +304,8 @@ class LlamaRunner:
             # Tokenization itself consumes the turn budget. Never report a
             # stale admission based on the time available before the requests.
             check(cancel,deadline)
-            target=admission.soft_limit(self.role,self.cfg,deadline-time.monotonic())
+            remaining=deadline-time.monotonic()
+            target=admission.soft_limit(self.role,self.cfg,remaining)
             if initial_tokens is None:initial_tokens=count
             fits_context=count+reserve+16<=self.cfg["context_tokens"]
             fits_clock=target is None or count<=target
@@ -318,7 +319,10 @@ class LlamaRunner:
                     self._prompt_admission['offer_template_witness'] = inspect(
                         work, p, v13_prompt_text(self.cfg, 'hypotheses'))
                 return p,count,truncated
-            candidate=admission.reduce_once(work,self.role,self.cfg)
+            candidate=admission.reduce_once(
+                work,self.role,self.cfg,
+                allow_old_turn=(self.role!="C3_LANGUAGE" or remaining<55),
+            )
             if candidate:
                 work,kind=candidate;removed.append(kind);truncated=True
                 continue
