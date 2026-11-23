@@ -159,8 +159,8 @@ class SpeakerChangeEvidenceRegistry:
             raise SpeakerEvidenceError("speaker window timestamps are invalid")
         if type(activity_hint) is not str or activity_hint not in _ACTIVITY:
             raise SpeakerEvidenceError("speaker activity hint is invalid")
-        if consent_receipt_ref is None and type(embeddings) is dict:
-            consent_receipt_ref = embeddings.get("consent_receipt_ref")
+        if consent_receipt_ref is None:
+            raise SpeakerEvidenceError("speaker embedding consent receipt is required from the active lease")
         batch = _validate_batch(
             embeddings, source_id, generation_id, consent_receipt_ref, start_ms, end_ms,
             current_chunk_sha256,
