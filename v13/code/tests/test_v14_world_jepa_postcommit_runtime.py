@@ -907,6 +907,9 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
                     "EPISODIC_RECALL_SHADOW", "EPISODIC_RECALL_PARTIAL",
                 }
                 assert episodic_audit["train_split_only"] is True
+                assert episodic_audit["candidate_cap"] == 256
+                assert episodic_audit["candidate_sampling"] == "TEMPORALLY_STRATIFIED_TRAIN_ONLY"
+                assert episodic_audit["train_window_count_before_cap"] >= episodic_audit["train_window_count"]
                 assert episodic_audit["heldout_used"] is False
                 assert episodic_audit["source_disjoint_from_query"] is True
                 assert episodic_audit["text_disclosed"] is False
