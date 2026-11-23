@@ -364,7 +364,46 @@ class Store:
         for component,entry in m.get('components',{}).items():
             if component not in COMPONENT_ENCODERS or m['hashes'].get(entry['path'])!=entry['sha256'] or entry['path'] in owners:raise ValueError('Komponenten-Manifest inkonsistent')
             owners.add(entry['path'])
+    def _require_live_update_sources(self,conn,row,*,status=None,path=None,sha256=None,check_sources=True):
+        """Revalidate update identity and every declared source inside the commit transaction."""
+        if row is None:
+            raise ValueError("Update row missing during generation change")
+        if status is not None and row["status"]!=status:
+            raise ValueError("Update status changed during generation change")
+        if path is not None and row["path"]!=path:
+            raise ValueError("Update artifact path changed during generation change")
+        if sha256 is not None and row["hash"]!=sha256:
+            raise ValueError("Update artifact hash changed during generation change")
+        try:
+            manifest=json.loads(row["manifest"])
+        except (ValueError,TypeError):
+            raise ValueError("Update source manifest is invalid")
+        if not isinstance(manifest,dict):
+            raise ValueError("Update source manifest is invalid")
+        if not check_sources:
+            return manifest
+        source_ids=manifest.get("source_ids",[])
+        if type(source_ids) is not list:
+            raise ValueError("Update source manifest is invalid")
+        seen=set()
+        for source_id in source_ids:
+            if type(source_id) is not str or not source_id or len(source_id)>256:
+                raise ValueError("Update source manifest is invalid")
+            if source_id in seen:
+                continue
+            seen.add(source_id)
+            source=conn.execute("SELECT deleted FROM sources WHERE id=?",(source_id,)).fetchone()
+            if source is None or source["deleted"]!=0:
+                raise ValueError("Update source is deleted or missing")
+        return manifest
+
     def switch_generation(self,update_id,cfg,models):
+        # Source forget takes the JEPA file lock first, then this same Store RLock.
+        # Hold the Store lock from the first preflight read through generation commit.
+        with self.mutex:
+            return self._switch_generation_locked(update_id,cfg,models)
+
+    def _switch_generation_locked(self,update_id,cfg,models):
         r=self.one("SELECT * FROM updates WHERE id=?",(update_id,));base=self.generation()
         if not r or r["status"]!="PENDING_APPROVAL":raise ValueError("Update nicht freigabefähig")
         if r["base_generation"]!=base["brain_generation_id"]:raise ValueError("Update veraltet")
@@ -395,24 +434,60 @@ class Store:
                                'dependency_revisions':m.get('dependency_revisions',{}),'context_revision':m.get('context_revision')}
         self.validate_artifacts({'hashes':hashes,'components':components})
         with self.tx() as c:
+            latest=c.execute("SELECT * FROM updates WHERE id=?",(update_id,)).fetchone()
+            if (latest is None or latest["status"]!="PENDING_APPROVAL"
+                    or latest["base_generation"]!=r["base_generation"]
+                    or latest["path"]!=r["path"] or latest["hash"]!=r["hash"]
+                    or latest["manifest"]!=r["manifest"]):
+                raise ValueError("Update changed during generation promotion")
+            self._require_live_update_sources(c,latest,status="PENDING_APPROVAL",
+                                              path=r["path"],sha256=r["hash"])
+            for entry in components.values():
+                prior_id=entry.get("update_id")
+                if prior_id and prior_id!=update_id:
+                    prior=c.execute("SELECT * FROM updates WHERE id=?",(prior_id,)).fetchone()
+                    self._require_live_update_sources(c,prior,status="COMMITTED",
+                                                      path=entry.get("path"),sha256=entry.get("sha256"))
             active=json.loads(c.execute("SELECT value FROM meta WHERE key='active_generation'").fetchone()[0])
             if active!=r["base_generation"]:raise ValueError("Generation konkurrierend geändert")
             ids=[entry['update_id'] for entry in components.values() if entry.get('update_id')]
             gid=self._generation(c,active,hashes,cfg,base["rule_version"],models,ids,components,update_id);m.update(approval_actor="OPERATOR_TTY",approval_time=now(),commit_generation_id=gid)
             c.execute("UPDATE updates SET status='COMMITTED',manifest=? WHERE id=?",(dumps(m),update_id))
         self.log("generation_commit",None,{"update_id":update_id,"generation":gid});return gid
+
     def rollback(self,update_id):
+        # Rollback can reactivate an older component; serialize its full preflight
+        # and commit against source forget using the same Store RLock.
+        with self.mutex:
+            return self._rollback_locked(update_id)
+
+    def _rollback_locked(self,update_id):
         r=self.one("SELECT * FROM updates WHERE id=?",(update_id,));active=self.generation()
         last=active.get('last_weight_update_id',active['created_by_update_ids'][-1] if active['created_by_update_ids'] else None)
         if not r or r["status"]!="COMMITTED" or update_id!=last:raise ValueError("Nur letztes aktives Update rollbackbar; spätere Änderungen zuerst zurücksetzen")
-        parent=self.generation(r["base_generation"]);self.validate_artifacts(parent)
+        parent=self.generation(r["base_generation"]);parent_components=self.components(parent);self.validate_artifacts(parent)
         with self.tx() as c:
+            latest=c.execute("SELECT * FROM updates WHERE id=?",(update_id,)).fetchone()
+            if (latest is None or latest["status"]!="COMMITTED"
+                    or latest["base_generation"]!=r["base_generation"]
+                    or latest["path"]!=r["path"] or latest["hash"]!=r["hash"]
+                    or latest["manifest"]!=r["manifest"]):
+                raise ValueError("Update changed during rollback")
+            self._require_live_update_sources(c,latest,status="COMMITTED",
+                                              path=r["path"],sha256=r["hash"],check_sources=False)
             current=json.loads(c.execute("SELECT value FROM meta WHERE key='active_generation'").fetchone()[0])
             if current!=active['brain_generation_id']:raise ValueError('Generation konkurrierend geändert')
+            for entry in parent_components.values():
+                prior_id=entry.get("update_id")
+                if prior_id:
+                    prior=c.execute("SELECT * FROM updates WHERE id=?",(prior_id,)).fetchone()
+                    self._require_live_update_sources(c,prior,status="COMMITTED",
+                                                      path=entry.get("path"),sha256=entry.get("sha256"))
             previous=parent.get('last_weight_update_id',parent['created_by_update_ids'][-1] if parent['created_by_update_ids'] else None)
-            gid=self._generation(c,active["brain_generation_id"],parent["hashes"],active["config"],active["rule_version"],parent["models"],parent["created_by_update_ids"],self.components(parent),previous)
+            gid=self._generation(c,active["brain_generation_id"],parent["hashes"],active["config"],active["rule_version"],parent["models"],parent["created_by_update_ids"],parent_components,previous)
             c.execute("UPDATE updates SET status='ROLLED_BACK' WHERE id=?",(update_id,))
         self.log("rollback",None,{"update_id":update_id,"generation":gid,"rules_preserved":True});return gid
+
     def source(self,text,kind="USER"):
         b=text.encode();h=digest(b);sid=uid("src");p=self.home/"data/blobs"/h
         # Serialize blob publication with revocation's tombstone/refcount/unlink.
