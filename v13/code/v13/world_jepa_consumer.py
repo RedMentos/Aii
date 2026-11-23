@@ -1140,6 +1140,7 @@ class WorldJEPAStoreConsumer:
                 candidates.append({
                     "distance": distance, "action_id": row["action_id"],
                     "source_id": row["source_id"], "source_sha256": row["source_sha256"],
+                    "source_refs": _row_source_refs(row),
                     "outcome_sha256": row["outcome_sha256"], "created": row["created"],
                     "observed_outcome": {
                         "duration_s": math.expm1(min(20.0, y[0])),
@@ -1180,35 +1181,47 @@ def source_forget_guard(store, source_id):
         pending_rows = state["pending_rows"]
         pending_for_source = [
             row["action_id"] for row in pending_rows
-            if row["source_id"] == source_id
+            if any(ref["source_id"] == source_id for ref in _row_source_refs(row))
         ]
         pending_ids = set(pending_for_source)
 
         def checkpoint_is_tainted(record):
             if record is None:
                 return False
-            if any(row["source_id"] == source_id
-                   for row in record["experience_rows"]):
+            if any(
+                ref["source_id"] == source_id
+                for row in record["experience_rows"]
+                for ref in _row_source_refs(row)
+            ):
                 return True
             cursor = record["scan_cursor"]
             if cursor <= 0:
                 return False
-            # Query a bounded set and filter pending IDs in Python. Avoid a
-            # variable-length SQL NOT IN list, which can exceed SQLite limits.
-            scanned = store.rows(
-                """SELECT a.id FROM actions a
-                   JOIN events e ON e.id=a.event_id
-                   WHERE a.rowid<=? AND e.source_id=?
-                     AND a.outcome IS NOT NULL AND a.expected LIKE ?
-                     AND a.status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED')
-                   ORDER BY a.rowid DESC LIMIT ?""",
-                (cursor, source_id, '%"forecast"%', MAX_TRACKED + 1),
-            )
+            # ActionSelection provenance is the durable influence list for each
+            # committed action. JSON1 joins every admitted SourceRef, so a source
+            # remains discoverable after its replay row has been evicted.
+            try:
+                scanned = store.rows(
+                    """SELECT DISTINCT a.id FROM actions a
+                       JOIN events e ON e.id=a.event_id
+                       JOIN packets p ON p.kind='ActionSelection'
+                         AND p.event_id=a.event_id AND p.generation_id=e.generation_id
+                         AND p.created<=a.created
+                       JOIN json_each(p.payload, '$.provenance') AS source_ref
+                       WHERE a.rowid<=? AND a.outcome IS NOT NULL AND a.expected LIKE ?
+                         AND a.status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED')
+                         AND COALESCE(json_extract(p.payload, '$.stage'), 'COMMIT')='COMMIT'
+                         AND json_extract(source_ref.value, '$.source_id')=?
+                       ORDER BY a.rowid DESC LIMIT ?""",
+                    (cursor, '%"forecast"%', source_id, MAX_TRACKED + 1),
+                )
+            except Exception:
+                # If JSON1 or packet decoding is unavailable, source absence is
+                # not established. Refuse deletion rather than assume clean.
+                return True
             if type(scanned) is not list:
                 raise ValueError("WorldJEPA source-forget history scan")
             if len(scanned) > MAX_TRACKED:
-                # The complete influence set cannot be checked within the
-                # tracked-identity bound. Never guess that the checkpoint is clean.
                 return True
             return any(row["id"] not in pending_ids for row in scanned)
 
@@ -1230,7 +1243,8 @@ def source_forget_guard(store, source_id):
             if record is not None and tainted
         }
         filtered_pending = [
-            row for row in pending_rows if row["source_id"] != source_id
+            row for row in pending_rows
+            if not any(ref["source_id"] == source_id for ref in _row_source_refs(row))
         ]
 
         if active_tainted:
