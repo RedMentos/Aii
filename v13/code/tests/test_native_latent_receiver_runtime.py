@@ -60,7 +60,7 @@ def setup_runtime(tmp_path):
         "download_complete": True,
         "exact_revision": "lfm2-r1",
         "main_file": "receiver.gguf",
-        "files": {"receiver.gguf": {"sha256": digest}},
+        "files": {"receiver.gguf": {"path": str(model_path.relative_to(runtime.home)), "sha256": digest, "size": model_path.stat().st_size}},
     }
     sender_dir = model_dir / "gist"
     sender_dir.mkdir(parents=True, exist_ok=True)
@@ -72,7 +72,7 @@ def setup_runtime(tmp_path):
         "download_complete": True,
         "exact_revision": "qwen35-r1",
         "main_file": "sender.gguf",
-        "files": {"sender.gguf": {"sha256": sender_digest}},
+        "files": {"sender.gguf": {"path": str(sender_path.relative_to(runtime.home)), "sha256": sender_digest, "size": sender_path.stat().st_size}},
     }
     runtime.models.path_for = lambda role: sender_path if role == "B2_GIST" else model_path
     runtime.models.revision = lambda role: "qwen35-r1" if role == "B2_GIST" else "lfm2-r1"
@@ -300,9 +300,11 @@ def test_native_receive_rejects_sender_model_symlink(tmp_path, monkeypatch):
 
 def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source(tmp_path):
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
-    runtime.last_answer = lambda: {"event_id": event["event_id"]}
+    runtime.last_answer = lambda: {"event_id": event["event_id"], "status": "FINAL"}
     calls = []
     runtime.require_idle = lambda: calls.append("idle")
+    from v13.native_probe_approval import arm
+    arm(runtime, "B2_GIST", "C3_LANGUAGE")
     packet = {
         "status": "NATIVE_INPUT_EFFECT",
         "sender_tap_packet_id": "tap-packet-3",
@@ -322,10 +324,11 @@ def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last
     ))
     assert result["completed"] is True
     assert result["queued"] is False
+    assert result["local_approval_consumed"] is True
     assert result["production_route"] is False
-    assert calls[0] == "idle"
-    assert calls[1][:4] == ("B2_GIST", "C3_LANGUAGE", event["event_id"], event["source_ref"])
-    assert calls[2] == "unload"
+    assert calls[:3] == ["idle", "idle", "idle"]
+    assert calls[3][:4] == ("B2_GIST", "C3_LANGUAGE", event["event_id"], event["source_ref"])
+    assert calls[4] == "unload"
     with pytest.raises(ValueError):
         operator_command(runtime, ["native-probe", "B2_GIST", "C3_LANGUAGE", "--last-source"])
     with pytest.raises(ValueError):

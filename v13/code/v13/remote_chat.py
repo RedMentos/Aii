@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -30,6 +31,170 @@ SAFE_OPERATOR_COMMANDS = frozenset({
     ":probe jef-modes", ":probe step12",
     ":scheduler lab summary", ":scheduler lab now"
 })
+# The only parameterized remote operator is a one-shot native receiver probe.
+# Remote --confirm is necessary but never grants local authority: staged Callosum
+# must consume a fresh local TTY arm before any native receiver work.
+NATIVE_RECEIVER_PROBE_COMMAND = re.compile(
+    r":callosum native-probe (B1_DETAIL|B2_GIST) "
+    r"(B1_DETAIL|B2_GIST|C3_LANGUAGE) --last-source --confirm",
+    re.ASCII,
+)
+
+
+def is_safe_operator_command(command):
+    """Accept fixed diagnostics or the exact owner-confirmed native probe form."""
+    if not isinstance(command, str) or command != command.strip():
+        return False
+    if command in SAFE_OPERATOR_COMMANDS:
+        return True
+    match = NATIVE_RECEIVER_PROBE_COMMAND.fullmatch(command)
+    return bool(match and match.group(1) != match.group(2))
+
+
+
+def _native_receiver_probe_summary(lines, sender, receiver):
+    """Return only bounded, source-free fields from one completed native probe."""
+    from .phone_monitor import ANSWER_PREFIXES
+    cleaned = []
+    for line in lines:
+        value = line.strip()
+        if not value:
+            continue
+        for prefix in ANSWER_PREFIXES:
+            if value.startswith(prefix):
+                value = value[len(prefix):].strip()
+                break
+        cleaned.append(value)
+    try:
+        value = json.loads("\n".join(cleaned))
+    except (TypeError, ValueError):
+        return None
+    if (not isinstance(value, dict) or value.get("completed") is not True
+            or value.get("queued") is not False
+            or value.get("requires_explicit_confirmation") is not True
+            or value.get("sender_role") != sender
+            or value.get("receiver_role") != receiver):
+        return None
+    if (value.get("production_route") is not False
+            or value.get("semantic_use_proven") is not False
+            or type(value.get("training_authority")) is not int
+            or value["training_authority"] != 0
+            or type(value.get("native_receiver_authority")) is not int
+            or value["native_receiver_authority"] != 0):
+        return None
+    try:
+        from .native_latent_receiver import EFFECT_EPSILON, PINNED_LLAMA_REVISION, POSITION_MODE
+    except (ImportError, AttributeError):
+        return None
+    if value.get("runner_revision") != PINNED_LLAMA_REVISION:
+        return None
+    if value.get("position_mode") != POSITION_MODE:
+        return None
+    if value.get("status") not in {
+            "NATIVE_INPUT_EFFECT", "NATIVE_DECODE_NO_EFFECT", "DIMENSION_MISMATCH"}:
+        return None
+    for key in ("sender_model_sha256", "receiver_model_sha256", "input_sha256"):
+        digest = value.get(key)
+        if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
+            return None
+    for key in ("sender_model_revision", "receiver_model_revision", "sender_tap_id", "llama_version"):
+        item = value.get(key)
+        if not isinstance(item, str) or not item or len(item) > 128:
+            return None
+    tokenizer_revision = value.get("tokenizer_revision")
+    if tokenizer_revision is not None and (
+            not isinstance(tokenizer_revision, str) or not tokenizer_revision or len(tokenizer_revision) > 128):
+        return None
+    rows, dim = value.get("input_rows"), value.get("input_dim")
+    receiver_dim, output_dim = value.get("receiver_input_dim"), value.get("output_dim")
+    decode_status = value.get("decode_status")
+    if (type(rows) is not int or not 1 <= rows <= 64
+            or type(dim) is not int or not 1 <= dim <= 8192
+            or type(receiver_dim) is not int or not 1 <= receiver_dim <= 8192
+            or type(output_dim) is not int or not 1 <= output_dim <= 8192
+            or type(decode_status) is not int):
+        return None
+    positions = value.get("position_ids")
+    if (not isinstance(positions, list) or len(positions) != rows
+            or any(type(pos) is not int for pos in positions)
+            or positions != list(range(rows))):
+        return None
+    if type(value.get("native_input_consumed")) is not bool or type(value.get("input_effect_detected")) is not bool:
+        return None
+    if type(value.get("row_shuffle_control_applicable")) is not bool:
+        return None
+    def finite_number(item, *, cosine=False):
+        return (isinstance(item, (int, float)) and not isinstance(item, bool)
+                and math.isfinite(float(item))
+                and (not cosine or -1.00001 <= float(item) <= 1.00001))
+    for key in ("output_norm", "input_effect_rms"):
+        if not finite_number(value.get(key)) or float(value[key]) < 0:
+            return None
+    for key in ("zero_control_cosine", "shuffle_control_cosine",
+                "row_shuffle_control_cosine", "repeat_cosine"):
+        item = value.get(key)
+        if item is not None and not finite_number(item, cosine=True):
+            return None
+    status = value["status"]
+    if status == "DIMENSION_MISMATCH":
+        if (receiver_dim == dim or decode_status != -100
+                or value["row_shuffle_control_applicable"]
+                or value.get("row_shuffle_control_cosine") is not None):
+            return None
+    else:
+        if rows >= 2:
+            if value["row_shuffle_control_applicable"] is not True:
+                return None
+        elif (value["row_shuffle_control_applicable"] is not False
+                or value.get("row_shuffle_control_cosine") is not None):
+            return None
+    consumed, effect = value["native_input_consumed"], value["input_effect_detected"]
+    effect_rms = float(value["input_effect_rms"])
+    if status == "DIMENSION_MISMATCH":
+        if consumed or effect:
+            return None
+    elif (receiver_dim != dim or decode_status != 0 or not consumed
+          or effect != (status == "NATIVE_INPUT_EFFECT")
+          or (effect and effect_rms <= EFFECT_EPSILON)
+          or (not effect and effect_rms > EFFECT_EPSILON)):
+        return None
+    # Never forward source_ref, event/session IDs, tap packet IDs, input hashes,
+    # raw position arrays, vectors, prompts, or arbitrary command output.
+    return {
+        "sender_role": sender,
+        "receiver_role": receiver,
+        "sender_model_revision": value["sender_model_revision"],
+        "sender_model_sha256": value["sender_model_sha256"],
+        "sender_tap_id": value["sender_tap_id"],
+        "tokenizer_revision": tokenizer_revision,
+        "receiver_model_revision": value["receiver_model_revision"],
+        "receiver_model_sha256": value["receiver_model_sha256"],
+        "runner_revision": PINNED_LLAMA_REVISION,
+        "llama_version": value["llama_version"],
+        "input_rows": rows,
+        "input_dim": dim,
+        "position_count": len(positions),
+        "position_mode": POSITION_MODE,
+        "receiver_input_dim": receiver_dim,
+        "output_dim": output_dim,
+        "decode_status": decode_status,
+        "output_norm": float(value["output_norm"]),
+        "input_effect_rms": effect_rms,
+        "zero_control_cosine": value.get("zero_control_cosine"),
+        "shuffle_control_cosine": value.get("shuffle_control_cosine"),
+        "row_shuffle_control_cosine": value.get("row_shuffle_control_cosine"),
+        "row_shuffle_control_applicable": value["row_shuffle_control_applicable"],
+        "repeat_cosine": value.get("repeat_cosine"),
+        "native_input_consumed": consumed,
+        "input_effect_detected": effect,
+        "status": status,
+        "production_route": False,
+        "semantic_use_proven": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+    }
+
+
 JOB_TTL_SECONDS = 21600
 TOKEN_PATTERN = re.compile(r"(?:gh[pousr]_[a-zA-Z0-9_]{10,}|github_pat_[a-zA-Z0-9_]{10,})")
 
@@ -120,7 +285,7 @@ def send(ident, text, *, operator=False):
     # Operator commands can modify state or invoke future tools. Remote
     # operator access is therefore a separate exact diagnostic allowlist.
     if operator:
-        if text.strip() not in SAFE_OPERATOR_COMMANDS:
+        if not is_safe_operator_command(text):
             raise ChatDenied("operator command not in diagnostic allowlist")
     elif text.strip().startswith(":"):
         raise ChatDenied("operator commands require a separate approved scope")
@@ -194,6 +359,7 @@ def result(ident):
     lines = text.splitlines()
     output = []
     got_input = False
+    input_text = None
     end = False
     for line in lines:
         if line.startswith("[du> "):
@@ -205,6 +371,7 @@ def result(ident):
                 return {"status":"CORRELATION_UNAVAILABLE", "request_id":ident,
                         "complete":False}
             got_input = True
+            input_text = line[5:-1]
             continue
         if line.strip() == "du>":
             # The Termux prompt appears immediately after the input was
@@ -232,6 +399,17 @@ def result(ident):
     if len(data) > MAX_READ_BYTES:
         return {"status": "TRUNCATED", "request_id": ident,
                 "output": visible, **correlation}
+    if item.get("operator") and input_text:
+        match = NATIVE_RECEIVER_PROBE_COMMAND.fullmatch(input_text)
+        if match and chat == "CHAT_RESPONDED":
+            summary = _native_receiver_probe_summary(output, match.group(1), match.group(2))
+            if summary is None:
+                return {"status": "OPERATOR_RESULT_INVALID", "request_id": ident,
+                        "error_code": "INVALID_NATIVE_RECEIVER_RESULT",
+                        "complete": False, **correlation}
+            return {"status": "OPERATOR_RESULT_VISIBLE", "request_id": ident,
+                    "operator": "NATIVE_RECEIVER_PROBE", "result": summary,
+                    "command_complete": True, **correlation}
     if chat == "CHAT_RESPONDED" and not item.get("operator"):
         # This proves only text is visible in the input's atomic log window;
         # the frozen plain UI supplies no final status or runtime turn ID.

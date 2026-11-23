@@ -191,6 +191,146 @@ class RemoteChatTests(unittest.TestCase):
         with self.assertRaises(bridge.Denied):
             owner.validate_owner_read(invalid,self.cfg,now=self.now)
 
+    def test_native_receiver_probe_requires_exact_explicit_confirmation_and_owner_relay(self):
+        command = ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source --confirm"
+        payload = {
+            "sender_role": "B1_DETAIL",
+            "receiver_role": "C3_LANGUAGE",
+            "sender_tap_id": "lfm2.detail.final.v1",
+            "sender_model_revision": "sender-r1",
+            "sender_model_sha256": "a" * 64,
+            "tokenizer_revision": "tokenizer-r1",
+            "receiver_model_revision": "receiver-r1",
+            "receiver_model_sha256": "b" * 64,
+            "runner_revision": "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4",
+            "llama_version": "b10964",
+            "input_rows": 2,
+            "input_dim": 3072,
+            "position_ids": [0, 1],
+            "position_mode": "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL",
+            "receiver_input_dim": 3072,
+            "output_dim": 3072,
+            "input_sha256": "c" * 64,
+            "decode_status": 0,
+            "output_norm": 1.25,
+            "input_effect_rms": 0.5,
+            "zero_control_cosine": 0.01,
+            "shuffle_control_cosine": 0.02,
+            "row_shuffle_control_cosine": 0.03,
+            "row_shuffle_control_applicable": True,
+            "repeat_cosine": 1.0,
+            "native_input_consumed": True,
+            "input_effect_detected": True,
+            "status": "NATIVE_INPUT_EFFECT",
+            "production_route": False,
+            "semantic_use_proven": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+            "completed": True,
+            "queued": False,
+            "requires_explicit_confirmation": True,
+            "source_ref": {"source_id": "private-source-id"},
+            "event_id": "private-event-id",
+            "sender_tap_packet_id": "private-tap-packet-id",
+        }
+
+        self.assertTrue(remote_chat.is_safe_operator_command(command))
+        self.assertTrue(remote_chat.is_safe_operator_command(
+            ":callosum native-probe B2_GIST B1_DETAIL --last-source --confirm"
+        ))
+        invalid = (
+            ":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm",
+            ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source",
+            ":callosum native-probe B1_DETAIL B1_DETAIL --last-source --confirm",
+            ":callosum native-probe C3_LANGUAGE B1_DETAIL --last-source --confirm",
+            ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source --confirm --force",
+            ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source --confirm && rm -rf ~",
+            " :callosum native-probe B1_DETAIL C3_LANGUAGE --last-source --confirm",
+        )
+        for value in invalid:
+            with self.subTest(command=value):
+                self.assertFalse(remote_chat.is_safe_operator_command(value))
+                with self.assertRaises(remote_chat.ChatDenied):
+                    remote_chat.send("f" * 32, value, operator=True)
+        with self.assertRaises(remote_chat.ChatDenied):
+            remote_chat.send("f" * 32, command, operator=False)
+
+        self.cfg["permissions"]["agent-owner"].append("CHAT_OPERATOR")
+
+        def rpc(method, **kw):
+            if method == "state":
+                return {"running": True, "last_session": self.session}
+            if method == "send":
+                self.assertEqual(kw["line"], command)
+                receipt = self.receipt()
+
+                with self.path.open("a", encoding="utf8") as out:
+                    out.write("[du> " + command + "]\nassistant> "
+                              + json.dumps(payload) + "\n\ndu>\n")
+                return receipt
+            raise AssertionError("Unexpected RPC " + method)
+
+        ident = "e" * 32
+        issue = self.make_issue("CHAT_OPERATOR", {"command": command},
+                                number=9, ident=ident)
+        client = FakeGitHub([issue])
+        with mock.patch("v13.chat_service.call", side_effect=rpc):
+            self.assertEqual(owner.poll_once(client, self.cfg, now=self.now)["processed"], 1)
+        self.assertEqual(
+            client.comments_sent[0][1]["device_status"]["status"], "SENT"
+        )
+        direct = remote_chat.result(ident)
+        self.assertEqual(direct["status"], "OPERATOR_RESULT_VISIBLE", msg=str(direct))
+        receive = self.make_issue("CHAT_RESULT", {"request_id": ident},
+                                  number=11, ident="d" * 32)
+        result_client = FakeGitHub([receive])
+        def result_rpc(method, **kw):
+            self.assertEqual(method, "state")
+            return {"running": True, "last_session": self.session}
+        with mock.patch("v13.chat_service.call", side_effect=result_rpc):
+            self.assertEqual(owner.poll_once(result_client, self.cfg, now=self.now)["processed"], 1)
+        result = result_client.comments_sent[0][1]["device_status"]
+        self.assertEqual(result["status"], "OPERATOR_RESULT_VISIBLE", msg=str(result))
+        self.assertEqual(result["operator"], "NATIVE_RECEIVER_PROBE")
+        self.assertTrue(result["command_complete"])
+        self.assertFalse(result["complete"])
+        self.assertEqual(result["correlation"], "ATOMIC_INPUT_WINDOW")
+        probe = result["result"]
+        self.assertEqual(probe["status"], "NATIVE_INPUT_EFFECT")
+        self.assertEqual((probe["sender_role"], probe["receiver_role"]),
+                         ("B1_DETAIL", "C3_LANGUAGE"))
+        self.assertEqual((probe["input_rows"], probe["input_dim"],
+                          probe["receiver_input_dim"]), (2, 3072, 3072))
+        self.assertTrue(probe["native_input_consumed"])
+        self.assertTrue(probe["input_effect_detected"])
+        self.assertFalse(probe["production_route"])
+        self.assertFalse(probe["semantic_use_proven"])
+        self.assertEqual(probe["training_authority"], 0)
+        self.assertEqual(probe["native_receiver_authority"], 0)
+        encoded = json.dumps(result)
+        for private_field in ("private-source-id", "private-event-id",
+                              "private-tap-packet-id", "source_ref",
+                              "input_sha256", "position_ids"):
+            self.assertNotIn(private_field, encoded)
+        self.assertNotIn("private question", encoded)
+
+        for unsafe in (
+            dict(payload, production_route=True),
+            dict(payload, native_receiver_authority=1),
+            dict(payload, receiver_role="B2_GIST"),
+        ):
+            self.assertIsNone(remote_chat._native_receiver_probe_summary(
+                ["assistant> " + json.dumps(unsafe)], "B1_DETAIL", "C3_LANGUAGE"
+            ))
+
+        bad = self.make_issue(
+            "CHAT_OPERATOR",
+            {"command": ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source"},
+            number=10, ident="f" * 32,
+        )
+        with self.assertRaises(bridge.Denied):
+            owner.validate_owner_read(bad, self.cfg, now=self.now)
+
     def test_owner_can_revoke_and_enable_explicit_private_log_diagnostics(self):
         from v13 import mobile_dashboard as ui
         self.cfg["permissions"]["agent-owner"].extend(["LOG_SHARING_ON","LOG_SHARING_OFF"])
