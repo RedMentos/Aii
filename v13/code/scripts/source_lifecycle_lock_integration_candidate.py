@@ -12,7 +12,7 @@ PINS = {
     'vision_source_lineage.py': 'bb63636c9ae84d345fe1f4e37254de3be87c26990cb320ca058859fd0b51b72f',
     'archive_reader_guard_candidate.py': '84c06a9f5c0b6054f836615023822ff577984d3efe9ddfb07cae569ec124f438',
     'archive_stream_range_candidate.py': 'd2d021adcc844c1f321312cbfa60a4affb0a6b7fddc09e41a234cdf83f1eec98',
-    'source_lifecycle_candidate.py': 'b87c072f528df7ba88724943508947579d035ac9d6ae8b54d27f540cf9dff387',
+    'source_lifecycle_candidate.py': '69378f39c84807048c4f626100c72fa1a427066e77ebac266599153b44bf806a',
 }
 GUARD_SCRIPT_SHA = '69a20b1c9e10882f80086c0620e8f87575c4559e7113ed19fd53002330be8747'
 OLD_ARCHIVE_INTEGRATED_SHA = '3f421423ce890b90033470e15150b1ba9830642e6b5e92e61b654801602e90b4'
