@@ -62,6 +62,8 @@ jobs:
           tests/test_unified_brain_delivery.py
           tests/test_enlightened_space.py
           tests/test_native_prompt_admission.py
+          tests/test_native_offer_prompt_receipt_20261118.py
+          tests/test_prompts.py
           tests/test_native_stream_integrity.py
           tests/test_prompt_source_integrity_20261116.py
           tests/test_context_offer_budget_20261116.py
@@ -101,11 +103,19 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+          fetch-depth: 64
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - run: python -m pip install --disable-pip-version-check torch==2.5.1+cpu --index-url https://download.pytorch.org/whl/cpu
       - run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.2.6 pillow==13.0.0 transformers==4.44.2 peft==0.13.2
+      - name: Public repository privacy scan
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base fb563d771fe2d493c4ec25abe94280981d24ef5c --head HEAD
+      - name: Run console privacy regressions before source composition
+        working-directory: v13/code
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python -m pytest -q -s tests/test_prompts.py
       - name: Exercise the shared staged organ and memory paths
         working-directory: v13/code
         env:

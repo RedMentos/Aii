@@ -214,24 +214,34 @@ class Runtime:
                     try:self.notice(dumps(self.cognition.tap(role,e,ref,time.monotonic()+self.cfg['observer_seconds'])))
                     finally:self.pool.unload()
                 elif kind=='probe':
-                    if payload=='sustained':
-                        from .proofs import probe_sustained
-                        self.notice(dumps(probe_sustained(self)))
-                    elif payload=='jef-modes':
-                        from .proofs import probe_jef_modes
-                        self.notice(dumps(probe_jef_modes(self)))
-                    elif payload=='body-state':
-                        from .proofs import probe_body_state
-                        self.notice(dumps(probe_body_state(self)))
-                    elif payload=='step12':
-                        from .proofs import probe_step12
-                        self.notice(dumps(probe_step12(self)))
-                    else:
-                        from .verification import probe
-                        self.notice(dumps(probe(self)))
+                    try:
+                        if payload=='sustained':
+                            from .proofs import probe_sustained
+                            self.notice(dumps(probe_sustained(self)))
+                        elif payload=='jef-modes':
+                            from .proofs import probe_jef_modes
+                            self.notice(dumps(probe_jef_modes(self)))
+                        elif payload=='body-state':
+                            from .proofs import probe_body_state
+                            self.notice(dumps(probe_body_state(self)))
+                        elif payload=='step12':
+                            from .proofs import probe_step12
+                            self.notice(dumps(probe_step12(self)))
+                        else:
+                            from .verification import probe, public_probe_summary
+                            self.notice(dumps(public_probe_summary(probe(self))))
+                    except BaseException:
+                        try:self.store.log('job_error',None,{'kind':'probe','error':'PROBE_ERROR'})
+                        except Exception:pass
+                        self.notice('probe: PROBE_ERROR')
                 else:raise ValueError('Job unbekannt')
             except BaseException as exc:
-                self.store.log('job_error',None,{'kind':kind,'error':type(exc).__name__,'detail':str(exc)[:1000]});self.notice(f'{kind}: {type(exc).__name__}: {exc}')
+                if kind=='probe':
+                    try:self.store.log('job_error',None,{'kind':'probe','error':'PROBE_ERROR'})
+                    except Exception:pass
+                    self.notice('probe: PROBE_ERROR')
+                else:
+                    self.store.log('job_error',None,{'kind':kind,'error':type(exc).__name__,'detail':str(exc)[:1000]});self.notice(f'{kind}: {type(exc).__name__}: {exc}')
                 if kind=='turn' and not self.store.one("SELECT id FROM messages WHERE event_id=? AND role='assistant'",(payload['event_id'],)):self._rejected(payload,str(exc))
             finally:
                 try:
