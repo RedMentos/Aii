@@ -282,6 +282,11 @@ def _require_runtime_probe_lease(runtime, lease_token):
                 or runtime.current != "probe"
                 or getattr(runtime, "_native_probe_lease_nonce", None) != lease_token):
             raise PermissionError("native probe requires its active exclusive Runtime lease")
+        if runtime.stop.is_set():
+            raise InterruptedError("native probe Runtime stopped during its exclusive lease")
+        if (not runtime.jobs.empty()
+                or runtime.store.queue_stats().get("count", 0) != 0):
+            raise PermissionError("native probe Runtime lease lost its empty queue")
 
 
 def _resource_preflight(runtime, receiver_binding):
@@ -362,7 +367,10 @@ def _resource_preflight(runtime, receiver_binding):
 
 def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None, lease_token=None):
     """Consume the local approval atomically before any native receiver work."""
-    runtime.require_idle()
+    if lease_token is None:
+        runtime.require_idle()
+    else:
+        _require_runtime_probe_lease(runtime, lease_token)
     _roles(sender_role, receiver_role)
     clock = _clock(now)
     record, version = runtime.store.state(KEY, None)
