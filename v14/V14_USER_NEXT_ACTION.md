@@ -1,3 +1,23 @@
+# Core & Harness — B1/B2 → C4 → C3 recovery-window checkpoint (2026-11-23T23:44:56.033Z)
+
+**Candidate:** [PR #2458](https://github.com/RedMentos/Aii/pull/2458), DRAFT / NOT_RELEASED. Branch `core/v14-fair-b1-b2-preanswer-budget-20261123-run1`, exact HEAD `e27c035bd6ba4679919a36dff0dda04bc77cb09e`, based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+
+**New connected runtime behavior:** repeated C3 zero-token prefill failures now leave a distinct 1.0 s C4/Focal selection and re-entry window after the fair initial B1/B2 slices. In the 30 s recovery example: 26 s reserved for C3, 3 s for initial B1/B2, 1 s for C4. Focal re-entry is explicitly distinguished from the initial pre-answer observer so it can use that final second. This does not prove that either native body can finish inside its slice.
+
+**Tests:** LOCAL_SYNTHETIC Python plan/slice prototype PASS (26/3/1 split, role deadline cap, expired-slice negative, fair allocation). Exact repository pytest/compile/integration tests NOT_RUN because this environment has no full checkout and GitHub DNS/clone access failed. Exact-head PR run [45291011985](https://github.com/RedMentos/Aii/actions/runs/45291011985) and push run [45291005230](https://github.com/RedMentos/Aii/actions/runs/45291005230) both ended `startup_failure` with zero jobs; neither is a test PASS or code-failure diagnosis.
+
+**User effect / Canon:** preserves the initial B1_DETAIL and B2_GIST opportunities, the C4 coalition/focal consumer, C3 time reserve, and existing post-commit observation path. Relevant path: B1/B2 → C4/Focal → C3, under the V14 distributed graph. Actual useful native offers, correct C3 output, TTFT improvement and real Redmi behavior remain UNVERIFIED.
+
+**Deployment:** PR #2458 is DRAFT / NOT_RELEASED; no release SHA. The Redmi was STOPPED_BY_USER / REDMI_UNVERIFIED. No private relay read, APK install, update request, chat send, shell, model/weight change or permission change was performed. Updater/device state was not re-queried in this run; no deployment is claimed.
+
+**Next:** Boss/Integrator must rebind nested Runtime/JEPA/staged-consumer pins and review the exact head; QA must obtain executable Python 3.13/3.14 staged and integrated CI. Next Core idea: use the existing native prefill profile only when device/model/thread/batch match authenticated DEVICE_RECEIPT samples; never use synthetic or unknown profiles as device evidence. No model alternative or swap is recommended without real comparisons and separate approval.
+
+**User action required:** none. No manual Termux command or update request.
+
+Handoff: `v14/handoffs/CORE_B1_B2_C4_FOCAL_RESERVE_20261124_RUN1.md`.
+
+---
+
 # Core & Harness — Android companion SQLite-recovery checkpoint (2026-11-23 22:56 UTC)
 
 **Candidate:** [PR #2406](https://github.com/RedMentos/Aii/pull/2406), DRAFT / NOT_RELEASED, branch `core/v14-capability-registry-mediaprojection-20261123`, exact code/test head `dc848768c6797b60c329d5d7485545b579d232f8`; handoff commit `3aa31af4aac90caefd85f7ca3c41bac9419fb0a0`. Added a Robolectric regression that injects SQLite receipt-write failure for both `EXECUTING → OUTCOME_UNKNOWN` and `DENYING → USER_DENIED`, verifies claims/notifications remain recoverable, then simulates restart, receipt-only finalization and idempotency without redispatch.
