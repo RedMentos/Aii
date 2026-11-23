@@ -1580,3 +1580,13 @@ JEPA #2396 Temporal WorldJEPA T8 Windows workflow is now SUCCESS. The same exact
 - V14 implication: supports a dedicated transcript output stream separate from agent text, but does not replace timestamped RAW EAR, prosody, speaker or non-speech signals. Keep transcript optional, provenance-bound and separately consented. Future small-model comparison needs causal latency, WER, interruption, barge-in, RSS and language coverage—not just batch ASR quality.
 
 Both findings are research-only: no code/weights imported, no model downloaded, and no Android measurement. Full details and limitations are in R-102/R-103 in the research ledger.
+
+
+## FASTDIAR model/code boundary audit — 2026-11-23T01:17:46.562Z
+
+- Primary arXiv paper 2610.02941v1 (submitted 2026-10-02 to ICASSP 2027) was read in full. It describes a causal 192-D speaker encoder emitting every 80 ms from a 2-second past window, with confidence-gated clustering and fixed 960 ms output delay. CPU RTF 0.19 was measured on an AMD Threadripper PRO 5995WX, not Android.
+- Evaluation is mixed: FASTDIAR leads on low-overlap VoxConverse/RAMC but is not best across all six datasets; it is last on DIHARD3, and overlap is a major limitation because it emits one label per frame. VoxConverse/NOTSOFAR dev data were used for checkpoint selection and threshold tuning.
+- Upstream code is MIT at signed release commit `e7f9bbccf98865216f48a04868d74f1d53c8734e`; checkpoint weights (2.4M/4.6M/10.4M parameter variants) have no separate license statement in the inspected README/release. Do not infer weight rights from the code license.
+- The dependency set is substantial: PyTorch 2.13.0, torchaudio 2.11.0, torchcodec 0.15.0, NumPy/SciPy, Silero VAD, pyannote, Lightning, PyArrow and others. CPU inference exists, but no Android/Termux/Bionic dependency closure or ARM64 wheel proof was found.
+- The current Perception `audio_fastdiar_adapter.py` is deliberately diagnostic: it accepts already-produced 192-D embeddings, hashes the local checkpoint + exact PCM chunk, and emits the RAW EAR contract. It does not load/download weights, execute the encoder, run clustering/VAD, assign identities, persist vectors or provide confidence calibration; A4 remains DEFER.
+- Next experiment is blocked on separate checkpoint-weight license verification and explicit approval for a disposable Termux install. If approved later, compare CPU RTF, 80 ms frame latency, RSS, DER with/without overlap, silence/noise negatives and restart. No weight was downloaded or loaded; REDMI_UNVERIFIED.
