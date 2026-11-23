@@ -8,7 +8,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Iterable
 
-import numpy as np
 import math
 import torch
 from torch import Tensor, nn
@@ -39,7 +38,7 @@ class FitConfig:
             raise ValueError("epochs, batch_size and patience must be positive")
         if not math.isfinite(self.learning_rate) or not math.isfinite(self.weight_decay) or self.learning_rate <= 0 or self.weight_decay < 0:
             raise ValueError("invalid optimizer settings")
-        if not math.isfinite(self.gradient_clip_norm) or not math.isfinite(self.collapse_weight) or self.gradient_clip_norm <= 0 or self.collapse_weight < 0:
+        if not math.isfinite(self.gradient_clip_norm) or not math.isfinite(self.collapse_weight) or not math.isfinite(self.min_delta) or self.gradient_clip_norm <= 0 or self.collapse_weight < 0 or self.min_delta < 0:
             raise ValueError("invalid gradient or regularizer setting")
 
 
