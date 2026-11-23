@@ -363,10 +363,23 @@ class Store:
             if component not in COMPONENT_ENCODERS or m['hashes'].get(entry['path'])!=entry['sha256'] or entry['path'] in owners:raise ValueError('Komponenten-Manifest inkonsistent')
             owners.add(entry['path'])
     def switch_generation(self,update_id,cfg,models):
+        # Serialize the entire promotion preflight/commit with source revocation.
+        # Memory._forget_source holds the same RLock through tombstone + unlink.
+        with self.mutex:
+            return self._switch_generation_locked(update_id,cfg,models)
+    def _switch_generation_locked(self,update_id,cfg,models):
         r=self.one("SELECT * FROM updates WHERE id=?",(update_id,));base=self.generation()
         if not r or r["status"]!="PENDING_APPROVAL":raise ValueError("Update nicht freigabefähig")
         if r["base_generation"]!=base["brain_generation_id"]:raise ValueError("Update veraltet")
         m=json.loads(r["manifest"])
+        source_ids=m.get("source_ids",[])
+        if (type(source_ids) is not list or len(source_ids)>4096
+                or any(type(sid) is not str or not sid or len(sid)>256 for sid in source_ids)):
+            raise ValueError("Ungültige Update-SourceRefs")
+        for sid in set(source_ids):
+            source_row=self.one("SELECT deleted FROM sources WHERE id=?",(sid,))
+            if not source_row or source_row["deleted"]:
+                raise ValueError("Update referenziert eine gelöschte Quelle")
         if not m.get("commit_eligible"):raise ValueError("Train/Retention-Gate nicht erfüllt")
         from .guards import stability_envelope
         envelope=stability_envelope(m,cfg)
@@ -400,10 +413,18 @@ class Store:
             c.execute("UPDATE updates SET status='COMMITTED',manifest=? WHERE id=?",(dumps(m),update_id))
         self.log("generation_commit",None,{"update_id":update_id,"generation":gid});return gid
     def rollback(self,update_id):
+        # A rollback target must be checked under the same revocation lock.
+        with self.mutex:
+            return self._rollback_locked(update_id)
+    def _rollback_locked(self,update_id):
         r=self.one("SELECT * FROM updates WHERE id=?",(update_id,));active=self.generation()
         last=active.get('last_weight_update_id',active['created_by_update_ids'][-1] if active['created_by_update_ids'] else None)
         if not r or r["status"]!="COMMITTED" or update_id!=last:raise ValueError("Nur letztes aktives Update rollbackbar; spätere Änderungen zuerst zurücksetzen")
         parent=self.generation(r["base_generation"]);self.validate_artifacts(parent)
+        for parent_update_id in parent.get("created_by_update_ids",[]):
+            parent_update=self.one("SELECT status FROM updates WHERE id=?",(parent_update_id,))
+            if parent_update and parent_update["status"]=="QUARANTINED":
+                raise ValueError("Rollback-Ziel enthält ein Update mit widerrufener Quelle")
         with self.tx() as c:
             current=json.loads(c.execute("SELECT value FROM meta WHERE key='active_generation'").fetchone()[0])
             if current!=active['brain_generation_id']:raise ValueError('Generation konkurrierend geändert')
