@@ -216,7 +216,7 @@ def _temporal_world_jepa_body_readout(r, e, role):
             "native_body_consumed": False,
             "native_body_weights_changed": False,
             "decision_authority": "NONE",
-            "note": "prediction_only",
+            "note": "prediction; not fact/permission",
         }
         # Unsupported-action detail remains in the stored audit. Do not spend
         # the 700-character B1/B2 prompt budget on optional diagnostics.
@@ -266,7 +266,6 @@ def _temporal_world_jepa_body_readout(r, e, role):
         episodic_rows = episodic_rows[:2]
         if episodic_rows:
             context["episodic"] = episodic_rows
-            context["episodic_note"] = "nearest train episode; observed outcome, not forecast"
 
         audit = {
             "schema": "V14_TEMPORAL_WORLDJEPA_BODY_RECEIVER_AUDIT/1",
