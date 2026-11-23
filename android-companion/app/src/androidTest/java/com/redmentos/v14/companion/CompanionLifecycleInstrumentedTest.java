@@ -50,6 +50,12 @@ public final class CompanionLifecycleInstrumentedTest {
         assertTrue(description + " has no visible display rectangle",
                 view.getGlobalVisibleRect(visible));
         assertTrue(description + " is fully clipped", visible.width() > 0 && visible.height() > 0);
+        int[] location = new int[2];
+        view.getLocationOnScreen(location);
+        int centerX = location[0] + view.getWidth() / 2;
+        int centerY = location[1] + view.getHeight() / 2;
+        assertTrue(description + " center is outside the visible display rectangle",
+                visible.contains(centerX, centerY));
     }
 
     private static void scrollIntoDisplayIfNeeded(View view, String description) {
