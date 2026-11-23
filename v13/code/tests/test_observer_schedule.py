@@ -10,7 +10,7 @@ from unittest.mock import Mock
 from v13 import observer_schedule as obs
 from v13 import resource_modes as rm
 from v13 import effort
-from v13.common import Cancelled
+from v13.common import Cancelled, Limits
 from v13.config import DEFAULTS,validate
 from v13.operator import Operator
 from v13.runtime import Runtime
@@ -31,6 +31,26 @@ class Plan(unittest.TestCase):
         self.assertEqual((p('ON_DEMAND_REENTRY')['pre'],p('ON_DEMAND_REENTRY')['reentry']),([],True))
         self.assertEqual(p('SAMPLED_OBSERVER',rate=1.)['pre'],BOTH);self.assertEqual(p('SAMPLED_OBSERVER',rate=0.)['reason'],'SAMPLED_OUT')
         with self.assertRaises(ValueError):obs.plan('BOTH_PLEASE',BOTH,'e')
+
+    def test_recovery_slice_allows_two_roles_without_weakening_other_limits(self):
+        sig=effort.signals('Compare plan A and plan B in detail',route='both')
+        cfg=dict(DEFAULTS)
+        recovery=effort.decide('max',sig,resource_state='NORMAL',resource_mode='GREEN',
+                               observer_window_s=3.9,minimum_body_seconds=1.0,cfg=cfg,age=effort.AGE0)
+        self.assertEqual(recovery['wake'],'both')
+        self.assertNotIn('DEADLINE_ONE_BODY',recovery['constraints'])
+        ordinary=effort.decide('max',sig,resource_state='NORMAL',resource_mode='GREEN',
+                               observer_window_s=3.9,cfg=cfg,age=effort.AGE0)
+        self.assertEqual(len(effort.roles(ordinary['wake'])),1)
+        self.assertIn('DEADLINE_ONE_BODY',ordinary['constraints'])
+        orange=effort.decide('max',sig,resource_state='PRESSURE',resource_mode='ORANGE',
+                             observer_window_s=3.9,minimum_body_seconds=1.0,cfg=cfg,age=effort.AGE0)
+        self.assertEqual(len(effort.roles(orange['wake'])),1)
+        self.assertIn('RESOURCE_ORANGE',orange['constraints'])
+        short=effort.decide('max',sig,resource_state='NORMAL',resource_mode='GREEN',
+                            observer_window_s=1.9,minimum_body_seconds=1.0,cfg=cfg,age=effort.AGE0)
+        self.assertEqual(len(effort.roles(short['wake'])),1)
+        self.assertIn('DEADLINE_ONE_BODY',short['constraints'])
 
     def test_sampling_is_deterministic_and_near_the_rate(self):
         hits=[obs.sampled('evt_%d'%i,.3) for i in range(2000)]
@@ -86,6 +106,12 @@ OFFER={'packet_id':'pkt_x','offer':{'summary':'note','needs_reentry':False,'quot
 class Turn(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.r=Runtime(Path(self.tmp.name));self.r.sleep.cycle.set_policy('enabled','off')
+        # Fix the resource fixture explicitly: this test proves scheduling when both bodies are admitted,
+        # not whichever resource mode the shared CI host happens to report.
+        self.r.resources=lambda: {'wall_time':time.time(),'mem_available_bytes':8*1024**3,'mem_total_bytes':8*1024**3,
+                                  'free_disk_bytes':20*1024**3,'battery_temperature_c':25.,'battery_percent':80.,
+                                  'charging':True,'processes':[],'own_peak_rss_bytes':0}
+        self.r.guard.update(self.r.resources())
         op=Operator(self.r);op.run(':route both');effort.set_mode(self.r.store,'max')
         self.r.learner.output_delta=Mock(return_value=None);self.calls=[];self.lock=threading.Lock()
         def offer(role,e,version,deadline,peer=None,**kw):
@@ -145,7 +171,7 @@ class Turn(unittest.TestCase):
         self.r.store.log=capture_log
         self.calls.clear()
         def offer(role,e,version,deadline,peer=None,valid_until=None,**kw):
-            self.calls.append((role,deadline,valid_until))
+            self.calls.append((role,deadline,valid_until,time.monotonic()))
             return dict(OFFER,role=role,packet_id="pkt_"+role+"_"+str(len(self.calls)))
         self.r.cognition.offer=offer
         self.r.cognition.communicate=Mock(return_value=None)
@@ -155,10 +181,16 @@ class Turn(unittest.TestCase):
         while not self.r.idle() and time.monotonic()<until:
             time.sleep(.005)
         pre=[x for x in self.calls if x[2] is not None]
+        self.assertEqual(self.r.guard.mode,'GREEN')
         self.assertGreaterEqual(len(pre),2)
         self.assertEqual([x[0] for x in pre[:2]],BOTH)
-        for _,role_deadline,turn_deadline in pre[:2]:
+        for _,role_deadline,turn_deadline,called_at in pre[:2]:
             self.assertLessEqual(role_deadline,turn_deadline-26.0)
+            self.assertGreaterEqual(role_deadline-called_at,.99)
+        decision_row=self.r.store.one("SELECT payload FROM packets WHERE kind='EffortDecision' ORDER BY rowid DESC LIMIT 1")
+        decision=json.loads(decision_row['payload'])
+        self.assertEqual(decision['wake'],'both')
+        self.assertNotIn('DEADLINE_ONE_BODY',decision['constraints'])
         plan_logs=[m for k,m in logs if k=="native_turn_budget_plan"]
         self.assertTrue(plan_logs)
         self.assertEqual(plan_logs[0]["recent_real_prefill_failures"],2)
@@ -183,6 +215,7 @@ class Turn(unittest.TestCase):
         while not self.r.idle() and time.monotonic()<until:
             time.sleep(.005)
         self.assertTrue(any(role=="B1_DETAIL" and pre for role,pre,_ in self.calls))
+        self.assertTrue(any(role=="B2_GIST" and pre for role,pre,_ in self.calls))
         self.assertTrue(any(role=="B2_GIST" and not pre and status=="FINAL"
                             for role,pre,status in self.calls))
 
