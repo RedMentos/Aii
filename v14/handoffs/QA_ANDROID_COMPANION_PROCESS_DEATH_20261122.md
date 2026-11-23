@@ -152,3 +152,18 @@ The Boss WorldJEPA cache candidate remains CI-green but not installed; this devi
 - #2415 remains DRAFT / NOT_RELEASED; no Android companion product behavior has been changed by these QA-harness commits.
 - LOCAL_LINUX full Aii test suite: BLOCKED / NOT_RUN. Android emulator exact-head result: NOT_OBSERVED for #2415. Physical Redmi: REDMI_UNVERIFIED.
 - Next: obtain a visible exact-head workflow result for #2415 head `1ddd033`; if the emulator again reports System UI ANR, retain the UI failure and read whether the independent durable marker/PID/SharedPreferences proof completed. Do not treat PARTIAL_PASS as full UI acceptance and do not increase Wait counts or select Close app.
+
+
+## CI trigger correction — exact head c254c71 (2026-11-23 07:38 UTC)
+
+This supersedes the previous unresolved-trigger note above.
+
+- Exact readback of the #2415 head workflow showed the defect: `push.branches` included `qa/v14-companion-stop-durability-20261123-run1`, but `pull_request.branches` omitted its actual target base `qa/v14-companion-final-qa-20261122`. The base branch file contained the filter, but the workflow version on the PR head/merge candidate did not.
+- Commit `c254c717c897b4502bc83fbf4166c130721206c2` adds the missing QA-base branch to `pull_request.branches`. No product code, permission or runtime behavior changed.
+- Exact-head GitHub check-run readback now shows workflow run `45128234393` queued for PR #2415:
+  - `android-companion` job `137537434145` — QUEUED.
+  - `android-companion-process-restart` job `137537434599` — QUEUED.
+  - `offline-bridge-security` job `137537433826` — QUEUED.
+- This is the first observed exact-head PR-triggered Android workflow for #2415. Queued is not PASS; read the complete job results before changing the acceptance status.
+- The earlier #2417 run `45124910049` demonstrates that the emulator test can execute on a separate branch; it remains FAIL because System UI did not recover after two safe Wait actions.
+- Current branch head at this checkpoint: `c254c717c897b4502bc83fbf4166c130721206c2`. Exact local test execution remains NOT_RUN; physical Redmi remains REDMI_UNVERIFIED.
