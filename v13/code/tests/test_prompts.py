@@ -47,4 +47,64 @@ class ConductAndPrivacy(unittest.TestCase):
         kept=telemetry_metrics({'text':'geheim','output':'geheim','query':'geheim','messages':[{'content':'geheim'}],'note':'geheim','kind':'rating'})
         self.assertNotIn('geheim',str(kept));self.assertIn('kind',kept);self.assertNotIn('text',kept)
 
+
+class ProbeOutputPrivacy(unittest.TestCase):
+    def test_console_probe_redacts_model_outputs_offers_and_control_payloads(self):
+        import json
+        from v13.verification import public_probe_summary
+
+        report = {
+            'proof_kind': 'NATIVE_SMOKE',
+            'status': 'SMOKE_PASS',
+            'phone_measured': True,
+            'full_runner_proof': False,
+            'model_revisions': {'C3_LANGUAGE': 'revision-c3'},
+            'effective_config': {'threads': 6, 'answer_tokens': 48, 'private_setting': 'SECRET_CONFIG'},
+            'missing_proofs': ['B3 receiver utility'],
+            'roles': {
+                'C3_LANGUAGE': {
+                    'ok': True,
+                    'actual_output': 'SECRET_C3_OUTPUT',
+                    'metrics': {
+                        'status': 'FINAL', 'generated_tokens': 7, 'prompt_tokens': 18,
+                        'prompt_preview': 'SECRET_PROMPT',
+                    },
+                },
+                'B1_DETAIL': {
+                    'ok': True,
+                    'actual_output': 'SECRET_B1_OUTPUT',
+                    'metrics': {'status': 'FINAL', 'generated_tokens': 3},
+                    'structured_offer': {
+                        'verified_quote_count': 1, 'rejected_quote_count': 0,
+                        'actual': {'summary': 'SECRET_B1_HYPOTHESIS'},
+                    },
+                },
+                'B2_GIST': {
+                    'ok': True,
+                    'structured_offer': {
+                        'verified_quote_count': 2, 'rejected_quote_count': 1,
+                        'actual': {'summary': 'SECRET_B2_HYPOTHESIS'},
+                    },
+                },
+                'C2_CONTROL': {
+                    'ok': True, 'embedding_dim': 3072,
+                    'actual_control': {'answer': 'SECRET_CONTROL_PAYLOAD'},
+                },
+            },
+        }
+
+        summary = public_probe_summary(report)
+        rendered = json.dumps(summary, sort_keys=True)
+        for secret in (
+            'SECRET_C3_OUTPUT', 'SECRET_B1_OUTPUT', 'SECRET_B1_HYPOTHESIS',
+            'SECRET_B2_HYPOTHESIS', 'SECRET_CONTROL_PAYLOAD',
+            'SECRET_PROMPT', 'SECRET_CONFIG',
+        ):
+            self.assertNotIn(secret, rendered)
+        self.assertEqual(summary['roles']['B1_DETAIL']['offer']['verified_quote_count'], 1)
+        self.assertEqual(summary['roles']['B2_GIST']['offer']['rejected_quote_count'], 1)
+        self.assertEqual(summary['roles']['C3_LANGUAGE']['metrics']['generated_tokens'], 7)
+        self.assertEqual(summary['effective_config']['threads'], 6)
+        self.assertTrue(summary['redaction']['raw_artifact_retained_locally'])
+
 if __name__=='__main__':unittest.main()
