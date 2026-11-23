@@ -386,26 +386,29 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "LOCAL_LINUX exact module compile + direct registry harness; CI startup_failure/no jobs; REDMI_UNVERIFIED",
-      "next_step": "Core/QA: review schema-v3 source/consent pins and restore a runnable exact-head CI job. Research & Perception: add the remaining 1-s/2-s invariance regression, then port the separate #2433 transactional A4 outcome/N10 path onto the current base without overwriting the newer RAW EAR/teacher/duplex consumers. Keep speaker thresholds uncalibrated and Android REDMI_UNVERIFIED. PR metadata/comment remains unmodified because GitHub API returned 403 until an email is verified; code and handoff are available on the branch.",
+      "proof_environment": "LOCAL_LINUX exact module compile + direct registry harness; CI startup_failure/no jobs; base installed receipt exists but PR feature REDMI_UNVERIFIED",
+      "next_step": "Core/QA: review schema-v3 source/consent pins and restore a runnable exact-head CI job. Research & Perception: add the remaining 1-s/2-s invariance regression, then port the separate #2433 transactional A4 outcome/N10 path onto the current base without overwriting the newer RAW EAR/teacher/duplex consumers. Keep speaker thresholds uncalibrated and Android REDMI_UNVERIFIED. PR metadata/comment remains unmodified because GitHub API returned 403 until an email is verified; code and handoff are available on the branch. Respect STOPPED_BY_USER: no CHAT_SEND, UPDATE_REQUEST or restart until explicit user re-enable. PR #2448 is not merged/installed; only base SHA 8d93236 is installed.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-23T22:00:28Z",
       "latest_candidate_pr": {
         "pr": 2448,
-        "head_sha": "b096152a6a18c4e5948a3b2eed82389714e02684",
+        "head_sha": "f0e428feff7e6c90c07ac699bebd4a6e71901753",
         "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
         "code_test_sha": "a23366f4ab72feaf53b965c16de9cc9f818ed04d",
-        "handoff_commit_sha": "dc7afb20d24619de61944adadbab79916f052cee",
+        "handoff_commit_sha": "83057babeb8e90fbab44e0f6a703eda191842de2",
         "ci": "STARTUP_FAILURE_NO_JOBS_45277411451",
-        "tested_code_sha": "a23366f4ab72feaf53b965c16de9cc9f818ed04d"
+        "tested_code_sha": "a23366f4ab72feaf53b965c16de9cc9f818ed04d",
+        "code_blob_sha": "25474bb202c1209800f5c8a73e36aeca5555efd6",
+        "consumer_blob_sha": "2693fb9e337c8fbb481a1d077ea30c0b2ede319f",
+        "test_blob_sha": "3c7db8e5e1ef51422049fc92fa7bf17b80db9e8d"
       },
-      "proof": "PR #2448 code/test state a23366f4ab72feaf53b965c16de9cc9f818ed04d, current docs/board head 5169c2b7d9b8947530c944150bd1a23f787c6a6a, base 8d93236c753f0194224c19edc7411d8d7082b1d6. Schema v3 requires exact current PCM SHA-256 and active lease consent receipt. Only VOICED embeddings enter bounded speaker history; non-voiced windows are suppressed while A4 novelty remains available. Exact module compile/direct checks PASS for lease receipt, PCM match/mismatch, suppression, history retention, consent reset and reset API. Full repository pytest not run; last visible Actions run 45277411451 startup_failure/no jobs. No Android microphone proof. Handoff: v14/handoffs/RESEARCH_PERCEPTION_SPEAKER_PCM_BINDING_20261123_RUN28.md @ d6c0b07c6fcb2fd5529dcce022c5e0f861e1644f. Stale #2433 still contains separate transactional A4 outcome/N10 path; not ported. PR-body update and #2433 coordination comment were blocked by GitHub API 403 (account email verification required); branch files/handoff were committed.",
+      "proof": "PR #2448 code/test state a23366f4ab72feaf53b965c16de9cc9f818ed04d, current docs/board head 5169c2b7d9b8947530c944150bd1a23f787c6a6a, base 8d93236c753f0194224c19edc7411d8d7082b1d6. Schema v3 requires exact current PCM SHA-256 and active lease consent receipt. Only VOICED embeddings enter bounded speaker history; non-voiced windows are suppressed while A4 novelty remains available. Exact module compile/direct checks PASS for lease receipt, PCM match/mismatch, suppression, history retention, consent reset and reset API. Full repository pytest not run; last visible Actions run 45277411451 startup_failure/no jobs. No Android microphone proof. Handoff: v14/handoffs/RESEARCH_PERCEPTION_SPEAKER_PCM_BINDING_20261123_RUN28.md @ d6c0b07c6fcb2fd5529dcce022c5e0f861e1644f. Stale #2433 still contains separate transactional A4 outcome/N10 path; not ported. PR-body update and #2433 coordination comment were blocked by GitHub API 403 (account email verification required); branch files/handoff were committed. Existing sanitized owner receipt #825 confirms base SHA 8d93236 installed with auto-update enabled; separate diagnostics #826 say AI runtime STOPPED_BY_USER, autostart false, model process stopped. No new chat/update/restart/log-page action was taken; P0 #1904 remains open.",
       "run28_checkpoint": {
         "branch": "research-perception/v14-audio-duplex-bridge-20261123-run21",
         "pr": 2448,
-        "branch_head_at_board_update": "b096152a6a18c4e5948a3b2eed82389714e02684",
+        "branch_head_at_board_update": "f0e428feff7e6c90c07ac699bebd4a6e71901753",
         "code_test_sha": "a23366f4ab72feaf53b965c16de9cc9f818ed04d",
-        "handoff_commit_sha": "dc7afb20d24619de61944adadbab79916f052cee",
+        "handoff_commit_sha": "83057babeb8e90fbab44e0f6a703eda191842de2",
         "handoff_path": "v14/handoffs/RESEARCH_PERCEPTION_SPEAKER_PCM_BINDING_20261123_RUN28.md",
         "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
         "code_paths": [
@@ -438,11 +441,21 @@
           }
         ],
         "e2e_scope": "Synthetic PCM16 impulse -> A5 RAW EAR -> A4 novelty/speaker evidence -> C3 admission summary; not a real microphone turn",
-        "device": "REDMI_UNVERIFIED",
+        "device": "Base SHA 8d93236 installed per sanitized owner receipt #825; AI runtime STOPPED_BY_USER per diagnostics #826; PR #2448 feature REDMI_UNVERIFIED",
         "release": "NOT_RELEASED",
-        "updater": "NOT_EXERCISED; no deployment attempted",
+        "updater": "Auto-update enabled for installed base per #825; no update request/deployment for PR #2448; runtime stop respected",
         "next_action": "Core/QA CI and source-pin review; Perception 1-s/2-s invariance, then current-base A4 outcome/N10 integration",
-        "github_metadata_blocker": "403: connected GitHub account has no verified email; PR body and #2433 comment not updated"
+        "github_metadata_blocker": "403: connected GitHub account has no verified email; PR body and #2433 comment not updated",
+        "p0_issue_1904": {
+          "status": "OPEN_BLOCKING",
+          "installed_base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+          "receipts": [
+            "#825 installed base / auto-update enabled",
+            "#826 AI runtime STOPPED_BY_USER / autostart false"
+          ],
+          "last_reported_acceptance": "3/20 live sample before current base: greeting FINAL; 2+2 incorrect; ambiguous follow-up repeated prior answer; B1/B2 TIME_BUDGET and zero valid offers",
+          "action": "No CHAT_SEND, UPDATE_REQUEST, restart, shell or LOG_PAGE"
+        }
       }
     },
     {
