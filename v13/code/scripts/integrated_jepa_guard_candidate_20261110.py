@@ -3,7 +3,7 @@ import hashlib
 import importlib.util
 from pathlib import Path
 
-ONLINE_BUILDER_SHA = '35b52d5d9505a516f17ca12bf14b596e03252226654646f2178cd3e973fa9f29'
+ONLINE_BUILDER_SHA = '78961bf83ab77cfd92dccc9990b651ad486a4db8754a79b6eea527b05a0eee50'
 GUARD_SHA = '2b23880b71bd302c9db2035e594b2e27f021f379f0fc02048c64e1efee66ba4f'
 CHECKPOINT_SHA = '3e769da6b1b777088d1a5eaea26c04cf6bc116002b6e8dddd58440968442934e'
 AGI_OLD = b'''    if args and args[0]=='jepa':
