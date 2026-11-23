@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T01:37:48.622Z",
+  "updated_at": "2026-11-23T01:44:25.178Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; private V13OBS #115 readback at 2026-11-23T00:36:32Z confirms same SHA installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE and last_error NONE. Latest stored turn remains slow with B1/B2 TIME_BUDGET. PR #2395 exact head 26ccaf has focused CI 2/2 PASS but staged/integrated FAIL on JEPA/QA source-lifecycle pin/overlay; all candidates remain DRAFT / NOT_RELEASED.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -199,19 +199,19 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "LOCAL_LINUX isolated lineage guard 6/6 PASS; exact-head GitHub ingress + staged/integrated workflows IN_PROGRESS; full local Aii suite BLOCKED/NOT_RUN; REDMI_UNVERIFIED.",
-      "next_step": "Poll exact PR #2401 head 62551749d0b7b0de7434e82b6381f305cf178b30. If an exact Perception consumer test fails, fix that observed failure only. QA must compose #2397/#2395 into the lifecycle builder and rebind vision.py + vision_source_lineage.py; then rerun staged/integrated and privacy/migration/owner-read gates. Core must combine the MediaProjection provider with the same UI lease and a real C3 consumer. Keep the branch DRAFT until the full dependency chain is green.",
+      "proof_environment": "LOCAL_LINUX isolated lineage guard 6/6 PASS; exact-head focused CI PASS 30/30 on Python 3.13.18 and 30/30 on Python 3.14.10; staged/integrated FAIL at QA-owned source_lifecycle_lock_integration_candidate.py vision.py pin (staged 19 fail/231 pass/10 skip/2 errors; integrated 1 fail); full local Aii suite BLOCKED/NOT_RUN; REDMI_UNVERIFIED.",
+      "next_step": "QA must preserve its training-resume repair, compose on exact JEPA #2397 + Perception #2395, pin both vision.py and vision_source_lineage.py, and recompute the full stage/deployer chain. Rerun staged/integrated plus migration/privacy/owner-read. Perception PR #2401 focused UI consumer tests are green at head 21b0c052; do not merge until the QA base dependency is green. Core must then combine the provider with the same UI lease and a normal C3 consumer.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T01:37:48.622Z",
+      "last_checkpoint": "2026-11-23T01:44:25.178Z",
       "latest_candidate_pr": {
         "pr": 2401,
-        "head_sha": "62551749d0b7b0de7434e82b6381f305cf178b30",
+        "head_sha": "21b0c05219629fa6b29833ba60647e133cd0acda",
         "base": "jepa-memory/v14-vision-forget-overlay-20261123-run5@f63a5877774f58b6928b4e8dd7125651e9d8173d",
         "state": "OPEN_DRAFT_STACKED",
-        "ci": "TWO_EXACT_HEAD_WORKFLOWS_IN_PROGRESS",
+        "ci": "FOCUSED_PASS_30_PY313_30_PY314; STAGED_FAIL_QA_SOURCE_PIN",
         "scope": "consent-bound MediaProjection→RAW EYE→A4/A5 plus independent A3 training-source liveness gate; no Android proof"
       },
-      "proof": "PR #2395 exact head 26ccaf: both A3 ridge projectors record training source_id + SHA-256; forget invalidates affected/legacy-unknown weights before source deletion and uses symlink-safe artifact/blob unlink. Local helper tests 7/7 PASS; exact GitHub focused Python 3.13/3.14 2/2 PASS. The staged JEPA overlay currently replaces vision.forget with a path that only strips global captions and leaves projector weights/tile_projector; QA composer pins old vision.py and omits new helper from PINS, so staged/integrated fail. R-101 local synthetic exact-statistics probe: 600 delete/add-back comparisons, max relative parameter error 6.72e-10 and normalized-output error 1.39e-15; future design only. Private V13OBS #115 at 00:36:32Z confirms release aed1d2 installed/up-to-date, but no candidate deployment; last stored turn 57.7388 s and B1/B2 TIME_BUDGET 53.2/54.2 s. JEPA #2397 overlay CI 2/2 PASS (Python 3.13/3.14); exact staged-runtime 19 failed / 231 passed / 10 skipped / 2 errors and integrated-regression 1 failed, due QA-owned immutable vision.py pin. Exact QA hashes handed off: vision.py d4a5e3e0… and vision_source_lineage.py bb63636c…. #2395/#2397 remain DRAFT / NOT_RELEASED. R-102 adds a systems research candidate for per-consumer memory budgeting; it is replay-based supervised OCL on Jetson, not JEPA or Android proof. R-103 supports parallel transcript/agent heads but does not replace raw acoustic features. QA #2391 updated to 076aa21e6b8c13a2a48d63d70f530ba6eba73072; seven workflows queued. Its source_lifecycle_lock_integration_candidate.py still pins old vision.py 758cfc… and omits vision_source_lineage.py, so staged/integrated source-forget remains uncomposed. PR #2401 adds consumer-side exact A3 source lineage verification (VISION index + live Store IMAGE row), with five synthetic negative cases; LOCAL_LINUX isolated guard logic 6/6 PASS. Full local repository tests BLOCKED. Exact-head CI in progress. R-105 ECL full-text research is a hardware-specific candidate only; no code/weights imported."
+      "proof": "PR #2395 exact head 26ccaf: both A3 ridge projectors record training source_id + SHA-256; forget invalidates affected/legacy-unknown weights before source deletion and uses symlink-safe artifact/blob unlink. Local helper tests 7/7 PASS; exact GitHub focused Python 3.13/3.14 2/2 PASS. The staged JEPA overlay currently replaces vision.forget with a path that only strips global captions and leaves projector weights/tile_projector; QA composer pins old vision.py and omits new helper from PINS, so staged/integrated fail. R-101 local synthetic exact-statistics probe: 600 delete/add-back comparisons, max relative parameter error 6.72e-10 and normalized-output error 1.39e-15; future design only. Private V13OBS #115 at 00:36:32Z confirms release aed1d2 installed/up-to-date, but no candidate deployment; last stored turn 57.7388 s and B1/B2 TIME_BUDGET 53.2/54.2 s. JEPA #2397 overlay CI 2/2 PASS (Python 3.13/3.14); exact staged-runtime 19 failed / 231 passed / 10 skipped / 2 errors and integrated-regression 1 failed, due QA-owned immutable vision.py pin. Exact QA hashes handed off: vision.py d4a5e3e0… and vision_source_lineage.py bb63636c…. #2395/#2397 remain DRAFT / NOT_RELEASED. R-102 adds a systems research candidate for per-consumer memory budgeting; it is replay-based supervised OCL on Jetson, not JEPA or Android proof. R-103 supports parallel transcript/agent heads but does not replace raw acoustic features. QA #2391 updated to 076aa21e6b8c13a2a48d63d70f530ba6eba73072; seven workflows queued. Its source_lifecycle_lock_integration_candidate.py still pins old vision.py 758cfc… and omits vision_source_lineage.py, so staged/integrated source-forget remains uncomposed. PR #2401 adds consumer-side exact A3 source lineage verification (VISION index + live Store IMAGE row), with five synthetic negative cases; LOCAL_LINUX isolated guard logic 6/6 PASS. Full local repository tests BLOCKED. Exact-head CI in progress. R-105 ECL full-text research is a hardware-specific candidate only; no code/weights imported. PR #2401 focused exact-head CI run 45095844550: 30 passed on Python 3.13.18 and 30 passed on Python 3.14.10. Initial compile failure at prior head was fixed by adding the provider-entrypoint test file. Exact staged/integrated run 45095844653 still fails at QA's immutable vision.py source pin; migration reports PARTIAL. R-105 ECL full-text research remains research-only."
     },
     {
       "id": "V14-007",
@@ -255,10 +255,10 @@
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
       "proof_environment": "GitHub CI + private V13OBS release receipt; no APK install, MediaProjection session, microphone capture or Redmi control proof",
-      "next_step": "Core/QA: compose QA #2356 + Perception #2375/#2401 + Core #2379 on one exact ancestor; #2401 is stacked on JEPA #2397/#2395 and adds A3 source-lineage checks at the UI consumer. Wire a real signed MediaProjection receipt and the same UIObservationLease through RAW EYE→A5→normal C3 dispatch, then test revocation/cancel/restart. No Android capture receipt exists. For audio, Core #2370 must rebind audio_voice_cues to Perception #2369's exact blob and keep Teacher Ear OFF unless both explicit opt-ins pass.",
+      "next_step": "Core/QA: combine QA #2356 + Perception #2375/#2401 + Core #2379 on one exact ancestor. #2401 head 21b0c052 has focused UI/provider CI 30/30 on Python 3.13 and 30/30 on 3.14, but staged/integrated fails at QA's stale vision.py source pin. QA must compose #2397/#2395 and rebind lifecycle pins first. Then wire the signed MediaProjection receipt and same UIObservationLease through RAW EYE→A5→normal C3 dispatch; test revocation/cancel/restart. No Android capture receipt exists. Audio #2370 must still rebind #2369's exact source and preserve both Teacher Ear opt-ins.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T01:37:48.622Z",
-      "proof": "#2375 e21a85 contains provider entrypoint; #2379 still fails import on stale base; #2356 process restart blocked by emulator System UI ANR. Private V13OBS #115 at 2026-11-23T00:05:52Z: runtime/dashboard RUNNING, updater enabled and UP_TO_DATE at aed1d2; this is release deployment only, not new provider capability proof. #2397 overlay is focused-CI green but staged/integrated still blocked by QA pin; #2369 audio compatibility is available but Core pin remains stale. No Android UI/audio proof. Perception #2401 exact head 62551749d0b7b0de7434e82b6381f305cf178b30 is DRAFT/STACKED; isolated lineage guard 6/6 PASS and five synthetic consumer negatives added; two exact-head workflows were in progress. No real MediaProjection, C3 or Redmi proof.",
+      "last_checkpoint": "2026-11-23T01:44:25.178Z",
+      "proof": "#2375 e21a85 contains provider entrypoint; #2379 still fails import on stale base; #2356 process restart blocked by emulator System UI ANR. Private V13OBS #115 at 2026-11-23T00:05:52Z: runtime/dashboard RUNNING, updater enabled and UP_TO_DATE at aed1d2; this is release deployment only, not new provider capability proof. #2397 overlay is focused-CI green but staged/integrated still blocked by QA pin; #2369 audio compatibility is available but Core pin remains stale. No Android UI/audio proof. Perception #2401 exact head 62551749d0b7b0de7434e82b6381f305cf178b30 is DRAFT/STACKED; isolated lineage guard 6/6 PASS and five synthetic consumer negatives added; two exact-head workflows were in progress. No real MediaProjection, C3 or Redmi proof. PR #2401 focused UI/provider CI PASS 30/30 on Python 3.13 and 30/30 on Python 3.14; staged/integrated FAIL due QA-owned vision.py source pin and migration PARTIAL. No real MediaProjection, C3 or Redmi proof.",
       "last_verified_at": "2026-11-23T00:05:08.222Z",
       "latest_candidate_pr": {
         "pr": 2379,
@@ -897,10 +897,10 @@
       "capability": "ANDROID_UI_CONTROL",
       "code": "RAW_EYE_FRAME_ADAPTER_WITH_PROVIDER_VERIFIER_AND_A3_SOURCE_LINEAGE_CONSUMER_GATE",
       "wired": "PERCEPTION_PR_2401_STACKED_ON_JEPA_2397_AND_A3_2395; CORE_2379_NOT_COMBINED",
-      "tested_synthetic": "#2401 isolated LOCAL_LINUX lineage guard 6/6 PASS; five synthetic consumer negatives added; exact-head ingress + staged/integrated workflows IN_PROGRESS",
+      "tested_synthetic": "#2401 exact head 21b0c052: focused UI/provider CI 30 passed Python 3.13 + 30 passed Python 3.14; staged/integrated FAIL at QA vision.py source pin (staged 19 fail/231 pass/10 skip/2 errors; integrated 1 fail)",
       "tested_android": "NO_MEDIAPROJECTION_CAPTURE_RECEIPT",
       "active": "OFF",
-      "evidence": "A3 student use is rejected when any training source is missing, tombstoned, malformed or hash-mismatched; fallback remains handcrafted RAW EYE. PR #2401 is DRAFT/NOT_RELEASED and depends on #2397/#2395; Core #2379 provider and normal C3 consumer remain separate. No Android capture or device proof."
+      "evidence": "A3 student use is rejected when any training source is missing, tombstoned, malformed or hash-mismatched; fallback remains handcrafted RAW EYE. PR #2401 is DRAFT/NOT_RELEASED and focused CI is green, but staged/integrated source-lifecycle pin remains red. Core #2379 provider and normal C3 consumer remain separate. No Android capture or device proof."
     },
     {
       "capability": "SELF_OPTIMIZATION",
@@ -1127,7 +1127,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-23T01:37:48.622Z",
+    "timestamp": "2026-11-23T01:44:25.178Z",
     "release_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "code_candidate_sha": "d149bd5e0a2f8394e44e0ed60a208638b9f4b3b9",
     "candidate_ci": "PR2370_EXACT_HEAD_d149bd5:15_QUEUED_1_CANCELLED_1_SKIPPED_0_NEW_HEAD_PASSES_OBSERVED",
@@ -1164,7 +1164,7 @@
       "2394": "DRAFT Core capability registry exact head 41b43cb139d68caf8c459cec668061b4eda6b6db: 2/2 synthetic workflows PASS; parent process-restart acceptance FAIL.",
       "2395": "DRAFT Perception A3 source-lineage exact head 26ccaf0825d4ebf02aedcdae781a9164b04f53d5: focused 2/2 PASS; staged/integrated FAIL at old vision.py pin/obsolete forget anchor.",
       "2396": "DRAFT exact head 3a1cecb: Temporal WorldJEPA T8 Windows SUCCESS; 3 other workflows FAIL at Termux12 training-resume builder pin; no optimizer-resume or weight proof.",
-      "2401": "DRAFT_STACKED_ON_2397_EXACT_HEAD_62551749; TWO_EXACT_HEAD_WORKFLOWS_IN_PROGRESS; NO_LOCAL_FULL_SUITE; REDMI_UNVERIFIED"
+      "2401": "HEAD_21b0c052_FOCUSED_30_PASS_PY313_30_PASS_PY314; STAGED_FAIL_QA_VISION_PIN; NOT_RELEASED"
     },
     "user_action_required": "NONE",
     "research_id_collision": "R-092 AudioRecord and the distinct JEPA paper's R-093 renumber remain unresolved; preserve the current ledger until explicit cross-check.",
@@ -1340,7 +1340,10 @@
       "No user action; no manual Termux command, update request, model/weight swap or permission change.",
       "Perception: poll #2401 exact head; fix observed consumer regressions only; preserve DRAFT until #2397/#2395/QA source-lifecycle chain is green.",
       "QA/JEPA: compose #2397/#2395 into source-lifecycle builder and rerun staged/integrated plus privacy/migration/owner-read.",
-      "Core: combine #2379 provider with #2401 UI lease and normal C3 consumer; no Android capture receipt yet."
+      "Core: combine #2379 provider with #2401 UI lease and normal C3 consumer; no Android capture receipt yet.",
+      "QA: preserve training-resume repair, compose #2397/#2395, rebind vision.py + vision_source_lineage.py source lifecycle pins and recompute stage/deployer hashes; rerun staged/integrated/migration/privacy/owner-read.",
+      "Perception: retain #2401 focused CI pass; no merge until the base source-lifecycle chain is green.",
+      "Core: after QA composition, combine #2379 provider with #2401 same UI lease and normal C3 consumer; no Android capture receipt yet."
     ],
     "previous_overlay": {
       "timestamp": "2026-11-23T00:05:08.222Z",
