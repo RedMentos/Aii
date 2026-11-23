@@ -192,4 +192,98 @@ public final class CompanionProviderRecoveryTest {
         assertEquals(0, dispatches.get());
         restarted.close();
     }
+
+    @Test public void sqliteReceiptWriteFailureRecoversAfterRestartWithoutRedispatch() {
+        long now = System.currentTimeMillis();
+        String executingId = actionId('c');
+        String denyingId = actionId('d');
+        CompanionDb db = new CompanionDb(context);
+        insertPending(db, executingId, now);
+        insertPending(db, denyingId, now);
+        postApprovalNotification(executingId);
+        postApprovalNotification(denyingId);
+        assertTrue(CompanionProvider.setEnabled(context, true));
+
+        AtomicInteger externalDispatches = new AtomicInteger();
+        assertEquals("DISPATCHED", CompanionProvider.claimAndDispatch(
+                context, db, executingId, () -> now, externalDispatches::incrementAndGet));
+        assertTrue(db.claimForDenial(denyingId, now));
+        assertEquals("EXECUTING", db.get(executingId).status);
+        assertEquals("DENYING", db.get(denyingId).status);
+
+        db.getWritableDatabase().execSQL(
+                "CREATE TRIGGER fail_recovery_receipt BEFORE UPDATE ON actions "
+                        + "WHEN NEW.status IN ('OUTCOME_UNKNOWN','USER_DENIED') "
+                        + "BEGIN SELECT RAISE(ABORT, 'injected SQLite receipt failure'); END");
+
+        AtomicInteger failedReceiptIssues = new AtomicInteger();
+        assertEquals(0, CompanionProvider.recoverClaimedActions(
+                context, db, now,
+                (action, status, localConsent, issuedAt) -> {
+                    failedReceiptIssues.incrementAndGet();
+                    if (executingId.equals(action.actionId)) {
+                        assertEquals("EXECUTING", action.status);
+                        assertEquals("OUTCOME_UNKNOWN", status);
+                        assertTrue(localConsent);
+                    } else {
+                        assertEquals(denyingId, action.actionId);
+                        assertEquals("DENYING", action.status);
+                        assertEquals("USER_DENIED", status);
+                        assertFalse(localConsent);
+                    }
+                    return "{\"fixture_receipt\":\"sqlite-write-failure\"}";
+                }));
+        assertEquals(2, failedReceiptIssues.get());
+        assertEquals("EXECUTING", db.get(executingId).status);
+        assertEquals("DENYING", db.get(denyingId).status);
+        assertNull(db.get(executingId).receiptJson);
+        assertNull(db.get(denyingId).receiptJson);
+        assertEquals("the external action is never retried", 1, externalDispatches.get());
+        assertTrue(hasApprovalNotification(executingId));
+        assertTrue(hasApprovalNotification(denyingId));
+        assertEquals(0, CompanionProvider.reconcileApprovalNotifications(
+                context, db, System.currentTimeMillis()));
+        assertTrue(hasApprovalNotification(executingId));
+        assertTrue(hasApprovalNotification(denyingId));
+
+        db.getWritableDatabase().execSQL("DROP TRIGGER fail_recovery_receipt");
+        db.close();
+        CompanionProvider.resetProcessStateForProviderStartup(context);
+        CompanionDb restarted = new CompanionDb(context);
+        AtomicInteger recoveredReceiptIssues = new AtomicInteger();
+        assertEquals(2, CompanionProvider.recoverClaimedActions(
+                context, restarted, now,
+                (action, status, localConsent, issuedAt) -> {
+                    recoveredReceiptIssues.incrementAndGet();
+                    if (executingId.equals(action.actionId)) {
+                        assertEquals("EXECUTING", action.status);
+                        assertEquals("OUTCOME_UNKNOWN", status);
+                        assertTrue(localConsent);
+                        return "{\"fixture_receipt\":\"unknown-after-sqlite-failure\"}";
+                    }
+                    assertEquals(denyingId, action.actionId);
+                    assertEquals("DENYING", action.status);
+                    assertEquals("USER_DENIED", status);
+                    assertFalse(localConsent);
+                    return "{\"fixture_receipt\":\"denied-after-sqlite-failure\"}";
+                }));
+        assertEquals(2, recoveredReceiptIssues.get());
+        assertEquals("OUTCOME_UNKNOWN", restarted.get(executingId).status);
+        assertEquals("USER_DENIED", restarted.get(denyingId).status);
+        assertNotNull(restarted.get(executingId).receiptJson);
+        assertNotNull(restarted.get(denyingId).receiptJson);
+        assertEquals(1, externalDispatches.get());
+        assertFalse(hasApprovalNotification(executingId));
+        assertFalse(hasApprovalNotification(denyingId));
+
+        assertEquals(0, CompanionProvider.recoverClaimedActions(
+                context, restarted, now,
+                (action, status, localConsent, issuedAt) -> {
+                    fail("durable SQLite recovery must be idempotent");
+                    return "";
+                }));
+        assertEquals(1, externalDispatches.get());
+        restarted.close();
+    }
+
 }
