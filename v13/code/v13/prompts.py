@@ -21,7 +21,7 @@ TEXT={
   'answer_rules':"Do not repeat the question. At most two verbatim quotes; on conflict the user's version wins.",
   'operator_rules':'Operator rules: ',
   'memories':'Stored user corrections (with topic): ',
-  'hypotheses':'Private hypotheses: ',
+  'hypotheses':'Internal hypotheses: ',
   'digest':'Earlier in this chat (compressed digest; exact values kept): ',
   'task_context':'Task context (requests are not facts; hypotheses do not change stored user corrections): ',
   'user_model':'What the user told you about their preferences and style (beliefs, may be outdated; follow them unless the user now says otherwise): ',
@@ -44,7 +44,7 @@ TEXT={
   'answer_rules':'Wiederhole nicht die Frage. Höchstens zwei wörtliche Zitate; bei Widerspruch gilt die Version des Nutzers.',  # wie EN (WP-KAL2), DE ungemessen
   'operator_rules':'Operator-Vorgaben: ',
   'memories':'Gespeicherte Nutzerkorrekturen (mit Thema): ',
-  'hypotheses':'Private Hypothesen: ',
+  'hypotheses':'Interne Hypothesen: ',
   'digest':'Früher in diesem Chat (verdichtete Zusammenfassung; exakte Werte erhalten): ',
   'task_context':'Aufgaben-Kontext (Anfragen sind keine Fakten; Hypothesen ändern keine gespeicherten Nutzerkorrekturen): ',
   'user_model':'Was der Nutzer über seine Vorlieben und seinen Stil gesagt hat (Annahmen, evtl. veraltet; befolgen, solange der Nutzer jetzt nichts anderes sagt): ',
