@@ -3,9 +3,10 @@
 Date: 2026-11-23  
 Branch: `research-perception/v14-ui-temporal-attention-20261123-run1`  
 Code checkpoint: `fc9e170399812b81366f8e67ac7563fec8b0f572`  
+Final branch/doc head: `846ee8389e42f6700767cdfdbecedcc23a3ebb69`  
 Parent: Perception temporal RAW EYE PR #2414 at `1660ce712edbde4a8555bd0b6fedcb428a53ec6f`  
 Release-development HEAD observed before work: `aed1d2b826290c95c70356b5d8b864b5ef382be4`  
-Status: DRAFT / NOT_RELEASED
+Status: DRAFT / NOT_RELEASED / EXACT TARGETED + STAGED + INTEGRATED CI GREEN
 
 ## Real defect and connected change
 
@@ -34,7 +35,11 @@ The Perception workflow now triggers for the temporal module/test/handoff on bot
   - no-Store A5 revoke clears temporal state;
   - Store cleanup exception still clears temporal state.
 - Full local Aii checkout/pytest and exact repo py_compile: **BLOCKED** — no checkout mounted; `git ls-remote` failed because github.com DNS did not resolve.
-- Exact-head GitHub Actions on code SHA `fc9e170399812b81366f8e67ac7563fec8b0f572`: at first readback, A5 UI lease workflow `45125473255` QUEUED; staged context/integrated regression `45125473300` IN_PROGRESS; MediaProjection RAW EYE ingress `45125473399` IN_PROGRESS. No CI PASS is claimed until those exact runs complete.
+- Exact-head GitHub Actions:
+  - Final branch/doc head `846ee8389e42f6700767cdfdbecedcc23a3ebb69`: MediaProjection RAW EYE ingress run `45125732399`, Python 3.13 and 3.14 each **37 passed**, compile PASS.
+  - Final branch/doc head `846ee8389e42f6700767cdfdbecedcc23a3ebb69`: A5 UI lease run `45125732575`, Python 3.13 and 3.14 each **18 passed + 5 subtests**, compile PASS, public privacy scan CLEAN.
+  - Code commit `fc9e170399812b81366f8e67ac7563fec8b0f572` (parent of the docs-only final commit): staged runtime **252 passed / 10 skipped / 47 subtests**; integrated regression **424 passed / 3 skipped / 58 subtests** in run `45125473300`.
+  - These are GitHub-hosted CI results, not LOCAL_LINUX full checkout or Android proof.
 - TERMUX/REDMI: **REDMI_UNVERIFIED**. Latest shared private owner-read in epic #1984 (06:34 UTC) still identifies installed release `aed1d2b826290c95c70356b5d8b864b5ef382be4`, updater enabled and UP_TO_DATE, but the last stored turn is 57.74 s total / 41.63 s TTFT / 38.95 s prefill / 2 generated tokens; B1/B2 remain TIME_BUDGET. This is not a new turn or a correctness acceptance.
 
 ## Important product limitation

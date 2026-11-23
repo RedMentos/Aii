@@ -1046,4 +1046,4 @@ The final-component projector open now includes O_NONBLOCK before fstat, preserv
 
 **Verification boundary:** LOCAL_LINUX CPython 3.13.5 isolated lifecycle smoke: 3/3 checks PASS (lease retention/release, no-Store revoke cleanup, cleanup after Store exception). Full Aii checkout/pytest and exact repository py_compile remain BLOCKED because no checkout is mounted and GitHub DNS fails in this runner. GitHub exact-head workflows are recorded separately in the handoff; CI is not local or Redmi proof. No Termux/Redmi capture, model/weight/permission change, raw screenshot persistence or data upload occurred.
 
-**Status:** CODE_PUSHED_TO_PERCEPTION_BRANCH / ISOLATED_LOCAL_LIFECYCLE_PASS / EXACT_HEAD_CI_PENDING_AT_HANDOFF / ONE_SHOT_ANDROID_PROVIDER_TEMPORAL_PATH_NOT_YET_ACTIVE / REDMI_UNVERIFIED / NO_MODEL_OR_DATA_REUSE.
+**Status:** CODE_PUSHED_TO_PERCEPTION_BRANCH / ISOLATED_LOCAL_LIFECYCLE_PASS / PYTHON_3_13_3_14_AND_STAGED_INTEGRATED_CI_PASS / ONE_SHOT_ANDROID_PROVIDER_TEMPORAL_PATH_NOT_YET_ACTIVE / REDMI_UNVERIFIED / NO_MODEL_OR_DATA_REUSE.
