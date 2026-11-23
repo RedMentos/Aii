@@ -830,6 +830,12 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         assert "worker-jepa-lifecycle" not in repr(telemetry)
         assert "worker-jepa-lifecycle" not in repr(temporal_telemetry)
 
+        # The idle postcommit consumer warms one Runtime-scoped model cache.
+        # B1 and B2 must share it; the foreground path is warm-cache-only.
+        shared_temporal_consumer = getattr(runtime, "_temporal_world_jepa_consumer", None)
+        assert shared_temporal_consumer is not None
+        assert shared_temporal_consumer._ephemeral_checkpoint_sha == temporal_checkpoint_sha
+
         # The numeric episodic recall must reach the actual B1/B2 prompt consumer.
         # The fake runner isolates prompt delivery; all recalled T8 rows and
         # SourceRefs below are read from the real Runtime SQLite Store.
@@ -861,6 +867,7 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
                 ("B2_GIST", 3, "P_FINAL_NOT_CORRECTNESS"),
             )
             for role, expected_history, expected_target in receiver_specs:
+                assert runtime._temporal_world_jepa_consumer is shared_temporal_consumer
                 delivered = runtime.cognition.offer(
                     role, receiver_event, 0, time.monotonic() + 30.0
                 )
@@ -870,6 +877,8 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
                 temporal_view = body_state.get("world_jepa_temporal")
                 assert type(temporal_view) is dict, (role, body_state)
                 assert temporal_view.get("status") == "SHADOW_READOUT_ONLY"
+                assert temporal_view.get("native_body_consumed") is False
+                assert temporal_view.get("native_body_weights_changed") is False
                 assert temporal_view.get("history_length") == expected_history
                 assert temporal_view.get("target") == expected_target
                 assert temporal_view.get("rows")
