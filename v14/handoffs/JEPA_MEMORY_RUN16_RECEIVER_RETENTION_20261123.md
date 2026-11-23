@@ -5,19 +5,19 @@ Date: 2026-11-23 (Europe/Berlin)
 ## Code checkpoint
 
 - Branch: `jepa-memory/v14-temporal-boss-2443-rebase-20261123-run14`
-- Current branch / PR #2454 head: `1cfac4a1518a959a2022b81e796e3dfc0b6b2cf0`
+- Current code/test checkpoint: `d60fcb66b24f44b061a48c173b5de87fc05ecbe0` (documentation commits follow on the same branch)
 - PR: [#2454](https://github.com/RedMentos/Aii/pull/2454), DRAFT, NOT_RELEASED, mergeable=false.
 - Latest file commits:
-  - `v13/code/v13/world_jepa_learning_intent.py`: `5736a303669dc473187b5f39e25b658ce5a92225`
+  - `v13/code/v13/world_jepa_learning_intent.py`: `477ba539c8196d7934ed0895fbb31c18ec7f6def`
   - `v13/code/v13/world_jepa_temporal.py`: `166ffa1a4e141653d91e6d190e1e82dc5cd707f7`
-  - `v13/code/tests/test_v14_world_jepa_temporal_runtime.py`: `1cfac4a1518a959a2022b81e796e3dfc0b6b2cf0`
+  - `v13/code/tests/test_v14_world_jepa_temporal_runtime.py`: `d60fcb66b24f44b061a48c173b5de87fc05ecbe0`
 
 ### Implemented in this candidate
 
 1. A successful first temporal update persists one fixed B1/B2 receiver-retention cohort in the temporal Store record: raw `X/A/Y`, window/action IDs, direct and transitive SourceRef IDs/hashes, creation checkpoint SHA and a canonical cohort SHA256.
 2. On later updates, training excludes that fixed cohort by lineage source IDs, source hashes and transition IDs. The prior model plus prior B1/B2 heads are measured before training; the updated model plus new heads are measured on the same old cohort after fitting.
-3. A committed update requires both B1/B2 roles to stay within the 5% old-cohort MSE tolerance. If the previous receiver had passed its utility gate, the updated pair must also beat mean, zero-latent and shuffled-latent controls. A non-disjoint cohort fails closed; it is not silently treated as unmeasured.
-4. `WeightDeltaReceipt` schema v3 records per-role old-cohort MSE, updated MSE, mean/zero/shuffled controls, cohort hash, source-disjoint status and pass flags. The first checkpoint correctly records `NOT_MEASURED / NO_PRIOR_CHECKPOINT`, while persisting the cohort for the next update.
+3. A committed update requires both B1/B2 roles to stay within the provisional **[DEFAULT] 5% relative old-cohort MSE tolerance**, recorded in the v3 receipt and subject to calibration against real update data. If the previous receiver had passed its utility gate, the updated pair must also beat mean, zero-latent and shuffled-latent controls. A non-disjoint cohort fails closed; it is not silently treated as unmeasured.
+4. `WeightDeltaReceipt` schema v3 records per-role old-cohort MSE, updated MSE, mean/zero/shuffled controls, cohort hash, source-disjoint status and pass flags. The The 5% threshold is an engineering default, not a paper-derived or Canon-locked constant. The first checkpoint correctly records `NOT_MEASURED / NO_PRIOR_CHECKPOINT`, while persisting the cohort for the next update.
 5. Source-forget reference discovery now includes the receiver-retention cohort, so its provenance remains discoverable even if the bounded replay-row list later rolls forward.
 6. Tests were added for first-checkpoint cohort persistence, same-cohort utility, encoder drift requiring receiver compensation, degraded-head rejection, source-overlap veto, cohort digest tampering, source-forget after replay-row eviction, and v3 receipt validation.
 
