@@ -16,7 +16,7 @@ from v13.audio_duplex_bridge import (
     decide_audio_overlap,
     on_audio_input,
 )
-from v13.audio_voice_cues import audio_consent_lease
+from v13.audio_voice_cues import audio_consent_lease, consume_pcm16_voice_window
 from v13.common import Cancelled
 from v13.runtime import Runtime
 
@@ -165,7 +165,7 @@ def test_default_auto_records_overlap_candidate_without_cancelling_answer(tmp_pa
         runtime.close()
 
 
-def test_bridge_rejects_expired_or_wrong_source_lease_before_cancel(tmp_path):
+def test_bridge_rejects_expired_or_wrong_receipt_lease_before_cancel(tmp_path):
     runtime, _started = make_runtime(tmp_path, "interrupt")
     try:
         audio_event, generation, _pcm, _kwargs = make_audio(runtime)
@@ -188,5 +188,23 @@ def test_bridge_rejects_expired_or_wrong_source_lease_before_cancel(tmp_path):
             assert not runtime.cancel_event.is_set()
         with pytest.raises(PermissionError):
             on_audio_input(runtime, bad_result, lease)
+    finally:
+        runtime.close()
+
+
+def test_bridge_rejects_mutated_persisted_audio_packet_before_cancel(tmp_path):
+    runtime, _started = make_runtime(tmp_path, "interrupt")
+    try:
+        _audio_event, generation, pcm, kwargs = make_audio(runtime)
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+        ) as lease:
+            result = consume_pcm16_voice_window(
+                runtime, pcm, consent_lease=lease, **kwargs,
+            )
+            result["packet"]["source_ref"]["sha256"] = "a" * 64
+            with pytest.raises(ValueError, match="differs from its persisted"):
+                on_audio_input(runtime, result, lease)
+            assert not runtime.cancel_event.is_set()
     finally:
         runtime.close()
