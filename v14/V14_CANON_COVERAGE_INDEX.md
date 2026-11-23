@@ -2461,3 +2461,7 @@ This overlay supplements the historical 1,255-heading inventory; it does not mar
 
 Research note: R-100 is a runtime-wheel compatibility candidate only; no wheel or model is installed. R-101 is a peer-reviewed ECML-PKDD 2026 ridge-head unlearning paper; its frozen-backbone limitation remains decisive. Synthetic sufficient-statistics equivalence does not prove real image accuracy, Android performance or neural-backbone unlearning.
 
+
+### Late CI refresh — 2026-11-23T01:03:20Z
+
+JEPA #2396's Temporal WorldJEPA T8 Windows workflow now reports SUCCESS; its staged startup, integrated regression and optimizer-resume workflows remain FAIL at the Termux12 training-resume source pin. Therefore the postcommit worker path has a synthetic workflow pass, while persistent optimizer resume, source-forget composition, master weight diff/retention and Android acceptance remain open. QA #2391 must rebase after the JEPA code and recompute the downstream builder pins.
