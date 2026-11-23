@@ -100,6 +100,23 @@ class Turn(unittest.TestCase):
         self.r.submit('Compare plan A and plan B in detail');until=time.monotonic()+15
         while not self.r.idle() and time.monotonic()<until:time.sleep(.005)
         time.sleep(.05);return json.loads(self.r.last_answer()['metadata'])
+    def test_budgeted_sequential_roles_get_fair_deadlines(self):
+        now=[0.0]
+        seen=[]
+        def clock():
+            return now[0]
+        def ask(role,peer,role_end):
+            seen.append((role,peer,role_end))
+            # B1 finishes early; B2 receives the remaining window.
+            now[0]=2.0 if role=="B1_DETAIL" else role_end
+            return role
+        out=obs.run(obs.plan("A_THEN_B_SEQUENTIAL",BOTH,"e"),
+                    ask,10.0,Mock(),clock=clock,budgeted=True)
+        self.assertEqual(out,BOTH)
+        self.assertEqual([x[0] for x in seen],BOTH)
+        self.assertEqual([x[1] for x in seen],[True,True])
+        self.assertEqual([x[2] for x in seen],[5.0,10.0])
+
     def test_schedules_change_physical_order_not_roles(self):
         self.assertEqual(self.r.cfg['observer_schedule'],'A_THEN_B_SEQUENTIAL')
         meta=self.turn('B_THEN_A_SEQUENTIAL');pre=[r for r,st in self.calls if st!='FINAL']
@@ -109,5 +126,64 @@ class Turn(unittest.TestCase):
         meta=self.turn('ON_DEMAND_REENTRY');self.assertEqual(meta['observer_schedule']['reason'],'ON_DEMAND_ONLY')
         self.assertFalse([r for r,st in self.calls if st=='FINAL'])  # no background pass either
         self.assertEqual(json.loads(Operator(self.r).run(':resources modes'))['mode'],self.r.guard.mode)
+
+    def test_short_c3_recovery_preserves_both_preanswer_body_slices(self):
+        self.r.cfg["deadline_seconds"]=30
+        original_rows=self.r.store.rows
+        failure={"status":"DEADLINE","metadata":json.dumps({
+            "runner":{"role":"C3_LANGUAGE","generated_tokens":0,"last_phase":"prefill"}
+        })}
+        self.r.store.rows=lambda query,args=(): (
+            [failure,failure] if "SELECT status,metadata FROM messages" in query
+            else original_rows(query,args)
+        )
+        logs=[]
+        original_log=self.r.store.log
+        def capture_log(kind,event,metrics):
+            logs.append((kind,metrics))
+            return original_log(kind,event,metrics)
+        self.r.store.log=capture_log
+        self.calls.clear()
+        def offer(role,e,version,deadline,peer=None,valid_until=None,**kw):
+            self.calls.append((role,deadline,valid_until))
+            return dict(OFFER,role=role,packet_id="pkt_"+role+"_"+str(len(self.calls)))
+        self.r.cognition.offer=offer
+        self.r.cognition.communicate=Mock(return_value=None)
+        Operator(self.r).run(":observers A_THEN_B_SEQUENTIAL")
+        self.r.submit("Compare plan A and plan B in detail")
+        until=time.monotonic()+15
+        while not self.r.idle() and time.monotonic()<until:
+            time.sleep(.005)
+        pre=[x for x in self.calls if x[2] is not None]
+        self.assertGreaterEqual(len(pre),2)
+        self.assertEqual([x[0] for x in pre[:2]],BOTH)
+        for _,role_deadline,turn_deadline in pre[:2]:
+            self.assertLessEqual(role_deadline,turn_deadline-26.0)
+        plan_logs=[m for k,m in logs if k=="native_turn_budget_plan"]
+        self.assertTrue(plan_logs)
+        self.assertEqual(plan_logs[0]["recent_real_prefill_failures"],2)
+        self.assertGreaterEqual(plan_logs[0]["c3_reserved_seconds"],26.0)
+
+    def test_missing_peer_gets_postcommit_observation_after_partial_preanswer(self):
+        self.calls.clear()
+        def offer(role,e,version,deadline,peer=None,valid_until=None,**kw):
+            status=self.r.store.one(
+                "SELECT status FROM messages WHERE event_id=? AND role='assistant'",
+                (e["event_id"],)
+            )["status"]
+            self.calls.append((role,valid_until is not None,status))
+            if role=="B2_GIST" and valid_until is not None:
+                raise Limits("pre-answer B2 slice expired")
+            return dict(OFFER,role=role,packet_id="pkt_"+role+"_"+str(len(self.calls)))
+        self.r.cognition.offer=offer
+        self.r.cognition.communicate=Mock(return_value=None)
+        Operator(self.r).run(":observers A_THEN_B_SEQUENTIAL")
+        self.r.submit("Compare plan A and plan B in detail")
+        until=time.monotonic()+15
+        while not self.r.idle() and time.monotonic()<until:
+            time.sleep(.005)
+        self.assertTrue(any(role=="B1_DETAIL" and pre for role,pre,_ in self.calls))
+        self.assertTrue(any(role=="B2_GIST" and not pre and status=="FINAL"
+                            for role,pre,status in self.calls))
 
 if __name__=='__main__':unittest.main()
