@@ -155,6 +155,15 @@ class ArrayWindowTests(unittest.TestCase):
         ]
         self.assertNotIn(100, origins)
 
+    def test_hard_memory_budget_rejects_oversized_window_batch(self):
+        config = DataConfig(
+            input_length=5000, horizon=2, max_candidate_input_length=5000,
+            seasonal_lags=(2, 4), train_fraction=0.40, validation_fraction=0.30,
+        )
+        dataset = ArrayDataset(rows_for(20000), self.channels, config)
+        with self.assertRaisesRegex(ValueError, "window batch would require"):
+            next(dataset.iter_batches("train", batch_size=8192))
+
     def test_batch_size_is_hard_bounded(self):
         with self.assertRaises(ValueError):
             list(self.dataset.iter_batches("train", batch_size=8193))
