@@ -203,3 +203,35 @@ This is a falsifiable harness hypothesis, not yet a proven fix.
 - Emulator process-restart job `137612193066` remains IN_PROGRESS at this readback. No visible Stop, PID-death or restart PASS is claimed yet.
 - The earlier `60e7e92` RootViewWithoutFocusException remains a recorded FAIL; the duplicate host Activity launch is removed on the current head, but the hypothesis is not accepted until the exact current-head emulator sequence completes.
 - Physical Redmi remains REDMI_UNVERIFIED; no companion APK/device action occurred.
+
+
+---
+
+## Run 6 follow-up — use one coordinate space for center visibility (2026-11-23)
+
+### Confirmed API-contract defect
+
+The center-visibility helper compared `getLocationOnScreen()` coordinates with the rectangle from `getGlobalVisibleRect(Rect)`. Android documents the latter rectangle in the **root-view coordinate space**, while the former is in the physical-screen coordinate space. A non-zero window/root offset could therefore misclassify a view center even when its visible rectangle was correct.
+
+Primary API reference: https://developer.android.com/reference/android/view/View#getGlobalVisibleRect(android.graphics.Rect,android.graphics.Point)
+
+### Correction on exact code head
+
+- Code commit: `1130f64606b98907385907a306a51ce32a8f3dff`.
+- The instrumented test now calls `getGlobalVisibleRect(Rect, Point)`; both the visible rectangle and view origin remain in root-view coordinates.
+- Removed the mixed `getLocationOnScreen()` comparison.
+- Added positive and clipped-center negative coverage for the root-coordinate predicate.
+- Kept the prior actual MainActivity listener invocation, persisted Enable/Stop checks, fresh provider process marker, monotonic process-start comparison and fail-closed PID census unchanged.
+
+### Exact-head verification state
+
+- New push workflows: `45168777338` (offline bridge security) and `45168777448` (Android companion helper/build + process-restart workflow) were IN_PROGRESS at first readback. The Android helper/build job had not completed; the process-restart emulator step had not started.
+- Previous emulator run `45166934616` targets the superseded `b06e853` code and is still IN_PROGRESS; it is not evidence for this correction.
+- No LOCAL_LINUX full Aii checkout, Android SDK, Gradle or adb is available in this worker. GitHub clone/raw access also failed DNS resolution. No local compile, Android emulator or full-suite pass is claimed.
+- Redmi physical companion remains REDMI_UNVERIFIED. No APK install, pairing, capability grant, UI action, chat, update request, model/weight change or user-data mutation occurred.
+
+### Next action
+
+Read the exact `1130f646` helper/build and emulator jobs. If they pass, report only Android-emulator view-handler + process-death evidence, then request independent Boss/Core review. If they fail, preserve the actual failure and continue fixing the harness without promoting a programmatic click to physical touch or a GitHub emulator to Redmi proof.
+
+**User action: none.**
