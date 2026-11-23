@@ -9,6 +9,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import math
 import re
 import time
 from pathlib import Path
@@ -69,6 +70,26 @@ class AndroidCompanionController:
                 or trust.get("public_key_sec1_base64") != info["public_key_sec1_base64"]):
             raise ControlDenied("companion key changed; explicit re-pairing required")
         return trust, point, info
+
+    def _trusted_public_key_for_recovery(self):
+        """Load only the explicit local trust pin; recovery must work offline."""
+        try:
+            trust = json.loads(self.trust_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise ControlDenied("public key not pinned for receipt recovery") from exc
+        if (type(trust) is not dict
+                or trust.get("schema") != "v14.android-companion-trust/1"
+                or type(trust.get("key_id")) is not str
+                or re.fullmatch(r"[0-9a-f]{64}", trust["key_id"]) is None
+                or type(trust.get("public_key_sec1_base64")) is not str):
+            raise ControlDenied("invalid pinned key for receipt recovery")
+        try:
+            point = base64.b64decode(trust["public_key_sec1_base64"], validate=True)
+        except Exception as exc:
+            raise ControlDenied("pinned recovery key encoding invalid") from exc
+        if len(point) != 65 or point[0] != 4 or hashlib.sha256(point).hexdigest() != trust["key_id"]:
+            raise ControlDenied("pinned recovery key fingerprint mismatch")
+        return trust, point
 
     def status(self):
         trust = None
@@ -292,6 +313,64 @@ class AndroidCompanionController:
                 or actual.get("world_learning_eligible") is not False
                 or actual.get("trusted_transition_eligible") is not False):
             raise ControlDenied("stored receipt recovery failed its receipt-only authority checks")
+
+        signed_receipt = actual.get("signed_receipt")
+        verified_at = actual.get("receipt_verified_at")
+        if (type(signed_receipt) is not dict
+                or set(signed_receipt) != {"body", "key_id", "signature"}
+                or type(signed_receipt.get("body")) is not dict
+                or type(signed_receipt.get("signature")) is not str
+                or not signed_receipt["signature"]
+                or len(signed_receipt["signature"]) > 256
+                or type(verified_at) not in (int, float)
+                or not math.isfinite(float(verified_at))):
+            raise ControlDenied("stored receipt recovery is missing its signed envelope")
+        signed_body = signed_receipt["body"]
+        issued_at = signed_body.get("issued_at")
+        expires_at = signed_body.get("expires_at")
+        if (type(issued_at) not in (int, float)
+                or type(expires_at) not in (int, float)
+                or not math.isfinite(float(issued_at))
+                or not math.isfinite(float(expires_at))
+                or expires_at < issued_at
+                or expires_at - issued_at > 60
+                or not issued_at <= float(verified_at) <= expires_at):
+            raise ControlDenied("stored receipt verification time is outside its signed validity window")
+
+        trust, public_key = self._trusted_public_key_for_recovery()
+        verifier = ECDSAReceiptVerifier(
+            self.verifier_path, public_key, trust["key_id"],
+            clock=lambda: float(verified_at),
+        )
+        verifier.start()
+        try:
+            attestation = verifier.verify(
+                {
+                    "action_id": action_id,
+                    "capability": proposal.capability,
+                    "digest": proposal.digest,
+                },
+                signed_receipt,
+                consume_nonce=False,
+            )
+        except Exception as exc:
+            raise ControlDenied("stored receipt signature revalidation failed") from exc
+        finally:
+            verifier.close()
+        if (
+            attestation.get("status") != outcome.get("status")
+            or attestation.get("schema") != actual.get("receipt_schema")
+            or attestation.get("auth_scheme") != actual.get("auth_scheme")
+            or attestation.get("nonce") != actual.get("receipt_nonce")
+            or attestation.get("receipt_status") != actual.get("receipt_status")
+            or attestation.get("companion_local_consent_claim") is not actual.get("companion_local_consent_claim")
+            or attestation.get("local_approval_evidence") != actual.get("local_approval_evidence")
+            or attestation.get("android_os_permission_status") != actual.get("android_os_permission_status")
+            or attestation.get("key_storage_status") != actual.get("key_storage_status")
+            or attestation.get("observed") is not False
+            or attestation.get("t8_authoritative") is not False
+        ):
+            raise ControlDenied("stored receipt signature does not authenticate the persisted outcome")
         return outcome
 
     def poll(self, action_id):
