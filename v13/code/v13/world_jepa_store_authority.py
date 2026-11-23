@@ -62,7 +62,7 @@ def _vector(value, size):
             and all(type(x) in (int, float) and math.isfinite(x) for x in value))
 
 
-def _validated_source_ref(store, value):
+def _validated_source_ref(store, value, *, verify_read=True):
     if type(value) is not dict or set(value) != _SOURCE_REF_KEYS:
         raise ValueError("ActionSelection source ref shape")
     source_id, source_sha = value.get("source_id"), value.get("sha256")
@@ -72,7 +72,7 @@ def _validated_source_ref(store, value):
             or type(start) is not int or type(end) is not int or not 0 <= start <= end
             or type(modality) is not str or not modality or len(modality) > 64):
         raise ValueError("ActionSelection source ref identity")
-    if type(store.read_source(value)) is not str:
+    if verify_read and type(store.read_source(value)) is not str:
         raise ValueError("ActionSelection source ref read")
     return {
         "source_id": source_id, "sha256": source_sha,
@@ -80,7 +80,7 @@ def _validated_source_ref(store, value):
     }
 
 
-def _focal_cycle_source_refs(store, event_id, generation_id, before_packet_rowid):
+def _focal_cycle_source_refs(store, event_id, generation_id, before_packet_rowid, *, verify_reads=True):
     """Return the bounded union of all source refs in the pre-action C4 trajectory.
 
     The final cycle is checked against its persisted FocalItem members. Earlier
@@ -133,7 +133,7 @@ def _focal_cycle_source_refs(store, event_id, generation_id, before_packet_rowid
         seen = set()
         source_hashes = {}
         for raw_ref in raw_refs:
-            ref = _validated_source_ref(store, raw_ref)
+            ref = _validated_source_ref(store, raw_ref, verify_read=verify_reads)
             key = (ref["source_id"], ref["sha256"], ref["char_start"],
                    ref["char_end"], ref["modality"])
             prior = source_hashes.get(ref["source_id"])
@@ -181,7 +181,7 @@ def _focal_cycle_source_refs(store, event_id, generation_id, before_packet_rowid
             item_seen = set()
             item_hashes = {}
             for raw_ref in raw_item_refs:
-                ref = _validated_source_ref(store, raw_ref)
+                ref = _validated_source_ref(store, raw_ref, verify_read=verify_reads)
                 key = (ref["source_id"], ref["sha256"], ref["char_start"],
                        ref["char_end"], ref["modality"])
                 prior = item_hashes.get(ref["source_id"])
@@ -239,7 +239,7 @@ def _focal_cycle_source_refs(store, event_id, generation_id, before_packet_rowid
                 union.append(ref)
     return union
 
-def _selection_source_refs(store, event_id, generation_id, event_source_ref):
+def _selection_source_refs(store, event_id, generation_id, event_source_ref, *, verify_reads=True):
     rows = store.rows(
         """SELECT rowid AS packet_rowid,payload FROM packets
            WHERE kind='ActionSelection' AND event_id=? AND generation_id=?
@@ -270,7 +270,7 @@ def _selection_source_refs(store, event_id, generation_id, event_source_ref):
         raise ValueError("ActionSelection source refs")
     refs, seen, source_hashes = [], set(), {}
     for raw_ref in raw_refs:
-        ref = _validated_source_ref(store, raw_ref)
+        ref = _validated_source_ref(store, raw_ref, verify_read=verify_reads)
         key = (ref["source_id"], ref["sha256"], ref["char_start"],
                ref["char_end"], ref["modality"])
         if key in seen:
@@ -290,7 +290,7 @@ def _selection_source_refs(store, event_id, generation_id, event_source_ref):
     # earlier cycles contribute their capped source refs. Merge it without
     # changing Core-owned packet production.
     for ref in _focal_cycle_source_refs(
-            store, event_id, generation_id, selection_rowid):
+            store, event_id, generation_id, selection_rowid, verify_reads=verify_reads):
         key = (ref["source_id"], ref["sha256"], ref["char_start"],
                ref["char_end"], ref["modality"])
         prior = source_hashes.get(ref["source_id"])
@@ -312,6 +312,20 @@ def _selection_source_refs(store, event_id, generation_id, event_source_ref):
          item["char_end"], item["modality"])
         for item in refs
     )
+
+
+def committed_action_source_refs(store, event_id, generation_id, event_source_ref, *, verify_reads=True):
+    """Return the complete committed ActionSelection + C4 source lineage.
+
+    verify_reads=False is reserved for source-forget auditing: it validates
+    packet structure and source identities without trying to read content that
+    may already have been deleted. Training verification keeps the default True.
+    """
+    return _selection_source_refs(
+        store, event_id, generation_id, event_source_ref,
+        verify_reads=verify_reads,
+    )
+
 
 @dataclass(frozen=True)
 class Provenance:
