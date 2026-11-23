@@ -1,3 +1,19 @@
+## Latest verified JEPA/Memory checkpoint — 2026-11-23 (post-syntax-fix)
+
+- Release-development base: fb563d771fe2d493c4ec25abe94280981d24ef5c.
+- JEPA/Memory PR: [#2447](https://github.com/RedMentos/Aii/pull/2447), branch jepa-memory/v14-temporal-world-jepa-release-20261123-run13, current code head 7a45b7f53b2e19514af1aa3b7035a616d3904af9, DRAFT / NOT_RELEASED.
+- **Real code fix:** v13/code/v13/world_jepa_temporal.py had a malformed multi-line import at line 41 (verify_rows was outside the parentheses). Commit [7a45b7f](https://github.com/RedMentos/Aii/commit/7a45b7f53b2e19514af1aa3b7035a616d3904af9) moves verify_rows inside the parenthesized import. Readback blob: fe08b4d248498e4c4760d4695a0eb13a9e5d52e4.
+- **Exact failure before fix:** merge-ref 2696ebd19b5a8b95ae85b98841cbf49f00965feb, workflow [45216140828](https://github.com/RedMentos/Aii/actions/runs/45216140828), Python 3.14 stopped at py_compile with that SyntaxError; temporal tests were skipped. The fix is now on the PR branch.
+- **Second independent blocker:** optimizer-resume run [45216141611](https://github.com/RedMentos/Aii/actions/runs/45216141611) failed because the nested recovery builder expected SHA-256 b05a5f4c6533f82f8c5092d9392e6a824f5c86d6857b06df04125fac2eaeed4d for integrated_world_training_resume_candidate_20261111.py, while the current resume candidate records 55ab761e4bd4a08f9c6cbdc9d47e63a8b9ec55d8f5c7cbe1a0f1d7b2c6a3f9e8. Boss was notified on #2443; JEPA did not edit the Boss/QA-owned recovery builders or weaken any pin.
+- **After-fix exact-head CI:** temporal T8 run [45217321223](https://github.com/RedMentos/Aii/actions/runs/45217321223), optimizer-resume [45217321225](https://github.com/RedMentos/Aii/actions/runs/45217321225), staged/integrated [45217321237](https://github.com/RedMentos/Aii/actions/runs/45217321237), Core receiver [45217321042](https://github.com/RedMentos/Aii/actions/runs/45217321042), and combined online JEPA [45217320951](https://github.com/RedMentos/Aii/actions/runs/45217320951) were QUEUED at last poll. No PASS is claimed.
+- **LOCAL_LINUX:** CPython 3.13.5. The corrected import block alone parsed successfully. Full Aii checkout, full-file compile and pytest remain BLOCKED / NOT_RUN because no checkout is mounted and git ls-remote failed with GitHub DNS resolution. This is not a project-suite pass.
+- **Runtime scope present but still unaccepted:** SleepRuntime post-commit T8 consumer, persistent temporal predictor/EMA/Adam/checkpoint, source/session-disjoint holdouts, replay/rollback, and B1/B2/SELF SHADOW receivers. Tests include A→B→C→A retention, positive rollback/restart, negative controls and Memory forget→cache invalidation→verified replay; exact-head CI must pass before these are accepted. No native GGUF/body-weight update or trained cross-organ latent transfer is claimed.
+- **REDMI_UNVERIFIED / NOT_DEPLOYED:** no live device receipt for this PR. Auto-update was previously reported enabled, but GitHub push is not installation proof. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, model/weight/permission change or phone mutation was performed.
+- **Next:** poll the five exact-head workflows; repair JEPA-owned failures, then let Boss/QA finish the recovery pin and Store-RLock/blob-unlink composition in #2443. Core still must attach every admitted Memory/observer/Enlightened-Space SourceRef to production ActionSelection. Keep optimizer promotion and receivers SHADOW/OFF.
+- **User action: NONE.** No manual Termux command or device approval is required for this code/CI work.
+
+---
+
 ## Latest verified JEPA/Memory checkpoint — 2026-11-23
 
 Run started 16:31:56 Europe/Berlin; completion time UNKNOWN.
