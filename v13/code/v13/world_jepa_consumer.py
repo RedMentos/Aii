@@ -1232,13 +1232,14 @@ def source_forget_guard(store, source_id):
                 return True
             if any(row["id"] not in pending_ids for row in scanned):
                 return True
-            # Also inspect every committed ActionSelection provenance list.
-            # This catches recalled/observer context sources whose identity is
-            # not the event's primary source_id, even after replay-row eviction.
+            # Inspect committed source-bearing packets created before dispatch.
+            # C5 ActionSelection may be event-only; the final C4 FocalCycle and
+            # FocalItem packets retain the selected coalition refs. All three
+            # must invalidate a checkpoint even after its replay row is evicted.
             selected = store.rows(
                 """SELECT DISTINCT a.id FROM actions a
                    JOIN events e ON e.id=a.event_id
-                   JOIN packets p ON p.kind='ActionSelection'
+                   JOIN packets p ON p.kind IN ('ActionSelection','FocalCycle','FocalItem')
                      AND p.event_id=a.event_id AND p.generation_id=e.generation_id
                    WHERE a.rowid<=? AND a.outcome IS NOT NULL AND a.expected LIKE ?
                      AND a.status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED')
