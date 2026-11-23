@@ -15,6 +15,10 @@ import threading
 import time
 from .common import APP,dumps,digest,atomic_write,Cancelled,Unavailable,Limits
 from .resources import process_memory
+
+# Bounded post-cancellation drain; this never extends the user turn deadline.
+WARM_RECOVERY_DRAIN_SECONDS = 0.75
+WARM_RECOVERY_POLL_SECONDS = 0.05
 def wire_json(v):
     """Request body for llama-server. Unlike common.dumps it keeps key order: the server builds the JSON-schema
     grammar in property order, so sorting would make the model decide e.g. `action` before `options` or
@@ -62,6 +66,7 @@ class LlamaRunner:
         self.binary=os.environ.get("V13_LLAMA_SERVER",str(home/"bin/llama-server"))
         self._audit_enabled=False;self._audit_window=None;self._audit_unavailable=None;self._audit_lock=threading.Lock()
         self.memory=None;self._memory_delivery_binding=None;self._loaded_stamp=None;self._loaded_binary=None
+        self._clear_next_prompt_cache=False
     def _lifecycle_stamp(self):
         # Warm generation checks metadata only. Approval/model/native hashes are
         # revalidated on load, never reread for every prompt on a healthy child.
@@ -101,10 +106,71 @@ class LlamaRunner:
     def unload(self):
         before=process_memory(self.proc.pid) if self.proc else None;kill_process(self.proc);self.proc=None
         self.memory=None;self._memory_delivery_binding=None;self._loaded_stamp=None;self._loaded_binary=None
+        self._clear_next_prompt_cache=False
         if self.log_handle:self.log_handle.close();self.log_handle=None
         if self._asset_snapshot is not None:shutil.rmtree(self._asset_snapshot,ignore_errors=True)
         self._asset_snapshot=None;self._launch_assets={};self._asset_snapshot_hashes={};self._approved_asset_paths=[]
         return {"before":before,"process_reaped":True}
+    def _recover_after_interruption(self, status):
+        """Retain a warm child only after the server proves its sole slot is idle."""
+        started=time.monotonic()
+        proc=self.proc
+        if proc is None or proc.poll() is not None:
+            unloaded=self.unload()
+            return {"status":"PROCESS_NOT_ALIVE","retained":False,"elapsed_s":time.monotonic()-started,"unload":unloaded}
+        try:
+            current_stamp=self._lifecycle_stamp()
+        except Exception:
+            current_stamp=None
+        if self._loaded_stamp is None or current_stamp!=self._loaded_stamp:
+            unloaded=self.unload()
+            return {"status":"LIFECYCLE_BINDING_CHANGED","retained":False,"elapsed_s":time.monotonic()-started,"unload":unloaded}
+        deadline=time.monotonic()+WARM_RECOVERY_DRAIN_SECONDS
+        last_slot=None
+        reason="SLOT_REMAINED_BUSY"
+        while time.monotonic()<deadline:
+            if self.proc is not proc or proc.poll() is not None:
+                reason="PROCESS_CHANGED_OR_EXITED"
+                break
+            try:
+                slots=self._json("GET","/slots",None,deadline,timeout_cap=.2)
+            except Exception as exc:
+                reason="SLOT_QUERY_"+type(exc).__name__.upper()
+                break
+            if (not isinstance(slots,list) or len(slots)!=1
+                    or not isinstance(slots[0],dict)
+                    or slots[0].get("id")!=0
+                    or type(slots[0].get("is_processing")) is not bool):
+                reason="INVALID_SLOT_STATE"
+                break
+            last_slot={"id":slots[0]["id"],"is_processing":slots[0]["is_processing"]}
+            if slots[0]["is_processing"] is False:
+                if self.proc is not proc or proc.poll() is not None:
+                    reason="PROCESS_CHANGED_OR_EXITED"
+                    break
+                # Avoid reusing a possibly partial KV prefix after interruption.
+                self._clear_next_prompt_cache=True
+                return {
+                    "status":"WARM_RETAINED_AFTER_IDLE_SLOT",
+                    "retained":True,
+                    "slot_id":0,
+                    "slot_idle":True,
+                    "next_request_cache_prompt":False,
+                    "request_status":status,
+                    "process_pid":proc.pid,
+                    "elapsed_s":time.monotonic()-started,
+                }
+            time.sleep(min(WARM_RECOVERY_POLL_SECONDS,max(0.0,deadline-time.monotonic())))
+        unloaded=self.unload()
+        return {
+            "status":"UNLOADED_AFTER_UNSAFE_SLOT_STATE",
+            "retained":False,
+            "reason":reason,
+            "last_slot":last_slot,
+            "request_status":status,
+            "elapsed_s":time.monotonic()-started,
+            "unload":unloaded,
+        }
     def _json(self,method,path,payload,deadline,timeout_cap=3.):
         remaining=deadline-time.monotonic()
         if remaining<=0:raise Limits('Zeitbudget erreicht')
@@ -397,7 +463,11 @@ class LlamaRunner:
                     observed=self._audit_finish_window(status)
                     if observed is not None:self.last_metrics['native_memory_firing']=observed
                 finally:self._audit_lock.release()
-            if status!='FINAL':self.last_metrics['interruption_unload']=self.unload()
+            if status in {'DEADLINE','CANCELLED'}:
+                self.last_metrics['interruption_recovery']=self._recover_after_interruption(status)
+                self.last_metrics['duration_s']=time.monotonic()-started
+            elif status!='FINAL':
+                self.last_metrics['interruption_unload']=self.unload()
     def completion_one(self,payload,cancel,deadline):
         """One real native decoder step with cancellation, not a text substitute."""
         self.load(cancel,deadline);check(cancel,deadline)
@@ -405,7 +475,8 @@ class LlamaRunner:
         def watchdog():
             while not done.wait(.05):
                 if cancel.is_set() or time.monotonic()>=deadline:
-                    kill_process(self.proc)
+                    # Disconnect is the cancellation signal; outer generate()
+                    # retains only after a bounded /slots idle-state check.
                     with contextlib.suppress(Exception):conn.close()
                     return
         watcher=threading.Thread(target=watchdog,daemon=True);watcher.start()
@@ -413,11 +484,12 @@ class LlamaRunner:
             conn.request('POST','/completion',wire_json(payload|{'n_predict':1,'stream':False,'return_tokens':True}).encode(),{'Authorization':'Bearer '+self.key,'Content-Type':'application/json'})
             response=conn.getresponse();raw=response.read();check(cancel,deadline)
             if response.status!=200:raise Unavailable('Native output step HTTP '+str(response.status))
+            self._clear_next_prompt_cache=False
             result=json.loads(raw)
             if result.get('error'):raise Unavailable('Native output step failed')
             return result
         except (OSError,http.client.HTTPException):
-            check(cancel,deadline);self.unload();raise Unavailable('Native output step interrupted')
+            check(cancel,deadline);raise Unavailable('Native output step interrupted')
         finally:done.set();conn.close();watcher.join(.2)
     def _generate(self,messages,cancel,deadline,max_tokens=None,schema=None,seed=13,first_token_bias=None,confidence_field='summary'):
         started=time.monotonic();self.load(cancel,deadline);self.stage_times['load_s']=time.monotonic()-started
@@ -425,7 +497,7 @@ class LlamaRunner:
         self.stage_times['template_s']=time.monotonic()-self.phase_started;self.phase='prefill';self.phase_started=time.monotonic()
         payload={"prompt":prompt,"n_predict":cap,"stream":True,
                  **native_sampling_policy(self.role,self.cfg,schema),
-                 "seed":seed,"cache_prompt":True,"id_slot":0,"return_tokens":True}
+                 "seed":seed,"cache_prompt":not self._clear_next_prompt_cache,"id_slot":0,"return_tokens":True}
         if schema:payload["json_schema"]=schema
         lp_pairs=[] if schema and self.cfg.get('offer_logprobs',True) else None
         if lp_pairs is not None:payload['n_probs']=1  # WP-KAL2: token confidence for focal.offer_uncertainty
@@ -451,7 +523,8 @@ class LlamaRunner:
         def watchdog():
             while not stop_watch.wait(.05):
                 if cancel.is_set() or time.monotonic()>=deadline:
-                    kill_process(self.proc)
+                    # A direct client disconnect asks llama-server to stop the
+                    # request; /slots decides whether the child can stay warm.
                     with contextlib.suppress(Exception):conn.close()
                     return
         watcher=threading.Thread(target=watchdog,daemon=True);watcher.start();first=time.monotonic() if first_step and first_step.get('content') else None;tokens=first_tokens;timings={};peak=None;native_stop=False
@@ -459,6 +532,7 @@ class LlamaRunner:
             conn.request("POST","/completion",wire_json(payload).encode(),{"Content-Type":"application/json","Authorization":"Bearer "+self.key});response=conn.getresponse()
             if response.status!=200:raise RuntimeError(f"Inferenz HTTP {response.status}: {response.read(200).decode(errors='replace')}")
             self._native_completion_http_200=True
+            self._clear_next_prompt_cache=False
             while True:
                 check(cancel,deadline);line=response.readline()
                 if not line:break
@@ -484,7 +558,7 @@ class LlamaRunner:
             if not native_stop:
                 raise Unavailable('Native stream ended without completion marker')
         except (OSError,http.client.HTTPException):
-            check(cancel,deadline);self.unload();raise Unavailable("Native Inferenz unterbrochen")
+            check(cancel,deadline);raise Unavailable("Native Inferenz unterbrochen")
         finally:
             stop_watch.set();conn.close();watcher.join(timeout=2);end=time.monotonic();mem=process_memory(self.proc.pid) if self.proc and self.proc.poll() is None else {}
             rss_values=[v for v in (peak,mem.get('rss_bytes')) if v is not None]
