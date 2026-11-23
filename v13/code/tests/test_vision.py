@@ -57,11 +57,35 @@ class Vision(unittest.TestCase):
     def test_projector_learns_alignment_and_reconstruction_is_measured(self):
         rng = numpy.random.default_rng(0); X = rng.normal(size=(40, 12)); M = rng.normal(size=(12, 16)); Y = X@M; Y /= numpy.linalg.norm(Y, axis=1, keepdims=True)
         cv = vision.crossval(X, Y, thumbs=X[:, :4]@rng.normal(size=(4, 9)))
+        self.assertEqual(cv['split'], 'ROW_WISE_DIAGNOSTIC_ONLY'); self.assertEqual(cv['authority'], 'DIAGNOSTIC_ONLY')
         self.assertGreater(cv['held_out_top1'], .8); self.assertLess(cv['reconstruction']['ratio'], .5); self.assertEqual(cv['reconstruction']['authority'], 'MEASUREMENT_ONLY')
         noise = vision.crossval(X, rng.normal(size=(40, 16))); self.assertLess(noise['held_out_top1'], .5)
         p = vision.Projector().fit(X, Y); path = self.home/'p.npz'; sha = p.save(path)
         self.assertTrue(numpy.allclose(vision.Projector.load(path, sha)(X), p(X)))
         with self.assertRaises(ValueError): vision.Projector.load(path, '0'*64)
+
+    def test_source_disjoint_validation_blocks_same_image_leakage(self):
+        rng = numpy.random.default_rng(17); X = []; Y = []; groups = []; labels = []; thumbs = []
+        for source in range(16):
+            label = 'caption-%02d' % source; target = numpy.eye(16)[source]
+            for region in range(4):
+                x = numpy.eye(16)[source] + rng.normal(0, .001, 16)
+                X.append(x); Y.append(target); groups.append('source-%02d' % source); labels.append(label); thumbs.append(x[:8])
+        X = numpy.asarray(X); Y = numpy.asarray(Y); thumbs = numpy.asarray(thumbs)
+        idx = numpy.arange(len(X)); correct = count = 0
+        for fold in range(4):
+            te = idx[fold::4]; tr = numpy.setdiff1d(idx, te)
+            projector = vision.Projector(1.).fit(X[tr], Y[tr]); scores = projector(X[te]) @ Y[te].T
+            for local, row in enumerate(scores):
+                correct += labels[te[int(row.argmax())]] == labels[te[local]]; count += 1
+        rowwise_accuracy = correct / count
+        cv = vision.source_disjoint_crossval(X, Y, groups, labels, thumbs=thumbs, folds=4, ridge=1.)
+        self.assertGreater(rowwise_accuracy, .90)
+        self.assertEqual(cv['split'], 'SOURCE_DISJOINT'); self.assertEqual(cv['status'], 'MEASURED')
+        self.assertAlmostEqual(cv['held_out_top1'], cv['chance'], places=6)
+        self.assertEqual(cv['utility_status'], 'AT_OR_BELOW_CHANCE')
+        self.assertEqual(cv['source_groups'], 16)
+        self.assertEqual(cv['reconstruction']['authority'], 'MEASUREMENT_ONLY')
 
     def test_hashed_encoder_is_deterministic_and_normalised(self):
         a = vision.hashed_embed('A red box'); self.assertTrue(numpy.allclose(a, vision.hashed_embed('a red box')))
@@ -82,6 +106,7 @@ class Vision(unittest.TestCase):
             rec = vision.ingest(self.store, png(c, box=(5+i, 5, 30+i, 30))); vision.describe(self.rt, rec, 'g', t)
         with self.assertRaises(ValueError): vision.look(self.rt, rec, enc)
         pj = vision.train(self.rt, enc); self.assertEqual(pj['n'], 9); self.assertEqual(pj['authority'], 'LAB_SHADOW_ONLY')
+        self.assertEqual(pj['metrics']['split'], 'SOURCE_DISJOINT'); self.assertEqual(pj['metrics']['status'], 'MEASURED'); self.assertEqual(pj['metrics']['source_groups'], 9)
         self.assertTrue((self.home/pj['path']).is_file())
         guess = vision.look(self.rt, vision.ingest(self.store, png((20, 20, 220), box=(8, 8, 33, 33))), enc)
         self.assertEqual(guess['authority'], 'STUDENT_ESTIMATE'); self.assertIn('blue', guess['nearest'][0]['caption'])
@@ -103,6 +128,7 @@ class Vision(unittest.TestCase):
             rec = vision.ingest(self.store, png(c, box=(box[0]+i % 2, box[1], box[2], box[3])))
             for reg in ('g', 'hl', 'hr'): vision.describe(self.rt, rec, reg, t)
         pj = vision.train(self.rt, enc); self.assertEqual(pj['n'], 18); self.assertTrue(any(k.endswith(':hl') for k in pj['captions']))
+        self.assertEqual(pj['metrics']['split'], 'SOURCE_DISJOINT'); self.assertEqual(pj['metrics']['source_groups'], 3)
         new = vision.ingest(self.store, png((20, 20, 220), box=(40, 10, 62, 38)))
         best = vision.locate(self.rt, new, 'a blue box', enc)['regions'][0]
         self.assertEqual(best['source_ref']['modality'], 'image'); self.assertGreaterEqual(best['source_ref']['box'][0], 32)  # right half
@@ -114,6 +140,16 @@ class Vision(unittest.TestCase):
         self.assertIsNone(vision.load(self.store)['projector'])
         rebuilt = vision.train(self.rt, enc)
         self.assertNotIn(rec['ref']['source_id'], {item['source_id'] for item in rebuilt['training_sources']})
+
+
+    def test_single_source_training_does_not_claim_heldout_utility(self):
+        teacher = FakeTeacher(); encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        rec = vision.ingest(self.store, png((220, 20, 20)))
+        for region in ('g', 'hl', 'hr', 'qtl'):
+            vision.describe(self.rt, rec, region, teacher)
+        projector = vision.train(self.rt, encoder)
+        self.assertEqual(projector['metrics']['status'], 'INSUFFICIENT_SOURCE_GROUPS')
+        self.assertIsNone(projector['metrics']['held_out_top1'])
 
     def test_operator_command(self):
         p = self.home/'x.png'; p.write_bytes(png((220, 20, 20)))
@@ -142,6 +178,8 @@ class Vision(unittest.TestCase):
             for reg in ('g', 'qtl', 'qtr', 'qbl', 'qbr'): vision.describe(self.rt, rec, reg, t)
         with self.assertRaises(ValueError): vision.find(self.rt, rec, 'a red box', enc)
         tp = vision.train_tiles(self.rt, enc); self.assertGreater(tp['salient_tiles'], 0); self.assertEqual(tp['authority'], 'LAB_SHADOW_ONLY')
+        self.assertEqual(tp['metrics']['split'], 'SOURCE_DISJOINT'); self.assertEqual(tp['metrics']['status'], 'MEASURED')
+        self.assertEqual(vision.status(self.rt)['tile_projector']['metrics']['split'], 'SOURCE_DISJOINT')
         self.assertEqual(vision.operator_command(self.rt, ['teacher', 'off']), {'teacher': 'removed'})
         with self.assertRaises(Unavailable): vision.describe(self.rt, rec, 'g', t)
         new = vision.ingest(self.store, two(B, 'qtl', R, 'qbr'))
