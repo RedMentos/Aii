@@ -242,20 +242,9 @@ public final class MediaProjectionCaptureService extends Service {
             org.json.JSONObject receipt = UIFrameReceiptFactory.create(
                     bytes, source.getWidth(), source.getHeight(),
                     captureStartElapsed, frameEndElapsed, new ReceiptSigner());
-            synchronized (CompanionProvider.ACTION_GATE_LOCK) {
-                // Stop/disable and pairing rotation use this same outer lock before
-                // clearing the frame store. Revalidate at the final publication point,
-                // not only when the OS consent result first arrives.
-                if (!captureGate.canPublish()
-                        || !CompanionProvider.isEnabled(this)
-                        || !CapabilityRegistry.isCurrentTermuxTrusted(this)) {
-                    throw new SecurityException("capture session revoked before publication");
-                }
-                ProjectionFrameStore.publish(bytes, receipt, frameEndElapsed);
-                if (!captureGate.completeFrame()) {
-                    ProjectionFrameStore.clear();
-                    throw new IllegalStateException("capture session changed during publication");
-                }
+            if (!CompanionProvider.publishScreenFrameIfAuthorized(
+                    this, captureGate, bytes, receipt, frameEndElapsed)) {
+                throw new SecurityException("capture session revoked before publication");
             }
             bytes = null; // ownership transferred to the one-shot in-memory store
             releaseProjection();
@@ -277,12 +266,7 @@ public final class MediaProjectionCaptureService extends Service {
     }
 
     private void failCapture(String reason) {
-        boolean completed;
-        synchronized (CompanionProvider.ACTION_GATE_LOCK) {
-            completed = captureGate.complete();
-            if (completed) ProjectionFrameStore.clear();
-        }
-        if (!completed) return;
+        if (!CompanionProvider.completeScreenFrameSession(captureGate, true)) return;
         updateNotification("Screen frame not available: " + reason);
         releaseProjection();
         stopForeground(true);
@@ -308,10 +292,7 @@ public final class MediaProjectionCaptureService extends Service {
     }
 
     private void stopCapture(boolean clearFrame) {
-        synchronized (CompanionProvider.ACTION_GATE_LOCK) {
-            captureGate.complete();
-            if (clearFrame) ProjectionFrameStore.clear();
-        }
+        CompanionProvider.completeScreenFrameSession(captureGate, clearFrame);
         releaseProjection();
         stopForeground(true);
     }
