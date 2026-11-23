@@ -135,7 +135,7 @@ The BASE tests check output shapes, stop-gradient behavior, EMA updates, shared-
 
 ## Evaluation and paired statistics
 
-`evaluation.py` reports exact lead-time MAE at 15, 30 and 60 minutes and the primary endpoint as the mean absolute error across all lead times 15–60 inclusive. It also provides per-origin primary MAE and a paired temporal-block bootstrap.
+`evaluation.py` reports exact lead-time MAE at 15, 30 and 60 minutes and the primary endpoint as the mean absolute error across all lead times 15–60 inclusive. It also provides streaming per-origin error collection: full prediction tensors are discarded batch by batch, and only the origin index plus primary/15/30/60-minute errors are retained. This keeps multi-model and multi-seed evaluation memory bounded. Requesting test errors still fails until the preregistration gate opens. A paired temporal-block bootstrap consumes the stored per-origin primary errors.
 
 The bootstrap expects aligned per-window errors shaped `[seeds, windows]` and raw origin indices. It resamples contiguous time blocks by the declared raw-index block length, applies the same sampled blocks to both models and every seed, computes paired differences within each seed, averages across seeds inside each replicate, and forms the confidence interval across replicate-level averages. Seed effects and seed dispersion are reported separately; seeds are not treated as independent time observations.
 
