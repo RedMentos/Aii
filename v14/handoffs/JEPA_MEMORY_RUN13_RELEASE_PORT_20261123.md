@@ -5,7 +5,7 @@
 - Current release-development branch `gpt6/v13-private-remote-bridge-20261111` was read back and verified identical to `fb563d771fe2d493c4ec25abe94280981d24ef5c`.
 - The separate `v14/rebuild-isolated-20261123` branch is an isolated M1 data experiment, not the runtime brain branch; this work did not use it as the product base.
 - Port branch: `jepa-memory/v14-temporal-world-jepa-release-20261123-run13`.
-- PR: [#2447](https://github.com/RedMentos/Aii/pull/2447), draft, base `fb563d771fe2d493c4ec25abe94280981d24ef5c`, head `581de80f164ab19ab559c946ce49a7af52be06ba` (code commit `3767e9916fad125dd36d745f869f48db566e9632`).
+- PR: [#2447](https://github.com/RedMentos/Aii/pull/2447), draft, base `fb563d771fe2d493c4ec25abe94280981d24ef5c`, head `e7c4cba13670eca11fa592df8b76d390009928b8` (runtime code commit `3767e9916fad125dd36d745f869f48db566e9632`; code-identical test head `581de80f164ab19ab559c946ce49a7af52be06ba`).
 - Readback confirms 10 changed files, 5,791 additions / 68 deletions.
 
 ## Actual code path added
@@ -19,7 +19,7 @@
 ## Test evidence and environment
 
 - Added `.github/workflows/v14-temporal-world-jepa.yml`: Python 3.13 and 3.14; compile changed modules; run temporal T8/JEPA/source-forget tests and postcommit B1/B2 receiver tests.
-- Exact-head workflows queued: run 45210392877 (Temporal WorldJEPA T8) and run 45210392798 (JEPA training-resume/source-forget). No conclusion yet; do not claim PASS.
+- Code-identical head workflows queued: run 45210392877 (Temporal WorldJEPA T8) and run 45210392798 (JEPA training-resume/source-forget). The current head adds workflow/documentation triggers only; no conclusion yet.
 - Full local checkout and repository tests: BLOCKED. `git ls-remote https://github.com/RedMentos/Aii.git` failed because GitHub DNS resolution was unavailable in the runner. No local full-suite PASS is claimed.
 - The new test file excludes tests that require the independent #2443 Store-RLock/blob-unlink changes or the old QA branch's staged-builder pin chain. Those are not silently claimed by this PR.
 
