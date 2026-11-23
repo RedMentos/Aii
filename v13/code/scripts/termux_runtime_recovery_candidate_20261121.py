@@ -8,7 +8,7 @@ import importlib.util
 from pathlib import Path
 
 BASE_BUILDER = "scripts/termux_runtime_recovery_candidate_20261112.py"
-BASE_BUILDER_BLOB_SHA1 = "3d2cd3d26e33c0c62d3c23fbec3c7734060deaf2"
+BASE_BUILDER_BLOB_SHA1 = "b1da2ee2db71314fececd24a63fe6bf4090f5466"
 AUDIO_BUILDER = "scripts/integrated_audio_context_candidate_20261121.py"
 AUDIO_BUILDER_BLOB_SHA1 = "ecefd90d533a5b4ad15c34e0a5e5976d41f332d8"
 C4_RECEIPT_BUILDER = "scripts/integrated_c4_c3_receipt_candidate_20261122.py"
