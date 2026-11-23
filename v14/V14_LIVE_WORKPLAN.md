@@ -1,3 +1,37 @@
+## Boss & Integration run 15 — 2026-11-23T00:05:08.222Z
+
+### Release/device boundary
+- Installed release remains aed1d2b826290c95c70356b5d8b864b5ef382be4; exact release check-runs 45/45 SUCCESS; private owner-read #653 confirms the same SHA, auto-update enabled, runtime/dashboard up to date.
+- Private DIAGNOSTICS #655 reports the last stored turn: 57.7388 s total, 41.6269 s TTFT, 38.9453 s C3 prefill, 751 prompt tokens, 2 generated tokens; correctness UNKNOWN. B1/B2 TIME_BUDGET at 53.2/54.2 s. Instant native-process sample 0 mapped, child readability unknown. No new turn, update request, model/weight change, permission change or device mutation.
+- Official Age 0; lab selector ACTIVE/requested 10/effective 5; physical feature execution false; learning commit authority requires SHADOW. Do not conflate Age with resource budget.
+
+### Implemented integration work
+- Boss PR #2370 now contains a recovery-only min_body_seconds override. effort.constrain retains the normal 2 s/body default; Runtime passes native_turn_budget.MIN_ROLE_SLICE_S only when the separate C3 recovery state is active. This avoids globally weakening the normal policy.
+- Added deterministic boundary coverage: ordinary 3.9 s window still admits one role; recovery 3.9 s admits both fair >=1 s attempts; 1.9 s admits one; 0.9 s admits none.
+- Rebound the complete source pin chain after effort.py and runtime.py changes: Lab-Age input blob, observer overlay Runtime SHA256, Termux12 observer/Lab-Age SHA256 pins, Termux21 base blob, integrated stage SHA256, runtime_deploy STAGER_SHA256. GitHub file readback verified the exact pins.
+- Merged QA #2389 into #2370 at 11c4ffea after its exact head had 3/3 CI success. It distinguishes source and staged budget contracts; no production reserve or model behavior is changed by that test.
+- Merged QA #2384 into Perception #2375 at e21a85a after exact head 4f7473b had 5/5 CI success. The integrated adapter includes bounded feature summary, provider verifier entrypoint, caller-buffer zeroization and scoped revocation tests. #2386 was closed as redundant.
+- Merged research #2387 into this documentation branch at 24694ce; R-096–R-099 remain research-only. No runtime, model, dependency or Android feature was imported.
+
+### Exact tests and blockers
+- Current Boss candidate PR #2370 exact head 11c4ffea182a6bfbb729fbf176b0c1b1f6541189: 0 completed successes / 29 pending / 1 skipped / 0 observed failures at last read. NOT_GREEN, DRAFT, NOT_RELEASED.
+- The earlier head 0076dbe exposed two effort-policy regressions because the first attempt changed the global 2 s default. That broad change was superseded by the recovery-only override before the current head. Do not report the earlier head as current.
+- Perception PR #2375 exact head e21a85a329ea25a2208fcfa64edc216884b55bf1: 3 checks pending; not yet green.
+- Core PR #2379 exact head 77fd5d63696940f255bb849b58da89c32150b370: 5 success / 2 failure; frame-ingress ImportError because its base lacks A5UIRuntimeAdapter. Core has been asked to combine current QA companion #2356 with Perception #2375 and rerun the full consumer chain.
+- QA PR #2356 exact head 43975b78659a02ce1ba9520ac5dfae10b2556d37: 7 success / 1 failure. The process-restart test hit an emulator System UI ANR and ColorBuffer/graphics failures; the app PID/MainActivity existed but UIAutomator could not inspect a usable app window. This is not a process-death PASS.
+- Local full Aii checkout and full local pytest/native suite remain BLOCKED; GitHub DNS clone failed. No local full test, native Linux inference, Redmi feature test, weight update or rollback test is claimed.
+
+### Next executable ownership
+- **Boss:** poll #2370 exact head; review the entire source pin chain and same-turn B1/B2→C4→C3 consumer; no merge until exact CI is green and source-bound negative controls pass.
+- **Core:** combine #2356 companion base with #2375 Perception head; adapt provider entrypoint and carry the consent lease through the real C3 consumer.
+- **QA:** stabilize the emulator process-restart harness without converting environment failure to PASS; continue native loader TOCTOU and staged regression checks.
+- **Perception:** connect RAW EYE frames to A3/A4/C3, and prove provider cleanup/revocation on lifecycle changes.
+- **JEPA & Memory:** repair source-forget, optimizer-resume, zero-gradient and source-pin failures; prove parameter diffs, retention, restart and rollback before any weight-learning claim.
+- **Research:** turn R-096–R-099 into bounded falsifiable experiments only after license and resource review; no model or code import is implied.
+- **Whole team:** continue semantic clause→code→consumer→test→platform→rollback coverage across all 1,255 historical headings. Preserve the complete V13 Canon and every prior user requirement.
+
+---
+
 ## Boss & Integration run 14 — 2026-11-22T23:05:31.059Z
 
 ### Release gate and actual device evidence
