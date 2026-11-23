@@ -4,6 +4,24 @@
 **Aktive Architektur:** [V14 Master](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md) §§21–23; [Arbeitsplan](V14_LIVE_WORKPLAN.md).  
 **Vorsicht:** Ein Paper-Abstract ist kein reproduzierter Experimentalbefund; eine nachgeprüfte URL ist keine vollständig gelesene Arbeit. Jeder Eintrag erhält eine *genaue* Evidenzstufe.
 
+## R-108 — Source deletion in continual predictive memory: checkpoint invalidation vs synaptic unlearning (2026-11-23)
+
+**Primary sources / evidence level:**
+
+1. Mohammad Ali Vahedifar, Behzad Bozorgtabar and Qi Zhang, *Learning with Unlearning: Synaptic Role Partitioning for Simultaneous Continual Learning and Machine Unlearning*, arXiv:2611.24205, submitted 2026-11-18: https://arxiv.org/abs/2611.24205 . The arXiv search record and abstract were reviewed; the HTML full text could not be retrieved in this research pass. **Evidence: ABSTRACT_ONLY.** The abstract proposes four synaptic roles, separate retain/forget/update rules, and orthogonal projection for contested-weight updates. Full method, experiments, limitations, code, model-weight licensing and mobile compatibility remain unverified. No implementation or weights were reused.
+
+2. Xiaoyu Xu et al., *Unlearning Isn't Deletion: Investigating Reversibility of Machine Unlearning in LLMs*, Proceedings of the 43rd International Conference on Machine Learning, PMLR 306:142657–142704 (2026): https://proceedings.mlr.press/v306/xu26cd.html . Official PMLR bibliographic record and abstract reviewed. **Evidence: PEER_REVIEWED_PAPER_ABSTRACT_REVIEWED; no V14 reproduction.** The authors report that task-level apparent forgetting can be reversed by limited fine-tuning, and propose representation-level diagnostics including PCA similarity/shift, CKA and Fisher information.
+
+**Why this matters to V14:** In a continuously learning system, deleting an episodic row is insufficient if the source still exists in a current checkpoint, rollback checkpoint, receiver adapter, retention anchor or replay queue. Conversely, a single successful deletion operation does not prove that a learned influence is irreversibly gone; later retained-data updates may restore related behavior. The two papers motivate separating (a) source-reference deletion and checkpoint lifecycle correctness from (b) the harder scientific claim of synaptic/model unlearning.
+
+**V14 implementation decision:** The JEPA temporal source-forget path now conservatively invalidates every active/previous temporal checkpoint whose experience rows, retention holdouts or LearningIntent provenance references the source. If a verified clean previous checkpoint exists, it is restored and non-forgotten active-only rows are made replayable. If no clean checkpoint remains, temporal state is cleared and the next permitted update starts again from the durable T8 ledger after the source is tombstoned. This is **checkpoint invalidation + source-verified replay**, not synaptic unlearning, not a claim that all organs have erased derived influence, and not authority to promote body weights.
+
+**Testable follow-up:** After exact CI and source-pin integration, measure (1) source-id absence from active/previous experience rows, retention anchors, LearningIntent train/validation references and pending rows; (2) restart and retained-only replay; (3) a retained-data-only relearning probe against a clean retrain-without-source baseline; and (4) representation-level drift/retention where an appropriate small trainable adapter exists. A future synapse-level method such as LwU remains a research candidate only after full-text, code, license, resource and independent-ablation review.
+
+**Reuse boundary:** No paper code, dataset, model weights or dependency downloaded or copied. No license claim is made for arXiv:2611.24205 because its license was not verified in this pass. No Android or native-model evidence is implied.
+
+---
+
 ## R-107 — Future-Aware Recall for predictive episodic memory (cross-lane link, 2026-11-23)
 
 **Primary source / review record:** Beomsu Kim et al., *Learning What to Recall: Adaptive Multi-Cue Episodic Memory for World Models*, arXiv:2609.34677 (submitted 2026-09-28), https://arxiv.org/abs/2609.34677 . The full paper-method/limitations and OSS/license review are recorded in JEPA research PR [#2413](https://github.com/RedMentos/Aii/pull/2413); this entry is a cross-reference so the active ledger points to the current research candidate. The preprint is not treated as peer-reviewed or independently reproduced.
