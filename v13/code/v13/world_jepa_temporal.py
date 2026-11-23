@@ -58,6 +58,7 @@ UNKNOWN = {"OUTCOME_UNKNOWN"}
 TERMINAL = {"FINAL", "FAILED", "ERROR", "DEADLINE", "REJECTED"} | CENSORED | UNKNOWN
 SHA256 = set("0123456789abcdef")
 MAX_ACTION_SOURCE_REFS = 64
+MAX_REVOKED_SOURCES = 4096
 
 # Every live temporal consumer may hold a warm model object for an active
 # checkpoint. Source-forget must invalidate all such process-local copies,
@@ -94,6 +95,14 @@ def _finite_vector(value, size):
 def _sha(value):
     if type(value) is not str or len(value) != 64 or any(ch not in SHA256 for ch in value):
         raise ValueError("invalid SHA256")
+    return value
+
+
+def _validate_source_id_list(value, label):
+    if (type(value) is not list or len(value) > MAX_REVOKED_SOURCES
+            or any(type(source) is not str or not source or len(source) > 256 for source in value)
+            or len(set(value)) != len(value)):
+        raise ValueError(label)
     return value
 
 
@@ -237,6 +246,7 @@ def empty_state():
         "pending_rows": [],
         "active": None,
         "previous": None,
+        "revoked_source_ids": [],
     }
 
 
@@ -786,14 +796,21 @@ def _record_valid(record):
         "receiver_heads", "receiver_metrics", "action_support", "retention_holdouts",
         "metrics", "scan_cursor", "fit_steps",
     }
-    optional = {"learning_intents", "weight_delta_receipts"}
+    optional_learning = {"learning_intents", "weight_delta_receipts"}
+    optional_revocations = {"revoked_source_ids"}
     if type(record) is not dict:
         raise ValueError("invalid temporal checkpoint record")
     record_keys = set(record)
-    if not required <= record_keys or record_keys - required not in (set(), optional):
+    extra = record_keys - required
+    if extra not in (
+        set(), optional_learning, optional_revocations,
+        optional_learning | optional_revocations,
+    ):
         raise ValueError("invalid temporal checkpoint record")
-    if bool(record_keys & optional) and not optional <= record_keys:
+    if extra & optional_learning and not optional_learning <= record_keys:
         raise ValueError("incomplete temporal learning-intent record")
+    if "revoked_source_ids" in record_keys:
+        _validate_source_id_list(record["revoked_source_ids"], "temporal checkpoint revocation list")
     name = record["checkpoint"]
     if type(name) is not str or re.fullmatch(r"jepa-[0-9a-f]{32}\.npz", name) is None:
         raise ValueError("invalid temporal checkpoint name")
@@ -875,7 +892,7 @@ def _record_valid(record):
         _sha(holdout["target_sha256"])
     if type(record["metrics"]) is not dict:
         raise ValueError("temporal metrics")
-    if optional <= record_keys:
+    if optional_learning <= record_keys:
         intents = record["learning_intents"]
         receipts = record["weight_delta_receipts"]
         if (
@@ -909,10 +926,14 @@ def _validate_state(state):
     if state is None:
         return empty_state()
     required = {"schema", "revision", "scan_cursor", "pending_rows", "active", "previous"}
-    if (type(state) is not dict or set(state) != required
+    allowed = required | {"revoked_source_ids"}
+    if (type(state) is not dict or set(state) not in (required, allowed)
             or state.get("schema") != SCHEMA or state.get("revision") != REVISION
             or type(state.get("scan_cursor")) is not int or state["scan_cursor"] < 0):
         raise ValueError("incompatible temporal WorldJEPA state")
+    state = dict(state)
+    state.setdefault("revoked_source_ids", [])
+    _validate_source_id_list(state["revoked_source_ids"], "temporal state revocation list")
     for key in ("active", "previous"):
         if state[key] is not None:
             _record_valid(state[key])
@@ -1402,6 +1423,7 @@ class TemporalWorldJEPAStoreConsumer:
                 "checkpoint": checkpoint_name,
                 "checkpoint_sha256": checkpoint["sha256"],
                 "source_sha256": source_sha,
+                "revoked_source_ids": list(state["revoked_source_ids"]),
                 "experience_rows": all_rows,
                 "processed_ids": [row["action_id"] for row in all_rows],
                 "fingerprints": {row["action_id"]: row["fingerprint"] for row in all_rows},
@@ -1421,6 +1443,7 @@ class TemporalWorldJEPAStoreConsumer:
             next_state = {
                 "schema": SCHEMA, "revision": REVISION, "scan_cursor": cursor,
                 "pending_rows": [], "active": record, "previous": active,
+                "revoked_source_ids": list(state["revoked_source_ids"]),
             }
             try:
                 self.store.set_state(STATE_KEY, next_state, expected=version)
@@ -1482,6 +1505,7 @@ class TemporalWorldJEPAStoreConsumer:
                 "pending_rows": pending,
                 "active": previous,
                 "previous": None,
+                "revoked_source_ids": list(state["revoked_source_ids"]),
             }
             self.store.set_state(STATE_KEY, next_state, expected=version)
             self._prune(next_state)
@@ -2189,6 +2213,12 @@ def _record_references_source(store, record, source_id, pending_action_ids=()):
                 or source_id in intent.get("validation_source_ids", [])):
             return True
 
+    # This checkpoint was created after a successful source deletion and its
+    # retained artifacts above have already been checked. Raw T8 packets remain
+    # as audit metadata, but their revoked source IDs were not trainable inputs.
+    if source_id in record.get("revoked_source_ids", []):
+        return False
+
     cursor = record.get("scan_cursor")
     if type(cursor) is int and cursor > 0:
         pending = set(pending_action_ids)
@@ -2267,6 +2297,9 @@ def invalidate_source_under_guard(store, source_id):
         raise ValueError("invalid temporal source-forget identity")
     state, version = store.state(STATE_KEY, empty_state())
     state = _validate_state(state)
+    if (source_id not in state["revoked_source_ids"]
+            and len(state["revoked_source_ids"]) >= MAX_REVOKED_SOURCES):
+        raise ValueError("temporal source-revocation ledger full")
     active = state["active"]
     previous = state["previous"]
     pending_action_ids = {
@@ -2362,6 +2395,7 @@ def invalidate_source_under_guard(store, source_id):
         ),
         "active": next_active,
         "previous": next_previous,
+        "revoked_source_ids": list(state["revoked_source_ids"]),
     }
     if next_state != state:
         store.set_state(STATE_KEY, next_state, expected=version)
@@ -2391,6 +2425,33 @@ def invalidate_source_under_guard(store, source_id):
     }
     return report
 
+
+
+def mark_source_revoked_after_forget(store, source_id):
+    """Persist a source tombstone only after Memory has completed deletion."""
+    if type(source_id) is not str or not source_id or len(source_id) > 256:
+        raise ValueError("invalid temporal source-forget identity")
+    state, version = store.state(STATE_KEY, empty_state())
+    state = _validate_state(state)
+    if source_id in state["revoked_source_ids"]:
+        return len(state["revoked_source_ids"])
+    if len(state["revoked_source_ids"]) >= MAX_REVOKED_SOURCES:
+        raise ValueError("temporal source-revocation ledger full")
+    next_state = dict(state)
+    next_state["revoked_source_ids"] = sorted(state["revoked_source_ids"] + [source_id])
+    # Any checkpoint that survived invalidation was proven source-clean. Carry
+    # the new revocation snapshot into it so future full-prefix scans do not
+    # mistake audit-only T8 packets for inputs used by that checkpoint.
+    for key in ("active", "previous"):
+        record = next_state[key]
+        if record is not None:
+            updated = dict(record)
+            updated["revoked_source_ids"] = sorted(
+                set(record.get("revoked_source_ids", [])) | {source_id}
+            )
+            next_state[key] = updated
+    store.set_state(STATE_KEY, next_state, expected=version)
+    return len(next_state["revoked_source_ids"])
 
 
 @contextmanager
