@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T22:52:13Z",
+  "updated_at": "2026-11-23T22:56:26Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -310,7 +310,25 @@
       "next_step": "Core/QA: integrate the checked pairing persistence leaf after independent review; before APK/device tests, add idempotent receipt-only recovery for claimed EXECUTING/DENYING rows after signing/SQLite failure (EXECUTING must reconcile conservatively to a signed unknown outcome, never redispatch; DENYING can reconcile to signed denial), and failure-injection/restart tests. Keep companion default-OFF and all other providers OFF.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T11:38:04.785Z",
-      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance."
+      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance.",
+      "core_run19_checkpoint": {
+        "date": "2026-11-23T22:56:26Z",
+        "owner": "Core & Harness",
+        "pull_request": 2406,
+        "branch": "core/v14-capability-registry-mediaprojection-20261123",
+        "code_test_head": "dc848768c6797b60c329d5d7485545b579d232f8",
+        "handoff_commit": "3aa31af4aac90caefd85f7ca3c41bac9419fb0a0",
+        "behavior": "SQLite trigger failure for EXECUTING→OUTCOME_UNKNOWN and DENYING→USER_DENIED; receipt-only restart retry, retained notifications before durable receipt, no redispatch, idempotency",
+        "tests": {
+          "local_linux_sqlite_semantics": "PASS: Python 3.13.5 RAISE(ABORT) preserves both claimed rows; retry finalizes both",
+          "android_robolectric_exact_head": "NOT_RUN / CI STARTUP_FAILURE_ZERO_JOBS run 45284177523",
+          "prior_head_android_unit_job": "PASS on 429f62a",
+          "prior_head_emulator_restart_job": "FAIL due System UI nonresponsive / com.android.phone ANR; separate environment failure"
+        },
+        "device": "REDMI_UNVERIFIED; no APK/device action",
+        "status": "DRAFT_NOT_RELEASED_NEW_SQLITE_TEST_UNVERIFIED",
+        "next_action": "Obtain executable exact-head Android companion workflow and verify new Robolectric test; separately fix emulator ANR without weakening assertions; independent QA review."
+      }
     },
     {
       "id": "V14-010",
@@ -1405,24 +1423,30 @@
     "documentation_pr2333": "DRAFT documentation/evidence synchronization PR #2333, branch boss/v14-run12-whole-system-handoff-20261122; base b3b92. Updates board/workplan/next-action/append-only coverage only; no runtime code."
   },
   "latest_core_checkpoint": {
-    "timestamp": "2026-11-23T22:52:13Z",
+    "timestamp": "2026-11-23T22:56:26Z",
     "owner": "Core & Harness",
     "primary_runtime_pr": 2458,
     "primary_runtime_branch": "core/v14-fair-b1-b2-preanswer-budget-20261123-run1",
     "primary_runtime_head": "7f1e865f47d9b9e39a289e03db87795fd16de079",
     "primary_runtime_code_checkpoint": "61509b1b061b377d5c19f69d861acda6f7b9f07e",
-    "primary_runtime_status": "DRAFT_CI_STARTUP_FAILURE_SOURCE_PIN_REBIND_PENDING",
+    "primary_runtime_status": "DRAFT_CI_STARTUP_FAILURE_PIN_REBIND_PENDING",
     "fastpath_pr": 2445,
     "fastpath_branch": "core/v14-fast-greeting-staged-overlay-20261123",
     "fastpath_head": "dee83e03af1afcdd827d60014e29d153ccd438eb",
     "fastpath_code_commit": "190d920f0f3a2dbe037250a7fa198d60ba9e9bb6",
     "fastpath_test_commit": "1187a609f46e41f91a16bb481e816865417fdb1b",
-    "fastpath_handoff": "v14/handoffs/CORE_FAST_GREETING_FAIL_CLOSED_20261123_RUN1.md",
-    "local_linux": "CPython 3.13.5 isolated fastpath py_compile and matcher/policy/audio-shape assertions PASS",
-    "full_repository_local": "BLOCKED_NO_CHECKOUT_NO_GITHUB_DNS",
-    "exact_head_ci": "PR2458_STARTUP_FAILURE_NO_JOBS; PR2445_RUN_45283293852_STARTUP_FAILURE_ZERO_JOBS; NO_CI_PASS",
-    "redmi": "STOPPED_BY_USER / REDMI_UNVERIFIED; no device action or deployment",
-    "next_action": "Boss rebinds #2458 nested Runtime/JEPA pins and QA reruns A5 Store lifecycle; then exact Python 3.13/3.14 staged/integrated/migration CI and independent review. Recompose #2445 fastpath only after the current integration chain is stable.",
+    "fastpath_status": "DRAFT_STALE_BASE_CI_STARTUP_FAILURE",
+    "android_receipt_pr": 2406,
+    "android_receipt_branch": "core/v14-capability-registry-mediaprojection-20261123",
+    "android_receipt_code_test_head": "dc848768c6797b60c329d5d7485545b579d232f8",
+    "android_receipt_handoff_commit": "3aa31af4aac90caefd85f7ca3c41bac9419fb0a0",
+    "android_receipt_status": "DRAFT_EXACT_HEAD_CI_STARTUP_FAILURE_NEW_SQLITE_TEST_UNVERIFIED",
+    "local_linux": "CPython 3.13.5 isolated fastpath py_compile/assertions PASS; SQLite trigger-abort/retry semantics PASS",
+    "full_repository_local": "BLOCKED_NO_CHECKOUT_NO_GITHUB_DNS; Android SDK/Gradle unavailable",
+    "exact_head_ci": "PR2458_STARTUP_FAILURE_NO_JOBS; PR2445_RUN_45283293852_STARTUP_FAILURE_ZERO_JOBS; PR2406_RUN_45284177523_STARTUP_FAILURE_ZERO_JOBS; NO_NEW_CI_PASS",
+    "previous_android_ci": "PR2406 prior head 429f62a Gradle/unit-test job PASS; emulator process-restart job FAIL due System UI non-responsive / com.android.phone ANR",
+    "redmi": "STOPPED_BY_USER / REDMI_UNVERIFIED; no APK, pairing, action, update or permission change",
+    "next_action": "Boss rebinds #2458 nested Runtime/JEPA pins and QA reruns A5 Store lifecycle; get executable exact-head Android companion CI for #2406 and QA review; recompose #2445 fastpath only after current integration chain is stable.",
     "user_action_required": false
   }
 }
