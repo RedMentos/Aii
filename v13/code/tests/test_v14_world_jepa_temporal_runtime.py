@@ -595,8 +595,35 @@ def test_temporal_receiver_matrix_batches_bodyview_contract_with_single_readout_
         )
         assert first["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", first
 
+        # Foreground reads must not synchronously load a cold checkpoint.
+        # A slow/cold model load belongs to the idle warm-up path only.
+        learner._ephemeral_model = None
+        learner._ephemeral_checkpoint_sha = None
+        original_load = learner._load_model
+
+        def unexpected_foreground_load(_record):
+            raise AssertionError("warm-only receiver attempted a cold checkpoint load")
+
+        learner._load_model = unexpected_foreground_load
+        try:
+            cold_matrix = learner.receiver_matrix(
+                sessions[0], world_model.ACTIONS, history_length=2,
+                nonblocking=True, warm_only=True,
+            )
+            assert cold_matrix["status"] == "MODEL_NOT_WARM"
+            cold_recall = learner.episodic_recall(
+                sessions[0], history_length=2, limit=4,
+                nonblocking=True, warm_only=True,
+            )
+            assert cold_recall["status"] == "MODEL_NOT_WARM"
+        finally:
+            learner._load_model = original_load
+
+        warm = learner.warm_active_checkpoint()
+        assert warm["status"] == "WARMED"
         matrix = learner.receiver_matrix(
-            sessions[0], world_model.ACTIONS, history_length=2, nonblocking=True
+            sessions[0], world_model.ACTIONS, history_length=2,
+            nonblocking=True, warm_only=True,
         )
         assert matrix["status"] == "SHADOW_READOUT_ONLY"
         assert matrix["checkpoint_sha256"] == first["checkpoint_sha256"]
