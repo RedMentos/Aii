@@ -1,3 +1,19 @@
+
+## Latest run update — syntax regression fixed, CI queued (2026-11-23)
+
+- Exact release base remains fb563d771fe2d493c4ec25abe94280981d24ef5c; current code fix commit is 7a45b7f53b2e19514af1aa3b7035a616d3904af9. The prior documentation checkpoint was 918141a3ef686e5b3391189f2966b78f4f6e2591; workplan synchronization commit is 22c2cc34e56b84d2b0ba153e851e9084b5f37e11.
+- Reproduced merge-ref Python 3.14 failure: world_jepa_temporal.py:41 had verify_rows outside the import parentheses. Fixed in commit 7a45b7f; GitHub readback blob is fe08b4d248498e4c4760d4695a0eb13a9e5d52e4.
+- Local CPython 3.13.5 parsed the corrected import block (PASS). This is only an isolated snippet check. Full repository checkout/compile/pytest remain BLOCKED because no checkout is mounted and GitHub DNS resolution fails.
+- After-fix exact-head runs: temporal 45217321223, optimizer-resume 45217321225, staged/integrated 45217321237, Core receiver 45217321042, combined JEPA 45217320951; all QUEUED at last poll.
+- Previous optimizer-resume run 45216141611 failed on the nested recovery-builder pin (expected b05a5f4c…, current resume-script SHA 55ab761e…). Boss was notified in #2443; JEPA did not modify the Boss/QA-owned recovery builders or weaken pins.
+- The PR's tests include positive rollback/restart, A→B→C→A old-cohort retention, source/session-disjoint holdouts, negative controls, and Memory forget→warm-cache invalidation→remaining-T8 replay. These are still pending exact-head CI; do not mark accepted yet.
+- Research R-115 records ICLR 2026 Cascading Eligibility Traces as a future additive delay-credit experiment. The cited upstream repository has no root license and unsuitable legacy dependencies; no code was imported.
+- Redmi remains REDMI_UNVERIFIED / NOT_DEPLOYED. No device command, update request, model/weight change, permission change or data mutation was performed.
+
+**Next:** poll exact-head CI; fix JEPA-owned failures; coordinate recovery pin + Store-RLock/blob-unlink composition with Boss/QA #2443; then close the production ActionSelection multi-SourceRef gap with Core. Keep promotion/receivers SHADOW/OFF.
+
+---
+
 # JEPA & Memory — release-base port handoff (2026-11-23)
 
 ## Verified source and branch
