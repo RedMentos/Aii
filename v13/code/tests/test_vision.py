@@ -369,5 +369,16 @@ class Vision(unittest.TestCase):
         self.assertEqual(vision.digest(blob.read_bytes()), sha)
 
 
+    def test_forget_fails_closed_on_malformed_projector_state(self):
+        rec = vision.ingest(self.store, png((220, 20, 20)))
+        state = dict(vision.load(self.store))
+        state['projector'] = 'malformed-legacy-value'
+        self.store.set_state(vision.KEY, state)
+        result = vision.forget(self.store, rec)
+        self.assertIn('projector', result['invalidated_projectors'])
+        self.assertIn('projector_artifact', result['cleanup_failed'])
+        self.assertIsNone(vision.load(self.store)['projector'])
+        self.assertNotIn(rec['ref']['source_id'], vision.load(self.store)['images'])
+
 if __name__ == '__main__':
     unittest.main()
