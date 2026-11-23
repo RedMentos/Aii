@@ -214,6 +214,7 @@ def load_sherpa_teacher_runtime(
         joiner=paths["joiner"],
         num_threads=num_threads,
         sample_rate=SAMPLE_RATE,
+        feature_dim=80,
         decoding_method="greedy_search",
         provider="cpu",
     )
