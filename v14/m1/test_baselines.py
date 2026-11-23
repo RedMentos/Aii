@@ -9,7 +9,7 @@ import torch
 
 from v14.m1.array_data import ArrayDataset, InputBundle
 from v14.m1.baselines import (
-    LinearInputBaseline,
+    LinearInputBaseline,\n    RidgeAR,
     PersistenceBaseline,
     RandomEncoderProbe,
     RawGRU,
@@ -18,7 +18,7 @@ from v14.m1.baselines import (
     TrainConstantBaseline,
 )
 from v14.m1.base import BaseConfig
-from v14.m1.data import DataConfig, MinuteRow
+from v14.m1.data import DataConfig, MinuteRow\nfrom v14.m1.training import FitConfig, fit_supervised_baseline
 
 
 class BaselineTests(unittest.TestCase):
@@ -54,6 +54,25 @@ class BaselineTests(unittest.TestCase):
         result = model(self.bundle)
         self.assertEqual(tuple(result.shape), (5, 3, 2))
         self.assertTrue(all(p.grad is None for p in model.encoder.parameters()))
+
+    def test_ridge_baseline_can_be_fitted_with_mse_and_explicit_l2(self):
+        start = datetime(2020, 1, 1)
+        rows = [
+            MinuteRow(start + timedelta(minutes=i), (float(np.sin(i / 10)), float(np.cos(i / 15))))
+            for i in range(1000)
+        ]
+        config = DataConfig(
+            input_length=5, horizon=2, max_candidate_input_length=5,
+            seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
+        )
+        dataset = ArrayDataset(rows, ("a", "b"), config)
+        model = RidgeAR(dataset.input_width, 2, 2)
+        report = fit_supervised_baseline(
+            model, dataset, FitConfig(epochs=1, batch_size=64, patience=1, weight_decay=0.0),
+            objective="mse", l2_penalty=1e-5,
+        )
+        self.assertEqual(report.validation_metric, "MAE")
+        self.assertTrue(np.isfinite(report.best_validation_score))
 
     def test_train_mean_and_median_use_training_rows_only(self):
         start = datetime(2020, 1, 1)
