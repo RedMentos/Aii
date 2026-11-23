@@ -742,6 +742,56 @@ def test_sleep_runtime_commits_source_verified_base_and_temporal_learning_after_
         store.close()
 
 
+def test_sleep_runtime_schedules_censored_terminal_outcome_for_temporal_learning(tmp_path):
+    home = tmp_path / "sleep-censored-schedule"
+    store = _make_store(home)
+    try:
+        _sessions, _events = _make_dataset(store, "sleep-censored-schedule", 60)
+        _session, latest_ids = _add_session(
+            store, "sleep-censored-latest", 60,
+            status_overrides={3: "INTERRUPTED"}, event_count=4,
+        )
+        latest_event = latest_ids[-1]
+        _permissions(store, steps=80)
+        sleep = _sleep(store, home)
+        posted = []
+
+        def post(*args, **kwargs):
+            posted.append((args, kwargs))
+            return {"action": kwargs.get("action"), "payload": kwargs.get("payload")}
+
+        sleep.scheduler = SimpleNamespace(post=post)
+        queued = sleep.schedule_world_jepa()
+        assert queued == {
+            "action": "jepa_update",
+            "payload": {"event_id": latest_event},
+        }
+        assert len(posted) == 1
+        assert posted[0][0] == ("IDLE",)
+        assert posted[0][1]["action"] == "jepa_update"
+
+        # The same event is accepted by the real postcommit consumer and its
+        # censored outcome remains in the persisted temporal experience ledger.
+        result = sleep._run_world_jepa(latest_event, limit=64)
+        assert result["action_status"] == "INTERRUPTED", result
+        assert result["temporal"]["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", result
+        assert result["temporal"]["metrics"]["parameter_delta_norm"] > 0
+        assert result["temporal"]["metrics"]["ema_target_delta_norm"] > 0
+        action = store.one(
+            "SELECT id FROM actions WHERE event_id=? AND outcome IS NOT NULL",
+            (latest_event,),
+        )
+        persisted, _ = store.state(STATE_KEY, None)
+        assert any(
+            row["action_id"] == action["id"] and row["status"] == "INTERRUPTED"
+            for row in persisted["active"]["experience_rows"]
+        )
+        assert result["temporal"]["native_body_weights_changed"] is False
+        assert result["decision_authority"] == "NONE"
+    finally:
+        store.close()
+
+
 def test_sleep_runtime_keeps_unknown_outcomes_out_of_the_learning_loop(tmp_path):
     home = tmp_path / "sleep-unknown-outcome"
     store = _make_store(home)
