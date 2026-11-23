@@ -185,8 +185,19 @@ def _current_event(runtime):
     return event, source_ref
 
 
+def _require_local_tty():
+    """Do not let a caller-supplied Operator origin impersonate a human TTY."""
+    try:
+        interactive = os.isatty(0)
+    except (OSError, ValueError):
+        interactive = False
+    if interactive is not True:
+        raise PermissionError("native probe approval requires an interactive local TTY")
+
+
 def arm(runtime, sender_role, receiver_role, *, now=None):
-    """Arm one exact probe locally; caller is the local Operator TTY path."""
+    """Arm one exact probe only from an interactive local terminal."""
+    _require_local_tty()
     runtime.require_idle()
     _roles(sender_role, receiver_role)
     event, source_ref = _current_event(runtime)
