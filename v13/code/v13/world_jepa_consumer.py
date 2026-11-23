@@ -1232,10 +1232,13 @@ def source_forget_guard(store, source_id):
                 return True
             if any(row["id"] not in pending_ids for row in scanned):
                 return True
-            # Inspect committed source-bearing packets created before dispatch.
-            # C5 ActionSelection may be event-only; the final C4 FocalCycle and
-            # FocalItem packets retain the selected coalition refs. All three
-            # must invalidate a checkpoint even after its replay row is evicted.
+            # Conservatively inspect every source-bearing C4 FocalCycle packet
+            # created before dispatch, not only the final cycle. Earlier cycles
+            # may have influenced the eventual action even when their items are
+            # absent from the final coalition. This intentionally broader scope
+            # can cause extra rollback/replay until the producer persists complete
+            # per-cycle item lineage. Include the available FocalItem provenance
+            # and event-only C5 ActionSelection provenance as well.
             selected = store.rows(
                 """SELECT DISTINCT a.id FROM actions a
                    JOIN events e ON e.id=a.event_id
