@@ -4,6 +4,7 @@ All transitions are synthetic fixtures written through the real SQLite Store.
 No native GGUF body, Android device, or Redmi behavior is claimed.
 """
 from types import SimpleNamespace
+import json
 import os
 import threading
 
@@ -923,9 +924,16 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
             def generate(self, messages, cancel, deadline, max_tokens, schema):
                 query = json.loads(messages[1]["content"])
                 seen_queries[self.role] = query
+                if self.role == "B2_GIST":
+                    # B2's product default is pointer selection: return an ID
+                    # from the supplied exact-source choices, not a string.
+                    assert query.get("quote_choices"), query
+                    quotes = [1]
+                else:
+                    quotes = ["verified action history is ready"]
                 return iter([json.dumps({
                     "summary": "A source-quoted next-action estimate.",
-                    "quotes": ["verified action history"],
+                    "quotes": quotes,
                     "uncertainty": "low",
                     "needs_reentry": False,
                 })])
