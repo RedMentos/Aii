@@ -180,7 +180,6 @@ def _temporal_world_jepa_body_readout(r, e, role):
                     round(min(86400.0, max(0.0, float(duration))), 2),
                     int(round(min(1000000.0, max(0.0, float(output_chars))))),
                     round(float(uncertainty), 3),
-                    support,
                 ]
             else:
                 success = prediction.get("predicted_success_probability")
@@ -189,8 +188,10 @@ def _temporal_world_jepa_body_readout(r, e, role):
                     return omitted("INVALID_PREDICTION", action=action)
                 row = [
                     action, round(min(1.0, max(0.0, float(success))), 3),
-                    round(float(uncertainty), 3), support,
+                    round(float(uncertainty), 3),
                 ]
+            # Per-action support counts remain in the full source-bound audit;
+            # the prompt already receives only gated predictions and uncertainty.
             rows.append(row)
         if not rows:
             return omitted("NO_SUPPORTED_ACTIONS", unsupported_actions=unsupported)
