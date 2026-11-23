@@ -1818,3 +1818,26 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
 
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+## JEPA & Memory — run 11, 2026-11-23 (19:32 Europe/Berlin; completion time UNKNOWN)
+
+**Candidate / code:** PR [#2454](https://github.com/RedMentos/Aii/pull/2454), exact current head `bf2913b150d8decbf6e33c43920d21acc83439b3`, stacked on Boss PR [#2443](https://github.com/RedMentos/Aii/pull/2443) head `6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4`. B1_DETAIL and B2_GIST temporal receiver heads now use a bounded full-batch Adam/MSE optimizer instead of a closed-form-only update: at most 64 steps, global gradient clipping, anchoring to the previous adapter, and persisted gradient norm/step/clip telemetry. The exact old/new adapter SHA-256 and parameter delta remain bound to source-derived LearningIntent and v2 WeightDeltaReceipt. SELF's existing ridge readout is unchanged. This only changes small float receiver adapters in SHADOW; no B1/B2 GGUF/base weights, permissions, Age, or production-learning gates changed.
+
+**Exact evidence:**
+- LOCAL_LINUX isolated helper test, CPython 3.13.5 + NumPy: PASS — nonzero gradient, clipping, parameter delta, training-loss reduction, and zero-learning-rate no-op. Synthetic helper test only, not a full repository run.
+- Exact-head GitHub workflow `V14 Temporal WorldJEPA T8 Windows`: PASS on Python 3.13 and 3.14; each ran `test_v14_world_jepa_temporal_runtime.py` (25 passed) and `test_v14_world_jepa_postcommit_runtime.py` (17 passed).
+- `V13 combined online JEPA integration`, `V13 incremental World JEPA`, and `V14 A4 source-bound attention outcomes`: PASS.
+- Still failing on the exact candidate head: `V14 JEPA training-resume and source-forget`, `V13 Lab Age`, `V13 private owner-read bootstrap`, `V13 two-checkout migration`, and `V13 staged context/integrated regression`. The common hard failure is Core-owned source composition: `stage_integrated_candidate.py:48` expects the old recovery-wrapper SHA-256 `6b3a9508...`, while the current JEPA wrapper requires `f87b63bbbb89f28718d627897d4e5495838f6e1ea2884ccd68239003e749a6b5`; other staged checks also report a stale feedback/bootstrap builder pin. Migration remains PARTIAL. This is not a JEPA optimizer-test failure: the dedicated temporal and postcommit suites are green. Exact pin handoff and ownership request were posted to #2443; JEPA did not edit Core-owned stage/deployer files.
+- Full local Aii checkout is absent and `git ls-remote` fails DNS in this container; full local repository suite is BLOCKED / NOT_RUN.
+
+**Latest private device evidence (read-only):**
+- PIPELINE_STATUS receipts [#832](https://github.com/RedMentos/Aiiii/issues/832) and [#833](https://github.com/RedMentos/Aiiii/issues/833): auto-update enabled; runtime/dashboard report UP_TO_DATE at installed SHA `8d93236c753f0194224c19edc7411d8d7082b1d6`; last_error NONE.
+- DIAGNOSTICS receipt [#834](https://github.com/RedMentos/Aiiii/issues/834): model process STOPPED, runtime state STOPPED_BY_USER, autostart false; service/dashboard still running; zero mapped native model processes; native probe SMOKE_PARTIAL. Official Age 0; Lab request 10 / effective implemented stage 5; physical feature execution unverified; learning commit authority still requires separate SHADOW. No candidate install receipt exists.
+- No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, shell, device restart, model/weight swap, permission change, or device mutation was performed.
+
+**Release / Redmi truth:** `NOT_RELEASED`. The phone's updater is enabled and the installed release SHA is `8d93236...`, but PR #2454 is not installed. Redmi-native JEPA, receiver-weight, retention, and B1/B2 semantic-use proof remain UNVERIFIED. Do not treat UP_TO_DATE as proof that the brain works.
+
+**Remaining JEPA gaps:** World predictor retention is measured; B1/B2 target-adapter old-session retention is still `NOT_MEASURED`. No native GGUF update, trained inter-organ latent transfer, or production learning promotion is claimed. The temporal T8/World/Self/Memory/replay/checkpoint path remains synthetic Store/T8 evidence until a real authorized Android receipt proves it.
+
+**Next concrete work:** Boss/Core must recompose the shared stage + feedback/bootstrap + deployer pin chain on a descendant containing #2443 and #2454, then rerun the exact staged, training-resume, Lab-Age, migration and owner-read workflows. After that, JEPA will add a source/session-disjoint old-session retention gate for the B1/B2 target adapters; the next memory research candidate is R-107 Future-Aware Recall, still not implemented. **User action required: NONE.**
