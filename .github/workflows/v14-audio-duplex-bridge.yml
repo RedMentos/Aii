@@ -1,0 +1,45 @@
+name: V14 RAW EAR audio duplex bridge
+
+on:
+  push:
+    branches:
+      - "research-perception/**"
+    paths:
+      - "v13/code/v13/audio_duplex_bridge.py"
+      - "v13/code/tests/test_audio_duplex_bridge.py"
+      - ".github/workflows/v14-audio-duplex-bridge.yml"
+  pull_request:
+    branches:
+      - "gpt6/v13-private-remote-bridge-20261111"
+    paths:
+      - "v13/code/v13/audio_duplex_bridge.py"
+      - "v13/code/tests/test_audio_duplex_bridge.py"
+      - ".github/workflows/v14-audio-duplex-bridge.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  audio-duplex-bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: \${{ matrix.python-version }}
+      - name: Install focused test runner
+        run: python -m pip install --upgrade pytest
+      - name: Compile exact bridge and integration tests
+        run: |
+          python -m py_compile \
+            v13/code/v13/audio_duplex_bridge.py \
+            v13/code/tests/test_audio_duplex_bridge.py
+      - name: Run source-bound RAW EAR to duplex Runtime tests
+        env:
+          PYTHONPATH: v13/code
+        run: python -m pytest -q v13/code/tests/test_audio_duplex_bridge.py
