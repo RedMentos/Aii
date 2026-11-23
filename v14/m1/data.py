@@ -10,9 +10,9 @@ import csv
 import hashlib
 import json
 from dataclasses import asdict, dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Iterable, Iterator, Mapping, Sequence
+from typing import Iterable, Mapping, Sequence
 
 UCI_TIMESTAMP_FORMAT = "%d/%m/%Y %H:%M:%S"
 UCI_MISSING = {"", "?", "nan", "NaN", "NA", "null", "None"}
@@ -23,6 +23,8 @@ DEFAULT_SEASONAL_LAGS = (1440, 10080)
 class DataConfig:
     input_length: int
     horizon: int = 60
+    # Upper bound fixed before the pilot; changing L within this range cannot move splits.
+    max_candidate_input_length: int = 10080
     primary_channel: str = "Global_active_power"
     seasonal_lags: tuple[int, ...] = DEFAULT_SEASONAL_LAGS
     include_calendar: bool = True
@@ -32,8 +34,10 @@ class DataConfig:
     split_gap: int | None = None
 
     def __post_init__(self) -> None:
-        if self.input_length < 1 or self.horizon < 1:
-            raise ValueError("input_length and horizon must be positive")
+        if self.input_length < 1 or self.horizon < 1 or self.max_candidate_input_length < 1:
+            raise ValueError("input_length, horizon and max_candidate_input_length must be positive")
+        if self.input_length > self.max_candidate_input_length:
+            raise ValueError("input_length exceeds preregistered max_candidate_input_length")
         if not 0 < self.train_fraction < 1:
             raise ValueError("train_fraction must be in (0, 1)")
         if not 0 < self.validation_fraction < 1:
@@ -50,7 +54,7 @@ class DataConfig:
         # The split is fixed independently of L. The pilot may vary L, but may
         # not silently shrink the predeclared gap. A caller should choose a
         # conservative gap using the maximum candidate L and seasonal lookback.
-        minimum = max(self.input_length, self.horizon, max(self.seasonal_lags, default=0))
+        minimum = max(self.max_candidate_input_length, self.horizon, max(self.seasonal_lags, default=0))
         return minimum + self.horizon
 
     @property
