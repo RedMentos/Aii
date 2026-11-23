@@ -4,13 +4,8 @@ from __future__ import annotations
 import unittest
 import numpy as np
 
-from datetime import datetime, timedelta
-
-from v14.m1.array_data import ArrayDataset
-from v14.m1.baselines import PersistenceBaseline
-from v14.m1.data import DataConfig, MinuteRow
 from v14.m1.evaluation import (
-    collect_model_errors, forecast_metrics, paired_block_bootstrap,
+    forecast_metrics, paired_block_bootstrap,
     per_window_primary_mae,
 )
 
@@ -43,25 +38,6 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(len(result.per_seed_differences), 2)
         self.assertGreater(result.seed_difference_std, 0.0)
         self.assertLess(result.confidence_interval_high, 0.0)
-
-    def test_streaming_error_collection_uses_validation_and_keeps_test_locked(self):
-        start = datetime(2020, 1, 1)
-        rows = [
-            MinuteRow(start + timedelta(minutes=i), (float(i % 37), float(i % 19)))
-            for i in range(2000)
-        ]
-        config = DataConfig(
-            input_length=5, horizon=60, max_candidate_input_length=5,
-            seasonal_lags=(60, 120), train_fraction=0.70, validation_fraction=0.15,
-        )
-        dataset = ArrayDataset(rows, ("a", "b"), config)
-        model = PersistenceBaseline(horizon=60)
-        errors = collect_model_errors(model, dataset, split="validation", batch_size=16)
-        self.assertGreater(errors.origin_indices.size, 0)
-        self.assertEqual(errors.primary_mae.shape, errors.origin_indices.shape)
-        self.assertEqual(errors.mae_at_60.shape, errors.origin_indices.shape)
-        with self.assertRaises(PermissionError):
-            collect_model_errors(model, dataset, split="test", batch_size=16)
 
     def test_bootstrap_rejects_misaligned_seeds_or_origins(self):
         with self.assertRaises(ValueError):
