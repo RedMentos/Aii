@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Drive real Android Espresso UI checks around an externally forced process death.
+"""Drive Espresso UI checks around an externally forced Android process death.
 
-Espresso clicks the companion's actual visible MainActivity button. The host
-then verifies PID disappearance, starts a fresh instrumentation process, and
-checks that provider startup returns to STOPPED. This avoids relying on
-System-UI/uiautomator hierarchy dumps, which repeatedly ANR on the TCG runner.
+The host wakes/unlocks the disposable emulator, launches the visible activity,
+and waits for both WindowManager focus and ActivityTaskManager resume before
+starting Espresso. It then verifies a real visible Stop action, kills the app
+from outside the process, and checks that a fresh provider startup is OFF.
 """
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ import subprocess
 import time
 
 PACKAGE = "com.redmentos.v14.companion"
+COMPONENT = PACKAGE + "/.MainActivity"
 TEST_RUNNER = (
     "com.redmentos.v14.companion.test/"
     "androidx.test.runner.AndroidJUnitRunner"
@@ -70,9 +71,46 @@ def wait_for_process(*, present: bool, timeout: float = 45.0) -> str:
     )
 
 
+def wait_for_activity_focus(timeout: float = 30.0) -> None:
+    """Require the companion to be both resumed and the focused window."""
+    deadline = time.monotonic() + timeout
+    last_focus: list[str] = []
+    last_resumed: list[str] = []
+    while time.monotonic() < deadline:
+        windows = adb("shell", "dumpsys", "window", "windows", timeout=20.0)
+        activities = adb("shell", "dumpsys", "activity", "activities", timeout=20.0)
+        last_focus = [
+            line.strip() for line in windows.splitlines()
+            if "mCurrentFocus" in line or "mFocusedApp" in line
+        ]
+        last_resumed = [
+            line.strip() for line in activities.splitlines()
+            if "mResumedActivity" in line or "topResumedActivity" in line
+        ]
+        focus_ok = any(PACKAGE in line for line in last_focus)
+        resumed_ok = any(PACKAGE in line for line in last_resumed)
+        if focus_ok and resumed_ok:
+            return
+        time.sleep(0.5)
+    raise AssertionError(
+        "companion MainActivity did not obtain window focus; focus="
+        + repr(last_focus[:3]) + "; resumed=" + repr(last_resumed[:3])
+    )
+
+
+def prepare_foreground_activity() -> None:
+    """Wake and foreground the app on the disposable CI emulator only."""
+    adb("shell", "input", "keyevent", "KEYCODE_WAKEUP")
+    adb("shell", "wm", "dismiss-keyguard")
+    adb("shell", "input", "keyevent", "KEYCODE_HOME")
+    adb("shell", "am", "start", "-W", "-n", COMPONENT, timeout=45.0)
+    wait_for_activity_focus()
+
+
 def run_instrumentation(method: str, timeout: float = 180.0) -> str:
     if method not in ALLOWED_METHODS:
         raise ValueError("instrumentation method is not allowlisted")
+    prepare_foreground_activity()
     target = TEST_CLASS + "#" + method
     output = adb(
         "shell", "am", "instrument", "-w", "-r",
@@ -95,8 +133,8 @@ def run_instrumentation(method: str, timeout: float = 180.0) -> str:
 
 
 def main() -> None:
-    # Start from a known stopped process. The first instrumentation launch
-    # creates a fresh app process, whose ContentProvider must persist OFF.
+    # Start from a known stopped process. The first instrumentation invocation
+    # explicitly foregrounds MainActivity after provider startup.
     adb("shell", "am", "force-stop", PACKAGE)
     wait_for_process(present=False)
     run_instrumentation(INITIAL_METHOD)
@@ -107,8 +145,8 @@ def main() -> None:
     adb("shell", "am", "force-stop", PACKAGE)
     wait_for_process(present=False)
 
-    # Starting instrumentation launches a new target process. Provider
-    # onCreate() must reset its process grant and persisted flag to OFF.
+    # Starting MainActivity starts a new process. Provider onCreate() must
+    # reset the process grant and persisted flag to OFF before the second test.
     run_instrumentation(RESTART_METHOD)
     restarted_pid = wait_for_process(present=True)
 
