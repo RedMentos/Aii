@@ -82,8 +82,13 @@ def apply_sources(code_dir, sources):
     for name in tuple(checked):
         if name == 'v13/runtime.py':
             continue
-        checked[name] = _replace(checked[name], b'from .common import dumps\n',
-            b'from .common import dumps\nfrom .record_only_gate import updates_allowed,blocked_status\n', name + ' import')
+        if name == 'v13/attention.py':
+            before = b'from .common import dumps, digest\n'
+        else:
+            before = b'from .common import dumps\n'
+        checked[name] = _replace(checked[name], before,
+            before + b'from .record_only_gate import updates_allowed,blocked_status\n',
+            name + ' import')
 
     name = 'v13/fastforward.py'
     raw = checked[name]
