@@ -1,3 +1,13 @@
+## M1 forecasting experiment checkpoint — 2026-11-23 12:34 UTC
+
+- M1 DATA files are present on the release-development branch: `v14/m1/data.py`, `test_data.py`, `README.md`, package initializer and `.github/workflows/v14-m1-data.yml`.
+- Independent static audit found and fixed non-finite numeric ingestion, case-insensitive missing markers, seasonal lags shorter than horizon, direct-entry row/channel/timestamp validation, exact seasonal alignment test and missing seasonal-source rejection.
+- Current branch HEAD is `8fb5a61361e34862f8510f7f2c14c43cc9cd2952`, 32 commits ahead of integration baseline `b20e9b1f3dd53af472055adb43da628785494ec4`; no force-push. M1 exact GitHub Actions runs 45175650226 (push) and 45175661600 (pull_request) are QUEUED. Do not call them passed.
+- No local full Aii suite, UCI real-data run, M1 model training, weight update, or Redmi validation has been performed. M1 remains [ENTWURF]. No test-year access.
+- Next: inspect exact M1 CI results; then implement common InputBundle and baseline adapters (Persistence, Seasonal Persistence, Train Mean/Median, Ridge-AR, LAD/L1-AR, Raw-Window-Probe, Raw-Window-MLP) before JEPA/direct-MAE PROBE. Preserve all same-information input parity and M1a/b/c controls. This is an additive experiment lane and does not replace the P0 whole-runtime work.
+
+---
+
 ## Boss follow-up — JEPA exact-head pin recheck — 2026-11-22T10:00:40.871Z
 
 - PR #2331 advanced to `535eba6f668b3990416c361368f36e3e8f1e599e` on b3b92. Exact matrix: **9 failures / 4 in progress / 2 queued / 4 success / 1 skipped**.
