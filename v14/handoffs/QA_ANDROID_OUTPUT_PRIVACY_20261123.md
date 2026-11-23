@@ -178,3 +178,13 @@ No device action, chat send, restart, model/weight change, permission change, or
 - Pipeline: \`auto_enabled=true\`, \`dashboard=UPDATED\`, \`runtime=CI_WAIT\`, \`last_result=PARTIAL\`, \`last_error=NONE\`, \`updated_commit=8d93236c753f0194224c19edc7411d8d7082b1d6\`. A fetched/target commit is not proof that the runtime launcher switched.
 - AI runtime: \`STOPPED_BY_USER\`, autostart false, model process STOPPED, B1/B2/C2/C3 native process count zero. Service and dashboard remain running.
 - No restart, CHAT_SEND, UPDATE_REQUEST, LOG_PAGE, shell, model/weight/permission change or data mutation was performed. The device remains intentionally stopped; no native validation of this PR is possible until a later explicit user restart.
+
+
+## Cross-lane QA review of Boss integration PR #2443
+
+- Reviewed Boss's exact head \`88ba1cc\` then \`9cf1965053c07cc0baa8d37caa35bb4070df179f\` against release-dev \`8d93236c753f0194224c19edc7411d8d7082b1d6\`. The first pass exposed (a) an obsolete source-forget test seam after the composer replaced \`store.one\` with \`cleanup_unreferenced\`, (b) vision ingest bypassing the source-lifecycle publisher, and (c) vision forget leaving compressed \`.z\` archives and checking only IMAGE references.
+- Boss reports those three issues corrected in \`5e14ba961ed4838892b3ac0ba503ea5387405fd5\`: image ingest test now hooks the real publisher, forget uses shared \`cleanup_unreferenced\`, race test pauses at the actual cleanup seam, and affected stage/runtime pins were rebound.
+- Exact 5e14 head still has a verified red: JEPA optimizer-resume Python 3.13 and 3.14 both fail because \`termux_runtime_recovery_candidate_20261112.py\` still expects SHA-256 \`10e0bf2d00d92fd565c8b9539d4f8c947a0621ee31de0906f9af25ef6a52e881\` for \`integrated_world_training_resume_candidate_20261111.py\`. QA comment #7108732823 asks for this remaining immediate pin and all downstream recovery/stage/deployer pins to be recomputed; preserve the negative mismatch test.
+- Other 5e14 checks (staged/integrated, Lab-Age, two-checkout migration, controller guard, vision, privacy, audio/RAW EAR, UI lease) were QUEUED at last poll. Do not infer they passed.
+- Two-checkout migration at 9cf showed both synthetic Git checkouts and dashboard advancing while runtime activation remained ERROR/PARTIAL. Boss attributed the earlier failure to the same stage hash mismatch; verify the new exact-head result before concluding whether a separate test-fixture issue remains.
+- No edits were made to Boss's branch or shared stage builders. Comments #7108650181, #7108695415, and #7108732823 record findings. This is CI/source-composition QA, not native Redmi evidence.
