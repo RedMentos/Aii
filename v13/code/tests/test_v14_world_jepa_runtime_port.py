@@ -24,20 +24,23 @@ def _make_store(home):
     return store, session
 
 
-def _add_focal_cycle_context(store, event_id, generation, refs, index, provenance_refs=None):
-    """Persist a realistic final C4 coalition, including FocalItem source receipts."""
-    item_ids = [f"focal-context-{index:04d}-{offset:02d}" for offset in range(len(refs))]
+def _add_focal_cycle_context(store, event_id, generation, refs, index, provenance_refs=None, cycle_number=0):
+    """Persist one C4 cycle and its FocalItem source receipts."""
+    item_ids = [
+        f"focal-context-{index:04d}-{cycle_number:02d}-{offset:02d}"
+        for offset in range(len(refs))
+    ]
     cycle = contracts.packet(
         "FocalCycle",
         "C4_FOCAL",
         event_id,
         generation,
         refs if provenance_refs is None else provenance_refs,
-        cycle=0,
+        cycle=cycle_number,
         decision="IGNORE",
         coalition=item_ids,
         signals={},
-        budget={"queries_left": 0, "inquisition_steps_left": 0, "cycles": 1, "slots": len(item_ids)},
+        budget={"queries_left": 0, "inquisition_steps_left": 0, "cycles": max(1, cycle_number + 1), "slots": len(item_ids)},
     )
     store.add_packet("FocalCycle", cycle)
     for item_id, ref in zip(item_ids, refs):
@@ -78,7 +81,7 @@ def _add_focal_cycle_context(store, event_id, generation, refs, index, provenanc
         store.add_packet("FocalItem", item)
 
 
-def _add_transitions(store, session, start, count, status_overrides=None, source_text_factory=None, context_source_refs_factory=None, focal_cycle_context_refs_factory=None, focal_cycle_provenance_refs_factory=None):
+def _add_transitions(store, session, start, count, status_overrides=None, source_text_factory=None, context_source_refs_factory=None, focal_cycle_context_refs_factory=None, focal_cycle_provenance_refs_factory=None, focal_cycle_history_factory=None):
     status_overrides = status_overrides or {}
     action_ids = []
     actions = tuple(world_model.ACTIONS)
@@ -88,13 +91,31 @@ def _add_transitions(store, session, start, count, status_overrides=None, source
         event = store.event(session, text)
         event_id = event["event_id"]
         generation = event["brain_generation_id"]
-        focal_refs = (focal_cycle_context_refs_factory(index) or []) if focal_cycle_context_refs_factory is not None else []
+        cycle_history = (
+            focal_cycle_history_factory(index) or []
+            if focal_cycle_history_factory is not None else []
+        )
+        if type(cycle_history) is not list:
+            raise TypeError("focal_cycle_history_factory must return a list")
+        for cycle_number, cycle_refs in enumerate(cycle_history):
+            if cycle_refs:
+                _add_focal_cycle_context(
+                    store, event_id, generation, cycle_refs, index,
+                    cycle_number=cycle_number,
+                )
+        focal_refs = (
+            focal_cycle_context_refs_factory(index) or []
+            if focal_cycle_context_refs_factory is not None else []
+        )
         if focal_refs:
-            cycle_refs = (focal_cycle_provenance_refs_factory(focal_refs)
-                          if focal_cycle_provenance_refs_factory is not None else focal_refs)
+            cycle_refs = (
+                focal_cycle_provenance_refs_factory(focal_refs)
+                if focal_cycle_provenance_refs_factory is not None else focal_refs
+            )
             _add_focal_cycle_context(
                 store, event_id, generation, focal_refs, index,
                 provenance_refs=cycle_refs,
+                cycle_number=len(cycle_history),
             )
         action_index = index % len(actions)
         route = actions[action_index]
@@ -1082,6 +1103,52 @@ def test_memory_forget_rebuilds_after_context_source_replay_row_eviction(tmp_pat
             "SELECT deleted FROM sources WHERE id=?", (context_ref["source_id"],)
         )
         assert after is not None and after["deleted"] == 1
+        current, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert current["active"] is None and current["previous"] is None
+        assert current["scan_cursor"] == 0
+    finally:
+        store.close()
+
+
+def test_memory_forget_conservatively_invalidates_nonfinal_focal_cycle_source_after_replay_row_eviction(tmp_path):
+    home = tmp_path / "brain-forget-nonfinal-focal-context"
+    store, session = _make_store(home)
+    try:
+        earlier_ref = store.source("source used only in an earlier C4 cycle", "MEMORY")
+        final_ref = store.source("source retained in the final C4 coalition", "MEMORY")
+        ids = _add_transitions(
+            store, session, 0, 256,
+            focal_cycle_history_factory=lambda index: [[earlier_ref]] if index == 0 else [],
+            focal_cycle_context_refs_factory=lambda index: [final_ref] if index == 0 else [],
+        )
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=120
+        )
+        result = consume_after_commit(store, home, limit=256)
+        assert result["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+
+        state, version = store.state("v14.world_jepa.store_consumer", None)
+        active = dict(state["active"])
+        target = next(row for row in active["experience_rows"] if row["action_id"] == ids[0])
+        assert final_ref in target["source_refs"]
+        # Earlier-cycle sources are not part of the final-cycle T8 receipt,
+        # but can still have influenced the deliberation trajectory.
+        assert earlier_ref not in target["source_refs"]
+        active["experience_rows"] = [
+            row for row in active["experience_rows"] if row["action_id"] != ids[0]
+        ]
+        active["train_ids"] = [item for item in active["train_ids"] if item != ids[0]]
+        active["holdout_ids"] = [item for item in active["holdout_ids"] if item != ids[0]]
+        state = dict(state)
+        state["active"] = active
+        store.set_state("v14.world_jepa.store_consumer", state, expected=version)
+
+        _memory_forget_source(store, earlier_ref["source_id"])
+
+        forgotten = store.one(
+            "SELECT deleted FROM sources WHERE id=?", (earlier_ref["source_id"],)
+        )
+        assert forgotten is not None and forgotten["deleted"] == 1
         current, _ = store.state("v14.world_jepa.store_consumer", None)
         assert current["active"] is None and current["previous"] is None
         assert current["scan_cursor"] == 0
