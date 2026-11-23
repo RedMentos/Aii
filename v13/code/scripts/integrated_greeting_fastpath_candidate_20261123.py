@@ -222,104 +222,113 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
     runtime = _patch_worker_learning(runtime)
 
 
-    marker = b"        mark('ingress')\n        monitor=NativePressureMonitor"
-    inserted = """        mark('ingress')
-        # Exact acknowledgements are plain-text only and never bypass RAW EAR.
-        greeting=None
-        from .fast_greeting import is_text_only_event
-        if is_text_only_event(e):
-            from .fast_greeting import match as match_greeting, match_unclaimed
-            candidate=match_greeting(text)
-            if candidate is not None:
-                mark('policy_check')
-                policy_match_ok=True
-                fixed_policy=None
-                try:
-                    from .output_policy import match as match_output_policy
-                    fixed_policy=match_output_policy(self.store,text)
-                except Exception as exc:
-                    policy_match_ok=False
-                    self.store.log('output_policy_unavailable',eid,{'stage':'early_policy_check','error':type(exc).__name__})
-                greeting=match_unclaimed(
-                    text,policy_match_ok=policy_match_ok,fixed_policy=fixed_policy)
-        if greeting:
-            # Cancellation/deadline and the durable IH-H12 commit remain mandatory.
+    policy_anchor = (
+        b"            monitor.start()\\n"
+        b"            check(self.cancel_event,deadline);resource=self.resources();state=self.guard.update(resource)\\n"
+    )
+    policy_inserted = b"""            monitor.start()
             check(self.cancel_event,deadline)
-            mark('greeting_fastpath')
-            source_ref=e['source_ref']
-            answer_ref=self.store.source(greeting['reply'],'BUILTIN_GREETING_ACK')
-            meta.update(
-                output_authority='APPROVED_FIXED_RULE',
-                output_policy={
-                    'kind':'BUILTIN_GREETING_ACK',
-                    'rule_id':greeting['rule_id'],
-                    'rule_version':'1',
-                    'query_ref':source_ref,
-                    'answer_ref':answer_ref,
-                },
-                output_policy_owner='SYSTEM_BUILTIN',
-                exact_policy_matched=True,
-                route={'source':'BUILTIN_GREETING_ACK'},
-                fastpath={
-                    'kind':'EXACT_GREETING_ACK',
-                    'normalized_input':greeting['normalized'],
-                    'skipped_organs':[
-                        'A1','A2','A3','A4','A5','B1_DETAIL','B2_GIST',
-                        'B3_ENLIGHTENED_SPACE','C2','C3_LANGUAGE','C4_FOCAL_LOOP','JEPA',
-                    ],
-                },
-                skipped_native_stages=[
-                    'SEGMENTATION','NATIVE_ALIGNMENT','SALIENCE','PERCEPTION_PACKET',
-                    'MEMORY_RECALL','B1_B2_OBSERVERS','C2_CONTROL','C4_FOCAL_LOOP',
-                    'C3_DECODE','WORLD_JEPA_PREDICTION','B3_LATENT_EXCHANGE','TOOL_PLANNING',
-                ],
-                context_source_refs=[source_ref,answer_ref],
-            )
-            decision=packet(
-                'OutputPolicyDecision','C5_REPORT_BROKER',eid,g,
-                [source_ref,answer_ref],
-                rule_id=greeting['rule_id'],rule_version='1',
-                query_ref=source_ref,answer_ref=answer_ref,
-                output_authority='APPROVED_FIXED_RULE',model_generated=False,
-            )
-            self.store.add_packet('OutputPolicyDecision',decision)
-            committed=txctl.commit_output(self.store,mid,eid,meta)
-            if committed is not True or not txctl.has_output_commit(self.store,mid,eid):
-                raise RuntimeError('Greeting output commit was not durably recorded')
-            meta['first_output_monotonic_ns']=time.monotonic_ns()
-            self.store.append_message(mid,greeting['reply'])
-            meta.update(
-                self_candidate_hash=digest(greeting['reply']),
-                duration_s=time.monotonic()-start,
-                characters=len(greeting['reply']),
-                model_generated=False,
-                fastpath_kind='EXACT_GREETING_ACK',
-                skip_online_world_update=True,
-                learning_authority=0,
-                experience_eligible=False,
-                external_action_authority=False,
-            )
-            self.store.finish_message(mid,'FINAL',meta)
-            try:txctl.settle_turn(self,eid,'FINAL')
-            except Exception as exc:self.store.log('provisional_unavailable',eid,{'error':type(exc).__name__})
-            try:self.executive.update(e,self.session,status='FINAL')
-            except Exception as exc:self.store.log('executive_finish_deferred',eid,{'error':type(exc).__name__})
-            try:
-                from .broker import Broker
-                broker_result=Broker(self).finalize(
-                    e,mid,meta,'FINAL',greeting['reply'],
-                    direct=True,exact_requested=False,clarify=False,
-                    tool_result=None,pending=None,
-                )
-                if broker_result.get('egress_ok') is not True:
-                    self.store.log('greeting_egress_blocked',eid,{'reason':'C7_NOT_CONFIRMED'})
-            except Exception as exc:self.store.log('broker_unavailable',eid,{'error':type(exc).__name__})
-            self.store.log('turn_finished',eid,meta|{'status':'FINAL'})
-            self.notice('Antwort gespeichert · FINAL')
-            self.turn_event=None
-            return {'skip_online_world_update':True,'fastpath':'EXACT_GREETING_ACK'}
-        monitor=NativePressureMonitor""".encode("utf-8")
-    runtime = _replace_once(runtime, marker, inserted, "early Runtime ingress hook")
+            from .output_policy import match
+            mark('policy_check');fixed_policy=match(self.store,text)
+            check(self.cancel_event,deadline)
+            if fixed_policy is None:
+                from .fast_greeting import is_text_only_event, match_unclaimed
+                if is_text_only_event(e):
+                    greeting=match_unclaimed(text,policy_match_ok=True,fixed_policy=None)
+                    if greeting is not None:
+                        answer_ref=self.store.source(greeting['reply'],'BUILTIN_GREETING_ACK')
+                        fixed_policy={
+                            'kind':'FIXED_EXACT',
+                            'rule_id':greeting['rule_id'],
+                            'rule_version':'builtin-v1',
+                            'query_ref':e['source_ref'],
+                            'answer_ref':answer_ref,
+                            'answer':greeting['reply'],
+                        }
+                        meta.update(
+                            output_policy_owner='SYSTEM_BUILTIN',
+                            fastpath={
+                                'kind':'EXACT_GREETING_ACK',
+                                'normalized_input':greeting['normalized'],
+                                'skipped_organs':[
+                                    'A1','A2','A3','A4','B1_DETAIL','B2_GIST',
+                                    'B3_ENLIGHTENED_SPACE','C2','C3_LANGUAGE',
+                                    'C4_FOCAL_LOOP','JEPA',
+                                ],
+                            },
+                            skip_online_world_update=True,
+                            learning_authority=0,
+                            experience_eligible=False,
+                            external_action_authority=False,
+                            model_generated=False,
+                        )
+            resource=self.resources();state=self.guard.update(resource)
+"""
+    runtime = _replace_once(runtime, policy_anchor, policy_inserted, "policy-first greeting admission")
+    runtime = _replace_once(
+        runtime,
+        b"            if state=='CRITICAL':",
+        b"            if state=='CRITICAL' and not meta.get('fastpath'):",
+        "critical resource guard",
+    )
+    runtime = _replace_once(
+        runtime,
+        b"            from .output_policy import match\\n            mark('policy_check');fixed_policy=match(self.store,text)\\n            mark('perception_and_state')\\n",
+        b"            mark('perception_and_state')\\n",
+        "remove duplicate policy check",
+    )
+    runtime = _replace_once(
+        runtime,
+        b"                meta['context_source_refs']=refs\\n",
+        b"                meta['context_source_refs']=refs\\n"
+        b"                if meta.get('fastpath',{}).get('kind') == 'EXACT_GREETING_ACK':\\n"
+        b"                    meta['route']={'source':'BUILTIN_GREETING_ACK'}\\n"
+        b"                    meta['skipped_native_stages']=[\\n"
+        b"                        'SEGMENTATION','TEACHER_ALIGNMENT','STUDENT_ALIGNMENT','SALIENCE',\\n"
+        b"                        'MEMORY_RECALL','B1_DETAIL','B2_GIST','B3_ENLIGHTENED_SPACE',\\n"
+        b"                        'C2_CONTROL','C3_DECODE','C4_FOCAL_LOOP','WORLD_JEPA_PREDICTION',\\n"
+        b"                        'TOOL_PLANNING',\\n"
+        b"                    ]\\n",
+        "fastpath route and skipped-stage telemetry",
+    )
+    runtime = _replace_once(
+        runtime,
+        b"            if not meta.get('skill'):route=agi_live.skill_route(self,e,text,route,direct,meta)  # WP-N13 AG4 -> C5\\n",
+        b"            if meta.get('experience_eligible') is not False and not meta.get('skill'):route=agi_live.skill_route(self,e,text,route,direct,meta)  # WP-N13 AG4 -> C5\\n",
+        "skip greeting skill learning",
+    )
+    runtime = _replace_once(
+        runtime,
+        b"            agi_live.expect(self,e,aid,predicted_role,route)  # WP-N13 AG2 prediction before acting\\n",
+        b"            if meta.get('experience_eligible') is not False:agi_live.expect(self,e,aid,predicted_role,route)  # WP-N13 AG2 prediction before acting\\n",
+        "skip greeting action prediction",
+    )
+    runtime = _replace_once(
+        runtime,
+        b"                txctl.commit_output(self.store,mid,eid,meta);meta['first_output_monotonic_ns']=time.monotonic_ns();self.store.append_message(mid,output);meta['direct_source_copy']=True\\n",
+        b"                committed=txctl.commit_output(self.store,mid,eid,meta)\\n"
+        b"                if meta.get('fastpath',{}).get('kind') == 'EXACT_GREETING_ACK' and (committed is not True or not txctl.has_output_commit(self.store,mid,eid)):\\n"
+        b"                    raise Unavailable('Greeting output commit was not durably recorded')\\n"
+        b"                meta['first_output_monotonic_ns']=time.monotonic_ns();self.store.append_message(mid,output);meta['direct_source_copy']=True\\n",
+        "durable direct-output commit guard",
+    )
+    runtime = _replace_once(
+        runtime,
+        b"            self.store.add_packet('ExperienceRecord',packet('ExperienceRecord','F1_EPISODIC',eid,g,[e['source_ref']],source_ref=e['source_ref'],self_candidate_hash=meta['self_candidate_hash'],outcome=status,teacher_seen_before_commit=False))\\n"
+        b"            agi_live.after_turn(self,e,meta,status,aid)  # WP-N13 AG2 outcome, AG4 skill outcome, AG0 slots\\n",
+        b"            if meta.get('experience_eligible') is not False:\\n"
+        b"                self.store.add_packet('ExperienceRecord',packet('ExperienceRecord','F1_EPISODIC',eid,g,[e['source_ref']],source_ref=e['source_ref'],self_candidate_hash=meta['self_candidate_hash'],outcome=status,teacher_seen_before_commit=False))\\n"
+        b"                agi_live.after_turn(self,e,meta,status,aid)  # WP-N13 AG2 outcome, AG4 skill outcome, AG0 slots\\n",
+        "gate experience record and AGI after-turn",
+    )
+    runtime = _replace_once(
+        runtime,
+        b"\\n    def _teacher",
+        b"\\n        if meta.get('fastpath',{}).get('kind') == 'EXACT_GREETING_ACK':\\n"
+        b"            return {'skip_online_world_update': True, 'fastpath': 'EXACT_GREETING_ACK'}\\n"
+        b"\\n    def _teacher",
+        "return skip marker after normal finalizer",
+    )
     compile(runtime, RUNTIME_PATH, "exec")
 
     result = dict(sources)
