@@ -6,6 +6,9 @@ production routing, learned alignment, weight updates or model swaps.
 import hashlib
 from pathlib import Path
 
+APPROVAL_BUILDER = "scripts/integrated_native_probe_approval_candidate_20261122.py"
+APPROVAL_BUILDER_SHA256 = "db5451cbf75f3d5eed239b557ada46e40d6b345904825c0d662a51789c4eb49b"
+
 BASE_PINS = {
     "v13/cognition.py": "6d7940b118f099c930ee94c5b00a117af60b759dc03d8113aa6e1350a9a5a04b",
     "v13/callosum.py": "de55ba637b9e0c0fe6ea12f74385b0f9f782735cc2f52098f5b227a52902d5fc",
@@ -205,4 +208,17 @@ def apply_sources(code_dir,sources):
         if _sha256(raw)!=expected: raise ValueError("native receiver source hash mismatch: "+relative)
         if relative.endswith(".py"): compile(raw,relative,"exec")
         result[relative]=raw
+    approval_path=code_dir/APPROVAL_BUILDER
+    if approval_path.is_symlink() or not approval_path.is_file():
+        raise ValueError("native probe approval builder missing or unsafe")
+    approval_raw=approval_path.read_bytes()
+    if _sha256(approval_raw)!=APPROVAL_BUILDER_SHA256:
+        raise ValueError("native probe approval builder hash mismatch")
+    namespace={"__name__":"v14_native_probe_approval_composer","__file__":str(approval_path)}
+    exec(compile(approval_raw,str(approval_path),"exec"),namespace)
+    result=namespace["apply_sources"](code_dir,result)
+    if (b"approval_token" not in result.get("v13/cognition.py",b"")
+            or b"arm-probe" not in result.get("v13/callosum.py",b"")
+            or b"v14.native_probe_approval" not in result.get("v13/native_probe_approval.py",b"")):
+        raise ValueError("native probe local approval was not composed into the Runtime")
     return result
