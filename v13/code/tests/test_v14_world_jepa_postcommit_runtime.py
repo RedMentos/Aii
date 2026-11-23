@@ -759,6 +759,7 @@ def test_memory_forget_serializes_same_hash_source_publication(tmp_path):
     """A same-hash source must not be inserted between forget's refcount check and unlink."""
     from pathlib import Path
     from unittest.mock import patch
+    from v13 import source_lifecycle_candidate as lifecycle
     from v13.memory import Memory
 
     (tmp_path / "data" / "db").mkdir(parents=True)
@@ -781,9 +782,9 @@ def test_memory_forget_serializes_same_hash_source_publication(tmp_path):
     published = {}
 
     original_mutex = store.mutex
-    original_unlink = Path.unlink
+    original_unlink = lifecycle.os.unlink
+    original_open_existing = lifecycle._open_existing
     original_source = store.source
-    original_exists = Path.exists
 
     class TrackingRLock:
         def acquire(self, *args, **kwargs):
@@ -805,18 +806,18 @@ def test_memory_forget_serializes_same_hash_source_publication(tmp_path):
         def __getattr__(self, name):
             return getattr(original_mutex, name)
 
-    def pause_before_blob_unlink(path, *args, **kwargs):
+    def pause_before_blob_unlink(name, *args, **kwargs):
         if (threading.current_thread().name == "forgetter"
-                and path == blob):
+                and name == original_ref["sha256"] and kwargs.get("dir_fd") is not None):
             refcount_checked.set()
             if not allow_forget.wait(10):
                 raise TimeoutError("test did not release source-forget unlink")
-        return original_unlink(path, *args, **kwargs)
+        return original_unlink(name, *args, **kwargs)
 
-    def observe_blob_check(path, *args, **kwargs):
-        if path == blob and threading.current_thread().name == "generic-source-producer":
+    def observe_blob_check(dir_fd, name):
+        if name == original_ref["sha256"] and threading.current_thread().name == "generic-source-producer":
             producer_blob_check.set()
-        return original_exists(path, *args, **kwargs)
+        return original_open_existing(dir_fd, name)
 
     def forget():
         try:
@@ -839,7 +840,7 @@ def test_memory_forget_serializes_same_hash_source_publication(tmp_path):
     forgetter = threading.Thread(target=forget, name="forgetter")
     producer = threading.Thread(target=publish, name="generic-source-producer")
     try:
-        with patch.object(Path, "unlink", pause_before_blob_unlink), patch.object(Path, "exists", observe_blob_check):
+        with patch.object(lifecycle.os, "unlink", pause_before_blob_unlink), patch.object(lifecycle, "_open_existing", observe_blob_check):
             forgetter.start()
             assert refcount_checked.wait(10), f"forget did not reach final blob refcount check; errors={errors!r}"
             producer.start()
@@ -853,6 +854,7 @@ def test_memory_forget_serializes_same_hash_source_publication(tmp_path):
             )
             allow_forget.set()
             assert producer_done.wait(5), "producer did not resume after forget released the Store lock"
+            assert producer_blob_check.is_set(), "producer did not reach the canonical blob lookup after the lock released"
             forgetter.join(5)
             producer.join(5)
         assert not forgetter.is_alive() and not producer.is_alive(), "race workers did not finish"
