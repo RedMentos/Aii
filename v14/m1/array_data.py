@@ -6,11 +6,12 @@ bounded batch of overlapping windows at a time.
 """
 from __future__ import annotations
 
+import csv
 import hashlib
 import json
 import os
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterator, Mapping, Sequence
 
@@ -21,6 +22,8 @@ from .data import (
     MinuteRow,
     SplitStats,
     _validate_rows,
+    UCI_TIMESTAMP_FORMAT,
+    _parse_measurement,
     build_chronological_boundaries,
     data_config_sha256,
     dataset_sha256,
@@ -81,11 +84,7 @@ class ArrayDataset:
         )
         if raw.shape != (self.n_rows, len(self.channels)) or not np.isfinite(raw[~np.isnan(raw)]).all():
             raise ValueError("invalid numeric matrix")
-        self.values = raw
-        self._missing_prefix = np.concatenate(
-            (np.zeros(1, dtype=np.int64), np.isnan(raw).sum(axis=1, dtype=np.int64).cumsum())
-        )
-        self._minute_ids = np.fromiter(
+        minute_ids = np.fromiter(
             (
                 row.timestamp.toordinal() * 1440 + row.timestamp.hour * 60 + row.timestamp.minute
                 for row in rows
@@ -93,13 +92,110 @@ class ArrayDataset:
             dtype=np.int64,
             count=self.n_rows,
         )
-        self._month_ids = np.fromiter(
+        month_ids = np.fromiter(
             (row.timestamp.year * 100 + row.timestamp.month for row in rows),
             dtype=np.int32,
             count=self.n_rows,
         )
+        self._install(raw, minute_ids, month_ids, self.channels, config, self.dataset_sha256)
+
+    def _install(
+        self,
+        values: np.ndarray,
+        minute_ids: np.ndarray,
+        month_ids: np.ndarray,
+        channels: Sequence[str],
+        config: DataConfig,
+        parsed_data_sha256: str,
+    ) -> None:
+        self.channels = tuple(channels)
+        self.config = config
+        self.n_rows = int(values.shape[0])
+        self.bounds = build_chronological_boundaries(self.n_rows, config)
+        self.config_sha256 = data_config_sha256(config)
+        self.split_sha256 = hashlib.sha256(
+            json.dumps(
+                {key: list(value) for key, value in self.bounds.items()},
+                sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+            ).encode("utf-8")
+        ).hexdigest()
+        self.dataset_sha256 = parsed_data_sha256
+        self.values = values
+        self._missing_prefix = np.concatenate(
+            (np.zeros(1, dtype=np.int64), np.isnan(values).sum(axis=1, dtype=np.int64).cumsum())
+        )
+        self._minute_ids = minute_ids
+        self._month_ids = month_ids
         self._test_authorized = False
         self._test_preregistration_sha256: str | None = None
+
+    @classmethod
+    def from_uci(cls, path: str | Path, config: DataConfig) -> "ArrayDataset":
+        """Two-pass UCI CSV ingestion directly into a dense matrix, without MinuteRow objects."""
+        source = Path(path)
+        before = source.stat()
+        channels: tuple[str, ...] | None = None
+        row_count = 0
+        previous: datetime | None = None
+        with source.open("r", encoding="utf-8-sig", newline="") as handle:
+            reader = csv.DictReader(handle, delimiter=";")
+            if not reader.fieldnames or "Date" not in reader.fieldnames or "Time" not in reader.fieldnames:
+                raise ValueError("Expected UCI Date and Time columns")
+            channels = tuple(name for name in reader.fieldnames if name not in {"Date", "Time"})
+            if not channels or len(set(channels)) != len(channels):
+                raise ValueError("UCI measurement channels must be non-empty and unique")
+            for line_no, raw in enumerate(reader, start=2):
+                stamp = datetime.strptime(
+                    f"{(raw.get('Date') or '').strip()} {(raw.get('Time') or '').strip()}",
+                    UCI_TIMESTAMP_FORMAT,
+                )
+                if previous is not None and stamp - previous != timedelta(minutes=1):
+                    raise ValueError(f"non-contiguous minute timestamp at line {line_no}")
+                previous = stamp
+                row_count += 1
+        if row_count < 1 or channels is None:
+            raise ValueError("UCI file contains no data rows")
+        values = np.full((row_count, len(channels)), np.nan, dtype=np.float32)
+        minute_ids = np.empty(row_count, dtype=np.int64)
+        month_ids = np.empty(row_count, dtype=np.int32)
+        digest = hashlib.sha256()
+        digest.update(json.dumps(list(channels), separators=(",", ":")).encode("utf-8"))
+        index = 0
+        previous = None
+        with source.open("r", encoding="utf-8-sig", newline="") as handle:
+            reader = csv.DictReader(handle, delimiter=";")
+            if tuple(name for name in (reader.fieldnames or ()) if name not in {"Date", "Time"}) != channels:
+                raise ValueError("UCI header changed between ingestion passes")
+            for line_no, raw in enumerate(reader, start=2):
+                if index >= row_count:
+                    raise ValueError("UCI file gained rows between ingestion passes")
+                stamp = datetime.strptime(
+                    f"{(raw.get('Date') or '').strip()} {(raw.get('Time') or '').strip()}",
+                    UCI_TIMESTAMP_FORMAT,
+                )
+                if previous is not None and stamp - previous != __import__("datetime").timedelta(minutes=1):
+                    raise ValueError(f"non-contiguous minute timestamp at line {line_no}")
+                previous = stamp
+                parsed: list[float | None] = []
+                for column, channel in enumerate(channels):
+                    value = _parse_measurement(raw.get(channel), context=f"line {line_no}, channel {channel}")
+                    parsed.append(value)
+                    if value is not None:
+                        values[index, column] = value
+                minute_ids[index] = stamp.toordinal() * 1440 + stamp.hour * 60 + stamp.minute
+                month_ids[index] = stamp.year * 100 + stamp.month
+                record = [stamp.isoformat(), parsed]
+                digest.update(json.dumps(record, separators=(",", ":"), allow_nan=False).encode("utf-8"))
+                digest.update(b"\\n")
+                index += 1
+        after = source.stat()
+        if index != row_count or (before.st_size, before.st_mtime_ns, before.st_ino) != (
+            after.st_size, after.st_mtime_ns, after.st_ino
+        ):
+            raise ValueError("UCI file changed during two-pass ingestion")
+        obj = cls.__new__(cls)
+        obj._install(values, minute_ids, month_ids, channels, config, digest.hexdigest())
+        return obj
 
     @property
     def input_width(self) -> int:
