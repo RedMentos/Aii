@@ -8,9 +8,9 @@ import numpy as np
 import torch
 
 from v14.m1.array_data import ArrayDataset
-from v14.m1.base import BaseConfig, DirectMAE, FrozenRepresentationProbe, M1JEPA
+from v14.m1.base import BaseConfig, DirectMAE, FrozenRepresentationProbe, M1JEPA, VICRegControl
 from v14.m1.data import DataConfig, MinuteRow
-from v14.m1.training import FitConfig, fit_direct_mae, fit_frozen_probe, fit_jepa
+from v14.m1.training import FitConfig, fit_direct_mae, fit_frozen_probe, fit_jepa, fit_vicreg_control
 
 
 class TrainingLoopTests(unittest.TestCase):
@@ -42,6 +42,19 @@ class TrainingLoopTests(unittest.TestCase):
         after = next(model.target_encoder.parameters()).detach()
         self.assertGreater(report.optimizer_steps, 0)
         self.assertGreater(report.best_epoch, 0)
+        self.assertFalse(torch.equal(before, after))
+
+    def test_vicreg_control_trains_from_two_augmented_views(self):
+        model = VICRegControl(self.base_cfg)
+        before = next(model.encoder.parameters()).detach().clone()
+        report = fit_vicreg_control(
+            model, self.dataset, self.fit_cfg, noise_std=0.005,
+            channel_drop_probability=0.05, random_seed=11,
+        )
+        after = next(model.encoder.parameters()).detach()
+        self.assertGreater(report.optimizer_steps, 0)
+        self.assertEqual(report.validation_metric, "VICReg_objective")
+        self.assertTrue(np.isfinite(report.best_validation_score))
         self.assertFalse(torch.equal(before, after))
 
     def test_unshared_recurrent_jepa_trains_from_scratch(self):
