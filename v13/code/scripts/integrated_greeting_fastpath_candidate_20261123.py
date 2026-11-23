@@ -223,8 +223,8 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
 
 
     policy_anchor = (
-        b"            monitor.start()\\n"
-        b"            check(self.cancel_event,deadline);resource=self.resources();state=self.guard.update(resource)\\n"
+        b"            monitor.start()\n"
+        b"            check(self.cancel_event,deadline);resource=self.resources();state=self.guard.update(resource)\n"
     )
     policy_inserted = b"""            monitor.start()
             check(self.cancel_event,deadline)
@@ -273,60 +273,60 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
     )
     runtime = _replace_once(
         runtime,
-        b"            from .output_policy import match\\n            mark('policy_check');fixed_policy=match(self.store,text)\\n            mark('perception_and_state')\\n",
-        b"            mark('perception_and_state')\\n",
+        b"            from .output_policy import match\n            mark('policy_check');fixed_policy=match(self.store,text)\n            mark('perception_and_state')\n",
+        b"            mark('perception_and_state')\n",
         "remove duplicate policy check",
     )
     runtime = _replace_once(
         runtime,
-        b"                meta['context_source_refs']=refs\\n",
-        b"                meta['context_source_refs']=refs\\n"
-        b"                if meta.get('fastpath',{}).get('kind') == 'EXACT_GREETING_ACK':\\n"
-        b"                    meta['route']={'source':'BUILTIN_GREETING_ACK'}\\n"
-        b"                    meta['skipped_native_stages']=[\\n"
-        b"                        'SEGMENTATION','TEACHER_ALIGNMENT','STUDENT_ALIGNMENT','SALIENCE',\\n"
-        b"                        'MEMORY_RECALL','B1_DETAIL','B2_GIST','B3_ENLIGHTENED_SPACE',\\n"
-        b"                        'C2_CONTROL','C3_DECODE','C4_FOCAL_LOOP','WORLD_JEPA_PREDICTION',\\n"
-        b"                        'TOOL_PLANNING',\\n"
-        b"                    ]\\n",
+        b"                meta['context_source_refs']=refs\n",
+        b"                meta['context_source_refs']=refs\n"
+        b"                if meta.get('fastpath',{}).get('kind') == 'EXACT_GREETING_ACK':\n"
+        b"                    meta['route']={'source':'BUILTIN_GREETING_ACK'}\n"
+        b"                    meta['skipped_native_stages']=[\n"
+        b"                        'SEGMENTATION','TEACHER_ALIGNMENT','STUDENT_ALIGNMENT','SALIENCE',\n"
+        b"                        'MEMORY_RECALL','B1_DETAIL','B2_GIST','B3_ENLIGHTENED_SPACE',\n"
+        b"                        'C2_CONTROL','C3_DECODE','C4_FOCAL_LOOP','WORLD_JEPA_PREDICTION',\n"
+        b"                        'TOOL_PLANNING',\n"
+        b"                    ]\n",
         "fastpath route and skipped-stage telemetry",
     )
     runtime = _replace_once(
         runtime,
-        b"            if not meta.get('skill'):route=agi_live.skill_route(self,e,text,route,direct,meta)  # WP-N13 AG4 -> C5\\n",
-        b"            if meta.get('experience_eligible') is not False and not meta.get('skill'):route=agi_live.skill_route(self,e,text,route,direct,meta)  # WP-N13 AG4 -> C5\\n",
+        b"            if not meta.get('skill'):route=agi_live.skill_route(self,e,text,route,direct,meta)  # WP-N13 AG4 -> C5\n",
+        b"            if meta.get('experience_eligible') is not False and not meta.get('skill'):route=agi_live.skill_route(self,e,text,route,direct,meta)  # WP-N13 AG4 -> C5\n",
         "skip greeting skill learning",
     )
     runtime = _replace_once(
         runtime,
-        b"            agi_live.expect(self,e,aid,predicted_role,route)  # WP-N13 AG2 prediction before acting\\n",
-        b"            if meta.get('experience_eligible') is not False:agi_live.expect(self,e,aid,predicted_role,route)  # WP-N13 AG2 prediction before acting\\n",
+        b"            agi_live.expect(self,e,aid,predicted_role,route)  # WP-N13 AG2 prediction before acting\n",
+        b"            if meta.get('experience_eligible') is not False:agi_live.expect(self,e,aid,predicted_role,route)  # WP-N13 AG2 prediction before acting\n",
         "skip greeting action prediction",
     )
     runtime = _replace_once(
         runtime,
-        b"                txctl.commit_output(self.store,mid,eid,meta);meta['first_output_monotonic_ns']=time.monotonic_ns();self.store.append_message(mid,output);meta['direct_source_copy']=True\\n",
-        b"                committed=txctl.commit_output(self.store,mid,eid,meta)\\n"
-        b"                if meta.get('fastpath',{}).get('kind') == 'EXACT_GREETING_ACK' and (committed is not True or not txctl.has_output_commit(self.store,mid,eid)):\\n"
-        b"                    raise Unavailable('Greeting output commit was not durably recorded')\\n"
-        b"                meta['first_output_monotonic_ns']=time.monotonic_ns();self.store.append_message(mid,output);meta['direct_source_copy']=True\\n",
+        b"                txctl.commit_output(self.store,mid,eid,meta);meta['first_output_monotonic_ns']=time.monotonic_ns();self.store.append_message(mid,output);meta['direct_source_copy']=True\n",
+        b"                committed=txctl.commit_output(self.store,mid,eid,meta)\n"
+        b"                if meta.get('fastpath',{}).get('kind') == 'EXACT_GREETING_ACK' and (committed is not True or not txctl.has_output_commit(self.store,mid,eid)):\n"
+        b"                    raise Unavailable('Greeting output commit was not durably recorded')\n"
+        b"                meta['first_output_monotonic_ns']=time.monotonic_ns();self.store.append_message(mid,output);meta['direct_source_copy']=True\n",
         "durable direct-output commit guard",
     )
     runtime = _replace_once(
         runtime,
-        b"            self.store.add_packet('ExperienceRecord',packet('ExperienceRecord','F1_EPISODIC',eid,g,[e['source_ref']],source_ref=e['source_ref'],self_candidate_hash=meta['self_candidate_hash'],outcome=status,teacher_seen_before_commit=False))\\n"
-        b"            agi_live.after_turn(self,e,meta,status,aid)  # WP-N13 AG2 outcome, AG4 skill outcome, AG0 slots\\n",
-        b"            if meta.get('experience_eligible') is not False:\\n"
-        b"                self.store.add_packet('ExperienceRecord',packet('ExperienceRecord','F1_EPISODIC',eid,g,[e['source_ref']],source_ref=e['source_ref'],self_candidate_hash=meta['self_candidate_hash'],outcome=status,teacher_seen_before_commit=False))\\n"
-        b"                agi_live.after_turn(self,e,meta,status,aid)  # WP-N13 AG2 outcome, AG4 skill outcome, AG0 slots\\n",
+        b"            self.store.add_packet('ExperienceRecord',packet('ExperienceRecord','F1_EPISODIC',eid,g,[e['source_ref']],source_ref=e['source_ref'],self_candidate_hash=meta['self_candidate_hash'],outcome=status,teacher_seen_before_commit=False))\n"
+        b"            agi_live.after_turn(self,e,meta,status,aid)  # WP-N13 AG2 outcome, AG4 skill outcome, AG0 slots\n",
+        b"            if meta.get('experience_eligible') is not False:\n"
+        b"                self.store.add_packet('ExperienceRecord',packet('ExperienceRecord','F1_EPISODIC',eid,g,[e['source_ref']],source_ref=e['source_ref'],self_candidate_hash=meta['self_candidate_hash'],outcome=status,teacher_seen_before_commit=False))\n"
+        b"                agi_live.after_turn(self,e,meta,status,aid)  # WP-N13 AG2 outcome, AG4 skill outcome, AG0 slots\n",
         "gate experience record and AGI after-turn",
     )
     runtime = _replace_once(
         runtime,
-        b"\\n    def _teacher",
-        b"\\n        if meta.get('fastpath',{}).get('kind') == 'EXACT_GREETING_ACK':\\n"
-        b"            return {'skip_online_world_update': True, 'fastpath': 'EXACT_GREETING_ACK'}\\n"
-        b"\\n    def _teacher",
+        b"\n    def _teacher",
+        b"\n        if meta.get('fastpath',{}).get('kind') == 'EXACT_GREETING_ACK':\n"
+        b"            return {'skip_online_world_update': True, 'fastpath': 'EXACT_GREETING_ACK'}\n"
+        b"\n    def _teacher",
         "return skip marker after normal finalizer",
     )
     compile(runtime, RUNTIME_PATH, "exec")
