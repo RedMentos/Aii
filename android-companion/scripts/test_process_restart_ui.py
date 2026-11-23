@@ -312,7 +312,7 @@ class ProcessRestartDurabilityTests(unittest.TestCase):
 
         with TemporaryDirectory() as directory:
             marker = Path(directory) / "stop-proof"
-            marker.write_text("STOP_ACTION_PERSISTED_OFF\\n", encoding="utf-8")
+            marker.write_text("STOP_ACTION_PERSISTED_OFF\n", encoding="utf-8")
             with (
                 patch.object(harness, "STOP_PROOF_MARKER", marker),
                 patch.object(harness, "persisted_enabled", side_effect=["false", "false"]),
