@@ -1478,7 +1478,7 @@ The temporal predictor's fixed-EMA retention gate is measured, and B1/B2 adapter
 
 ### Test and platform state
 
-- Exact-head Actions run #45272190117: `startup_failure`, 0 jobs; no CI test executed.
+- Exact-head Actions run #45273031215: `startup_failure`, 0 jobs; no CI test executed.
 - Full local project suite: NOT_RUN; no Aii checkout and GitHub DNS unavailable. Python 3.13.5 / NumPy 2.3.5 / pytest 9.0.2 are installed in the container, but cannot substitute for the repository.
 - Synthetic Python numeric control: PASS for same-cohort retention, encoder drift, compensation, degraded-head rejection and overlap detection.
 - Termux/Redmi: REDMI_UNVERIFIED. Private V13OBS #115 (19:52:16Z) still reports installed 8d93236, auto-update enabled, runtime STOPPED_BY_USER, two failed native attempts per B1/B2 and zero valid offers. Fresh private owner-read creation failed HTTP 422 due unverified GitHub email; no device action was taken.
