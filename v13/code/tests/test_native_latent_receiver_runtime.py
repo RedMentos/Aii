@@ -12,6 +12,7 @@ from v13.contracts import validate
 from v13.callosum import controller
 from v13.operator import Operator
 from v13 import native_latent_receiver as native
+from v13 import native_probe_approval as approval
 
 
 def receipt(model_sha, sender_sha):
@@ -299,7 +300,8 @@ def test_native_receive_rejects_sender_model_symlink(tmp_path, monkeypatch):
         runtime.close()
 
 
-def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source(tmp_path):
+def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source(tmp_path, monkeypatch):
+    monkeypatch.setattr(approval.os, "isatty", lambda fd: fd == 0)
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
     runtime.last_answer = lambda: {"event_id": event["event_id"], "status": "FINAL"}
     calls = []
