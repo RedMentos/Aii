@@ -2371,3 +2371,23 @@ No result in this late poll changes the Redmi boundary: private #840/#841/#842 s
 | Whole-system Android / B3 / native latent | No new native device action, trained cross-organ latent path, or Android body-weight update was added by this regression. | NOT_IMPLEMENTED_OR_UNVERIFIED AS APPLICABLE; REDMI_UNVERIFIED. | Continue all Canon families; this JEPA test does not close P0 chat, B3, voice, Android control, or whole-Canon acceptance. |
 
 Boss #2443 current branch head `cdf6b64067ac426ba32194100d3764f6e74c105f` has code-bearing checkpoint `a5e536a96f6dc2a3a515d37b08393f7136e9efff`; combined exact-head CI is incomplete. JEPA #2454 remains 102 ahead / 47 behind, merge base `6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4`; wait for a green parent before rebase. LOCAL_LINUX Aii suite BLOCKED / NOT_RUN (no checkout, GitHub DNS failure). Redmi installed SHA remains `8d93236c753f0194224c19edc7411d8d7082b1d6`, AI STOPPED_BY_USER; no candidate install.
+
+---
+
+## Preserved historical overlay — JEPA & Memory run 16
+
+- **Additional open JEPA acceptance:** B1/B2 target-adapter retention remains `NOT_MEASURED` in the current WeightDeltaReceipt schema. World-predictor EMA retention and current source-disjoint receiver holdouts do not substitute for retention of the prior B1/B2 adapter on a persisted old cohort. Keep the cross-organ receiver loop PARTIAL / SHADOW until the prior holdout outcomes are persisted, old/new adapter performance is compared on the identical disjoint cohort, and negative controls pass.
+
+
+## Evidence overlay — JEPA & Memory run 16 (2026-11-23)
+
+| Canon family / path | Candidate code change | Evidence class for the new sub-path | Acceptance status |
+|---|---|---|---|
+| T8 ActionOutcome → WorldJEPA → B1/B2 | Persist fixed source-disjoint receiver cohort; exclude it from later train; compare prior and updated encoder+head on identical old `X/A/Y` | CODE_PRESENT_UNVERIFIED; exact project tests not executed | NOT_IMPLEMENTED_FOR_ACCEPTANCE |
+| B1_DETAIL / B2_GIST receiver readout | WeightDeltaReceipt v3 adds old/new cohort MSE, the provisional [DEFAULT] 5% relative regression tolerance, mean/zero/shuffled controls and cohort/source-disjoint evidence | CODE_PRESENT_UNVERIFIED; synthetic numeric reproduction only | NOT_IMPLEMENTED_FOR_ACCEPTANCE |
+| SourceRef / Forget / bounded replay | Receiver cohort source IDs/hashes are scanned by source-forget even after experience-row eviction | CODE_PRESENT_UNVERIFIED; regression test committed but not executed | NOT_IMPLEMENTED_FOR_ACCEPTANCE |
+| Checkpoint / restart / rollback | Existing rollback code remains unchanged; new receiver cohort is part of the persisted record and therefore follows active/previous checkpoint selection | No new runtime evidence this run | NOT_ACCEPTED |
+| Native B1/B2 body weights / trained latent coupling | No native model weights or trained inter-body latent path changed | NONE | NOT_IMPLEMENTED |
+| Android / Redmi | No phone command, update, training, model swap or permission change | NO_LIVE_RECEIPT; private #115 is the latest stored evidence | REDMI_UNVERIFIED |
+
+**Test status:** latest exact-head Actions run #45273031215 is `startup_failure` with zero jobs; local Aii suite NOT_RUN because there is no checkout and GitHub DNS fails. The synthetic numeric control is not a project test. Keep V14-004, V14-010 and V14-011 partial; do not promote any new acceptance state.
