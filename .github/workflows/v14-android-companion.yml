@@ -9,6 +9,7 @@ on:
       - qa/v14-companion-os-permission-contract-20261122
       - qa/v14-companion-stop-durability-20261123-run1
       - qa/v14-companion-stop-durability-followup-20261123-run2
+      - qa/v14-companion-instrumented-process-death-20261123-run4
     paths:
       - "android-companion/**"
       - ".github/workflows/v14-android-companion.yml"
@@ -20,6 +21,7 @@ on:
       - qa/v14-companion-final-qa-20261122
       - qa/v14-companion-stop-durability-20261123-run1
       - qa/v14-companion-stop-durability-followup-20261123-run2
+      - qa/v14-companion-stop-durability-followup-20261123-run3
     paths:
       - "android-companion/**"
       - ".github/workflows/v14-android-companion.yml"
@@ -33,7 +35,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Test emulator UI recovery helpers
-        run: python3 android-companion/scripts/test_process_restart_ui.py
+        run: |
+          python3 android-companion/scripts/test_process_restart_ui.py
+          python3 android-companion/scripts/test_process_restart_instrumented_unit.py
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -91,4 +95,4 @@ jobs:
           disable-animations: true
           emulator-boot-timeout: 900
           script: |
-            bash -n android-companion/scripts/wait_for_emulator.sh && bash android-companion/scripts/wait_for_emulator.sh && gradle --no-daemon -p android-companion :app:installDebug && python3 android-companion/scripts/test_process_restart.py
+            bash -n android-companion/scripts/wait_for_emulator.sh && bash android-companion/scripts/wait_for_emulator.sh && gradle --no-daemon -p android-companion :app:installDebug :app:installDebugAndroidTest && python3 android-companion/scripts/test_process_restart_instrumented.py
