@@ -60,10 +60,11 @@ def consent_guard(check):
 
 def speaker_batch(source_id, generation_id, start_ms, end_ms, vector_at,
                   *, revision="fixture-embedding-v1", threshold=0.8,
-                  consent_receipt_ref=RECEIPT, current_chunk_sha256=CHUNK_SHA):
+                  consent_receipt_ref=RECEIPT, current_chunk_sha256=CHUNK_SHA,
+                  frame_step_ms=80, lookback_frames=10):
     frames = [
         {"end_ms": end, "vector": list(vector_at(end))}
-        for end in range(start_ms + 80, end_ms + 1, 80)
+        for end in range(start_ms + frame_step_ms, end_ms + 1, frame_step_ms)
     ]
     return {
         "schema": SCHEMA,
@@ -75,8 +76,8 @@ def speaker_batch(source_id, generation_id, start_ms, end_ms, vector_at,
         "model_revision": revision,
         "model_sha256": MODEL_SHA,
         "embedding_dim": 3,
-        "frame_step_ms": 80,
-        "lookback_frames": 10,
+        "frame_step_ms": frame_step_ms,
+        "lookback_frames": lookback_frames,
         "confidence_threshold": threshold,
         "calibration_id": "fixture:caller-asserted-unverified" if threshold is not None else None,
         "frames": frames,
@@ -939,3 +940,54 @@ def test_registry_requires_active_consent_receipt_not_batch_self_assertion():
             start_ms=100, end_ms=1100, current_chunk_sha256=batch["current_chunk_sha256"],
             activity_hint="VOICED", embeddings=batch,
         )
+
+
+
+@pytest.mark.parametrize("lookback_frames", [10, 20])
+def test_one_and_two_second_reference_timestamps_are_batch_length_invariant(lookback_frames):
+    frame_step_ms = 100
+    warmup_end_ms = 2100
+    common_frame_end_ms = 3100
+
+    def run(current_end_ms):
+        registry = SpeakerChangeEvidenceRegistry()
+        warmup_hash = "b" * 64
+        current_hash = "c" * 64
+        warmup = speaker_batch(
+            SOURCE, "gen-time", 100, warmup_end_ms,
+            lambda _: (1.0, 0.0, 0.0),
+            current_chunk_sha256=warmup_hash,
+            frame_step_ms=frame_step_ms, lookback_frames=lookback_frames,
+        )
+        registry_update(
+            registry, source_id=SOURCE, generation_id="gen-time",
+            start_ms=100, end_ms=warmup_end_ms,
+            current_chunk_sha256=warmup_hash,
+            activity_hint="VOICED", embeddings=warmup,
+        )
+        current = speaker_batch(
+            SOURCE, "gen-time", warmup_end_ms, current_end_ms,
+            lambda _: (0.0, 1.0, 0.0),
+            current_chunk_sha256=current_hash,
+            frame_step_ms=frame_step_ms, lookback_frames=lookback_frames,
+        )
+        evidence = registry_update(
+            registry, source_id=SOURCE, generation_id="gen-time",
+            start_ms=warmup_end_ms, end_ms=current_end_ms,
+            current_chunk_sha256=current_hash,
+            activity_hint="VOICED", embeddings=current,
+        )
+        return next(
+            frame for frame in evidence["frame_evidence"]
+            if frame["frame_end_ms"] == common_frame_end_ms
+        )
+
+    one_second_batch = run(common_frame_end_ms)
+    two_second_batch = run(4100)
+    expected_target_ms = common_frame_end_ms - lookback_frames * frame_step_ms
+    assert expected_target_ms == (2100 if lookback_frames == 10 else 1100)
+    for frame in (one_second_batch, two_second_batch):
+        assert frame["lookback_target_ms"] == expected_target_ms
+        assert frame["reference_frame_end_ms"] == expected_target_ms
+        assert frame["reference_age_ms"] == lookback_frames * frame_step_ms
+        assert frame["cosine_similarity"] == 0.0
