@@ -106,6 +106,47 @@ public final class CompanionProvider extends ContentProvider {
         }
     }
 
+    /**
+     * Final publication boundary for a one-shot frame. Stop/disable and pairing
+     * rotation use ACTION_GATE_LOCK before the store/trust locks, so no revoked
+     * session can publish after its stop transition has won this gate.
+     */
+    static boolean publishScreenFrameIfAuthorized(
+            Context context, CaptureSessionGate captureGate, byte[] frame,
+            JSONObject receipt, long nowElapsed) {
+        return publishScreenFrameIfAuthorized(
+                context, captureGate, frame, receipt, nowElapsed,
+                CompanionProvider::packageCertificateDigest);
+    }
+
+    static boolean publishScreenFrameIfAuthorized(
+            Context context, CaptureSessionGate captureGate, byte[] frame,
+            JSONObject receipt, long nowElapsed,
+            CapabilityRegistry.CertificateDigestReader certificateReader) {
+        synchronized (ACTION_GATE_LOCK) {
+            if (context == null || captureGate == null || frame == null || receipt == null
+                    || !captureGate.canPublish() || !isEnabledLocked(context)
+                    || !CapabilityRegistry.isCurrentTermuxTrusted(context, certificateReader)) {
+                return false;
+            }
+            ProjectionFrameStore.publish(frame, receipt, nowElapsed);
+            if (!captureGate.completeFrame()) {
+                ProjectionFrameStore.clear();
+                return false;
+            }
+            return true;
+        }
+    }
+
+    /** Complete a capture session and optionally clear its frame under the stop gate. */
+    static boolean completeScreenFrameSession(CaptureSessionGate captureGate, boolean clearFrame) {
+        synchronized (ACTION_GATE_LOCK) {
+            boolean changed = captureGate != null && captureGate.complete();
+            if (clearFrame) ProjectionFrameStore.clear();
+            return changed;
+        }
+    }
+
     interface PairedCallerCheck {
         boolean isAllowed();
     }
