@@ -714,6 +714,8 @@ def forget(store,rec):
 
 def status(runtime):
     st=load(runtime.store);t=Teacher(runtime.home,runtime.models);ok,missing=t.available();pj=st.get('projector');tp=st.get('tile_projector')
+    if type(pj) is not dict: pj=None
+    if type(tp) is not dict: tp=None
     return {'revision':REVISION,'scope':'LAB_SHADOW_ONLY (Age-0-Kern bleibt Text)','images':len(st['images']),
             'described':sum(1 for r in st['images'].values() if r['captions']),'teacher':{'available':ok,'missing':missing,'authority':AUTHORITY,'removed':bool(st.get('teacher_removed'))},
             'projector':{k:pj.get(k) for k in ('n','encoder','metrics','metrics_status','created','source_stats_mode')} | {'source_stats_count':len(pj.get('source_stats')) if type(pj.get('source_stats')) is list else 0} if pj else None,
