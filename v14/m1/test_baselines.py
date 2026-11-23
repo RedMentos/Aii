@@ -9,7 +9,9 @@ import torch
 
 from v14.m1.array_data import ArrayDataset, InputBundle
 from v14.m1.baselines import (
+    L1AR,
     LinearInputBaseline,
+    RawWindowProbe,
     RidgeAR,
     PersistenceBaseline,
     RandomEncoderProbe,
@@ -17,6 +19,8 @@ from v14.m1.baselines import (
     RawWindowMLP,
     SeasonalPersistenceBaseline,
     TrainConstantBaseline,
+    TrainMean,
+    TrainMedian,
 )
 from v14.m1.base import BaseConfig
 from v14.m1.data import DataConfig, MinuteRow
@@ -43,6 +47,8 @@ class BaselineTests(unittest.TestCase):
     def test_linear_mlp_and_gru_receive_common_bundle(self):
         models = [
             LinearInputBaseline(self.width, 3, 2),
+            RawWindowProbe(self.width, 3, 2),
+            L1AR(self.width, 3, 2),
             RawWindowMLP(self.width, 3, 2, hidden_dim=16),
             RawGRU(channels=2, seasonal_lags=2, horizon=3, hidden_dim=16),
         ]
@@ -87,10 +93,14 @@ class BaselineTests(unittest.TestCase):
             seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
         )
         dataset = ArrayDataset(rows, ("a", "b"), config)
-        mean = TrainConstantBaseline(2, 2, "mean").fit(dataset)
-        median = TrainConstantBaseline(2, 2, "median").fit(dataset)
-        self.assertLess(float(mean.constant[0]), 700.0)
-        self.assertLess(float(median.constant[0]), 700.0)
+        mean = TrainMean(2, 2).fit(dataset)
+        median = TrainMedian(2, 2).fit(dataset)
+        self.assertAlmostEqual(float(mean.constant[0]), 349.5, places=5)
+        self.assertAlmostEqual(float(median.constant[0]), 349.5, places=5)
+        restored = TrainMean(2, 2)
+        restored.load_state_dict(mean.state_dict())
+        self.assertTrue(restored.fitted)
+        torch.testing.assert_close(restored.constant, mean.constant)
         self.assertEqual(tuple(mean(self.bundle).shape), (5, 2, 2))
 
 
