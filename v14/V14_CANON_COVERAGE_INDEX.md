@@ -2366,3 +2366,6 @@ No result in this late poll changes the Redmi boundary: private #840/#841/#842 s
 - Exact Aii tests are NOT_RUN locally; PR #2454 has no exact-head workflow run or combined status and is 10 ahead / 47 behind current Boss #2443 head `cdf6b64067ac426ba32194100d3764f6e74c105f`. Keep NOT_ACCEPTED / NOT_RELEASED until rebase and full exact-head test matrix.
 - No accepted B1/B2/C3 GGUF/base-weight update, native gradient path, trained cross-organ latent transfer, or Redmi learning proof. B1/B2 receiver adapters remain SHADOW. The installed Redmi release remains `8d93236`, AI STOPPED_BY_USER; no candidate installed.
 - R-115 proposes separating invariant retention from revision latency for changing world facts. It is a conceptual evaluation hypothesis only; no retention gate or threshold has been changed.
+
+
+- **Additional open JEPA acceptance:** B1/B2 target-adapter retention remains `NOT_MEASURED` in the current WeightDeltaReceipt schema. World-predictor EMA retention and current source-disjoint receiver holdouts do not substitute for retention of the prior B1/B2 adapter on a persisted old cohort. Keep the cross-organ receiver loop PARTIAL / SHADOW until the prior holdout outcomes are persisted, old/new adapter performance is compared on the identical disjoint cohort, and negative controls pass.
