@@ -36,7 +36,9 @@ from .world_jepa_learning_intent import (
     validate_weight_delta_receipt,
 )
 from .world_jepa_runtime import permission_state
-from .world_jepa_store_authority import verify_committed_temporal_page, verify_rows
+from .world_jepa_store_authority import (
+    committed_action_source_refs, verify_committed_temporal_page,
+), verify_rows
 
 
 STATE_KEY = "v14.world_jepa.temporal_consumer"
@@ -2226,46 +2228,40 @@ def _record_references_source(store, record, source_id, pending_action_ids=()):
         # that bound guarantees that an eligible scanned row outside the
         # pending set is found without a large SQLite NOT IN parameter list.
         rows = store.rows(
-            """SELECT a.id FROM actions a
+            """SELECT a.id AS action_id,e.id AS event_id,e.source_id,
+                      e.generation_id,e.packet
+               FROM actions a
                JOIN events e ON e.id=a.event_id
-               WHERE a.rowid<=? AND e.source_id=?
-                 AND a.outcome IS NOT NULL AND a.expected LIKE ?
+               WHERE a.rowid<=? AND a.outcome IS NOT NULL AND a.expected LIKE ?
                  AND a.status IN (
                    'FINAL','FAILED','ERROR','DEADLINE','REJECTED',
                    'CANCELLED','ABORTED','INTERRUPTED'
                )
                ORDER BY a.rowid ASC LIMIT ?""",
-            (cursor, source_id, '%"forecast"%', MAX_ROWS + 1),
+            (cursor, '%"forecast"%', MAX_ROWS + 1),
         )
-        if type(rows) is not list:
-            raise ValueError("temporal source-forget history query")
-        for row in rows:
-            if _mapping(row).get("id") not in pending:
-                return True
-        selected_rows = store.rows(
-            """SELECT DISTINCT a.id AS action_id
-               FROM actions a
-               JOIN events e ON e.id=a.event_id
-               JOIN packets p ON p.kind='ActionSelection'
-                    AND p.event_id=a.event_id AND p.generation_id=e.generation_id
-               WHERE a.rowid<=? AND a.outcome IS NOT NULL AND a.expected LIKE ?
-                 AND a.status IN (
-                     'FINAL','FAILED','ERROR','DEADLINE','REJECTED',
-                     'CANCELLED','ABORTED','INTERRUPTED'
-                 )
-                 AND p.created<=a.created
-                 AND COALESCE(json_extract(p.payload,'$.stage'),'COMMIT')!='PREDICTION'
-                 AND EXISTS (
-                     SELECT 1 FROM json_each(p.payload,'$.provenance') AS source_ref
-                     WHERE json_extract(source_ref.value,'$.source_id')=?
-                 )
-               ORDER BY a.rowid ASC LIMIT ?""",
-            (cursor, '%"forecast"%', source_id, MAX_ROWS + 1),
-        )
-        if type(selected_rows) is not list or len(selected_rows) > MAX_ROWS:
+        if type(rows) is not list or len(rows) > MAX_ROWS:
             return True
-        for row in selected_rows:
-            if _mapping(row).get("action_id") not in pending:
+        for raw in rows:
+            row = _mapping(raw, "temporal source-forget action row")
+            if row.get("action_id") in pending:
+                continue
+            if row.get("source_id") == source_id:
+                return True
+            try:
+                event_packet = _json_object(row.get("packet"), "temporal source-forget event")
+                event_source_ref = event_packet.get("source_ref")
+                if type(event_source_ref) is not dict:
+                    return True
+                refs = committed_action_source_refs(
+                    store, row.get("event_id"), row.get("generation_id"),
+                    event_source_ref, verify_reads=False,
+                )
+            except Exception:
+                # A scanned action with ambiguous ActionSelection/C4 lineage
+                # cannot be proven source-clean; retain the conservative gate.
+                return True
+            if any(ref[0] == source_id for ref in refs):
                 return True
     return False
 
