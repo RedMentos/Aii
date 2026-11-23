@@ -252,7 +252,12 @@ def public_probe_summary(report):
     import math
 
     def number(value):
-        return type(value) in (int, float) and math.isfinite(float(value))
+        if type(value) not in (int, float):
+            return False
+        try:
+            return math.isfinite(float(value))
+        except (OverflowError, ValueError):
+            return False
 
     def enum(value):
         return (isinstance(value, str) and len(value) <= 80
