@@ -1,6 +1,6 @@
 # Core & Harness — B1/B2 → C4 → C3 recovery-window checkpoint (2026-11-23T23:44:56.033Z)
 
-**Candidate:** [PR #2458](https://github.com/RedMentos/Aii/pull/2458), DRAFT / NOT_RELEASED. Branch `core/v14-fair-b1-b2-preanswer-budget-20261123-run1`, exact HEAD `e27c035bd6ba4679919a36dff0dda04bc77cb09e`, based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+**Candidate:** [PR #2458](https://github.com/RedMentos/Aii/pull/2458), DRAFT / NOT_RELEASED. Branch `core/v14-fair-b1-b2-preanswer-budget-20261123-run1`, code/test checkpoint `e27c035bd6ba4679919a36dff0dda04bc77cb09e`; branch tip at last readback `eec84757077d4fc23df5e6079692254cd7080d5f` (documentation-only commits followed), based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`.
 
 **New connected runtime behavior:** repeated C3 zero-token prefill failures now leave a distinct 1.0 s C4/Focal selection and re-entry window after the fair initial B1/B2 slices. In the 30 s recovery example: 26 s reserved for C3, 3 s for initial B1/B2, 1 s for C4. Focal re-entry is explicitly distinguished from the initial pre-answer observer so it can use that final second. This does not prove that either native body can finish inside its slice.
 
