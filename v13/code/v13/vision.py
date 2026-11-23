@@ -29,6 +29,7 @@ import time
 import zlib
 from pathlib import Path
 from .common import Unavailable,atomic_write,digest,dumps,uid,now
+from .vision_source_lineage import source_lineage, invalidate_projectors, unlink_projector_artifact, unlink_source_blob
 
 KEY='WP_N15_VISION';REVISION='wp-n15-vision-v1';AUTHORITY='REFERENCE_NOT_FACT';STUDENT='STUDENT_ESTIMATE'
 PROMPT='Describe the image in one sentence: name the main objects, their colours and where they are.'
@@ -283,8 +284,9 @@ def train(runtime,encoder=None,cfg=DEFAULTS):
     name,enc=encoder or text_encoder(runtime,cfg);Y=enc(caps);cv=crossval(X,Y,T,ridge=cfg['ridge'])
     p=Projector(cfg['ridge']).fit(X,Y);path=runtime.home/'data/vision'/('projector-'+uid('vis')[4:]+'.npz');sha=p.save(path)
     st=load(runtime.store);old=st.get('projector')
+    training_sources=source_lineage(st['images'],ids)
     st['projector']={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,'metrics':cv,'created':now(),
-                     'captions':{sid:c for sid,c in zip(ids,caps)},'authority':'LAB_SHADOW_ONLY'}
+                     'captions':{sid:c for sid,c in zip(ids,caps)},'training_sources':training_sources,'authority':'LAB_SHADOW_ONLY'}
     save(runtime.store,st)
     if old and old['path']!=st['projector']['path']:(runtime.home/old['path']).unlink(missing_ok=True)
     runtime.store.log('vision',None,{'action':'train','n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow','value':round(cv['held_out_top1'],4)})
@@ -328,8 +330,9 @@ def train_tiles(runtime,encoder=None,cfg=DEFAULTS):
     name,enc=encoder or text_encoder(runtime,cfg);uniq=sorted(set(texts));E=dict(zip(uniq,enc(uniq)));Y=_np().stack([E[t] for t in texts])
     p=Projector(cfg['ridge']).fit(X,Y);path=runtime.home/'data/vision'/('tiles-'+uid('vis')[4:]+'.npz');sha=p.save(path)
     st=load(runtime.store);old=st.get('tile_projector')
+    training_sources=source_lineage(st['images'],keys)
     st['tile_projector']={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,'created':now(),
-                          'salient_tiles':sum(t!=BACKGROUND for t in texts),'authority':'LAB_SHADOW_ONLY'}
+                          'salient_tiles':sum(t!=BACKGROUND for t in texts),'training_sources':training_sources,'authority':'LAB_SHADOW_ONLY'}
     save(runtime.store,st)
     if old and old['path']!=st['tile_projector']['path']:(runtime.home/old['path']).unlink(missing_ok=True)
     runtime.store.log('vision',None,{'action':'train_tiles','n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow'})
@@ -357,12 +360,43 @@ def teacher_switch(store,on):
     st=load(store);st['teacher_removed']=not on;save(store,st);return {'teacher':'on' if on else 'removed'}
 
 def forget(store,rec):
-    st=load(store);sid=rec['ref']['source_id'];st['images'].pop(sid,None)
-    if st.get('projector'):st['projector']['captions']={k:v for k,v in st['projector']['captions'].items() if k.split(':')[0]!=sid}
+    st=load(store)
+    sid=rec['ref']['source_id']
+    current=st['images'].get(sid)
+    if (type(current) is not dict or type(current.get('ref')) is not dict
+            or current['ref'].get('sha256') != rec['ref'].get('sha256')):
+        raise ValueError('Image source is missing or changed; refusing stale forget request')
+
+    # Clear learned state first. If the process stops after this save, no
+    # projector can continue using a source whose deletion is in progress.
+    st['images'].pop(sid,None)
+    invalidated=invalidate_projectors(st,sid)
     save(store,st)
+
     with store.tx() as c:c.execute('UPDATE sources SET deleted=1 WHERE id=?',(sid,))
-    if not store.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(rec['ref']['sha256'],)):(store.home/'data/blobs'/rec['ref']['sha256']).unlink(missing_ok=True)
-    return {'forgotten':sid}
+    shared=store.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(rec['ref']['sha256'],))
+    blob_deleted=False
+    blob_retained_shared=bool(shared)
+    cleanup_failed=[]
+    if not shared:
+        blob_deleted=unlink_source_blob(store.home,rec['ref']['sha256'])
+        if not blob_deleted:cleanup_failed.append('image_blob')
+
+    projector_files_deleted={}
+    for key,record in invalidated:
+        deleted=unlink_projector_artifact(store.home,record)
+        projector_files_deleted[key]=deleted
+        if not deleted:cleanup_failed.append(key+'_artifact')
+
+    return {
+        'forgotten':sid,
+        'invalidated_projectors':[key for key,_ in invalidated],
+        'projector_files_deleted':projector_files_deleted,
+        'blob_deleted':blob_deleted,
+        'blob_retained_shared':blob_retained_shared,
+        'retrain_required':[key for key,_ in invalidated],
+        'cleanup_failed':cleanup_failed,
+    }
 
 def status(runtime):
     st=load(runtime.store);t=Teacher(runtime.home,runtime.models);ok,missing=t.available();pj=st.get('projector');tp=st.get('tile_projector')
