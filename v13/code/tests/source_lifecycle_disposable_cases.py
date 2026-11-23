@@ -132,7 +132,7 @@ def test_final_image_forget_removes_both_plain_and_shared_text_archive(runtime):
 
 
 def test_live_text_source_preserves_shared_blob_after_image_forget(runtime):
-    text = 'P3\\n16 16\\n255\\n' + '0 0 0\\n' * (16 * 16)
+    text = 'P3\n16 16\n255\n' + '0 0 0\n' * (16 * 16)
     source = runtime.store.source(text, 'USER')
     rec = vision.ingest(runtime.store, text.encode())
     result = vision.forget(runtime.store, rec)

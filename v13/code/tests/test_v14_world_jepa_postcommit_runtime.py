@@ -837,7 +837,7 @@ def test_memory_forget_serializes_same_hash_source_publication(tmp_path):
             producer_done.set()
 
     store.mutex = TrackingRLock()
-        forgetter = threading.Thread(target=forget, name="forgetter")
+    forgetter = threading.Thread(target=forget, name="forgetter")
     producer = threading.Thread(target=publish, name="generic-source-producer")
     try:
         with patch.object(lifecycle, "_cleanup_pending_fd", pause_after_refcount_cleanup), patch.object(Path, "exists", observe_blob_check):
@@ -869,5 +869,5 @@ def test_memory_forget_serializes_same_hash_source_publication(tmp_path):
             forgetter.join(5)
         if producer.is_alive():
             producer.join(5)
-                store.mutex = original_mutex
+        store.mutex = original_mutex
         store.close()
