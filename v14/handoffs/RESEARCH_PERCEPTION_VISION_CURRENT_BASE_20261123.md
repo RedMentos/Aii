@@ -5,7 +5,7 @@
 - Target branch: `gpt6/v13-private-remote-bridge-20261111`
 - Verified base SHA at branch creation: `dfa3945b2bbfdb65d932db74e02f402435494e84`
 - Perception branch: `research-perception/v14-vision-lifecycle-current-20261123-run18`
-- This is a current-base re-composition of the Perception-owned files from the older stacked #2404 candidate. It is 9 commits ahead / 0 behind the verified release-development branch at the time of readback.
+- This is a current-base re-composition of the Perception-owned files from the older stacked #2404 candidate. Code/test head `3300aafc0bb27ce22c855596be02cfab1ba027c1` was 10 commits ahead / 0 behind the verified release-development branch. The following handoff correction is documentation-only; no code changed after that tested code head.
 - No Core-owned controller guard, recovery/stage/deployer pins, Android companion provider, OS permission, installed model, model weights, user data or release setting was changed.
 
 ## Runtime functions added/reconnected
@@ -40,7 +40,7 @@
 
 - **LOCAL_LINUX / CPython 3.13.5:** copied the exact committed `vision_source_lineage.py` and `test_vision_source_lineage.py` into an isolated temporary package; `pytest -q` = **7 passed**. This covers lineage binding, malformed/unknown lineage, selective invalidation, caption-lineage mismatch, safe unlink, symlink-parent rejection and traversal rejection.
 - **LOCAL_LINUX / full Aii checkout:** BLOCKED / NOT_RUN. This worker has no mounted repository checkout and GitHub DNS/network access is unavailable; therefore the full exact-repository vision and ingress suites were not run locally.
-- **CI:** workflows are included and will exercise Python 3.13 and 3.14 with exact source/test files. At handoff time, no run result has yet been read back for the final branch head; do not claim CI green until the exact-head jobs finish.
+- **CI on exact code/test head `3300aafc0bb27ce22c855596be02cfab1ba027c1`:** [vision source-lineage run 45167386005](https://github.com/RedMentos/Aii/actions/runs/45167386005) PASS, Python 3.13 and 3.14; [MediaProjection RAW EYE run 45167386335](https://github.com/RedMentos/Aii/actions/runs/45167386335) PASS, Python 3.13 and 3.14; [privacy scan 45167386073](https://github.com/RedMentos/Aii/actions/runs/45167386073) PASS. **Staged/integrated run 45167386042 FAIL:** 234 passed / 19 failed / 10 skipped / 2 errors in staged-runtime; integrated regression 1 failed. Both fail at the Core-owned `source_lifecycle_lock_integration_candidate.py` pin: `ValueError: unsupported lifecycle source: vision.py`. The current guard expects SHA-256 `758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5`; this branch's exact `vision.py` SHA-256 is `b42b4ceddc04021b968bbf60940b5346c360903887a8de7b58fc532b800cec2d`. Other new Perception file SHA-256 values: `vision_source_lineage.py` `bb63636c9ae84d345fe1f4e37254de3be87c26990cb320ca058859fd0b51b72f`; `vision_ui_frame_ingress.py` `4dfde9bc4cde8d555054c353c4636af3d5eb55e24330f2f19f73a6704ece6f0a`. Core owns the pin and dependent recovery/stage/deployer chain; rebind exact hashes bottom-up without weakening the guard. This is a cross-lane integration blocker, not a passing staged consumer.
 - **ANDROID / REDMI:** REDMI_UNVERIFIED. No connected handset, Android MediaProjection capture, AudioRecord, Termux runtime, or native performance test was performed.
 - **Release/deployment:** NOT_RELEASED. GitHub push is not deployment. No update request or manual Termux command was sent.
 
@@ -59,4 +59,4 @@
 3. QA: inspect privacy/revocation/zeroization and Android API-level lifecycle; keep Redmi status unverified until real hardware evidence exists.
 4. Boss/Integrator: update the shared work board and Next Action only after independent review; keep the historical Canon unchanged.
 
-**Status:** CODE_PRESENT / WIRED_SYNTHETIC_CANDIDATE / LOCAL_HELPER_TEST_PASS / CI_PENDING / REDMI_UNVERIFIED / NOT_RELEASED.
+**Status:** CODE_PRESENT / WIRED_SYNTHETIC_CANDIDATE / LOCAL_HELPER_TEST_PASS / PERCEPTION_CI_PASS / CORE_STAGED_PIN_FAIL / REDMI_UNVERIFIED / NOT_RELEASED.
