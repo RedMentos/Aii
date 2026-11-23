@@ -400,7 +400,9 @@ def test_temporal_source_forget_promotes_clean_previous_and_replays_after_restar
     home = tmp_path / "temporal-forget-clean-previous"
     store = _make_store(home)
     try:
-        _make_dataset(store, "forget-fallback-A", 32)
+        # Use the full 256-action scan budget so the source/session-disjoint
+        # receiver holdout is stable across randomly generated Store identities.
+        _make_dataset(store, "forget-fallback-A", 64)
         _permissions(store, steps=80)
         learner = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
         first = learner.update(
@@ -414,13 +416,13 @@ def test_temporal_source_forget_promotes_clean_previous_and_replays_after_restar
         first_path = learner.home / first_state["active"]["checkpoint"]
 
         _sessions, second_events = _make_dataset(
-            store, "forget-fallback-B", 32, start_index=32,
+            store, "forget-fallback-B", 64, start_index=64,
         )
         second = learner.update(
             limit=64, max_pages=4, steps=80,
             optimizer_permission=True, replay_mode="uniform",
         )
-        assert second["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", second
+        assert second["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", json.dumps(second, sort_keys=True)
         second_state, _ = store.state(STATE_KEY, None)
         second_record = second_state["active"]
         second_path = learner.home / second_record["checkpoint"]
