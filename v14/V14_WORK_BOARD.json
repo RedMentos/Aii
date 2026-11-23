@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T00:59:43Z",
+  "updated_at": "2026-11-23T01:03:20Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; private V13OBS #115 readback at 2026-11-23T00:36:32Z confirms same SHA installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE and last_error NONE. Latest stored turn remains slow with B1/B2 TIME_BUDGET. PR #2395 exact head 26ccaf has focused CI 2/2 PASS but staged/integrated FAIL on JEPA/QA source-lifecycle pin/overlay; all candidates remain DRAFT / NOT_RELEASED.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -1127,7 +1127,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-23T00:59:43Z",
+    "timestamp": "2026-11-23T01:03:20Z",
     "release_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "code_candidate_sha": "d149bd5e0a2f8394e44e0ed60a208638b9f4b3b9",
     "candidate_ci": "PR2370_EXACT_HEAD_d149bd5:15_QUEUED_1_CANCELLED_1_SKIPPED_0_NEW_HEAD_PASSES_OBSERVED",
@@ -1159,11 +1159,11 @@
       "2375": "DRAFT synthetic RAW EYE/A5 adapter; no real capture; Core provider stack not combined.",
       "2378": "DRAFT docs-only Boss branch; current head being updated from merged research #2393; no release impact.",
       "2379": "DRAFT MediaProjection provider head 77fd5d6; graph diverged 891 ahead / 6 behind QA base; rebase required.",
-      "2391": "DRAFT QA pin-repair head 224153378e7ec5119509468fc996ba77ae2ead0d; diverges from JEPA #2396 (7/5); must rebase after final JEPA code.",
+      "2391": "DRAFT exact head 2241533: 12 workflow FAIL / 2 SUCCESS; diverged 7/5 from JEPA #2396; rebase after JEPA and recompute pins.",
       "2393": "MERGED docs-only into Boss V14 documentation branch at 57c1701; no runtime/code/model change.",
       "2394": "DRAFT Core capability registry exact head 41b43cb139d68caf8c459cec668061b4eda6b6db: 2/2 synthetic workflows PASS; parent process-restart acceptance FAIL.",
       "2395": "DRAFT Perception A3 source-lineage exact head 26ccaf0825d4ebf02aedcdae781a9164b04f53d5: focused 2/2 PASS; staged/integrated FAIL at old vision.py pin/obsolete forget anchor.",
-      "2396": "DRAFT JEPA postcommit worker exact head 3a1cecb0ddb4de3791d4ea6b66dc5d2038b3830c: 3 FAIL / 1 IN_PROGRESS; training-resume source pin mismatch; no native weight proof."
+      "2396": "DRAFT exact head 3a1cecb: Temporal WorldJEPA T8 Windows SUCCESS; 3 other workflows FAIL at Termux12 training-resume builder pin; no optimizer-resume or weight proof."
     },
     "user_action_required": "NONE",
     "research_id_collision": "R-092 AudioRecord and the distinct JEPA paper's R-093 renumber remain unresolved; preserve the current ledger until explicit cross-check.",
@@ -1228,7 +1228,7 @@
         "capability": "JEPA/EMA/temporal T8",
         "code": "persistent temporal encoder/predictor/EMA candidate",
         "wired": "SleepRuntime and B1/B2 readout consumer",
-        "tested_synthetic": "#2396 three workflows fail at training-resume source pin; T8 workflow in progress",
+        "tested_synthetic": "#2396 T8 Windows SUCCESS; 3 other exact-head workflows fail at training-resume pin; no optimizer resume or weight diff",
         "tested_android": "NOT_TESTED",
         "active": "SHADOW_ONLY"
       },
@@ -1244,7 +1244,7 @@
         "capability": "Sleep/Dream/Replay",
         "code": "bounded cancellable postcommit JEPA shadow",
         "wired": "partial Store postcommit worker",
-        "tested_synthetic": "postcommit worker test added to T8 workflow; staged startup and optimizer-resume fail",
+        "tested_synthetic": "postcommit worker T8 workflow PASS; staged startup and optimizer-resume still FAIL",
         "tested_android": "NOT_TESTED",
         "active": "NOT_ACCEPTED"
       },
