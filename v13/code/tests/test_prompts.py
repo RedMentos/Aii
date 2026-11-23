@@ -27,17 +27,16 @@ class EnglishFirstPrompts(unittest.TestCase):
         self.assertEqual(DEFAULTS['answer_language'],'en')
 
 class ConductAndPrivacy(unittest.TestCase):
-    def test_internal_organ_offers_are_private_in_both_languages(self):
-        for lang, markers in (
-            ('en', ('private:', 'never reveal', 'Private hypotheses')),
-            ('de', ('privat:', 'nie offenlegen', 'Private Hypothesen')),
+    def test_internal_organ_offers_are_private_without_changing_receipt_prefixes(self):
+        for lang, markers, expected_prefix in (
+            ('en', ('private:', 'never reveal'), 'Internal hypotheses: '),
+            ('de', ('privat:', 'nie offenlegen'), 'Interne Hypothesen: '),
         ):
             cfg = DEFAULTS | {'answer_language': lang}
             system = prompts.text(cfg, 'system')
-            hypotheses = prompts.text(cfg, 'hypotheses')
-            for marker in markers[:2]:
+            for marker in markers:
                 self.assertIn(marker, system)
-            self.assertIn(markers[2], hypotheses)
+            self.assertEqual(prompts.text(cfg, 'hypotheses'), expected_prefix)
 
     def test_conduct_rule_is_harm_based_and_open(self):
         for lang in ('en','de'):
