@@ -1840,52 +1840,14 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
 
+---
 
-## JEPA & Memory — run 15 (2026-11-23)
+# JEPA & Memory — run 17 (2026-11-23 21:57 UTC)
 
-**Code/test checkpoint:** `978e257399a9a23eff8119b3f9611a1ba6d410de` (source fix `3122e30830a94848f4ffe17fb55146d8c5a614d0`; initial handoff-file commit `05ec1f4527860960677bda93d7736ad0c1a289a1`), draft PR #2454. The temporal learner now validates the previous checkpoint's safe path, source lineage and checkpoint digest by loading it before changing the persistent rollback pointer. If the fallback is missing/corrupt, the active checkpoint and Store state remain untouched. Successful rollback invalidates same-Store warm readers and warms the caller from the verified restored model. Tests now include missing/corrupt fallback negatives and warm-cache identity across a two-checkpoint rollback/restart; the positive warm assertion first clears the cache so it exercises a real checkpoint reload rather than the update path's already-warm model.
+**User action: none.** Do not restart the Redmi AI runtime, send CHAT_SEND / UPDATE_REQUEST / LOG_PAGE, run shell commands, or change models, weights, permissions or data. The latest authenticated device baseline remains release `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled, Runtime/Dashboard UP_TO_DATE, AI `STOPPED_BY_USER`; no new device action was attempted.
 
-**Integration status:** PR #2454 remains DRAFT and mergeable=false, stacked on merge-base `6e9bad8`; comparison with the latest Boss branch `cdf6b64067ac426ba32194100d3764f6e74c105f` is 10 ahead / 47 behind. Exact-head workflow readback returned no runs and no combined statuses. Do not merge or rebase onto the Boss candidate until its combined exact-head matrix is green. Latest readback before this status sync: #2454 head `72f43dfc93251451790d9b89e3e9bd8f6045c162` is 45 ahead / 47 behind Boss #2443 head `cdf6b64067ac426ba32194100d3764f6e74c105f`; Core #2457 head `f8d0427100019da42e23d29a14e43440c641e0f3` is 10 ahead / 41 behind #2454, merge base `bf2913b150d8decbf6e33c43920d21acc83439b3`. Core should rebase its native-probe overlay only after the Boss parent and JEPA stack are green. No force-push was used.
-
-**Local tests:** NOT_RUN/BLOCKED. Python 3.13.5, NumPy 2.3.5 and pytest 9.0.0 are present, but this execution environment has no Aii checkout and GitHub DNS fails. No project compile or pytest PASS is claimed.
-
-**Redmi:** authenticated private owner receipts #840/#841/#842 confirm installed release `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled and service/dashboard up to date, but AI runtime `STOPPED_BY_USER`, autostart=false and model process stopped. B1/B2 remain TIME_BUDGET 53.2/54.2 s; last stored turn correctness is UNKNOWN. Preserve the stop state; no update request, restart, CHAT_SEND, LOG_PAGE, shell, model/weight/permission change or user-data mutation. Candidate #2454 is NOT_RELEASED / NOT_INSTALLED.
-
-**Research:** R-115 on stratified world-model retention is recorded in `V14_RESEARCH_LEDGER.md` on this branch. It is a conceptual evaluation proposal, not an adopted algorithm. No user action is required.
-
-
-**GitHub collaboration note:** PR conversation comments and PR metadata updates returned HTTP 403 because the linked GitHub account has no verified email; repository content commits and readbacks still succeeded. Optional account email verification would restore those collaboration writes. This is not a blocker for the current code-only work and does not require device action.
-
-
-**Remaining receiver-retention gap (do not overclaim):** the experimental WorldJEPA predictor has its fixed-EMA retention gate, and B1/B2 use bounded Adam with parameter hashes/delta norms, gradient measurements, source-disjoint current holdouts and shuffled/zero-latent controls. However, `finalize_weight_delta_receipts()` still writes `target_adapter_retention: NOT_MEASURED`. The next JEPA code task after rebase is to persist the prior receiver holdout outcomes, evaluate old/new B1/B2 adapters on the identical source-disjoint retained cohort, add shuffled/no-history negatives and record the measured result in the receipt. Until then the receiver loop is partial/SHADOW, not fully retained.
-
-
-## JEPA & Memory — run 16, 2026-11-23
-
-**Code/test checkpoint:** `d60fcb66b24f44b061a48c173b5de87fc05ecbe0`, draft PR [#2454](https://github.com/RedMentos/Aii/pull/2454). Handoff: [JEPA_MEMORY_RUN16_RECEIVER_RETENTION_20261123.md](https://github.com/RedMentos/Aii/blob/b82e1203a9c45224449ff2dac05404fdf566978a/v14/handoffs/JEPA_MEMORY_RUN16_RECEIVER_RETENTION_20261123.md).
-
-### New code candidate
-
-- Persist one fixed B1/B2 receiver holdout cohort with raw input/action/outcome arrays, window/action IDs, direct/transitive SourceRef IDs and hashes, creation checkpoint SHA and cohort digest.
-- Exclude that cohort from later training by source ID/hash and transition ID. Compare the prior encoder+receiver pair and the updated encoder+receiver pair on the identical old cohort.
-- Add per-role retention receipts (schema v3) with old/new MSE, mean/zero/shuffled controls and source-disjoint evidence. A non-disjoint cohort fails closed; a measured regression prevents checkpoint commit. First-update `NOT_MEASURED / NO_PRIOR_CHECKPOINT` is expected and stores the cohort for a later update.
-- Include receiver-cohort provenance in source-forget discovery, including after replay-row eviction. Add tests for persistence, encoder drift/compensation, degraded heads, overlap, tamper, source-forget and receipt validation.
-
-This remains a SHADOW float receiver adapter consumed by the existing bodyview readout. It is not a native B1/B2 GGUF/base-weight update, a trained cross-organ latent path or a Redmi proof.
-
-### Verification
-
-- Latest exact code-head Actions run [#45273031215](https://github.com/RedMentos/Aii/actions/runs/45272190117): `startup_failure`, **0 jobs**. Combined status: 0 contexts / pending. PR-head run [#45273984275](https://github.com/RedMentos/Aii/actions/runs/45273984275) also ended startup_failure with 0 jobs; no CI test ran.
-- Local Aii project tests: **NOT_RUN / BLOCKED**. Container has Python 3.13.5, NumPy 2.3.5 and pytest 9.0.2, but no Aii checkout and GitHub DNS resolution fails.
-- Synthetic Python numeric control: **PASS** for unchanged retention, encoder drift, compensated receiver, degraded receiver rejection and source-overlap detection. This is not the project test suite.
-- PR #2454 remains DRAFT / mergeable=false, 95 ahead / 47 behind current Boss #2443 head `cdf6b64067ac426ba32194100d3764f6e74c105f`; merge base `6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4`. Do not rebase until the combined Boss exact-head matrix is green. Core #2457 must then rebase onto the verified JEPA head.
-
-### Redmi and user action
-
-Private V13OBS #115 last updated 2026-11-23 19:52:16Z: installed `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled, pipeline/runtime/dashboard UP_TO_DATE, but AI is `STOPPED_BY_USER`, autostart false and model process stopped. The stored diagnostic turn was 6.295 s / 2.046 s TTFT / 358 prompt tokens / 7 generated; B1/B2 each had two failed native attempts and zero valid offers. Correctness remains UNKNOWN.
-
-A fresh private owner-read could not be created (GitHub HTTP 422: linked account has no verified email), so current device state is `NO_LIVE_RECEIPT` beyond issue #115. No LOG_PAGE, CHAT_SEND, shell, UPDATE_REQUEST, restart, model/weight swap or permission change was attempted. **User action: none required.** Optional GitHub email verification would restore private issue-creation/PR-metadata writes; it does not require or authorize any phone action.
-
-### Next internal action
-
-Wait for a complete green Boss #2443 exact-head matrix; then rebase #2454 onto that exact head without force-push, rebase Core #2457 after it, and run Python 3.13/3.14 temporal/postcommit, optimizer-resume, source-forget, restart/rollback, staged and integrated suites. Keep adapters SHADOW and preserve the phone's stopped state.
+- **PR / code:** [#2454](https://github.com/RedMentos/Aii/pull/2454), branch `jepa-memory/v14-temporal-boss-2443-rebase-20261123-run14`, exact head `32505a33061283522b3bde5597a74a93b12d399b`, DRAFT / NOT_RELEASED / mergeable=false. Added a second-update Store integration assertion to `test_temporal_A_B_C_A_replay_ablation_uses_matched_steps_and_retains_old_cohorts`: the same persisted first-update B1/B2 cohort must produce two `MEASURED_PASS` v3 receipts on update two, remain source/action-disjoint from the optimizer training windows, show nonzero gradient/parameter deltas, and survive a fresh consumer checkpoint warm-read. The first update's `NOT_MEASURED / NO_PRIOR_CHECKPOINT` bootstrap remains expected.
+- **Integration ancestry:** #2454 is still based on Boss #2443's older base `6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4`; compare against current Boss branch head `cdf6b64067ac426ba32194100d3764f6e74c105f` is 102 ahead / 47 behind. The Boss candidate code-bearing checkpoint is `a5e536a96f6dc2a3a515d37b08393f7136e9efff`; its combined exact-head CI remains incomplete after runner startup failures. Do not rebase until the complete parent matrix is green. Core #2457 is stacked on an older JEPA head and must be coordinated after this rebase.
+- **Tests:** exact-head CI for `32505a33` returned no workflow runs or combined status contexts at readback; no pass is claimed. LOCAL_LINUX project compile/pytest is BLOCKED / NOT_RUN: Python 3.13.5, NumPy and pytest are present, but no Aii checkout is mounted and `git ls-remote` fails because github.com DNS cannot resolve. Previous helper-level synthetic numeric control is not a project-suite result.
+- **Consumer / platform:** the code candidate's temporal learner is wired through SleepRuntime and B1/B2 bodyview as a source-verified SHADOW readout, but this new test has not executed. No native GGUF/body-weight change, trained B1↔B2 latent exchange, production learning promotion, or Redmi behavior is claimed. Redmi remains REDMI_UNVERIFIED; the AI runtime remains STOPPED_BY_USER.
+- **Next:** wait for Boss #2443's complete combined exact-head CI; then rebase #2454 onto its exact green head without force-push, recompute the resume/recovery/stage pins with Core, and run the full Python 3.13/3.14 temporal, postcommit, optimizer-resume, source-forget, staged and integrated matrix. Keep B1/B2 adapters SHADOW.
