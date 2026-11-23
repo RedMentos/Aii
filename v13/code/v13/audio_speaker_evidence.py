@@ -13,7 +13,7 @@ import math
 import re
 import threading
 
-SCHEMA = "v14.raw-ear-speaker-embeddings/2"
+SCHEMA = "v14.raw-ear-speaker-embeddings/3"
 METHOD = "COSINE_LOOKBACK_DIAGNOSTIC_V1"
 _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 _ACTIVITY = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}
@@ -41,9 +41,9 @@ def _unit_vector(vector, dimension):
     return array("f", (value / norm for value in values))
 
 
-def _validate_batch(value, source_id, generation_id, consent_receipt_ref, start_ms, end_ms):
+def _validate_batch(value, source_id, generation_id, consent_receipt_ref, start_ms, end_ms, current_chunk_sha256):
     required = {
-        "schema", "source_id", "generation_id", "consent_receipt_ref",
+        "schema", "source_id", "generation_id", "consent_receipt_ref", "current_chunk_sha256",
         "model_id", "model_revision", "model_sha256", "embedding_dim",
         "frame_step_ms", "lookback_frames",
         "confidence_threshold", "calibration_id", "frames",
@@ -56,6 +56,12 @@ def _validate_batch(value, source_id, generation_id, consent_receipt_ref, start_
             or len(consent_receipt_ref) > 256
             or value.get("consent_receipt_ref") != consent_receipt_ref):
         raise SpeakerEvidenceError("speaker embedding consent receipt mismatch")
+    supplied_chunk_sha256 = value.get("current_chunk_sha256")
+    if (type(current_chunk_sha256) is not str or not _SHA256.fullmatch(current_chunk_sha256)
+            or type(supplied_chunk_sha256) is not str
+            or not _SHA256.fullmatch(supplied_chunk_sha256)
+            or supplied_chunk_sha256 != current_chunk_sha256):
+        raise SpeakerEvidenceError("speaker embedding current PCM chunk hash mismatch")
     for key in ("model_id", "model_revision"):
         item = value.get(key)
         if type(item) is not str or not item.strip() or len(item) > 128:
@@ -101,6 +107,7 @@ def _validate_batch(value, source_id, generation_id, consent_receipt_ref, start_
         previous = end
     return {
         "consent_receipt_ref": consent_receipt_ref,
+        "current_chunk_sha256": supplied_chunk_sha256,
         "model_id": value["model_id"],
         "model_revision": value["model_revision"],
         "model_sha256": digest.lower(),
@@ -118,7 +125,10 @@ class _Stream:
     def __init__(self, metadata, max_frames):
         self.metadata = dict(metadata)
         self.frames = deque(maxlen=max_frames)
+        # Every input window advances ordering; only voiced windows advance
+        # the speaker-reference clock and retained vector history.
         self.last_end_ms = None
+        self.last_voiced_end_ms = None
 
 
 class SpeakerChangeEvidenceRegistry:
@@ -138,19 +148,20 @@ class SpeakerChangeEvidenceRegistry:
         self._lock = threading.RLock()
 
     def update(self, *, source_id, generation_id, start_ms, end_ms,
-               activity_hint, embeddings, consent_receipt_ref=None):
+               current_chunk_sha256, activity_hint, embeddings, consent_receipt_ref=None):
         if type(source_id) is not str or not source_id.strip() or len(source_id) > 128:
             raise SpeakerEvidenceError("speaker source id is invalid")
         if type(generation_id) is not str or not generation_id.strip() or len(generation_id) > 128:
             raise SpeakerEvidenceError("speaker generation id is invalid")
         if type(start_ms) is not int or type(end_ms) is not int or not 0 <= start_ms < end_ms:
             raise SpeakerEvidenceError("speaker window timestamps are invalid")
-        if activity_hint not in _ACTIVITY:
+        if type(activity_hint) is not str or activity_hint not in _ACTIVITY:
             raise SpeakerEvidenceError("speaker activity hint is invalid")
         if consent_receipt_ref is None and type(embeddings) is dict:
             consent_receipt_ref = embeddings.get("consent_receipt_ref")
         batch = _validate_batch(
             embeddings, source_id, generation_id, consent_receipt_ref, start_ms, end_ms,
+            current_chunk_sha256,
         )
         metadata = {k: batch[k] for k in (
             "model_id", "model_revision", "model_sha256", "embedding_dim",
@@ -182,7 +193,8 @@ class SpeakerChangeEvidenceRegistry:
             elif state.metadata != metadata:
                 state = _Stream(metadata, self.max_frames)
                 reset_reason = "MODEL_OR_CALIBRATION_CHANGED"
-            elif state.last_end_ms is not None and start_ms - state.last_end_ms > self.reset_gap_ms:
+            elif (state.last_voiced_end_ms is not None
+                  and start_ms - state.last_voiced_end_ms > self.reset_gap_ms):
                 state = _Stream(metadata, self.max_frames)
                 reset_reason = "STREAM_GAP"
 
@@ -194,10 +206,8 @@ class SpeakerChangeEvidenceRegistry:
             peak_candidate_reference_age_ms = None
             if self.max_frames < batch["lookback_frames"] + 2:
                 raise SpeakerEvidenceError("speaker history bound is shorter than the configured lookback")
-            # A batch is one publication unit. Every frame in it must compare
-            # against the history that existed before this batch; otherwise a
-            # later frame can compare with an earlier same-batch frame from the
-            # new speaker and overwrite the cross-window change evidence.
+            # A batch is one publication unit. Every voiced frame compares
+            # against the immutable history snapshot that existed before it.
             history = tuple(state.frames)
             last_seen_end_ms = state.last_end_ms
             tolerance = max(40, int(batch["frame_step_ms"] * 1.5))
@@ -205,54 +215,77 @@ class SpeakerChangeEvidenceRegistry:
                 "CALLER_ASSERTED_UNVERIFIED"
                 if batch["confidence_threshold"] is not None else "NOT_CONFIGURED"
             )
-            for frame_end, vector in batch["frames"]:
-                if last_seen_end_ms is not None and frame_end <= last_seen_end_ms:
-                    raise SpeakerEvidenceError("speaker frames must advance across windows")
-                target_ms = frame_end - batch["lookback_ms"]
-                candidates = [
-                    (abs(previous_end - target_ms), previous_end, previous_vector)
-                    for previous_end, previous_vector in history
-                    if previous_end < frame_end and abs(previous_end - target_ms) <= tolerance
-                ]
-                if candidates:
-                    _, reference_end, reference_vector = min(candidates, key=lambda item: item[0])
-                    similarity = max(-1.0, min(1.0, sum(a * b for a, b in zip(vector, reference_vector))))
-                    threshold = batch["confidence_threshold"]
-                    # A caller-supplied threshold/calibration label is not a
-                    # validated calibration artifact. Preserve the measured
-                    # similarity, but never promote it to a speaker decision.
-                    gate_passed = None
-                    candidate = None
-                    change_score = round(max(0.0, min(1.0, (1.0 - similarity) * 0.5)), 6)
-                    frame_record = {
-                        "status": "MEASURED",
-                        "frame_end_ms": frame_end,
-                        "reference_age_ms": frame_end - reference_end,
-                        "cosine_similarity": round(similarity, 6),
-                        "change_score": change_score,
-                        "confidence_threshold": threshold,
-                        "threshold_status": threshold_status,
-                        "confidence_gate_passed": gate_passed,
-                        "speaker_change_candidate": candidate,
-                        "candidate_kind": None,
-                        "interpretation": (
-                            "SIMILARITY_ONLY_UNCALIBRATED"
-                            if threshold is not None else "SIMILARITY_ONLY_NO_THRESHOLD"
-                        ),
-                    }
-                    frame_evidence.append(frame_record)
-                    latest = frame_record
-                    if candidate is True:
-                        candidate_count += 1
-                        if change_score > peak_candidate_change_score:
-                            peak_candidate_change_score = change_score
-                            peak_candidate_frame_end_ms = frame_end
-                            peak_candidate_reference_age_ms = frame_end - reference_end
-                last_seen_end_ms = frame_end
-
-            # Publish the new frames only after all comparisons used the same
-            # pre-batch snapshot. The next call may then use this batch as history.
-            state.frames.extend(batch["frames"])
+            if activity_hint == "VOICED":
+                for frame_end, vector in batch["frames"]:
+                    if last_seen_end_ms is not None and frame_end <= last_seen_end_ms:
+                        raise SpeakerEvidenceError("speaker frames must advance across windows")
+                    target_ms = frame_end - batch["lookback_ms"]
+                    candidates = [
+                        (abs(previous_end - target_ms), previous_end, previous_vector)
+                        for previous_end, previous_vector in history
+                        if previous_end < frame_end and abs(previous_end - target_ms) <= tolerance
+                    ]
+                    if candidates:
+                        _, reference_end, reference_vector = min(candidates, key=lambda item: item[0])
+                        similarity = max(-1.0, min(1.0, sum(a * b for a, b in zip(vector, reference_vector))))
+                        threshold = batch["confidence_threshold"]
+                        # Caller thresholds are not validated calibration artifacts.
+                        gate_passed = None
+                        candidate = None
+                        change_score = round(max(0.0, min(1.0, (1.0 - similarity) * 0.5)), 6)
+                        frame_record = {
+                            "status": "MEASURED",
+                            "frame_end_ms": frame_end,
+                            "lookback_target_ms": target_ms,
+                            "reference_frame_end_ms": reference_end,
+                            "reference_age_ms": frame_end - reference_end,
+                            "cosine_similarity": round(similarity, 6),
+                            "change_score": change_score,
+                            "confidence_threshold": threshold,
+                            "threshold_status": threshold_status,
+                            "confidence_gate_passed": gate_passed,
+                            "speaker_change_candidate": candidate,
+                            "candidate_kind": None,
+                            "interpretation": (
+                                "SIMILARITY_ONLY_UNCALIBRATED"
+                                if threshold is not None else "SIMILARITY_ONLY_NO_THRESHOLD"
+                            ),
+                        }
+                        frame_evidence.append(frame_record)
+                        latest = frame_record
+                        if candidate is True:
+                            candidate_count += 1
+                            if change_score > peak_candidate_change_score:
+                                peak_candidate_change_score = change_score
+                                peak_candidate_frame_end_ms = frame_end
+                                peak_candidate_reference_age_ms = frame_end - reference_end
+                    last_seen_end_ms = frame_end
+                # Only voiced frames may seed or update speaker-reference history.
+                state.frames.extend(batch["frames"])
+                state.last_voiced_end_ms = batch["frames"][-1][0]
+            else:
+                # Non-speech embeddings remain available as no stored vectors:
+                # preserve timing order, but never let noise/silence seed identity history.
+                for frame_end, _ in batch["frames"]:
+                    if last_seen_end_ms is not None and frame_end <= last_seen_end_ms:
+                        raise SpeakerEvidenceError("speaker frames must advance across windows")
+                    last_seen_end_ms = frame_end
+                latest = {
+                    "status": "SUPPRESSED_NON_VOICED",
+                    "frame_end_ms": batch["frames"][-1][0],
+                    "lookback_target_ms": batch["frames"][-1][0] - batch["lookback_ms"],
+                    "reference_frame_end_ms": None,
+                    "reference_age_ms": None,
+                    "cosine_similarity": None,
+                    "change_score": None,
+                    "confidence_threshold": batch["confidence_threshold"],
+                    "threshold_status": threshold_status,
+                    "confidence_gate_passed": None,
+                    "speaker_change_candidate": None,
+                    "candidate_kind": None,
+                    "interpretation": "NON_VOICED_FRAMES_NOT_USED_AS_SPEAKER_REFERENCE",
+                }
+            # Non-voiced windows still advance the input clock for monotonicity.
             state.last_end_ms = batch["frames"][-1][0]
 
             self._states.pop(key, None)
@@ -279,6 +312,12 @@ class SpeakerChangeEvidenceRegistry:
                 "method": METHOD,
                 "source_id": source_id,
                 "generation_id": generation_id,
+                "consent_receipt_ref": batch["consent_receipt_ref"],
+                "current_chunk_sha256": batch["current_chunk_sha256"],
+                "source_binding_status": "CURRENT_PCM_CHUNK_SHA256_MATCH",
+                "activity_hint": activity_hint,
+                "accepted_frame_count": len(batch["frames"]) if activity_hint == "VOICED" else 0,
+                "history_frame_count": len(state.frames),
                 "model_id": batch["model_id"],
                 "model_revision": batch["model_revision"],
                 "model_sha256": batch["model_sha256"],
