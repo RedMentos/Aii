@@ -1,3 +1,14 @@
+## JEPA temporal port — exact compile failure repaired, composed gates still pending (2026-11-23)
+
+- The release-base temporal learner remains on draft PR #2447. Code fix commit: 7a45b7f53b2e19514af1aa3b7035a616d3904af9; documentation-only checkpoint at start of this update: 918141a3ef686e5b3391189f2966b78f4f6e2591. Base: fb563d771fe2d493c4ec25abe94280981d24ef5c.
+- The exact Python 3.14 merge-ref compile failure was a malformed import in world_jepa_temporal.py:41; code commit 7a45b7f fixes it and GitHub readback confirms the corrected import bytes.
+- Previous optimizer-resume CI independently exposed a stale nested recovery-builder pin (b05a5f4c… expected versus the current resume-script SHA 55ab761e…). This belongs to Boss/QA's recovery composition; the handoff was posted on PR #2443. No pin was relaxed or overwritten.
+- New exact-head temporal, optimizer-resume, staged/integrated, Core receiver and combined JEPA runs (45217321223, 45217321225, 45217321237, 45217321042, 45217320951) were queued at last poll. The previous temporal run failed before tests, so no test PASS is claimed for the new head yet.
+- LOCAL_LINUX CPython 3.13.5: corrected import snippet parse PASS only. Full checkout/compile/pytest BLOCKED by absent checkout and GitHub DNS failure. Redmi/Termux learning and deployment remain REDMI_UNVERIFIED / NOT_DEPLOYED.
+- Keep the runtime consumer and B1/B2/SELF receivers SHADOW/OFF until exact CI, source-forget/blob lifecycle, producer SourceRefs and measured retention/utility gates are independently green.
+
+---
+
 ## M1 DATA audit-first and direct-array checkpoint — 2026-11-23 12:44 UTC
 
 - `ArrayDataset.from_uci()` validates/counts the source on pass one, fills a float32 matrix and computes the exact parsed-data fingerprint on pass two, and rejects file changes between passes. It does not allocate Python `MinuteRow` objects for the real cohort.
