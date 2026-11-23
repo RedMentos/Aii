@@ -268,10 +268,6 @@ class SpeakerChangeEvidenceRegistry:
             # All input windows advance ordering; only VOICED windows advance
             # the separate speaker-reference clock and history.
             state.last_end_ms = batch["frames"][-1][0]
-            # Publish the new frames only after all comparisons used the same
-            # pre-batch snapshot. The next call may then use this batch as history.
-            state.frames.extend(batch["frames"])
-            state.last_end_ms = batch["frames"][-1][0]
 
             self._states.pop(key, None)
             self._states[key] = state
