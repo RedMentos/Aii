@@ -155,7 +155,7 @@ class LiveHookTests(Base):
         self.assertTrue(done);self.assertTrue(all(d['key'].endswith('|A_SOURCE') for d in done))
         self.assertTrue(all(d['source_sha256']==src['sha256'] and d['source_ref_count']>=1 for d in done))
         mods=[json.loads(x['payload']) for x in self.r.store.rows("SELECT payload FROM packets WHERE kind='ModulatorPacket' AND event_id=?",(e,))]
-        attention_mods=[p for p in mods if p.get('path')==A.PATH]
+        attention_mods=[p for p in mods if p.get('path_id')==A.PATH]
         self.assertTrue(attention_mods)
         self.assertTrue(all(any(ref.get('source_id')==src['source_id'] and ref.get('sha256')==src['sha256']
                                 for ref in p.get('provenance',[])) for p in attention_mods))
@@ -171,7 +171,7 @@ class LiveHookTests(Base):
         self.assertEqual(self.a.source_outcome(e,text.replace('45','46'),'Invoice 4471 is 45 EUR.'),[])
         self.assertEqual(self.a.report()['policy'],{})
         mods=[json.loads(x['payload']) for x in self.r.store.rows("SELECT payload FROM packets WHERE kind='ModulatorPacket' AND event_id=?",(e,))]
-        self.assertFalse(any(p.get('path')==A.PATH for p in mods))
+        self.assertFalse(any(p.get('path_id')==A.PATH for p in mods))
     def test_action_gain_scales_c5_focal_support(self):
         from v13.focal import ActionGate
         e=self.r.store.event(self.r.session,'x');coal=[{'item_id':'o','source_kind':'B1_DETAIL','priority':1.}]
