@@ -1,3 +1,32 @@
+# Perception / RAW EYE — current verified handoff (2026-11-23 15:48 UTC)
+
+**User action: NONE.** Do not issue a manual Termux command or UPDATE_REQUEST. The latest sanitized private receipt says the installed base is still fb563d771fe2d493c4ec25abe94280981d24ef5c and auto-update reports UP_TO_DATE, but the AI runtime is STOPPED_BY_USER, the model process is STOPPED and native residency is unavailable. This Perception branch is not installed.
+
+## New executable Perception function
+
+- PR [#2442](https://github.com/RedMentos/Aii/pull/2442), branch research-perception/v14-vision-lifecycle-current-20261123-run19. Latest branch head: eebfd4115949e7206b82e7f3e843486bc6839fc4; exact code head: 18384cd3113e25d357955c19b38bd01dfbedb528. Later commits are handoff/research documentation only.
+- Added a bounded 256-sample median common-mode luminance shift plus per-tile local residual. The original raw frame-difference score and ON/OFF surfaces remain; A4 now prefers local novelty and retains a weak 0.15 global-transition signal. That weight is an uncalibrated BOOT heuristic.
+- Consumer path on the candidate: source-bound A5 frame summaries → temporal visual evidence → existing A4 modulation. No raw image persistence, OCR/object truth, action authority, native latent exchange or body-weight update is claimed.
+
+## Exact evidence and blockers
+
+- LOCAL_LINUX x86_64 / Python 3.13.5: helper py_compile PASS, 6/6 isolated pytest PASS, 0.0806 ms/call over 10,000 calls and 15,008-byte one-call tracemalloc peak. Full Aii local suite NOT_RUN/BLOCKED.
+- GitHub exact-head CI: frame ingress 39/39 PASS on Python 3.13 and 3.14; source-lineage 29/29 PASS on both; public privacy scan CLEAN.
+- Staged-runtime and integrated-regression FAIL because the Core-owned source lifecycle composer rejects the changed vision.py SHA. Staged result: 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests; two migration cases return PARTIAL. No source pin was weakened.
+- Sanitized device aggregate still shows C3 later-turn prefill around 33–37 s with 2–3 generated tokens, B1/B2 zero valid offers and no native latent exchange proof. The auto-updater's UP_TO_DATE status is not chat acceptance.
+- REDMI_UNVERIFIED for all candidate code; NOT_RELEASED.
+
+## Next internal ownership
+
+1. Core: rebind the exact Perception vision.py SHA in its fail-closed source lifecycle builder and recompute dependent pins bottom-up. Coordinate with the parallel attention.py pin blocker in PR #2441.
+2. QA: rerun staged/integrated, migration, privacy and consent-revocation checks on the composed exact head.
+3. Perception: after Core/provider composition, run source/session-disjoint global-vs-local/flicker/scroll/app-transition ablations and prove the same-turn A5→A4→C3 consumer.
+4. Boss/Integrator: incorporate this append-only evidence into the shared board and final user-facing action state; preserve all other Canon lanes.
+
+Research R-113 records the full Crowder et al. (2008) article and Ebelin et al. (2024) abstract/official MIT reference repository review. No external code or weights were imported. Global/local separation is a diagnostic heuristic, not semantic vision.
+
+---
+
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
