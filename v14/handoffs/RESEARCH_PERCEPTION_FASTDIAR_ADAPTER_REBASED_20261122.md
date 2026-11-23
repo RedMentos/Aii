@@ -171,7 +171,7 @@ LOCAL_LINUX CPython 3.13.5 isolated hash-binding helper: 5/5 PASS (matching dige
 - Previous exact head: `6dcf1fddd7b68d3cfe9526b764d086090fa054f9`.
 - Two Perception/model-lab checks failed because the RAW EAR V3 comparator still expected Git blob `5dbb0fd5e17eb9bcb190d7a3743bdd1ef1ecbb9d`, while the exact `audio_voice_cues.py` source on this branch is blob `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`.
 - Updated both `v14/experiments/test_raw_ear_vad_compare.py` and `.github/workflows/v14-raw-ear-vad-comparison.yml` to the exact current source blob.
-- Commits: test pin `f56196e`; workflow pin `b4894a0`. GitHub readback verified both files contain the new blob and no longer contain the stale one. Current branch head: `b4894a001d711527f97c9c8f5c888c7a54c40312`.
+- Commits: test pin `f56196e`; workflow pin `b4894a0`. GitHub readback verified both files contain the new blob and no longer contain the stale one. Code/test head: `b4894a001d711527f97c9c8f5c888c7a54c40312`; handoff-only commit: `b9ee92c0253aede577f2ca79601dfbb4b69b965a` (current branch head).
 - Exact-head workflows were queued at last poll; no PASS is claimed yet. No local Aii checkout was available, so full local pytest/compile remains BLOCKED. The exact CI run is the next verification.
 
 ### Cross-lane integration blockers (not Perception-owned)
@@ -187,3 +187,11 @@ LOCAL_LINUX CPython 3.13.5 isolated hash-binding helper: 5/5 PASS (matching dige
 - Official Moonshine Voice docs expose Android Maven `ai.moonshine:moonshine-voice:0.1.5`. Its base `Transcriber.add_audio()` accepts caller-supplied mono chunks at arbitrary sample rates and emits provisional text updates plus final line events; default update interval is 500 ms. This is a better integration shape than `MicTranscriber`: V14 should keep capture in its own explicit, OS-permissioned AudioRecord provider and feed PCM to the transcriber, rather than letting a library open the microphone itself. Keep `identify_speakers` off; it is optional and not needed for text hypotheses.
 - Concrete next experiment after explicit model approval: compare Moonshine German Tiny against the current sherpa/Whisper candidate on a fixed, consented conversational German corpus, using the exact Android Java runtime and 0.5 s PCM chunks; measure first partial, final latency, WER, RSS/PSS, CPU, thermal drift, short/noisy repetition failures, and restart cleanup on the Redmi. Do not add the Maven dependency, download weights, or change the active model until separately approved. Teacher output remains a source-bound ephemeral hypothesis with independent teacher and transcript opt-ins; RAW EAR acoustic cues remain first-class and are never replaced by ASR text.
 
+
+
+### Cross-lane coordination sent
+
+- Commented on Core PR #2370 with the exact `audio_voice_cues.py` blob mismatch and optional Teacher-Ear pin requirement (comment 7091229930).
+- Commented on QA PR #2402 with the #2395 vs #2404 `vision.py` pin conflict and requested exact-byte rebinding (comment 7091230268).
+- Commented on Boss docs PR #2378 with the Moonshine v2 German Tiny research note and request to append it to the shared ledger / user next action (comment 7091230731).
+- Commented on this PR with the comparator-pin repair and exact CI status (comment 7091232132).
