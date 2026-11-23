@@ -67,3 +67,15 @@ def test_memory_c3_body_and_world_in_one_disposable_copy(tmp_path):
                             capture_output=True, text=True, timeout=240)
     assert result.returncode == 0, result.stdout + result.stderr
     print('combined memory/C3/Body/World copy:', next(line for line in reversed(result.stdout.splitlines()) if 'passed' in line))
+
+
+
+def test_store_locked_memory_forget_source_is_preserved():
+    """The integrated lifecycle composer must not overwrite the newer Store-lock fix."""
+    module = builder()
+    sources = module.build_sources(CODE)
+    original = (CODE / 'v13/memory.py').read_bytes()
+    staged = sources['v13/memory.py']
+    assert staged == original
+    assert b'with source_forget_guard(self.s,sid):\n            with self.s.mutex:\n' in staged
+    assert b"from .source_lifecycle_candidate import cleanup_unreferenced" not in staged

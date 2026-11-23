@@ -103,6 +103,12 @@ MEMORY_OLD = b'''            src=self.s.one('SELECT hash FROM sources WHERE id=?
 MEMORY_NEW = b'''            from .source_lifecycle_candidate import cleanup_unreferenced
             cleanup_unreferenced(self.s,sid)
 '''
+MEMORY_GUARDED_MARKERS = (
+    b"with source_forget_guard(self.s,sid):\n            with self.s.mutex:\n",
+    b"source=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))",
+    b"if source and not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(source['hash'],)):",
+    b"(self.s.home/'data/blobs'/(source['hash']+'.z')).unlink(missing_ok=True)",
+)
 VISION_OLD = b'''def ingest(store,data,cfg=DEFAULTS,label=None):
     """Store image bytes as an IMAGE source (dedup by hash) and register its regions. Returns the image record."""
     im=decode(data,cfg);w,h=im.size;sha=digest(data);st=load(store)
@@ -185,12 +191,20 @@ def build_sources(source_dir):
             ('store.py', RECOVER_OLD, RECOVER_NEW),
             ('store.py', EVENT_OLD, EVENT_NEW),
             ('store.py', READ_SOURCE_OLD, READ_SOURCE_NEW),
-            ('memory.py', MEMORY_OLD, MEMORY_NEW),
             ('vision.py', VISION_OLD, VISION_NEW),
             ('vision.py', VISION_FORGET_OLD, VISION_FORGET_NEW),
             ('vision.py', VISION_STATE_OLD, VISION_STATE_NEW),
             ('archive.py', RESTORE_OLD, RESTORE_NEW)):
         raw[filename] = _replace_once(raw[filename], old, new, filename)
+    memory = raw['memory.py']
+    if memory.count(MEMORY_OLD) == 1:
+        raw['memory.py'] = memory.replace(MEMORY_OLD, MEMORY_NEW, 1)
+    elif memory.count(MEMORY_OLD) == 0 and all(marker in memory for marker in MEMORY_GUARDED_MARKERS):
+        # Newer Memory already holds the Store lock through tombstone/refcount/unlink.
+        # Preserve it: applying the old helper substitution would discard the race fix.
+        pass
+    else:
+        raise ValueError('unexpected memory forget lifecycle source')
     archive_sha = hashlib.sha256(raw['archive.py']).hexdigest().encode()
     store_sha = hashlib.sha256(raw['store.py']).hexdigest().encode()
     guard = raw['archive_reader_guard_candidate.py']
