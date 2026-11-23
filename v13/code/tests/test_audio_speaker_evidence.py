@@ -509,6 +509,51 @@ def test_a5_a4_c3_consumer_preserves_unverified_similarity_without_vectors(tmp_p
         runtime.store.close()
 
 
+def test_real_audio_consumer_resets_speaker_history_on_receipt_change(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    generation = event["brain_generation_id"]
+    next_receipt = "fixture:consented-speaker-next"
+    allowed = {RECEIPT, next_receipt}
+
+    def check(source_id, receipt):
+        return source_id == SOURCE and receipt in allowed
+
+    guard = consent_guard(check)
+    try:
+        first = speaker_batch(SOURCE, generation, 100, 1100, lambda _: (1.0, 0.0, 0.0))
+        consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=generation,
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=check, consent_guard=guard,
+            finality="FINAL", speaker_embeddings=first,
+        )
+
+        second = speaker_batch(
+            SOURCE, generation, 1100, 2100, lambda _: (0.0, 1.0, 0.0),
+            consent_receipt_ref=next_receipt,
+        )
+        result = consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=1100,
+            event_id=event["event_id"], generation_id=generation,
+            source_id=SOURCE, consent_receipt=next_receipt,
+            consent_check=check, consent_guard=guard,
+            finality="FINAL", speaker_embeddings=second,
+        )
+
+        evidence = result["speaker_change_evidence"]
+        assert evidence["status"] == "WARMUP"
+        assert evidence["reset_reason"] == "CONSENT_RECEIPT_CHANGED"
+        assert evidence["cosine_similarity"] is None
+        assert result["a4"]["speaker_change_decision"] == "DEFER"
+        summary = result["c3_admission"].selected[0].summary
+        assert "speaker_similarity_delta=" not in summary
+        assert "spk_dec=DEFER" in summary
+        assert len(_runtime_speaker_evidence_registry(runtime)) == 1
+    finally:
+        runtime.store.close()
+
+
 def test_batch_similarity_diagnostic_does_not_trigger_a4_interrupt_or_c3_candidate(tmp_path, monkeypatch):
     runtime, event = make_runtime(tmp_path)
     generation = event["brain_generation_id"]
