@@ -1,79 +1,8 @@
-**VERBINDLICHE TEAMARBEIT 20.11.2026:** Für jede V14-Entwicklungs- oder Forschungsrunde zusätzlich [v14/V14_TEAM_OPERATING_SYSTEM.md](v14/V14_TEAM_OPERATING_SYSTEM.md), [v14/V14_WORK_BOARD.json](v14/V14_WORK_BOARD.json) und [v14/V14_USER_NEXT_ACTION.md](v14/V14_USER_NEXT_ACTION.md) lesen und nach tatsächlich verifiziertem Fortschritt aktualisieren. Fünf stündliche Fachagenten = ein koordinierter Produktbetrieb, nicht isolierte PR-Zähler. Der Benutzer bleibt bei denselben normalen Prompts und ggf. bisherigen Termux-Kommandos; keine zwanghafte Umbenennung nach V14. Code selbst entwickeln, in vorhandener Umgebung real lokal testen, bei Bedarf Modellalternativen isoliert vergleichen und genehmigungspflichtige Swap-/Download-Entscheidungen sinnvoll vorschlagen. Nach Tests direkt auf zuständigem Branch pushen/readback/PR und Boss/QA zur Integration übergeben. Bei nachweislich funktionierendem autorisiertem Auto-Update dieses nutzen, sonst reale Updater-Bugs beheben statt erfundene Geräteaktionen zu behaupten. GitHub-Push ≠ Handy-Deploy. Nächste sinnvolle Nutzeraktion samt Belegen dokumentieren; manuelle Termux-Befehle nur falls wirklich nötig. Canon/Consent/Privacy/Safety/Full-Scope bleiben erhalten.
+# Active V14 workspace rules
 
-# ACTIVE V14 LIVE DEVELOPMENT + RESEARCH OVERRIDE — 2026-11-20
-
-**Before every work session and research scan, read all live V14 sources:**
-
-1. [Full V14 live master + unchanged historical Canon](v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md)
-2. [Current executable delivery workplan](v14/V14_LIVE_WORKPLAN.md)
-3. [Persistent and dated research ledger](v14/V14_RESEARCH_LEDGER.md)
-4. [Historical canonical heading coverage inventory](v14/V14_CANON_COVERAGE_INDEX.md)
-5. [Readable active architecture](v14/V14_ARCHITECTURE_AND_RESEARCH_ONLY_20261119.md).
-
-These documents reflect explicit **2026-11-20 user corrections**. They take precedence over contradictory old static diagrams and placeholder assumptions, but **do not remove the functional requirements of the entire V13 Canon**. The 2026-11-20 byte-identical pre-change master is archived at [v14/backups/V14_MASTER_PRE_LIVE_CORRECTIONS_20261120.md](v14/backups/V14_MASTER_PRE_LIVE_CORRECTIONS_20261120.md).
-
-**Architecture invariants:** distributed system-wide cognition and neural processing without a central conscious boss, adaptive/recurrent/opportunistic routing, true cross-organ **latent activation exchange** as the target (not JSON/text message exchange treated as success), two differentiated trainable B1/B2 sparse MoE hemispheres in the end goal, dynamic plasticity/active learning across perception, attention, temporal outcomes/omission, world/self/memory, JEPA and local eligibility, cross-organ learning, replay/sleep, meta-learning, and later safe self-edit. Temporarily stabilized targets or technical comparison copies must not become permanent unlearning teacher organs by specification. Respect user consent, security, privacy, rights, provenance, OS and model-weight licensing, reversibility.
-
-**Research is a mandatory recurring workstream, not just a document section.** During each research run, actively search dated primary scientific sources and maintained open-source/model repositories for new relevant results, review the underlying method, experiment limitations and counterevidence, map them to a precise V13/V14 component, and record an actionable test/integration idea, provenance/date, model/code/data rights, required ARM resources, status and follow-up in the research ledger. Go beyond reading the abstract when feasible. When a user's newly mentioned paper matches existing work, link back to *actually recorded* reading and experiments; never claim prior reading without a dated entry. If research genuinely yields a superior or missing mechanism, propose/adapt code and live architecture with comparison and evidence, preserving whole-function scope. Do not wait for explicit user prompting to start research on a scheduled research run.
-
-**Living plan + immutable snapshot rule:** *Edit the existing V14 master directly*, synchronize the readable architecture and workplan, and keep the research ledger current. Before **every material architecture/master edit**, create a new historical snapshot under `v14/backups/` and verify equality/readback. Archive unchanged V13 text from Part III; never overwrite a snapshot or silently delete a Canon obligation. Central master edits need a designated integrator/owner; other agents use separate work paths/branches/PRs. No force push; current HEAD & open changes check; recoverable commits and independent review. Use the canonical coverage index and track old-to-new clause mapping instead of letting small overlooked functions disappear.
-
-**Build-first and proof-first:** prioritize real connected runtime consumers, actual on-device native token/latent/weight-learning behavior, performance, memory, safety and rollback. Parallel fronts may continue even while some isolated tests fail; regressions remain visible. Distinguish `SPEC / CODE_PRESENT / SYNTHETIC / LINUX_NATIVE / ANDROID_NATIVE / WEIGHTS_UPDATED / HELDOUT_PASS / RELEASED`. Never report paper notes or proposed hooks as demonstrated Android/JEPA/AGI operation.
-
----
-
-# V14 superseding design handoff — 2026-11-19
-
-For all new project development **read [v14/README.md](v14/README.md) and [V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md](v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md) FIRST**. The user's newest decision is a full **V14 rewrite and whole-architecture implementation**, not another isolated bug-patch campaign. The V14 master contains two operational plans (architecture and research/reuse/execution) followed by the **entire pre-existing public V13 Canon**, GitHub roadmap and three Drive roadmap parts as verbatim appendices to prevent silent loss. Preserve all named functional obligations, plus updated age rights, real JEPA/latent learning, open outcome/omission learning, on-policy/speculative self-distillation as an *experiment*, two different sparse MoE bodies, self/world/memory, tool agency and eventually comprehensible/safely approved self-programming. Research existing maintained open source and licenses before writing a fresh duplicate. Deliver connected live-function progress, then validate/refine, while retaining genuine privacy/safety/hardware approval gates and negative device evidence. V14 document is a design, **not** a release or proof of implementation; keep existing V13 runtime safe and reversible until replacement passes actual acceptance.
-
----
-
-# V13 continuation rules
-
-These project instructions preserve the user's decisions, including the 2026-10-12 request to recover research, open questions, end goals and agent work rules and continue without requiring a full chat export. Read the current remote HEAD before work; this file does not replace the Canon or the existing plan.
-
-When executing large V13 coding sessions, use the scoped [fast integration playbook](v13/code/docs/coordination/V13_FAST_INTEGRATION_AGENT_PLAYBOOK_20261110.md) for the implement-test-integrate-continuation loop. This guide supplements rather than overrides Canon, source freezes, and approval rules.
-
-## User execution priority — 2026-11-19 (newer explicit direction; governs all V13 agents)
-
-**Build the full requested system first; refine, remove or replace parts later with the user's involvement.** Do not quietly narrow V13 to one feature, one Age, one architecture, one test gate, or whichever incidental PR failure is easiest to patch. The Canon and the user's current instructions define the end-to-end functional target (A perception, B1_DETAIL/B2_GIST, B3/Enlightened Space, C2/JEF/C3, memory/self/world, JEPA weight learning, sleep/replay, tools, local Termux operation, age-dependent rights and self-optimisation as a future controlled feature). Age remains a development/tool/learning-right setting, **not a token/time/performance budget**; official Age may remain 0 while higher lab settings are tested.
-
-**Implementation order:** create a runnable, connected whole-system vertical slice and keep a complete feature/consumer map. Wire already-existing repo components into the real runtime and app; when hardware, training data, or a missing runtime path prevents genuine behavior, expose that component clearly as `unavailable`, `shadow`, or `experimental` and retain a working fallback. Do not pretend a fake latent, mock, unconsumed config or disabled component is finished. No Canon function may disappear silently. Work on major unfinished architecture branches in parallel under independent file ownership; integrate functioning components in batches, then improve and fix them iteratively. Keep a narrow smoke check before merges but do not spend entire sessions on repetitive synthetic CI/test fixtures while the whole system remains unwired. Release/authority and real-device evidence gates still apply to actual deployment, unapproved tool execution, learning promotion, credentials and user data; they should not block isolated development of the full architecture.
-
-**Reuse-first, not wheel-reinvention.** Before custom implementation, search this repository (including candidates/PRs), upstream GitHub and other maintained public projects for a matching production-ready solution. Capture an upstream URL, exact revision, license + third-party notices/model-weight licenses, supported Android/aarch64 behavior, dependencies/RAM costs, interfaces, expected integration and upgrade/rollback path. Prefer adapting a proven solution over another miniature duplicate implementation. Do not copy code with absent/incompatible licenses; keep attribution and license/NOTICE files where needed. If no suitable upstream component exists, implement the smallest real adapter and document why. On recurring stalls, change research strategy or take a different high-priority subsystem instead of endlessly debugging the same local test.
-
-**Progress reporting:** measure useful, user-visible vertical behavior, not PR counts, hashes, theoretical scaffolds or CI-only success. Every checkpoint states (a) which complete user-requested path now actually runs, (b) what is still disconnected, (c) which third-party code was reused or rejected and why, (d) which proof is Linux/mock versus Redmi native, and (e) the next highest-impact connection. Maintain the whole-CANON ledger, and avoid describing ordinary incomplete work as a reason to stop implementing unrelated features. Do not claim permanent background execution or completed native learning without evidence.
-
-## Sources and priorities
-
-- Start with `v13/code/docs/HANDOFF_CURRENT.md`, `v13/code/BUILD_STATE.json`, `v13/ROADMAP.md`, `v13/NUTZER_ENTSCHEIDUNGEN.md` and `v13/code/docs/USER_CONTINUATION_DECISIONS_20261011.md`.
-- Canon: `v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md`. The user's newer decisions prevail over older design choices. Runtime code and closed evidence determine implemented state.
-- Finish the existing Drive plan. Continue implementing, testing and fixing until robust extended human testing is possible. Research and future improvements supplement the plan; they do not replace unfinished packages. Missing exact historical transcripts are a retrieval limitation, not a reason to stop authorized work.
-- End goal: many distinct model organs, English first and later observable German learning, world model, continuous learning, a reduced brain simulation on Android/Termux. Local tools, knowledge and developing autonomy toward RSI/AGI remain long-term aims, never an already demonstrated result.
-
-## Research and unanswered questions
-
-- Recover prior relevant decisions instead of asking the user to explain them again. Distinguish original user messages, archived extraction notes and assistant interpretations; never invent exact last-three-message wording.
-- Archived `v13/sichtung/chat1.md` records researching current models and versions individually, including newest Hugging Face entries rather than only leaderboards. Verify current recommendations against primary model cards, official repositories, papers and licenses before selecting them.
-- Follow Canon IH-H31: record source, access date, claim scope and current/historical/hypothesis status. Record license, revision, compatibility, provenance and missing prerequisites for usable third-party code/models.
-- Each research question needs evidence for and against, a small Redmi-testable baseline, V13 mapping, failure modes, an ablation and what result would change the implementation. Research can challenge a mechanism while preserving the locked functional goal.
-- Keep open questions, blockers, missing models and prerequisites in the persistent handoff. Resolve what can be researched or tested independently; ask only for a genuinely missing decision or device action. Model swaps require separately bound comparisons and must not alter an active preregistered cohort.
-
-## Agents, evidence and persistence
-
-- The user requests agent-assisted work. Delegate independent code/research/review packages with explicit file ownership; the coordinator checks results, integrates and tests. Do not let agents concurrently mutate shared status or frozen sources. Do not claim access to Claude's live conversation; exchange via the agreed GitHub/Drive handoff.
-- Heavy native inference and full-master training run serially under the measured Linux cgroup budget. Read current lifecycle/registration before starting. Never run competing heavy jobs or signal unowned processes.
-- Preserve original protocols, numerical settings, model/source hashes, failed attempts and negative gates. Current runtime Python is frozen for SourceHandoff: prepare fixes as isolated hash-bound candidates until that cohort permits integration.
-- Implemented means code, actual data path, persistence/restart, tests and telemetry. Software/synthetic tests, structural checks, Linux-native runs and real Redmi measurements are distinct evidence levels. Never present SHADOW/scaffold as learned utility.
-- Existing STEP2 UTILITY_FAIL and B3 L1 FAIL remain until their original gates pass. `canonical_architecture_complete` and `user_full_scope_complete` remain false while any required scope is open.
-- Publish reviewable checkpoints regularly to the authorized `RedMentos/Aii` work branch without re-requesting routine push permission. Verify remote commit/tree after each push; local commits alone are not a backup. Preserve a current handoff for Codex/Claude/other agents and update the agreed second location when technically available.
-- Close and hash-bind raw evidence before saving; use the existing lossless small-object storage for large artifacts. Give brief progress updates and continue across checkpoints rather than stopping after one small task. Never claim a save, model run or result before confirmation.
-
-## Cross-review between Claude and GPT/Codex (user request 2026-10-21)
-
-The user wants Claude and GPT/Codex to check each other's work. This is a standing rule for both sides:
-
-- Before building on the other side's latest work, review it first: run the full suite, read the runtime-code diff (`v13/code/v13/`), try at least one counterexample per new guard or gate, check that every FAIL stays FAIL and that SHADOW/synthetic/Linux/Redmi evidence levels stay separate, check that preregistrations were committed before their runs, and run `python v13/code/scripts/public_repo_privacy_scan.py --base <last reviewed commit> --head <their branch>` (must print CLEAN).
-- Also check the goal: no harm to people; new tools or modules default off and only run with the user's conscious, unmanipulated permission; unmeasured SHADOW parts get no decision authority.
-- Record each round at the top of `v13/PRUEFUNG_CLAUDE_FUER_GPT.md` (or `v13/PRUEFUNG_GPT_FUER_CLAUDE.md`): reviewed commits, commands with output, findings (bug / note / OK) and what you changed. Fix confirmed small bugs with a test; leave larger findings as open points for the other side or the user.
-- Never overwrite the other side: `git fetch` before every push, merge foreign commits instead of replacing them, no force-push, and name in the handoff what came from whom. The repo is public: nothing private (tokens, personal data, private chats, device identifiers) in git; private material goes to Drive only. Back up each round to git and Drive.
+- All new implementation work belongs under `v14/`.
+- `archive/LEGACY_PRE_REBUILD_20261123/` is immutable historical source. Do not edit it.
+- Do not modify or reactivate archived V13 workflows or runtime code.
+- Preserve the M1 protocol and the independent status/evidence markers in `v14/m1/README.md`.
+- Never claim implementation gates passed without code, real data/state path, persistence, tests, telemetry and ablation evidence.
+- Test DATA on Python 3.13 and 3.14. PyTorch model tests currently run on Python 3.13.
