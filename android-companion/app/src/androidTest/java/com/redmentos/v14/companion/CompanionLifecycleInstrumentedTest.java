@@ -42,6 +42,14 @@ public final class CompanionLifecycleInstrumentedTest {
         return InstrumentationRegistry.getInstrumentation().getTargetContext();
     }
 
+    private static boolean centerIsVisible(View view, Rect visible) {
+        int[] location = new int[2];
+        view.getLocationOnScreen(location);
+        int centerX = location[0] + view.getWidth() / 2;
+        int centerY = location[1] + view.getHeight() / 2;
+        return visible.contains(centerX, centerY);
+    }
+
     private static void assertOnDisplay(View view, String description) {
         assertNotNull(description + " is missing from MainActivity", view);
         assertTrue(description + " is not attached to the window", view.isAttachedToWindow());
@@ -50,17 +58,15 @@ public final class CompanionLifecycleInstrumentedTest {
         assertTrue(description + " has no visible display rectangle",
                 view.getGlobalVisibleRect(visible));
         assertTrue(description + " is fully clipped", visible.width() > 0 && visible.height() > 0);
-        int[] location = new int[2];
-        view.getLocationOnScreen(location);
-        int centerX = location[0] + view.getWidth() / 2;
-        int centerY = location[1] + view.getHeight() / 2;
         assertTrue(description + " center is outside the visible display rectangle",
-                visible.contains(centerX, centerY));
+                centerIsVisible(view, visible));
     }
 
     private static void scrollIntoDisplayIfNeeded(View view, String description) {
         Rect visible = new Rect();
-        if (view.getGlobalVisibleRect(visible) && visible.width() > 0 && visible.height() > 0) {
+        if (view.getGlobalVisibleRect(visible)
+                && visible.width() > 0 && visible.height() > 0
+                && centerIsVisible(view, visible)) {
             return;
         }
 
@@ -78,12 +84,16 @@ public final class CompanionLifecycleInstrumentedTest {
         assertTrue("ScrollView has not been laid out", scroll.isLaidOut());
         Rect descendant = new Rect(0, 0, view.getWidth(), view.getHeight());
         scroll.offsetDescendantRectToMyCoords(view, descendant);
-        int targetY = Math.max(0, descendant.bottom - scroll.getHeight());
+        // Center the target rather than aligning only its bottom. This also
+        // handles a partially visible TextView whose center is still clipped.
+        int targetY = Math.max(0, descendant.centerY() - scroll.getHeight() / 2);
         scroll.scrollTo(scroll.getScrollX(), targetY);
         assertTrue(description + " remained outside the viewport after scrolling",
                 view.getGlobalVisibleRect(visible));
         assertTrue(description + " is still fully clipped after scrolling",
                 visible.width() > 0 && visible.height() > 0);
+        assertTrue(description + " center remained outside the visible display rectangle",
+                centerIsVisible(view, visible));
     }
 
     private static TextView findText(View view, String expected) {
@@ -123,6 +133,7 @@ public final class CompanionLifecycleInstrumentedTest {
             assertFalse("MainActivity unexpectedly finished", activity.isFinishing());
             TextView status = findText(
                     activity.getWindow().getDecorView(), expected);
+            scrollIntoDisplayIfNeeded(status, "status text " + expected);
             assertOnDisplay(status, "status text " + expected);
         });
     }
