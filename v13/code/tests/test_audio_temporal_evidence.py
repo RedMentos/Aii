@@ -7,13 +7,14 @@ def cue(hint, score=1.0):
     return {"activity_hint": hint, "activity_score": score}
 
 
-def step(state, t, hint, score=1.0, source="mic-a", generation="g1"):
+def step(state, t, hint, score=1.0, source="mic-a", generation="g1", receipt=None):
     return state.update(
         source_id=source,
         generation_id=generation,
         start_ms=t,
         end_ms=t + 40,
         cues=cue(hint, score),
+        consent_receipt_ref=receipt,
     )
 
 
@@ -204,3 +205,44 @@ def test_registry_replaces_old_generation_and_supports_explicit_reset():
     )
     assert registry.reset() == 1
     assert len(registry) == 0
+
+
+
+def test_explicit_temporal_state_resets_when_consent_receipt_changes():
+    state = TemporalVoiceEvidence()
+    step(state, 0, "VOICED", receipt="fixture:receipt-a")
+    active = step(state, 40, "VOICED", receipt="fixture:receipt-a")
+    assert active["voice_active"] is True
+
+    renewed = step(state, 80, "SILENCE", receipt="fixture:receipt-b")
+    assert renewed["state_reset"] is True
+    assert renewed["reset_reason"] == "CONSENT_RECEIPT_CHANGED"
+    assert renewed["voice_evidence"] == 0.0
+    assert renewed["voice_active"] is False
+    assert renewed["voice_onset"] is False
+
+
+def test_registry_starts_fresh_for_a_new_consent_receipt():
+    registry = TemporalVoiceEvidenceRegistry(max_streams=4)
+    registry.update(
+        source_id="mic-a", generation_id="g1",
+        consent_receipt_ref="fixture:receipt-a",
+        start_ms=0, end_ms=40, cues=cue("VOICED"),
+    )
+    active = registry.update(
+        source_id="mic-a", generation_id="g1",
+        consent_receipt_ref="fixture:receipt-a",
+        start_ms=40, end_ms=80, cues=cue("VOICED"),
+    )
+    assert active["voice_active"] is True
+
+    renewed = registry.update(
+        source_id="mic-a", generation_id="g1",
+        consent_receipt_ref="fixture:receipt-b",
+        start_ms=80, end_ms=120, cues=cue("SILENCE"),
+    )
+    assert renewed["state_reset"] is True
+    assert renewed["reset_reason"] == "CONSENT_RECEIPT_CHANGED"
+    assert renewed["voice_evidence"] == 0.0
+    assert renewed["voice_active"] is False
+    assert len(registry) == 1
