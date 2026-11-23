@@ -154,7 +154,9 @@ def test_body_state_surfaces_temporal_omission_reason_without_authority(tmp_path
         assert view["role"] == "B2_GIST"
         assert len(bodyview.dumps(view)) <= bodyview.STATE_CHARS
         persisted = json.loads(store.read_source(result["source_ref"]))
-        assert persisted["world_jepa_temporal_status"] == expected
+        assert persisted["schema"] == "V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/2"
+        assert persisted["view"]["world_jepa_temporal_status"] == expected
+        assert persisted["temporal_world_jepa_audit"]["reason"] == "RECEIVER_UTILITY_REJECTED"
     finally:
         store.close()
 
