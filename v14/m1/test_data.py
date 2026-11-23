@@ -241,6 +241,7 @@ class WindowTests(unittest.TestCase):
             second = write_manifest(manifest, path)
             self.assertEqual(first, second)
             self.assertEqual(len(first), 64)
+            self.assertEqual(first, hashlib.sha256(path.read_bytes()).hexdigest())
 
 
 class UCIParserTests(unittest.TestCase):
