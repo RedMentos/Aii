@@ -841,6 +841,9 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         # SourceRefs below are read from the real Runtime SQLite Store.
         receiver_text = "The verified action history is ready. Estimate the next action duration."
         receiver_event = runtime.store.event(runtime.session, receiver_text)
+        # Exercise the gated B2 receiver explicitly; product default stays OFF
+        # because the prior STEP2 ablation found B2 offer hijacking.
+        runtime.cfg["b2_offer_body_state"] = True
         seen_queries = {}
         original_pool_get = runtime.pool.get
 
