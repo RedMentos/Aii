@@ -1500,3 +1500,21 @@ Private diagnostics report Lab-Age mode ACTIVE, requested stage 10, effective im
 ## Latest CI detail — 2026-11-22T22:36:01.944Z
 
 #2370 exact head bae7d031: private owner-read bootstrap run 45077837232 SUCCESS (CI only), JEPA Runtime transactional update IN_PROGRESS, 14 other workflows QUEUED; 7 cancelled/7 skipped are not passes. #2379 exact head 4ce32890: one-shot MediaProjection provider run 45077108220 SUCCESS, staged/integrated regression still QUEUED; base remains 11 commits behind #2356. No device capture or process-death acceptance.
+
+## Boss integration checkpoint — 2026-11-23T00:59:43Z
+
+Current release branch remains aed1d2b826290c95c70356b5d8b864b5ef382be4, installed on Redmi by private PIPELINE_STATUS #664. Exact release workflow runs: 21/21 SUCCESS. The device is up-to-date, but the product remains functionally incomplete: the latest stored turn is 57.74 s with 41.63 s TTFT, 38.95 s prefill and only 2 generated tokens; B1/B2 still have 53.2/54.2 s TIME_BUDGET failures and zero valid offers. HEALTH/DIAGNOSTICS conflict; LEARNING_STATUS is unavailable; no mapped native process or native weight change is proven.
+
+Boss #2370 now sits at exact head d149bd5e0a2f8394e44e0ed60a208638b9f4b3b9. The immutable arithmetic→Termux12→Termux21→stage→deployer chain is 7/7 consistent by GitHub readback. CI is 15 queued, 1 cancelled, 1 skipped; no new-head pass. The measured upstream Runtime hash is now pinned; the next decision must come from exact CI, not a source-only check. Local full-suite testing is blocked by absent checkout and GitHub DNS failure.
+
+Cross-agent dependencies:
+- JEPA #2396 head 3a1cecb0ddb4de3791d4ea6b66dc5d2038b3830c: 3 workflow failures converge on the stale Termux12 pin for integrated_world_training_resume_candidate_20261111.py; temporal T8 is in progress. QA #2391 head 224153378e7ec5119509468fc996ba77ae2ead0d diverges 7/5 and must rebase after JEPA code, then recompute every downstream pin.
+- Perception #2395 head 26ccaf0825d4ebf02aedcdae781a9164b04f53d5: focused lineage workflows 2/2 pass, staged/integrated fail because source_lifecycle_lock_integration_candidate.py pins old vision.py and applies an obsolete forget anchor. Pin the new vision + lineage helper, preserve ingest/state overlays, remove the old forget replacement and stage the helper.
+- Core #2394 head 41b43cb139d68caf8c459cec668061b4eda6b6db: 2/2 synthetic workflows pass, but parent QA #2356 process-restart acceptance still fails. Keep all non-launch_app capabilities OFF.
+- Core #2379 MediaProjection branch is diverged 891/6 against the latest QA base. Rebase, then integrate provider→A5 lease→RAW EYE→C3 with one exact consumer test. Perception #2375 remains synthetic only; no real screen capture.
+- Audio/voice: #2369 has seven Perception-owned checks green but the Core staged/import failure remains. Core must include and pin audio_teacher_ear.py plus separate teacher/transcript opt-ins or leave Teacher Ear OFF. No AudioRecord provider or speech decoder/vocoder is Android-verified.
+- Research #2393 merged documentation only. R-100 remains an isolated sherpa-onnx wheel candidate; R-101 is now correctly identified as an ECML-PKDD 2026 proceedings paper. No runtime package or model was downloaded.
+
+Role-specific next work: Boss finish #2370 exact CI and whole-candidate review; Core rebase #2379 and complete the MediaProjection/A5/C3 consumer; QA rebase #2391 after JEPA and fix process-death/restart; JEPA repair the training-resume pin and preserve the postcommit worker test; Research/Perception fix A3 source-forget composition and complete AudioRecord/MediaProjection consumer tests. Whole-Canon clause→code→consumer→test→platform→rollback traceability remains active; no organ is dropped.
+
+**User action: none.** No Termux command, update request, model/weight swap, permission change or device action.
