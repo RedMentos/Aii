@@ -1426,63 +1426,12 @@ The linked `alikayyam/sticky_moe` repository README declares MIT, but the root `
 - M1 #2452 current exact head `2104f72` has a failing M1 test workflow. M1 #2453 `f7f7520` has a passing DATA workflow only. Neither is a real UCI cohort, model training, weight update or Redmi result. Preserve all Ridge-AR, Raw-Window-Probe, persistence, train-mean and direct-MAE/JEPA controls.
 - These open branches are reviewed but not silently integrated: no exact current-base CI/consumer proof justifies merging them into the Boss candidate. Keep file ownership with Core, QA, JEPA/Memory and Perception; Boss owns only cross-lane integration and synchronized handoff/coverage.
 
-
 ---
 
-## JEPA & Memory — run 15 — 2026-11-23
+## JEPA & Memory — run 17: second-update receiver-retention integration gate (2026-11-23T21:57:29Z)
 
-### Code checkpoint
-
-- Working branch `jepa-memory/v14-temporal-boss-2443-rebase-20261123-run14`; code/test checkpoint `978e257399a9a23eff8119b3f9611a1ba6d410de` (source commit `3122e30830a94848f4ffe17fb55146d8c5a614d0`); documentation-only descendants update this handoff, Board, Next Action, Workplan, Research Ledger and Canon overlay. Parent is Boss PR #2443, current branch head `cdf6b64067ac426ba32194100d3764f6e74c105f`; release ancestor remains `8d93236c753f0194224c19edc7411d8d7082b1d6`.
-- `v13/code/v13/world_jepa_temporal.py`: rollback now loads/verifies the prior checkpoint before committing the rollback pointer. A missing/corrupt prior file cannot replace the valid active model or cause its pruning. Successful rollback invalidates same-Store warm caches and warms the invoking consumer from the already verified restored model.
-- `v13/code/tests/test_v14_world_jepa_temporal_runtime.py`: the positive two-checkpoint rollback/restart path checks warm-cache SHA identity after explicitly forcing a cold reader; parameterized missing/corrupt fallback controls assert no Store-state/version change and preserve the current active checkpoint.
-- Handoff: `v14/handoffs/JEPA_MEMORY_RUN15_ROLLBACK_GUARD_20261123.md`.
-
-### Verification and integration boundary
-
-- PR #2454 is DRAFT / mergeable=false. Branch head before final Board refresh was `83475a095072afdd7611f0a5bf2ce60cde97b005` (18 ahead / 47 behind); code/test checkpoint is `978e257399a9a23eff8119b3f9611a1ba6d410de` (source fix `3122e30830a94848f4ffe17fb55146d8c5a614d0`; handoff-file commit `05ec1f4527860960677bda93d7736ad0c1a289a1`). Against Boss #2443 head `cdf6b64067ac426ba32194100d3764f6e74c105f`, merge base remains `6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4`. Latest readback before this status sync: #2454 head `99ebac7797977360e9baf23bd621d62b6eb457dc` is 35 ahead / 47 behind Boss #2443; Core #2457 head `f8d0427100019da42e23d29a14e43440c641e0f3` is 10 ahead / 31 behind #2454 (merge base `bf2913b150d8decbf6e33c43920d21acc83439b3`) and must be rebased after parent/JEPA verification. No force-push or rebase was attempted because the combined Boss exact-head CI remains incomplete.
-- Exact-head workflow readback for the JEPA branch: zero PR workflow runs and zero combined statuses. Exact Aii tests were NOT_RUN locally because there is no checkout in this execution environment and GitHub DNS resolution fails. CPython 3.13.5, NumPy 2.3.5 and pytest 9.0.0 are present, but this is not a project test.
-- The Boss candidate's QA children #2459 and #2460 have their recorded focused passes, but the combined Boss code head `a5e536a96f6dc2a3a515d37b08393f7136e9efff` had workflow attempts ending `startup_failure` with no jobs. The current Boss head `cdf6b64067ac426ba32194100d3764f6e74c105f` is a documentation descendant with no workflow runs. No combined PASS is claimed.
-- Redmi remains on installed release `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled, AI `STOPPED_BY_USER`, autostart=false, model process stopped. B1/B2 TIME_BUDGET 53.2/54.2 s, correctness UNKNOWN, native residency unavailable. No device action was taken; candidate NOT_RELEASED / NOT_INSTALLED.
-
-### Next executable steps
-
-1. Wait for a complete exact-head combined Boss matrix. Then rebase #2454 onto that exact green head without force-push.
-2. Rebind JEPA-owned optimizer-resume/recovery pins from read-back bytes; leave Core-owned stage/deployer pins with Core and rebind only after the final JEPA bytes are stable.
-3. Run the temporal and postcommit suites on Python 3.13 and 3.14, then optimizer-resume, staged/integrated, source-forget, restart, positive rollback and missing/corrupt rollback controls. Capture numeric parameter/checkpoint deltas and holdout/retention utility; no native body-weight claim without a real receiver consumer.
-4. Complete the production ActionSelection multi-SourceRef producer with Core. Keep B1/B2/SELF readouts SHADOW until the real receiver and source-disjoint utility are verified.
-5. Preserve the Redmi STOPPED_BY_USER state. No user action is required for this code-only candidate.
-
-
-### Explicit remaining JEPA receiver-retention gap
-
-The temporal predictor's fixed-EMA retention gate is measured, and B1/B2 adapter fitting records bounded Adam gradients, old/new parameter SHA, parameter delta norm, source-disjoint current holdout metrics and shuffled/zero-latent controls. But `world_jepa_learning_intent.finalize_weight_delta_receipts()` currently sets `target_adapter_retention` to `NOT_MEASURED`. The old adapter's MSE on the *new* holdout is not an old-cohort retention measurement. After the parent/rebase gate, persist prior receiver holdout outcomes and measure old/new B1/B2 heads on the identical retained cohort, with source/transition disjointness and shuffled/no-history negative controls. Do not call the B1/B2 receiver loop complete until the receipt reports a measured retention result.
-
-
-## 2026-11-23 — JEPA & Memory run 16: receiver-adapter retention
-
-**Code candidate:** PR #2454, branch head at code/test checkpoint `1cfac4a1518a959a2022b81e796e3dfc0b6b2cf0`; handoff commit `3066dac6aaaa5573b13c1dc0e0864f144e08c2c2`.
-
-### Implemented source path
-
-- `world_jepa_learning_intent.py`: bounded, digest-validated receiver-retention cohort; pre-update baseline using the active encoder and active B1/B2 heads; post-update evaluation using the new encoder and new heads; v3 WeightDeltaReceipt metrics; fixed cohort IDs included in LearningIntent retention provenance.
-- `world_jepa_temporal.py`: fixed cohort exclusion from training by direct/transitive source IDs, source hashes and action IDs; fail-closed behavior when the old cohort cannot be proven disjoint; persistent cohort in the checkpoint record; source-forget scans its provenance.
-- `test_v14_world_jepa_temporal_runtime.py`: bootstrap persistence, same-cohort adapter retention, encoder drift and compensation, degraded-head failure, source-overlap veto, digest tampering, source-forget after bounded-row eviction, and measured v3 receipt validation.
-
-### Gate semantics
-
-- First update: no prior receiver cohort exists, so the receipt is `NOT_MEASURED / NO_PRIOR_CHECKPOINT`; the current holdout is persisted for the next update.
-- Later update: the previous encoder+head and updated encoder+head are evaluated on the same raw `X/A/Y` cohort. Both B1 and B2 must stay within the provisional [DEFAULT] 5% relative old-cohort MSE tolerance; the value is recorded in each v3 receipt and must be calibrated against real update data. If the prior receiver utility gate passed, the updated pair must also beat mean, zero-latent and shuffled-latent controls.
-- Any source overlap or measured retention regression prevents checkpoint commit. The fixed cohort is not trained on; source-forget can still invalidate it.
-- This is an adapter-retention guard, not full world-fact timescale stratification, not native body-weight training and not trained latent coupling.
-
-### Test and platform state
-
-- Exact-head Actions run #45273984275: `startup_failure`, 0 jobs; no CI test executed.
-- Full local project suite: NOT_RUN; no Aii checkout and GitHub DNS unavailable. Python 3.13.5 / NumPy 2.3.5 / pytest 9.0.2 are installed in the container, but cannot substitute for the repository.
-- Synthetic Python numeric control: PASS for same-cohort retention, encoder drift, compensation, degraded-head rejection and overlap detection.
-- Termux/Redmi: REDMI_UNVERIFIED. Private V13OBS #115 (19:52:16Z) still reports installed 8d93236, auto-update enabled, runtime STOPPED_BY_USER, two failed native attempts per B1/B2 and zero valid offers. Fresh private owner-read creation failed HTTP 422 due unverified GitHub email; no device action was taken.
-
-### Integration ordering
-
-PR #2454 remains DRAFT and is 95 ahead / 47 behind current Boss #2443 head cdf6b640; merge base remains 6e9bad8. Do not rebase until the combined Boss exact-head CI is green. Then rebase #2454 onto that exact head, review source-authority/forget composition, rebase Core #2457 (currently 10 ahead / 91 behind the current JEPA head) onto the verified JEPA head, and run the Python 3.13/3.14 temporal, postcommit, optimizer-resume, source-forget, restart/rollback, staged and integrated suites. No force-push. Keep B1/B2 SHADOW and no phone release.
+- PR #2454 exact head: `32505a33061283522b3bde5597a74a93b12d399b`, DRAFT / NOT_RELEASED. The new regression assertions extend the real Store-backed A→B→C→A sequence: update two must persist `MEASURED_PASS` B1_DETAIL and B2_GIST v3 receipts on the exact first-update cohort; the cohort's source IDs, hashes and action IDs must be absent from update-two training windows; the receipts must carry nonzero gradients/parameter deltas; and a fresh consumer must warm-read the second checkpoint and persisted receipts.
+- This closes the run-16 handoff's test-assertion gap; it does not establish that the test passed. The exact-head workflow/status lookup returned no runs/contexts. LOCAL_LINUX full Aii project tests remain BLOCKED / NOT_RUN (no checkout; github.com DNS resolution fails).
+- Parent integration remains blocked: Boss #2443 current branch head `cdf6b64067ac426ba32194100d3764f6e74c105f`, code-bearing checkpoint `a5e536a96f6dc2a3a515d37b08393f7136e9efff`; combined exact-head matrix is incomplete after startup_failure attempts. #2454 is 102 ahead / 47 behind this branch, merge base `6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4`. Wait for green parent CI before rebasing; no force-push. Core #2457 remains stacked on an older JEPA checkpoint.
+- The existing code path remains an experimental persistent numeric temporal predictor/EMA plus small float B1/B2 receiver adapters. No native GGUF body-weight update, trained cross-organ latent transfer, production learning authority or Redmi proof. Receiver adapters remain SHADOW / decision authority NONE.
+- Next executable step: after the Boss parent turns green, rebase this branch onto its exact head, recompute the source-derived recovery pins, then run the temporal and postcommit suites on Python 3.13/3.14 plus optimizer-resume, source-forget, restart/rollback, staged and integrated consumers. Fix any measured failure before Core rebases #2457.
