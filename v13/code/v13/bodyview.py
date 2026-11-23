@@ -90,15 +90,16 @@ def _temporal_world_jepa_body_readout(r, e, role):
 
     try:
         from . import world_model
-        from .world_jepa_temporal import TemporalWorldJEPAStoreConsumer
+        from .world_jepa_temporal import runtime_consumer
 
         session_id = getattr(r, "session", None)
         if type(session_id) is not str or not session_id:
             return omitted("NO_SESSION")
         actions = tuple(world_model.ACTIONS)
-        learner = TemporalWorldJEPAStoreConsumer(r.store)
+        learner = runtime_consumer(r)
         matrix = learner.receiver_matrix(
             session_id, actions, history_length=history_length, nonblocking=True,
+            warm_only=True,
         )
         matrix_status = matrix.get("status")
         if matrix_status != "SHADOW_READOUT_ONLY":
@@ -213,6 +214,7 @@ def _temporal_world_jepa_body_readout(r, e, role):
             "history_sources": [value[:8] for value in history_sources],
             "rows": rows,
             "native_body_consumed": False,
+            "native_body_weights_changed": False,
             "decision_authority": "NONE",
             "note": "prediction; not fact/permission",
         }
@@ -223,7 +225,7 @@ def _temporal_world_jepa_body_readout(r, e, role):
         try:
             episodic = learner.episodic_recall(
                 session_id, history_length=history_length, limit=len(actions),
-                nonblocking=True, budget_s=0.05,
+                nonblocking=True, budget_s=0.05, warm_only=True,
             )
         except (BlockingIOError, ValueError, TypeError, KeyError, OSError,
                 OverflowError, ArithmeticError, AttributeError):
