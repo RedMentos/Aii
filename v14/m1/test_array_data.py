@@ -69,7 +69,8 @@ class DirectUCIArrayTests(unittest.TestCase):
             self.assertEqual(dataset.values.shape, (1000, 2))
             self.assertTrue(np.isnan(dataset.values[12, 0]))
             batch = next(dataset.iter_batches("train", batch_size=16))
-            self.assertEqual(batch.inputs.x.shape, (16, 5, 2))
+            # The missing row at index 12 rejects origins 10..16; only 9 of the first 16 candidates survive.
+            self.assertEqual(batch.inputs.x.shape, (9, 5, 2))
 
     def test_two_pass_array_loader_rejects_nonfinite_values(self):
         with tempfile.TemporaryDirectory() as directory:
