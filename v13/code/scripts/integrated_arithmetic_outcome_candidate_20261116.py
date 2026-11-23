@@ -11,7 +11,7 @@ SOURCE_PINS = {
     'v13/world.py': 'bb221176167cb1f83285127cba2b2e059ebf9b0cec79b9405b3b5f23cef0343e',
     'v13/broker.py': 'ec70ef8c27ca2513bf3feb54faad3588029cb4f5d8a14bfa89394e26e118c9f7',
     'v13/world_semantic_evidence_candidate.py': '354306bb763fda116728bd13e8502d81ed8e6a790c4387d98e0920960a87b8a5',
-    'v13/local_error_route_shadow_candidate.py': '87bb77ed43b739fb890308fa565d0ca4a84278992a2312e219122c358f2c5187',
+    'v13/local_error_route_shadow_candidate.py': 'd419544e27d1c3f8e98aa44f4c0bb306ae4a991e3a9210254717f5d7a5ff452a',
 }
 UPSTREAM_PINS = {
     'v13/world.py': SOURCE_PINS['v13/world.py'],
