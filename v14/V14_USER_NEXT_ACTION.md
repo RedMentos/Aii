@@ -1,3 +1,16 @@
+## Latest verified status — 2026-11-23T00:05:08.222Z
+
+**No user action is required.** Do not run a manual Termux command, send a chat, change permissions, download/swap a model, or request an update for the current candidate.
+
+- Redmi remains on installed release aed1d2b826290c95c70356b5d8b864b5ef382be4; private owner-read #653 confirms auto-update enabled and runtime/dashboard up to date.
+- Latest stored turn is still 57.74 s total, 41.63 s TTFT, 38.95 s C3 prefill, 751 prompt tokens and 2 generated tokens; correctness is unknown. B1/B2 still time out at 53.2/54.2 s.
+- Boss candidate PR #2370 is draft at 11c4ffea182a6bfbb729fbf176b0c1b1f6541189; 29 checks pending, 1 skipped, no completed green matrix. It is not a release and has not been installed.
+- The candidate's recovery-only role-slice change keeps the ordinary 2 s floor intact; it does not claim to improve Redmi inference speed.
+- The Perception adapter stack is integrated on draft PR #2375 at e21a85a329ea25a2208fcfa64edc216884b55bf1; 3 checks pending. Core's provider PR still needs a combined base and actual C3 consumer.
+- The next work is automated CI/review and Android-path integration. A fresh device receipt will be required before any installed status changes.
+
+---
+
 # V14 — nächste Nutzeraktion
 
 ## Aktueller Stand — Boss-Integration, Run 14 (2026-11-22T23:05:31.059Z)
