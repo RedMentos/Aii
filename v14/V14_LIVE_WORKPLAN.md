@@ -1329,3 +1329,8 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - Boss: review only current-base, exact-head candidates; preserve all Canon families and the historical V13 bytes; keep the single P0 whole-system ledger and re-evaluate after each owner fix.
 
 **User action required: NONE.** The normal updater installed dfa3945; no manual command, duplicate update request, model swap, permission change or new device test is needed now.
+
+
+### Fresh HEALTH follow-up — 2026-11-23T11:33:30.773Z
+
+Private owner-read #793 returned a current local OS snapshot: MemAvailable 1,388 MiB of 5,569 MiB; free disk 990 MiB of 109,641 MiB. HEALTH's runtime field is UNAVAILABLE, while DIAGNOSTICS #776 reports the model process/service RUNNING. Treat this as a telemetry-surface discrepancy, not evidence that the service stopped. The receipt says remote observation is recent and PUBLISHED, but the explicit diagnostics field `console_errors` remains USER_NOT_OPTED_IN; no LOG_PAGE was requested. The health result does not alter the P0 latency/B1/B2/correctness status. No device action, chat turn, model/weight/permission change or data mutation occurred.
