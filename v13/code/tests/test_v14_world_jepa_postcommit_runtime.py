@@ -829,6 +829,112 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         assert "runtime-jepa-" not in repr(temporal_state)
         assert "worker-jepa-lifecycle" not in repr(telemetry)
         assert "worker-jepa-lifecycle" not in repr(temporal_telemetry)
+
+        # The numeric episodic recall must reach the actual B1/B2 prompt consumer.
+        # The fake runner isolates prompt delivery; all recalled T8 rows and
+        # SourceRefs below are read from the real Runtime SQLite Store.
+        receiver_text = "The verified action history is ready. Estimate the next action duration."
+        receiver_event = runtime.store.event(runtime.session, receiver_text)
+        seen_queries = {}
+        original_pool_get = runtime.pool.get
+
+        class CaptureReceiverRunner:
+            def __init__(self, role):
+                self.role = role
+                self.last_metrics = {"status": "FINAL", "duration_s": 0.0}
+
+            def generate(self, messages, cancel, deadline, max_tokens, schema):
+                query = json.loads(messages[1]["content"])
+                seen_queries[self.role] = query
+                return iter([json.dumps({
+                    "summary": "A source-quoted next-action estimate.",
+                    "quotes": ["verified action history"],
+                    "uncertainty": "low",
+                    "needs_reentry": False,
+                })])
+
+        runtime.pool.get = lambda role: CaptureReceiverRunner(role)
+        try:
+            receiver_specs = (
+                ("B1_DETAIL", 2, "DURATION+OUTPUT_CHARS"),
+                ("B2_GIST", 3, "P_FINAL_NOT_CORRECTNESS"),
+            )
+            for role, expected_history, expected_target in receiver_specs:
+                delivered = runtime.cognition.offer(
+                    role, receiver_event, 0, time.monotonic() + 30.0
+                )
+                query = seen_queries[role]
+                body_state = query.get("body_state")
+                assert type(body_state) is dict, (role, query.keys())
+                temporal_view = body_state.get("world_jepa_temporal")
+                assert type(temporal_view) is dict, (role, body_state)
+                assert temporal_view.get("status") == "SHADOW_READOUT_ONLY"
+                assert temporal_view.get("history_length") == expected_history
+                assert temporal_view.get("target") == expected_target
+                assert temporal_view.get("rows")
+                episodic_view = temporal_view.get("episodic")
+                assert type(episodic_view) is list and 1 <= len(episodic_view) <= 2
+                assert all(
+                    type(row) is list and len(row) == 6
+                    and row[0] in world_model.ACTIONS
+                    and type(row[1]) in (int, float)
+                    and type(row[2]) in (int, float)
+                    and type(row[3]) is bool
+                    and type(row[4]) is int
+                    and type(row[5]) is str and len(row[5]) == 8
+                    for row in episodic_view
+                )
+                assert "runtime-jepa-" not in repr(episodic_view)
+                assert "synthetic-postcommit-source-" not in repr(episodic_view)
+
+                query_row = runtime.store.one(
+                    "SELECT payload FROM packets WHERE kind='QueryPacket' AND event_id=? "
+                    "ORDER BY rowid DESC LIMIT 1",
+                    (receiver_event["event_id"],),
+                )
+                assert query_row is not None
+                query_packet = json.loads(query_row["payload"])
+                body_state_ref = query_packet["bodyview"]["body_state_ref"]
+                assert body_state_ref in query_packet["provenance"]
+                body_state_raw = runtime.store.read_source(body_state_ref)
+                assert "runtime-jepa-" not in body_state_raw
+                assert "synthetic-postcommit-source-" not in body_state_raw
+                body_state_payload = json.loads(body_state_raw)
+                receiver_audit = body_state_payload["temporal_world_jepa_audit"]
+                episodic_audit = receiver_audit["episodic_recall"]
+                assert episodic_audit["status"] in {
+                    "EPISODIC_RECALL_SHADOW", "EPISODIC_RECALL_PARTIAL",
+                }
+                assert episodic_audit["train_split_only"] is True
+                assert episodic_audit["heldout_used"] is False
+                assert episodic_audit["source_disjoint_from_query"] is True
+                assert episodic_audit["text_disclosed"] is False
+                assert episodic_audit["decision_authority"] == "NONE"
+                assert episodic_audit["native_memory_consumed"] is False
+                assert episodic_audit["native_body_consumed"] is False
+                assert episodic_audit["native_body_weights_changed"] is False
+                query_history_ids = set(episodic_audit["query_history_action_ids"])
+                query_history_sources = set(episodic_audit["query_history_source_sha256s"])
+                holdout_ids = set(temporal_state["active"]["holdout_window_ids"])
+                train_ids = set(temporal_state["active"]["train_window_ids"])
+                audit_items = episodic_audit["items"]
+                assert audit_items
+                assert len(audit_items) >= len(episodic_view)
+                for item in audit_items:
+                    assert item["window_id"] in train_ids
+                    assert item["window_id"] not in holdout_ids
+                    assert len(item["window_action_ids"]) == expected_history + 1
+                    assert not query_history_ids.intersection(item["window_action_ids"])
+                    assert not query_history_sources.intersection(item["window_source_sha256s"])
+                    assert item["source_sha256"] == item["source_ref"]["sha256"]
+                    assert item["source_ref"] == item["window_source_refs"][-1]
+                    assert len(item["window_source_refs"]) == expected_history + 1
+                    for source_ref in item["window_source_refs"]:
+                        assert type(runtime.store.read_source(source_ref)) is str
+                assert len(delivered["evidence_refs"]) == 1
+                assert runtime.store.read_source(delivered["evidence_refs"][0]) == "verified action history"
+        finally:
+            runtime.pool.get = original_pool_get
     finally:
         runtime.close()
 
