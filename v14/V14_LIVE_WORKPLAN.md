@@ -1328,3 +1328,13 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - Research ledger now carries R-084 and R-090–R-107 append-only. R-096 engram gate is synthetic and has no old-task retention win; not sparse MoE. R-107 FAR is a preprint and sony/far is CC BY-NC 4.0 with CUDA 12.8 / 14 GB GPU environment; conceptual only, no code/weights reused.
 - Next: wait for later PIPELINE_STATUS; recompose fair B1/B2→C4→C3; wire production ActionSelection context SourceRefs; rebase temporal/episodic JEPA; continue voice, Android agency, B3, sparse MoE, self-optimization and all Canon families.
 - **User action required: NONE.** Auto-updater enabled; no manual command or duplicate UPDATE_REQUEST.
+
+
+## JEPA & Memory — release-base temporal port (2026-11-23, Run 13)
+
+- PR #2447: `jepa-memory/v14-temporal-world-jepa-release-20261123-run13`, base `fb563d771fe2d493c4ec25abe94280981d24ef5c`, head `3767e9916fad125dd36d745f869f48db566e9632`.
+- Adds persistent temporal T8 ActionOutcome -> trainable WorldJEPA/EMA -> source/session-disjoint episodic recall -> B1/B2 numeric SHADOW receiver; SleepRuntime postcommit scheduling, optimizer/checkpoint persistence, replay, restart and rollback.
+- Existing Memory API source-forget now invokes temporal checkpoint invalidation through the shared JEPA guard and clears a changed warm model cache. A Memory._forget_source -> invalidation -> remaining-T8 replay regression is included.
+- Exact-head CI: PENDING at last poll. Full local checkout blocked by GitHub DNS; no local full-suite PASS. REDMI_UNVERIFIED / NOT_RELEASED.
+- Excluded from this PR: #2443 Store-RLock/blob-unlink concurrency fix, staged builder pin recomposition, and Core's complete ActionSelection context SourceRefs. The receiver remains SHADOW; no native body weights, GGUF weights or cross-organ latent transfer are claimed.
+- Handoff: `v14/handoffs/JEPA_MEMORY_RUN13_RELEASE_PORT_20261123.md`.
