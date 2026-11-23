@@ -892,6 +892,15 @@ def test_temporal_rollback_restores_previous_checkpoint_and_retries_pending_rows
         first_state, _ = store.state(STATE_KEY, None)
         first_record = first_state["active"]
         first_sha = first_record["checkpoint_sha256"]
+        from v13.world_jepa_learning_intent import validate_receiver_retention_holdout
+        first_receiver_cohorts = first_record["receiver_retention_holdouts"]
+        assert len(first_receiver_cohorts) == 1
+        assert validate_receiver_retention_holdout(first_receiver_cohorts[0]) is True
+        assert first_receiver_cohorts[0]["created_checkpoint_sha256"] == first_sha
+        assert first_record["metrics"]["receiver_retention"]["status"] == "NOT_MEASURED"
+        assert first_record["metrics"]["receiver_retention"]["reason"] == "NO_PRIOR_CHECKPOINT"
+        for role in ("B1_DETAIL", "B2_GIST"):
+            assert first_record["weight_delta_receipts"][role]["target_adapter_retention"] == "NOT_MEASURED"
         first_intent_ids = {
             role: intent["intent_id"]
             for role, intent in first_record["learning_intents"].items()
@@ -911,6 +920,16 @@ def test_temporal_rollback_restores_previous_checkpoint_and_retries_pending_rows
         second_record = second_state["active"]
         assert second_record["checkpoint_sha256"] != first_sha
         assert second_record["fit_steps"] > first_record["fit_steps"]
+        assert second["metrics"]["receiver_retention"]["status"] == "MEASURED_PASS"
+        assert second["metrics"]["receiver_retention"]["source_disjoint"] is True
+        assert second["metrics"]["receiver_retention_gate_accepted"] is True
+        assert second_record["receiver_retention_holdouts"] == first_receiver_cohorts
+        for role in ("B1_DETAIL", "B2_GIST"):
+            receipt = second_record["weight_delta_receipts"][role]
+            assert receipt["schema"] == "v14.weight_delta_receipt.v3"
+            assert receipt["target_adapter_retention"] == "MEASURED_PASS"
+            assert receipt["target_adapter_retention_metrics"]["source_disjoint"] is True
+            assert receipt["target_adapter_retention_metrics"]["max_relative_regression"] == 0.05
         second_sha = second_record["checkpoint_sha256"]
         # Force a cold reader so this assertion exercises persisted checkpoint reload.
         learner._ephemeral_model = None
@@ -925,6 +944,7 @@ def test_temporal_rollback_restores_previous_checkpoint_and_retries_pending_rows
         restored, _ = store.state(STATE_KEY, None)
         assert restored["active"]["checkpoint_sha256"] == first_sha
         assert restored["active"]["fit_steps"] == first_record["fit_steps"]
+        assert restored["active"]["receiver_retention_holdouts"] == first_receiver_cohorts
         assert {
             role: intent["intent_id"]
             for role, intent in restored["active"]["learning_intents"].items()
@@ -943,6 +963,7 @@ def test_temporal_rollback_restores_previous_checkpoint_and_retries_pending_rows
         store = Store(home)
         reopened, _ = store.state(STATE_KEY, None)
         assert reopened["active"]["checkpoint_sha256"] == first_sha
+        assert reopened["active"]["receiver_retention_holdouts"] == first_receiver_cohorts
         assert {
             role: intent["intent_id"]
             for role, intent in reopened["active"]["learning_intents"].items()
