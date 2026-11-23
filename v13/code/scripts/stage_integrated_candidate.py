@@ -16,6 +16,8 @@ BUILDER = 'scripts/termux_runtime_recovery_candidate_20261121.py'
 BUILDER_SHA = 'a6af1c476c2bec51692e5c00f8995c7d592239f5b78b989fcf799edb6c9f75c9'
 ARITHMETIC_OVERLAY = 'scripts/integrated_arithmetic_guard_candidate_20261121.py'
 ARITHMETIC_OVERLAY_GIT_BLOB = '88c179a71387c5caba7bbd645f868a7cccf39d30'
+PROBE_PRIVACY_OVERLAY = 'scripts/integrated_public_probe_privacy_candidate_20261124.py'
+PROBE_PRIVACY_OVERLAY_SHA256 = 'b53de0580a274e6204df0e5985c457a6c69f0142eb91cb3de39e0cacbc324fd5'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 
@@ -102,7 +104,37 @@ def stage(code_dir: Path, destination: Path) -> dict:
             if target.is_symlink() or not target.is_file() or not isinstance(payload, bytes):
                 raise ValueError('unsafe arithmetic guard output')
             target.write_bytes(payload)
-        replaced_files = sorted(set(replacements) | set(arithmetic_files))
+
+        probe_privacy_path = code_dir / PROBE_PRIVACY_OVERLAY
+        if probe_privacy_path.is_symlink() or not probe_privacy_path.is_file():
+            raise ValueError('public probe privacy overlay missing or unsafe')
+        probe_privacy_raw = probe_privacy_path.read_bytes()
+        if hashlib.sha256(probe_privacy_raw).hexdigest() != PROBE_PRIVACY_OVERLAY_SHA256:
+            raise ValueError('public probe privacy overlay source changed')
+        probe_privacy_spec = importlib.util.spec_from_file_location(
+            'v14_checked_public_probe_privacy', probe_privacy_path)
+        if probe_privacy_spec is None or probe_privacy_spec.loader is None:
+            raise RuntimeError('public probe privacy overlay is not loadable')
+        probe_privacy_module = importlib.util.module_from_spec(probe_privacy_spec)
+        probe_privacy_spec.loader.exec_module(probe_privacy_module)
+        probe_privacy_files = probe_privacy_module.apply_staged_probe_privacy(staging)
+        if (not isinstance(probe_privacy_files, dict)
+                or set(probe_privacy_files) != {'v13/runtime.py', 'v13/__main__.py'}):
+            raise ValueError('public probe privacy overlay output mismatch')
+        for relative, expected_sha256 in probe_privacy_files.items():
+            target = staging / relative
+            if (target.is_symlink() or not target.is_file()
+                    or hashlib.sha256(target.read_bytes()).hexdigest() != expected_sha256):
+                raise ValueError('unsafe public probe privacy output')
+        probe_privacy_manifest = {
+            'name': PROBE_PRIVACY_OVERLAY,
+            'sha256': PROBE_PRIVACY_OVERLAY_SHA256,
+            'public_probe_sha256': probe_privacy_module.PUBLIC_PROBE_SHA256,
+            'status': 'SHADOW_REVIEW_ONLY',
+            'replaced_files': sorted(probe_privacy_files),
+            'files_sha256': probe_privacy_files,
+        }
+        replaced_files = sorted(set(replacements) | set(arithmetic_files) | set(probe_privacy_files))
         arithmetic_overlay_manifest = {
             'name': ARITHMETIC_OVERLAY,
             'git_blob_sha1': ARITHMETIC_OVERLAY_GIT_BLOB,
@@ -117,6 +149,7 @@ def stage(code_dir: Path, destination: Path) -> dict:
             'builder_sha256': BUILDER_SHA,
             'replaced_files': replaced_files,
             'arithmetic_overlay': arithmetic_overlay_manifest,
+            'probe_privacy_overlay': probe_privacy_manifest,
             'files_sha256': {str(path.relative_to(staging)): hashlib.sha256(path.read_bytes()).hexdigest()
                              for path in sorted(staging.rglob('*')) if path.is_file()},
             'limitations': ['not a production Runtime promotion', 'no Android evidence',
