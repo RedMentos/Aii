@@ -130,6 +130,17 @@ class ArrayWindowTests(unittest.TestCase):
         self.assertEqual(batch.target[0, :, 0].tolist(), [5, 6])
         self.assertEqual(batch.inputs.seasonal[0, 0, :, 0].tolist(), [3, 1])
 
+    def test_calendar_ablation_has_zero_width_calendar_tensor(self):
+        config = DataConfig(
+            input_length=5, horizon=2, max_candidate_input_length=5,
+            seasonal_lags=(2, 4), include_calendar=False,
+            train_fraction=0.70, validation_fraction=0.15,
+        )
+        dataset = ArrayDataset(self.rows, self.channels, config)
+        batch = next(dataset.iter_batches("train", batch_size=8))
+        self.assertEqual(batch.inputs.calendar.shape, (8, 2, 0))
+        self.assertEqual(batch.inputs.flatten().shape[1], 5 * 2 + 2 * 2 * 2)
+
     def test_lazy_stats_match_reference_list_builder(self):
         bounds = build_chronological_boundaries(len(self.rows), self.config)
         _, expected = make_split(
