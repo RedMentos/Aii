@@ -102,7 +102,13 @@ class PublicProbePrivacyTests(unittest.TestCase):
 
     def test_staged_overlay_patches_interactive_and_one_shot_consumers(self):
         overlay = load_overlay()
-        runtime = b"""                elif kind=='probe':
+        runtime = b"""def worker(self, kind, payload):
+    if True:
+        if True:
+            try:
+                if kind == 'other':
+                    pass
+                elif kind=='probe':
                     if payload=='sustained':
                         self.notice('bounded')
                     else:
@@ -113,10 +119,13 @@ class PublicProbePrivacyTests(unittest.TestCase):
                 self.store.log('job_error',None,{'kind':kind,'error':type(exc).__name__,'detail':str(exc)[:1000]});self.notice(f'{kind}: {type(exc).__name__}: {exc}')
                 if kind=='turn':self._rejected(payload,str(exc))
 """
-        main = b"""            if a.command=='probe':
-                from .verification import probe
-                else:result=probe(r)
-            print(json.dumps(result,ensure_ascii=False,indent=2))
+        main = b"""def main():
+    if a.command=='probe':
+        from .verification import probe
+        if a.mode=='sustained':
+            result=probe_sustained(r)
+        else:result=probe(r)
+    print(json.dumps(result,ensure_ascii=False,indent=2))
 """
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -134,6 +143,8 @@ class PublicProbePrivacyTests(unittest.TestCase):
             self.assertIn("PROBE_ERROR", runtime_after)
             self.assertIn("public_probe_summary(probe(r))", main_after)
             self.assertIn("public_probe_error()", main_after)
+            compile(runtime_after, "staged_runtime.py", "exec")
+            compile(main_after, "staged_main.py", "exec")
             with self.assertRaises(ValueError):
                 overlay.apply_staged_probe_privacy(root)
 
