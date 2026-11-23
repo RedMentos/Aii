@@ -52,3 +52,25 @@ Core must rebind its staged composer/source pins to the exact new `audio_voice_c
 ## Next executable action
 
 Run the exact-head workflow. If green, request Core's source-pin rebinding and staged/integrated consumer run; then QA review, merge readiness review, and only after the normal release pipeline a separately consented Redmi install receipt. The only current user action is **none**.
+
+
+## First exact-head CI cycle — 2026-11-23
+
+The first CI cycle on the code candidate exposed two consumer-contract issues and they were fixed before proceeding:
+
+- The RAW EAR/WebRTC comparator workflow still expected the pre-update `audio_voice_cues.py` blob. Its expected source pin now matches `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`.
+- `v13/code/experiments/benchmark_raw_ear_backends.py` used the new speaker registry without the required `current_chunk_sha256`; it now passes the exact synthetic PCM digest already computed by the benchmark.
+
+First-run evidence at head `09f4233e4b1a9f39d9b95b02acaa71cf5681e7f3`:
+- FASTDIAR diagnostic adapter: Python 3.13 and 3.14 SUCCESS.
+- RAW EAR pre-processing consent-revocation QA: SUCCESS.
+- RAW EAR prosody-to-attention: Python 3.11 and 3.13 SUCCESS.
+- Public privacy scan: SUCCESS.
+- NumPy backend regression suite: 130 tests PASS on Python 3.13 and 3.14; its later benchmark step failed only because the new required PCM digest was omitted.
+- RAW EAR/WebRTC comparator: 8/9 tests PASS; the sole failure was the stale expected source blob.
+- Staged/integrated matrix was still running at first readback.
+
+Both failures were corrected and read back. Current branch head: `86620113afceb5287aaa840aa014f9e8e304d416`.
+- `v13/code/experiments/benchmark_raw_ear_backends.py` blob: `99833db447768198b85541f99dce6e2ce34abeb6`.
+- `.github/workflows/v14-raw-ear-vad-comparison.yml` blob: `d9f29037f3eef15bde87d10a684ff872ed53c571`.
+- New exact-head CI after these two fixes: QUEUED/IN_PROGRESS at this readback. Do not count either fix as tested until the rerun completes.
