@@ -143,6 +143,23 @@ class Turn(unittest.TestCase):
         self.assertEqual([x[1] for x in seen],[True,True])
         self.assertEqual([x[2] for x in seen],[5.0,10.0])
 
+    def test_budgeted_short_window_defers_expired_first_role_but_keeps_peer_slice(self):
+        now=[0.0]
+        seen=[]
+        errors=[]
+        def ask(role,peer,role_end):
+            available=role_end-now[0]
+            seen.append((role,round(available,3)))
+            if available < 1.0:
+                raise Limits("pre-answer slice below role minimum")
+            return role
+        out=obs.run(obs.plan("A_THEN_B_SEQUENTIAL",BOTH,"e"),ask,1.5,
+                    lambda role,exc:errors.append((role,type(exc).__name__)),
+                    clock=lambda:now[0],budgeted=True)
+        self.assertEqual(seen,[("B1_DETAIL",0.75),("B2_GIST",1.5)])
+        self.assertEqual(out,["B2_GIST"])
+        self.assertEqual(errors,[("B1_DETAIL","Limits")])
+
     def test_schedules_change_physical_order_not_roles(self):
         self.assertEqual(self.r.cfg['observer_schedule'],'A_THEN_B_SEQUENTIAL')
         meta=self.turn('B_THEN_A_SEQUENTIAL');pre=[r for r,st in self.calls if st!='FINAL']
@@ -154,7 +171,10 @@ class Turn(unittest.TestCase):
         self.assertEqual(json.loads(Operator(self.r).run(':resources modes'))['mode'],self.r.guard.mode)
 
     def test_short_c3_recovery_preserves_both_preanswer_body_slices(self):
-        self.r.cfg["deadline_seconds"]=30
+        # 50 s gives this Runtime integration fixture a deterministic 10 s
+        # pre-answer window while still reserving 40 s for C3. The 30 s
+        # subminimum case is covered by the controlled scheduler regression.
+        self.r.cfg["deadline_seconds"]=50
         original_rows=self.r.store.rows
         failure={"status":"DEADLINE","metadata":json.dumps({
             "runner":{"role":"C3_LANGUAGE","generated_tokens":0,"last_phase":"prefill"}
@@ -185,7 +205,7 @@ class Turn(unittest.TestCase):
         self.assertGreaterEqual(len(pre),2)
         self.assertEqual([x[0] for x in pre[:2]],BOTH)
         for _,role_deadline,turn_deadline,called_at in pre[:2]:
-            self.assertLessEqual(role_deadline,turn_deadline-26.0)
+            self.assertLessEqual(role_deadline,turn_deadline-40.0)
             self.assertGreaterEqual(role_deadline-called_at,.99)
         decision_row=self.r.store.one("SELECT payload FROM packets WHERE kind='EffortDecision' ORDER BY rowid DESC LIMIT 1")
         decision=json.loads(decision_row['payload'])
@@ -194,7 +214,7 @@ class Turn(unittest.TestCase):
         plan_logs=[m for k,m in logs if k=="native_turn_budget_plan"]
         self.assertTrue(plan_logs)
         self.assertEqual(plan_logs[0]["recent_real_prefill_failures"],2)
-        self.assertGreaterEqual(plan_logs[0]["c3_reserved_seconds"],26.0)
+        self.assertGreaterEqual(plan_logs[0]["c3_reserved_seconds"],40.0)
 
     def test_missing_peer_gets_postcommit_observation_after_partial_preanswer(self):
         self.calls.clear()
