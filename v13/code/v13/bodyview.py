@@ -257,6 +257,7 @@ def _temporal_world_jepa_body_readout(r, e, role):
                     round(min(86400.0, max(0.0, float(duration))), 1),
                     success, min(1000000, output_chars), source_sha[:8],
                 ])
+        episodic_rows = episodic_rows[:2]
         if episodic_rows:
             context["episodic"] = episodic_rows
             context["episodic_note"] = "nearest train episode; observed outcome, not forecast"
