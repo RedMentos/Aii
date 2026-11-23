@@ -21,6 +21,7 @@ from v13.world_jepa_store_authority import verify_committed_temporal_page
 from v13.world_jepa_temporal import (
     STATE_KEY,
     TemporalWorldJEPAStoreConsumer,
+    _record_references_source,
     _split_windows,
     build_temporal_windows,
 )
@@ -350,6 +351,47 @@ def test_temporal_world_jepa_updates_ema_checkpoint_and_b1_b2_shadow_receivers(t
         assert forget_metrics["count"] == 1
         assert forget_metrics["source_id"] == source_row["source_id"]
         assert forget_metrics["status"] == "PASS"
+    finally:
+        store.close()
+
+
+def test_temporal_source_forget_checks_scanned_history_beyond_bounded_replay_and_ignores_pending(tmp_path):
+    """An evicted-but-scanned T8 source still taints parameters; pending-only does not."""
+    store = _make_store(tmp_path / "temporal-forget-scanned-history")
+    try:
+        _sessions, _events = _make_dataset(store, "forget-scanned-history", 8)
+        target = store.one(
+            """SELECT a.id AS action_id,a.rowid AS scan_seq,e.source_id
+               FROM actions a JOIN events e ON e.id=a.event_id
+               WHERE a.outcome IS NOT NULL AND a.expected LIKE ?
+                 AND a.status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED')
+               ORDER BY a.rowid ASC LIMIT 1""",
+            ('%"forecast"%',),
+        )
+        assert target is not None
+        # Deliberately model the bounded checkpoint after this row has aged out
+        # of experience_rows, holdouts and LearningIntent provenance.
+        evicted_record = {
+            "scan_cursor": target["scan_seq"],
+            "experience_rows": [],
+            "retention_holdouts": [],
+            "learning_intents": {},
+        }
+        assert _record_references_source(
+            store, evicted_record, target["source_id"]
+        ) is True
+        # A scanned-but-not-trained pending row is removed without invalidating
+        # an otherwise clean checkpoint.
+        assert _record_references_source(
+            store, evicted_record, target["source_id"], {target["action_id"]}
+        ) is False
+        assert _record_references_source(
+            store, evicted_record, "unrelated-source"
+        ) is False
+        before_row = dict(evicted_record, scan_cursor=target["scan_seq"] - 1)
+        assert _record_references_source(
+            store, before_row, target["source_id"]
+        ) is False
     finally:
         store.close()
 
