@@ -83,7 +83,13 @@ class Vision(unittest.TestCase):
         self.assertTrue((self.home/pj['path']).is_file())
         guess = vision.look(self.rt, vision.ingest(self.store, png((20, 20, 220), box=(8, 8, 33, 33))), enc)
         self.assertEqual(guess['authority'], 'STUDENT_ESTIMATE'); self.assertIn('blue', guess['nearest'][0]['caption'])
-        sha = rec['ref']['sha256']; vision.forget(self.store, rec)
+        sha = rec['ref']['sha256']; projector_path = self.home/pj['path']
+        forgotten = vision.forget(self.store, rec)
+        self.assertIn('projector', forgotten['invalidated_projectors'])
+        self.assertTrue(forgotten['projector_files_deleted']['projector'])
+        self.assertFalse(projector_path.exists())
+        self.assertIsNone(vision.load(self.store)['projector'])
+        self.assertTrue(forgotten['blob_deleted'])
         self.assertFalse((self.home/'data/blobs'/sha).exists())
         with self.assertRaises(ValueError): vision.read_image(self.store, rec['ref'])
         self.assertNotIn(rec['ref']['source_id'], vision.load(self.store)['images'])
@@ -99,7 +105,13 @@ class Vision(unittest.TestCase):
         best = vision.locate(self.rt, new, 'a blue box', enc)['regions'][0]
         self.assertEqual(best['source_ref']['modality'], 'image'); self.assertGreaterEqual(best['source_ref']['box'][0], 32)  # right half
         with self.assertRaises(ValueError): vision.locate(self.rt, new, ' ', enc)
-        vision.forget(self.store, rec); self.assertFalse(any(k.startswith(rec['ref']['source_id']) for k in vision.load(self.store)['projector']['captions']))
+        old_projector_path = self.home/pj['path']
+        forgotten = vision.forget(self.store, rec)
+        self.assertIn('projector', forgotten['invalidated_projectors'])
+        self.assertFalse(old_projector_path.exists())
+        self.assertIsNone(vision.load(self.store)['projector'])
+        rebuilt = vision.train(self.rt, enc)
+        self.assertNotIn(rec['ref']['source_id'], {item['source_id'] for item in rebuilt['training_sources']})
 
     def test_operator_command(self):
         p = self.home/'x.png'; p.write_bytes(png((220, 20, 20)))
@@ -137,6 +149,54 @@ class Vision(unittest.TestCase):
         self.assertLess(blue['tiles'][0]['source_ref']['box'][2], 33); self.assertLess(blue['tiles'][0]['source_ref']['box'][3], 25)          # top-left
         self.assertTrue(vision.status(self.rt)['teacher']['removed']); vision.operator_command(self.rt, ['teacher', 'on'])
         self.assertFalse(vision.status(self.rt)['teacher']['removed'])
+
+
+    def test_tile_projector_is_invalidated_when_its_training_source_is_forgotten(self):
+        t = FakeTeacher(); enc = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20)]
+        records = []
+        for i, colour in enumerate(colours * 2):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            for region in ('g', 'qtl', 'qtr'):
+                vision.describe(self.rt, rec, region, t)
+            records.append(rec)
+        tile = vision.train_tiles(self.rt, enc)
+        self.assertIn(records[-1]['ref']['source_id'], {item['source_id'] for item in tile['training_sources']})
+        artifact = self.home/tile['path']
+        result = vision.forget(self.store, records[-1])
+        self.assertIn('tile_projector', result['invalidated_projectors'])
+        self.assertTrue(result['projector_files_deleted']['tile_projector'])
+        self.assertFalse(artifact.exists())
+        self.assertIsNone(vision.load(self.store)['tile_projector'])
+
+    def test_projector_with_proven_disjoint_training_sources_survives_forget(self):
+        t = FakeTeacher(); enc = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        records = []
+        for i, colour in enumerate([(220, 20, 20), (20, 20, 220), (20, 180, 20), (220, 20, 20)]):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            vision.describe(self.rt, rec, 'g', t)
+            records.append(rec)
+        projector = vision.train(self.rt, enc)
+        unrelated = vision.ingest(self.store, png((20, 180, 20), box=(20, 8, 45, 35)))
+        path = self.home/projector['path']
+        result = vision.forget(self.store, unrelated)
+        self.assertNotIn('projector', result['invalidated_projectors'])
+        self.assertTrue(path.is_file())
+        self.assertIsNotNone(vision.load(self.store)['projector'])
+
+    def test_legacy_projector_without_source_lineage_is_invalidated(self):
+        rec = vision.ingest(self.store, png((220, 20, 20)))
+        path = self.home/'data/vision/projector-legacy.npz'
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b'legacy')
+        state = vision.load(self.store)
+        state['projector'] = {'path':'data/vision/projector-legacy.npz','sha256':'0'*64,'n':4,'captions':{}}
+        vision.save(self.store, state)
+        result = vision.forget(self.store, rec)
+        self.assertIn('projector', result['invalidated_projectors'])
+        self.assertTrue(result['projector_files_deleted']['projector'])
+        self.assertFalse(path.exists())
+
 
 if __name__ == '__main__':
     unittest.main()
