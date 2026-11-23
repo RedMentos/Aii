@@ -149,6 +149,7 @@ def benchmark_speaker_tracker(iterations):
             generation_id="benchmark:generation",
             start_ms=start_ms,
             end_ms=start_ms + 1000,
+            current_chunk_sha256=current_chunk_sha256,
             activity_hint="VOICED",
             embeddings=batches[index],
         )
