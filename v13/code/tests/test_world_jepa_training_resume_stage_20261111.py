@@ -74,6 +74,8 @@ def test_world_jepa_source_builder_pin_chain_is_exact():
     assert pin(context, r"BASE_BUILDER_SHA = '([0-9a-f]{64})'") == sha(feedback)
     assert pin(training, r"BASE_SHA = '([0-9a-f]{64})'") == sha(context)
     assert pin(termux12, r"integrated_world_training_resume_candidate_20261111[.]py': '([0-9a-f]{64})'") == sha(training)
+    guard_builder = "scripts/record_only_controller_guard_20261116.py"
+    assert pin(termux12, r"record_only_controller_guard_20261116[.]py',\s*'([0-9a-f]{64})'") == sha(guard_builder)
 
     base = read(termux12)
     git_blob = hashlib.sha1(b"blob " + str(len(base)).encode("ascii") + bytes([0]) + base).hexdigest()
