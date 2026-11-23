@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -246,8 +247,6 @@ class ArrayDataset:
         for key, value in expected.items():
             if prereg.get(key) != value:
                 raise PermissionError(f"preregistration mismatch: {key}")
-        self._test_authorized = True
-        self._test_preregistration_sha256 = actual_hash
         event = {
             "event": "TEST_SPLIT_OPENED",
             "timestamp_utc": datetime.now(timezone.utc).isoformat(),
