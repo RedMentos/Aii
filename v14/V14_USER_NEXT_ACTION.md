@@ -1731,3 +1731,15 @@ A newer owner-consented, read-only private V13OBS snapshot was read from the pri
 The same snapshot reports service/model process RUNNING and 8 managed sessions, but this does not establish useful cognition or sustained native residency. The last stored turn is unchanged and not a new test: FINAL, 57.739 s total, 41.627 s TTFT, 38.945 s prefill, 751 prompt tokens, 2 generated tokens; correctness UNKNOWN. B1_DETAIL/B2_GIST remain TIME_BUDGET at 53.2/54.2 s; the latest five-turn aggregate has B1 4/4 native failures and B2 2/2, with 0 valid offers. Native probe remains SMOKE_PARTIAL. No 20-turn acceptance, no fresh PSS/RSS sample, and no native latent exchange are proven.
 
 No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, shell, model/weight/permission change or device mutation was performed. PR #2433 remains NOT_RELEASED and is not installed. This is an installation readback only; the P0 real-chat/offer-delivery gate remains OPEN.
+
+
+
+## Research & Perception — exact CI outcome (2026-11-23)
+
+On code/test head `f9384604b6a58f06d8663003817175a91d1facf6`:
+- PASS: adapter consumer on CPython 3.13.18 and 3.14.10, 92 tests each, including the new synthetic impulse through RAW EAR → A4 → C3 admission; py_compile PASS.
+- PASS: RAW EAR fastpath (3.13/3.14), prosody-to-attention (3.11/3.13), WebRTC/libfvad comparison (3.13/3.14), consent-revocation, privacy, offline-bridge security and offline backend checks.
+- FAIL: staged Runtime, integrated regression and recovery consumer on Python 3.13/3.14, all due to Core's stale `audio_voice_cues.py` source pin `b18e450162b062b09368a12b1ca18924ed8c5025` vs current `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`. Staged Runtime 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; integrated regression 1 failed; recovery consumer 2 failed / 3 passed. The Perception consumer itself is green. No source gate was removed.
+- Current PR docs/handoff head at time of this note: `4c4c0e06386584cff7fe0bdc8d37f5493c821164`; PR #2433 remains DRAFT / NOT_RELEASED. No Redmi installation receipt for this candidate.
+- Fresh private V13OBS receipt reports installed base SHA `8bf44cb50e855a6dba0c91f64f60d8daddcbdc9c`, auto-update enabled, Runtime/Dashboard UPDATED, last_error NONE. The last stored turn is still 57.739 s / 41.627 s TTFT / 2 generated tokens; B1/B2 remain TIME_BUDGET and 0 valid offers. No new CHAT_SEND, LOG_PAGE or UPDATE_REQUEST.
+- Next: Core must rebind both audio source blobs and downstream recovery/stage/deployer hashes bottom-up; QA reruns the combined gate. Perception keeps its source hashes and negative controls. User action: none.
