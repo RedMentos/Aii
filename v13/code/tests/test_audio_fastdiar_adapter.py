@@ -161,6 +161,29 @@ def test_adapter_rejects_noncanonical_current_chunk_sha256(tmp_path):
         )
 
 
+def test_adapter_rejects_missing_or_unbounded_consent_receipt(tmp_path):
+    root, checkpoint, _ = make_checkpoint(tmp_path)
+    common = {
+        "source_id": SOURCE,
+        "generation_id": "gen-a",
+        "current_chunk_sha256": hashlib.sha256(tone()).hexdigest(),
+        "model_revision": MODEL_REVISION,
+        "checkpoint_path": checkpoint,
+        "checkpoint_root": root,
+        "window_start_ms": 100,
+        "window_end_ms": 300,
+        "first_frame_end_ms": 180,
+    }
+    with pytest.raises(ValueError, match="consent_receipt_ref"):
+        build_fastdiar_diagnostic_batch(
+            matrix([vector_a()]), consent_receipt_ref="", **common,
+        )
+    with pytest.raises(ValueError, match="consent_receipt_ref"):
+        build_fastdiar_diagnostic_batch(
+            matrix([vector_a()]), consent_receipt_ref="x" * 257, **common,
+        )
+
+
 def test_adapter_rejects_bad_dimensions_nonfinite_and_boolean_values(tmp_path):
     root, checkpoint, _ = make_checkpoint(tmp_path)
     args = {"checkpoint_root": root, "checkpoint_path": checkpoint}
