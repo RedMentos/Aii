@@ -1,3 +1,17 @@
+
+# QA & Android — current verified device and privacy status (2026-11-23 15:47 UTC)
+
+- Current release-development branch HEAD and authenticated installed phone SHA both equal `fb563d771fe2d493c4ec25abe94280981d24ef5c`. PIPELINE_STATUS #819 reports auto-update enabled, Runtime/Dashboard `UP_TO_DATE`, `last_error=NONE`.
+- DIAGNOSTICS #820 says the AI runtime is `STOPPED_BY_USER`, model process `STOPPED`, and `autostart=false`. Preserve this choice: no restart, CHAT_SEND, UPDATE_REQUEST, LOG_PAGE or manual Termux command. **No user action is needed unless/ until the user chooses to start V13 again.**
+- The latest stored turn (not a new test) was 6.295 s total / 2.046 s TTFT / 358 admitted tokens / 7 generated tokens. B1/B2 remain `TIME_BUDGET` at 53.2/54.2 s; C2 OK; C3 probe 3.1 s; native probe `SMOKE_PARTIAL`; residency unavailable without a verified model supervisor. No 20-turn correctness acceptance or new post-install CHAT_SEND exists.
+- QA PR #2446 now includes deterministic console redaction for the explicit native `:probe` and one-shot `v13 probe` outputs while preserving the full raw artifact locally. Candidate head `8b6b9e716886b1dbf3fccd8ade82d3cacb16ad3a`; exact staged/integrated CI is still pending/unconfirmed, LOCAL_LINUX full suite blocked by missing checkout + GitHub DNS, and Redmi behavior remains untested.
+- Current release SHA `fb563d` has 20/21 observed PR-triggered workflows successful; the single red workflow is the experimental M1 DATA fixture/window test. QA PR #2444 head `88e2115a` repairs those fixtures and passes 43 tests on Python 3.13 and 3.14 plus offline-bridge security, but is not merged and has no real UCI training or weight update.
+- The whole V13 Canon remains incomplete: correct fast chat, B1/B2 delivered and consumed by C4/C3, learned native latent coupling, real persistent body-weight learning, Android control/voice, sustained residency and full lifecycle/rollback are not accepted. Keep all statuses separate; CI is not phone proof.
+
+**Next action:** none from the user now. Keep the runtime stopped. After the user explicitly starts it, QA can run the bounded 20-turn matrix and output-privacy checks without changing models, weights, permissions or learning rights.
+
+---
+
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
