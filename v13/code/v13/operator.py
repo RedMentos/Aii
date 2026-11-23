@@ -63,7 +63,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :homeostasis [status|run|shadow|active] (WP-U2 Homöostase: Drift-/Sättigungs-Gate + langsame Pfad-Gains; aktiv nur durch Nutzer)
 :attention [status|edge <Kante>|shadow|active] (WP-N5 Aufmerksamkeit, thalamische Gain, A4)
 :ctxos [status|last|shadow|active|layout <L>|knob <N> <W>|capability <Rolle> on|off|probe <Rolle>|outcome <Event> <W>] (WP-N7 Context OS, Cache-Policy)
-:callosum [status|shadow|active|degrade|promote <Richtung>] (WP-J B3-Kanal-Policy, signed_gain; WP-N19 B3-H10-Degradation) / :gist [status|shadow|active|preview <Text>|readout [fixed|text|native|hybrid]] (WP-G G1B Gist-Gruppen ~8 Token/~12 Slots; readout = nativer B2-Tap-Konsument, SHADOW) / :body [status|bridges|swap <Rolle> <gguf>|parity <Rolle> <alt.json> <neu.json>|ramp <Rolle>|rollback <Rolle>] (WP-T13 BodyPort, Bridge-Key, Body-Swap online) / :tx [status|provisional|broker|cancel <atx>|approve <Aufruf>|undo <Aufruf>] (WP-K Aktions-Transaktion, Werkzeug-Freigabe mit Vorschau, WP-T7 Output-Broker) / :toolforecast [status|shadow|off|score] (Werkzeug-Folgen-Prädiktor vor der Wirkung, SHADOW, Runden 7/8) / :delib [status|shadow|active] (WP-N2 gelernte Deliberation, Halt-Gate) / :c5 [status|shadow|active] (WP-N4 gelernte Aktionsauswahl, C6-Egress) / :ff [status|shadow|active] (WP-F Fast-Forward/Kleinhirn, Prozeduralisierung) / :reflex [status|close <Rolle>] (WP-F Reflexe)
+:callosum [status|shadow|active|degrade|promote <Richtung>|arm-probe <sender> <receiver> --last-source --confirm|native-probe <sender> <receiver> --last-source --confirm|revoke-probe] (WP-J B3-Kanal-Policy, signed_gain; WP-N19 B3-H10-Degradation) / :gist [status|shadow|active|preview <Text>|readout [fixed|text|native|hybrid]] (WP-G G1B Gist-Gruppen ~8 Token/~12 Slots; readout = nativer B2-Tap-Konsument, SHADOW) / :body [status|bridges|swap <Rolle> <gguf>|parity <Rolle> <alt.json> <neu.json>|ramp <Rolle>|rollback <Rolle>] (WP-T13 BodyPort, Bridge-Key, Body-Swap online) / :tx [status|provisional|broker|cancel <atx>|approve <Aufruf>|undo <Aufruf>] (WP-K Aktions-Transaktion, Werkzeug-Freigabe mit Vorschau, WP-T7 Output-Broker) / :toolforecast [status|shadow|off|score] (Werkzeug-Folgen-Prädiktor vor der Wirkung, SHADOW, Runden 7/8) / :delib [status|shadow|active] (WP-N2 gelernte Deliberation, Halt-Gate) / :c5 [status|shadow|active] (WP-N4 gelernte Aktionsauswahl, C6-Egress) / :ff [status|shadow|active] (WP-F Fast-Forward/Kleinhirn, Prozeduralisierung) / :reflex [status|close <Rolle>] (WP-F Reflexe)
 :regeln (deine Regeln + was ich ohne Nachfrage tun würde) / :regel <Text> (Verbot oder „frag vorher“ speichern) / :regel aus|verbot|fragen|nein <Nr>
 :jef [status|last|shadow|active|query|outcome <Event> <0..1>] (WP-N3 JEF-Broadcast-Cache, Offer-Nutzen, Top-down-Query)
 :self [status|model|body|messages|edit list|edit approve|reject|rollback <Id>] (WP-N9 Selbstmodell, Körpergefühl, Corollary, Self-Messages/-Edits)
@@ -153,6 +153,9 @@ class Operator:
         if cmd=='self' and args:  # bare :self keeps the F3 self_state view below
             from .selfmodel import operator_command
             return operator_command(r,args)
+        if cmd=='callosum' and args and args[0] in {'arm-probe','native-probe','revoke-probe'}:
+            from .native_probe_approval import operator_command as probe_operator_command
+            return probe_operator_command(r,args)
         if cmd=='callosum':
             from .callosum import operator_command
             return operator_command(r,args)

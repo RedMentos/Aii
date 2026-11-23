@@ -22,6 +22,10 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     callosum = (destination / "v13/callosum.py").read_text(encoding="utf-8")
     assert "def native_receive(" in cognition
     assert "native-probe" in callosum
+    assert (destination / "v13/native_probe_approval.py").is_file()
+    operator = (destination / "v13/operator.py").read_text(encoding="utf-8")
+    assert "arm-probe" in operator
+    assert "native_probe_approval import operator_command" in operator
     assert "production_route=False" in cognition
     assert "semantic_use_proven=False" in cognition
     assert "import time" in callosum
@@ -44,6 +48,7 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
         [sys.executable, "-m", "pytest", "-q",
          str(CODE / "tests/test_native_latent_receiver.py"),
          str(CODE / "tests/test_native_latent_receiver_runtime.py"),
+         str(CODE / "tests/test_native_latent_receiver_approval.py"),
          str(CODE / "tests/test_callosum.py"),
          str(CODE / "tests/observer_fair_budget_disposable_cases_20261116.py")],
         cwd=tmp_path, env=env, capture_output=True, text=True, timeout=150,
