@@ -225,20 +225,42 @@ def matched_predictor_width_estimates(hidden_dim: int, steps: int) -> dict[str, 
 
 
 def m1b_predictor_control_configs(config: BaseConfig) -> dict[str, BaseConfig]:
-    """Construct the preregistered shared/unshared and width-matched M1b configs."""
+    """Construct M1b controls and refine rough widths against actual graph formulas."""
     if config.predictor_steps not in (2, 4):
         raise ValueError("M1b predictor controls require T=2 or T=4")
-    widths = matched_predictor_width_estimates(config.hidden_dim, config.predictor_steps)
+    d, h, steps = config.latent_dim, config.hidden_dim, config.predictor_steps
+    rough = matched_predictor_width_estimates(h, steps)
+
+    def shared_params(width: int, depth: int) -> int:
+        return width * width + 4 * d * width + 3 * width + 6 * d
+
+    def unshared_params(width: int, depth: int) -> int:
+        return (
+            depth * width * width
+            + (2 * depth + 2) * d * width
+            + (2 * depth + 1) * width
+            + (3 * depth + 3) * d
+        )
+
+    target_params = shared_params(h, steps)
+    param_search = range(1, max(h * 2, d * 2) + 1)
+    parameter_width = min(
+        param_search, key=lambda width: abs(unshared_params(width, steps) - target_params)
+    )
+    target_macs = predictor_macs_per_example(d, h, steps)
+    wide_search = range(1, max(2, round(h * math.sqrt(steps) * 2)) + 1)
+    wide_width = min(
+        wide_search,
+        key=lambda width: abs(predictor_macs_per_example(d, width, 1) - target_macs),
+    )
     return {
         "shared_recurrent": replace(config, predictor_kind="shared"),
         "unshared_compute_matched": replace(config, predictor_kind="unshared"),
         "unshared_parameter_matched": replace(
-            config, predictor_kind="unshared",
-            hidden_dim=widths["parameter_matched_unshared"],
+            config, predictor_kind="unshared", hidden_dim=parameter_width
         ),
         "wide_t1_compute_matched": replace(
-            config, predictor_kind="shared", predictor_steps=1,
-            hidden_dim=widths["compute_matched_wide_t1"],
+            config, predictor_kind="shared", predictor_steps=1, hidden_dim=wide_width
         ),
     }
 
