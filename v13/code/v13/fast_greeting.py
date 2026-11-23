@@ -23,14 +23,14 @@ _REPLIES = {
 
 
 def is_text_only_event(event: object) -> bool:
-    """Accept only a plain text SourceRef without an attached audio window."""
+    """Accept only a plain text SourceRef with no non-null audio window."""
     if not isinstance(event, dict):
         return False
     source_ref = event.get("source_ref")
     return (
         isinstance(source_ref, dict)
         and source_ref.get("modality") == "text"
-        and not isinstance(event.get("_audio_window"), dict)
+        and event.get("_audio_window") is None
     )
 
 
