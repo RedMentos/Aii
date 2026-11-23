@@ -45,6 +45,7 @@ class TemporalVoiceEvidence:
     def reset(self) -> None:
         self._source_id: str | None = None
         self._generation_id: str | None = None
+        self._consent_receipt_ref: str | None = None
         self._last_end_ms: int | None = None
         self._evidence = 0.0
         self._active = False
@@ -57,6 +58,7 @@ class TemporalVoiceEvidence:
         start_ms: int,
         end_ms: int,
         cues: dict,
+        consent_receipt_ref: str | None = None,
     ) -> dict:
         if type(source_id) is not str or not source_id.strip() or len(source_id) > 128:
             raise ValueError("source_id is invalid")
@@ -68,6 +70,12 @@ class TemporalVoiceEvidence:
             raise ValueError("end_ms must be an integer after start_ms")
         if type(cues) is not dict:
             raise ValueError("cues must be an object")
+        if consent_receipt_ref is not None and (
+            type(consent_receipt_ref) is not str
+            or not consent_receipt_ref.strip()
+            or len(consent_receipt_ref) > 256
+        ):
+            raise ValueError("consent_receipt_ref is invalid")
         hint = cues.get("activity_hint")
         score = cues.get("activity_score")
         if type(hint) is not str or hint not in {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}:
@@ -81,6 +89,11 @@ class TemporalVoiceEvidence:
         ):
             self.reset()
             reset_reason = "SOURCE_OR_GENERATION_CHANGED"
+        elif self._source_id is not None and consent_receipt_ref != self._consent_receipt_ref:
+            # A renewed/replaced consent receipt starts a new acoustic epoch.
+            # Never carry voice-activity evidence across that boundary.
+            self.reset()
+            reset_reason = "CONSENT_RECEIPT_CHANGED"
 
         previous_end_ms = self._last_end_ms
         gap_ms = 0
@@ -139,6 +152,7 @@ class TemporalVoiceEvidence:
 
         self._source_id = source_id
         self._generation_id = generation_id
+        self._consent_receipt_ref = consent_receipt_ref
         self._last_end_ms = end_ms
         self._evidence = max(0.0, min(1.0, evidence))
         self._active = active
@@ -163,7 +177,7 @@ import threading
 
 
 class TemporalVoiceEvidenceRegistry:
-    """Bounded, runtime-local temporal filters keyed by source and generation."""
+    """Bounded temporal filters isolated by source, generation and consent receipt."""
 
     def __init__(self, *, max_streams: int = 16, **state_options) -> None:
         if type(max_streams) is not int or not 1 <= max_streams <= 256:
@@ -174,22 +188,38 @@ class TemporalVoiceEvidenceRegistry:
         self._lock = threading.RLock()
 
     def update(self, *, source_id: str, generation_id: str,
-               start_ms: int, end_ms: int, cues: dict) -> dict:
+               start_ms: int, end_ms: int, cues: dict,
+               consent_receipt_ref: str | None = None) -> dict:
         if type(source_id) is not str or not source_id.strip() or len(source_id) > 128:
             raise ValueError("source_id is invalid")
         if type(generation_id) is not str or not generation_id.strip() or len(generation_id) > 128:
             raise ValueError("generation_id is invalid")
-        key = (source_id, generation_id)
+        if consent_receipt_ref is not None and (
+            type(consent_receipt_ref) is not str
+            or not consent_receipt_ref.strip()
+            or len(consent_receipt_ref) > 256
+        ):
+            raise ValueError("consent_receipt_ref is invalid")
+        key = (source_id, generation_id, consent_receipt_ref)
         with self._lock:
+            receipt_changed = any(
+                old_key[0] == source_id and old_key[1] == generation_id
+                and old_key[2] != consent_receipt_ref
+                for old_key in self._states
+            )
             state = self._states.get(key)
             if state is None:
                 state = TemporalVoiceEvidence(**self._state_options)
             result = state.update(
                 source_id=source_id, generation_id=generation_id,
                 start_ms=start_ms, end_ms=end_ms, cues=cues,
+                consent_receipt_ref=consent_receipt_ref,
             )
+            if receipt_changed and result.get("reset_reason") is None:
+                result["state_reset"] = True
+                result["reset_reason"] = "CONSENT_RECEIPT_CHANGED"
             for old_key in list(self._states):
-                if old_key[0] == source_id and old_key[1] != generation_id:
+                if old_key[0] == source_id and old_key != key:
                     del self._states[old_key]
             self._states.pop(key, None)
             self._states[key] = state
@@ -198,7 +228,8 @@ class TemporalVoiceEvidenceRegistry:
             return result
 
     def reset(self, *, source_id: str | None = None,
-              generation_id: str | None = None) -> int:
+              generation_id: str | None = None,
+              consent_receipt_ref: str | None = None) -> int:
         if source_id is None and generation_id is not None:
             raise ValueError("generation_id requires source_id")
         if source_id is not None and (
@@ -209,12 +240,21 @@ class TemporalVoiceEvidenceRegistry:
             type(generation_id) is not str or not generation_id.strip() or len(generation_id) > 128
         ):
             raise ValueError("generation_id is invalid")
+        if consent_receipt_ref is not None and (
+            type(consent_receipt_ref) is not str
+            or not consent_receipt_ref.strip()
+            or len(consent_receipt_ref) > 256
+        ):
+            raise ValueError("consent_receipt_ref is invalid")
+        if consent_receipt_ref is not None and source_id is None:
+            raise ValueError("consent_receipt_ref requires source_id")
         with self._lock:
             keys = [
                 key for key in self._states
                 if source_id is None or (
                     key[0] == source_id and
-                    (generation_id is None or key[1] == generation_id)
+                    (generation_id is None or key[1] == generation_id) and
+                    (consent_receipt_ref is None or key[2] == consent_receipt_ref)
                 )
             ]
             for key in keys:
