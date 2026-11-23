@@ -13,7 +13,7 @@ import os
 import re
 import stat
 import unicodedata
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from .audio_voice_cues import AudioConsentLease
@@ -33,6 +33,7 @@ MAX_WORDS = 64
 MAX_WORD_TEXT = 128
 MAX_SUMMARY_CHARS = 512
 TIMING_METHOD = "TOKEN_STARTS_NEXT_WORD_END_INFERRED"
+_SHERPA_RUNTIME_TOKEN = object()
 _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 _LANGUAGE = re.compile(r"(?:und|[a-z]{2,3}(?:-[A-Za-z0-9]{2,8}){0,3})\Z")
 DEFAULT_MODEL_FILES = {
@@ -51,6 +52,7 @@ class SherpaTeacherRuntime:
     manifest: dict
     sample_rate: int = SAMPLE_RATE
     runtime_version: str = "UNKNOWN"
+    _token: object = field(default=None, repr=False, compare=False)
 
 
 def _clean_word(value: str) -> str:
@@ -147,6 +149,34 @@ def hash_sherpa_model_files(model_root, model_files: dict | None = None) -> dict
     }
 
 
+def _manifest_is_valid(manifest: dict) -> bool:
+    if type(manifest) is not dict:
+        return False
+    if (manifest.get("model_id") != MODEL_ID
+            or manifest.get("model_revision") != MODEL_REVISION
+            or manifest.get("license") != MODEL_LICENSE
+            or manifest.get("provenance_status") != "LOCAL_FILES_HASHED_UNATTESTED"):
+        return False
+    files = manifest.get("files")
+    if type(files) is not dict or set(files) != {"tokens", "encoder", "decoder", "joiner"}:
+        return False
+    for item in files.values():
+        if (type(item) is not dict or type(item.get("sha256")) is not str
+                or not _SHA256.fullmatch(item["sha256"])
+                or type(item.get("size_bytes")) is not int or item["size_bytes"] <= 0):
+            return False
+    body = {
+        "model_id": manifest["model_id"],
+        "model_revision": manifest["model_revision"],
+        "license": manifest["license"],
+        "files": files,
+    }
+    digest = hashlib.sha256(
+        json.dumps(body, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    return type(manifest.get("model_sha256")) is str and digest == manifest["model_sha256"]
+
+
 def load_sherpa_teacher_runtime(
     model_root,
     *,
@@ -191,6 +221,7 @@ def load_sherpa_teacher_runtime(
         manifest=manifest_after,
         sample_rate=SAMPLE_RATE,
         runtime_version=str(getattr(sherpa_onnx, "__version__", "UNKNOWN")),
+        _token=_SHERPA_RUNTIME_TOKEN,
     )
 
 
@@ -352,7 +383,7 @@ def validate_teacher_ear_result(
         previous_end = word_end
 
     summary, truncated = _summary(language, clean_words)
-    source_seed = "\\0".join((
+    source_seed = chr(0).join((
         source_id, generation_id, source_sha256, model_sha256,
         str(start_ms), str(end_ms),
     )).encode("utf-8")
@@ -403,8 +434,11 @@ def enrich_audio_result_with_sherpa_teacher(
         raise ValueError("teacher opt-in flags must be literal booleans")
     if teacher_opt_in is not True or transcript_consent is not True:
         return {"status": "DEFERRED_NOT_CONSENTED", "authority": "NONE"}
-    if not isinstance(teacher_runtime, SherpaTeacherRuntime):
+    if (not isinstance(teacher_runtime, SherpaTeacherRuntime)
+            or teacher_runtime._token is not _SHERPA_RUNTIME_TOKEN):
         raise TypeError("teacher_runtime must come from load_sherpa_teacher_runtime")
+    if not _manifest_is_valid(teacher_runtime.manifest):
+        raise ValueError("teacher runtime model manifest is invalid")
     if type(token_budget) is not int or isinstance(token_budget, bool) or token_budget < 0:
         raise ValueError("token_budget must be a nonnegative integer")
     if type(audio_result) is not dict or audio_result.get("status") != "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION":
@@ -466,6 +500,9 @@ def enrich_audio_result_with_sherpa_teacher(
             or not _SHA256.fullmatch(manifest["model_sha256"])):
         raise ValueError("teacher runtime model manifest is invalid")
     recognizer = teacher_runtime.recognizer
+    for method in ("create_stream", "is_ready", "decode_stream", "get_result_all"):
+        if not callable(getattr(recognizer, method, None)):
+            raise TypeError("sherpa-onnx recognizer is missing a required streaming method")
     stream = recognizer.create_stream()
     stream.accept_waveform(SAMPLE_RATE, samples)
     stream.input_finished()
@@ -476,6 +513,8 @@ def enrich_audio_result_with_sherpa_teacher(
     else:
         raise RuntimeError("sherpa-onnx decode exceeded the bounded step limit")
     result = recognizer.get_result_all(stream)
+    if getattr(result, "is_final", True) is not True:
+        raise ValueError("sherpa-onnx result is not final for the finalized PCM window")
     tokens = getattr(result, "tokens", None)
     timestamps = getattr(result, "timestamps", None)
     if timestamps is None:
