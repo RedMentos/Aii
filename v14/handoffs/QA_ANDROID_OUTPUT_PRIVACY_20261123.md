@@ -1,4 +1,35 @@
 
+## Follow-up after probe-output review — 2026-11-23 16:00 UTC
+
+The code-bearing QA checkpoint is now `17ed403a1e8c3d9896d28a8b1be57eaffd427100` (PR #2446). The follow-up was prompted by direct source inspection: the default native `:probe` path returned the full `verification.probe()` object, including C3 `actual_output`, B1/B2 `structured_offer.actual`, and C2 `actual_control`; both `Runtime._worker` and the one-shot `v13 probe` CLI serialized that object to the visible console.
+
+### Additional implementation
+
+- `v13/code/v13/verification.py`: new `public_probe_summary()` is an allowlist, not a blacklist. It exposes bounded status, token/timing/resource metrics, prompt-admission counts, verified/rejected quote counts and proof gaps. It does not copy model output, body offer content, C2 control payloads, arbitrary metric strings or unapproved config values. Non-native report shapes fail closed; non-finite/oversized numbers are ignored.
+- `v13/code/v13/runtime.py`: interactive default `:probe` now emits only the public summary.
+- `v13/code/v13/__main__.py`: one-shot default `v13 probe` emits the same summary.
+- The original full probe report remains in the existing local `exports/native-probe.json` artifact. No upload or remote diagnostic logging was added.
+- `v13/code/tests/test_prompts.py`: adversarial sentinel test covers C3 output, B1/B2 hypotheses, C2 payload, prompt preview, private config, and oversized numeric input; a negative test rejects a non-native report and checks fail-closed numeric filtering. The existing staged-context workflow already runs this test file.
+
+### Current evidence
+
+- Code-bearing head: `17ed403a1e8c3d9896d28a8b1be57eaffd427100`. PR #2446 remains DRAFT. The first-page workflow listing has not yet returned exact-head staged/integrated results for this final code commit; no green claim is made. An earlier ancestor run reported JEPA receipt-integrity PASS and other queued jobs, but it is not evidence for the final head.
+- Full LOCAL_LINUX suite remains BLOCKED: no checkout is mounted and the container cannot resolve `github.com`. No repository pytest or compile result is claimed locally.
+- Fresh authenticated device receipts #819/#820 confirm installed SHA `fb563d771fe2d493c4ec25abe94280981d24ef5c`, updater UP_TO_DATE, but AI `STOPPED_BY_USER`, model process STOPPED and autostart false. No CHAT_SEND, restart, shell, LOG_PAGE or device mutation was performed. Stored-turn timing and B1/B2 timeout metrics are unchanged and are not a new acceptance sample.
+- The 20-turn live matrix remains blocked until the user explicitly re-enables the runtime. No model/weight/permission/Age change was made.
+
+### Remaining privacy boundary
+
+This change structurally redacts the default `:probe` console and CLI response. It does not prove that a normal generative C3 answer can never reveal internal text, and the explicitly invoked `:tap` diagnostic still returns raw body inspection data by design. The prompt-level C3 rule remains a mitigation, not a hard sandbox. A native adversarial test is still required after user-controlled restart.
+
+### Shared integration coordination
+
+I reverted temporary edits to `V14_WORK_BOARD.json` and `V14_USER_NEXT_ACTION.md` from this QA branch because Boss's current integration PR #2443 is already editing those shared files. The verified status and exact code head are recorded here and in the #2443 coordination comment; Boss should carry them into the shared board/next-action without overwriting other lanes.
+
+
+---
+
+
 ## QA & Android — fresh Redmi and output-boundary checkpoint (2026-11-23 15:47 UTC)
 
 **Installed phone state:** private owner-read receipt #819 confirms the Redmi is on exact release-development SHA `fb563d771fe2d493c4ec25abe94280981d24ef5c`, matching the current release branch. Auto-update is enabled; Runtime and Dashboard are `UP_TO_DATE`; `last_error=NONE`. This is installation metadata only.
