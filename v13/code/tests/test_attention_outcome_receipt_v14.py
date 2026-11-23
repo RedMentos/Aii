@@ -123,6 +123,31 @@ class AttentionOutcomeReceiptV14(unittest.TestCase):
         self.assertIn("reward_error", persisted_packet["channels"])
         self.assertIn("surprise", persisted_packet["channels"])
 
+    def test_negative_prediction_error_stays_signed_into_next_event(self):
+        rid = self.granted()[0]
+        result = self.a.outcome(rid, -0.75)
+
+        self.assertEqual(result["prediction_error"], -0.75)
+        receipt = self.r.store.state(RECEIPT_PREFIX + rid)[0]
+        self.assertEqual(receipt["prediction_error"], -0.75)
+
+        rows = self.r.store.rows(
+            "SELECT payload FROM packets WHERE kind='ModulatorPacket' AND event_id=?",
+            (self.event["event_id"],),
+        )
+        self.assertEqual(len(rows), 1)
+        packet = json.loads(rows[0]["payload"])
+        self.assertEqual(packet["path_id"], "attention_policy")
+        self.assertEqual(packet["channels"]["reward_error"], -0.75)
+        self.assertEqual(packet["channels"]["surprise"], 0.75)
+        self.assertEqual(packet["channels"]["action_error"], 0.75)
+
+        next_event = self.r.store.event(self.r.session, "next event after negative A4 outcome")
+        recent = self.a.recent_modulators(next_event["event_id"], session=self.r.session)
+        self.assertEqual(recent["reward_error"], -0.75)
+        self.assertEqual(recent["surprise"], 0.75)
+        self.assertEqual(recent["action_error"], 0.75)
+
     def test_concurrent_same_response_is_credited_once(self):
         rid = self.granted()[0]
         barrier = threading.Barrier(2)
