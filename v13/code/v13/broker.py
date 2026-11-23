@@ -103,15 +103,15 @@ class Broker:
         from .transaction import has_output_commit
         committed=has_output_commit(self.s,mid,e['event_id'])
         if (output or status=='FINAL') and not committed:
-            conflicts=['OUTPUT_NOT_COMMITTED']
+            blocked_conflicts=['OUTPUT_NOT_COMMITTED']
             p=self.s.add_packet('OutputBrokerDecision',packet(
                 'OutputBrokerDecision','C7_OUTPUT_BROKER',e['event_id'],e['brain_generation_id'],[e['source_ref']],
-                authority='NONE',egress_type='TEXT_REPORT',status=status,overridden=[],conflicts=conflicts,
+                authority='NONE',egress_type='TEXT_REPORT',status=status,overridden=[],conflicts=blocked_conflicts,
                 committed=False,late=[],message_id=mid,rewrites=0,
             ))
             self.s.log('output_egress_blocked',e['event_id'],{'reason':'OUTPUT_NOT_COMMITTED','message_id':mid})
             return {'packet_id':p['packet_id'],'authority':None,'egress_type':'TEXT_REPORT',
-                    'egress_ok':False,'conflicts':conflicts,'late':[]}
+                    'egress_ok':False,'conflicts':blocked_conflicts,'late':[]}
         cands=[]
         if meta.get('output_authority')=='APPROVED_FIXED_RULE' or meta.get('exact_policy_matched'):cands.append('APPROVED_FIXED_RULE')
         if exact_requested or (direct and not cands):cands.append('EXPLICIT_EXACT_COPY')
