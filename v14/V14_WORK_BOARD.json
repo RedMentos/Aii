@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T00:16:19.914Z",
+  "updated_at": "2026-11-23T00:18:33.283Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; exact SHA readback 30/30 observed check-runs SUCCESS. Authenticated private PIPELINE_STATUS #619 confirms the same SHA installed, auto-update enabled, runtime/dashboard UP_TO_DATE and last_error NONE. DIAGNOSTICS #620 still shows a slow 2-token stored turn and B1/B2 TIME_BUDGET. Current candidates remain DRAFT / CI pending; functional and whole-Canon acceptance remain open.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -200,7 +200,7 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "CI / SYNTHETIC frame and local projector fixtures; no Android MediaProjection or Redmi capture",
-      "next_step": "Perception #2375 exact head e21a85 has 5/5 GitHub workflows SUCCESS on synthetic frames; the A5 packet reaches the lease-gated UI context cache and returns a 320-char A5 envelope, but normal Runtime→C3 dispatch is still separate. Core #2379 must be rebased on a combined QA+Perception base, then consume the bounded envelope through C3 under the same live lease. #2369 fixed its own stale comparator pin; exact-head comparator/staged jobs are still queued/in progress.",
+      "next_step": "Perception #2375 exact head e21a85 has 4 executed workflows SUCCESS + 1 expected safe-additive SKIPPED on synthetic frames; the A5 packet reaches the lease-gated UI context cache and returns a 320-char A5 envelope, but normal Runtime→C3 dispatch is still separate. Core #2379 must be rebased on a combined QA+Perception base, then consume the bounded envelope through C3 under the same live lease. #2369 fixed its own stale comparator pin; exact-head comparator/staged jobs are still queued/in progress.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-23T00:16:05.798Z",
       "latest_candidate_pr": {
@@ -208,10 +208,10 @@
         "head_sha": "e21a85a329ea25a2208fcfa64edc216884b55bf1",
         "base": "gpt6/v13-private-remote-bridge-20261111@aed1d2b826290c95c70356b5d8b864b5ef382be4",
         "state": "OPEN_DRAFT",
-        "ci": "5_WORKFLOWS_SUCCESS_SYNTHETIC",
+        "ci": "4_SUCCESS_1_EXPECTED_SKIPPED_SYNTHETIC",
         "scope": "one-shot frame producer adapter; not Android capture or C3 consumption"
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. #2375 e21a85: 5/5 workflows SUCCESS; synthetic frame → RAW EYE/A4/A5 cache only. A3 test fits a tiny synthetic hashed-label projector; no gradient/JEPA/retention claim. #2379 still has separate Runtime→C3 work."
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. #2375 e21a85: 4/4 executed workflows SUCCESS + 1 expected safe-additive SKIPPED; synthetic frame → RAW EYE/A4/A5 cache only. A3 test fits a tiny synthetic hashed-label projector; no gradient/JEPA/retention claim. #2379 still has separate Runtime→C3 work."
     },
     {
       "id": "V14-007",
