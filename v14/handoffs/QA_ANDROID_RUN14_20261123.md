@@ -53,3 +53,12 @@ Boss source-forget composition PR [#2443](https://github.com/RedMentos/Aii/pull/
 4. Continue the whole-Canon evidence map, prioritizing actual B1/B2→C4→C3 and native chat correctness/latency once a consented device receipt/test path is available.
 
 User action: none at this checkpoint. No chat send, log-page request, shell, model/weight swap, permission change or device mutation was performed.
+
+
+## Android companion Stop / process-death emulator evidence
+
+- QA PR [#2427](https://github.com/RedMentos/Aii/pull/2427) exact head `ae56dd1e54b3b78161f226d7735ed919879ea6cf` has 5/5 associated checks SUCCESS: two Android companion build/unit runs, two Android 13 emulator process-restart runs, and offline bridge security.
+- Emulator log: `PASS: Espresso visibly enabled/stopped the companion; target process identity changed across provider restart; persisted OFF survived`. Target process identity changed from `2415@653888` to `2925@736298`; first death boundary `activity-teardown`.
+- The test exercises the actual MainActivity Button's registered handler with `View.performClick()`, verifies persisted OFF, force-stops the process externally, then starts a fresh provider process and confirms OFF remains. This is real Android emulator process-lifecycle evidence.
+- It is **not** physical touch injection, Accessibility control or Redmi proof. No APK was installed on the user's phone.
+- PR #2427 remains DRAFT / NOT_RELEASED: it is 55 commits ahead of an unmerged base branch `qa/v14-companion-stop-durability-followup-20261123-run3` at `7d6f73de2dd1ddc5ad1929bdfc4c71bcc2c1664e`; no open PR currently exposes that base. A clean current-release-base integration/rebase and independent review are required.
