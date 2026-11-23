@@ -2,7 +2,7 @@
 
 **No user action is required. Do not run a manual Termux command or send an update request.** This candidate is not released and has not been tested on the Redmi.
 
-- Draft PR [#2451](https://github.com/RedMentos/Aii/pull/2451), branch `core/v14-native-probe-staged-overlay-20261123-run2`, head `8d4c0678cfad1f0fce995c9b7df22d1f21d8da77`, based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- Draft PR [#2451](https://github.com/RedMentos/Aii/pull/2451), branch `core/v14-native-probe-staged-overlay-20261123-run2`, code checkpoint commit `8d4c0678cfad1f0fce995c9b7df22d1f21d8da77` (later handoff/board sync commits are on the same PR branch; PR #2451 is the authoritative current head), based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`.
 - The local native-probe helper is now connected through a **post-composition staged overlay**, not a direct edit to canonical `operator.py`. Exact operator/module Git-blob pins are checked; only staged `v13/operator.py` is patched after the existing recovery/native-receiver/arithmetic builders. The stage manifest records the diagnostic-only authority boundary; `runtime_deploy.py` is rebound to the exact stage-builder SHA-256.
 - Local isolated overlay harness: **PASS** for staged-only replacement, compilation, source immutability, tamper rejection and duplicate-anchor rejection. Full local Aii pytest/stage build: **BLOCKED / NOT_RUN** (no mounted checkout; GitHub DNS failed).
 - Exact Python 3.13/3.14 GitHub Actions: **PENDING** after PR creation; no green result claimed. Redmi: **REDMI_UNVERIFIED**. No probe, Termux command, update request, model/weight/permission/data change.
