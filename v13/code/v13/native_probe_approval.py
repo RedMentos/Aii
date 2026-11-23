@@ -11,6 +11,7 @@ import os
 import secrets
 import stat
 import time
+from contextlib import contextmanager
 from pathlib import Path
 
 from .models import model_key
@@ -18,6 +19,8 @@ from .models import model_key
 KEY = "v14.native_probe_approval"
 SCHEMA = "v14.native-probe-approval/1"
 TTL_SECONDS = 120
+MIN_EXTRA_HEADROOM_BYTES = 256 * 1024 * 1024
+MIN_MODEL_HEADROOM_RATIO = 0.20
 SENDER_ROLES = frozenset({"B1_DETAIL", "B2_GIST"})
 RECEIVER_ROLES = frozenset({"B1_DETAIL", "B2_GIST", "C3_LANGUAGE"})
 
@@ -234,7 +237,130 @@ def arm(runtime, sender_role, receiver_role, *, now=None):
     }
 
 
-def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None):
+
+@contextmanager
+def runtime_probe_lease(runtime):
+    """Exclusively reserve the idle Runtime while one approved native probe runs."""
+    lock = getattr(runtime, "lock", None)
+    if lock is None:
+        raise ValueError("native probe cannot acquire the Runtime lock")
+    token = secrets.token_hex(16)
+    with lock:
+        if getattr(runtime, "closed", False) or runtime.stop.is_set():
+            raise ValueError("native probe cannot run on a closed Runtime")
+        if (runtime.current is not None or not runtime.jobs.empty()
+                or runtime.store.queue_stats().get("count", 0) != 0):
+            raise ValueError("native probe requires an idle Runtime with no queued work")
+        if runtime.paused or runtime.store.queue_paused():
+            raise ValueError("native probe cannot override a paused Runtime")
+        if getattr(runtime, "_native_probe_lease_nonce", None):
+            raise ValueError("another native probe Runtime lease is already active")
+        runtime.current = "probe"
+        runtime.paused = True
+        runtime.status = "probe"
+        runtime._native_probe_lease_nonce = token
+        runtime.cancel_event.clear()
+        runtime.wake.set()
+    try:
+        yield token
+    finally:
+        with lock:
+            if getattr(runtime, "_native_probe_lease_nonce", None) == token:
+                if runtime.current == "probe":
+                    runtime.current = None
+                delattr(runtime, "_native_probe_lease_nonce")
+                persisted_pause = bool(runtime.store.queue_paused())
+                runtime.paused = persisted_pause or runtime.current is not None
+                if runtime.current is None:
+                    runtime.status = "Beendet" if runtime.stop.is_set() else ("Pausiert" if runtime.paused else "Bereit")
+                runtime.wake.set()
+
+
+def _require_runtime_probe_lease(runtime, lease_token):
+    with runtime.lock:
+        if (not isinstance(lease_token, str) or not lease_token
+                or runtime.current != "probe"
+                or getattr(runtime, "_native_probe_lease_nonce", None) != lease_token):
+            raise PermissionError("native probe requires its active exclusive Runtime lease")
+
+
+def _resource_preflight(runtime, receiver_binding):
+    """Unload body runners, refuse every other resident native process, then check headroom."""
+    pool = getattr(runtime, "pool", None)
+    unload = getattr(pool, "unload", None)
+    if not callable(unload):
+        raise PermissionError("native probe cannot verify B1/B2/C3 unload")
+    try:
+        unload()
+    except Exception as exc:
+        raise PermissionError("native probe could not unload B1/B2/C3 runners") from exc
+
+    semantic_keys = getattr(getattr(runtime, "memory", None), "semantic_keys", None)
+    encoder = getattr(semantic_keys, "encoder", None)
+    owners = (
+        ("B1/B2/C3", pool),
+        ("C2", getattr(runtime, "needle", None)),
+        ("semantic encoder", encoder),
+    )
+    process_counts = {}
+    for label, owner in owners:
+        pids_fn = getattr(owner, "pids", None)
+        if not callable(pids_fn):
+            raise PermissionError("native probe cannot verify " + label + " process residency")
+        try:
+            pids = pids_fn()
+        except Exception as exc:
+            raise PermissionError("native probe cannot inspect " + label + " process residency") from exc
+        if not isinstance(pids, (list, tuple, set)):
+            raise PermissionError("native probe received invalid " + label + " process census")
+        process_counts[label] = len(pids)
+        if pids:
+            raise PermissionError(
+                "native probe requires zero resident native model processes; "
+                + label + " still has " + str(len(pids))
+            )
+
+    resources_fn = getattr(runtime, "resources", None)
+    if not callable(resources_fn):
+        raise PermissionError("native probe cannot verify MemAvailable")
+    try:
+        snapshot = resources_fn()
+    except Exception as exc:
+        raise PermissionError("native probe cannot read resource snapshot") from exc
+    if not isinstance(snapshot, dict):
+        raise PermissionError("native probe resource snapshot is invalid")
+    available = snapshot.get("mem_available_bytes")
+    if type(available) is not int or available <= 0:
+        raise PermissionError("native probe requires a valid MemAvailable byte count")
+
+    identity = receiver_binding.get("file_identity")
+    if not isinstance(identity, (list, tuple)) or len(identity) < 3:
+        raise PermissionError("native probe receiver model identity is incomplete")
+    model_bytes = identity[2]
+    if type(model_bytes) is not int or model_bytes <= 0:
+        raise PermissionError("native probe receiver model size is invalid")
+    extra = max(MIN_EXTRA_HEADROOM_BYTES, math.ceil(model_bytes * MIN_MODEL_HEADROOM_RATIO))
+    required = model_bytes + extra
+    if available < required:
+        raise PermissionError(
+            "native probe MemAvailable is insufficient: requires at least "
+            + str(required) + " bytes for model plus headroom; found " + str(available)
+        )
+    return {
+        "status": "PASS",
+        "mem_available_bytes": available,
+        "receiver_model_bytes": model_bytes,
+        "minimum_extra_headroom_bytes": extra,
+        "required_headroom_bytes": required,
+        "headroom_margin_bytes": available - required,
+        "resident_native_processes": sum(process_counts.values()),
+        "process_counts": process_counts,
+        "body_models_unloaded": True,
+        "estimate": "receiver file size plus max(256 MiB, 20%); conservative preflight, not an OOM guarantee",
+    }
+
+
+def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None, lease_token=None):
     """Consume the local approval atomically before any native receiver work."""
     runtime.require_idle()
     _roles(sender_role, receiver_role)
@@ -267,10 +393,15 @@ def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None)
     }
     if record.get("models") != models:
         raise PermissionError("native probe model revision/hash changed after local approval")
-    # Hashing can be slow for large GGUFs; re-check expiry after verification.
+    if runtime.cancel_event.is_set():
+        raise InterruptedError("native probe cancelled before execution; local approval remains pending")
+    resource_preflight = _resource_preflight(runtime, models[receiver_role])
+    # Hashing and resource checks can be slow for large GGUFs; re-check expiry and cancellation.
     clock = _clock(now)
     if clock >= expires:
         raise PermissionError("native probe local approval expired")
+    if runtime.cancel_event.is_set():
+        raise InterruptedError("native probe cancelled before execution; local approval remains pending")
     consumed = dict(record)
     consumed.update({"status": "CONSUMED", "consumed_at": clock})
     runtime.store.set_state(KEY, consumed, expected=version)
@@ -280,6 +411,7 @@ def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None)
         "receiver_role": receiver_role,
         "event_id": record["event_id"],
         "consumed": True,
+        "resource_preflight": resource_preflight,
     }
 
 
