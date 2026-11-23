@@ -213,8 +213,8 @@ class UCIParserTests(unittest.TestCase):
     def test_non_finite_measurements_fail_closed(self):
         for token in ("inf", "-inf", "Infinity"):
             payload = (
-                "Date;Time;Global_active_power\\n"
-                f"16/12/2006;17:24:00;{token}\\n"
+                "Date;Time;Global_active_power\n"
+                f"16/12/2006;17:24:00;{token}\n"
             )
             with tempfile.TemporaryDirectory() as directory:
                 path = Path(directory) / "nonfinite.txt"
@@ -224,8 +224,8 @@ class UCIParserTests(unittest.TestCase):
 
     def test_nan_spellings_are_treated_as_missing(self):
         payload = (
-            "Date;Time;Global_active_power;Voltage\\n"
-            "16/12/2006;17:24:00;NAN;234,840\\n"
+            "Date;Time;Global_active_power;Voltage\n"
+            "16/12/2006;17:24:00;NAN;234,840\n"
         )
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "nan.txt"
@@ -236,9 +236,9 @@ class UCIParserTests(unittest.TestCase):
 
     def test_missing_minute_timestamp_fails_closed(self):
         payload = (
-            "Date;Time;Global_active_power\\n"
-            "16/12/2006;17:24:00;1,0\\n"
-            "16/12/2006;17:26:00;2,0\\n"
+            "Date;Time;Global_active_power\n"
+            "16/12/2006;17:24:00;1,0\n"
+            "16/12/2006;17:26:00;2,0\n"
         )
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "gap.txt"
