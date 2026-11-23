@@ -32,6 +32,10 @@ from .a5_ui_admission_bridge import (
 )
 from .contracts import packet as make_packet, validate
 from .percept_admission import Percept, admit
+from .vision_temporal_attention import (
+    reset_runtime_ui_temporal_attention,
+    update_runtime_ui_temporal_attention,
+)
 
 REVISION = "v14-a5-media-projection-raw-eye-v1"
 MAX_FRAME_BYTES = 8 * 1024 * 1024
@@ -517,6 +521,7 @@ def consume_projected_frame(
         student_query = goal.strip() or current_source[:512].strip()
         student = _load_local_tile_projector(runtime, cfg, student_query)
         student_status = student["status"]
+        temporal_attention = None
         tile_feature_rows = []
         tile_region_ids = []
         region_records = []
@@ -557,14 +562,42 @@ def consume_projected_frame(
                 except Exception:
                     student_status = "INFERENCE_FAILED"
 
+            if not consent_lease.active_for(runtime, generation_id):
+                raise PermissionError("UI observation was cancelled or revoked before temporal A4 comparison")
+            temporal_attention = update_runtime_ui_temporal_attention(
+                runtime,
+                consent_lease=consent_lease,
+                source_id=observation["source_id"],
+                capture_session_id=observation["capture_session_id"],
+                consent_receipt_ref=observation["consent_receipt_ref"],
+                generation_id=generation_id,
+                start_ms=observation["start_ms"],
+                end_ms=observation["end_ms"],
+                frame_sha256=frame_sha256,
+                region_ids=tile_region_ids,
+                feature_rows=tile_feature_rows,
+            )
+            segments[0]["temporal_change_status"] = temporal_attention["status"]
+            segments[0]["temporal_change_max"] = temporal_attention["max_change"]
+            segments[0]["temporal_change_authority"] = temporal_attention["authority"]
+
             for region, box, features, salience in region_records:
                 region_id = region["region_id"]
                 margin = student_scores.get(region_id)
+                delta = temporal_attention["per_region_change"].get(region_id, 0.0)
                 summary = _feature_summary(region_id, box, features, salience)
+                suffixes = []
                 if margin is not None:
-                    summary = (
-                        summary + f" student_goal_margin={margin:.4f} authority=STUDENT_ESTIMATE"
-                    )[:MAX_SUMMARY_CHARS]
+                    suffixes.append(
+                        f"student_goal_margin={margin:.4f} authority=STUDENT_ESTIMATE"
+                    )
+                if delta > 0.0:
+                    suffixes.append(
+                        f"temporal_delta={delta:.4f} authority=HEURISTIC_RAW_FEATURE_DELTA"
+                    )
+                if suffixes:
+                    suffix = " " + " ".join(suffixes)
+                    summary = summary[:MAX_SUMMARY_CHARS - len(suffix)] + suffix
                 region_ref = vision.region_ref(frame_ref, region)
                 source_id = f"{frame_source_id}:{region_id}"
                 segment = {
@@ -583,8 +616,16 @@ def consume_projected_frame(
                 if margin is not None:
                     segment["student_goal_margin"] = round(margin, 4)
                     segment["student_estimate_authority"] = "STUDENT_ESTIMATE"
+                segment["temporal_change_score"] = round(delta, 4)
+                segment["temporal_change_authority"] = "HEURISTIC_RAW_FEATURE_DELTA"
+                segment["temporal_change_status"] = temporal_attention["status"]
                 segments.append(segment)
-                tile_priority = priority * 1000 + (101 if salience is None else int(round(salience * 100)))
+                temporal_bonus = int(round(delta * 50)) if region_id.startswith("r") else 0
+                tile_priority = (
+                    priority * 1000
+                    + (101 if salience is None else int(round(salience * 100)))
+                    + temporal_bonus
+                )
                 percepts.append(Percept(
                     source_id, "ui", observation["start_ms"], observation["end_ms"],
                     summary, True, observation["finality"] == "FINAL", tile_priority,
@@ -596,9 +637,35 @@ def consume_projected_frame(
         if not consent_lease.active_for(runtime, generation_id):
             raise PermissionError("UI observation was cancelled or revoked before A4 admission")
 
-        a4 = attention_module.controller(runtime).perceive(
+        attention_controller = attention_module.controller(runtime)
+        temporal_modulation = None
+        if (temporal_attention["status"] == "MEASURED"
+                and temporal_attention["max_change"] > 0.0):
+            temporal_modulation = attention_controller.modulate(
+                event["event_id"],
+                sal={
+                    "novelty": temporal_attention["novelty_signal"],
+                    "external_interrupt": temporal_attention["interrupt_signal"],
+                },
+            )
+        a4 = attention_controller.perceive(
             event["event_id"], segments, goal=goal, file_requests=False
         )
+        a4["temporal_attention"] = temporal_attention
+        a4["temporal_modulation"] = temporal_modulation
+        reobserve_proposal = {
+            "status": "PROPOSED" if temporal_attention["interrupt_signal"] > 0.0 else "NONE",
+            "reason": (
+                "TEMPORAL_REGION_CHANGE"
+                if temporal_attention["interrupt_signal"] > 0.0 else "NO_HIGH_CHANGE"
+            ),
+            "regions": temporal_attention["changed_regions"][:4]
+            if temporal_attention["interrupt_signal"] > 0.0 else [],
+            "requires_user_approval": True,
+            "automatic_capture": False,
+            "action_authority": False,
+            "learning_authority": False,
+        }
         admission = admit(percepts, token_budget, max_items=12)
         context_items = [
             A5Item(
@@ -635,6 +702,8 @@ def consume_projected_frame(
                 "projector_sha256": student.get("sha256") if student_scores else None,
                 "goal_margin_by_region": {key: round(value, 4) for key, value in student_scores.items()},
             },
+            temporal_attention=temporal_attention,
+            reobserve_proposal=reobserve_proposal,
             learning_authority=False, action_authority=False, truth_authority=0,
         )
         validate("PerceptPacket", percept_packet)
@@ -671,6 +740,9 @@ def consume_projected_frame(
             "student_projector_used": bool(student_scores),
             "student_projector_status": student_status,
             "student_goal_margins": {key: round(value, 4) for key, value in student_scores.items()},
+            "temporal_attention": temporal_attention,
+            "temporal_modulation": temporal_modulation,
+            "reobserve_proposal": reobserve_proposal,
             "learning_authority": False,
             "action_authority": False,
             "truth_authority": 0,
@@ -719,7 +791,10 @@ def consume_projected_frame_scope(runtime, observation, frame_buffer, **kwargs):
         result = consume_projected_frame(runtime, validated, frame_buffer, **kwargs)
         yield result
     finally:
-        revoke_ui_observation(runtime, validated["source_id"])
+        try:
+            revoke_ui_observation(runtime, validated["source_id"])
+        finally:
+            reset_runtime_ui_temporal_attention(runtime, validated["source_id"])
 
 
 __all__ = [
@@ -727,4 +802,5 @@ __all__ = [
     "consume_projected_frame",
     "consume_projected_frame_from_provider",
     "consume_projected_frame_scope",
+    "reset_runtime_ui_temporal_attention",
 ]
