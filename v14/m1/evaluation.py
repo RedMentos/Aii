@@ -173,6 +173,8 @@ def collect_model_errors(
         prediction = model(bundle)
         if prediction.shape != target.shape or prediction.shape[1] < 60:
             raise ValueError("model output must match [batch, horizon>=60, channels] target shape")
+        if not torch.isfinite(prediction).all():
+            raise FloatingPointError("model produced non-finite predictions")
         absolute = torch.abs(prediction - target)
         origins.append(batch.origin_indices.copy())
         primary.append(absolute[:, 14:60, :].mean(dim=(1, 2)).cpu().numpy())
