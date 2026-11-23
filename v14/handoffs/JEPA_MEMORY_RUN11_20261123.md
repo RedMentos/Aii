@@ -55,3 +55,18 @@ Appended R-080 to `v14/V14_RESEARCH_LEDGER.md`: continual deletion in post-train
 
 - Started: 2026-11-23 09:02 Europe/Berlin (automation context).
 - Completed: UNKNOWN.
+
+
+## Next cross-organ provenance gap verified (not changed in this PR)
+
+The direct source-forget fix above is not yet full derived-source unlearning. Current code inspection shows a producer/consumer gap:
+
+- Runtime computes the broader `meta['context_source_refs']` only after output preparation in `v13/code/v13/runtime.py` around lines 577–586.
+- C5 selection is emitted earlier at `runtime.py:503` through `ActionGate.select(...)`, but the call receives no context-source set.
+- `v13/code/v13/focal.py:577` creates the committed `ActionSelection` packet with only `[e['source_ref']]`, even though the turn may have used Memory, history, executive state, observer offers and other source-backed context.
+- `v13/code/v13/world_jepa_store_authority.py` verifies the EventEnvelope's single `source_ref` and requires `event.provenance` to contain exactly that one ref; the verified T8 proof therefore cannot express the full context dependency set.
+- `ActionOutcome` currently contains action_id/status/actual only. It does not independently restore the missing context lineage.
+
+**Required cross-agent contract:** Core/Runtime must construct and attach the complete, bounded source-ref set actually admitted to the selected action before the ActionSelection commit; JEPA must validate every ref against Store source/hash/span and persist the complete set into each temporal training row/checkpoint; base WorldJEPA and Memory source-forget must query every member; missing, revoked or over-bound provenance must fail closed for learning. Do not infer context dependencies from text after the fact.
+
+**Next test:** source A enters B's recalled/observer context; B's ActionSelection and T8 ActionOutcome must carry A and B refs; train a checkpoint; forget A; verify B-derived windows/checkpoints are invalidated or rebuilt, while an unrelated C cohort remains. Then repeat a later update and verify no A-derived trajectory re-enters. This requires Core producer ownership and JEPA/Memory consumer coordination; no Core-owned runtime/focal/Store file was modified in this PR.
