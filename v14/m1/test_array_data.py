@@ -65,6 +65,7 @@ class DirectUCIArrayTests(unittest.TestCase):
             dataset = ArrayDataset.from_uci(path, config)
             self.assertEqual(dataset.channels, channels)
             self.assertEqual(dataset.dataset_sha256, dataset_sha256(rows, channels))
+            self.assertEqual(dataset.split_sha256, split_boundaries_sha256(rows, config))
             self.assertEqual(dataset.values.shape, (1000, 2))
             self.assertTrue(np.isnan(dataset.values[12, 0]))
             batch = next(dataset.iter_batches("train", batch_size=16))
