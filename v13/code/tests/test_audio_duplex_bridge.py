@@ -518,3 +518,36 @@ def test_audio_consent_lease_cannot_be_reused_from_another_thread(tmp_path):
         assert answer(runtime, first)["status"] == "FINAL"
     finally:
         runtime.close()
+
+
+def test_persisted_audio_receipt_is_rejected_after_runtime_process_epoch_changes(
+    tmp_path, monkeypatch,
+):
+    runtime, started = make_runtime(tmp_path, "interrupt")
+    try:
+        first = runtime.submit("Tell me a long story about the history of Finland")
+        assert started.wait(10)
+        _audio_event, generation, pcm, kwargs = make_audio(runtime)
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+        ) as lease:
+            result = consume_pcm16_voice_window(
+                runtime, pcm, consent_lease=lease, **kwargs,
+            )
+            receipt = _persist_temporal_voice_receipt(runtime, result, lease)
+            assert receipt["process_epoch"] == _TEMPORAL_RECEIPT_PROCESS_EPOCH
+
+            # A fresh Runtime process creates a different epoch. A receipt
+            # persisted by the prior process must fail closed before cancel.
+            monkeypatch.setattr(
+                "v13.audio_duplex_bridge._TEMPORAL_RECEIPT_PROCESS_EPOCH",
+                "simulated-new-runtime-process",
+            )
+            with pytest.raises(ValueError, match="belongs to another Runtime process"):
+                on_audio_input(runtime, result, lease)
+            assert not runtime.cancel_event.is_set()
+
+        wait_idle(runtime)
+        assert answer(runtime, first)["status"] == "FINAL"
+    finally:
+        runtime.close()
