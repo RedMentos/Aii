@@ -46,7 +46,8 @@ class FitConfig:
 class FitReport:
     best_epoch: int
     epochs_run: int
-    best_validation_mae: float
+    best_validation_score: float
+    validation_metric: str
     final_training_loss: float
     optimizer_steps: int
 
@@ -161,7 +162,8 @@ def _fit_supervised(
     return FitReport(
         best_epoch=best_epoch,
         epochs_run=epochs_run,
-        best_validation_mae=best_validation,
+        best_validation_score=best_validation,
+        validation_metric="MAE",
         final_training_loss=final_loss,
         optimizer_steps=optimizer_steps,
     )
@@ -271,7 +273,8 @@ def fit_jepa(
     return FitReport(
         best_epoch=best_epoch,
         epochs_run=epochs_run,
-        best_validation_mae=best_validation,
+        best_validation_score=best_validation,
+        validation_metric="latent_prediction_L1",
         final_training_loss=final_loss,
         optimizer_steps=optimizer_steps,
     )
