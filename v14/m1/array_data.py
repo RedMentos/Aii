@@ -152,9 +152,11 @@ class ArrayDataset:
             if not reader.fieldnames or "Date" not in reader.fieldnames or "Time" not in reader.fieldnames:
                 raise ValueError("Expected UCI Date and Time columns")
             channels = tuple(name for name in reader.fieldnames if name not in {"Date", "Time"})
-            if not channels or len(set(channels)) != len(channels):
+            if not channels or any(not name.strip() for name in channels) or len(set(channels)) != len(channels):
                 raise ValueError("UCI measurement channels must be non-empty and unique")
             for line_no, raw in enumerate(reader, start=2):
+                if None in raw or raw.get("Date") is None or raw.get("Time") is None or any(raw.get(channel) is None for channel in channels):
+                    raise ValueError(f"truncated or overlong CSV row at line {line_no}")
                 stamp = datetime.strptime(
                     f"{(raw.get('Date') or '').strip()} {(raw.get('Time') or '').strip()}",
                     UCI_TIMESTAMP_FORMAT,
@@ -181,6 +183,8 @@ class ArrayDataset:
             for line_no, raw in enumerate(reader, start=2):
                 if index >= row_count:
                     raise ValueError("UCI file gained rows between ingestion passes")
+                if None in raw or raw.get("Date") is None or raw.get("Time") is None or any(raw.get(channel) is None for channel in channels):
+                    raise ValueError(f"truncated or overlong CSV row at line {line_no}")
                 stamp = datetime.strptime(
                     f"{(raw.get('Date') or '').strip()} {(raw.get('Time') or '').strip()}",
                     UCI_TIMESTAMP_FORMAT,
