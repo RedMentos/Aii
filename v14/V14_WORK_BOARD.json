@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T20:58:33.465Z",
-  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6. Boss candidate branch boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean @ 2925c4aecf2674d86a3ee33d1bd451bd4839229f (code-bearing checkpoint a5e536a96f6dc2a3a515d37b08393f7136e9efff; later commits are documentation only). QA #2459 and #2460 were fast-forward integrated into the candidate. Candidate PR #2443 remains DRAFT / NOT_RELEASED; exact combined current-head CI is incomplete.",
+  "updated_at": "2026-11-23T21:00:28.033Z",
+  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6. Boss candidate code-bearing checkpoint a5e536a96f6dc2a3a515d37b08393f7136e9efff on boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean; documentation-only handoff/workplan/research/coverage/board commits follow it (latest prior docs readback ac404784853c21e2a4270484cfd9c90e134e4fac). QA #2459 and #2460 fast-forward integrated. Candidate PR #2443 remains DRAFT / NOT_RELEASED; full combined exact-head CI incomplete.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "The Boss branch is a candidate only, NOT_RELEASED/NOT_INSTALLED. CI must pass on its exact final head before any release action. Do not restart the explicitly stopped phone runtime or issue a duplicate update request. Keep synthetic, CI, local Linux and real Redmi evidence separate.",
   "tickets": [
@@ -459,11 +459,11 @@
       "proof": "v14/m1/data.py + array_data.py + test_data.py + test_array_data.py. Two-pass direct-to-array UCI ingestion; data/split hash parity; 256 MiB batch allocation ceiling; vectorized missing-window checks; monthly rejection stats; test gate logs and fsyncs before any test-window materialization/unlock. Latest M1 CI queued, not passed."
     }
   ],
-  "current_redmi_status": "Fresh private owner-read #840 confirms installed 8d93236c753f0194224c19edc7411d8d7082b1d6, auto-update enabled, Runtime/Dashboard UP_TO_DATE, last_error NONE. DIAGNOSTICS #841: service/dashboard RUNNING but AI STOPPED_BY_USER, autostart=false, model process STOPPED, native residency UNAVAILABLE; B1/B2 TIME_BUDGET 53.2/54.2 s; last stored turn 6.295 s / 2.046 s TTFT / 358 prompt / 7 generated, correctness UNKNOWN. HEALTH #842: 1,222 MiB MemAvailable, 1,618 MiB free disk. Opted-in redacted console excerpt still confirms internal organ-hypothesis leakage and stored 2+2 answer 2; console error sharing remains USER_NOT_OPTED_IN. No new turn, restart, update request, LOG_PAGE, shell or data/model/permission mutation.",
+  "current_redmi_status": "Fresh private owner-read #840 confirms installed 8d93236c753f0194224c19edc7411d8d7082b1d6, auto-update enabled, Runtime/Dashboard UP_TO_DATE, last_error NONE. DIAGNOSTICS #841: service/dashboard RUNNING but AI STOPPED_BY_USER, autostart=false, model process STOPPED, native residency UNAVAILABLE; B1/B2 TIME_BUDGET 53.2/54.2 s; last stored turn 6.295 s / 2.046 s TTFT / 358 prompt / 7 generated, correctness UNKNOWN. HEALTH #842: 1,222 MiB MemAvailable, 1,618 MiB free disk. Opted-in redacted console excerpt confirms internal organ-hypothesis leakage and stored 2+2 answer 2; console error sharing remains USER_NOT_OPTED_IN. No new turn, restart, update request, LOG_PAGE, shell or data/model/permission mutation.",
   "last_code_release_head": "8d93236c753f0194224c19edc7411d8d7082b1d6",
-  "latest_integrated_head": "2925c4aecf2674d86a3ee33d1bd451bd4839229f",
-  "latest_integrated_head_verified_at": "2026-11-23T20:58:33.465Z",
-  "release_gate_status": "Release 8d93236c753f0194224c19edc7411d8d7082b1d6: 30/30 exact check-runs SUCCESS; 32/33 workflow runs SUCCESS, one cancelled, zero workflow failures; private #840 confirms installed. Candidate code a5e536a96f6dc2a3a515d37b08393f7136e9efff, docs head 2925c4aecf2674d86a3ee33d1bd451bd4839229f: #2459 exact head 58646862436ba3f69bce81ef4d3710105fc7c12b passed 7/7 workflows; #2460 code-bearing head 79a1734dfae5604a829eb0371c9d4dc7436286a8 passed vision 29/29 on Python 3.13/3.14, staged 255 passed/10 skipped/47 subtests, source recall 15 passed, integrated 437 passed/3 skipped/58 subtests. Combined candidate head a5e536 had two workflow startup_failure attempts with no jobs; current docs-only head has no workflow runs. PR #2443 is DRAFT / NOT_RELEASED; no candidate phone update.",
+  "latest_integrated_head": "a5e536a96f6dc2a3a515d37b08393f7136e9efff",
+  "latest_integrated_head_verified_at": "2026-11-23T21:00:28.033Z",
+  "release_gate_status": "Release 8d93236c753f0194224c19edc7411d8d7082b1d6: 30/30 exact check-runs SUCCESS; 32/33 workflow runs SUCCESS, one cancelled, zero workflow failures; private #840 confirms installed. Candidate code a5e536a96f6dc2a3a515d37b08393f7136e9efff: #2459 exact head 58646862436ba3f69bce81ef4d3710105fc7c12b passed 7/7 workflows; #2460 code-bearing head 79a1734dfae5604a829eb0371c9d4dc7436286a8 passed vision 29/29 on Python 3.13/3.14, staged 255 passed/10 skipped/47 subtests, source recall 15 passed, integrated 437 passed/3 skipped/58 subtests. Combined a5e536 workflow attempts ended startup_failure with no jobs; later branch commits are documentation only and have no workflow runs. PR #2443 remains DRAFT / NOT_RELEASED; no candidate phone update.",
   "phone_receipt": {
     "state": "8D93236_INSTALLED_AI_STOPPED_BY_USER",
     "pipeline_status_issue": 840,
@@ -754,12 +754,12 @@
     }
   ],
   "latest_boss_checkpoint": {
-    "timestamp": "2026-11-23T20:58:33.465Z",
+    "timestamp": "2026-11-23T21:00:28.033Z",
     "boss_branch": "boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean",
     "release_development_branch": "gpt6/v13-private-remote-bridge-20261111",
     "release_development_head": "8d93236c753f0194224c19edc7411d8d7082b1d6",
     "candidate_code_head": "a5e536a96f6dc2a3a515d37b08393f7136e9efff",
-    "candidate_documentation_head": "2925c4aecf2674d86a3ee33d1bd451bd4839229f",
+    "candidate_documentation_head": "ac404784853c21e2a4270484cfd9c90e134e4fac",
     "integrated_prs": [
       2459,
       2460
@@ -798,8 +798,10 @@
       "P0_20_TURN_REDMI_ACCEPTANCE",
       "P0_CANON_SEMANTIC_TRACEABILITY"
     ],
-    "next_action": "Retry exact current Boss candidate CI when Actions can start; keep PR2443 draft. Continue P0 Core PR2458 fair B1/B2→C4→C3 repair and require both useful offers delivered and consumed. Then rebase/review output-privacy PR2446, close audio PR2448 idempotency/cancellation races, wire complete production ActionSelection SourceRefs, and continue JEPA, B3, Android control, voice, sparse MoE, Memorilla and full Canon.",
-    "user_action_required": "NONE_FOR_DEVICE. Optional: verify an email on the linked GitHub account to restore private issue creation and PR metadata/merge writes; no device re-enable requested."
+    "next_action": "Retry exact combined Boss CI when Actions can start; keep #2443 draft. Continue P0 Core #2458 fair B1/B2→C4→C3 repair; then rebase/review output privacy #2446, close #2448 audio races, wire production ActionSelection SourceRefs and continue JEPA, B3, Android control, voice, sparse MoE, Memorilla and all Canon families.",
+    "user_action_required": "NONE_FOR_DEVICE; optional verify a GitHub email on the linked account to restore private issue creation and PR metadata/merge writes.",
+    "current_branch_head_at_readback": "ac404784853c21e2a4270484cfd9c90e134e4fac",
+    "post_merge_push_ci": "No release merge performed. QA child exact-head CI is green; combined Boss code head a5e536 had startup_failure runs with no jobs."
   },
   "active_agent_automations": [
     {
@@ -1224,10 +1226,10 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-23T20:58:33.465Z",
+    "timestamp": "2026-11-23T21:00:28.033Z",
     "release_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
     "code_candidate_sha": "a5e536a96f6dc2a3a515d37b08393f7136e9efff",
-    "documentation_head": "2925c4aecf2674d86a3ee33d1bd451bd4839229f",
+    "documentation_head": "ac404784853c21e2a4270484cfd9c90e134e4fac",
     "integrated_prs": [
       2459,
       2460
@@ -1238,12 +1240,12 @@
     "device_health": "PRIVATE_842_MEMAVAILABLE_1222_MIB_DISK_FREE_1618_MIB",
     "native_residency": "UNAVAILABLE_NO_VERIFIED_MODEL_SUPERVISOR; 0_MAPPED_MODEL_PROCESSES",
     "local_full_suite": "BLOCKED_NO_LOCAL_CHECKOUT; NO_FULL_LOCAL_TEST",
-    "pr2443": "DRAFT_NOT_RELEASED; 90_AHEAD_0_BEHIND_AFTER_DOCS; CODE_HEAD_A5E536; EXACT_COMBINED_CI_INCOMPLETE",
+    "pr2443": "DRAFT_NOT_RELEASED; CODE_HEAD_A5E536; EXACT_COMBINED_CI_INCOMPLETE; LATEST_MERGEABLE_METADATA_FALSE; COMPARE_AHEAD_93_BEHIND_0_AT_PRIOR_DOC_HEAD",
     "pr2459": "FAST_FORWARD_INTEGRATED; EXACT_HEAD_7_OF_7_WORKFLOWS_SUCCESS",
     "pr2460": "FAST_FORWARD_INTEGRATED; CODE_HEAD_79A173_TESTS_PASS; FINAL_HANDOFF_ONLY_DESCENDANT",
     "pr2458": "DRAFT; CURRENT_HEAD_6A750B; ONLY_WORKFLOW_STARTUP_FAILURE; PRIOR_HEAD_7688C360_6_SUCCESS_4_FAILURE_2_SKIPPED",
     "pr2448": "DRAFT; CURRENT_HEAD_C00D18D; 15_OF_18_SUCCESS_3_SKIPPED; SAME_TARGET_TURN_IDEMPOTENCY_AND_CANCEL_HANDOFF_RACES_OPEN",
-    "research": "R114_STICKYMOE_ARXIV_2607.08780; SOFT_ROUTING_LOCALITY_LOSS; 8.8M_22M_SIMULATED_2_SLOT_LRU; NO_ANDROID_PROOF; README_SAYS_MIT_BUT_LICENSE_FILE_MISSING; NO_REUSE",
+    "research": "R114_STICKYMOE_ARXIV_2607.08780; SOFT_ROUTING_LOCALITY_LOSS; 8.8M_22M_SIMULATED_2_SLOT_LRU; NO_ANDROID_PROOF; README_DECLARES_MIT_LICENSE_FILE_MISSING; NO_REUSE",
     "active_blockers": [
       "P0_NATIVE_B1_B2_OFFERS_AND_C4_C3_CORRECTNESS",
       "P0_INTERNAL_HYPOTHESIS_OUTPUT_PRIVACY",
@@ -1307,5 +1309,6 @@
     "user_action_required": "NONE. Do not run a manual Termux command. Existing updater is enabled; #519 is already queued. No model/weight/permission/microphone change or device action requested.",
     "active_agents": "Exactly five active V14 roles: Boss & Integration, QA & Android, JEPA & Memory, Research & Perception, Core & Harness.",
     "documentation_pr2333": "DRAFT documentation/evidence synchronization PR #2333, branch boss/v14-run12-whole-system-handoff-20261122; base b3b92. Updates board/workplan/next-action/append-only coverage only; no runtime code."
-  }
+  },
+  "latest_documentation_head_at_readback": "ac404784853c21e2a4270484cfd9c90e134e4fac"
 }
