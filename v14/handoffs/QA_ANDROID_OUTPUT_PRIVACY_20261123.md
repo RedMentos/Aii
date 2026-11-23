@@ -1,4 +1,34 @@
 
+
+## QA & Android run 2 — 2026-11-23 16:15 UTC
+
+### Exact-head CI result
+
+- PR #2446 current head at this checkpoint: `762105e36b46b5af9b2bbec11916554bd18d1cb4`; code-bearing commit remains `17ed403a1e8c3d9896d28a8b1be57eaffd427100`.
+- Exact staged/integrated run [45211647723](https://github.com/RedMentos/Aii/actions/runs/45211647723) is **FAIL**: 41 failed, 232 passed, 10 skipped, 2 errors. The integrated-regression path also fails at source composition. The failures are currently explained by stale immutable builder pins after `runtime.py` and `verification.py` changed; they are not evidence that the sanitizer behavior itself failed.
+- Exact PR source readback: `v13/runtime.py` SHA-256 `f8a86c7f659890b4a26450a292e5057f454621883c9f4090298210aed9d12380`, Git blob `43198ed1bd9b835c59583a117ebb14f8ad9259c2`; `v13/verification.py` SHA-256 `25d0fb139cf74105e9680c1b4b91cac5b4de2bb4d2b6e0d244e61d707c36d283`, Git blob `9347264b35e43d256210fe92e769e10cecc9ab36`.
+- Direct pin consumers identified: `integrated_online_world_candidate_20261110.py`, `record_only_online_guard_candidate_20261116.py`, `integrated_observer_fair_budget_candidate_20261116.py`, `integrated_arithmetic_candidate_20261116.py`, `integrated_audio_context_candidate_20261121.py`, `integrated_arithmetic_guard_candidate_20261121.py`, `termux_probe_recovery_candidate_20261112.py`, `postcommit_observer_candidate_20261116.py` and `record_only_controller_guard_20261116.py`. Their parent chain must be re-bound bottom-up through the recovery wrapper, stager and deployer; no integrity check may be relaxed. Exact failure details and source hashes were posted to PR #2446. Boss owns Core source-pin integration; this QA run did not edit those shared builders.
+- Separate JEPA receipt/transaction workflows on the same head passed. The two migration tests returning PARTIAL are downstream of the stage failure and must be rerun after re-binding.
+
+### Current authenticated Redmi boundary
+
+- Private owner PIPELINE_STATUS #821 reports exact installed SHA `fb563d771fe2d493c4ec25abe94280981d24ef5c`, auto-update enabled, runtime/dashboard UP_TO_DATE, last error NONE.
+- Private DIAGNOSTICS #822 reports `STOPPED_BY_USER`, model service STOPPED, autostart false and zero resident native model processes. No restart, CHAT_SEND, UPDATE_REQUEST or device mutation was performed.
+- The last stored turn is diagnostic only: 6.295 s total, 2.046 s TTFT, 358 admitted prompt tokens, 7 generated tokens, FINAL. B1_DETAIL/B2_GIST remain TIME_BUDGET at 53.2/54.2 s; native probe SMOKE_PARTIAL. HEALTH #823 reports 1,118 MiB MemAvailable and 1,611 MiB disk free; LEARNING_STATUS #824 is UNAVAILABLE. This is not the required 20-turn acceptance matrix or proof of B1/B2 contribution.
+- The redacted opted-in console receipt confirms the explicit probe path exposed internal hypothesis material. No raw private transcript was copied into this handoff or public repository.
+
+### Cross-lane QA review
+
+- PR #2448 received a review with two adversarial findings: the temporal voice-onset result is returned separately from the persisted PerceptPacket and can be forged while reusing a valid packet/lease; and the same audio event/packet can be replayed under a still-live lease to interrupt a later turn because no one-use event/packet guard exists. Perception owns the code path; required negative tests are in the PR review. This is a synthetic bridge, not an Android microphone provider.
+- The #2446 public sanitizer also received review comments: `model_revisions` currently accepts arbitrary strings up to 128 chars and `missing_proofs` copies arbitrary strings up to 160 chars. Close both with a safe grammar/closed label set and sentinel tests.
+
+### Evidence limits and next step
+
+- LOCAL_LINUX full Aii suite: BLOCKED / NOT_RUN (no checkout mounted; GitHub DNS unavailable). GitHub Actions are CI evidence only.
+- Phone code installation is verified at `fb563d77`; new QA fixes, normal chat quality, process-death/reboot, rollback, Android AudioRecord and full Canon acceptance remain REDMI_UNVERIFIED.
+- Keep the phone stopped. Boss should re-bind the exact source-pin chain and rerun the full staged/integrated/migration matrix. Perception should address the two audio-bridge findings before provider integration. Do not send another update request or manual Termux command.
+
+
 ## Follow-up after probe-output review — 2026-11-23 16:00 UTC
 
 The code-bearing QA checkpoint is now `17ed403a1e8c3d9896d28a8b1be57eaffd427100` (PR #2446). The follow-up was prompted by direct source inspection: the default native `:probe` path returned the full `verification.probe()` object, including C3 `actual_output`, B1/B2 `structured_offer.actual`, and C2 `actual_control`; both `Runtime._worker` and the one-shot `v13 probe` CLI serialized that object to the visible console.
