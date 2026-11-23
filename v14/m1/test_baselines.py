@@ -10,6 +10,7 @@ from v14.m1.array_data import ArrayDataset
 from v14.m1.baselines import (
     LADARBaseline,
     PersistenceBaseline,
+    RawWindowProbeBaseline,
     RidgeARBaseline,
     SeasonalPersistenceBaseline,
     TrainMeanBaseline,
@@ -82,6 +83,33 @@ class BaselineTests(unittest.TestCase):
         self.assertTrue(np.isfinite(prediction).all())
         self.assertEqual(len(model.epoch_losses), 2)
         self.assertTrue(all(np.isfinite(value) for value in model.epoch_losses))
+
+    def test_raw_window_probe_trains_on_full_x_seasonal_calendar_bundle(self):
+        model = RawWindowProbeBaseline(
+            alpha=0.01, epochs=2, learning_rate=0.01, max_parameters=100_000
+        )
+        raw_features = model._raw_features(self.batch)
+        np.testing.assert_array_equal(raw_features, self.batch.inputs.flatten())
+        model.fit(self.dataset, batch_size=64)
+        self.assertEqual(model.feature_width, raw_features.shape[1])
+        self.assertEqual(model.feature_width, self.dataset.input_width)
+        self.assertEqual(
+            model.trainable_parameters,
+            (model.feature_width + 1) * self.config.horizon * len(self.channels),
+        )
+        self.assertGreater(model.n_train_windows, 0)
+        self.assertEqual(len(model.epoch_losses), 2)
+        self.assertTrue(all(np.isfinite(value) for value in model.epoch_losses))
+        prediction = model.predict(self.batch)
+        self.assertEqual(prediction.shape, self.batch.target.shape)
+        self.assertTrue(np.isfinite(prediction).all())
+        self.assertGreater(float(np.linalg.norm(model.weights)), 0.0)
+
+    def test_raw_window_probe_fails_before_allocation_when_parameter_budget_is_too_small(self):
+        model = RawWindowProbeBaseline(max_parameters=1)
+        with self.assertRaisesRegex(ValueError, "parameter budget"):
+            model.fit(self.dataset, batch_size=64)
+        self.assertIsNone(model.weights)
 
     def test_mae_evaluator_reports_horizon_and_channel_metrics(self):
         result = evaluate_mae(PersistenceBaseline(), self.dataset, "validation", batch_size=32)
