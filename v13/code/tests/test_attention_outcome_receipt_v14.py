@@ -134,6 +134,17 @@ class AttentionOutcomeReceiptV14(unittest.TestCase):
         self.assertEqual(len(self.r.store.rows("SELECT id FROM packets WHERE kind='ModulatorPacket' AND event_id=?", (self.event["event_id"],))), 1)
         self.assertIsNotNone(self.r.store.state(RECEIPT_PREFIX + rid)[0])
 
+    def test_n10_transactional_signal_rejects_non_transaction_connection(self):
+        with self.assertRaisesRegex(ValueError, "needs an active Store transaction"):
+            self.n.signal_in_transaction(
+                self.r.store.db,
+                self.event["event_id"],
+                path="attention_policy",
+                source_class="internal_crosscheck",
+                reward_error=-0.25,
+                surprise=0.25,
+            )
+
     def test_non_granted_response_never_writes_receipt_or_policy(self):
         req = self.a.request(
             self.event["event_id"], "JEF", "MEMORY", "recall", budget=100
