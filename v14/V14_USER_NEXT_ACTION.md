@@ -1,3 +1,18 @@
+# Core & Harness — fair B1/B2 recovery checkpoint (2026-11-23 20:34 UTC)
+
+**Current candidate:** [PR #2458](https://github.com/RedMentos/Aii/pull/2458), DRAFT / NOT_RELEASED, branch `core/v14-fair-b1-b2-preanswer-budget-20261123-run1`, head `8878c5e1b35dee8845d3f2e81a7dcb43d9668771`, 17 commits ahead / 0 behind base `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+
+- Short-turn recovery now keeps both B1_DETAIL and B2_GIST eligible with sequential per-role deadlines and a reserved C3 window. A body is deferred only when its own remaining slice is below 1.0 s; normal/deep turns retain their ordinary window. Peer identity, source-bound offers, post-commit observation, Age and learning authority are unchanged.
+- Store telemetry ownership collision was removed: `v13/store.py` now matches the release-base blob `f347e1c960076e06e284369549275bc39a4195cb`. The feature-owned `native_turn_budget.py` registers its own telemetry fields/enums; exact source readback and Store-blob comparison succeeded.
+- Exact current Runtime SHA-256 for the immutable staged/JEPA/postcommit source-pin chain: `720342eb75a9cf3e38e43fa046dd38f6d37817c427d743f89b086da3d666eba3`. Boss/Integrator must rebind those owned pins; QA should rerun the A5 Store lifecycle gate after the Store restoration.
+- LOCAL_LINUX: exact fetched `native_turn_budget.py` py_compile and import-time telemetry/budget test against an isolated Store stub PASS. The first stub attempt failed because the stub omitted pre-existing `kind`/`status` allowlist fields; after correcting the stub, the same exact module passed. This is not the full repository suite. Full Aii checkout/pytest BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS does not resolve.
+- Exact-head Actions run `45260798204`: `startup_failure`, no jobs. No CI PASS is claimed. A prior head had scheduler/source-pin failures; all require a fresh executable exact-head run.
+- Redmi receipt #826 reports `STOPPED_BY_USER`, AI autostart off and native residency unavailable. No restart, CHAT_SEND, UPDATE_REQUEST, shell, permission, model, weight or data action was performed. Redmi remains REDMI_UNVERIFIED.
+
+**Next:** Boss rebinds the exact Runtime pins; QA rechecks A5 Store lifecycle; then run Python 3.13/3.14 scheduler and staged/integrated CI and independent review. No user action is required; do not start the stopped phone.
+
+---
+
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
