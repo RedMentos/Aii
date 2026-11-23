@@ -363,6 +363,24 @@ def body_state(r,e,role,text):
         # The temporal view already carries source-bound history; omit the static
         # world-scope label from this compact prompt, not from persisted WORLD_STATE.
         view['world'].pop('scope',None)
+    elif isinstance(temporal_audit, dict):
+        # An omitted readout must remain visible to the receiving body. Otherwise
+        # a failed utility/provenance/warm-cache gate looks identical to "no
+        # temporal subsystem", which hides the reason from both the model and QA.
+        reason = temporal_audit.get("reason")
+        if temporal_audit.get("status") == "OMITTED" and type(reason) is str:
+            status_view = {
+                "status": "OMITTED",
+                "reason": reason[:48],
+                "role": role,
+                "decision_authority": "NONE",
+            }
+            for key, limit in (("action", 48), ("action_status", 48),
+                               ("utility_reason", 64)):
+                value = temporal_audit.get(key)
+                if type(value) is str and value:
+                    status_view[key] = value[:limit]
+            view["world_jepa_temporal_status"] = status_view
     try:
         from .agi import hub
         view['skills']=hub(r).skills.select(text)[:3]
