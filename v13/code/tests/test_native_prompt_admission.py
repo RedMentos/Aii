@@ -201,6 +201,45 @@ class NativePrefillAdmissionTests(unittest.TestCase):
         self.assertFalse(removed)
         self.assertEqual(r._prompt_admission["target_tokens"],520)
 
+    def test_c3_long_deadline_preserves_complete_history_when_only_history_exceeds_soft_cap(self):
+        r=fake_runner()
+        old_question="Earlier user question: "+"q"*1800
+        old_answer="Earlier assistant answer: "+"a"*1800
+        current="Continue from the earlier discussion."
+        messages=[
+            {"role":"system","content":stable(r.cfg)},
+            {"role":"user","content":old_question},
+            {"role":"assistant","content":old_answer},
+            {"role":"user","content":current},
+        ]
+        rendered,n,removed=r._prompt(messages,threading.Event(),time.monotonic()+90,48)
+        self.assertIn(old_question,rendered)
+        self.assertIn(old_answer,rendered)
+        self.assertIn(current,rendered)
+        self.assertEqual(r._prompt_admission["target_tokens"],520)
+        self.assertEqual(r._prompt_admission["status"],"PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET")
+        self.assertEqual(r._prompt_admission["removed_layers"],[])
+        self.assertFalse(removed)
+
+    def test_c3_short_deadline_may_remove_only_a_complete_old_turn(self):
+        r=fake_runner()
+        old_question="Earlier user question: "+"q"*500
+        old_answer="Earlier assistant answer: "+"a"*500
+        current="What should happen next?"
+        messages=[
+            {"role":"system","content":stable(r.cfg)},
+            {"role":"user","content":old_question},
+            {"role":"assistant","content":old_answer},
+            {"role":"user","content":current},
+        ]
+        rendered,n,removed=r._prompt(messages,threading.Event(),time.monotonic()+30,48)
+        self.assertNotIn(old_question,rendered)
+        self.assertNotIn(old_answer,rendered)
+        self.assertIn(current,rendered)
+        self.assertIn("OLD_NATIVE_HISTORY",r._prompt_admission["removed_layers"])
+        self.assertLessEqual(n,r._prompt_admission["target_tokens"])
+        self.assertTrue(removed)
+
     def test_c3_long_deadline_reduces_only_removable_layer_before_prefill(self):
         r=fake_runner()
         source="What is 120 minus 20?"
