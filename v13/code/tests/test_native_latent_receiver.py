@@ -458,8 +458,9 @@ def test_native_child_executes_the_verified_binary_descriptor_after_path_replace
             failures.append("native version child did not reach its barrier")
             release.write_text("release")
             return
-        original_path = binary.with_name("verified-original-native-receiver")
-        os.replace(binary, original_path)
+        original_bin_dir = binary.parent.with_name(binary.parent.name + "-verified")
+        os.rename(binary.parent, original_bin_dir)
+        binary.parent.mkdir()
         binary.write_text(
             "#!/usr/bin/env python3\n"
             f"from pathlib import Path\nPath({str(replacement_runs)!r}).write_text('ran')\n",
@@ -485,7 +486,7 @@ def test_native_receiver_binary_fifo_is_rejected_without_blocking(tmp_path):
     binary.unlink()
     os.mkfifo(binary)
     started = time.monotonic()
-    with pytest.raises(NativeReceiverUnavailable, match="linked/non-regular"):
+    with pytest.raises(NativeReceiverUnavailable, match="regular file"):
         run_probe(home, model, None, digest)
     assert time.monotonic() - started < 1.0
 
