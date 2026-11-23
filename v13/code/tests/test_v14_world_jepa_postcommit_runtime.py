@@ -285,7 +285,9 @@ def test_sleep_jepa_job_requeues_when_only_temporal_page_has_more_rows(tmp_path)
         result = sleep.job(dispatched)
         assert result["learning"]["has_more"] is False
         assert result["temporal"]["has_more"] is True
+        assert result["learning_status"] == "NO_NEW_TRANSITIONS"
         assert result["temporal_status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA"
+        assert result["planner_status"] == "NO_CHECKPOINT"
         assert result["learning_has_more"] is False
         assert result["temporal_has_more"] is True
         assert result["continuation_reason"] == "TEMPORAL_PAGE"
