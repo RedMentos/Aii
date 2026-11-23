@@ -403,12 +403,12 @@ class Runtime:
                     fastpath={
                         'kind':'EXACT_GREETING_ACK',
                         'normalized_input':greeting['normalized'],
-                        'skipped_organs':['A1','A2','A3','A4','B1_DETAIL','B2_GIST','C2','C4','C3_LANGUAGE','JEPA'],
+                        'skipped_organs':['A1','A2','A3','A4','B1_DETAIL','B2_GIST','C2','C4','C3_LANGUAGE','B3_ENLIGHTENED_SPACE','JEPA'],
                     },
                     skipped_native_stages=[
-                        'SEGMENTATION','NATIVE_ALIGNMENT','SALience','MEMORY_RECALL',
+                        'SEGMENTATION','NATIVE_ALIGNMENT','SALIENCE','MEMORY_RECALL',
                         'B1_B2_OBSERVERS','C2_CONTROL','C4_FOCAL_LOOP','C3_DECODE',
-                        'WORLD_JEPA_PREDICTION','TOOL_PLANNING',
+                        'WORLD_JEPA_PREDICTION','B3_LATENT_EXCHANGE','TOOL_PLANNING',
                     ],
                     context_source_refs=[e['source_ref'],answer_ref],
                 )
@@ -430,9 +430,13 @@ class Runtime:
                     model_generated=False,
                     fastpath_kind='EXACT_GREETING_ACK',
                     skip_online_world_update=True,
+                    learning_authority=0,
+                    experience_eligible=False,
+                    external_action_authority=False,
                 )
                 self.store.finish_message(mid,'FINAL',meta)
-                txctl.settle_turn(self,eid,'FINAL')
+                try:txctl.settle_turn(self,eid,'FINAL')
+                except Exception as exc:self.store.log('provisional_unavailable',eid,{'error':type(exc).__name__})
                 try:self.executive.update(e,self.session,status='FINAL')
                 except Exception as exc:self.store.log('executive_finish_deferred',eid,{'error':type(exc).__name__})
                 try:
