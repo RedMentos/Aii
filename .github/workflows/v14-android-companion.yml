@@ -9,6 +9,7 @@ on:
       - qa/v14-companion-os-permission-contract-20261122
       - qa/v14-companion-stop-durability-20261123-run1
       - qa/v14-companion-stop-durability-followup-20261123-run2
+      - qa/v14-companion-stop-durability-followup-20261123-run3
       - qa/v14-companion-instrumented-process-death-20261123-run4
     paths:
       - "android-companion/**"
