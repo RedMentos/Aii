@@ -72,3 +72,105 @@ Queued is not PASS. Full local Aii checkout, Android SDK and adb execution are u
 ## Next action
 
 Read exact-head CI for `0034b2c`. If the emulator still ANRs, preserve the failure and diagnose emulator/System-UI versus companion main-thread state from the bounded logcat and process/window evidence; do not increase the Wait budget again or weaken the process-death acceptance. If the emulator job passes, hand the exact evidence to Boss/Core for integration while retaining Redmi as unverified.
+
+---
+
+## QA run 11 — separate durable Stop evidence from System-UI ANR (2026-11-23 06:14 UTC)
+
+### Exact prior emulator evidence
+
+- Parent QA stack #2356 was read at head `b327c80861e640a9b2afb574698279ca4ed6307d`.
+- Exact workflow run `45116548718`:
+  - Android companion Gradle/Robolectric job `137500616062` failed during dependency resolution for Android Gradle Plugin transitive artifacts (including jose4j, slf4j, Gson and ASM). This is a dependency-fetch failure, not a demonstrated Java compile or test regression.
+  - Emulator process-restart job `137500616248` built and installed the APK, then failed at the visible STOPPED-state wait after the safe System-UI Wait budget was exhausted. The harness refused Close app. The visible UI lifecycle remains FAIL/BLOCKED; this run did not establish the STOPPED label or process-death acceptance.
+- The exact emulator log does not prove a Redmi result and does not justify another renderer or Wait-count experiment.
+
+### QA-only follow-up branch
+
+- Branch: `qa/v14-companion-stop-durability-20261123-run1`.
+- Base: parent QA head `b327c80861e640a9b2afb574698279ca4ed6307d`.
+- Current code/test head: `3c42a26694c3827eddcb574521535618777114f8`.
+- The visible Stop button now writes an ephemeral host-side marker only after the companion's actual SharedPreferences `enabled=false` value is read back. A later UIAutomator/System-UI failure cannot create this marker by itself.
+- If the visible STOPPED label is blocked after that verified Stop action, the harness separately:
+  1. verifies the marker and OFF preference,
+  2. force-stops the companion,
+  3. observes the PID disappear,
+  4. relaunches MainActivity,
+  5. verifies the persisted preference remains OFF.
+- It prints a clearly labelled `PARTIAL_PASS` for this independent durable-state proof, then re-raises the original UI assertion. The overall visible-UI lifecycle gate therefore remains failed; durable state is not relabelled as UI success.
+- The post-restart path also reads the provider-startup OFF state before attempting the UI label.
+- Added unit coverage for marker provenance, missing-marker rejection, force-stop/relaunch state verification, and preserving UI failure after a partial pass. Moved the unittest main guard to the end so all appended harness tests are discovered.
+- Added the exact QA stack base and this branch to the Android workflow trigger filters. No production Android capability or permission changed.
+
+### Verification boundary / next action
+
+- New exact-head CI has not yet been observed on `3c42a266`; all changes remain unverified until the workflow result is read back.
+- No full local Aii checkout, Gradle or Android SDK is available in this worker. No LOCAL_LINUX full-suite or local emulator PASS is claimed.
+- Physical Redmi remains `REDMI_UNVERIFIED`. No phone install, pairing, CHAT_SEND, UPDATE_REQUEST, permission change, model/weight change or user-data mutation occurred.
+- Next: open the stacked draft PR and inspect its exact-head Android unit/emulator plus staged/integrated checks. If the durable fallback passes while System UI remains unresponsive, report only the partial persistence proof and keep visible UI acceptance blocked. Do not increase wait counts or switch renderers again.
+
+## Fresh Redmi owner-read — 2026-11-23 06:15 UTC
+
+Read-only private receipts, no new chat turn or device action:
+
+- Installed release `aed1d2b826290c95c70356b5d8b864b5ef382be4`; updater auto-enabled, Runtime/Dashboard UP_TO_DATE, last_error NONE.
+- Runtime service/model process report RUNNING. HEALTH's Runtime field is UNAVAILABLE, so preserve the status disagreement.
+- Last stored turn remains 57.74 s total / 41.63 s TTFT / 38.95 s C3 prefill / 2 tokens; B1/B2 remain TIME_BUDGET at 53.2/54.2 s; C3 probe 3.1 s.
+- HEALTH: 1,371 MiB MemAvailable / 1,362 MiB disk free. Instant native-residency snapshot: 0 mapped processes, UNKNOWN_NO_GROUP_CHILDREN; not free-RAM or sustained residency proof.
+- LEARNING_STATUS UNAVAILABLE. Official Age 0; lab stage request 10 / effective implemented stage 5; physical feature execution false.
+- No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, shell, permission, model/weight or user-data mutation.
+
+The Boss WorldJEPA cache candidate remains CI-green but not installed; this device receipt does not establish any improvement from that candidate. The Android companion lifecycle and MediaProjection paths remain REDMI_UNVERIFIED.
+
+## CI trigger correction — 2026-11-23 06:34 UTC
+
+- PR #2415's actual base is `qa/v14-companion-final-qa-20261122`, whose workflow did not include that branch in its own `pull_request.branches` filter. A filter change only in the head PR cannot trigger itself.
+- Mis-targeted draft PR #2416 (based on Core's branch, whose workflow contains only Gradle/Robolectric and no process-restart emulator job) was closed after its Gradle/Robolectric-only run `45124508756` passed. That run is not evidence for the process-death test.
+- Correct trigger prerequisite is ready-for-review PR #2417, based on the actual QA branch and adding the missing QA-base filter plus exact QA push branches. It has no exact workflow run yet because the base filter must first be integrated.
+- #2415 remains DRAFT / CI_PENDING / NOT_RELEASED. Do not count its test additions as executed until the new exact-head run is visible.
+
+
+## QA run 11 follow-up — exact branch readback and adb failure coverage (2026-11-23 07:35 UTC)
+
+### Current QA branch
+
+- Branch: `qa/v14-companion-stop-durability-20261123-run1`.
+- Latest code/test head before this handoff append: `1ddd033e121a623b68182d2eeb48e58ce8db627e`.
+- Commit `6884ab61b21056b842746e2d46eabf5c8083bc88`: the durable Stop fallback now runs after `AssertionError`, `subprocess.SubprocessError` (including adb timeout and nonzero exit), and `OSError` transport failures. It preserves and re-raises the original UI failure after the independent proof attempt.
+- Commit `1ddd033e121a623b68182d2eeb48e58ce8db627e`: adds negative tests for four UI-observation failure classes: System-UI assertion/ANR, adb timeout, adb nonzero exit, and missing/failed transport.
+- Exact GitHub source readback confirmed both modified files and their blob IDs. No local Python/Gradle/Android SDK execution was available, so these tests are **NOT_RUN locally**.
+
+### Corrected workflow evidence
+
+- PR #2417 exact run `45124910049` did execute the Android workflow: the Gradle/Robolectric job passed; the emulator process-restart job failed at the visible STOPPED wait after two safe System-UI Wait actions. This proves that the workflow trigger was active for that PR; it does not prove the durable fallback on #2415.
+- PR #2356 exact run `45125561704`: emulator process-restart failed at the same System-UI wait; the companion unit job hit Maven Central HTTP 429 while resolving Robolectric.
+- For #2415 head `1ddd033e121a623b68182d2eeb48e58ce8db627e`, the connector's PR-triggered workflow list is empty and combined commit status has no statuses. No exact-head CI result is observed. The base-branch workflow file at `b327c80861e640a9b2afb574698279ca4ed6307d` does contain the QA-base pull-request filter; therefore the earlier claim that the base branch definitely lacked that filter is not supported by this readback. The reason #2415 has no visible exact-head run is **UNRESOLVED**; do not invent a trigger cause.
+- The process-restart gate remains FAIL/BLOCKED on the observed emulator runs. The durable OFF/process-death proof added in #2415 has not yet been exercised by an exact-head emulator run.
+
+### Evidence boundary and next action
+
+- #2415 remains DRAFT / NOT_RELEASED; no Android companion product behavior has been changed by these QA-harness commits.
+- LOCAL_LINUX full Aii test suite: BLOCKED / NOT_RUN. Android emulator exact-head result: NOT_OBSERVED for #2415. Physical Redmi: REDMI_UNVERIFIED.
+- Next: obtain a visible exact-head workflow result for #2415 head `1ddd033`; if the emulator again reports System UI ANR, retain the UI failure and read whether the independent durable marker/PID/SharedPreferences proof completed. Do not treat PARTIAL_PASS as full UI acceptance and do not increase Wait counts or select Close app.
+
+
+## CI trigger correction — exact head c254c71 (2026-11-23 07:38 UTC)
+
+This supersedes the previous unresolved-trigger note above.
+
+- Exact readback of the #2415 head workflow showed the defect: `push.branches` included `qa/v14-companion-stop-durability-20261123-run1`, but `pull_request.branches` omitted its actual target base `qa/v14-companion-final-qa-20261122`. The base branch file contained the filter, but the workflow version on the PR head/merge candidate did not.
+- Commit `c254c717c897b4502bc83fbf4166c130721206c2` adds the missing QA-base branch to `pull_request.branches`. No product code, permission or runtime behavior changed.
+- Exact-head GitHub check-run readback now shows workflow run `45128234393` queued for PR #2415:
+  - `android-companion` job `137537434145` — QUEUED.
+  - `android-companion-process-restart` job `137537434599` — QUEUED.
+  - `offline-bridge-security` job `137537433826` — QUEUED.
+- This is the first observed exact-head PR-triggered Android workflow for #2415. Queued is not PASS; read the complete job results before changing the acceptance status.
+- The earlier #2417 run `45124910049` demonstrates that the emulator test can execute on a separate branch; it remains FAIL because System UI did not recover after two safe Wait actions.
+- Current branch head at this checkpoint: `c254c717c897b4502bc83fbf4166c130721206c2`. Exact local test execution remains NOT_RUN; physical Redmi remains REDMI_UNVERIFIED.
+
+
+## Boss rebase checkpoint — 2026-11-23
+
+- Rebased this QA-only Stop/process-death candidate onto the trigger-enabled parent head `6dab323f1b59663682d0af65ffbd75c5de489578` by copying the four reviewed changed files from the prior branch `qa/v14-companion-stop-durability-20261123-run1` at `12bf044646c054fc4f878b1001b10568152adf40`.
+- New branch: `qa/v14-companion-stop-durability-rebased-20261123-run1`. Exact PR-event CI is pending; the previous branch had no new workflow runs because it was one commit behind the parent and the trigger prerequisite had landed separately.
+- The workflow trigger now explicitly includes this rebased branch. No device, pairing, capability, permission, model, weight or user-data action was performed.

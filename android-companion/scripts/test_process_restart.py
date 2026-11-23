@@ -12,6 +12,7 @@ import re
 import subprocess
 import time
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 from process_restart_ui import button_center, parse_hierarchy, poll_delay, transient_overlay_action, visible_labels
 
@@ -20,6 +21,8 @@ COMPONENT = PACKAGE + "/.MainActivity"
 TOGGLE_LABEL = "Enable / Stop companion"
 STOPPED_TEXT = "STOPPED (restart requires explicit re-enable)"
 ENABLED_TEXT = "ENABLED FOR THIS PROCESS"
+NOT_PAIRED_TEXT = "not paired (stored identity/current installed signer not verified)"
+STOP_PROOF_MARKER = Path(".v14-stop-persisted-off")
 
 
 def adb(*args: str, check: bool = True, timeout: float = 25.0) -> str:
@@ -134,9 +137,14 @@ def wait_for_text(
         action = transient_overlay_action(root)
         if action == "Wait":
             if waits_used >= wait_budget:
+                budget_label = "two" if wait_budget == 2 else str(wait_budget)
+                wait_unit = "action" if wait_budget == 1 else "actions"
+                diagnostic = foreground_diagnostic()
+                logs = failure_logcat()[:5000]
                 raise AssertionError(
-                    "System UI remained unresponsive after two safe Wait actions; "
-                    "refusing to select Close app"
+                    "System UI remained unresponsive after " + budget_label
+                    + " safe Wait " + wait_unit + "; refusing to select Close app; "
+                    + diagnostic + "; relevant logcat=" + logs
                 )
             handle_transient_overlay(root)
             waits_used += 1
@@ -170,14 +178,37 @@ def wait_for_text(
     # timed out repeatedly. Inspect this final bounded snapshot and, if its
     # explicit Wait button is present, use that safe action once and retry.
     # Never infer coordinates or select Close app.
-    if waits_used < wait_budget and final_xml:
+    if final_xml:
         try:
             final_root = parse_hierarchy(final_xml)
         except ET.ParseError:
             final_root = None
-        if final_root is not None and transient_overlay_action(final_root) == "Wait":
-            handle_transient_overlay(final_root)
-            return wait_for_text(needle, timeout=15.0, wait_budget=0)
+        if final_root is not None:
+            final_action = transient_overlay_action(final_root)
+            if final_action == "GOT IT":
+                # The immersive confirmation is benign and consumes no ANR-Wait
+                # budget. Handle it even when the Wait budget is zero.
+                handle_transient_overlay(final_root)
+                remaining_waits = max(0, wait_budget - waits_used)
+                return wait_for_text(
+                    needle, timeout=15.0, wait_budget=remaining_waits,
+                )
+            if final_action == "Wait":
+                if waits_used >= wait_budget:
+                    budget_label = "two" if wait_budget == 2 else str(wait_budget)
+                    wait_unit = "action" if wait_budget == 1 else "actions"
+                    diagnostic = foreground_diagnostic()
+                    logs = failure_logcat()[:5000]
+                    raise AssertionError(
+                        "System UI remained unresponsive after " + budget_label
+                        + " safe Wait " + wait_unit + "; refusing to select Close app; "
+                        + diagnostic + "; relevant logcat=" + logs
+                    )
+                handle_transient_overlay(final_root)
+                remaining_waits = max(0, wait_budget - waits_used - 1)
+                return wait_for_text(
+                    needle, timeout=15.0, wait_budget=remaining_waits,
+                )
 
     raise AssertionError("UI did not show expected state: " + needle
                          + "; visible labels=" + last[:1200]
@@ -249,41 +280,124 @@ def launch_companion() -> None:
     time.sleep(2.0)
 
 
-def main() -> None:
-    adb("shell", "am", "force-stop", PACKAGE, check=False)
-    launch_companion()
-    wait_for_process(absent=False)
-    wait_for_text(STOPPED_TEXT, timeout=60.0)
 
-    assert persisted_enabled() == "false"
+def record_stop_persisted_off() -> None:
+    """Record proof only after the visible Stop button durably writes OFF."""
+    state = persisted_enabled()
+    if state != "false":
+        raise AssertionError("visible Stop action did not persist OFF")
+    STOP_PROOF_MARKER.write_text("STOP_ACTION_PERSISTED_OFF\n", encoding="utf-8")
+    print("PASS: visible Stop action persisted OFF before UI confirmation")
 
-    tap_button(TOGGLE_LABEL)
-    enabled = wait_for_text(ENABLED_TEXT)
-    assert ENABLED_TEXT in enabled
-    assert persisted_enabled() == "true"
 
-    tap_button(TOGGLE_LABEL)
-    stopped = wait_for_text(STOPPED_TEXT)
-    assert ENABLED_TEXT not in stopped
-    assert persisted_enabled() == "false"
-
-    tap_button(TOGGLE_LABEL)
-    enabled = wait_for_text(ENABLED_TEXT)
-    assert ENABLED_TEXT in enabled
-    assert persisted_enabled() == "true"
-    old_pid = wait_for_process(absent=False)
-
+def verify_durable_off_after_process_death(*, clear_marker: bool = True) -> tuple[str, str]:
+    """Independently verify the observed Stop state across a real app process death."""
+    try:
+        marker = STOP_PROOF_MARKER.read_text(encoding="utf-8").strip()
+    except OSError as exc:
+        raise AssertionError("no verified visible Stop action marker; durable proof unavailable") from exc
+    if marker != "STOP_ACTION_PERSISTED_OFF":
+        raise AssertionError("visible Stop action marker is invalid")
+    if persisted_enabled() != "false":
+        raise AssertionError("companion preference was not OFF before process death")
+    old_pid = process_id()
+    if not old_pid:
+        raise AssertionError("companion PID absent before force-stop; process-death proof unavailable")
     adb("shell", "am", "force-stop", PACKAGE)
     wait_for_process(absent=True)
     launch_companion()
+    new_pid = wait_for_process(absent=False)
+    if persisted_enabled() != "false":
+        raise AssertionError("companion preference did not remain OFF after process restart")
+    if clear_marker:
+        STOP_PROOF_MARKER.unlink(missing_ok=True)
+    print("PASS: durable OFF survived force-stop/relaunch; PID "
+          + old_pid + " -> " + new_pid)
+    return old_pid, new_pid
+
+
+def wait_for_stopped_ui_or_prove_durable(timeout: float = 60.0) -> str:
+    """Keep visible UI strict; record independent durable state if UI is blocked."""
+    try:
+        return wait_for_text(STOPPED_TEXT, timeout=timeout)
+    except (AssertionError, subprocess.SubprocessError, OSError, RuntimeError) as ui_failure:
+        # uiautomator may report an ANR as an assertion, an adb timeout/nonzero
+        # exit, or an OS-level transport error. All are UI-observation failures;
+        # preserve the original failure but still attempt the independent OFF
+        # + process-death proof.
+        try:
+            verify_durable_off_after_process_death()
+        except Exception as durable_failure:
+            print("DURABLE_STOP_PROOF_FAILED: " + type(durable_failure).__name__
+                  + ": " + str(durable_failure)[:1000])
+        else:
+            print("PARTIAL_PASS: durable OFF/process-death proof passed; "
+                  "visible STOPPED UI confirmation remains BLOCKED")
+        raise ui_failure
+
+
+def wait_for_restarted_stopped_ui_or_report_durable(timeout: float = 60.0) -> str:
+    """Keep the restarted UI gate strict while reporting independently verified OFF state."""
+    try:
+        return wait_for_text(STOPPED_TEXT, timeout=timeout)
+    except (AssertionError, subprocess.SubprocessError, OSError, RuntimeError) as ui_failure:
+        try:
+            marker = STOP_PROOF_MARKER.read_text(encoding="utf-8").strip()
+            if marker != "STOP_ACTION_PERSISTED_OFF":
+                raise AssertionError("visible Stop action marker is invalid")
+            if persisted_enabled() != "false":
+                raise AssertionError("provider startup did not preserve OFF")
+        except Exception as durable_failure:
+            print("DURABLE_STOP_PROOF_FAILED: " + type(durable_failure).__name__
+                  + ": " + str(durable_failure)[:1000])
+        else:
+            print("PARTIAL_PASS: force-stop/PID disappearance and provider startup persisted OFF; "
+                  "visible STOPPED UI confirmation remains BLOCKED")
+        raise ui_failure
+
+
+def verify_stop_and_restart(timeout: float = 60.0) -> tuple[str, str]:
+    """Prove explicit Stop, process death, OFF on relaunch, and no implicit re-pair."""
+    try:
+        stopped = wait_for_stopped_ui_or_prove_durable(timeout=timeout)
+        if ENABLED_TEXT in stopped:
+            raise AssertionError("visible Stop action left the companion enabled")
+        if persisted_enabled() != "false":
+            raise AssertionError("visible Stop action did not leave persisted OFF")
+        old_pid, new_pid = verify_durable_off_after_process_death(clear_marker=False)
+        restarted = wait_for_restarted_stopped_ui_or_report_durable(timeout=timeout)
+        if ENABLED_TEXT in restarted:
+            raise AssertionError("provider/activity restart unexpectedly enabled the companion")
+        if NOT_PAIRED_TEXT not in restarted:
+            raise AssertionError("provider/activity restart unexpectedly shows a Termux pairing")
+        if persisted_enabled() != "false":
+            raise AssertionError("companion preference changed from OFF after restart")
+        return old_pid, new_pid
+    finally:
+        STOP_PROOF_MARKER.unlink(missing_ok=True)
+
+
+def main() -> None:
+    STOP_PROOF_MARKER.unlink(missing_ok=True)
+    adb("shell", "am", "force-stop", PACKAGE, check=False)
+    launch_companion()
     wait_for_process(absent=False)
-    restarted = wait_for_text(STOPPED_TEXT, timeout=60.0)
-    assert ENABLED_TEXT not in restarted
+    initial = wait_for_text(STOPPED_TEXT, timeout=60.0)
+    assert NOT_PAIRED_TEXT in initial
     assert persisted_enabled() == "false"
 
-    print("PASS: visible stop persisted OFF; force-stop killed PID "
-          + old_pid + "; provider/activity restart returned STOPPED without "
-          "re-pairing, action submission, or capability grant.")
+    tap_button(TOGGLE_LABEL)
+    enabled = wait_for_text(ENABLED_TEXT)
+    assert ENABLED_TEXT in enabled
+    assert persisted_enabled() == "true"
+
+    tap_button(TOGGLE_LABEL)
+    record_stop_persisted_off()
+    old_pid, new_pid = verify_stop_and_restart(timeout=60.0)
+
+    print("PASS: explicit visible Stop persisted OFF; force-stop/relaunch PID "
+          + old_pid + " -> " + new_pid
+          + "; restarted UI stayed STOPPED and unpaired.")
 
 
 if __name__ == "__main__":
