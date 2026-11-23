@@ -1,3 +1,45 @@
+## Research & Perception execution checkpoint — 2026-11-23T00:38:13Z
+
+### Implemented A3 source-forget candidate
+- PR #2395, branch research-perception/v14-vision-source-forget-20261123-run10, exact head 26ccaf0825d4ebf02aedcdae781a9164b04f53d5 (DRAFT / NOT_RELEASED). The previous V13 A3 global and tile ridge projectors retained trained weights after image-source forget. Both now record exact training source IDs + SHA-256. Forget clears affected/legacy-unknown projector state before deleting the source, removes only expected artifacts with descriptor-relative no-follow traversal, preserves a projector proven source-disjoint, and reports explicit retraining required. No model inference/download or live-learning authority is added.
+- LOCAL_LINUX isolated helper tests: 7/7 PASS, CPython 3.13.5 / pytest 9.0.2. Exact-head GitHub focused workflow: 2/2 PASS (Python 3.13 and 3.14); offline bridge security PASS.
+- Exact-head staged-runtime and integrated-regression: FAIL. The staged JEPA source-lifecycle overlay replaces vision.forget() with its own vision_forget, which currently removes the global caption index but leaves projector weights and does not handle tile_projector. QA's source-lock composer also pins the old vision.py SHA256 and copies only its explicit PINS list; it must add vision_source_lineage.py and rebind the new vision.py hash. The prior staged run had 231 passed / 10 skipped / 19 failed / 2 errors, with the first hard failure unsupported lifecycle source: vision.py; the current exact head repeats the same pin blocker. Cross-owner details were posted to JEPA #2372 and QA #2391. No foreign-owned branch was modified.
+- Full local Aii tests: BLOCKED (no checkout; GitHub DNS fails). Local helper tests only; no full Aii integration, no native inference, no Redmi/Termux evidence.
+
+### Private device / release boundary
+- Private V13OBS #115 readback updated 2026-11-23T00:36:32Z: installed release remains aed1d2b826290c95c70356b5d8b864b5ef382be4; auto-update enabled, Runtime/Dashboard UP_TO_DATE, last_error NONE. Last stored turn remains 57.7388 s; B1/B2 TIME_BUDGET at 53.2/54.2 s; C2 OK, C3 3.1 s; native mapped-process sample 0. No new deployment or candidate installation.
+- Official Age 0; lab selector stage 10/effective implemented stage 5; physical feature execution false; learning commit authority requires separate SHADOW. No model/weight/permission/device mutation.
+
+### Research result R-101
+- Full-read preprint arXiv:2603.12977 (2026-03-13) describes exact add/delete updates for ridge heads using additive sufficient statistics. Local synthetic test adapted the current standardized Projector.fit with per-source n, sum-X, XᵀX, sum-Y and XᵀY: 600 delete/add-back comparisons, max relative parameter error 6.72e-10, max normalized-output error 1.39e-15. Local CPU microbenchmark: d=37/c=256, 128 sources, 2,048 samples; 10.87 MiB fp64 stats total, 1.28 ms mean stats solve vs 2.54 ms full refit over 100 warmed repetitions. Synthetic only, not image quality or Android.
+
+### Next executable step
+- Wait for JEPA #2372 to port the source-forget semantics into its overlaid vision_forget and QA #2391 to add/pin the helper + new vision.py bytes. Then rerun the exact staged and integrated workflows. Only after that continue the independent MediaProjection→RAW EYE→A3/A4→A5→real C3 path. No user action required.
+
+---
+
+## Research & Perception execution checkpoint — 2026-11-23 (2026-11-23T00:19:34.393Z)
+
+### Actual code / PR work
+- Perception PR #2369: corrected only the Perception-owned RAW EAR comparator fixture + workflow source pin from stale `81ae3e453c9ef378b072dfc9d243098427e24baa` to current `audio_voice_cues.py` Git blob `5dbb0fd5e17eb9bcb190d7a3743bdd1ef1ecbb9d`. Code/test commit `9cca6f0a0c6a3be0e8b5d64c02faed7be33aa0d8`; handoff-only head `930f9aab2aaca46dbf0f9ef876b2b1ef68ea85ab`. Exact PR remains DRAFT / NOT_RELEASED.
+- The previous exact run showed the comparator assertion failing in both Python 3.13 and 3.14 while libfvad/WebRTC ABI smoke passed. The stale expected blob is now corrected. On current head `930f9aab`, 7 workflows are SUCCESS (RAW EAR comparator, FASTDIAR diagnostic, RAW EAR prosody→attention, optional NumPy, model-lab, privacy scan and consent-revocation QA), 1 safe-additive check is expected SKIPPED, 1 release-event integration is CANCELLED, and the Core-owned staged/integrated workflow FAILS. Exact run `45086824158`: staged-runtime 16 failed / 234 passed / 10 skipped / 2 errors; integrated-regression 1 failed. All primary failures stop at Core #2370's composer pin `b18e450162b062b09368a12b1ca18924ed8c5025`, stale against current `audio_voice_cues.py` blob `5dbb0fd5e17eb9bcb190d7a3743bdd1ef1ecbb9d`; the two migration `PARTIAL != UPDATED` assertions are downstream of the failed stage. Current Core head `4c0663f60d588b6f296bef43e5a4bf56cabfda31` was re-read and still has the old pin. Perception posted the exact failing logs and required rebind on #2370; do not weaken hash validation. A separate follow-on import blocker is verified: Core's current branch has no `v13/code/v13/audio_teacher_ear.py` (404), while Perception `audio_voice_cues.py` imports it at module load; Perception's exact module blob is `5a26193c94c864e6ad3af55def59bae040e59f35`. Core's audio-window contract also rejects and does not propagate `teacher_result`, `teacher_opt_in` or `teacher_transcript_consent`. The module must be included/pinned and those fields added as strict optional, default-false inputs before Teacher Ear is reachable; otherwise keep Teacher Ear explicitly OFF.
+- Perception PR #2375 exact head `e21a85a329ea25a2208fcfa64edc216884b55bf1`: 4 executed GitHub workflows SUCCESS + 1 expected safe-additive SKIPPED. This is synthetic frame/fixture execution: MediaProjection-shaped input → handcrafted RAW EYE numeric features → A4 → source-bound PerceptPacket/A5 lease-gated context cache, with a 320-character A5 envelope. The optional A3 test fits a tiny synthetic hashed-label projector and scores a shifted synthetic frame. It is not semantic vision, neural gradient learning, JEPA, retention or Android proof. Normal Runtime→C3 dispatch remains separate.
+- Core PR #2379 exact head `77fd5d63696940f255bb849b58da89c32150b370` is a one-shot signed MediaProjection provider candidate stacked on the older QA companion base. It must be composed with #2356 and #2375 before the exact provider→RAW EYE→bounded A5→C3 path can run. The same live UI lease must remain held through C3 generation; revoke/cancel/restart must be tested. No actual screen capture was performed.
+
+### Private device / deployment evidence
+- Private V13OBS #115 updated 2026-11-23T00:05:52Z: installed release `aed1d2b826290c95c70356b5d8b864b5ef382be4`; `auto_enabled=true`, runtime/dashboard `UP_TO_DATE`, `last_error=NONE`, runtime service/model process RUNNING. This confirms release deployment only; none of the new PRs is deployed.
+- Last turn: 57.7388 s total / 41.6269 s TTFT / 38.9453 s prefill / 751 prompt tokens / 2 generated tokens. Five-turn body summary: B1 4/4 native attempts failed / 0 valid offers; B2 2/2 failed / 0 valid offers; no prompt inclusion, semantic use or native latent exchange is proven. Native process sample reports 0 mapped processes and does not establish model residency or free RAM.
+
+### Research / persistence
+- Draft PR #2393, branch head `128656fb0f8a795c804a721a3617e5c930847b85`, adds R-100 (sherpa-onnx v2.0.3 CPython 3.14 Android API24+ ARM64 wheel metadata) and refreshes the shared board, next-action file and coverage overlay. Runtime is Apache-2.0; PyPI artifacts lack provenance; model weights are separate. Candidate only; no wheel/model download or install.
+- The work board now points V14-005 to #2393, V14-006 to #2375, V14-009 to #2379 and V14-018 to #2369. The whole-Canon coverage overlay records exact synthetic/CI/device boundaries; historical 1,255-heading inventory is unchanged.
+
+### Environment / next ownership
+- LOCAL_LINUX full Aii tests: BLOCKED — no repository checkout is mounted and `git ls-remote` fails DNS resolution for `github.com`. No local Aii pytest/Gradle run was possible. CI is GitHub-hosted; no Redmi-native capture/AudioRecord proof.
+- Next Perception action: poll #2369 comparator + staged runs; fix only Perception-owned failures. Next Core/Boss action: rebind its own audio source pin and compose QA + Perception + MediaProjection branches, then deliver the bounded source-bound A5 envelope to the real C3 consumer. No user action required; no model/weight/permission/device mutation.
+
+---
+
 ## Boss & Integration run 15 — 2026-11-23T00:05:08.222Z
 
 ### Release/device boundary

@@ -1,6 +1,6 @@
 # V14 / Inquisition-JEPA — laufendes Forschungsjournal
 
-**Stand:** 2026-11-22. **Arbeitsart:** ergebnisorientiertes laufendes Research, nicht bloß Literaturanhang.  
+**Stand:** 2026-11-23. **Arbeitsart:** ergebnisorientiertes laufendes Research, nicht bloß Literaturanhang.  
 **Aktive Architektur:** [V14 Master](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md) §§21–23; [Arbeitsplan](V14_LIVE_WORKPLAN.md).  
 **Vorsicht:** Ein Paper-Abstract ist kein reproduzierter Experimentalbefund; eine nachgeprüfte URL ist keine vollständig gelesene Arbeit. Jeder Eintrag erhält eine *genaue* Evidenzstufe.
 
@@ -1103,3 +1103,35 @@ No new primary-source research was performed in this Boss integration run. Exist
 ## Boss integration note — 2026-11-23T00:05:08.222Z
 
 PR #2387 was merged into the Boss documentation branch only. R-096–R-099 remain research records, not runtime features: R-096 is a peer-reviewed mechanism with CC BY 4.0 article text but no code import; R-097 is a preprint/design reference with no matching implementation found; R-098 is an arXiv preprint with repository license not established; R-099 was abstract-only and is CC BY-NC-ND 4.0. No model, dependency, weights, Android provider or learning path was imported. No retention gain, latency gain or Android benchmark is claimed. Any follow-up must be a bounded, falsifiable V14 experiment with license and resource checks.
+
+
+## R-100 — sherpa-onnx 2.0.3: CPython 3.14 Android ARM64 wheel feasibility (2026-11-23)
+
+**Primary upstream/revision:** `k2-fsa/sherpa-onnx` release `v2.0.3`, released 2026-11-22 at upstream commit `38016c6` (GitHub release marks the tag commit verified). The project repository and PyPI `sherpa-onnx` package identify Apache-2.0. Upstream describes offline local streaming/non-streaming ASR, TTS, diarization, speaker verification, VAD and other audio tasks, including Android support. This is runtime feasibility evidence, not a model-quality result.
+
+**New Android Python packaging evidence:** PyPI lists `sherpa_onnx-2.0.3-cp314-cp314-android_24_arm64_v8a.whl` at 2.7 MB (uploaded 2026-11-22), tagged CPython 3.14 / Android API 24+ / ARM64-v8a. The matching `sherpa-onnx-bin 2.0.3` Android ARM64 wheel is 10.2 MB; `sherpa-onnx-core 2.0.2` lists an Android ARM64 wheel at 10.3 MB. All three releases currently show **no PyPI provenance/attestation**. These are runtime-package artifacts, not acoustic model weights. The package dependency closure and actual installed footprint must be confirmed from metadata before summing sizes or pinning them.
+
+**Model/resource boundary:** the previously audited `sherpa-onnx-streaming-zipformer-en-20M-2023-02-17` is a small English-only candidate; it does not solve German speech. The official model catalogue lists other language-specific streaming models and Chinese/English X-ASR variants, but the cited X-ASR int8 model is 134 MB and does not cover German. A multilingual Whisper tiny route is larger and batch-oriented. Do not present the Python wheel as a model or as proof that the desired German/English voice path is solved. Model-weight and training-data licenses must be audited separately from the Apache-2.0 runtime.
+
+**V14 adaptation / next hard test:** candidate for an isolated, opt-in Termux compatibility experiment only. First read `sysconfig.get_platform()`, `packaging.tags.sys_tags()`, Python version, Android API and ABI on the actual device; verify that pip accepts the `android_24_arm64_v8a` tags and that every ELF dependency resolves against Bionic (not glibc). Then install only into a disposable venv, import the exact pinned package trio, and run a fixed local WAV through a tiny streaming model with no network or persistence. Record wheel hashes/provenance, dependency closure, cold/warm initialization, chunk latency/RTF, peak RSS, CPU/battery, silence/noise/music negatives and English/German holdout quality. Keep raw audio local and separately consented. Compare against the current caller-supplied Teacher Ear contract; do not change normal Runtime, model weights, or user data before explicit approval.
+
+**Limitations:** a PyPI platform tag does not prove compatibility with Termux's exact Python build, Bionic linker, Android lifecycle or Redmi hardware. The wheel files are published without provenance attestations. No wheel, dependency, model or weight was downloaded or installed in this review; no Termux/Redmi benchmark was performed.
+
+**Status:** UPSTREAM_RELEASE_AND_WHEEL_METADATA_VERIFIED / APACHE_RUNTIME_LICENSE / NO_PROVENANCE / CANDIDATE_ONLY / NOT_INSTALLED / REDMI_UNVERIFIED.
+
+
+## R-101 — Exact source-level unlearning for standardized A3 ridge projectors (2026-11-23)
+
+**Primary paper read in full:** Yijun Quan, Wentai Wu and Giovanni Montana, *Exact Federated Continual Unlearning for Ridge Heads on Frozen Foundation Models*, arXiv:2603.12977v1, submitted 2026-03-13 (https://arxiv.org/abs/2603.12977). Preprint; no peer-reviewed acceptance was established in this review. No official code repository was identified, no code/weights were imported, and the paper-specific license was not confirmed from the primary arXiv page.
+
+**Method:** for a fixed feature extractor and a ridge-regression head, the optimum depends on additive sufficient statistics S=FᵀF and G=FᵀY. The paper maintains these through add/delete requests and recomputes the exact retained-data head; Variant A uses a full fp64 solve, while Variant B uses QR/Sherman–Morrison–Woodbury updates with feasibility and periodic-reset considerations. Its Bayesian section derives a zero-KL retrain-equivalence certificate when the tracked statistics are exact.
+
+**Reported evidence and limits:** four supervised benchmarks (CIFAR-10/100, FeMNIST and Sentiment140), DINOv2 or RoBERTa 768-dimensional frozen features, 100 simulated clients, and experiments on a server with 4 NVIDIA RTX A6000 GPUs. The authors report fp64 relative Frobenius deviations around 1e-9 versus centralized ridge retraining and test 200 sequential deletion requests plus add-back. This is not a mobile benchmark. The guarantee removes influence from the ridge head only; it does not unlearn a backbone or teacher that was itself trained on the deleted source. The paper also notes second-order statistics can leak feature-distribution information.
+
+**A3 mapping:** V13 vision.Projector.fit is a closed-form ridge head over deterministic visual features and text-embedding targets, but it first standardizes X using data-dependent mean/std and uses an unregularized bias. Plain S/G therefore needs extra first moments. For the current fit, source-level n, sx=sum(X), S=XᵀX, sy=sum(Y), G=XᵀY are sufficient to reconstruct the exact standardized system: mu=sx/n, sigma=sqrt(max(diag(S)/n-mu²,0))+1e-6, H=(S-sx sxᵀ/n)/(sigma sigmaᵀ), C=(G-mu syᵀ)/sigma, W_feature=(H+lambda I)^-1 C, W_bias=sy/n. This assumes the feature extractor, text encoder revision, preprocessing and target rows remain fixed and source-bound.
+
+**LOCAL_LINUX synthetic equivalence probe:** CPython 3.13.5 / NumPy 2.3.5. Across 600 delete/add-back comparisons (d=37 with target dimensions 256 and 768, plus d=12/c=16; seven synthetic source groups per seed; zero-variance feature stress included), maximum relative parameter error against a fresh Projector.fit was 6.72e-10, p99 5.86e-10, and maximum normalized-output relative error 1.39e-15. A separate 128-source / 2,048-sample / d=37 / c=256 CPU microbenchmark stored 89,080 bytes of fp64 sufficient statistics per source (10.87 MiB total); mean delete-update solve time over 100 warmed repetitions was 1.28 ms versus 2.54 ms for full refit on retained samples. These are local synthetic/CPU results, not real image accuracy, Android latency, RSS or Redmi evidence.
+
+**V14 consequence:** keep PR #2395's conservative invalidation as the safe first step. After the JEPA source-lifecycle overlay and QA pin chain consume that fix, prototype per-source fp64 sufficient-stat artifacts so an explicit forget can subtract one source and reconstruct the remaining A3 head without retaining raw image/audio data. Store encoder/preprocessing revisions and exact source hashes; delete per-source stats on forget; test delete/add-back, order invariance, restart, rollback, old-task retention and malformed/legacy fallback. Do not claim neural-backbone unlearning or permission to activate live learning.
+
+**Status:** FULL_ARXIV_PREPRINT_REVIEWED / LOCAL_SYNTHETIC_STATS_EQUIVALENCE / NO_CODE_IMPORT / NO_ANDROID_PROOF.
