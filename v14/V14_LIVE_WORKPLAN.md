@@ -1457,3 +1457,32 @@ The linked `alikayyam/sticky_moe` repository README declares MIT, but the root `
 ### Explicit remaining JEPA receiver-retention gap
 
 The temporal predictor's fixed-EMA retention gate is measured, and B1/B2 adapter fitting records bounded Adam gradients, old/new parameter SHA, parameter delta norm, source-disjoint current holdout metrics and shuffled/zero-latent controls. But `world_jepa_learning_intent.finalize_weight_delta_receipts()` currently sets `target_adapter_retention` to `NOT_MEASURED`. The old adapter's MSE on the *new* holdout is not an old-cohort retention measurement. After the parent/rebase gate, persist prior receiver holdout outcomes and measure old/new B1/B2 heads on the identical retained cohort, with source/transition disjointness and shuffled/no-history negative controls. Do not call the B1/B2 receiver loop complete until the receipt reports a measured retention result.
+
+
+## 2026-11-23 — JEPA & Memory run 16: receiver-adapter retention
+
+**Code candidate:** PR #2454, branch head at code/test checkpoint `1cfac4a1518a959a2022b81e796e3dfc0b6b2cf0`; handoff commit `3066dac6aaaa5573b13c1dc0e0864f144e08c2c2`.
+
+### Implemented source path
+
+- `world_jepa_learning_intent.py`: bounded, digest-validated receiver-retention cohort; pre-update baseline using the active encoder and active B1/B2 heads; post-update evaluation using the new encoder and new heads; v3 WeightDeltaReceipt metrics; fixed cohort IDs included in LearningIntent retention provenance.
+- `world_jepa_temporal.py`: fixed cohort exclusion from training by direct/transitive source IDs, source hashes and action IDs; fail-closed behavior when the old cohort cannot be proven disjoint; persistent cohort in the checkpoint record; source-forget scans its provenance.
+- `test_v14_world_jepa_temporal_runtime.py`: bootstrap persistence, same-cohort adapter retention, encoder drift and compensation, degraded-head failure, source-overlap veto, digest tampering, source-forget after bounded-row eviction, and measured v3 receipt validation.
+
+### Gate semantics
+
+- First update: no prior receiver cohort exists, so the receipt is `NOT_MEASURED / NO_PRIOR_CHECKPOINT`; the current holdout is persisted for the next update.
+- Later update: the previous encoder+head and updated encoder+head are evaluated on the same raw `X/A/Y` cohort. Both B1 and B2 must stay within 5% old-cohort MSE tolerance. If the prior receiver utility gate passed, the updated pair must also beat mean, zero-latent and shuffled-latent controls.
+- Any source overlap or measured retention regression prevents checkpoint commit. The fixed cohort is not trained on; source-forget can still invalidate it.
+- This is an adapter-retention guard, not full world-fact timescale stratification, not native body-weight training and not trained latent coupling.
+
+### Test and platform state
+
+- Exact-head Actions run #45272190117: `startup_failure`, 0 jobs; no CI test executed.
+- Full local project suite: NOT_RUN; no Aii checkout and GitHub DNS unavailable. Python 3.13.5 / NumPy 2.3.5 / pytest 9.0.2 are installed in the container, but cannot substitute for the repository.
+- Synthetic Python numeric control: PASS for same-cohort retention, encoder drift, compensation, degraded-head rejection and overlap detection.
+- Termux/Redmi: REDMI_UNVERIFIED. Private V13OBS #115 (19:52:16Z) still reports installed 8d93236, auto-update enabled, runtime STOPPED_BY_USER, two failed native attempts per B1/B2 and zero valid offers. Fresh private owner-read creation failed HTTP 422 due unverified GitHub email; no device action was taken.
+
+### Integration ordering
+
+PR #2454 remains DRAFT and is 59 ahead / 47 behind current Boss #2443 head cdf6b640; merge base remains 6e9bad8. Do not rebase until the combined Boss exact-head CI is green. Then rebase #2454 onto that exact head, review source-authority/forget composition, rebase Core #2457 onto the verified JEPA head, and run the Python 3.13/3.14 temporal, postcommit, optimizer-resume, source-forget, restart/rollback, staged and integrated suites. No force-push. Keep B1/B2 SHADOW and no phone release.
