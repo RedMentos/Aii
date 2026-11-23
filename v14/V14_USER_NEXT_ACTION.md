@@ -1,3 +1,16 @@
+# M1 experiment — latest implementation checkpoint (2026-11-23 12:34 UTC)
+
+The M1 DATA implementation is present on the release-development branch. It now rejects non-finite measurements, treats common missing markers case-insensitively, requires every seasonal lag to be at least the forecast horizon, validates rows/channels/timestamp continuity at both normal dataset construction and hash-gated test access, and tests exact seasonal alignment plus missing seasonal-source rejection.
+
+- Current branch HEAD: `8fb5a61361e34862f8510f7f2c14c43cc9cd2952` (32 commits ahead of integration baseline `b20e9b1f3dd53af472055adb43da628785494ec4`).
+- M1 GitHub Actions runs: push `45175650226` and pull_request `45175661600` are **QUEUED**, not passed.
+- No local full suite, real UCI data run, model training, weight update or Redmi validation. M1 remains [ENTWURF]; no test-year access.
+- Next: wait for exact CI result, fix failures, then implement common InputBundle and baseline adapters before JEPA/direct-MAE PROBE. Preserve the M1a/b/c gates and all equal-input/parity controls.
+
+**No user action is required.** Do not run a manual Termux command or send another update request; the phone updater status remains governed by the existing authenticated receipt below.
+
+---
+
 # Boss & Integration — current verified handoff (2026-11-23)
 
 **No user action is required. Do not run a manual Termux command or send a duplicate update request.** The existing authenticated auto-updater is enabled.
