@@ -276,3 +276,19 @@ The fresh device diagnostics still show a slow stored turn: 57.74 s total, 41.63
 - Physical Redmi/Termux capture, Android OS-consent receipt, actual frame delivery and same-turn C3 use remain **REDMI_UNVERIFIED**. The candidate is **NOT_RELEASED**.
 
 **Next internal action:** poll #2408 exact-head CI, repair any code/test regression, have QA retry the #2406 emulator process-restart path, then integrate Core provider + Perception RAW EYE + normal C3 consumer under the same live lease. Only an explicit, consented Redmi receipt and C3 consumer evidence can advance the Android status. No user action is needed.
+
+
+## Core & Harness run18 — 2026-11-23T04:15Z
+
+**User action: none.** No Termux command, update request, model download/swap, permission change, shell action or device mutation was performed.
+
+- Core PR #2408 is DRAFT at exact head `ee5f040939918e4bd45a914bdbb13e8e92746d8f`, stacked on #2406 at base `429f62ad4e0d1c8561f148a862267a1749f96d38`. It is NOT_RELEASED and is not a release ancestor.
+- The exact Android Gradle compile failure from the previous head was fixed: both `publishScreenFrameIfAuthorized` overloads now propagate the checked exception from `ProjectionFrameStore.publish` to the existing capture-service cleanup path. A malformed-receipt/no-publication regression was added.
+- Added read-only `:android frame-status`: it requires the pinned companion key, verifies the signed frame metadata and fixed ContentProvider URI, and returns bounded metadata only. It does not read screenshot bytes, consume the one-use nonce, persist raw capture or grant action/learning authority. Tests cover the positive path, unpinned-key denial, zero frame reads and zero nonce rows.
+- LOCAL_LINUX: JDK 21 `javac --release 17` plus dependency-free CaptureSessionGate smoke **3/3 PASS**. This is not an Android Gradle build. Full Aii checkout/Python suite is **BLOCKED / NOT_RUN** because no checkout is mounted and GitHub DNS resolution fails.
+- Exact-head GitHub Actions: provider run **45110548664 QUEUED**; staged/integrated run **45110548708 QUEUED**. No exact-head CI PASS is claimed.
+- User effect: the local operator can check whether a signed one-shot frame is ready without consuming it. The provider is still not connected to the normal Runtime same-turn A5/A4 → B1/B2 → C4/JEF → C3 consumer. Native latent coupling and trained weight updates are not claimed.
+- Redmi capture, Android OS-consent receipt, frame delivery and C3 use remain **REDMI_UNVERIFIED**. Installed release remains `aed1d2b826290c95c70356b5d8b864b5ef382be4` according to the last available private evidence; no current-run receipt was obtained. No update request was sent.
+- Parent #2406's emulator process-restart test previously hit a System UI / com.android.phone ANR; QA owns the retry. The current PR still depends on QA process-restart acceptance and Perception's public RAW EYE receiver.
+- **Next internal action:** poll both exact-head runs, fix any observed regression, then compose the provider with Perception's RAW EYE path and a real same-turn Runtime/C3 consumer on a reviewed compatible stack. Keep capture OFF until consent/restart acceptance.
+- **User action:** none.

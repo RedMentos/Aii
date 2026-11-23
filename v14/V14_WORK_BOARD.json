@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T03:28:05.579Z",
+  "updated_at": "2026-11-23T04:17:22.339Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4 remains installed on Redmi. Fresh private owner-read receipts #690–#693 (2026-11-23 02:55–02:56Z) confirm auto-update enabled, Runtime/Dashboard UP_TO_DATE, last_error NONE; diagnostics still show 57.74s turn, 41.63s TTFT, 2 output tokens, B1/B2 TIME_BUDGET, and zero mapped native processes. Boss #2370 exact head ec1c59591b1c309f3435941717b645d29f746830 is DRAFT/NOT_RELEASED; 16/16 immutable source links verified by GitHub file readback, exact-head CI 16 queued + 1 skipped, no current-head PASS yet.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Run 14 evidence overlay supersedes earlier operational snapshots. Historical negative results and all 1,255 Canon headings remain preserved. CI/synthetic evidence is never promoted to native Android proof.",
@@ -254,37 +254,37 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
-      "proof_environment": "GitHub CI + private V13OBS release receipt; no APK install, MediaProjection session, microphone capture or Redmi control proof",
-      "next_step": "Core PR #2408 (head f8ceb9447a7335d4d7346930a8bed030f7e95c59) now carries the one-shot MediaProjection provider and calls Perception #2375's public consume_projected_frame_from_provider entrypoint. Exact-head CI was re-triggered after fixing two escaped-NUL test assertions; runs 45105971297 (provider) and 45105971273 (staged/integrated) are QUEUED. Parent #2406 Android process-restart run 45103190236 failed because the emulator displayed 'System UI isn't responding' and logcat recorded an ANR in com.android.phone; QA owns retry/diagnosis. Next: poll #2408 exact-head CI, resolve failures, then integrate Core + Perception #2375 and prove a consented same-turn C3 consumer. Redmi remains REDMI_UNVERIFIED.",
+      "proof_environment": "LOCAL_LINUX isolated Java gate smoke 3/3 PASS; PR #2408 exact head ee5f040939918e4bd45a914bdbb13e8e92746d8f provider + staged/integrated CI QUEUED; no Android/Redmi frame capture or normal Runtime/C3 proof; REDMI_UNVERIFIED",
+      "next_step": "Poll #2408 exact-head provider run 45110548664 and staged/integrated run 45110548708. The compile fix now propagates ProjectionFrameStore.publish checked failures into the capture-service cleanup path; :android frame-status verifies a signed frame receipt read-only without bytes/nonce consumption. Then compose with Perception #2375/#2401 and wire a same-turn Runtime/C3 consumer; QA owns the #2406 emulator process-restart retry. Do not mark Runtime/C3 connected or Redmi-verified.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T03:02:25.620Z",
-      "proof": "#2375 e21a85 contains provider entrypoint; #2379 still fails import on stale base; #2356 process restart blocked by emulator System UI ANR. Private V13OBS #115 at 2026-11-23T00:05:52Z: runtime/dashboard RUNNING, updater enabled and UP_TO_DATE at aed1d2; this is release deployment only, not new provider capability proof. #2397 overlay is focused-CI green but staged/integrated still blocked by QA pin; #2369 audio compatibility is available but Core pin remains stale. No Android UI/audio proof. Perception #2401 exact head 62551749d0b7b0de7434e82b6381f305cf178b30 is DRAFT/STACKED; isolated lineage guard 6/6 PASS and five synthetic consumer negatives added; two exact-head workflows were in progress. No real MediaProjection, C3 or Redmi proof. PR #2401 focused UI/provider CI PASS 30/30 on Python 3.13 and 30/30 on Python 3.14; staged/integrated FAIL due QA-owned vision.py source pin and migration PARTIAL. No real MediaProjection, C3 or Redmi proof.",
+      "last_checkpoint": "2026-11-23T04:17:22.339Z",
+      "proof": "#2375 e21a85 contains provider entrypoint; #2379 still fails import on stale base; #2356 process restart blocked by emulator System UI ANR. Private V13OBS #115 at 2026-11-23T00:05:52Z: runtime/dashboard RUNNING, updater enabled and UP_TO_DATE at aed1d2; this is release deployment only, not new provider capability proof. #2397 overlay is focused-CI green but staged/integrated still blocked by QA pin; #2369 audio compatibility is available but Core pin remains stale. No Android UI/audio proof. Perception #2401 exact head 62551749d0b7b0de7434e82b6381f305cf178b30 is DRAFT/STACKED; isolated lineage guard 6/6 PASS and five synthetic consumer negatives added; two exact-head workflows were in progress. No real MediaProjection, C3 or Redmi proof. PR #2401 focused UI/provider CI PASS 30/30 on Python 3.13 and 30/30 on Python 3.14; staged/integrated FAIL due QA-owned vision.py source pin and migration PARTIAL. No real MediaProjection, C3 or Redmi proof. Run18: PR #2408 exact head ee5f040939918e4bd45a914bdbb13e8e92746d8f adds checked publication failure propagation, malformed-receipt/no-publication regression, and read-only :android frame-status with pinned-key negative, zero-byte-read and zero-nonce-consumption assertions. LOCAL_LINUX JDK 21 javac --release 17 + CaptureSessionGate smoke 3/3 PASS. Exact-head CI queued; no Redmi proof.",
       "last_verified_at": "2026-11-23T00:05:08.222Z",
       "latest_candidate_pr": {
-        "pr": 2379,
-        "head_sha": "77fd5d63696940f255bb849b58da89c32150b370",
-        "base": "qa/v14-companion-final-qa-20261122",
+        "pr": 2408,
+        "head_sha": "ee5f040939918e4bd45a914bdbb13e8e92746d8f",
+        "base": "429f62ad4e0d1c8561f148a862267a1749f96d38",
         "state": "OPEN_DRAFT_STACKED",
-        "ci": "PROVIDER_CANDIDATE; STAGED_AND_RESTART_PENDING",
-        "scope": "one-shot signed MediaProjection provider; normal Runtime→C3 dispatch separate"
+        "ci": "PROVIDER_45110548664_QUEUED; STAGED_INTEGRATED_45110548708_QUEUED; no exact-head PASS",
+        "scope": "one-shot signed MediaProjection provider + read-only frame-status; no normal Runtime/C3 consumer"
       },
       "checkpoint": {
         "date": "2026-11-23",
         "owner": "Core & Harness",
         "branch": "core/v14-media-projection-provider-perception-api-20261123",
         "base_sha": "429f62ad4e0d1c8561f148a862267a1749f96d38",
-        "code_commit": "f8ceb9447a7335d4d7346930a8bed030f7e95c59",
+        "code_commit": "ee5f040939918e4bd45a914bdbb13e8e92746d8f",
         "pull_request": 2408,
         "status": "DRAFT_EXACT_HEAD_CI_QUEUED",
         "tests": {
-          "prior_provider_commit": "PASS: run 45105228986 — Android Gradle assemble/unit; Python 3.13 and 3.14 compile + 95 tests; staged/integrated run 45105228992 PASS. This was before the public-Perception-entrypoint follow-up.",
-          "exact_head": "QUEUED: provider run 45105971297; staged/integrated run 45105971273.",
-          "previous_exact_head_failure": "FAIL: 2 test assertions expected literal backslash text instead of NUL bytes; runtime zeroization was observed. Fixed in f8ceb9447a7335d4d7346930a8bed030f7e95c59.",
-          "parent_qa": "FAIL: #2406 run 45103190236 — emulator System UI ANR/com.android.phone; APK assemble/install and isolated Gradle/unit job passed.",
-          "local_linux": "BLOCKED: no checkout; git ls-remote failed DNS resolution for github.com."
+          "local_linux": "PASS: JDK 21 javac --release 17 + dependency-free CaptureSessionGate smoke 3/3; full Aii checkout/Python suite BLOCKED_NO_CHECKOUT_DNS.",
+          "exact_head": "QUEUED: provider run 45110548664; staged/integrated run 45110548708.",
+          "compile_failure_fixed": "Previous head e472540 had Android Gradle checked-exception compile failure at ProjectionFrameStore.publish; both wrapper overloads now declare throws Exception; malformed-receipt regression added.",
+          "read_only_status": "Synthetic controller/provider test verifies signed metadata, explicit pinned key, zero frame reads and zero consumed nonce rows.",
+          "parent_qa": "#2406 Android process-restart emulator failure due System UI/com.android.phone ANR remains QA-owned."
         },
         "device": "REDMI_UNVERIFIED; no physical OS-consent capture, native frame delivery or same-turn C3 receipt.",
-        "next_action": "Poll #2408 exact-head CI; fix any failures; coordinate QA retry of #2406 process-restart emulator test; integrate with Perception #2375 public receiver; then obtain an explicitly consented Redmi frame and same-turn C3 consumer evidence."
+        "next_action": "Poll exact-head CI; fix/retest observed failures; compose Core provider with Perception RAW EYE and a normal Runtime/C3 consumer on a reviewed current-release stack; obtain consented Redmi evidence only after QA process-restart acceptance."
       }
     },
     {
@@ -1100,7 +1100,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-23T03:02:25.620Z",
+    "timestamp": "2026-11-23T04:17:22.339Z",
     "release_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "code_candidate_sha": "ec1c59591b1c309f3435941717b645d29f746830",
     "candidate_ci": "PR2370_EXACT_HEAD_ec1c595:16_QUEUED_1_SKIPPED_0_NEW_HEAD_PASSES_OBSERVED",
@@ -1137,18 +1137,20 @@
       "2394": "DRAFT Core capability registry exact head 41b43cb139d68caf8c459cec668061b4eda6b6db: 2/2 synthetic workflows PASS; parent process-restart acceptance FAIL.",
       "2395": "DRAFT Perception A3 source-lineage exact head 26ccaf0825d4ebf02aedcdae781a9164b04f53d5: focused 2/2 PASS; staged/integrated FAIL at old vision.py pin/obsolete forget anchor.",
       "2396": "DRAFT exact head 3a1cecb: Temporal WorldJEPA T8 Windows SUCCESS; 3 other workflows FAIL at Termux12 training-resume builder pin; no optimizer-resume or weight proof.",
-      "2401": "HEAD_21b0c052_FOCUSED_30_PASS_PY313_30_PASS_PY314; STAGED_FAIL_QA_VISION_PIN; NOT_RELEASED"
+      "2401": "HEAD_21b0c052_FOCUSED_30_PASS_PY313_30_PASS_PY314; STAGED_FAIL_QA_VISION_PIN; NOT_RELEASED",
+      "2408": "DRAFT exact head ee5f040939918e4bd45a914bdbb13e8e92746d8f; checked publish exception compile fix + read-only :android frame-status; provider/staged CI queued; NOT_RELEASED; no normal Runtime/C3 consumer or Redmi capture."
     },
     "user_action_required": "NONE",
     "research_id_collision": "R-092 AudioRecord and the distinct JEPA paper's R-093 renumber remain unresolved; preserve the current ledger until explicit cross-check.",
     "capability_evidence": [
       {
         "capability": "A0-A5 perception/attention",
-        "code": "RAW_EAR features + RAW_EYE adapter candidate",
-        "wired": "A5/A4/C3 audio candidate; RAW_EYE frame ingress still failing",
-        "tested_synthetic": "#2375 synthetic-frame checks only; #2379 provider stack diverged; #2369 seven Perception-owned checks green, Core staged/import failure remains",
-        "tested_android": "NO_AUDIORECORD_OR_MEDIAPROJECTION_RECEIPT",
-        "active": "PARTIAL_SHADOW_ONLY"
+        "code": "RAW_EAR features + RAW_EYE adapter + one-shot signed MediaProjection provider candidate",
+        "wired": "Core #2408 provider→public Perception consumer API; no normal Runtime/C3 turn consumer",
+        "tested_synthetic": "Prior provider stack Android Gradle/Java + Python 3.13/3.14 and staged regression passed; current head compile fix + frame-status tests await exact-head CI; LOCAL_LINUX JDK gate smoke 3/3 PASS",
+        "tested_android": "NO_MEDIAPROJECTION_RECEIPT_OR_C3_DELIVERY",
+        "active": "DRAFT_NOT_RELEASED / REDMI_UNVERIFIED",
+        "evidence": "Read-only :android frame-status verifies metadata only and consumes neither frame bytes nor nonce; no accepted same-turn A5/A4→C3 consumer."
       },
       {
         "capability": "B1_DETAIL/B2_GIST",
@@ -1316,7 +1318,8 @@
       "Core: combine #2379 provider with #2401 UI lease and normal C3 consumer; no Android capture receipt yet.",
       "QA: preserve training-resume repair, compose #2397/#2395, rebind vision.py + vision_source_lineage.py source lifecycle pins and recompute stage/deployer hashes; rerun staged/integrated/migration/privacy/owner-read.",
       "Perception: retain #2401 focused CI pass; no merge until the base source-lifecycle chain is green.",
-      "Core: after QA composition, combine #2379 provider with #2401 same UI lease and normal C3 consumer; no Android capture receipt yet."
+      "Core: after QA composition, combine #2379 provider with #2401 same UI lease and normal C3 consumer; no Android capture receipt yet.",
+      "Core: poll #2408 exact head ee5f040939918e4bd45a914bdbb13e8e92746d8f (provider 45110548664; staged/integrated 45110548708). The compile fix and read-only frame-status are code-present but CI-pending; then compose Perception RAW EYE + normal Runtime/C3 consumer. REDMI_UNVERIFIED; no user action."
     ],
     "previous_overlay": {
       "timestamp": "2026-11-23T00:05:08.222Z",
@@ -1727,6 +1730,30 @@
       ],
       "user_action_required": "NONE",
       "research_note": "Existing R-102 Orion paper suggests a resource governor that allocates training/replay budget from measured memory and latency, but it is a preprint with Jetson evidence, no located Orion code license and no Redmi validation. Do not transplant; first obtain per-organ RSS/latency/retention data on the target device."
+    },
+    "core_run18": {
+      "timestamp": "2026-11-23T04:17:22.339Z",
+      "pr": 2408,
+      "branch": "core/v14-media-projection-provider-perception-api-20261123",
+      "head": "ee5f040939918e4bd45a914bdbb13e8e92746d8f",
+      "base_sha": "429f62ad4e0d1c8561f148a862267a1749f96d38",
+      "change": "checked ProjectionFrameStore.publish exception propagation; malformed receipt no-publication regression; read-only :android frame-status",
+      "readback": {
+        "android_companion_runtime": "932d8e24e645cc71e003d8a1529c393997db4353",
+        "test_android_companion_runtime": "0da080f4105b92fb999c974d750ec13054ee5e96",
+        "handoff": "306dac8aa708107013ac2ce8d9e9bb1b055e26c0"
+      },
+      "local_linux": "JDK21 javac --release 17 + CaptureSessionGate smoke 3/3 PASS; full repository suite BLOCKED_NO_CHECKOUT_DNS",
+      "ci": {
+        "provider": 45110548664,
+        "status": "QUEUED",
+        "staged_integrated": 45110548708,
+        "status2": "QUEUED"
+      },
+      "device": "REDMI_UNVERIFIED; no frame capture, OS consent receipt or same-turn C3 consumer",
+      "release": "NOT_RELEASED; installed release unchanged; no UPDATE_REQUEST/device mutation",
+      "user_action_required": false,
+      "next": "poll exact-head CI; compose provider with Perception and normal Runtime/C3 consumer; QA to retry parent process-restart emulator"
     }
   },
   "qa_latest_checkpoint": {
