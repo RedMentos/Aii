@@ -1363,3 +1363,54 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 2. Review and compose the separate #2446 internal-hypothesis presentation-boundary mitigation after its exact tests, without removing B1/B2 source-bound offers.
 3. Recompose the P0 fair B1/B2 → C4 → C3 path on the current release ancestor; preserve both bodies and require useful offers to be delivered and consumed.
 4. Keep the phone STOPPED_BY_USER state intact. No user action is required for this code/CI work; a live Redmi acceptance run must wait until the user explicitly re-enables the runtime.
+
+
+---
+
+## Boss & Integration — run 14 — 2026-11-23
+
+### Integration checkpoint
+
+- Release-development branch remains `gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6`. Exact release readback recorded in #1984: 30/30 check-runs SUCCESS; 32/33 workflow runs SUCCESS and one cancelled, with no workflow failure.
+- Boss candidate code-bearing head: `a5e536a96f6dc2a3a515d37b08393f7136e9efff`, on `boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean`, 87 ahead / 0 behind release, 52 changed files. The following `6286c6fa0d7d8f141b3edf2cc9558299aeb8fec6` commit updates only this handoff file's companion user-action document; it adds no runtime code.
+- Fast-forward integrated QA PR #2459 into the Boss branch. Exact code head `58646862436ba3f69bce81ef4d3710105fc7c12b`: 7/7 workflows SUCCESS (Lab Age migration, Lab Age control/WebView, RuntimeDeploy integrity, controller guard, private owner-read bootstrap, JEPA optimizer-resume/source-forget Python 3.13/3.14, staged/integrated regression). Its patch rebinds five dependent immutable pins bottom-up and strengthens the same-hash source-publication race test; no hash gate was relaxed.
+- Fast-forward integrated QA PR #2460 after #2459. Code-bearing head `79a1734dfae5604a829eb0371c9d4dc7436286a8`: vision source-lineage 29/29 on Python 3.13 and 29/29 on 3.14; staged runtime 255 passed / 10 skipped / 47 subtests; source recall 15 passed; integrated regression 437 passed / 3 skipped / 58 subtests. Its regression now pauses the canonical `os.unlink(name, dir_fd=...)` and proves re-ingest attempts but cannot acquire Store.tx until cleanup releases the lock. Final handoff-only descendant `a5e536a` records this evidence.
+- The final candidate head `a5e536a` had two workflow attempts ending in `startup_failure` with no jobs; retry of the failed run was rejected because GitHub reports it cannot be retried. Therefore the exact *combined final-head* matrix is NOT PASS. PR #2443 remains DRAFT / NOT_RELEASED; do not merge to the release line or request a device update from this candidate.
+- LOCAL_LINUX full Aii suite: BLOCKED / NOT_RUN (no checkout mounted). CI evidence above is not a local full-suite result and is not Android proof.
+
+### Current authenticated Redmi boundary
+
+- Private owner-read #840 confirms installed SHA `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled, Runtime/Dashboard UP_TO_DATE and last_error NONE.
+- Private DIAGNOSTICS #841: service and dashboard RUNNING; AI `STOPPED_BY_USER`, autostart=false, model_process=STOPPED; native residency UNAVAILABLE (no verified model supervisor). B1_DETAIL/B2_GIST remain TIME_BUDGET at 53.2/54.2 s. Last stored turn is 6.295 s total / 2.046 s TTFT / 358 prompt tokens / 7 generated tokens; correctness is UNKNOWN and this is not a new test. The opted-in, redacted console excerpt confirms internal organ hypotheses remain visible in console output and the stored arithmetic sample remains incorrect (2+2→2). Console error sharing remains USER_NOT_OPTED_IN; no LOG_PAGE was requested.
+- Private HEALTH #842: 1,222 MiB MemAvailable / 5,569 MiB total and 1,618 MiB free disk. These are snapshots, not sustained model residency.
+- No CHAT_SEND, runtime restart, UPDATE_REQUEST, shell, model/weight/permission change or data mutation occurred. Preserve STOPPED_BY_USER.
+
+### Canon coverage overlay
+
+| Canon family | Candidate change / consumer | Evidence and current classification | Still open |
+|---|---|---|---|
+| A3 / A4 / A5 perception and attention | Source-bound A3 projector lineage/forget invalidation; A5 one-shot UI-frame receipt + temporal summary; A4 durable source-bound outcome/N10 modulation; caller-supplied RAW EAR/Teacher Ear/FASTDIAR diagnostics | Integrated into Boss candidate branch; focused upstream workflows exist, QA #2459/#2460 composition checks above. Candidate only; exact combined final-head CI incomplete. | Real MediaProjection provider/revocation callback, AudioRecord, learned vision/audio, semantic perception and Redmi proof |
+| Memory / source-forget / Store | Serialize Memory._forget_source with Store RLock through tombstone, final refcount check and blob cleanup; same-hash publisher and vision re-ingest interleaving regressions | #2459 7/7 workflows; #2460 code-bearing regression tests pass; no hash gate weakened | Exact combined-head CI, full local suite, crash/restart/migration on device; this is source/SQLite lineage protection, not neural weight unlearning |
+| B1_DETAIL / B2_GIST → C4 → C3 | No accepted native offer-delivery improvement in this run | Phone still TIME_BUDGET 53.2/54.2 s; Core #2458 remains draft, current head CI startup-failed; earlier head 7688c360 had 6/12 success, 4 failures, 2 skips | Both bodies must get useful pre-answer slices, emit source-bound offers, and have C4/C3 demonstrably consume them while retaining C3 reserve; real TTFT and correctness |
+| B3 / Enlightened Space | No new trained activation-to-activation receiver | Production B3 remains OFF / symbolic or diagnostic only | Trained receiver, source-disjoint held-out utility, zero/shuffle/exact/parity/OOD controls and local approval |
+| JEPA / body-weight learning / self-optimization | Source-forget protects source lineage/checkpoint lifecycle; no new model-weight optimizer consumer | No accepted native body-weight delta, cross-organ gradient or Android learning receipt | Actual persistent numeric B1/B2/C3 changes, held-out utility, retention, restart, rollback and explicit learning gates |
+| Voice / audio | Caller-supplied RAW EAR and diagnostics only; separate #2448 duplex adapter is not integrated | #2448 latest head c00d18d has 15/18 checks green and 3 skipped, but Boss found same-target-turn idempotency and cancellation-to-handoff ordering races | AudioRecord provider, signed consent/revocation, live ASR, independently trainable decoder/vocoder, full-duplex/barging-in and Redmi tests |
+| Android background/UI control | A5 UI-frame ingress candidate is observation-only | No APK install, MediaProjection/Accessibility provider, background executor or authorized tap/type action on Redmi | API-first Android actions, explicit per-capability approvals, audit/stop/cancel/recovery and device validation |
+| Sparse MoE / hardware-aware routing | New research intake R-114 only; no sparse-MoE implementation | Research-only; no weights/code imported and no B1/B2 body is thereby sparse MoE | Separate B1/B2 expert bodies, router/weight residency, swap/latency/quality/retention measurements on ARM |
+| Whole Canon / traceability | V14 master and 1,255-heading historical inventory were not edited | Master blob remains `9748ad5ba9a4d4f5c3d004a0577141f6779fcbca`; semantic coverage remains incomplete | Clause→implementation→real consumer→test→environment→negative control→rollback mapping across every Canon family |
+
+### Research intake R-114 — Sticky Routing / StickyMoE
+
+Ali Kayyam, *Sticky Routing: Training MoE Models for Memory-Efficient Inference*, arXiv:2607.08780 (2026-06-12), https://arxiv.org/abs/2607.08780. The paper proposes a differentiable L2 consistency penalty between adjacent-token router probability vectors, optionally with a segment-anchor term, alongside language-model and load-balancing losses. It reports up to 59% fewer expert switches and up to 3.92× fewer simulated cache misses on 8.8M/22M parameter models with a two-slot LRU cache. These results are not an Android benchmark and do not establish scaling to billion-parameter models.
+
+The linked `alikayyam/sticky_moe` repository README declares MIT, but the root `LICENSE` file is absent (GitHub contents lookup 404); the code license is therefore treated as unverified pending an explicit license file/author confirmation. No code, weights or data were copied. Repository readback showed its `soft` variant implements the differentiable adjacent-token loss; its `hard` variant is a detached recent-top-k logit bias, not the paper's differentiable segment-anchor loss. This distinction must remain explicit.
+
+**V14 hypothesis:** evaluate an independently implemented soft routing-locality regularizer on small synthetic B1 and B2 expert routers, separately. Reset/relax locality at semantic/task boundaries so the router can change experts when the topic or required skill changes. Measure switch rate, actual cache hit/miss and bytes loaded, p50/p95 latency, quality/perplexity, load balance, OOD behavior and old-task retention. Include `lambda=0`, shuffled-span, boundary-reset and fixed-router controls. This is internal expert-routing optimization, not a bridge between B1 and B2 and not learned latent coupling.
+
+### Next integration order
+
+1. Retry/recreate exact current-head CI for Boss #2443 when Actions can start; if mergeability remains false, inspect the actual base conflict rather than assuming the startup failure is a code failure. Keep DRAFT / NOT_RELEASED until the full staged, integrated, migration, privacy, audio, RAW EYE and deployment matrix is green.
+2. Continue the P0 Core fair B1/B2→C4→C3 path on exact release base 8d93236. Repair source pins and prove both admitted roles receive a useful slice, deliver valid OfferPackets and are consumed by C4/C3; do not trade away C3 reserve or either body.
+3. Rebase/review the output-privacy mitigation (#2446) and close #2448 audio dispatch/idempotency/cancellation races on the exact current base.
+4. Reconnect production ActionSelection SourceRefs for all admitted Memory/observer/Enlightened context, then rebase temporal/episodic JEPA and continue B3, self-optimization, Android control, voice, Memorilla and all remaining Canon families.
+5. No device action until the user independently re-enables the runtime and a later explicit, bounded device test is authorized.
