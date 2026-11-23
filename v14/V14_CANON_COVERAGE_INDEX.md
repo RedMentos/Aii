@@ -2382,4 +2382,4 @@ No result in this late poll changes the Redmi boundary: private #840/#841/#842 s
 | Native B1/B2 body weights / trained latent coupling | No native model weights or trained inter-body latent path changed | NONE | NOT_IMPLEMENTED |
 | Android / Redmi | No phone command, update, training, model swap or permission change | NO_LIVE_RECEIPT; private #115 is the latest stored evidence | REDMI_UNVERIFIED |
 
-**Test status:** latest exact-head Actions run #45272190117 is `startup_failure` with zero jobs; local Aii suite NOT_RUN because there is no checkout and GitHub DNS fails. The synthetic numeric control is not a project test. Keep V14-004, V14-010 and V14-011 partial; do not promote any new acceptance state.
+**Test status:** latest exact-head Actions run #45273031215 is `startup_failure` with zero jobs; local Aii suite NOT_RUN because there is no checkout and GitHub DNS fails. The synthetic numeric control is not a project test. Keep V14-004, V14-010 and V14-011 partial; do not promote any new acceptance state.
