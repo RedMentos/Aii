@@ -1303,12 +1303,6 @@ class TemporalWorldJEPAStoreConsumer:
             model = self._ephemeral_model
             if (model is None
                     or self._ephemeral_checkpoint_sha != active["checkpoint_sha256"]):
-                model = self._load_model(active)
-                self._ephemeral_model = model
-                self._ephemeral_checkpoint_sha = active["checkpoint_sha256"]
-            model = self._ephemeral_model
-            if (model is None
-                    or self._ephemeral_checkpoint_sha != active["checkpoint_sha256"]):
                 if warm_only:
                     return {
                         "status": "MODEL_NOT_WARM", "items": [],
