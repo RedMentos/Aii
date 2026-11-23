@@ -256,6 +256,8 @@ def test_nonvoiced_embeddings_never_seed_or_poison_speaker_history(activity):
     )
     state = registry._states[(SOURCE, "gen-a")]
     voiced_history = tuple(state.frames)
+    assert len(voiced_history) == len(first["frames"])
+    assert state.last_voiced_end_ms == first["frames"][-1]["end_ms"]
 
     # A dissimilar non-voiced embedding batch is validated and timestamped,
     # but must not enter the reference deque or produce similarity evidence.
@@ -274,6 +276,7 @@ def test_nonvoiced_embeddings_never_seed_or_poison_speaker_history(activity):
     assert suppressed["cosine_similarity"] is None
     assert suppressed["speaker_change_candidate"] is None
     assert tuple(state.frames) == voiced_history
+    assert state.last_voiced_end_ms == first["frames"][-1]["end_ms"]
 
     # The next voiced batch must compare with the prior voiced history, not
     # the intervening noise/silence vectors.
@@ -290,6 +293,32 @@ def test_nonvoiced_embeddings_never_seed_or_poison_speaker_history(activity):
     assert measured["cosine_similarity"] == 1.0
     assert measured["change_score"] == 0.0
     assert measured["speaker_change_candidate"] is None
+
+
+def test_nonvoiced_first_window_does_not_seed_speaker_history():
+    registry = SpeakerChangeEvidenceRegistry()
+    first = speaker_batch(SOURCE, "gen-empty", 100, 1100, lambda _: (0.0, 1.0, 0.0))
+    suppressed = registry.update(
+        source_id=SOURCE, generation_id="gen-empty", start_ms=100, end_ms=1100,
+        activity_hint="SILENCE", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+        embeddings=first,
+    )
+    state = registry._states[(SOURCE, "gen-empty")]
+    assert suppressed["status"] == "SUPPRESSED_NON_VOICED"
+    assert suppressed["history_frame_count"] == 0
+    assert state.frames == deque()
+    assert state.last_voiced_end_ms is None
+    assert state.last_end_ms == first["frames"][-1]["end_ms"]
+
+    next_voiced = speaker_batch(SOURCE, "gen-empty", 1100, 2100, lambda _: (1.0, 0.0, 0.0))
+    warmup = registry.update(
+        source_id=SOURCE, generation_id="gen-empty", start_ms=1100, end_ms=2100,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+        embeddings=next_voiced,
+    )
+    assert warmup["status"] == "WARMUP"
+    assert warmup["frame_evidence"] == []
+    assert warmup["accepted_frame_count"] == len(next_voiced["frames"])
 
 
 def test_long_nonvoiced_gap_resets_stale_speaker_reference_history():
