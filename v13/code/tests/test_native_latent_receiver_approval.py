@@ -644,3 +644,28 @@ def test_arm_rejects_non_interactive_stdin(tmp_path, monkeypatch):
         assert record is None
     finally:
         runtime.close()
+
+def test_remote_operator_origin_cannot_arm_or_consume_native_probe(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    calls = []
+    runtime.cognition.native_receive = lambda *args: calls.append(args)
+    operator = Operator(runtime)
+    arm_command = ":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm"
+    probe_command = ":callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm"
+    try:
+        with pytest.raises(ValueError, match="Nur lokale Operator-Eingaben"):
+            operator.run(arm_command, origin="CHAT_OPERATOR")
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record is None
+
+        operator.run(arm_command)
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record["status"] == "PENDING"
+
+        with pytest.raises(ValueError, match="Nur lokale Operator-Eingaben"):
+            operator.run(probe_command, origin="CHAT_OPERATOR")
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record["status"] == "PENDING"
+        assert calls == []
+    finally:
+        runtime.close()
