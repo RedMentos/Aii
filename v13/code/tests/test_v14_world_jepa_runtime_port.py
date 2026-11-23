@@ -1157,7 +1157,7 @@ def test_t8_multisource_lineage_is_verified_split_disjoint_and_forget_taints_che
         )
 
         consumer = WorldJEPAStoreConsumer(
-            store, tmp_path / "private-jepa-multisource",
+            store, store.home / "world_jepa",
             learning_enabled=True, seed=29, ensemble=2,
         )
         updated = consumer.update(limit=256, steps=120, optimizer_permission=True)
