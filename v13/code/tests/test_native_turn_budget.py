@@ -212,6 +212,7 @@ class NativeTurnBudgetTests(unittest.TestCase):
         metrics = store.telemetry_metrics({
             "kind": "native_turn_budget_plan",
             "preanswer_seconds_available": 1.25,
+            "focal_reserved_seconds": 1.0,
             "c3_reserved_seconds": 26.1,
             "recent_real_prefill_failures": 2,
             "minimum_role_slice_s": 1.0,
@@ -219,6 +220,7 @@ class NativeTurnBudgetTests(unittest.TestCase):
         })
         self.assertEqual(metrics["kind"], "native_turn_budget_plan")
         self.assertEqual(metrics["preanswer_seconds_available"], 1.25)
+        self.assertEqual(metrics["focal_reserved_seconds"], 1.0)
         self.assertEqual(metrics["c3_reserved_seconds"], 26.1)
         self.assertEqual(metrics["recent_real_prefill_failures"], 2)
         self.assertEqual(metrics["minimum_role_slice_s"], 1.0)
