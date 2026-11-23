@@ -1,3 +1,13 @@
+## M1 DATA memory-path checkpoint — 2026-11-23 12:43 UTC
+
+- The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass CSV validation/counting, direct float32 matrix fill, parsed-data fingerprint parity with the list parser, and source-file stat checks across both passes. The list parser remains a small-fixture/reference adapter.
+- Overlapping windows are no longer required to be materialized as Python objects. `iter_batches()` builds bounded NumPy batches, prefix counts make strict missing-window checks independent of L, and a 256 MiB hard ceiling rejects oversized batches. `InputBundle` carries X, seasonal S and calendar features identically for every primary model; calendar-off ablation is represented by a zero-width calendar tensor.
+- Test access is still hash-gated. `open_test_split()` checks preregistration/config/split/data hashes and only unlocks test batches after the access event is flushed and fsynced.
+- Exact M1 Actions runs are still queued/pending; no test result is claimed. No local full suite, real UCI cohort, model training, weight update or Redmi validation has occurred. M1 remains [ENTWURF].
+- Code snapshot before this handoff sync: `8c24322f32ae9af27c57efa9b2c59f32a8fafcf6`. Next: wait for Python 3.13/3.14 exact CI, fix any failures, then implement BASE adapters using the common InputBundle. Preserve every agreed baseline and M1a/b/c control.
+
+---
+
 ## M1 forecasting experiment checkpoint — 2026-11-23 12:34 UTC
 
 - M1 DATA files are present on the release-development branch: `v14/m1/data.py`, `test_data.py`, `README.md`, package initializer and `.github/workflows/v14-m1-data.yml`.

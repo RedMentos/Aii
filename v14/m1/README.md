@@ -8,7 +8,7 @@ This package starts with the DATA layer. It is deliberately isolated under v14/m
 
 - data.py: UCI minute-file parser, timestamp continuity checks, parameterized windows, chronological split, strict NaN rejection, seasonal lags, future calendar features, split/month rejection statistics, canonical manifest and hashes.
 - test_data.py: synthetic logic tests for the list-based DATA helpers only. These are not a UCI real-data run.
-- array_data.py: NumPy-backed `ArrayDataset`, common `InputBundle`, vectorized missing-window checks, bounded `WindowBatch` generation, and a two-pass `from_uci()` loader that writes directly into a dense matrix without constructing Python `MinuteRow` objects.
+- array_data.py: NumPy-backed `ArrayDataset`, common `InputBundle`, vectorized missing-window checks, bounded `WindowBatch` generation, and a two-pass `from_uci()` loader that writes directly into a dense matrix without constructing Python `MinuteRow` objects. Window and statistics batches have a hard 256 MiB estimated-allocation ceiling.
 - test_array_data.py: synthetic checks for bounded batches, exact input/target/seasonal alignment, monthly statistics parity, direct UCI hash parity, malformed-row rejection and hash-gated test access.
 - Numeric ingestion rejects non-finite values (`inf`, `-inf`, `Infinity`) and normalizes common case-insensitive missing markers such as `NaN` to missing values. Alternate row adapters and the test loader repeat finite-value and timestamp/channel integrity checks.
 - Every seasonal lag must be at least the forecast horizon, ensuring each horizon-aligned seasonal value is already known at the forecast origin.

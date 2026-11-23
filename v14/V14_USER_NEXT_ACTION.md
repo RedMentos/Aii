@@ -1,3 +1,20 @@
+# M1 DATA — latest implementation checkpoint (2026-11-23 12:43 UTC)
+
+The DATA path now has a bounded-memory route for the real UCI file:
+
+- `ArrayDataset.from_uci()` validates the file in two passes and fills a float32 matrix directly; it does not construct a Python object for every minute.
+- `iter_batches()` creates overlapping windows only when needed. Missing-window checks use prefix counts; batch allocation is capped at 256 MiB.
+- Every model receives the same `InputBundle`: X context, horizon-aligned seasonal S and calendar features. Disabling calendar creates a zero-width calendar tensor, not a different data route.
+- Test batches remain locked until exact preregistration/config/split/data hashes match and the audit event is flushed and fsynced.
+
+**Evidence boundary:** exact M1 GitHub Actions CI is queued/pending, not passed. No local full suite, real UCI cohort, training, weight update or Redmi validation. M1 remains [ENTWURF].
+
+**Next:** wait for exact Python 3.13/3.14 CI; fix failures; then build BASE adapters on the common InputBundle, followed by JEPA/direct-MAE PROBE. Keep the full baseline list and M1a/b/c controls.
+
+**No user action is required.** Do not run a manual Termux command or send another update request; the phone updater state remains separate from this M1 experiment.
+
+---
+
 # M1 experiment — latest implementation checkpoint (2026-11-23 12:34 UTC)
 
 The M1 DATA implementation is present on the release-development branch. It now rejects non-finite measurements, treats common missing markers case-insensitively, requires every seasonal lag to be at least the forecast horizon, validates rows/channels/timestamp continuity at both normal dataset construction and hash-gated test access, and tests exact seasonal alignment plus missing seasonal-source rejection.
