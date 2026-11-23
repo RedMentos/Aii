@@ -45,6 +45,10 @@ def receipt(model_sha, sender_sha):
         "repeat_cosine": 1.0,
         "native_input_consumed": True,
         "input_effect_detected": True,
+        "production_route": False,
+        "semantic_use_proven": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
         "status": "NATIVE_INPUT_EFFECT",
     }
 
@@ -127,7 +131,16 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
         "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], time.monotonic() + 30
     )
     assert packet["status"] == "NATIVE_INPUT_EFFECT"
-    assert packet["sender_tap_packet_id"] == "tap-packet-1"
+    assert isinstance(packet["sender_tap_packet_id"], str) and packet["sender_tap_packet_id"]
+    tap_row = runtime.store.one(
+        "SELECT payload FROM packets WHERE id=? AND kind='LatentTapPacket'",
+        (packet["sender_tap_packet_id"],),
+    )
+    assert tap_row is not None
+    sender_tap = json.loads(tap_row["payload"])
+    assert sender_tap["packet_id"] == packet["sender_tap_packet_id"]
+    assert sender_tap["source_ref"] == event["source_ref"]
+    assert sender_tap["role"] == "B2_GIST"
     assert packet["source_ref"] == event["source_ref"]
     assert packet["provenance"] == [event["source_ref"]]
     assert packet["native_input_consumed"] is True
