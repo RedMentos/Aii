@@ -546,9 +546,13 @@ def create_learning_intents(train_windows, holdout_windows, active_record,
 
     old_retention_ids = []
     if active_record is not None:
-        raw_retention_ids = active_record.get("holdout_window_ids", [])
+        raw_retention_ids = list(active_record.get("holdout_window_ids", []))
+        for cohort in active_record.get("receiver_retention_holdouts", []):
+            raw_retention_ids.extend(cohort.get("window_ids", []))
         if raw_retention_ids:
-            old_retention_ids = _unique(raw_retention_ids, "old retention ids")
+            old_retention_ids = _unique(
+                sorted(set(raw_retention_ids)), "old retention ids"
+            )
     provenance = {
         "train_window_ids": train_ids,
         "validation_window_ids": validation_ids,
