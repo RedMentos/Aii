@@ -22,10 +22,17 @@ def _trees(tmp_path):
     return code_dir, staging
 
 
+def _apply(code_dir, staging):
+    expected = (code_dir / "v13/operator.py").read_bytes()
+    return OVERLAY.apply_staged_native_probe(
+        code_dir, staging, expected_staged_operator=expected,
+    )
+
+
 def test_overlay_changes_only_staged_operator_and_preserves_source(tmp_path):
     code_dir, staging = _trees(tmp_path)
     source_before = (code_dir / "v13/operator.py").read_bytes()
-    result = OVERLAY.apply_staged_native_probe(code_dir, staging)
+    result = _apply(code_dir, staging)
     assert set(result) == {"v13/operator.py"}
     for relative, payload in result.items():
         (staging / relative).write_bytes(payload)
@@ -44,7 +51,7 @@ def test_overlay_rejects_staged_operator_drift(tmp_path):
     path = staging / "v13/operator.py"
     path.write_bytes(path.read_bytes() + b"\\n# tampered staged operator\\n")
     with pytest.raises(ValueError, match="staged operator source pin mismatch"):
-        OVERLAY.apply_staged_native_probe(code_dir, staging)
+        _apply(code_dir, staging)
 
 
 def test_overlay_rejects_approval_module_drift(tmp_path):
@@ -52,7 +59,7 @@ def test_overlay_rejects_approval_module_drift(tmp_path):
     path = code_dir / "v13/native_probe_approval.py"
     path.write_bytes(path.read_bytes() + b"\\n# tampered approval module\\n")
     with pytest.raises(ValueError, match="native-probe approval module source pin mismatch"):
-        OVERLAY.apply_staged_native_probe(code_dir, staging)
+        _apply(code_dir, staging)
 
 
 def test_overlay_rejects_duplicate_help_insertion_point(tmp_path, monkeypatch):
@@ -67,4 +74,4 @@ def test_overlay_rejects_duplicate_help_insertion_point(tmp_path, monkeypatch):
         OVERLAY._git_blob_sha1(raw),
     )
     with pytest.raises(ValueError, match="operator help expected exactly one"):
-        OVERLAY.apply_staged_native_probe(code_dir, staging)
+        _apply(code_dir, staging)
