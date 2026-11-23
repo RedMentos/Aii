@@ -552,7 +552,7 @@ def load_vision_state(store):
 
 
 def _validate_vision_write(conn, state):
-    """Reject source/caption references to forgotten or mismatched images."""
+    """Reject stale image/caption/projector lineage before publishing state."""
     images = state.get('images')
     if not isinstance(images, dict):
         raise ValueError('invalid vision image registry')
@@ -569,13 +569,47 @@ def _validate_vision_write(conn, state):
             if (not isinstance(caption_ref, dict) or caption_ref.get('source_id') != sid
                     or caption_ref.get('sha256') != ref['sha256'] or caption_ref.get('modality') != 'image'):
                 raise ValueError('image caption references a non-live source')
-    projector = state.get('projector')
-    if projector:
-        if not isinstance(projector, dict) or not isinstance(projector.get('captions'), dict):
-            raise ValueError('invalid vision projector captions')
-        for key in projector['captions']:
-            if not isinstance(key, str) or ':' not in key or key.split(':', 1)[0] not in images:
-                raise ValueError('projector caption references a non-live image source')
+
+    # The staged runtime replaces vision.load/save with these helpers. Validate
+    # both source-trained heads here; direct vision.py checks are not enough
+    # because the lifecycle composer routes all staged writes through this path.
+    for key in ('projector', 'tile_projector'):
+        projector = state.get(key)
+        if projector is None:
+            continue
+        if not isinstance(projector, dict):
+            raise ValueError('invalid vision projector record')
+        captions = projector.get('captions')
+        if captions is not None:
+            if not isinstance(captions, dict):
+                raise ValueError('invalid vision projector captions')
+            for caption_key in captions:
+                if (not isinstance(caption_key, str) or ':' not in caption_key
+                        or caption_key.split(':', 1)[0] not in images):
+                    raise ValueError('projector caption references a non-live image source')
+        lineage = projector.get('training_sources')
+        if lineage in (None, []):
+            # Unknown legacy lineage remains readable only until explicit forget,
+            # which conservatively invalidates that projector.
+            continue
+        if not isinstance(lineage, list) or len(lineage) > 256:
+            raise ValueError('invalid vision projector source lineage')
+        seen = set()
+        for item in lineage:
+            if not isinstance(item, dict) or set(item) != {'source_id', 'sha256'}:
+                raise ValueError('invalid vision projector source lineage item')
+            source_id = item['source_id']
+            if not isinstance(source_id, str) or not source_id or source_id in seen:
+                raise ValueError('invalid vision projector source lineage item')
+            try:
+                source_sha = _key(item['sha256'])
+            except (KeyError, ValueError) as exc:
+                raise ValueError('invalid vision projector source lineage item') from exc
+            image = images.get(source_id)
+            image_ref = image.get('ref') if isinstance(image, dict) else None
+            if not isinstance(image_ref, dict) or image_ref.get('sha256') != source_sha:
+                raise ValueError('vision projector lineage references a non-live image source')
+            seen.add(source_id)
 
 
 def save_vision_state(store, state):
