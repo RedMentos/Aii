@@ -60,6 +60,8 @@ class DataConfig:
             raise ValueError("train + validation fractions must be below 1")
         if not self.seasonal_lags:
             raise ValueError("at least one seasonal lag is required")
+        if len(set(self.seasonal_lags)) != len(self.seasonal_lags):
+            raise ValueError("seasonal lags must be unique")
         if any(x < self.horizon for x in self.seasonal_lags):
             raise ValueError("every seasonal lag must be >= horizon so all seasonal values are known at the forecast origin")
         if self.split_gap is not None and self.split_gap < 0:
@@ -302,7 +304,7 @@ def make_split(
 
 
 def _validate_rows(rows: Sequence[MinuteRow], channels: Sequence[str]) -> None:
-    if not channels or len(set(channels)) != len(channels):
+    if not channels or any(not str(name).strip() for name in channels) or len(set(channels)) != len(channels):
         raise ValueError("channel names must be non-empty and unique")
     if not rows:
         raise ValueError("dataset contains no rows")
