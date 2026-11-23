@@ -62,7 +62,8 @@ public final class CompanionLifecycleInstrumentedTest {
     public void testVisibleStopButtonPersistsOff() {
         try (ActivityScenario<MainActivity> ignored =
                      ActivityScenario.launch(MainActivity.class)) {
-            awaitWindowFocus(ignored);\n            assertVisibleState(STOPPED);
+            awaitWindowFocus(ignored);
+            assertVisibleState(STOPPED);
             assertFalse("a fresh process must start stopped", persistedEnabled());
 
             onView(withText(TOGGLE)).check(matches(isDisplayed())).perform(
