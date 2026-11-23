@@ -1412,9 +1412,15 @@ class TemporalWorldJEPAStoreConsumer:
             receiver_retention = evaluate_receiver_retention(
                 receiver_retention_baseline, model, receiver_heads
             )
-            receiver_retention_gate_accepted = receiver_retention["status"] in {
-                "NOT_MEASURED", "MEASURED_PASS"
-            }
+            receiver_retention_gate_accepted = (
+                receiver_retention["status"] == "MEASURED_PASS"
+                or (
+                    receiver_retention["status"] == "NOT_MEASURED"
+                    and receiver_retention.get("reason") in {
+                        "NO_PRIOR_CHECKPOINT", "NO_PRIOR_COHORT"
+                    }
+                )
+            )
             if not receiver_retention_gate_accepted:
                 next_state = dict(state)
                 next_state["scan_cursor"] = cursor
