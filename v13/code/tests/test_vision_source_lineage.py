@@ -1,0 +1,82 @@
+"""Pure filesystem/lineage tests for the shadow vision source-forget contract."""
+import os
+
+from v13.vision_source_lineage import (
+    invalidate_projectors, projector_uses_source, source_lineage,
+    unlink_projector_artifact, unlink_source_blob,
+)
+
+
+def test_training_keys_are_bound_to_live_source_hashes():
+    images = {
+        "src_a": {"ref": {"source_id": "src_a", "sha256": "a" * 64}},
+        "src_b": {"ref": {"source_id": "src_b", "sha256": "b" * 64}},
+    }
+    assert source_lineage(images, ["src_b:r00", "src_a:g", "src_b:r01"]) == [
+        {"source_id": "src_a", "sha256": "a" * 64},
+        {"source_id": "src_b", "sha256": "b" * 64},
+    ]
+
+
+def test_training_lineage_rejects_unknown_or_malformed_source():
+    import pytest
+    with pytest.raises(ValueError):
+        source_lineage({}, ["missing:g"])
+    with pytest.raises(ValueError):
+        source_lineage({"src_a": {"ref": {"source_id": "src_b", "sha256": "a" * 64}}}, ["src_a:g"])
+
+
+def test_invalidation_is_selective_and_legacy_fails_closed():
+    state = {
+        "projector": {"training_sources": [{"source_id": "src_a", "sha256": "a" * 64}], "captions": {}},
+        "tile_projector": {"training_sources": [{"source_id": "src_b", "sha256": "b" * 64}]},
+    }
+    invalidated = invalidate_projectors(state, "src_a")
+    assert [key for key, _ in invalidated] == ["projector"]
+    assert state["projector"] is None
+    assert state["tile_projector"] is not None
+    assert projector_uses_source({"path": "legacy.npz"}, "src_a") is True
+
+
+def test_caption_lineage_cannot_be_hidden_by_an_inconsistent_source_list():
+    record = {
+        "training_sources": [{"source_id": "src_b", "sha256": "b" * 64}],
+        "captions": {"src_a:r00": "teacher reference"},
+    }
+    assert projector_uses_source(record, "src_a") is True
+
+
+def test_safe_unlink_removes_only_expected_artifacts(tmp_path):
+    home = tmp_path
+    vision_dir = home / "data" / "vision"
+    blob_dir = home / "data" / "blobs"
+    vision_dir.mkdir(parents=True)
+    blob_dir.mkdir(parents=True)
+    projector = vision_dir / "tiles-test.npz"
+    projector.write_bytes(b"weights")
+    sha = "c" * 64
+    blob = blob_dir / sha
+    blob.write_bytes(b"image")
+    assert unlink_projector_artifact(home, {"path": "data/vision/tiles-test.npz"}) is True
+    assert unlink_source_blob(home, sha) is True
+    assert not projector.exists()
+    assert not blob.exists()
+
+
+def test_safe_unlink_rejects_symlinked_parent_without_touching_outside_file(tmp_path):
+    if not hasattr(os, "symlink"):
+        return
+    home = tmp_path
+    (home / "data").mkdir()
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    target = outside / "projector-escape.npz"
+    target.write_bytes(b"must survive")
+    (home / "data" / "vision").symlink_to(outside, target_is_directory=True)
+    assert unlink_projector_artifact(home, {"path": "data/vision/projector-escape.npz"}) is False
+    assert target.read_bytes() == b"must survive"
+
+
+def test_blob_unlink_rejects_bad_hash_and_path_traversal(tmp_path):
+    assert unlink_source_blob(tmp_path, "../" + "a" * 64) is False
+    assert unlink_projector_artifact(tmp_path, {"path": "data/vision/../../escape.npz"}) is False
