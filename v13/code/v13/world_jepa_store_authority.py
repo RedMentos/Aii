@@ -80,19 +80,21 @@ def _validated_source_ref(store, value):
     }
 
 
-def _focal_cycle_source_refs(store, event_id, generation_id, action_created):
+def _focal_cycle_source_refs(store, event_id, generation_id, before_packet_rowid):
     """Return the bounded union of all source refs in the pre-action C4 trajectory.
 
     The final cycle is checked against its persisted FocalItem members. Earlier
     cycles have only their FocalCycle provenance list; because the producer caps
     that list at 16, an earlier cycle at the cap is ambiguous and fails closed.
     """
+    if type(before_packet_rowid) is not int or before_packet_rowid < 1:
+        raise ValueError("ActionSelection packet boundary")
     rows = store.rows(
-        """SELECT payload FROM packets
-           WHERE kind='FocalCycle' AND event_id=? AND generation_id=? AND created<=?
+        """SELECT rowid AS packet_rowid,payload FROM packets
+           WHERE kind='FocalCycle' AND event_id=? AND generation_id=? AND rowid<?
              AND COALESCE(json_extract(payload,'$.stage'),'COMMIT')!='PREDICTION'
-           ORDER BY created DESC,rowid DESC LIMIT 17""",
-        (event_id, generation_id, action_created),
+           ORDER BY rowid DESC LIMIT 17""",
+        (event_id, generation_id, before_packet_rowid),
     )
     if type(rows) is not list or len(rows) >= 17:
         raise ValueError("FocalCycle source scan bound")
@@ -237,12 +239,12 @@ def _focal_cycle_source_refs(store, event_id, generation_id, action_created):
                 union.append(ref)
     return union
 
-def _selection_source_refs(store, event_id, generation_id, action_created, event_source_ref):
+def _selection_source_refs(store, event_id, generation_id, event_source_ref):
     rows = store.rows(
-        """SELECT payload FROM packets
-           WHERE kind='ActionSelection' AND event_id=? AND generation_id=? AND created<=?
-           ORDER BY created DESC LIMIT 17""",
-        (event_id, generation_id, action_created),
+        """SELECT rowid AS packet_rowid,payload FROM packets
+           WHERE kind='ActionSelection' AND event_id=? AND generation_id=?
+           ORDER BY rowid DESC LIMIT 17""",
+        (event_id, generation_id),
     )
     if type(rows) is not list or len(rows) >= 17:
         raise ValueError("ActionSelection source scan bound")
@@ -257,10 +259,13 @@ def _selection_source_refs(store, event_id, generation_id, action_created, event
         if stage not in (None, "PREDICTION", "COMMIT"):
             raise ValueError("ActionSelection source stage")
         if stage != "PREDICTION":
-            committed.append(selection)
+            committed.append((selection, packet_row.get("packet_rowid")))
     if len(committed) != 1:
         raise ValueError("ActionSelection source cardinality")
-    raw_refs = committed[0].get("provenance")
+    selection, selection_rowid = committed[0]
+    if type(selection_rowid) is not int or selection_rowid < 1:
+        raise ValueError("ActionSelection packet boundary")
+    raw_refs = selection.get("provenance")
     if type(raw_refs) is not list or not 1 <= len(raw_refs) <= MAX_ACTION_SOURCE_REFS:
         raise ValueError("ActionSelection source refs")
     refs, seen, source_hashes = [], set(), {}
@@ -285,7 +290,7 @@ def _selection_source_refs(store, event_id, generation_id, action_created, event
     # earlier cycles contribute their capped source refs. Merge it without
     # changing Core-owned packet production.
     for ref in _focal_cycle_source_refs(
-            store, event_id, generation_id, action_created):
+            store, event_id, generation_id, selection_rowid):
         key = (ref["source_id"], ref["sha256"], ref["char_start"],
                ref["char_end"], ref["modality"])
         prior = source_hashes.get(ref["source_id"])
@@ -476,7 +481,7 @@ def _verify_one(store, row):
     # FocalItem members and merge that coalition lineage. Truncation or revocation
     # fails closed rather than certifying an incomplete JEPA training row.
     selected_source_refs = _selection_source_refs(
-        store, meta["event_id"], meta["generation_id"], created, source_ref
+        store, meta["event_id"], meta["generation_id"], source_ref
     )
     # Scan the complete event history up to a hard bound. A small LIMIT could
     # hide an older duplicate and incorrectly certify the remaining packet as

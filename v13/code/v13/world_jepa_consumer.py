@@ -1240,11 +1240,20 @@ def source_forget_guard(store, source_id):
             selected = store.rows(
                 """SELECT DISTINCT a.id FROM actions a
                    JOIN events e ON e.id=a.event_id
+                   JOIN packets sel ON sel.kind='ActionSelection'
+                     AND sel.event_id=a.event_id AND sel.generation_id=e.generation_id
+                     AND COALESCE(json_extract(sel.payload,'$.stage'),'COMMIT')!='PREDICTION'
+                     AND sel.rowid=(
+                         SELECT MIN(sel2.rowid) FROM packets sel2
+                         WHERE sel2.kind='ActionSelection'
+                           AND sel2.event_id=a.event_id AND sel2.generation_id=e.generation_id
+                           AND COALESCE(json_extract(sel2.payload,'$.stage'),'COMMIT')!='PREDICTION'
+                     )
                    JOIN packets p ON p.kind IN ('ActionSelection','FocalCycle','FocalItem')
                      AND p.event_id=a.event_id AND p.generation_id=e.generation_id
                    WHERE a.rowid<=? AND a.outcome IS NOT NULL AND a.expected LIKE ?
                      AND a.status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED')
-                     AND p.created<=a.created
+                     AND p.rowid<=sel.rowid
                      AND COALESCE(json_extract(p.payload,'$.stage'),'COMMIT')!='PREDICTION'
                      AND EXISTS (
                          SELECT 1 FROM json_each(p.payload,'$.provenance') AS source_ref

@@ -1178,7 +1178,7 @@ def test_verified_t8_rejects_capped_nonfinal_focal_cycle_lineage_without_item_re
         store.close()
 
 
-def test_memory_forget_uses_all_preaction_cycles_but_ignores_postaction_cycle_after_row_eviction(tmp_path):
+def test_memory_forget_uses_all_preaction_cycles_but_ignores_same_timestamp_postaction_cycle_after_row_eviction(tmp_path):
     home = tmp_path / "brain-forget-postaction-focal-context"
     store, session = _make_store(home)
     try:
@@ -1197,14 +1197,16 @@ def test_memory_forget_uses_all_preaction_cycles_but_ignores_postaction_cycle_af
             "SELECT generation_id FROM events WHERE id=?", (action["event_id"],)
         )
         before = store.one("SELECT COALESCE(MAX(rowid),0) AS last_rowid FROM packets")
+        # A post-action C4 packet can share the action's time.time() float.
+        # Packet row order, not wall-clock equality, must define the causal cutoff.
         _add_focal_cycle_context(
             store, action["event_id"], event["generation_id"], [post_ref], 999,
-            cycle_number=99, persist_items=False,
+            cycle_number=3, persist_items=True,
         )
         with store.tx() as connection:
             connection.execute(
-                "UPDATE packets SET created=? WHERE event_id=? AND rowid>? AND kind='FocalCycle'",
-                (float(action["created"]) + 1.0, action["event_id"], before["last_rowid"]),
+                "UPDATE packets SET created=? WHERE event_id=? AND rowid>? AND kind IN ('FocalCycle','FocalItem')",
+                (float(action["created"]), action["event_id"], before["last_rowid"]),
             )
 
         _set_runtime_permissions(

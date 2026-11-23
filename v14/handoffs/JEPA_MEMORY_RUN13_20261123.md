@@ -104,3 +104,21 @@ Code commits on candidate branch:
 Verification: full repository compile/pytest is BLOCKED / NOT_RUN because no Aii checkout is mounted locally and GitHub DNS is unavailable. The isolated SQLite source-forget predicate check from Run 13 is not a substitute for these new repository tests. Exact-head Python 3.13/3.14 JEPA, staged/integrated, migration and privacy checks must run on the replacement PR before review. No local numeric weight update, no GGUF mutation, no Android deployment, and no Redmi-native test is claimed.
 
 This candidate is based on the Run 13 C4→T8 branch but is intended to replace the earlier one-cycle-only candidate after exact-head CI. The earlier #2436 PR remains open until the replacement PR is created and reviewed; no merge/force-push has occurred.
+
+
+## Run 14 follow-up — strict packet-order cutoff for C4/T8 provenance (2026-11-23)
+
+### Additional defect found by code review
+- Store timestamps are generated with `time.time()`; the T8 verifier and source-forget guard previously relied on `packet.created <= action.created` to distinguish pre-action C4 packets.
+- A post-action FocalCycle/FocalItem written in the same clock tick can share the exact float timestamp and be misclassified as pre-action. The previous regression only covered a strictly later timestamp.
+- Runtime ordering is deterministic: FocalLoop persists all FocalCycle/FocalItem packets, then C5 persists its committed ActionSelection, and only afterward does Store.start_action create the action. The causal boundary is therefore the committed ActionSelection's rowid in the shared `packets` table.
+
+### Implemented on this branch
+- T8 authority now captures the unique committed ActionSelection rowid and accepts only FocalCycle rows before that packet boundary; cycle ordering also follows packet rowid.
+- WorldJEPA source-forget scans ActionSelection/FocalCycle/FocalItem only through the same committed ActionSelection rowid. The learning receipt and deletion rollback therefore share one causal cutoff.
+- The replay-row-eviction regression now inserts a valid cycle-3 FocalCycle plus FocalItems after the action, rewrites their timestamps to equal the action timestamp, verifies they are excluded from the T8 row, then forgets that source and requires the checkpoint to remain active.
+
+### Verification boundary at commit preparation
+- LOCAL_LINUX full repository checkout/pytest: BLOCKED / NOT_RUN; Python 3.13.5 is available, but `git ls-remote https://github.com/RedMentos/Aii.git` fails because github.com DNS is unavailable.
+- No Redmi/Termux receipt, model download, weight mutation, permission change, or deployment was performed. REDMI_UNVERIFIED.
+- Exact-head GitHub workflows are required to validate the new regression and source-composition pins before review. This remains a source-provenance/rollback integrity fix, not native JEPA latent transfer or GGUF weight learning.
