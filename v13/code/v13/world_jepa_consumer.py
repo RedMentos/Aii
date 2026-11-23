@@ -1176,7 +1176,7 @@ class WorldJEPAStoreConsumer:
 
 
 @contextmanager
-def source_forget_guard(store, source_id):
+def _base_source_forget_guard(store, source_id):
     """Remove a source from retained JEPA state by rollback plus source-verified replay.
 
     A bounded replay buffer is not a complete record of parameter influence.
@@ -1379,3 +1379,28 @@ def source_forget_guard(store, source_id):
                 if next_state["active"] is not None else None
             ),
         }
+
+
+@contextmanager
+def source_forget_guard(store, source_id):
+    """Compose base and temporal checkpoint revocation before source deletion.
+
+    Memory already calls this public guard. Keeping the composition here avoids
+    a second Memory implementation and makes old/no-temporal installs compatible.
+    """
+    with _base_source_forget_guard(store, source_id) as base_report:
+        try:
+            from .world_jepa_temporal import invalidate_source_under_guard
+        except ModuleNotFoundError as exc:
+            expected = __package__ + ".world_jepa_temporal"
+            if exc.name != expected:
+                raise
+            temporal_home = Path(store.home) / "world_jepa_temporal"
+            if temporal_home.is_symlink() or temporal_home.exists():
+                raise RuntimeError(
+                    "temporal checkpoints exist but the temporal consumer is unavailable"
+                ) from exc
+            temporal_report = {}
+        else:
+            temporal_report = invalidate_source_under_guard(store, source_id)
+        yield dict(base_report) | temporal_report
