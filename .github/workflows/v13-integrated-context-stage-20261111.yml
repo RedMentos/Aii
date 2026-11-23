@@ -58,6 +58,7 @@ jobs:
           tests/test_termux_chat_recovery_candidate_20261112.py
           tests/test_termux_idle_recovery_candidate_20261112.py
           tests/test_termux_runtime_recovery_stage.py
+          tests/test_fast_greeting.py
           tests/test_activate_termux_recovery.py
           tests/test_unified_brain_delivery.py
           tests/test_enlightened_space.py

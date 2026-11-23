@@ -1,7 +1,8 @@
-"""Compose the current pinned recovery/runtime candidate with consent-bound RAW EAR.
+"""Compose the current pinned recovery/runtime candidate with RAW EAR and fastpath.
 
 The existing V13 arithmetic, source-span C4 and postcommit overlays remain
-owned by the base builder. This wrapper adds only the A5 audio consumer.
+owned by the base builder. This wrapper adds the A5 audio consumer, then a
+text-only exact-greeting overlay that cannot bypass audio-backed input.
 """
 import hashlib
 import importlib.util
@@ -15,6 +16,8 @@ C4_RECEIPT_BUILDER = "scripts/integrated_c4_c3_receipt_candidate_20261122.py"
 C4_RECEIPT_SHA256 = "0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a22028dff3"
 NATIVE_RECEIVER_BUILDER = "scripts/integrated_native_latent_receiver_candidate_20261122.py"
 NATIVE_RECEIVER_BLOB_SHA1 = "b6e335d83633a6ef92fb26ab291532b821a0f941"
+GREETING_BUILDER = "scripts/integrated_greeting_fastpath_candidate_20261123.py"
+GREETING_BUILDER_BLOB_SHA1 = "b010272ab87adba493cc4937faec52f2eebed4bb"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
@@ -24,9 +27,9 @@ def _git_blob_sha1(raw: bytes) -> str:
 def _load(code_dir: Path, relative: str, expected: str):
     path = code_dir / relative
     if path.is_symlink() or not path.is_file():
-        raise ValueError("pinned audio composition input missing or unsafe: " + relative)
+        raise ValueError("pinned composition input missing or unsafe: " + relative)
     if _git_blob_sha1(path.read_bytes()) != expected:
-        raise ValueError("pinned audio composition input changed: " + relative)
+        raise ValueError("pinned composition input changed: " + relative)
     spec = importlib.util.spec_from_file_location("v14_audio_" + path.stem, path)
     if spec is None or spec.loader is None:
         raise RuntimeError("pinned audio composition input is not loadable: " + relative)
@@ -84,4 +87,11 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
         raise ValueError("Runtime-wide A5 consent lease was not composed")
     if "v13/audio_context_store.py" not in composed:
         raise ValueError("consent-bound audio context store was not produced")
+
+    greeting = _load(code_dir, GREETING_BUILDER, GREETING_BUILDER_BLOB_SHA1)
+    composed = greeting.apply_sources(code_dir, composed)
+    if b"EXACT_GREETING_ACK" not in composed.get("v13/runtime.py", b""):
+        raise ValueError("source-only exact-greeting Runtime path was not composed")
+    if "v13/fast_greeting.py" not in composed:
+        raise ValueError("pinned exact-greeting matcher was not composed")
     return composed
