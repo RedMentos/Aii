@@ -9,7 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterator, Mapping, Sequence
 
@@ -250,7 +250,7 @@ class ArrayDataset:
         self._test_preregistration_sha256 = actual_hash
         event = {
             "event": "TEST_SPLIT_OPENED",
-            "timestamp_utc": datetime.now().astimezone().isoformat(),
+            "timestamp_utc": datetime.now(timezone.utc).isoformat(),
             "preregistration_sha256": actual_hash,
             **expected,
         }
