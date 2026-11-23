@@ -20,7 +20,7 @@ from statistics import median
 
 from . import attention as attctl
 from .audio_temporal_evidence import TemporalVoiceEvidence, TemporalVoiceEvidenceRegistry
-from .audio_teacher_ear import SherpaOnlineTeacher
+from .audio_teacher_ear import SherpaOnlineTeacher, SherpaOnlineTeacherStream
 from .audio_speaker_evidence import SpeakerChangeEvidenceRegistry, SpeakerEvidenceError
 from .audio_silero_vad import SileroVADStream, validate_vad_evidence
 from .a5_audio_admission_bridge import audio_to_admission
@@ -691,7 +691,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                consent_lease: AudioConsentLease | None = None,
                                voice_backend: str = "python",
                                 speaker_embeddings: dict | None = None,
-                                teacher_ear: SherpaOnlineTeacher | None = None,
+                                teacher_ear: SherpaOnlineTeacher | SherpaOnlineTeacherStream | None = None,
                                 teacher_asr_opt_in: bool = False,
                                 transcript_persist_opt_in: bool = False):
     """Persist source-bound acoustic cues under an owned or caller-held consent lease."""
@@ -814,6 +814,29 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                     or teacher_source.get("consent_receipt_ref") != consent_receipt
                     or teacher_source.get("source_sha256") != audio_packet["source_ref"]["sha256"]):
                 raise ValueError("Teacher Ear hypothesis is not bound to this exact audio source")
+            stream_ref = teacher_result.get("stream_ref")
+            if stream_ref is not None:
+                stream_sha = stream_ref.get("rolling_sha256")
+                stream_id = stream_ref.get("stream_id")
+                if (
+                    type(stream_ref) is not dict
+                    or stream_ref.get("source_id") != source_id
+                    or stream_ref.get("generation_id") != generation_id
+                    or stream_ref.get("consent_receipt_ref") != consent_receipt
+                    or type(stream_ref.get("start_ms")) is not int
+                    or stream_ref.get("start_ms") > audio_segment["start_ms"]
+                    or stream_ref.get("end_ms") != audio_segment["end_ms"]
+                    or type(stream_ref.get("chunk_count")) is not int
+                    or not 1 <= stream_ref.get("chunk_count") <= 2400
+                    or stream_ref.get("chunk_index") != stream_ref.get("chunk_count")
+                    or type(stream_sha) is not str
+                    or len(stream_sha) != 64
+                    or any(ch not in "0123456789abcdef" for ch in stream_sha)
+                    or type(stream_id) is not str
+                    or len(stream_id) != 64
+                    or any(ch not in "0123456789abcdef" for ch in stream_id)
+                ):
+                    raise ValueError("Teacher Ear stream provenance is not bound to this audio packet")
             if teacher_result.get("status") == "MEASURED":
                 audio_segment["unmeasured"] = [
                     item for item in audio_segment["unmeasured"] if item != "ASR"
