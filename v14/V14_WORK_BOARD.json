@@ -163,11 +163,11 @@
         "ci": "PR_HEAD_STAGED_249_10SKIP_47_INTEGRATED_424_3SKIP_58_PY313_314_64_EACH; MERGED_PUSH_30_OF_30_SUCCESS",
         "scope": "production Runtime/SleepRuntime Store-backed WorldJEPA numeric consumer with persistent Adam/inverse/RNG optimizer state, gated legacy optimizer bootstrap, per-role held-out-vs-mean/zero/shuffled Planner receiver gate, Android no-clobber renameat2 checkpoint publication"
       },
-      "proof": "Run15 code-bearing commit 05ec1f4527860960677bda93d7736ad0c1a289a1 adds previous-checkpoint byte/source/digest verification before rollback state publication, same-Store warm-cache invalidation/reload, and missing/corrupt fallback negative controls. The exact Aii project tests were NOT_RUN locally (no checkout; GitHub DNS failure) and no exact-head CI is attached to PR #2454. No native B1/B2 body-weight, cross-organ latent, or Redmi learning proof.",
+      "proof": "Run15 code/test checkpoint f56e7067e6f2df5900231324dd5b2d55ea277477 (source commit 3122e30830a94848f4ffe17fb55146d8c5a614d0) adds previous-checkpoint byte/source/digest verification before rollback state publication, same-Store warm-cache invalidation/reload, and missing/corrupt fallback negative controls. The exact Aii project tests were NOT_RUN locally (no checkout; GitHub DNS failure) and no exact-head CI is attached to PR #2454. No native B1/B2 body-weight, cross-organ latent, or Redmi learning proof.",
       "latest_temporal_candidate": {
         "pr": 2454,
         "branch": "jepa-memory/v14-temporal-boss-2443-rebase-20261123-run14",
-        "code_sha": "05ec1f4527860960677bda93d7736ad0c1a289a1",
+        "code_sha": "f56e7067e6f2df5900231324dd5b2d55ea277477",
         "branch_head_before_doc_sync": "0b6cd16b98e73af3d32884ea733c7614e0933eee",
         "parent_pr": 2443,
         "parent_head": "cdf6b64067ac426ba32194100d3764f6e74c105f",
@@ -189,7 +189,10 @@
           "merge_base": "bf2913b150d8decbf6e33c43920d21acc83439b3",
           "compare_to_jeppa_branch": "10_AHEAD_14_BEHIND",
           "status": "DRAFT_STALE_STACK_REBASE_AFTER_PARENT_GREEN"
-        }
+        },
+        "source_commit": "3122e30830a94848f4ffe17fb55146d8c5a614d0",
+        "test_commit": "f56e7067e6f2df5900231324dd5b2d55ea277477",
+        "handoff_commit": "05ec1f4527860960677bda93d7736ad0c1a289a1"
       },
       "collaboration_write_blocker": "GitHub PR comments and PR metadata updates returned HTTP 403 because the linked GitHub account has no verified email. Repository content commits/readbacks succeeded. Optional account email verification would restore PR discussion/metadata writes; no device action is needed."
     },
