@@ -8,6 +8,8 @@ import json
 import os
 from pathlib import Path
 
+APPROVAL_MODULE_SHA256 = "f149145fbb2a63385554a33550cd55a1dfef847df72fe38d78a328cfb6860939"
+
 OPERATOR_PREFIX_OLD = r"""    c=controller(r)
     if len(args)==5 and args[0]=='native-probe' and args[3]=='--last-source' and args[4]=='--confirm':
         sender,receiver=args[1],args[2]
@@ -58,7 +60,7 @@ OPERATOR_PREFIX_NEW = r"""    c=controller(r)
         r.models.path_for(receiver)
         deadline=time.monotonic()+120.0
         try:
-            packet=r.cognition.native_receive(sender,receiver,event,ref,deadline)
+            packet=r.cognition.native_receive(sender,receiver,event,ref,deadline,approval_token=approval["approval_token"])
         finally:
             r.pool.unload()
         return dumps({**packet,'queued':False,'completed':True,
@@ -118,6 +120,112 @@ def _atomic_write(path: Path, payload: bytes) -> None:
     finally:
         if temporary.exists() and not temporary.is_symlink():
             temporary.unlink()
+
+
+def apply_sources(code_dir: Path, sources: dict) -> dict:
+    """Compose local approval into the exact staged source map before publication."""
+    code_dir = Path(code_dir).resolve(strict=True)
+    result = dict(sources)
+    approval_path = _safe_file(code_dir, "v13/native_probe_approval.py", "native probe approval source")
+    approval = approval_path.read_bytes()
+    if hashlib.sha256(approval).hexdigest() != APPROVAL_MODULE_SHA256:
+        raise ValueError("native probe approval source hash mismatch")
+    compile(approval, "v13/native_probe_approval.py", "exec")
+    staged_approval = result.get("v13/native_probe_approval.py")
+    if staged_approval is not None and staged_approval != approval:
+        raise ValueError("staged native probe approval module differs from reviewed source")
+
+    cognition = result.get("v13/cognition.py")
+    callosum = result.get("v13/callosum.py")
+    operator = result.get("v13/operator.py")
+    if not all(isinstance(raw, bytes) for raw in (cognition, callosum, operator)):
+        raise ValueError("native probe approval requires the staged Cognition, Callosum and Operator sources")
+    if b"approval_token" in cognition or b"arm-probe" in callosum or b"arm-probe" in operator:
+        raise ValueError("native probe approval is already composed")
+
+    cognition = _replace(
+        cognition,
+        b"    def native_receive(self,sender_role,receiver_role,e,source_ref,deadline):\n",
+        b"    def native_receive(self,sender_role,receiver_role,e,source_ref,deadline,*,approval_token):\n",
+        "Cognition native receiver approval signature",
+    )
+    cognition = _replace(
+        cognition,
+        b"        from .common import file_hash\n",
+        b"        import os\n        from pathlib import Path\n",
+        "Cognition native receiver identity imports",
+    )
+    identity_helper = (
+        b"        def file_identity(path):\n"
+        b"            st=os.stat(path,follow_symlinks=False)\n"
+        b"            return [st.st_dev,st.st_ino,st.st_size,st.st_mtime_ns,st.st_ctime_ns]\n"
+    )
+    cognition = _replace(
+        cognition,
+        b"        register_packet_contract()\n",
+        b"        register_packet_contract()\n"
+        b"        from .native_probe_approval import require_consumed\n"
+        b"        approval_record=require_consumed(self.r,sender_role,receiver_role,e,source_ref,approval_token)\n"
+        + identity_helper,
+        "Cognition local approval consumer",
+    )
+    sender_old = (
+        b"        if file_hash(sender_model_path)!=sender_model_sha256:\n"
+        b"            raise ValueError(\"Sender model hash differs from the pinned tap model\")\n"
+    )
+    sender_new = (
+        b"        sender_binding=approval_record[\"models\"][sender_role]\n"
+        b"        if (str(sender_model_path)!=sender_binding[\"canonical_path\"]\n"
+        b"                or sender_model_sha256!=sender_binding[\"sha256\"]\n"
+        b"                or file_identity(sender_model_path)!=sender_binding[\"file_identity\"]):\n"
+        b"            raise ValueError(\"Sender model path/identity differs from the locally approved tap model\")\n"
+    )
+    cognition = _replace(cognition, sender_old, sender_new, "Cognition sender approval binding")
+    receiver_old = (
+        b"        model_path=self.r.models.path_for(receiver_role)\n"
+        b"        main=installed.get(\"files\",{}).get(installed.get(\"main_file\"))\n"
+        b"        if not isinstance(main,dict) or not isinstance(main.get(\"sha256\"),str):\n"
+        b"            raise ValueError(\"Receiver model manifest hash is missing\")\n"
+    )
+    receiver_new = (
+        b"        receiver_binding=approval_record[\"models\"][receiver_role]\n"
+        b"        model_path=Path(self.r.models.path_for(receiver_role))\n"
+        b"        if model_path.is_symlink():\n"
+        b"            raise ValueError(\"Receiver model symlink refused\")\n"
+        b"        model_path=model_path.resolve(strict=True)\n"
+        b"        receiver_models_root=(Path(self.r.home)/\"models\").resolve(strict=True)\n"
+        b"        if not model_path.is_relative_to(receiver_models_root) or not model_path.is_file():\n"
+        b"            raise ValueError(\"Receiver model must be an installed file under home/models\")\n"
+        b"        if (str(model_path)!=receiver_binding[\"canonical_path\"]\n"
+        b"                or file_identity(model_path)!=receiver_binding[\"file_identity\"]):\n"
+        b"            raise ValueError(\"Receiver model path/identity differs from local approval\")\n"
+        b"        main=installed.get(\"files\",{}).get(installed.get(\"main_file\"))\n"
+        b"        if not isinstance(main,dict) or not isinstance(main.get(\"sha256\"),str):\n"
+        b"            raise ValueError(\"Receiver model manifest hash is missing\")\n"
+        b"        if (main[\"sha256\"]!=receiver_binding[\"sha256\"]\n"
+        b"                or installed[\"exact_revision\"]!=receiver_binding[\"revision\"]):\n"
+        b"            raise ValueError(\"Receiver model manifest differs from local approval\")\n"
+    )
+    cognition = _replace(cognition, receiver_old, receiver_new, "Cognition receiver approval binding")
+    compile(cognition, "v13/cognition.py", "exec")
+
+    callosum = _replace(callosum, OPERATOR_PREFIX_OLD.encode("utf-8"),
+                        OPERATOR_PREFIX_NEW.encode("utf-8"), "Callosum local approval consumer")
+    callosum = _replace(callosum, OPERATOR_HELP_OLD.encode("utf-8"),
+                        OPERATOR_HELP_NEW.encode("utf-8"), "Callosum local approval help")
+    callosum = _replace(callosum, OPERATOR_ERROR_OLD.encode("utf-8"),
+                        OPERATOR_ERROR_NEW.encode("utf-8"), "Callosum local approval error")
+    compile(callosum, "v13/callosum.py", "exec")
+
+    operator = _replace(operator, HELP_OLD.encode("utf-8"), HELP_NEW.encode("utf-8"),
+                        "Operator local approval help")
+    compile(operator, "v13/operator.py", "exec")
+
+    result["v13/cognition.py"] = cognition
+    result["v13/callosum.py"] = callosum
+    result["v13/operator.py"] = operator
+    result["v13/native_probe_approval.py"] = approval
+    return result
 
 
 def apply_staged(code_dir: Path, staging_dir: Path) -> dict:
