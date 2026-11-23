@@ -41,8 +41,16 @@ class FakeNumpy:
 class Stream:
     def __init__(self):
         self.waveforms = []
+        self.pending = False
+        self.finished = False
+        self.input_finished_calls = 0
     def accept_waveform(self, sample_rate, waveform):
         self.waveforms.append((sample_rate, waveform.copy()))
+        self.pending = True
+    def input_finished(self):
+        self.finished = True
+        self.input_finished_calls += 1
+        self.pending = True
 
 
 class Recognizer:
@@ -50,12 +58,15 @@ class Recognizer:
         self.text = text
         self.stream = Stream()
         self.decoded = 0
+        self.create_stream_calls = 0
     def create_stream(self):
+        self.create_stream_calls += 1
         return self.stream
     def is_ready(self, stream):
-        return self.decoded == 0
+        return stream.pending
     def decode_stream(self, stream):
         self.decoded += 1
+        stream.pending = False
     def get_result(self, stream):
         return self.text
 
@@ -203,3 +214,122 @@ def test_empty_hypothesis_is_not_promoted_to_transcript(tmp_path):
     )
     assert result["status"] == "EMPTY"
     assert result["segments"] == []
+
+
+
+def test_contiguous_teacher_stream_reuses_one_stream_and_finishes_once(tmp_path):
+    teacher = SherpaOnlineTeacher(make_manifest(tmp_path), recognizer=Recognizer("hello"), numpy_module=FakeNumpy())
+    runtime = object()
+    lease = Lease()
+    session = teacher.open_stream(
+        runtime=runtime, source_id="src", generation_id="gen",
+        consent_receipt_ref="receipt", consent_lease=lease,
+        teacher_asr_opt_in=True,
+    )
+    first = session.transcribe_pcm16(
+        pcm16_for(500), sample_rate=16000, start_ms=100, end_ms=600,
+        runtime=runtime, source_id="src", generation_id="gen",
+        consent_receipt_ref="receipt", consent_lease=lease,
+        finality="PROVISIONAL", teacher_asr_opt_in=True,
+    )
+    assert first["processing_mode"] == "CONTIGUOUS_STREAM"
+    assert first["segments"][0]["text"] == "hello"
+    assert first["stream_ref"]["chunk_count"] == 1
+    assert len(teacher._recognizer.stream.waveforms) == 1
+    assert teacher._recognizer.stream.input_finished_calls == 0
+
+    teacher._recognizer.text = "hello world"
+    second = session.transcribe_pcm16(
+        pcm16_for(500), sample_rate=16000, start_ms=600, end_ms=1100,
+        runtime=runtime, source_id="src", generation_id="gen",
+        consent_receipt_ref="receipt", consent_lease=lease,
+        finality="PROVISIONAL", teacher_asr_opt_in=True,
+    )
+    assert second["segments"][0]["text"] == "world"
+    assert second["stream_ref"]["chunk_count"] == 2
+    assert second["stream_ref"]["rolling_sha256"] != first["stream_ref"]["rolling_sha256"]
+    assert len(teacher._recognizer.stream.waveforms) == 2
+
+    teacher._recognizer.text = "hello world."
+    third = session.transcribe_pcm16(
+        pcm16_for(500), sample_rate=16000, start_ms=1100, end_ms=1600,
+        runtime=runtime, source_id="src", generation_id="gen",
+        consent_receipt_ref="receipt", consent_lease=lease,
+        finality="FINAL", teacher_asr_opt_in=True,
+    )
+    assert third["segments"][0]["text"] == "."
+    assert third["stream_ref"]["chunk_count"] == 3
+    assert third["stream_ref"]["start_ms"] == 100
+    assert third["stream_ref"]["end_ms"] == 1600
+    assert len(teacher._recognizer.stream.waveforms) == 4  # three chunks + one final-only tail
+    assert teacher._recognizer.stream.input_finished_calls == 1
+    assert session.closed
+    assert teacher._active_streams == 0
+    with pytest.raises(TeacherEarError, match="closed"):
+        session.transcribe_pcm16(
+            pcm16_for(500), sample_rate=16000, start_ms=1600, end_ms=2100,
+            runtime=runtime, source_id="src", generation_id="gen",
+            consent_receipt_ref="receipt", consent_lease=lease,
+            finality="PROVISIONAL", teacher_asr_opt_in=True,
+        )
+
+
+def test_teacher_stream_rejects_gap_and_releases_native_stream(tmp_path):
+    teacher = SherpaOnlineTeacher(make_manifest(tmp_path), recognizer=Recognizer(), numpy_module=FakeNumpy())
+    runtime = object()
+    lease = Lease()
+    session = teacher.open_stream(
+        runtime=runtime, source_id="src", generation_id="gen",
+        consent_receipt_ref="receipt", consent_lease=lease,
+        teacher_asr_opt_in=True,
+    )
+    session.transcribe_pcm16(
+        pcm16_for(500), sample_rate=16000, start_ms=0, end_ms=500,
+        runtime=runtime, source_id="src", generation_id="gen",
+        consent_receipt_ref="receipt", consent_lease=lease,
+        finality="PROVISIONAL", teacher_asr_opt_in=True,
+    )
+    with pytest.raises(TeacherEarError, match="contiguous"):
+        session.transcribe_pcm16(
+            pcm16_for(500), sample_rate=16000, start_ms=600, end_ms=1100,
+            runtime=runtime, source_id="src", generation_id="gen",
+            consent_receipt_ref="receipt", consent_lease=lease,
+            finality="PROVISIONAL", teacher_asr_opt_in=True,
+        )
+    assert session.closed
+    assert teacher._active_streams == 0
+
+
+def test_teacher_stream_rejects_second_session_and_cross_thread_use(tmp_path):
+    teacher = SherpaOnlineTeacher(make_manifest(tmp_path), recognizer=Recognizer(), numpy_module=FakeNumpy())
+    runtime = object()
+    lease = Lease()
+    session = teacher.open_stream(
+        runtime=runtime, source_id="src", generation_id="gen",
+        consent_receipt_ref="receipt", consent_lease=lease,
+        teacher_asr_opt_in=True,
+    )
+    with pytest.raises(TeacherEarError, match="one active"):
+        teacher.open_stream(
+            runtime=runtime, source_id="src", generation_id="gen",
+            consent_receipt_ref="receipt", consent_lease=lease,
+            teacher_asr_opt_in=True,
+        )
+    errors = []
+    def wrong_thread():
+        try:
+            session.transcribe_pcm16(
+                pcm16_for(500), sample_rate=16000, start_ms=0, end_ms=500,
+                runtime=runtime, source_id="src", generation_id="gen",
+                consent_receipt_ref="receipt", consent_lease=lease,
+                finality="PROVISIONAL", teacher_asr_opt_in=True,
+            )
+        except Exception as exc:
+            errors.append(exc)
+    thread = threading.Thread(target=wrong_thread)
+    thread.start()
+    thread.join(timeout=5)
+    assert not thread.is_alive()
+    assert errors and isinstance(errors[0], PermissionError)
+    assert session.closed
+    assert teacher._active_streams == 0
