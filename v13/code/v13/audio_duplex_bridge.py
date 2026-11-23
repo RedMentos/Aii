@@ -290,10 +290,9 @@ def _claim_one_use_audio_receipt(runtime, event_id, packet_id, temporal_receipt_
 def on_audio_input(runtime, audio_result, consent_lease, *, temporal_state=None, vad_stream=None):
     """Decide/cancel only for a fresh audio event bound to the active Runtime turn.
 
-    The provider lease remains held by the caller. Store reads happen outside
-    Runtime.lock; the active turn is snapshotted and rechecked under the lock
-    before cancellation, so a turn switch during validation cannot redirect a
-    stale onset into a later answer.
+    For INTERRUPT, the handoff is committed before cancellation becomes
+    observable. A separate per-Runtime lock prevents the next-turn handoff
+    reader from racing that commit; Runtime.lock is never held during Store I/O.
     """
     (
         event_id, packet_id, temporal_receipt_id, _source_id, generation_id,
@@ -305,13 +304,11 @@ def on_audio_input(runtime, audio_result, consent_lease, *, temporal_state=None,
     mode = runtime.cfg.get("duplex_mode", "auto")
     outcome = decide_audio_overlap(activity_hint, voice_onset, mode)
     # Claim every receipt, even when the decision is CONTINUE or mode=off.
-    # The Store CAS is durable and happens before Runtime.lock/cancellation.
     _claim_one_use_audio_receipt(runtime, event_id, packet_id, temporal_receipt_id)
     if outcome is None:
         return None
     decision_name, relation = outcome
 
-    # Snapshot only in-memory turn identity while holding Runtime.lock.
     with runtime.lock:
         current = runtime.turn_event if runtime.current == "turn" else None
         if type(current) is not dict:
@@ -347,37 +344,85 @@ def on_audio_input(runtime, audio_result, consent_lease, *, temporal_state=None,
     if audio_created > now or now - audio_created > (_REPLAY_TTL_NS / 1_000_000_000):
         raise ValueError("audio event is stale or from the future")
 
-    # Recheck the exact turn snapshot after Store I/O. If it changed, consume
-    # this one-shot receipt but never cancel or attach it to the newer turn.
-    with runtime.lock:
-        current = runtime.turn_event if runtime.current == "turn" else None
-        if (type(current) is not dict
-                or current.get("event_id") != from_event
-                or current.get("brain_generation_id") != generation_id):
-            return None
-        started = time.monotonic()
-        decision = {
-            "decision": decision_name,
-            "relation": relation,
-            "from_event": from_event,
-            "to_event": event_id,
-            "at": time.time(),
-            "started": started,
-        }
-        if decision_name == "INTERRUPT":
-            runtime.cancel_event.set()
-    try:
-        duplex.record(runtime, decision)
+    decision = {
+        "decision": decision_name,
+        "relation": relation,
+        "from_event": from_event,
+        "to_event": event_id,
+        "at": time.time(),
+        "started": time.monotonic(),
+    }
+
+    if decision_name == "CONTINUE":
+        try:
+            recorded = duplex.record(runtime, decision)
+            decision["record_status"] = "RECORDED" if recorded else "TARGET_TURN_ALREADY_INTERRUPTED"
+        except Exception as exc:
+            runtime.store.log(
+                "duplex_unavailable", event_id,
+                {"stage": "audio_record", "error": type(exc).__name__},
+            )
+            decision["record_status"] = "FAILED"
+        decision["bridge_revision"] = BRIDGE_REVISION
+        return decision
+
+    # The audio lock is separate from Runtime.lock. handoff() takes the same
+    # lock, so a next turn cannot consume an uncommitted/rolled-back relation.
+    with duplex.audio_handoff_lock(runtime):
+        with runtime.lock:
+            current = runtime.turn_event if runtime.current == "turn" else None
+            if (type(current) is not dict
+                    or current.get("event_id") != from_event
+                    or current.get("brain_generation_id") != generation_id
+                    or runtime.cancel_event.is_set()):
+                return None
+
+        # Commit both pending and interrupted state with Store CAS before
+        # making cancellation visible to the Runtime worker.
+        try:
+            recorded = duplex.record(runtime, decision)
+        except Exception as exc:
+            runtime.store.log(
+                "duplex_unavailable", event_id,
+                {"stage": "audio_record", "error": type(exc).__name__},
+            )
+            decision["record_status"] = "FAILED"
+            decision["bridge_revision"] = BRIDGE_REVISION
+            return decision
+        if not recorded:
+            decision["record_status"] = "TARGET_TURN_ALREADY_INTERRUPTED"
+            decision["bridge_revision"] = BRIDGE_REVISION
+            return decision
+
+        # If the target turn completed while Store I/O ran, remove only this
+        # exact unconsumed relation before releasing the handoff lock. If the
+        # same turn is still current, the durable handoff is already available
+        # and cancellation can safely be signalled.
+        with runtime.lock:
+            current = runtime.turn_event if runtime.current == "turn" else None
+            same_target = (
+                type(current) is dict
+                and current.get("event_id") == from_event
+                and current.get("brain_generation_id") == generation_id
+            )
+            if same_target:
+                runtime.cancel_event.set()
+        if not same_target:
+            try:
+                duplex.rollback_record(runtime, decision)
+                decision["record_status"] = "ROLLED_BACK_TARGET_CHANGED"
+            except Exception as exc:
+                runtime.store.log(
+                    "duplex_unavailable", event_id,
+                    {"stage": "audio_record_rollback", "error": type(exc).__name__},
+                )
+                decision["record_status"] = "ROLLBACK_FAILED"
+            decision["bridge_revision"] = BRIDGE_REVISION
+            return decision
+
         decision["record_status"] = "RECORDED"
-    except Exception as exc:
-        runtime.store.log(
-            "duplex_unavailable", event_id,
-            {"stage": "audio_record", "error": type(exc).__name__},
-        )
-        decision["record_status"] = "FAILED"
     decision["bridge_revision"] = BRIDGE_REVISION
     return decision
-
 
 def consume_pcm16_voice_window_with_duplex(runtime, pcm, *, consent_lease, **kwargs):
     """Run the existing A5->A4->C3 PCM consumer and duplex bridge under one lease.
