@@ -17,6 +17,7 @@ on:
       - core/v14-android-companion-native-20261121
       - qa/v14-companion-single-use-approval-20261121
       - qa/v14-companion-final-qa-20261122
+      - qa/v14-companion-stop-durability-20261123-run1
     paths:
       - "android-companion/**"
       - ".github/workflows/v14-android-companion.yml"
