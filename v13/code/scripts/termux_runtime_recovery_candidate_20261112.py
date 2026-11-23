@@ -173,7 +173,7 @@ def build_sources(code_dir, *, include_postcommit=True):
         if path.is_symlink() or not path.is_file():
             raise ValueError('Postcommit observer builder missing or unsafe')
         raw_candidate = path.read_bytes()
-        if hashlib.sha256(raw_candidate).hexdigest() != 'ae9a9a2f7b98795ac1aa9c64bb15a2b649c8adaea9b4062cc11d38ca3392f5c5':
+        if hashlib.sha256(raw_candidate).hexdigest() != '9f57c1cf4cbdbf7c983a512aa38101cd12b497d4586e5963459f16fea864411a':
             raise ValueError('Postcommit observer builder source changed')
         namespace = {'__name__': 'v13_checked_postcommit', '__file__': str(path)}
         exec(compile(raw_candidate, str(path), 'exec'), namespace)
@@ -220,7 +220,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             raise ValueError('LateWatch output changed')
         result['v13/latewatch.py'] = late
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
-                             'c57d29d5ef37d2f91ebc530657a449fe628e198ae481cd40e9d5681f58ba0c94')
+                             'f2ce59ab5574fe6164c5d9f7e6161160db830f22fb7de4ce70a31e051b83c6a2')
         result = control_guard.apply_sources(code_dir, result)
         # The guard rewrites the semantic module and its local-error consumer as
         # one reviewed generation. Snapshot that exact pair before Store overlays.
