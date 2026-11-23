@@ -99,3 +99,11 @@ The first R-107 documentation PR #2411 was closed as duplicate after its base br
 - Exact current code/test SHA: 89c0c7fcf3a598d7b99e2b07299f3aac4f82690b. Readback confirms the prompt still has the explicit prediction/not-fact-permission note, and per-action support counts are kept in the full audit rather than repeated in prompt rows.
 - The 30c failure was repaired in two steps: (a) remove per-row support counts while preserving audit support >=8, (b) when the temporal readout is present, omit only the static WORLD_STATE scope label from the compact prompt; persisted WORLD_STATE is unchanged and mode + observed_actions remain visible. Added regression assertions for the compact world metadata and B1/B2 row shape.
 - Exact-head temporal-jepa 3.13, temporal-jepa 3.14 and offline-bridge-security were QUEUED at readback (workflow 45111415768/45111415769). No PASS is claimed. Wait for this exact head before further integration.
+
+
+## QueryPacket negative-control correction — exact current head (2026-11-23)
+
+- Exact code/test SHA: b955b58a547223c1c823698d8f58ac43fc3b9ecb.
+- The prior 89c0c7f head retained the temporal view within the 700-character budget, but exposed a second test assumption: the cold B1 negative-control offer correctly writes its own QueryPacket, so the event has three QueryPackets (cold B1, warm B1, warm B2), not two. The failure was at the test's count assertion after the temporal receiver prompt assertions had passed.
+- Fixed the test to select only QueryPackets whose referenced BODY_STATE source has schema V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/2, then require exactly the two warm B1/B2 temporal receiver queries. The cold query remains a required negative control and is not miscounted as a temporal receiver. Source-ref provenance and full audit checks remain for both warm queries.
+- Exact-head Python 3.13, Python 3.14 and offline-bridge-security checks for b955b58 are IN_PROGRESS/QUEUED at readback; no PASS yet. The 89c head had 20/21 pass and one test-count assertion failure in Python 3.13; Python 3.14 was still in progress at that time. Postcommit tests were skipped after the temporal test failure; they must run on a green exact head.
