@@ -1894,3 +1894,6 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - After the Boss parent is fully green, rebase JEPA #2454 onto its exact current head, resolve overlapping Memory/neuromod/Sleep/bodyview files with three-way review, recompute every nested builder pin, then run exact Python 3.13/3.14 temporal, postcommit, optimizer-resume, source-forget, staged, integrated and migration suites.
 - Next JEPA-specific experiment: an A→B→A dynamics/outcome shift with source-disjoint old/new cohorts, replay-on/off and frozen-baseline controls; persist old-cohort prediction/receiver outcomes and test recovery of the original dynamics without using the old cohort for the adaptation update.
 - **User action required: NONE.** Preserve the current STOPPED_BY_USER phone state.
+
+
+**Coordination write limitation:** attempts to create the four private owner-read relay issues were rejected with HTTP 422 (verified email required), and attempts to post the run-18 comments on PRs #2454/#2457 were rejected with HTTP 403 for the same verified-email requirement. No comments or relay issues were created; record `NO_LIVE_RECEIPT` / `NO_COMMENT_PERMISSION`. The shared `V14_WORK_BOARD.json` was not edited because Boss & Integration owns board synchronization; the verified status is in this user-action file and the run-18 handoff.
