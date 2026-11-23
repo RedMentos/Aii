@@ -2,7 +2,7 @@
 
 **Current status:** code/test head `45696f7d37b898b2a7a1bc8331a25e1b268e954b` on `jepa-memory/v14-temporal-episodic-recall-20261123-run7`; PR #2405 remains DRAFT / NOT_RELEASED. Exact-head CI has not yet returned a run at this readback. No phone update or model/weight/permission change.
 
-- **Integration ancestry:** PR #2405 currently targets QA branch `qa/v14-jepa-source-lifecycle-rebase-20261123-run16` at `c5d847ca36567ea265610b235941bf251f1425fa`, but compare with the JEPA head is still `diverged` (57 ahead / 22 behind; merge base `de4143790bc9ff7e3dc32c40fbc2a4fe9d09dd64`). The base ref is current, but the head ancestry is stale. Do not merge or blindly rebase; QA/Boss must recompose the JEPA changes without overwriting the A3 source-forget chain.
+- **Integration ancestry:** PR #2405 currently targets QA branch `qa/v14-jepa-source-lifecycle-rebase-20261123-run16` at `c5d847ca36567ea265610b235941bf251f1425fa`, but compare with the JEPA head is still `diverged` (59 ahead / 22 behind; merge base `de4143790bc9ff7e3dc32c40fbc2a4fe9d09dd64`). The base ref is current, but the head ancestry is stale. Do not merge or blindly rebase; QA/Boss must recompose the JEPA changes without overwriting the A3 source-forget chain.
 
 
 - `v13/code/v13/bodyview.py`: when a temporal receiver is omitted, B1/B2 now receive a bounded `world_jepa_temporal_status` with the omission reason and (when present) action/utility reason. It grants no decision authority and does not fabricate a prediction.
