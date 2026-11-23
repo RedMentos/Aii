@@ -88,3 +88,18 @@ Both failures were corrected and read back. Current branch head: `86620113afceb5
 - REDMI remains `REDMI_UNVERIFIED`: no AudioRecord provider, microphone capture, native speaker inference, Android RSS/latency or new installed SHA. No model/weight/permission/data change and no UPDATE_REQUEST.
 - Research ledger appended as R-083 with full-paper FASTDIAR confidence-gate details, reported conditions, license/weight caveats and the explicit distinction between voiced-only history and calibrated confidence gating. `V14_USER_NEXT_ACTION.md` was updated with the verified current checkpoint and no-user-action boundary.
 - **Next:** poll exact-head CI; Core must rebind both current audio source blobs and recompute dependent recovery/stage/deployer pins bottom-up; QA review the non-voiced and A4 impulse path. No user action is required.
+
+
+
+## Final exact-head CI and device readback — 2026-11-23
+
+Code/test head verified: `f9384604b6a58f06d8663003817175a91d1facf6` (the following commits only update handoff/ledger/next-action docs).
+
+- PASS: `adapter-consumer` on Python 3.13.18 and 3.14.10 — **92 passed each**, including the new impulse-to-A4 consumer test; py_compile passed in both jobs.
+- PASS: RAW EAR fastpath on Python 3.13/3.14; RAW EAR prosody-to-attention on Python 3.11/3.13; WebRTC/libfvad comparison on Python 3.13/3.14; consent-revocation QA; public privacy scan; offline-bridge security; offline backend checks.
+- FAIL: three staged/Runtime consumers on Python 3.13/3.14 and staged/integrated workflow. All share the same Core-owned root cause: `integrated_audio_context_candidate_20261121.py` rejects `audio_voice_cues.py` because it expects blob `b18e450162b062b09368a12b1ca18924ed8c5025` rather than `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`. Staged runtime reports 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; integrated regression reports 1 failed; recovery consumer reports 2 failed / 3 passed. No Perception-owned source changed to bypass this gate. The new A4 impulse test itself is green.
+- CI evidence is hosted Linux, not local Redmi. Full local Aii pytest remains BLOCKED because no checkout is mounted and GitHub DNS resolution fails in this worker.
+
+Fresh private V13OBS owner-read at 2026-11-23 10:25:09 UTC reports installed SHA `8bf44cb50e855a6dba0c91f64f60d8daddcbdc9c`, auto-update enabled, pipeline `UPDATED`, Runtime/Dashboard `UPDATED`, last error `NONE`. This is the base release, not PR #2433. Service/model process is RUNNING with 8 managed sessions, but no sustained PSS/RSS proof. Last stored turn remains FINAL at 57.739 s total / 41.627 s TTFT / 38.945 s prefill, 751 prompt tokens / 2 generated tokens; correctness UNKNOWN. B1/B2 remain TIME_BUDGET at 53.2/54.2 s with zero valid offers in the latest five-turn aggregate. No new CHAT_SEND or UPDATE_REQUEST was issued; no LOG_PAGE, shell, model/weight/permission change or data mutation.
+
+Current PR branch after the device/next-action handoff append: `fdd6d0e34f2bb209a7c5447d57581dadf20c0b7f` plus this handoff commit. PR #2433 remains DRAFT / NOT_RELEASED. Next owner action is Core source-pin rebinding, not a Perception hash bypass; Boss updates the shared board. No user action is required.
