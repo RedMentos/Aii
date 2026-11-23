@@ -35,6 +35,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install bounded vision test dependencies
         run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.3.5 Pillow==12.3.0
+      - name: Report exact source hashes for staged composer rebinding
+        run: sha256sum v13/code/v13/vision.py v13/code/v13/vision_source_lineage.py v13/code/v13/vision_ui_frame_ingress.py
       - name: Compile exact source and tests
         run: python -m py_compile v13/code/v13/vision.py v13/code/v13/vision_source_lineage.py v13/code/tests/test_vision.py v13/code/tests/test_vision_source_lineage.py
       - name: Run vision and source-forget regressions
