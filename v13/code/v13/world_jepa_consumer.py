@@ -1064,21 +1064,22 @@ class WorldJEPAStoreConsumer:
 
 @contextmanager
 def source_forget_guard(store, source_id):
-    """Serialize source deletion with JEPA updates and refuse false unlearning.
+    """Remove a source from retained JEPA state by rollback plus source-verified replay.
 
-    Replay rows are bounded, but their parameter influence can outlive row
-    eviction. Check each retained checkpoint's full scanned T8 history, not
-    only its current replay rows. Pending-only rows are discarded before the
-    source is deleted; any source that may have trained active/rollback weights
-    blocks deletion until a real JEPA rebuild/forget path exists.
+    A bounded replay buffer is not a complete record of parameter influence.
+    For each checkpoint, inspect both its retained rows and all eligible T8
+    actions scanned up to that checkpoint's cursor. Pending-only rows are not
+    treated as trained. If the active checkpoint is tainted, restore a verified
+    clean previous checkpoint and rewind to its cursor; if both are tainted,
+    invalidate both and restart the scan from zero. This is checkpoint
+    invalidation/retraining, not gradient-based unlearning or proof that
+    correlated retained examples cannot relearn similar behavior.
     """
     if type(source_id) is not str or not source_id or len(source_id) > 256:
         raise ValueError("invalid WorldJEPA source identity")
 
     root = Path(store.home) / "world_jepa"
-    consumer = WorldJEPAStoreConsumer(
-        store, root, learning_enabled=False
-    )
+    consumer = WorldJEPAStoreConsumer(store, root, learning_enabled=False)
     with consumer._locked(True):
         state, version = consumer._read_state()
         pending_rows = state["pending_rows"]
@@ -1086,50 +1087,114 @@ def source_forget_guard(store, source_id):
             row["action_id"] for row in pending_rows
             if row["source_id"] == source_id
         ]
+        pending_ids = set(pending_for_source)
 
-        for label, record in (
-            ("active", state["active"]),
-            ("rollback", state["previous"]),
-        ):
+        def checkpoint_is_tainted(record):
             if record is None:
-                continue
-            if any(
-                row["source_id"] == source_id
-                for row in record["experience_rows"]
-            ):
-                raise ValueError(
-                    "Source is retained by a WorldJEPA "
-                    + label + " checkpoint; safe unlearning is not implemented"
-                )
-
+                return False
+            if any(row["source_id"] == source_id
+                   for row in record["experience_rows"]):
+                return True
             cursor = record["scan_cursor"]
             if cursor <= 0:
-                continue
-            query = (
-                "SELECT a.id FROM actions a "
-                "JOIN events e ON e.id=a.event_id "
-                "WHERE a.rowid<=? AND e.source_id=? "
-                "AND a.outcome IS NOT NULL AND a.expected LIKE ? "
-                "AND a.status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED')"
+                return False
+            # Query a bounded set and filter pending IDs in Python. Avoid a
+            # variable-length SQL NOT IN list, which can exceed SQLite limits.
+            scanned = store.rows(
+                """SELECT a.id FROM actions a
+                   JOIN events e ON e.id=a.event_id
+                   WHERE a.rowid<=? AND e.source_id=?
+                     AND a.outcome IS NOT NULL AND a.expected LIKE ?
+                     AND a.status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED')
+                   ORDER BY a.rowid DESC LIMIT ?""",
+                (cursor, source_id, '%"forecast"%', MAX_TRACKED + 1),
             )
-            params = [cursor, source_id, '%"forecast"%']
-            if pending_for_source:
-                placeholders = ",".join("?" for _ in pending_for_source)
-                query += " AND a.id NOT IN (" + placeholders + ")"
-                params.extend(pending_for_source)
-            query += " LIMIT 1"
-            if store.rows(query, tuple(params)):
-                raise ValueError(
-                    "Source may have trained a WorldJEPA "
-                    + label + " checkpoint (including evicted replay rows); "
-                    "safe unlearning is not implemented"
-                )
+            if type(scanned) is not list:
+                raise ValueError("WorldJEPA source-forget history scan")
+            if len(scanned) > MAX_TRACKED:
+                # The complete influence set cannot be checked within the
+                # tracked-identity bound. Never guess that the checkpoint is clean.
+                return True
+            return any(row["id"] not in pending_ids for row in scanned)
 
-        if pending_for_source:
-            next_state = dict(state)
-            next_state["pending_rows"] = [
-                row for row in pending_rows if row["source_id"] != source_id
-            ]
+        active, previous = state["active"], state["previous"]
+        active_tainted = checkpoint_is_tainted(active)
+        previous_tainted = checkpoint_is_tainted(previous)
+        if (active is not None and previous is not None
+                and active["checkpoint"] == previous["checkpoint"]
+                and (active_tainted or previous_tainted)):
+            # Two records cannot claim one immutable file with different
+            # lineage and then treat one view as a clean rollback.
+            active_tainted = previous_tainted = True
+
+        tainted_names = {
+            record["checkpoint"]
+            for record, tainted in (
+                (active, active_tainted), (previous, previous_tainted)
+            )
+            if record is not None and tainted
+        }
+        filtered_pending = [
+            row for row in pending_rows if row["source_id"] != source_id
+        ]
+
+        if active_tainted:
+            if previous is not None and not previous_tainted:
+                # Hash-load the fallback before publishing it as active.
+                consumer._load_model(previous)
+                next_state = {
+                    "schema": STATE_SCHEMA, "revision": REVISION,
+                    "active": previous, "previous": None,
+                    "scan_cursor": previous["scan_cursor"],
+                    # Rewind means every later row is rediscovered from SQLite.
+                    # Keeping pending rows here would duplicate that page.
+                    "pending_rows": [],
+                }
+                status = "RESTORED_CLEAN_PREVIOUS"
+            else:
+                next_state = {
+                    "schema": STATE_SCHEMA, "revision": REVISION,
+                    "active": None, "previous": None,
+                    "scan_cursor": 0, "pending_rows": [],
+                }
+                status = "RESET_FOR_SOURCE_VERIFIED_REPLAY"
+        elif active is None and previous is not None:
+            if previous_tainted:
+                next_state = {
+                    "schema": STATE_SCHEMA, "revision": REVISION,
+                    "active": None, "previous": None,
+                    "scan_cursor": 0, "pending_rows": [],
+                }
+                status = "RESET_FOR_SOURCE_VERIFIED_REPLAY"
+            else:
+                consumer._load_model(previous)
+                next_state = {
+                    "schema": STATE_SCHEMA, "revision": REVISION,
+                    "active": previous, "previous": None,
+                    "scan_cursor": previous["scan_cursor"],
+                    "pending_rows": [],
+                }
+                status = "PROMOTED_CLEAN_PREVIOUS"
+        elif previous_tainted:
+            # The live checkpoint is clean; only its rollback point is tainted.
+            consumer._load_model(active)
+            next_state = {
+                "schema": STATE_SCHEMA, "revision": REVISION,
+                "active": active, "previous": None,
+                "scan_cursor": active["scan_cursor"],
+                "pending_rows": filtered_pending,
+            }
+            status = "DROPPED_TAINTED_ROLLBACK"
+        else:
+            next_state = {
+                "schema": STATE_SCHEMA, "revision": REVISION,
+                "active": active, "previous": previous,
+                "scan_cursor": state["scan_cursor"],
+                "pending_rows": filtered_pending,
+            }
+            status = "PENDING_ROWS_REMOVED" if pending_for_source else "NO_CHECKPOINT_TAINT"
+
+        if next_state != state:
             try:
                 store.set_state(STATE_KEY, next_state, expected=version)
             except ValueError as exc:
@@ -1139,12 +1204,29 @@ def source_forget_guard(store, source_id):
                     ) from exc
                 raise
 
-        removed, errors = consumer._prune_checkpoints(state)
-        if errors:
+        removed, errors = consumer._prune_checkpoints(next_state)
+        keep = {
+            record["checkpoint"]
+            for record in (next_state["active"], next_state["previous"])
+            if record is not None
+        }
+        leftovers = [
+            path.name for path in consumer.home.glob("jepa-*.npz")
+            if path.name not in keep
+        ]
+        if errors or leftovers:
             raise OSError(
-                "WorldJEPA orphan checkpoint cleanup failed; source deletion refused"
+                "WorldJEPA tainted/orphan checkpoint cleanup failed; source deletion refused"
             )
+
         yield {
+            "status": status,
             "pending_rows_removed": len(pending_for_source),
+            "tainted_checkpoints_invalidated": len(tainted_names),
             "orphan_checkpoints_removed": removed,
+            "scan_cursor": next_state["scan_cursor"],
+            "active_checkpoint_sha256": (
+                next_state["active"]["checkpoint_sha256"]
+                if next_state["active"] is not None else None
+            ),
         }
