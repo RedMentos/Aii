@@ -1,3 +1,20 @@
+# Core & Harness — latest verified checkpoint (2026-11-23 22:18 UTC)
+
+**Native-probe lifecycle candidate:** [branch `core/v14-native-probe-jepa-stack-20261123-run3`](https://github.com/RedMentos/Aii/tree/core/v14-native-probe-jepa-stack-20261123-run3), head `d636196247f65b7d9cce4e7d817212e1d5ca9330`, based on current JEPA PR #2454 head `9a89b30fc360c0257dc6765e58e3871a6f2df1c6`. No PR number yet.
+
+- QA's Runtime-close race is addressed in staged Runtime: active native-probe worker and exclusive lease are tracked; close cancels and waits before pool unload / Store close; bounded timeout fails closed and leaves Store open.
+- Positive and negative concurrency tests were added, together with stage/overlay/deployer tests.
+- Exact readback verified recovery builder, stage builder, deployer, overlay, approval module and operator pins. No pin was weakened.
+- LOCAL_LINUX CPython 3.13.5 isolated cancellation/lease helper reproduction: PASS. Full Aii pytest: BLOCKED / NOT_RUN because there is no checkout and GitHub DNS fails.
+- GitHub Actions push run `45278456774`: `startup_failure`, zero jobs; no CI PASS.
+- PR creation was rejected with GitHub API 403: “At least one email address must be verified to do that.” The earlier #2457 branch is 112 commits behind the current #2454 head and is superseded; it was not force-pushed or merged.
+- Handoff: `v14/handoffs/CORE_NATIVE_PROBE_JEPA_STACK_20261123_RUN2.md`.
+- Redmi: STOPPED_BY_USER / REDMI_UNVERIFIED. No device command, update request, shell, permission, model, weight or data action.
+
+**Next:** obtain the exact-head 3.13/3.14 staged Runtime, overlay, deployer, migration and privacy tests; investigate workflow startup failure; then request independent review. To let me create the draft PR, verify at least one email address on the GitHub account. No device action is needed.
+
+---
+
 # CURRENT USER ACTION / RELEASE STATUS — Boss integration run 14 (2026-11-23)
 
 **No device action is required or authorized.** Preserve the Redmi AI runtime in `STOPPED_BY_USER`; do not send `CHAT_SEND`, restart, `UPDATE_REQUEST`, `LOG_PAGE`, shell commands, or model/weight/permission/data mutations.
