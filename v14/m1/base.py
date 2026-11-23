@@ -370,6 +370,60 @@ class FrozenRepresentationProbe(nn.Module):
         )
 
 
+
+class VICRegControl(nn.Module):
+    """Non-JEPA representation control trained from two augmented context views."""
+    def __init__(self, config: BaseConfig):
+        super().__init__()
+        self.config = config
+        self.encoder = SharedTokenEncoder(config.channels, config.latent_dim)
+        self.projector = nn.Sequential(
+            nn.LayerNorm(config.latent_dim),
+            nn.Linear(config.latent_dim, config.hidden_dim),
+            nn.GELU(),
+            nn.Linear(config.hidden_dim, config.latent_dim),
+        )
+
+    def forward(self, first_view: InputBundle, second_view: InputBundle) -> tuple[Tensor, Tensor]:
+        first = self.projector(self.encoder.encode_context(first_view))
+        second = self.projector(self.encoder.encode_context(second_view))
+        return first, second
+
+
+def vicreg_loss(
+    first: Tensor,
+    second: Tensor,
+    *,
+    invariance_weight: float = 25.0,
+    variance_weight: float = 25.0,
+    covariance_weight: float = 1.0,
+    variance_target: float = 1.0,
+) -> Tensor:
+    """Standard invariance + variance + covariance objective for the VICReg control."""
+    if first.shape != second.shape or first.ndim != 2 or first.shape[0] < 2:
+        raise ValueError("VICReg views must share shape [batch>=2, latent_dim]")
+    if min(invariance_weight, variance_weight, covariance_weight) < 0 or variance_target <= 0:
+        raise ValueError("invalid VICReg weights or variance target")
+
+    def variance_and_covariance(z: Tensor) -> tuple[Tensor, Tensor]:
+        centered = z - z.mean(dim=0, keepdim=True)
+        std = torch.sqrt(centered.var(dim=0, unbiased=False) + 1e-4)
+        variance = torch.relu(variance_target - std).square().mean()
+        covariance = centered.T @ centered / (z.shape[0] - 1)
+        off_diagonal = covariance - torch.diag(torch.diagonal(covariance))
+        covariance_penalty = off_diagonal.square().sum() / z.shape[1]
+        return variance, covariance_penalty
+
+    inv = F.mse_loss(first, second)
+    var_a, cov_a = variance_and_covariance(first)
+    var_b, cov_b = variance_and_covariance(second)
+    return (
+        invariance_weight * inv
+        + variance_weight * (var_a + var_b) / 2.0
+        + covariance_weight * (cov_a + cov_b) / 2.0
+    )
+
+
 def variance_covariance_regularizer(representations: Tensor, *, variance_target: float = 1.0) -> Tensor:
     """VICReg-style anti-collapse diagnostic/control term, separate from JEPA loss."""
     if representations.ndim != 2 or representations.shape[0] < 2:
