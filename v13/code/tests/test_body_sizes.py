@@ -72,4 +72,51 @@ class Live(unittest.TestCase):
         json.loads(Operator(self.r).run(':resources bodies reset'));self.assertEqual(self.experts()['B2_GIST']['size_source'],'CLOUD_X86_LOWER_BOUND')
         with self.assertRaises(ValueError):S.import_report(self.r.store,bench(True,[]))
 
+
+    def test_parallel_admission_requires_measured_joint_fit(self):
+        # Shipped cloud lower bounds plus an unmeasured C3 estimate must never
+        # authorize two simultaneous bodies on the phone.
+        self.assertFalse(self.r.bodies.can_run_parallel())
+
+        # Bind the test C3 file to the exact model-registry digest so the same
+        # source-disjoint size-profile path used by :resources bodies is read.
+        self.r.models.installed['language']['files']['language.gguf']['sha256'] = SHA['C3_LANGUAGE']
+        self.r.models.save()
+
+        names = {
+            'C3_LANGUAGE': 'LFM2.5-350M-QAD-Q4_0.gguf',
+            'B1_DETAIL': 'LFM2.5-1.2B-Instruct-QAD-Q4_0.gguf',
+            'B2_GIST': 'Qwen3.5-0.8B-Q4_0.gguf',
+        }
+
+        def profile(values):
+            rows = [
+                {'scenario': 'single:' + role,
+                 'processes': [proc(role, names[role], values[role])]}
+                for role in ('C3_LANGUAGE', 'B1_DETAIL', 'B2_GIST')
+            ]
+            return bench(False, rows)
+
+        fitting = {'C3_LANGUAGE': 200., 'B1_DETAIL': 300., 'B2_GIST': 400.}
+        S.import_report(self.r.store, profile(fitting), evidence='HOST_MEASURED_NOT_REDMI')
+        self.r.bodies.sync()
+        self.assertTrue(self.r.bodies.can_run_parallel())
+
+        over_budget = {'C3_LANGUAGE': 800., 'B1_DETAIL': 800., 'B2_GIST': 800.}
+        S.import_report(self.r.store, profile(over_budget), evidence='HOST_MEASURED_NOT_REDMI')
+        self.r.bodies.sync()
+        self.assertFalse(self.r.bodies.can_run_parallel())
+
+        # A host profile is not sufficient to authorize parallel residency on
+        # Android; only a device-imported profile may do so.
+        S.import_report(self.r.store, profile(fitting), evidence='HOST_MEASURED_NOT_REDMI')
+        self.r.bodies.sync()
+        with patch('v13.resources.device', return_value={'android': True}):
+            self.assertFalse(self.r.bodies.can_run_parallel())
+
+        S.import_report(self.r.store, profile(fitting), evidence='DEVICE_MEASURED')
+        self.r.bodies.sync()
+        with patch('v13.resources.device', return_value={'android': True}):
+            self.assertTrue(self.r.bodies.can_run_parallel())
+
 if __name__=='__main__':unittest.main()
