@@ -75,4 +75,12 @@ Code inspection found a concrete evaluation leak: the previous A3 `crossval()` s
 
 **CI:** exact-head workflows pending after this commit. Full repository suite remains BLOCKED locally (no checkout; GitHub DNS unavailable). **REDMI_UNVERIFIED / NOT_RELEASED.**
 
-**Core integration pin:** this modifies Perception-owned `vision.py`; Core must recompute its exact SHA-256 lifecycle allowlist and dependent recovery/stage/deployer pins bottom-up. Do not weaken the existing hash guard. New `vision.py` SHA-256: pending exact-byte readback.
+**Core integration pin:** this modifies Perception-owned `vision.py`; Core must recompute its exact SHA-256 lifecycle allowlist and dependent recovery/stage/deployer pins bottom-up. Do not weaken the existing hash guard. New `vision.py` SHA-256: `0e08fdd20140f3e60f67305c930d3b1b5db273ebaa0e289925136c1378340877` (exact CPython 3.13/3.14 CI readback).
+
+
+### Exact-head CI correction
+
+- CPython 3.13.18 and 3.14.10 both compiled `vision.py`, `vision_source_lineage.py`, `vision_validation.py` and the vision tests successfully.
+- The first exact-head vision test run returned **28 passed / 1 failed** on both Python versions. The sole failure was an incorrect new test expectation: its fixture ingests three colours × two different boxes as six distinct image sources, so `source_groups` correctly equals 6, not 3. This is a test assertion correction, not a source-split or runtime failure.
+- Exact CI hashes: `vision.py` SHA-256 `0e08fdd20140f3e60f67305c930d3b1b5db273ebaa0e289925136c1378340877`; `vision_validation.py` SHA-256 `2297f17c4bc60f49b19b5a4b5da1a175a2bc9a32fb18b0801a8274b067b44b8b`; existing lineage and UI ingress hashes unchanged.
+- Corrected the fixture assertion to six source groups; exact-head CI rerun is pending. Core's lifecycle guard still needs the exact `vision.py` hash rebinding; no guard was relaxed.
