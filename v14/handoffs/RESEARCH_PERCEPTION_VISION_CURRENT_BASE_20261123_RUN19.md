@@ -77,3 +77,39 @@ The current Core source-lifecycle builder at the release base still pins vision.
 - Local isolated prototype test: python3 /tmp/v14_temporal_surface_probe.py -> 3 PASS; python3 -m py_compile /tmp/v14_temporal_surface_probe.py -> PASS. This is a standalone algorithm/lifecycle copy, not the exact repository module or full suite.
 - Device: REDMI_UNVERIFIED; the installed runtime remains STOPPED_BY_USER per authenticated DIAGNOSTICS #815. No CHAT_SEND, restart, UPDATE_REQUEST, microphone/screen capture, model/weight change, permission change or user-data mutation.
 - Next: Core/QA pass temporal_visual_revocation_callback(runtime, capture_session_id=...) into the actual provider's lease factory, then rerun exact Python 3.13/3.14 staged/integrated/migration/consent tests. Do not request a phone run while the user-controlled runtime is STOPPED.
+
+
+## Run-20 implementation checkpoint — global/local temporal novelty (2026-11-23)
+
+**Current branch:** research-perception/v14-vision-lifecycle-current-20261123-run19.  
+**Parent code head:** b1d19846a400f321b7c737753a88601e879e445d.  
+**New commits:** 28494563fb4208413f27e5e9891eee014d174848 (new pure-Python decomposition module), 91b85d9977dcb34eeb89da2a16bbae339e1b6aaa (temporal evidence state), 9bf949a2b63b3e331ed5784e34531aa762204ecc (A4 consumer), 4c3cc26a22000a332a9eb8073ee115303ee6b989 (synthetic regression tests), ff888b11b6023394bc4320ee505a9a8b50a21c75 (numeric assertion correction), 9ebadb055c6e2f6c1b587ff046a3baa9627fc3c6 (workflow compile/path coverage), bd4d8990b6678d653c83f9d43ca1b555a0771112 (R-113 research ledger).
+
+### New executable behavior
+
+- New vision_temporal_adaptation.py decomposes the 256 bounded 4×4-tile luminance samples into a median signed common-mode shift and per-tile residuals. It uses only the Python standard library.
+- vision_temporal_evidence.py preserves the prior raw delta and ON/OFF surfaces, while adding a separate local residual surface, global shift score, local change score, local temporal activity and a bounded attention-novelty calculation.
+- vision_ui_frame_ingress.py now passes the local-first novelty scalar into the existing A4 modulation consumer and includes global/local diagnostics in the source-bound A4 evidence object. Global-only change retains a 0.15 contribution; this is a BOOT heuristic, not a calibrated threshold.
+- Two repository regressions cover global-only brightening versus a same-amplitude one-tile change, and a mixed global+local case. Existing ON/OFF, decay, receipt, session, revoke and PerceptPacket tests remain in the same targeted workflow.
+- No image bytes, OCR, text, persistent screenshot data, model weights, permissions or Android provider code were added or changed.
+
+### Tests and environment
+
+- LOCAL_LINUX: isolated helper source compiled with py_compile and 6/6 pytest tests passed in /tmp/v14-perception-check. These tests exercise the exact helper implementation but are not the full repository suite or A5/A4 integration.
+- Exact repository Python 3.13/3.14 workflow: queued after the latest push; no PASS is claimed until exact-head workflow readback.
+- Full Aii LOCAL_LINUX checkout/suite: NOT_RUN / BLOCKED; no checkout is mounted and prior git ls-remote failed because github.com DNS could not resolve.
+- Staged/integrated status from the parent head remains FAIL due the Core-owned source_lifecycle_lock_integration_candidate.py pin: expected vision.py SHA-256 758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5; Perception branch vision.py SHA-256 0e08fdd20140f3e60f67305c930d3b1b5db273ebaa0e289925136c1378340877. Perception has not edited Core-owned pins.
+- REDMI_UNVERIFIED; no connected authorized phone or real MediaProjection provider. No Android capture, microphone, CHAT_SEND, UPDATE_REQUEST, restart or device mutation.
+- NOT_RELEASED; GitHub commits are not deployment.
+
+### Research
+
+- R-113 appended to the research ledger. Full Crowder et al. (2008) PMC article read; Ebelin et al. (2024) publication abstract and official MIT reference-repository README/LICENSE reviewed, but ACM full text was inaccessible (403). No external code or dataset imported.
+- Main limitation: median common-mode separation assumes fewer than half of the 256 samples contain local change. Scrolling, camera motion and full-screen transitions remain confounded. The 0.15 global weight needs source/session-disjoint real-screen ablations; do not tune it from synthetic fixtures.
+
+### Coordination / next
+
+- Core still owns the fail-closed source-lifecycle hash rebind and dependent recovery/stage/deployer pins. The current #2442 staged/integrated failure remains a blocker, not a Perception success.
+- QA should run the exact frame-ingress workflow on this new head and then the full staged/migration/privacy/revocation matrix after Core's pin composition is repaired.
+- Perception next: run source/session-disjoint global-vs-local-vs-flicker/scroll/app-transition ablations, then connect the signed provider callback and prove same-turn A5→A4→C3 only after Core/QA integration.
+- Boss owns the shared board and V14_USER_NEXT_ACTION.md; this handoff records the facts for that update. User action: none.
