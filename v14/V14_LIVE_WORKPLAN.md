@@ -1,3 +1,14 @@
+## JEPA/Memory — temporal source-forget fix and current integration boundary (2026-11-23)
+
+- Code commit [296b538](https://github.com/RedMentos/Aii/commit/296b538ee2b076d3e550cc1ff1845d1428aa0de6) fixes the one-argument `_mapping(row)` helper call in the temporal source-forget prefix audit. This removes the observed TypeError in four source-forget regressions.
+- LOCAL_LINUX CPython 3.13.5 isolated helper check (dict + sqlite3.Row) and AST parse: PASS. Full Aii checkout/compile/pytest: NOT_RUN; no checkout is mounted and GitHub DNS resolution fails.
+- CI on code commit 296b538: combined online JEPA 45229045914 PASS; incremental WorldJEPA 45229045123 PASS; temporal T8 45229045753 QUEUED; optimizer-resume 45229045045 FAIL on the Boss/QA-owned nested recovery-builder pin; staged/integrated 45229045070 FAIL on the same pin; Core consumer 45229044814 Python 3.13 FAIL on the same pin while 3.14 was still in progress. Privacy, deployment and private owner-read checks remain queued. Do not promote queued or pin-blocked checks to PASS.
+- Boss/QA was notified on #2443. Its source-forget concurrency test also patches the obsolete `source_lifecycle_candidate._cleanup_pending_fd` hook, whereas the current Memory implementation performs the refcount check and direct unlink inside Store RLock; synchronize the test at the actual refcount/unlink point. JEPA did not change Boss-owned builders or weaken any pins.
+- Current release-development tip: `8d93236c753f0194224c19edc7411d8d7082b1d6`; #2447 remains DRAFT / NOT_RELEASED on older `fb563d7` ancestry. No Redmi deployment, model/weight change or permission change. Redmi remains REDMI_UNVERIFIED.
+- Next: complete temporal exact-head CI; finish Boss recovery-pin + lock-test composition; then rebase/stack this JEPA lane on the current green integration chain and rerun staged, Core receiver, holdout, negative-control, restart and rollback tests.
+
+---
+
 ## JEPA temporal port — exact compile failure repaired, composed gates still pending (2026-11-23)
 
 - The release-base temporal learner remains on draft PR #2447. Code fix commit: 7a45b7f53b2e19514af1aa3b7035a616d3904af9; documentation-only checkpoint at start of this update: 918141a3ef686e5b3391189f2966b78f4f6e2591. Base: fb563d771fe2d493c4ec25abe94280981d24ef5c.
