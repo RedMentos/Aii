@@ -823,11 +823,12 @@ def test_temporal_visual_attention_preserves_global_and_local_components_togethe
     assert result["local_tile_delta"]["r11"] == pytest.approx(0.0)
     assert result["global_change_score"] > 0.0
     assert result["local_change_score"] > 0.0
-    assert result["attention_novelty"] == max(
+    expected_novelty = max(
         result["local_change_score"],
         result["local_temporal_activity_score"],
-        pytest.approx(0.15 * result["global_change_score"]),
+        0.15 * result["global_change_score"],
     )
+    assert result["attention_novelty"] == pytest.approx(expected_novelty)
 
 
 
