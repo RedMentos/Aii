@@ -85,3 +85,24 @@ The existing staged C4 source-validation/receipt and C3 same-turn consumer path 
 Shared `V14_WORK_BOARD.json`, `V14_LIVE_WORKPLAN.md` and `V14_USER_NEXT_ACTION.md` remain Boss/Integrator-owned and are currently being edited by active Boss #2443 and JEPA #2454; this Core branch records the exact handoff instead of overwriting those concurrent files. User action: none.
 
 Run start/end timestamps and elapsed execution time: UNKNOWN (not measured by the available execution interface).
+
+
+## Run 3 — remove Store ownership collision and preserve exact telemetry (2026-11-23)
+
+### Code-bearing checkpoint
+- Commit `ef31879a323417606c62b92505d1f15935ef7a69`: removed the two fair-budget telemetry allowlist edits from shared `v13/store.py`. Its readback Git blob is now exactly the release-base blob `f347e1c960076e06e284369549275bc39a4195cb`; byte-for-byte comparison with base SHA `8d93236c753f0194224c19edc7411d8d7082b1d6` passed.
+- Commit `1768314397bccb8cf5d90925f6b423bca457f36a`: the feature-owned `native_turn_budget.py` registers its telemetry fields/enums into Store's existing mutable allowlist at module import. This keeps the Store schema/source contract untouched and adds the previously omitted `minimum_role_slice_s` field.
+- Commit `f714a29e3900da7d355033bd4b3865f393092941`: adds a regression proving the budget fields and event/status enums survive `store.telemetry_metrics`.
+- Current branch head at this checkpoint: `f714a29e3900da7d355033bd4b3865f393092941`, 16 commits ahead / 0 behind release base; PR #2458 remains open and NOT_RELEASED.
+
+### Test evidence
+- LOCAL_SYNTHETIC: PASS — an isolated Python 3.13.5 mirror compiled the feature module, imported it against a Store telemetry stub, verified dynamic field/enum retention, and exercised the two-failure/1.5-second role-window calculation. This is a synthetic helper check, not the exact repository test suite.
+- LOCAL_LINUX full Aii checkout/pytest: BLOCKED / NOT_RUN — no repository checkout is mounted and `getent hosts github.com` returned no address. No repository compile or project pytest PASS is claimed.
+- Exact-head Actions run `45259601667` on the previous code head ended `startup_failure` with no jobs; it is not a test result. The newer code changes have not yet received an executable CI result.
+- Prior A5 UI lease failure was caused by the changed Store source pin. Store is now byte-identical to release base, but the A5 regression still needs a fresh exact-head run.
+- The remaining staged/integrated failures are source-pin composition, not evidence of a Redmi speed change. Exact current `v13/runtime.py` SHA-256 is `720342eb75a9cf3e38e43fa046dd38f6d37817c427d743f89b086da3d666eba3`. Boss/Integrator owns rebinding the immutable JEPA/integrated-online-world and postcommit observer chain to this exact Runtime; Core did not edit those owner files.
+
+### Device and next action
+- Latest sanitized owner-authenticated Redmi diagnostics #826 report `STOPPED_BY_USER`, AI autostart false, model process stopped, and native residency unavailable. The last stored arithmetic answer was still wrong; B1/B2 remain TIME_BUDGET. No restart, CHAT_SEND, UPDATE_REQUEST, shell, permission, model, weight or user-data action was performed.
+- Next: obtain an executable exact-head CI run; have Boss rebind the Runtime source-pin chain and QA confirm the Store/A5 pin now passes; then review the integrated consumer path. Redmi remains REDMI_UNVERIFIED for this candidate.
+- User action: none. Do not start the phone while its Stop state remains active.
