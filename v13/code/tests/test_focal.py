@@ -74,13 +74,100 @@ class Store(unittest.TestCase):
             self.assertEqual(suppressed['B2_GIST'],'BODY_INTERNAL_OFFER_ONLY')
             self.assertEqual(gate.select(self.e,route=route,direct=False,resource_state='PRESSURE')['role'],'C3_LANGUAGE')
         self.assertEqual(gate.select(self.e,route='detail',direct=True,resource_state='NORMAL')['role'],'SOURCE_COPY')
-        strong_b1=[dict(cand('o'),priority=1.)]
+        strong_offer=packet('OfferPacket','B1_DETAIL',self.e['event_id'],self.e['brain_generation_id'],[self.e['source_ref']],
+                            role='B1_DETAIL',based_on_state_version=0,deadline_monotonic_ns=int((time.monotonic()+30)*1e9),
+                            evidence_refs=[],offer={'summary':'Strong detail','quotes':[],'uncertainty':'low','needs_reentry':False},
+                            confidence=0.,rejected_quotes=0,model_revision='test')
+        self.s.add_packet('OfferPacket',strong_offer)
+        strong_b1=[dict(cand(strong_offer['packet_id']),priority=1.,source_refs=[self.e['source_ref']],origin_event_id=self.e['event_id'])]
         sel=gate.select(self.e,route='simple',direct=False,resource_state='NORMAL',coalition=strong_b1,view={'uncertainty':.9,'conflict':.9})
         self.assertEqual(sel['role'],'C3_LANGUAGE')  # focal support stays inside the BOOT margin
         reasons={x['action_id']:x['reason'] for x in sel['suppressed']}
         self.assertEqual(reasons['EXTERNAL_TOOL'],'AGE_NO_TOOLS');self.assertEqual(reasons['ASK_USER'],'WAIT_VS_ACT_BIAS_BOOT')
         p=json.loads(self.s.one("SELECT payload FROM packets WHERE kind='ActionSelection' ORDER BY rowid DESC LIMIT 1")['payload'])
         validate('ActionSelection',p);self.assertEqual(p['route_prior'],'C3_LANGUAGE')
+
+    def test_action_selection_binds_admitted_context_sources_and_survives_restart(self):
+        event_ref=self.e['source_ref']
+        memory_ref=self.s.source('Remembered fact source','MEMORY')
+        context_ref=self.s.source('Context OS source','CONTEXT_OS')
+        observer_ref=self.s.source('Observer-provided source','A4_OBSERVER')
+        enlightened_ref=self.s.source('Enlightened Space source','ENLIGHTENED_SPACE')
+        bodyview_ref=self.s.source('Body-view source','B2_BODYVIEW')
+
+        query=packet('QueryPacket','C1_EXEC',self.e['event_id'],self.e['brain_generation_id'],
+                     [event_ref,context_ref,observer_ref,enlightened_ref,bodyview_ref],
+                     target_role='B1_DETAIL',goal='Compute the total budget',source_refs=[event_ref],
+                     based_on_state_version=7,context_source_refs=[context_ref,observer_ref],
+                     enlightened_source_refs=[enlightened_ref])
+        self.s.add_packet('QueryPacket',query)
+        b1=packet('OfferPacket','B1_DETAIL',self.e['event_id'],self.e['brain_generation_id'],
+                  [event_ref,context_ref,observer_ref,enlightened_ref],
+                  role='B1_DETAIL',based_on_state_version=7,deadline_monotonic_ns=int((time.monotonic()+30)*1e9),
+                  evidence_refs=[event_ref],offer={'summary':'Exact detail','quotes':[],'uncertainty':'low','needs_reentry':False},
+                  confidence=.5,rejected_quotes=0,model_revision='test',query_packet_id=query['packet_id'])
+        b1.update(context_source_refs=[context_ref,observer_ref],enlightened_source_refs=[enlightened_ref])
+        self.s.add_packet('OfferPacket',b1)
+        b2=packet('OfferPacket','B2_GIST',self.e['event_id'],self.e['brain_generation_id'],
+                  [event_ref,context_ref,enlightened_ref],
+                  role='B2_GIST',based_on_state_version=7,deadline_monotonic_ns=int((time.monotonic()+30)*1e9),
+                  evidence_refs=[event_ref],offer={'summary':'Broad context','quotes':[],'uncertainty':'low','needs_reentry':False},
+                  confidence=.5,rejected_quotes=0,model_revision='test')
+        b2.update(context_source_refs=[context_ref],enlightened_source_refs=[enlightened_ref])
+        self.s.add_packet('OfferPacket',b2)
+        coalition=[
+            {'item_id':b1['packet_id'],'source_kind':'B1_DETAIL','source_refs':[event_ref],
+             'origin_event_id':self.e['event_id'],'priority':.8},
+            {'item_id':b2['packet_id'],'source_kind':'B2_GIST','source_refs':[event_ref],
+             'origin_event_id':self.e['event_id'],'priority':.7},
+            {'item_id':'memory-1','source_kind':'MEMORY','source_refs':[memory_ref],
+             'origin_event_id':self.e['event_id'],'priority':.4},
+        ]
+        ActionGate=focal.ActionGate(self.s)
+        ActionGate.select(self.e,route='both',direct=False,resource_state='NORMAL',coalition=coalition,
+                          view={'uncertainty':.2,'conflict':.1})
+        selection=json.loads(self.s.one(
+            "SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? ORDER BY rowid DESC LIMIT 1",
+            (self.e['event_id'],))['payload'])
+        validate('ActionSelection',selection)
+        expected={tuple(sorted(ref.items())) for ref in
+                  (event_ref,memory_ref,context_ref,observer_ref,enlightened_ref,bodyview_ref)}
+        actual={tuple(sorted(ref.items())) for ref in selection['provenance']}
+        self.assertEqual(actual,expected)
+        from v13.world_jepa_store_authority import _selection_source_refs
+        consumed=_selection_source_refs(self.s,self.e['event_id'],self.e['brain_generation_id'],event_ref)
+        self.assertEqual(set(consumed),{(r['source_id'],r['sha256'],r['char_start'],r['char_end'],r['modality'])
+                                        for r in (event_ref,memory_ref,context_ref,observer_ref,enlightened_ref,bodyview_ref)})
+        serialized=json.dumps(selection)
+        for private_text in ('Remembered fact source','Context OS source','Observer-provided source',
+                             'Enlightened Space source','Body-view source'):
+            self.assertNotIn(private_text,serialized)
+
+        home=Path(self.tmp.name)
+        self.r.close()
+        self.r=Runtime(home);self.s=self.r.store
+        resumed=_selection_source_refs(self.s,self.e['event_id'],self.e['brain_generation_id'],event_ref)
+        self.assertEqual(resumed,consumed)
+
+    def test_action_selection_rejects_unreadable_admitted_source_before_commit(self):
+        event_ref=self.e['source_ref']
+        bad_ref=self.s.source('Revoked context source','CONTEXT_OS')|{'sha256':'0'*64}
+        offer=packet('OfferPacket','B1_DETAIL',self.e['event_id'],self.e['brain_generation_id'],
+                     [event_ref,bad_ref],role='B1_DETAIL',based_on_state_version=1,
+                     deadline_monotonic_ns=int((time.monotonic()+30)*1e9),evidence_refs=[event_ref],
+                     offer={'summary':'Detail','quotes':[],'uncertainty':'low','needs_reentry':False},
+                     confidence=.5,rejected_quotes=0,model_revision='test',context_source_refs=[bad_ref])
+        self.s.add_packet('OfferPacket',offer)
+        coalition=[{'item_id':offer['packet_id'],'source_kind':'B1_DETAIL','source_refs':[event_ref],
+                    'origin_event_id':self.e['event_id'],'priority':.8}]
+        before=self.s.one("SELECT COUNT(*) AS n FROM packets WHERE kind='ActionSelection' AND event_id=?",
+                          (self.e['event_id'],))['n']
+        with self.assertRaises(ValueError):
+            focal.ActionGate(self.s).select(self.e,route='detail',direct=False,resource_state='NORMAL',
+                                            coalition=coalition,view={'uncertainty':0.,'conflict':0.})
+        after=self.s.one("SELECT COUNT(*) AS n FROM packets WHERE kind='ActionSelection' AND event_id=?",
+                         (self.e['event_id'],))['n']
+        self.assertEqual(after,before)
 
     def test_inquisition_age0_forced_p1_p2_and_age2_modes(self):
         inq=focal.Inquisition(self.s)
