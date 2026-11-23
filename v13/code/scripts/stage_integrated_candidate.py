@@ -13,7 +13,7 @@ import shutil
 import tempfile
 
 BUILDER = 'scripts/termux_runtime_recovery_candidate_20261121.py'
-BUILDER_SHA = 'a6af1c476c2bec51692e5c00f8995c7d592239f5b78b989fcf799edb6c9f75c9'
+BUILDER_SHA = '950cdb64b010b4e3efcbf8d2204ad76dd9cd8248eed3b278f583f43128b00ef6'
 ARITHMETIC_OVERLAY = 'scripts/integrated_arithmetic_guard_candidate_20261121.py'
 ARITHMETIC_OVERLAY_GIT_BLOB = '88c179a71387c5caba7bbd645f868a7cccf39d30'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
@@ -102,6 +102,11 @@ def stage(code_dir: Path, destination: Path) -> dict:
             if target.is_symlink() or not target.is_file() or not isinstance(payload, bytes):
                 raise ValueError('unsafe arithmetic guard output')
             target.write_bytes(payload)
+        final_runtime = (staging / 'v13/runtime.py').read_bytes()
+        if b'EXACT_GREETING_ACK' not in final_runtime:
+            raise ValueError('later stage overlay removed the source-only greeting fastpath')
+        if not (staging / 'v13/fast_greeting.py').is_file():
+            raise ValueError('staged greeting matcher missing after all overlays')
         replaced_files = sorted(set(replacements) | set(arithmetic_files))
         arithmetic_overlay_manifest = {
             'name': ARITHMETIC_OVERLAY,
