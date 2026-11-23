@@ -16,6 +16,8 @@ BUILDER = 'scripts/termux_runtime_recovery_candidate_20261121.py'
 BUILDER_SHA = '16fc4a35ad94b6f7ee0cb4ed06b622e4c19a3887081225ed69e516236b10a41f'
 ARITHMETIC_OVERLAY = 'scripts/integrated_arithmetic_guard_candidate_20261121.py'
 ARITHMETIC_OVERLAY_GIT_BLOB = '88c179a71387c5caba7bbd645f868a7cccf39d30'
+CONSOLE_PRIVACY_OVERLAY = 'scripts/integrated_console_probe_privacy_overlay_20261123.py'
+CONSOLE_PRIVACY_OVERLAY_GIT_BLOB = 'd2af3b90d85d739c1773fe326d4ca3c4f6cdab36'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 
@@ -102,13 +104,53 @@ def stage(code_dir: Path, destination: Path) -> dict:
             if target.is_symlink() or not target.is_file() or not isinstance(payload, bytes):
                 raise ValueError('unsafe arithmetic guard output')
             target.write_bytes(payload)
-        replaced_files = sorted(set(replacements) | set(arithmetic_files))
+        console_privacy_overlay_path = code_dir / CONSOLE_PRIVACY_OVERLAY
+        if console_privacy_overlay_path.is_symlink() or not console_privacy_overlay_path.is_file():
+            raise ValueError('console privacy overlay missing or unsafe')
+        console_privacy_overlay_raw = console_privacy_overlay_path.read_bytes()
+        console_privacy_overlay_blob = hashlib.sha1(
+            b'blob ' + str(len(console_privacy_overlay_raw)).encode('ascii') + b'\0' + console_privacy_overlay_raw
+        ).hexdigest()
+        if console_privacy_overlay_blob != CONSOLE_PRIVACY_OVERLAY_GIT_BLOB:
+            raise ValueError('console privacy overlay source changed')
+        console_privacy_spec = importlib.util.spec_from_file_location(
+            'v14_checked_console_probe_privacy', console_privacy_overlay_path)
+        if console_privacy_spec is None or console_privacy_spec.loader is None:
+            raise RuntimeError('console privacy overlay is not loadable')
+        console_privacy_module = importlib.util.module_from_spec(console_privacy_spec)
+        console_privacy_spec.loader.exec_module(console_privacy_module)
+        expected_staged_files = {
+            'v13/runtime.py': arithmetic_files.get(
+                'v13/runtime.py', replacements.get('v13/runtime.py', (code_dir / 'v13/runtime.py').read_bytes())),
+            'v13/__main__.py': arithmetic_files.get(
+                'v13/__main__.py', replacements.get('v13/__main__.py', (code_dir / 'v13/__main__.py').read_bytes())),
+        }
+        console_privacy_files = console_privacy_module.apply_staged_console_probe_privacy(
+            code_dir, staging, expected_staged_files=expected_staged_files,
+        )
+        if not isinstance(console_privacy_files, dict) or set(console_privacy_files) != {
+                'v13/runtime.py', 'v13/__main__.py'}:
+            raise ValueError('console privacy overlay produced an unexpected staged file set')
+        for relative, payload in console_privacy_files.items():
+            target = staging / relative
+            if target.is_symlink() or not target.is_file() or not isinstance(payload, bytes):
+                raise ValueError('unsafe console privacy overlay output')
+            target.write_bytes(payload)
+        replaced_files = sorted(set(replacements) | set(arithmetic_files) | set(console_privacy_files))
         arithmetic_overlay_manifest = {
             'name': ARITHMETIC_OVERLAY,
             'git_blob_sha1': ARITHMETIC_OVERLAY_GIT_BLOB,
             'status': 'SHADOW_REVIEW_ONLY',
             'source_pins': arithmetic_overlay_module.SOURCE_PINS,
             'replaced_files': sorted(arithmetic_files),
+        }
+        console_privacy_manifest = {
+            'name': CONSOLE_PRIVACY_OVERLAY,
+            'git_blob_sha1': CONSOLE_PRIVACY_OVERLAY_GIT_BLOB,
+            'status': 'PUBLIC_CONSOLE_ALLOWLIST',
+            'source_pins': console_privacy_module.SOURCE_PINS,
+            'replaced_files': sorted(console_privacy_files),
+            'raw_artifact_retained_locally': True,
         }
         manifest = {
             'status': 'SHADOW_REVIEW_ONLY',
@@ -117,6 +159,7 @@ def stage(code_dir: Path, destination: Path) -> dict:
             'builder_sha256': BUILDER_SHA,
             'replaced_files': replaced_files,
             'arithmetic_overlay': arithmetic_overlay_manifest,
+            'console_probe_privacy': console_privacy_manifest,
             'files_sha256': {str(path.relative_to(staging)): hashlib.sha256(path.read_bytes()).hexdigest()
                              for path in sorted(staging.rglob('*')) if path.is_file()},
             'limitations': ['not a production Runtime promotion', 'no Android evidence',
