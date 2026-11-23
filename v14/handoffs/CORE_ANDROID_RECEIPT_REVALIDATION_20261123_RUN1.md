@@ -73,3 +73,11 @@ Run exact-head Python 3.13/3.14 Core and staged Runtime CI, fix any failures, th
 - No Redmi/emulator action was taken; REDMI_UNVERIFIED. The last private device receipt remains STOPPED_BY_USER.
 
 **Next:** user should verify at least one email address on the connected GitHub account if further standalone PRs or review comments are required. Separately, investigate the zero-job Actions startup failure and rerun exact Python 3.13/3.14 project tests. Keep PR #2450 unmerged until its exact-head CI and parent Android process-restart gate pass.
+
+
+## Run 5 — Actions dispatch diagnosis (2026-11-23)
+
+- Latest exact-code PR head before this handoff update: `060fc61ff478b368a407cadf0396cd87409fbcb5`; its push run `45266943120` again resolved to synthetic `BuildFailed` / `startup_failure`, with zero jobs.
+- GitHub Status at the time of inspection reports **All Systems Operational**, Actions Operational, and no incident reported on Nov 23. This does not identify the cause; the observed failure is specific to this repository/run association or account path unless further evidence appears.
+- The workflow YAML was parsed locally with PyYAML 6.0.3 and the job graph is present; this rules out only basic YAML syntax, not GitHub's server-side workflow resolution or repository policy.
+- Do not keep rewriting workflow files or creating probe workflows without new evidence. The failure occurs before job creation and exposes no job logs; preserve run IDs for GitHub support/repository-owner investigation.
