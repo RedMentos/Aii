@@ -300,6 +300,8 @@ def _validate_rows(rows: Sequence[MinuteRow], channels: Sequence[str]) -> None:
     if not rows:
         raise ValueError("dataset contains no rows")
     for index, row in enumerate(rows):
+        if row.timestamp.second != 0 or row.timestamp.microsecond != 0:
+            raise ValueError(f"timestamp is not aligned to a whole minute (row {index})")
         if len(row.values) != len(channels):
             raise ValueError(f"row {index} channel count does not match channel names")
         if any(value is not None and not math.isfinite(value) for value in row.values):
