@@ -3,7 +3,8 @@
 ## Implemented candidate
 
 - Branch: `research-perception/v14-audio-duplex-bridge-20261123-run21`
-- Base: `gpt6/v13-private-remote-bridge-20261111` at `b20e9b1f3dd53af472055adb43da628785494ec4`.
+- Current code ancestry checkpoint: `f9c5da84de38d933232503dac7e515e4e07d6e41` (merge parents: prior candidate head + current gpt6 base).
+- Base: current `gpt6/v13-private-remote-bridge-20261111` at `fb563d771fe2d493c4ec25abe94280981d24ef5c` (the original branch started at older ancestor `b20e9b1f3dd53af472055adb43da628785494ec4`; a no-force two-parent merge commit brought the current base into the candidate).
 - New module: `v13/code/v13/audio_duplex_bridge.py`.
 - Consumer: wraps the existing `consume_pcm16_voice_window` A5→A4→C3 admission path and feeds its timed RAW EAR voice-onset result into the existing `duplex.record` / `duplex.settle` path.
 - Policy: default `duplex_mode=auto` records only an overlap candidate and never cancels. Only the existing explicit `duplex_mode=interrupt` setting turns a fresh VOICED onset into `AUDIO_BARGE_IN`. `off` remains inert. The bridge uses no ASR transcript, speaker identity, learning authority or action authority.
