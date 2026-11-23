@@ -1518,3 +1518,7 @@ Cross-agent dependencies:
 Role-specific next work: Boss finish #2370 exact CI and whole-candidate review; Core rebase #2379 and complete the MediaProjection/A5/C3 consumer; QA rebase #2391 after JEPA and fix process-death/restart; JEPA repair the training-resume pin and preserve the postcommit worker test; Research/Perception fix A3 source-forget composition and complete AudioRecord/MediaProjection consumer tests. Whole-Canon clause→code→consumer→test→platform→rollback traceability remains active; no organ is dropped.
 
 **User action: none.** No Termux command, update request, model/weight swap, permission change or device action.
+
+## Late CI refresh — 2026-11-23T01:03:20Z
+
+JEPA #2396 Temporal WorldJEPA T8 Windows workflow is now SUCCESS. The same exact head still has three failures at the Termux12 training-resume builder pin; QA #2391 remains 12 FAIL / 2 SUCCESS and must rebase after final JEPA code. This is synthetic T8 worker evidence only. Boss #2370 exact head remains 15 queued / 1 cancelled / 1 skipped, no new-head result.
