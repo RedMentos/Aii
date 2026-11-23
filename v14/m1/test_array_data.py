@@ -5,6 +5,8 @@ import hashlib
 import json
 import tempfile
 import unittest
+
+import numpy as np
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -15,6 +17,7 @@ from v14.m1.data import (
     build_chronological_boundaries,
     data_config_sha256,
     dataset_sha256,
+    parse_uci,
     make_split,
     split_boundaries_sha256,
 )
@@ -30,6 +33,64 @@ def rows_for(n: int, missing=()):
         )
         for i in range(n)
     ]
+
+
+class DirectUCIArrayTests(unittest.TestCase):
+    def _write_uci(self, path: Path, *, bad_value: str | None = None, bad_second: str | None = None):
+        start = datetime(2020, 1, 1)
+        lines = ["Date;Time;Global_active_power;Voltage"]
+        for i in range(1000):
+            stamp = start + timedelta(minutes=i)
+            power = f"{i / 10:.1f}".replace(".", ",")
+            if i == 12:
+                power = "?"
+            if i == 30 and bad_value is not None:
+                power = bad_value
+            time_text = stamp.strftime("%H:%M:%S")
+            if i == 40 and bad_second is not None:
+                time_text = bad_second
+            voltage = f"{230 + i / 100:.2f}".replace(".", ",")
+            lines.append(f"{stamp.strftime('%d/%m/%Y')};{time_text};{power};{voltage}")
+        path.write_text("\\n".join(lines) + "\\n", encoding="utf-8")
+
+    def test_two_pass_array_loader_matches_reference_parsed_data_hash(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "uci.txt"
+            self._write_uci(path)
+            channels, rows = parse_uci(path)
+            config = DataConfig(
+                input_length=5, horizon=2, max_candidate_input_length=5,
+                seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
+            )
+            dataset = ArrayDataset.from_uci(path, config)
+            self.assertEqual(dataset.channels, channels)
+            self.assertEqual(dataset.dataset_sha256, dataset_sha256(rows, channels))
+            self.assertEqual(dataset.values.shape, (1000, 2))
+            self.assertTrue(np.isnan(dataset.values[12, 0]))
+            batch = next(dataset.iter_batches("train", batch_size=16))
+            self.assertEqual(batch.inputs.x.shape, (16, 5, 2))
+
+    def test_two_pass_array_loader_rejects_nonfinite_values(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "uci.txt"
+            self._write_uci(path, bad_value="inf")
+            config = DataConfig(
+                input_length=5, horizon=2, max_candidate_input_length=5,
+                seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
+            )
+            with self.assertRaisesRegex(ValueError, "non-finite"):
+                ArrayDataset.from_uci(path, config)
+
+    def test_two_pass_array_loader_rejects_off_grid_timestamps(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "uci.txt"
+            self._write_uci(path, bad_second="00:40:30")
+            config = DataConfig(
+                input_length=5, horizon=2, max_candidate_input_length=5,
+                seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
+            )
+            with self.assertRaisesRegex(ValueError, "whole minute"):
+                ArrayDataset.from_uci(path, config)
 
 
 class ArrayWindowTests(unittest.TestCase):
