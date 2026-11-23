@@ -194,3 +194,9 @@ No device action, chat send, restart, model/weight change, permission change, or
 
 - Reproduced every regex and allowlist in \`v13/code/scripts/public_repo_privacy_scan.py\` against the GitHub compare diff from base \`fb563d771fe2d493c4ec25abe94280981d24ef5c\` to the QA branch (7 changed files). Result: **0 matches** across credential, contact, Android identifier, Termux secret-path and Drive resource-key patterns.
 - The official GitHub Actions privacy-scan step was added to the existing integrated workflow with fetch depth 64 so the base is available. It remains queued with the rest of the exact-head CI; the manual reproduction is not represented as an official workflow PASS.
+
+
+## Exact recovery pin and migration status refinement
+
+- Computed the SHA-256 of the exact \`integrated_world_training_resume_candidate_20261111.py\` UTF-8 content read from Boss head \`5e14ba961ed4838892b3ac0ba503ea5387405fd5\`: \`dcddb9382ba9fc2d8e740dcf2eb38e5ab3e9270051fb1ab0ec9722a708dda879\` (Git blob \`3cf3b9425978cf550d34c433f8cdd6f6c055c732\`). The hash implementation was checked against the standard \`abc\` SHA-256 vector. The current recovery-12 pin still expects \`10e0bf2d00d92fd565c8b9539d4f8c947a0621ee31de0906f9af25ef6a52e881\`. QA comment #7108766286 supplies the exact value.
+- On Boss head \`5e14ba9\`, the old-phone migration test still fails: both synthetic Git checkouts advance to the target and dashboard updates, but the new worker returns \`PARTIAL\` / \`runtime=ERROR\` / \`last_error=UPDATE\`. Cause is not yet isolated. The stale recovery pin may explain it; the earlier CI-wait/circular-gate explanation is unproven and has been explicitly qualified in comment #7108818581. Re-run after the pin chain is repaired; if it remains, expose only a sanitized reason code and separately assert checkout, dashboard, and runtime activation.
