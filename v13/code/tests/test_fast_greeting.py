@@ -3,7 +3,10 @@ import queue
 import threading
 from types import SimpleNamespace
 
-from v13 import broker, output_policy, transaction
+import pytest
+
+from v13 import broker, fast_greeting, output_policy, runtime as runtime_module, transaction
+from v13.common import Cancelled, Limits
 from v13.contracts import validate
 from v13.fast_greeting import match
 from v13.runtime import Runtime
@@ -18,6 +21,26 @@ def test_exact_greeting_allowlist_and_fallthrough():
     assert match("hello world") is None
     assert match("") is None
     assert match(None) is None
+
+
+
+
+def test_user_output_policy_takes_precedence_over_builtin_greeting(monkeypatch):
+    calls = []
+    monkeypatch.setattr(fast_greeting, "match", lambda text: calls.append(text) or {"reply": "Hi."})
+
+    assert fast_greeting.match_unclaimed(
+        "hi", policy_match_ok=True, fixed_policy={"rule_id": "USER_APPROVED"}
+    ) is None
+    assert calls == []
+    assert fast_greeting.match_unclaimed(
+        "hi", policy_match_ok=False, fixed_policy=None
+    ) is None
+    assert calls == []
+    assert fast_greeting.match_unclaimed(
+        "hi", policy_match_ok=True, fixed_policy=None
+    ) == {"reply": "Hi."}
+    assert calls == ["hi"]
 
 
 class _Store:
@@ -76,6 +99,7 @@ def _runtime_for_fastpath(text):
     runtime.bodies = SimpleNamespace(begin_turn=lambda _event_id: None)
     runtime.session = "session-1"
     runtime.cfg = {"deadline_seconds": 30}
+    runtime.cancel_event = threading.Event()
     runtime.notice_messages = []
     runtime.notice = runtime.notice_messages.append
     runtime.turn_event = None
@@ -91,6 +115,7 @@ def test_runtime_persists_source_only_greeting_without_loading_native_organs(mon
         "commit_output",
         lambda _store, _mid, _eid, meta: meta.update(output_committed=True) or True,
     )
+    monkeypatch.setattr(transaction, "has_output_commit", lambda *_args: True)
     monkeypatch.setattr(transaction, "settle_turn", lambda *_args: None)
     monkeypatch.setattr(
         broker.Broker,
@@ -135,6 +160,74 @@ def test_runtime_persists_source_only_greeting_without_loading_native_organs(mon
     assert broker_calls and broker_calls[0][2:4] == ("FINAL", "Hi.")
     assert broker_calls[0][4]["direct"] is True
     assert runtime.executive.updated == [("event-1", "session-1", "FINAL")]
+
+
+
+
+def _event():
+    return {
+        "event_id": "event-1",
+        "brain_generation_id": "generation-1",
+        "source_ref": {
+            "source_id": "user-source",
+            "sha256": "a" * 64,
+            "char_start": 0,
+            "char_end": 3,
+            "modality": "text",
+        },
+    }
+
+
+@pytest.mark.parametrize(("commit_result", "receipt_ok"), [(False, True), (True, False)])
+def test_runtime_never_emits_greeting_without_durable_output_commit(monkeypatch, commit_result, receipt_ok):
+    runtime = _runtime_for_fastpath("hi!")
+    broker_calls = []
+    settle_calls = []
+    monkeypatch.setattr(output_policy, "match", lambda _store, _text: None)
+    monkeypatch.setattr(transaction, "commit_output", lambda *_args: commit_result)
+    monkeypatch.setattr(transaction, "has_output_commit", lambda *_args: receipt_ok)
+    monkeypatch.setattr(transaction, "settle_turn", lambda *args: settle_calls.append(args))
+    monkeypatch.setattr(
+        broker.Broker,
+        "finalize",
+        lambda _self, *args, **kwargs: broker_calls.append((args, kwargs)) or {"egress_ok": True},
+    )
+
+    with pytest.raises(RuntimeError, match="not durably recorded"):
+        Runtime._turn(runtime, _event())
+
+    assert runtime.store.output is None
+    assert runtime.store.finished is None
+    assert settle_calls == []
+    assert runtime.executive.updated == []
+    assert broker_calls == []
+
+
+def test_runtime_does_not_fastpath_after_cancellation(monkeypatch):
+    runtime = _runtime_for_fastpath("hi!")
+    runtime.cancel_event.set()
+    monkeypatch.setattr(output_policy, "match", lambda _store, _text: None)
+
+    with pytest.raises(Cancelled):
+        Runtime._turn(runtime, _event())
+
+    assert runtime.store.output is None
+    assert runtime.store.finished is None
+    assert runtime.executive.updated == []
+
+
+def test_runtime_does_not_fastpath_after_deadline(monkeypatch):
+    runtime = _runtime_for_fastpath("hi!")
+    ticks = iter((100.0, 100.0, 100.0, 131.0))
+    monkeypatch.setattr(runtime_module.time, "monotonic", lambda: next(ticks))
+    monkeypatch.setattr(output_policy, "match", lambda _store, _text: None)
+
+    with pytest.raises(Limits):
+        Runtime._turn(runtime, _event())
+
+    assert runtime.store.output is None
+    assert runtime.store.finished is None
+    assert runtime.executive.updated == []
 
 
 class _WorkerStore:
