@@ -11,6 +11,7 @@ yet. ``verify``/``focal_cycles``/``tool_steps`` are recorded budgets; the only
 executed extra cycle is the existing B1 re-entry.
 """
 import json
+import math
 import re
 from .common import dumps
 from .contracts import packet
@@ -102,7 +103,7 @@ def age_limits(control,resource_state='NORMAL'):
     return simulated_effort(control,real,resource_mode=mode)
 AGE0={'stage':0,'autonomous_effort_max':'max','focal_depth':BOOT['max_cycles_age0'],'deliberation':False,'tools':False,'long_loops':False,'resource_mode':'UNKNOWN'}
 
-def constrain(plan,*,direct=False,observers=True,resource_state='NORMAL',resource_mode=None,observer_window_s=None,cfg=None,age=None,p=BOOT):
+def constrain(plan,*,direct=False,observers=True,resource_state='NORMAL',resource_mode=None,observer_window_s=None,minimum_body_seconds=None,cfg=None,age=None,p=BOOT):
     """Hard limits that no mode, override or learned readout may exceed."""
     plan=dict(plan);cfg=cfg or {};age=age or AGE0;why=[];ceiling='both'
     if direct:plan.update(effort=0.,band='DIRECT_C_NATIVE');ceiling='none';why.append('EXACT_OR_FIXED_OUTPUT')
@@ -114,7 +115,14 @@ def constrain(plan,*,direct=False,observers=True,resource_state='NORMAL',resourc
     if rpol['focal_cycles_max'] is not None and plan['focal_cycles']>rpol['focal_cycles_max']:plan['focal_cycles']=rpol['focal_cycles_max'];why.append('RESOURCE_FOCAL_DEPTH')
     if rpol['observer_depth']<1:plan['observer_scale']=round(plan['observer_scale']*rpol['observer_depth'],4)
     if observer_window_s is not None and ceiling!='none':
-        fits=int(observer_window_s//max(p['min_body_seconds'],1e-9))
+        min_body_s=p['min_body_seconds'] if minimum_body_seconds is None else minimum_body_seconds
+        try:
+            valid_min_body=(type(min_body_s) in (int,float) and math.isfinite(min_body_s) and min_body_s>0)
+        except (OverflowError,TypeError,ValueError):
+            valid_min_body=False
+        if not valid_min_body:raise ValueError('minimum_body_seconds must be a positive finite number')
+        # Recovery can explicitly pass the fair scheduler's per-role floor; ordinary turns keep the BOOT 2 s floor.
+        fits=int(observer_window_s//max(min_body_s,1e-9))
         if fits<1:ceiling='none';why.append('DEADLINE_NO_BODY')
         elif fits<2 and plan['wake']=='both':ceiling='one';why.append('DEADLINE_ONE_BODY')
     if plan['max_reentry']>cfg.get('max_reentry',1):plan['max_reentry']=cfg.get('max_reentry',1);why.append('CFG_MAX_REENTRY')
