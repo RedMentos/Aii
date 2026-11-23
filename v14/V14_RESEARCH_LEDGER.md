@@ -941,3 +941,46 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
+
+
+## R-081 — Prompt Compression in the Wild: measure end-to-end break-even (2026-11-23)
+
+**Primary source:** Cornelius Kummer, Lena Jurkschat, Michael Färber and Sahar Vahdati, “Prompt Compression in the Wild: Measuring Latency, Rate Adherence, and Quality for Faster LLM Inference,” arXiv:2604.02985, 2026-04-03; https://arxiv.org/abs/2604.02985. The abstract reports a large evaluation (30,000 queries, multiple open models and three GPU classes) and separates compression overhead from model prefill/decode latency. It reports up to 18% end-to-end speed-up in a matched operating window, while compression overhead cancels gains outside that window.
+
+**Knowledge status:** ABSTRACT_VERIFIED / FULLTEXT_PENDING / REPRO_NOT_ATTEMPTED. The paper page and abstract were checked; the full paper, appendix and code were not inspected in this run.
+
+**V14 mapping:** this supports measuring the complete path, not optimizing prompt token count alone. For the new C3 admission policy, separately measure reducer CPU time, token count before/after, native prefill, TTFT, decode time, total latency, answer correctness and peak RSS. Compare no reduction, current exact structural omission, and any future reusable learned compressor. Do not compress exact B1/B2 source evidence, selected peer content or trusted tool output. A compressor is not useful if its per-turn preprocessing costs more than the prefill it saves.
+
+**License/reuse:** paper metadata is cited through arXiv. No code or model was imported; no implementation/license review was performed. The result is not Redmi evidence.
+
+**Next hard test:** on the same installed model and task cohort, run matched no-reduction vs structural-reduction trials with source-exactness checks and a negative control where no removable layer exists. Measure the whole turn, not only prompt length.
+
+## R-082 — TAKE: Task-Aware Chunked KV Cache Eviction (2026-11-23)
+
+**Primary source:** Rui Wang, Nan Jia, Jiahui Li, Qingyi Yang, Yixue Hao and Long Hu, “TAKE: Task-Aware Chunked KV Cache Eviction for Efficient Long-Context LLM Prefill,” Findings of EMNLP 2026, pages 5449–5463, DOI 10.18653/2026.findings-emnlp.260; https://aclanthology.org/2026.findings-emnlp.260/. The ACL Anthology abstract reports chunked KV eviction with accumulated task-aware probe tokens and delayed eviction; reported results include >60% TTFT improvement and 59.53% peak-memory versus baseline at 128K tokens.
+
+**Knowledge status:** ABSTRACT_VERIFIED / FULLTEXT_PENDING / CODE_LICENSE_UNVERIFIED / REPRO_NOT_ATTEMPTED. The ACL Anthology metadata and abstract were checked. The full paper and linked source repository were not audited. ACL publication metadata indicates post-2016 Anthology material is CC BY 4.0; that does not establish the linked implementation's code license.
+
+**V14 mapping:** potentially relevant only if long-context prefill/KV construction becomes a measured bottleneck beyond prompt-text admission. The reported 128K setting is not comparable to V13's current 2K context and must not be translated into a phone speed claim. Integration would require compatible attention/KV access in the actual llama.cpp runner, bounded CPU/ARM memory, source-retrieval negatives and exact cache-position semantics.
+
+**Decision:** RESEARCH_ONLY; no code, dependency or model imported; no runtime default changed.
+
+**Next hard test:** inspect the full method and exact repository revision/license; verify whether the target native backend exposes the required layer-wise KV hooks. If not, reject for the current phone runner rather than adding a heavyweight PyTorch/GPU dependency.
+
+
+
+## R-083 — FASTDIAR confidence gating and non-voiced RAW EAR history (2026-11-23)
+
+**Primary source reviewed in full:** Nikita Torgashov and Okan Köpüklü, *FASTDIAR: Frame-Level Speaker Encoder for Streaming Diarization*, arXiv:2610.02941v1, submitted 2026-10-02; five-page preprint submitted to ICASSP 2027, not treated as peer-reviewed. Full paper: https://arxiv.org/pdf/2610.02941. Official code: https://github.com/microsoft/fastdiar.
+
+**Method detail relevant to V14:** FASTDIAR emits one normalized 192-D embedding every 80 ms from a causal two-second receptive field. Its confidence gate compares the current frame with the frame 10 steps earlier (800 ms); only frames above the development-tuned cosine threshold (0.8) update speaker-cluster anchors. Low-confidence frames can indicate a speaker change, silence or noise: they are still labelled after a fixed 12-frame / 960-ms correction window but do not shape the anchor set. A separate VAD emits non-speech as silence. This is a distinct gate from simply excluding non-voiced activity.
+
+**Evidence and limits:** the paper reports CPU real-time factors of 0.05 / 0.09 / 0.19 for 2.7M / 4.6M / 10.4M parameter Small / Medium / Large variants on an AMD Threadripper PRO 5995WX. With overlap counted, FASTDIAR does not lead most benchmarks and is last on DIHARD3 under both reported overlap protocols. VoxConverse and NOTSOFAR development sets were used for checkpoint selection and threshold tuning; the confidence gate itself is not separately ablated. The one-label-per-frame decoder counts overlapped regions as misses. These results do not establish ARM64/Redmi performance.
+
+**V14 implementation mapping:** Perception PR #2433 now admits only `VOICED` caller-supplied embeddings into the bounded speaker-reference deque. `SILENCE`, `UNVOICED_NOISE`, `IMPULSIVE` and `UNCERTAIN` windows are validated and timestamped but return `SUPPRESSED_NON_VOICED`, accept zero reference frames and cannot poison a later voiced comparison. Non-speech cues remain in the separate RAW EAR/A4 salience path. A new end-to-end impulse fixture checks that an isolated non-speech transient reaches A4 as novelty, remains non-interrupting, is not admitted as speaker history, and is not persisted as an embedding vector. This is a synthetic consumer regression, not a live microphone or model inference result.
+
+**Critical distinction:** PR #2433 does **not** implement FASTDIAR inference or its calibrated confidence gate. Embeddings are caller-supplied, the producer/recurrent state is not attested, the caller threshold is unverified, and A4 remains `DEFER`; there is no speaker identity, learning or action authority. The official repository code license is MIT, but no separate checkpoint-weight license was established in this review. Its pinned PyTorch/torchaudio/torchcodec stack is not selected for Termux. No weights, dependencies or upstream code were downloaded or vendored.
+
+**Integration status:** exact Perception focused CI on head `0d97e9faec926992acc6b513381fa15edc93b08a` passed FASTDIAR adapter, NumPy backend, VAD comparator, consent-revocation, prosody-to-attention and public privacy workflows. The shared staged/integrated workflow failed because Core's composer still expects the old `audio_voice_cues.py` Git blob `b18e450162b062b09368a12b1ca18924ed8c5025`, while the exact current Perception blob is `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`; the failure fans out to staged Runtime and migration. Core ownership was left untouched; the exact pin requirement is already recorded on PR #2370. A follow-up test commit is pending a fresh exact-head CI run.
+
+**Decision:** `DIAGNOSTIC_ONLY / CANDIDATE_FOR_INTEGRATION / NOT_RELEASED`. Local full-repository tests are blocked by the missing checkout and DNS failure; Redmi microphone, ARM64 native inference, latency/RSS, calibration, speaker identity and device installation remain unverified. Next: complete exact-head focused CI, then Core must rebind both Perception source blobs and all dependent recovery/stage/deployer hashes bottom-up before staged/integrated acceptance.
