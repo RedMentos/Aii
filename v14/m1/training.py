@@ -113,7 +113,7 @@ def _fit_supervised(
     if not parameters:
         raise ValueError("no trainable parameters")
     optimizer = torch.optim.AdamW(
-        parameters, lr=config.learning_rate, weight_decay=config.weight_decay
+        parameters, lr=config.learning_rate, weight_decay=(0.0 if l2_penalty else config.weight_decay)
     )
     best_state = None
     best_validation = float("inf")
@@ -136,7 +136,7 @@ def _fit_supervised(
             if l2_penalty:
                 loss = loss + l2_penalty * model.linear.weight.square().sum()
             if not torch.isfinite(loss):
-                raise FloatingPointError("non-finite supervised MAE loss")
+                raise FloatingPointError("non-finite supervised baseline loss")
             loss.backward()
             nn.utils.clip_grad_norm_(parameters, config.gradient_clip_norm)
             optimizer.step()
