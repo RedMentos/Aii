@@ -66,3 +66,14 @@ The current Core source-lifecycle builder at the release base still pins vision.
 4. **Perception:** after integration, connect the approved provider result to the actual Runtime A5→A4→C3 consumer and validate on authorized Android hardware. Until then the path is synthetic/provider-contract only.
 
 **User action:** none required.
+
+
+## Follow-up implementation — polarity-aware temporal surface and revoke cleanup (2026-11-23)
+
+- Research note R-112: full-text inspection of arXiv:2607.05205v2 (submitted 2026-07-06; v2 2026-09-09), Sections II–III. It describes polarity-separated ON/OFF event time-surfaces with tau=30 ms and a 50 ms temporal window feeding a lightweight fly-optic-lobe motion network and bottom-up attention. Its evaluation uses DAVIS346 event-camera vehicle sequences (four velocities in each day/night condition) on an Apple M4 / 16 GB host; it is not an Android/ARM or phone-screen benchmark. The work is a preprint; peer-review status and primary license were not independently confirmed. No official code repository was found. A secondary index reports CC BY-NC-ND 4.0, so no paper code/text/figures are reused. The V14 adaptation is only a coarse frame-difference ON/OFF diagnostic, not an event-camera implementation.
+- vision_temporal_evidence.py now keeps bounded per-tile brightening/darkening surfaces with exponential decay (30 ms tau; 50 ms expiry window), alongside the original absolute frame-difference score. A4 uses max(raw change, decayed activity) as a short-lived novelty signal; no OCR/object/action/learning authority is added.
+- vision_ui_frame_ingress.py now exports temporal_visual_revocation_callback(runtime, capture_session_id=...). The Android provider can pass it as revoke_callback to ui_observation_lease. It clears the matching temporal registry before the existing source/cache revocation. The provider must still wire this callback; no Android provider is added here.
+- New exact repository tests cover ON/OFF polarity, 30 ms decay, 50 ms expiry, long-gap reset and provider post-lock revocation cleanup. These tests are queued for exact-head CI; local full Aii checkout is unavailable.
+- Local isolated prototype test: python3 /tmp/v14_temporal_surface_probe.py -> 3 PASS; python3 -m py_compile /tmp/v14_temporal_surface_probe.py -> PASS. This is a standalone algorithm/lifecycle copy, not the exact repository module or full suite.
+- Device: REDMI_UNVERIFIED; the installed runtime remains STOPPED_BY_USER per authenticated DIAGNOSTICS #815. No CHAT_SEND, restart, UPDATE_REQUEST, microphone/screen capture, model/weight change, permission change or user-data mutation.
+- Next: Core/QA pass temporal_visual_revocation_callback(runtime, capture_session_id=...) into the actual provider's lease factory, then rerun exact Python 3.13/3.14 staged/integrated/migration/consent tests. Do not request a phone run while the user-controlled runtime is STOPPED.

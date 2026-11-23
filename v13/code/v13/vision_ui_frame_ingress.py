@@ -79,13 +79,37 @@ def _runtime_temporal_visual_registry(runtime):
 
 
 def reset_temporal_visual_evidence(runtime, *, capture_session_id: str) -> int:
-    """Erase one capture session's luminance history after provider revocation/end."""
+    """Erase one capture session's luminance and polarity history after revocation/end."""
     registry = getattr(runtime, "_a5_temporal_visual_registry", None)
     if registry is None:
         return 0
     if not isinstance(registry, TemporalVisualEvidenceRegistry):
         raise ValueError("Runtime temporal visual evidence state is invalid")
     return registry.reset(capture_session_id=capture_session_id)
+
+
+def temporal_visual_revocation_callback(runtime, *, capture_session_id: str):
+    """Create a provider post-lock callback that clears this capture session's temporal state.
+
+    Pass the returned callback as revoke_callback to ui_observation_lease.
+    It preserves standard A5 source tombstone/cache cleanup while erasing
+    frame-derived luminance history when the provider revokes the grant.
+    """
+    if type(capture_session_id) is not str or not capture_session_id.strip():
+        raise ValueError("capture_session_id is invalid")
+
+    def cleanup(source_id):
+        reset_error = None
+        try:
+            reset_temporal_visual_evidence(runtime, capture_session_id=capture_session_id)
+        except Exception as exc:
+            reset_error = exc
+        result = revoke_ui_observation(runtime, source_id)
+        if reset_error is not None:
+            raise reset_error
+        return result
+
+    return cleanup
 
 
 def _overwrite_caller_buffer(buffer):
@@ -679,7 +703,9 @@ def consume_projected_frame(
             end_ms=observation["end_ms"],
             tile_luminance=tile_luminance,
         )
+        attention_novelty = max(float(temporal_visual["change_score"]), float(temporal_visual.get("temporal_activity_score", 0.0)))
         temporal_visual_packet = dict(temporal_visual)
+        temporal_visual_packet["attention_novelty"] = round(attention_novelty, 6)
         temporal_visual_packet.update({
             "source_ref": dict(frame_ref),
             "capture_session_id": observation["capture_session_id"],
@@ -704,9 +730,9 @@ def consume_projected_frame(
 
         attention = attention_module.controller(runtime)
         temporal_modulation = None
-        if temporal_visual["status"] == "MEASURED" and temporal_visual["change_score"] > 0.0:
+        if temporal_visual["status"] == "MEASURED" and attention_novelty > 0.0:
             temporal_modulation = attention.modulate(
-                event["event_id"], sal={"novelty": temporal_visual["change_score"]},
+                event["event_id"], sal={"novelty": attention_novelty},
             )
         a4 = attention.perceive(
             event["event_id"], segments, goal=goal, file_requests=False
@@ -714,6 +740,8 @@ def consume_projected_frame(
         a4["temporal_visual_evidence"] = {
             "status": temporal_visual["status"],
             "change_score": temporal_visual["change_score"],
+            "temporal_activity_score": temporal_visual.get("temporal_activity_score", 0.0),
+            "attention_novelty": round(attention_novelty, 6),
             "changed_tile_ids": list(temporal_visual["changed_tile_ids"]),
             "source_ref": dict(frame_ref),
             "truth_authority": 0,
@@ -867,4 +895,5 @@ __all__ = [
     "consume_projected_frame_from_provider",
     "consume_projected_frame_scope",
     "reset_temporal_visual_evidence",
+    "temporal_visual_revocation_callback",
 ]

@@ -17,6 +17,7 @@ from v13.vision_ui_frame_ingress import (
     ProviderFrameVerifier, _feature_summary, _issue_provider_frame_verifier,
     _load_local_tile_projector, _summary, consume_projected_frame,
     consume_projected_frame_from_provider, consume_projected_frame_scope,
+    temporal_visual_revocation_callback,
 )
 
 
@@ -242,7 +243,7 @@ def install_student_projector(runtime, tmp_path):
     return path, sha
 
 
-def lease_for(runtime, obs, callbacks=None, lock=None):
+def lease_for(runtime, obs, callbacks=None, lock=None, revoke_callback=None):
     lock = lock or threading.RLock()
 
     def check(*_args):
@@ -263,7 +264,7 @@ def lease_for(runtime, obs, callbacks=None, lock=None):
 
     return ui_observation_lease(
         runtime, obs, runtime.turn_event["brain_generation_id"],
-        check, guard, subscribe,
+        check, guard, subscribe, revoke_callback=revoke_callback,
     )
 
 
@@ -749,6 +750,60 @@ def test_fifo_tile_projector_is_rejected_without_blocking(monkeypatch, tmp_path)
 
 
 
+def test_temporal_visual_on_off_surface_decays_and_expires():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidence
+    state = TemporalVisualEvidence(tau_ms=30, window_ms=50)
+    base = {tile: [0.2] * 16 for tile in TILE_IDS}
+    bright = {tile: [0.8] * 16 for tile in TILE_IDS}
+    assert state.update(start_ms=1000, end_ms=1033, tile_luminance=base)["status"] == "WARMUP"
+    brightening = state.update(start_ms=1033, end_ms=1066, tile_luminance=bright)
+    assert brightening["on_activity"] > 0.59 and brightening["off_activity"] == 0.0
+    assert brightening["temporal_activity_score"] > 0.59
+    assert brightening["polarity_delta_by_tile"]["r00"]["on"] > 0.59
+    assert brightening["polarity_delta_by_tile"]["r00"]["off"] == 0.0
+    quiet = state.update(start_ms=1066, end_ms=1099, tile_luminance=bright)
+    assert quiet["change_score"] == 0.0
+    assert 0.0 < quiet["temporal_activity_score"] < brightening["temporal_activity_score"]
+    expired = state.update(start_ms=1099, end_ms=1132, tile_luminance=bright)
+    assert expired["surface_expired"] is True and expired["temporal_activity_score"] == 0.0
+    darkening = state.update(start_ms=1132, end_ms=1165, tile_luminance=base)
+    assert darkening["off_activity"] > 0.59 and darkening["on_activity"] == 0.0
+    assert darkening["polarity_delta_by_tile"]["r00"]["off"] > 0.59
+
+
+def test_temporal_visual_surface_resets_on_stream_gap():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidence
+    state = TemporalVisualEvidence()
+    base = {tile: [0.1] * 16 for tile in TILE_IDS}
+    bright = {tile: [0.9] * 16 for tile in TILE_IDS}
+    state.update(start_ms=1000, end_ms=1033, tile_luminance=base)
+    state.update(start_ms=1033, end_ms=1066, tile_luminance=bright)
+    reset = state.update(start_ms=3000, end_ms=3033, tile_luminance=bright)
+    assert reset["status"] == "WARMUP" and reset["state_reset"] is True
+    assert reset["reset_reason"] == "STREAM_GAP" and reset["temporal_activity_score"] == 0.0
+
+
+def test_provider_revocation_erases_temporal_history(monkeypatch):
+    runtime = make_runtime(monkeypatch, with_store=True)
+    obs = observation()
+    callbacks = {}
+    first, second = image_buffer(), image_buffer_variant()
+    cleanup = temporal_visual_revocation_callback(runtime, capture_session_id=obs["capture_session_id"])
+    with lease_for(runtime, obs, callbacks=callbacks, revoke_callback=cleanup) as lease:
+        consume_with_provider_verifier(runtime, obs, first, consent_lease=lease,
+                                       current_source="Observe the screen change.")
+        next_obs = dict(obs, start_ms=1033, end_ms=1066)
+        consume_with_provider_verifier(runtime, next_obs, second, consent_lease=lease,
+                                       current_source="Observe the screen change.")
+        assert len(runtime._a5_temporal_visual_registry) == 1
+    on_revoked = callbacks[obs["source_id"]][1]
+    result = on_revoked()
+    assert result["cache_cleared"] is True
+    assert len(runtime._a5_temporal_visual_registry) == 0
+    assert obs["source_id"] not in runtime._a5_ui_context_cache
+    assert not any(first) and not any(second)
+
+
 @pytest.mark.parametrize(
     "failure,expected_status",
     [
@@ -828,7 +883,7 @@ def test_temporal_visual_evidence_is_source_session_bound_and_drives_a4(monkeypa
     assert evidence["action_authority"] is False
     assert evidence["changed_tile_ids"]
     assert second_result["temporal_visual_modulation"]["truth_authority"] == 0
-    assert second_result["temporal_visual_modulation"]["salience"]["novelty"] == evidence["change_score"]
+    assert second_result["temporal_visual_modulation"]["salience"]["novelty"] == evidence["attention_novelty"]
     assert second_result["a4"]["temporal_visual_modulation"] == second_result["temporal_visual_modulation"]
     assert any("temporal_change" in segment for segment in second_result["packet"]["segments"])
     assert packets == (second_result["packet"],)

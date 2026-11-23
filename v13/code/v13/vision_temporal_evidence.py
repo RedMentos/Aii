@@ -14,6 +14,8 @@ import threading
 TILE_IDS = tuple(f"r{row}{col}" for row in range(4) for col in range(4))
 LUMINANCE_VALUES_PER_TILE = 16
 METHOD = "RAW_EYE_TEMPORAL_LUMINANCE_DELTA_V1"
+DEFAULT_SURFACE_TAU_MS = 30
+DEFAULT_SURFACE_WINDOW_MS = 50
 
 
 class TemporalVisualEvidenceError(ValueError):
@@ -46,19 +48,33 @@ def _validate_luminance(value) -> dict[str, tuple[float, ...]]:
 class TemporalVisualEvidence:
     """One-stream, one-frame-history temporal delta accumulator."""
 
-    def __init__(self, *, reset_gap_ms: int = 1500, changed_tile_threshold: float = 0.08) -> None:
+    def __init__(self, *, reset_gap_ms: int = 1500, changed_tile_threshold: float = 0.08,
+                 tau_ms: int = DEFAULT_SURFACE_TAU_MS,
+                 window_ms: int = DEFAULT_SURFACE_WINDOW_MS) -> None:
         if type(reset_gap_ms) is not int or not 100 <= reset_gap_ms <= 10000:
             raise ValueError("reset_gap_ms must be an integer in [100, 10000]")
         if type(changed_tile_threshold) not in (int, float) or not math.isfinite(float(changed_tile_threshold)) or not 0.0 < float(changed_tile_threshold) <= 1.0:
             raise ValueError("changed_tile_threshold must be finite in (0,1]")
+        if type(tau_ms) is not int or not 1 <= tau_ms <= 1000:
+            raise ValueError("tau_ms must be an integer in [1, 1000]")
+        if type(window_ms) is not int or not 10 <= window_ms <= 1000:
+            raise ValueError("window_ms must be an integer in [10, 1000]")
         self.reset_gap_ms = reset_gap_ms
         self.changed_tile_threshold = float(changed_tile_threshold)
+        self.tau_ms = tau_ms
+        self.window_ms = window_ms
         self._last_end_ms = None
         self._previous = None
+        self._on_surface = {tile: 0.0 for tile in TILE_IDS}
+        self._off_surface = {tile: 0.0 for tile in TILE_IDS}
+        self._last_activity_ms = None
 
     def reset(self) -> None:
         self._last_end_ms = None
         self._previous = None
+        self._on_surface = {tile: 0.0 for tile in TILE_IDS}
+        self._off_surface = {tile: 0.0 for tile in TILE_IDS}
+        self._last_activity_ms = None
 
     def update(self, *, start_ms: int, end_ms: int, tile_luminance: dict) -> dict:
         if type(start_ms) is not int or type(end_ms) is not int or start_ms < 0 or end_ms <= start_ms:
@@ -78,48 +94,60 @@ class TemporalVisualEvidence:
             self._previous = current
             self._last_end_ms = end_ms
             return {
-                "method": METHOD,
-                "status": "WARMUP",
-                "change_score": 0.0,
-                "mean_change": 0.0,
-                "peak_change": 0.0,
-                "changed_tile_ids": [],
-                "tile_delta": {},
-                "gap_ms": gap_ms,
-                "state_reset": reset_reason is not None,
-                "reset_reason": reset_reason,
-                "truth_authority": 0,
-                "learning_authority": False,
-                "action_authority": False,
+                "method": METHOD, "status": "WARMUP", "change_score": 0.0,
+                "mean_change": 0.0, "peak_change": 0.0, "changed_tile_ids": [],
+                "tile_delta": {}, "polarity_delta_by_tile": {}, "polarity_activity_by_tile": {},
+                "temporal_activity_score": 0.0, "on_activity": 0.0, "off_activity": 0.0,
+                "surface_expired": False, "tau_ms": self.tau_ms, "window_ms": self.window_ms,
+                "gap_ms": gap_ms, "state_reset": reset_reason is not None,
+                "reset_reason": reset_reason, "truth_authority": 0,
+                "learning_authority": False, "action_authority": False,
             }
 
-        tile_delta = {
-            tile_id: sum(abs(a - b) for a, b in zip(current[tile_id], self._previous[tile_id])) / LUMINANCE_VALUES_PER_TILE
-            for tile_id in TILE_IDS
-        }
+        elapsed_ms = max(1, end_ms - self._last_end_ms)
+        surface_expired = self._last_activity_ms is not None and end_ms - self._last_activity_ms > self.window_ms
+        if surface_expired:
+            self._on_surface = {tile: 0.0 for tile in TILE_IDS}
+            self._off_surface = {tile: 0.0 for tile in TILE_IDS}
+        else:
+            decay = math.exp(-elapsed_ms / self.tau_ms)
+            self._on_surface = {tile: value * decay for tile, value in self._on_surface.items()}
+            self._off_surface = {tile: value * decay for tile, value in self._off_surface.items()}
+
+        tile_delta, polarity_delta = {}, {}
+        for tile_id in TILE_IDS:
+            before, after = self._previous[tile_id], current[tile_id]
+            on_delta = sum(max(0.0, a - b) for a, b in zip(after, before)) / LUMINANCE_VALUES_PER_TILE
+            off_delta = sum(max(0.0, b - a) for a, b in zip(after, before)) / LUMINANCE_VALUES_PER_TILE
+            tile_delta[tile_id] = on_delta + off_delta
+            polarity_delta[tile_id] = {"on": on_delta, "off": off_delta}
+            self._on_surface[tile_id] = min(1.0, self._on_surface[tile_id] + on_delta)
+            self._off_surface[tile_id] = min(1.0, self._off_surface[tile_id] + off_delta)
+        if any(value > 0.0 for value in tile_delta.values()):
+            self._last_activity_ms = end_ms
+
         ordered = sorted(tile_delta.values(), reverse=True)
         mean_change = sum(ordered) / len(ordered)
         top4_change = sum(ordered[:4]) / 4.0
-        # Top-four pooling keeps a small changed UI region visible without
-        # letting one noisy pixel dominate the entire frame score.
         change_score = min(1.0, max(0.0, 0.6 * top4_change + 0.4 * mean_change))
-        changed = [tile_id for tile_id in TILE_IDS if tile_delta[tile_id] >= self.changed_tile_threshold]
-        self._previous = current
-        self._last_end_ms = end_ms
+        activity = sorted((self._on_surface[t] + self._off_surface[t] for t in TILE_IDS), reverse=True)
+        temporal_activity_score = min(1.0, max(0.0, 0.6 * sum(activity[:4]) / 4.0 + 0.4 * sum(activity) / len(activity)))
+        on_activity = sum(self._on_surface.values()) / len(TILE_IDS)
+        off_activity = sum(self._off_surface.values()) / len(TILE_IDS)
+        changed = [tile for tile in TILE_IDS if tile_delta[tile] >= self.changed_tile_threshold]
+        self._previous, self._last_end_ms = current, end_ms
         return {
-            "method": METHOD,
-            "status": "MEASURED",
-            "change_score": round(change_score, 6),
-            "mean_change": round(mean_change, 6),
-            "peak_change": round(max(ordered), 6),
-            "changed_tile_ids": changed,
-            "tile_delta": {key: round(value, 6) for key, value in tile_delta.items()},
-            "gap_ms": gap_ms,
-            "state_reset": reset_reason is not None,
-            "reset_reason": reset_reason,
-            "truth_authority": 0,
-            "learning_authority": False,
-            "action_authority": False,
+            "method": METHOD, "status": "MEASURED",
+            "change_score": round(change_score, 6), "mean_change": round(mean_change, 6),
+            "peak_change": round(max(ordered), 6), "changed_tile_ids": changed,
+            "tile_delta": {k: round(v, 6) for k, v in tile_delta.items()},
+            "polarity_delta_by_tile": {k: {p: round(v, 6) for p, v in row.items()} for k, row in polarity_delta.items()},
+            "polarity_activity_by_tile": {t: {"on": round(self._on_surface[t], 6), "off": round(self._off_surface[t], 6)} for t in TILE_IDS},
+            "temporal_activity_score": round(temporal_activity_score, 6),
+            "on_activity": round(on_activity, 6), "off_activity": round(off_activity, 6),
+            "surface_expired": surface_expired, "tau_ms": self.tau_ms, "window_ms": self.window_ms,
+            "gap_ms": gap_ms, "state_reset": reset_reason is not None, "reset_reason": reset_reason,
+            "truth_authority": 0, "learning_authority": False, "action_authority": False,
         }
 
 
