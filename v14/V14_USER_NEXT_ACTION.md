@@ -1851,3 +1851,46 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - **Tests:** exact-head CI for `32505a33` returned no workflow runs or combined status contexts at readback; no pass is claimed. LOCAL_LINUX project compile/pytest is BLOCKED / NOT_RUN: Python 3.13.5, NumPy and pytest are present, but no Aii checkout is mounted and `git ls-remote` fails because github.com DNS cannot resolve. Previous helper-level synthetic numeric control is not a project-suite result.
 - **Consumer / platform:** the code candidate's temporal learner is wired through SleepRuntime and B1/B2 bodyview as a source-verified SHADOW readout, but this new test has not executed. No native GGUF/body-weight change, trained B1↔B2 latent exchange, production learning promotion, or Redmi behavior is claimed. Redmi remains REDMI_UNVERIFIED; the AI runtime remains STOPPED_BY_USER.
 - **Next:** wait for Boss #2443's complete combined exact-head CI; then rebase #2454 onto its exact green head without force-push, recompute the resume/recovery/stage pins with Core, and run the full Python 3.13/3.14 temporal, postcommit, optimizer-resume, source-forget, staged and integrated matrix. Keep B1/B2 adapters SHADOW.
+
+---
+
+## JEPA & Memory — run 18 (2026-11-23 23:30 CET)
+
+**User action: none.** No device command, CHAT_SEND, UPDATE_REQUEST, LOG_PAGE, restart, model/weight swap, permission change or data mutation was performed.
+
+### New JEPA/Memory code on PR #2454
+
+- Branch: `jepa-memory/v14-temporal-boss-2443-rebase-20261123-run14`; current code-bearing head at this handoff: `20b8087306dfc2318072a27549c7c0249edc77b`; PR [#2454](https://github.com/RedMentos/Aii/pull/2454), DRAFT / NOT_RELEASED / mergeable=false.
+- Fixed a provenance-loss seam in `v13/code/v13/world_jepa_temporal.py`: temporal rows previously re-read only the committed `ActionSelection` packet, even though the sealed T8 verifier had already validated and attached the earlier C4 `FocalCycle`/`FocalItem` provenance. A C4-only Memory/observer/Enlightened source could therefore be absent from temporal experience rows, source-disjoint split lineage and retained-row source-forget checks.
+- The temporal reader now consumes the sealed verified receipt's complete `source_refs`, revalidates each referenced source against Store, verifies the event source is present, and rejects duplicate or digest-conflicting references. It does not treat unverified packet text as a source.
+- Added a Store-backed regression to `test_v14_world_jepa_temporal_runtime.py`: ActionSelection carries only the event source while C4 FocalCycle/FocalItem carry a shared context-only Memory source; the test asserts the source survives into temporal rows, remains visible to source-forget discovery, and keeps shared-source sessions in the same split with no train/holdout lineage overlap.
+- This is a real code change and test assertion, not a test PASS. It preserves source lineage already available in verified C4 records; it does not yet make the upstream C5 producer attach every admitted source directly to ActionSelection.
+
+### Exact verification boundary
+
+- Earlier code head `bf2913b150d8decbf6e33c43920d21acc83439b3`: temporal runtime (25 tests) and postcommit/source-forget (17 tests) passed on Python 3.13 and 3.14; combined online JEPA (49 tests) and incremental WorldJEPA (27 tests) passed. These results belong to that earlier head only.
+- That earlier head still failed optimizer-resume and staged/integrated paths on immutable nested builder pins; two-checkout migration remained PARTIAL. Those are integration failures, not JEPA numerical-test failures.
+- Current head `20b8087306dfc2318072a27549c7c0249edc77b`: no exact-head workflow run or combined-status context was returned at readback. No current-head CI PASS is claimed.
+- LOCAL_LINUX: Python 3.13.5, NumPy 2.3.5 and pytest 9.0.2 are present; no Aii checkout is mounted and `git ls-remote` fails because github.com DNS cannot resolve. Full project compile/pytest is BLOCKED / NOT_RUN.
+- No local numerical update, parameter diff, checkpoint write, rollback or native measurement was run in this automation container. Do not promote the earlier synthetic numeric control to project or device evidence.
+
+### Parent integration / current blockers
+
+- Boss PR #2443 current branch head readback: `cdf6b64067ac426ba32194100d3764f6e74c105f`, based on release-development `8d93236c753f0194224c19edc7411d8d7082b1d6`. QA pin repair #2459 is merged into the Boss branch at `58646862436ba3f69bce81ef4d3710105fc7c12b`; its exact seven workflows passed, including staged/integrated, migration, Lab-Age, owner-read and JEPA resume/source-forget. Boss's later board-only head has a workflow startup_failure, so the full parent head matrix is not yet freshly green.
+- JEPA #2454 still bases on older Boss head `6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4`; do not claim it is current-base or mergeable. Several source files differ from the latest Boss branch, so a blind file-copy/rebase would risk overwriting Core/QA/Boss changes.
+- Core #2457 currently bases on the prior JEPA head `a8bba75481812b2344d4ae237acfa9bc57078d29`, not this run's `20b808...`. It also has a QA review finding that Runtime.close must cancel and join the native-probe worker/lease before closing Store; keep that diagnostic path blocked until its lifecycle regression passes.
+- The current Core/QA handoff still requires bottom-up exact source-pin recomputation after the parent/JEPA rebase. Do not weaken any byte/hash gate to get green CI.
+
+### Redmi, updater and user-visible effect
+
+- Latest available private V13OBS issue #115 body is updated `2026-11-23T19:52:16Z`. It reports installed release `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled, Runtime/Dashboard UP_TO_DATE, AI state STOPPED_BY_USER, autostart false, model process STOPPED and native residency UNAVAILABLE.
+- Its last recorded turn was 6.295 s total / 2.046 s TTFT / 358 admitted prompt tokens / 7 generated tokens; B1_DETAIL and B2_GIST still report TIME_BUDGET (53.2 s / 54.2 s). This is stored diagnostic evidence, not a new test or correctness pass; the arithmetic example remains incorrect/incomplete.
+- A fresh owner-read relay request for HEALTH, PIPELINE_STATUS, DIAGNOSTICS and LEARNING_STATUS could not be created: GitHub returned HTTP 422 because the connected account has no verified email address. Record `NO_LIVE_RECEIPT`; no device query response arrived.
+- Existing updater is enabled/up-to-date for the installed release, but no candidate was merged, requested or installed. The new JEPA code has no Redmi effect yet: `REDMI_UNVERIFIED`.
+
+### Research / next executable step
+
+- New research entry R-116 (below) records JEPA-TTT's persistent latent-predictor updates and dense replay. It supports testing persistent optimizer/replay across episodes, but the paper does not test return-to-old dynamics or catastrophic forgetting.
+- After the Boss parent is fully green, rebase JEPA #2454 onto its exact current head, resolve overlapping Memory/neuromod/Sleep/bodyview files with three-way review, recompute every nested builder pin, then run exact Python 3.13/3.14 temporal, postcommit, optimizer-resume, source-forget, staged, integrated and migration suites.
+- Next JEPA-specific experiment: an A→B→A dynamics/outcome shift with source-disjoint old/new cohorts, replay-on/off and frozen-baseline controls; persist old-cohort prediction/receiver outcomes and test recovery of the original dynamics without using the old cohort for the adaptation update.
+- **User action required: NONE.** Preserve the current STOPPED_BY_USER phone state.
