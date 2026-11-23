@@ -16,6 +16,8 @@ from v14.m1.base import (
     predictor_parameter_count,
     predictor_macs_per_example,
     matched_predictor_width_estimates,
+    m1b_predictor_control_configs,
+    predictor_budget_report,
     variance_covariance_regularizer,
 )
 
@@ -89,6 +91,34 @@ class BaseArchitectureTests(unittest.TestCase):
         widths = matched_predictor_width_estimates(256, 4)
         self.assertEqual(widths["compute_matched_wide_t1"], 512)
         self.assertEqual(widths["parameter_matched_unshared"], 128)
+
+    def test_m1b_control_configs_measure_parameter_and_compute_matching(self):
+        cfg = BaseConfig(
+            channels=2, horizon=3, latent_dim=16, hidden_dim=32,
+            predictor_steps=4,
+        )
+        controls = m1b_predictor_control_configs(cfg)
+        self.assertEqual(set(controls), {
+            "shared_recurrent", "unshared_compute_matched",
+            "unshared_parameter_matched", "wide_t1_compute_matched",
+        })
+        report = predictor_budget_report(cfg)
+        shared = report["shared_recurrent"]
+        unshared_compute = report["unshared_compute_matched"]
+        unshared_params = report["unshared_parameter_matched"]
+        wide = report["wide_t1_compute_matched"]
+        self.assertEqual(
+            shared["linear_macs_per_example"],
+            unshared_compute["linear_macs_per_example"],
+        )
+        self.assertLess(
+            abs(unshared_params["trainable_parameters"] - shared["trainable_parameters"]),
+            shared["trainable_parameters"] * 0.06,
+        )
+        self.assertLess(
+            abs(wide["linear_macs_per_example"] - shared["linear_macs_per_example"]),
+            shared["linear_macs_per_example"] * 0.02,
+        )
 
     def test_jepa_and_direct_control_accept_unshared_predictor(self):
         cfg = BaseConfig(
