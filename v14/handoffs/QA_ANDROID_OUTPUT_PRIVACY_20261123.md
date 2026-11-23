@@ -188,3 +188,9 @@ No device action, chat send, restart, model/weight change, permission change, or
 - Other 5e14 checks (staged/integrated, Lab-Age, two-checkout migration, controller guard, vision, privacy, audio/RAW EAR, UI lease) were QUEUED at last poll. Do not infer they passed.
 - Two-checkout migration at 9cf showed both synthetic Git checkouts and dashboard advancing while runtime activation remained ERROR/PARTIAL. Boss attributed the earlier failure to the same stage hash mismatch; verify the new exact-head result before concluding whether a separate test-fixture issue remains.
 - No edits were made to Boss's branch or shared stage builders. Comments #7108650181, #7108695415, and #7108732823 record findings. This is CI/source-composition QA, not native Redmi evidence.
+
+
+## Public repository privacy scan preflight
+
+- Reproduced every regex and allowlist in \`v13/code/scripts/public_repo_privacy_scan.py\` against the GitHub compare diff from base \`fb563d771fe2d493c4ec25abe94280981d24ef5c\` to the QA branch (7 changed files). Result: **0 matches** across credential, contact, Android identifier, Termux secret-path and Drive resource-key patterns.
+- The official GitHub Actions privacy-scan step was added to the existing integrated workflow with fetch depth 64 so the base is available. It remains queued with the rest of the exact-head CI; the manual reproduction is not represented as an official workflow PASS.
