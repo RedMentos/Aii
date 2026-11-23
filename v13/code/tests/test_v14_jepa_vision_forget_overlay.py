@@ -1,5 +1,7 @@
 """JEPA source-lifecycle overlay must revoke every projector trained on a forgotten image."""
 import hashlib
+import io
+import threading
 import time
 
 import pytest
@@ -158,3 +160,213 @@ def test_forget_retains_blob_still_referenced_by_another_live_source(runtime):
     assert result["blob_retained_shared"] is True
     assert result["blob_deleted"] is False
     assert (runtime.home / "data" / "blobs" / sha).exists()
+
+
+
+@pytest.fixture
+def staged_vision(runtime, monkeypatch):
+    """Mirror the exact vision wrappers installed by the staged lifecycle composer."""
+    monkeypatch.setattr(vision, "load", lifecycle.load_vision_state)
+    monkeypatch.setattr(vision, "save", lifecycle.save_vision_state)
+    monkeypatch.setattr(vision, "ingest", lifecycle.vision_ingest)
+    monkeypatch.setattr(vision, "forget", lifecycle.vision_forget)
+    return runtime
+
+
+def _png(colour, box=(10, 10, 40, 40), size=(64, 48)):
+    from PIL import Image, ImageDraw
+    image = Image.new("RGB", size, "white")
+    ImageDraw.Draw(image).rectangle(box, fill=colour)
+    output = io.BytesIO()
+    image.save(output, "PNG")
+    return output.getvalue()
+
+
+class _FakeTeacher:
+    def describe(self, image, prompt=vision.PROMPT, cancel=None):
+        np = vision._np()
+        pixels = np.asarray(image).reshape(-1, 3)
+        if pixels.mean() > 250:
+            caption = "an empty white area"
+        else:
+            red, green, blue = pixels.min(0)
+            name = ("red" if red > 150 and green < 100 else
+                    "blue" if blue > 150 and red < 100 else "green")
+            caption = "a %s box on white" % name
+        return {
+            "text": caption,
+            "authority": vision.AUTHORITY,
+            "teacher": "synthetic-test-only",
+            "revision": None,
+            "prompt": prompt,
+            "seconds": 0.0,
+        }
+
+
+@pytest.mark.parametrize("projector_key", ["projector", "tile_projector"])
+@pytest.mark.parametrize("bad_reference", ["missing_source", "mismatched_hash"])
+def test_save_rejects_non_live_training_lineage_for_both_projectors(
+    runtime, projector_key, bad_reference
+):
+    rec = vision.ingest(runtime.store, _ppm(59))
+    source_id = rec["ref"]["source_id"]
+    source_sha = rec["ref"]["sha256"]
+    if bad_reference == "missing_source":
+        bad_id = "src_missing_vision_lineage_test"
+        bad_sha = "a" * 64
+    else:
+        bad_id = source_id
+        bad_sha = "f" * 64 if source_sha != "f" * 64 else "e" * 64
+
+    state = lifecycle.load_vision_state(runtime.store)
+    projector = {
+        "training_sources": [{"source_id": bad_id, "sha256": bad_sha}],
+        "authority": "LAB_SHADOW_ONLY",
+    }
+    if projector_key == "projector":
+        projector["captions"] = {}
+    state[projector_key] = projector
+
+    with pytest.raises(ValueError, match="lineage"):
+        lifecycle.save_vision_state(runtime.store, state)
+
+
+def test_staged_versioned_snapshot_cannot_overwrite_a_completed_forget(staged_vision):
+    rec = vision.ingest(staged_vision.store, _ppm(61))
+    stale = vision.load(staged_vision.store)
+    vision.forget(staged_vision.store, rec)
+    stale["teacher_removed"] = True
+
+    with pytest.raises(ValueError, match="Stale state write"):
+        vision.save(staged_vision.store, stale)
+    current = vision.load(staged_vision.store)
+    assert rec["ref"]["source_id"] not in current["images"]
+    assert not current.get("teacher_removed", False)
+
+
+def _assert_training_commit_rejected_after_forget(runtime, monkeypatch, trainer, state_key, prefix):
+    np = vision._np()
+    teacher = _FakeTeacher()
+    encoder = ("hashed_bow", lambda texts: np.stack([vision.hashed_embed(value) for value in texts]))
+    records = []
+    colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20)] * 2
+    for index, colour in enumerate(colours):
+        record = vision.ingest(
+            runtime.store, _png(colour, box=(5 + index, 5, 30 + index, 30))
+        )
+        for region in ("g", "qtl", "qtr"):
+            vision.describe(runtime, record, region, teacher)
+        records.append(record)
+
+    entered = threading.Event()
+    release = threading.Event()
+    outcome = {}
+    original_save = vision.save
+
+    def delayed_save(store, state):
+        entered.set()
+        if not release.wait(30):
+            raise TimeoutError("test did not release delayed vision save")
+        return original_save(store, state)
+
+    monkeypatch.setattr(vision, "save", delayed_save)
+
+    def train_worker():
+        try:
+            outcome["result"] = trainer(runtime, encoder)
+        except BaseException as exc:
+            outcome["error"] = exc
+
+    worker = threading.Thread(target=train_worker)
+    worker.start()
+    assert entered.wait(30), "training never reached its state commit"
+    vision.forget(runtime.store, records[-1])
+    release.set()
+    worker.join(30)
+
+    assert not worker.is_alive(), "training worker did not finish"
+    assert isinstance(outcome.get("error"), ValueError)
+    assert "Stale state write" in str(outcome["error"])
+    assert vision.load(runtime.store).get(state_key) is None
+    assert list((runtime.home / "data" / "vision").glob(prefix + "*.npz")) == []
+
+
+@pytest.mark.parametrize(
+    ("trainer", "state_key", "prefix"),
+    [
+        (vision.train, "projector", "projector-"),
+        (vision.train_tiles, "tile_projector", "tiles-"),
+    ],
+)
+def test_global_and_tile_training_cannot_publish_after_source_forget(
+    staged_vision, monkeypatch, trainer, state_key, prefix
+):
+    _assert_training_commit_rejected_after_forget(
+        staged_vision, monkeypatch, trainer, state_key, prefix
+    )
+
+
+def test_reingest_waits_for_last_source_blob_cleanup_under_store_lock(staged_vision, monkeypatch):
+    data = _ppm(67)
+    original = vision.ingest(staged_vision.store, data)
+    source_sha = original["ref"]["sha256"]
+    cleanup_entered = threading.Event()
+    release_cleanup = threading.Event()
+    ingest_started = threading.Event()
+    ingest_done = threading.Event()
+    forget_result = {}
+    ingest_result = {}
+    original_cleanup = lifecycle._cleanup_pending_fd
+
+    def delayed_cleanup(dir_fd, key=None):
+        if key == source_sha and not cleanup_entered.is_set():
+            cleanup_entered.set()
+            if not release_cleanup.wait(30):
+                raise TimeoutError("test did not release Store-locked blob cleanup")
+        return original_cleanup(dir_fd, key)
+
+    monkeypatch.setattr(lifecycle, "_cleanup_pending_fd", delayed_cleanup)
+
+    def forget_worker():
+        try:
+            forget_result["result"] = vision.forget(staged_vision.store, original)
+        except BaseException as exc:
+            forget_result["error"] = exc
+
+    def ingest_worker():
+        ingest_started.set()
+        try:
+            ingest_result["record"] = vision.ingest(staged_vision.store, data)
+        except BaseException as exc:
+            ingest_result["error"] = exc
+        finally:
+            ingest_done.set()
+
+    forget_thread = threading.Thread(target=forget_worker)
+    forget_thread.start()
+    assert cleanup_entered.wait(30), "forget did not enter Store-locked blob cleanup"
+    ingest_thread = threading.Thread(target=ingest_worker)
+    ingest_thread.start()
+    assert ingest_started.wait(2)
+    time.sleep(0.05)
+    assert not ingest_done.is_set(), "re-ingest crossed the active Store cleanup lock"
+
+    release_cleanup.set()
+    forget_thread.join(30)
+    ingest_thread.join(30)
+
+    assert not forget_thread.is_alive()
+    assert not ingest_thread.is_alive()
+    assert "error" not in forget_result, str(forget_result.get("error"))
+    assert "error" not in ingest_result, str(ingest_result.get("error"))
+    assert forget_result["result"]["blob_deleted"] is True
+    recreated = ingest_result["record"]
+    assert recreated["ref"]["source_id"] != original["ref"]["source_id"]
+    row = staged_vision.store.one(
+        "SELECT hash,kind,deleted FROM sources WHERE id=?",
+        (recreated["ref"]["source_id"],),
+    )
+    assert row["kind"] == "IMAGE" and row["hash"] == source_sha and row["deleted"] == 0
+    blob = staged_vision.home / "data" / "blobs" / source_sha
+    assert blob.is_file()
+    assert hashlib.sha256(blob.read_bytes()).hexdigest() == source_sha
