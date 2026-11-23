@@ -16,6 +16,7 @@ SOURCE_SHA256 = {
     'b4bd2eb39cffd62f04ef8932e57223b7b1adae08039509fc1457e3b82f2f15bc',
     '85a2f94e642a787173fcc973270516a39bef4cb2145c3a19a638cb71975f9235',
     'b5d17df38c119d124d679233c4026d237a86162e31f1320b7178ed7b592497dc',
+    '650f78dc277cc06d23f9c0776bae7168b2bb7878e778a2fb01b5203aba86c4e4',
     'c64ed6170bbc49c3a60d24d2566d10e9d53586c6608534c738a10b8834718c52',
     '45fe67f66ad3bac2491c877be3a0c63f20b20014bf7ccfa15b1df236dd08b8ba',
     'a217e50b6a821675e2b799d1d4de8c957708aa04aabc95a2e34da9b24c0c215b',
@@ -111,6 +112,7 @@ def apply_source(raw):
                              'b4bd2eb39cffd62f04ef8932e57223b7b1adae08039509fc1457e3b82f2f15bc',
                              '85a2f94e642a787173fcc973270516a39bef4cb2145c3a19a638cb71975f9235',
                              'b5d17df38c119d124d679233c4026d237a86162e31f1320b7178ed7b592497dc',
+                             '650f78dc277cc06d23f9c0776bae7168b2bb7878e778a2fb01b5203aba86c4e4',
                              'c64ed6170bbc49c3a60d24d2566d10e9d53586c6608534c738a10b8834718c52')
                 and before == "                def ask(role,focus=None,use_peer=True):\n"):
             before = before.replace('use_peer=True)', 'use_peer=True,role_end=None)')
