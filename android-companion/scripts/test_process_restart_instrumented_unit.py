@@ -36,6 +36,27 @@ class InstrumentationDriverTests(unittest.TestCase):
                 harness.run_instrumentation("arbitraryMethod")
         adb_call.assert_not_called()
 
+    def test_process_id_accepts_pidof_exit_one_as_no_process(self):
+        completed = harness.subprocess.CompletedProcess(
+            args=["adb", "shell", "pidof", harness.PACKAGE],
+            returncode=1,
+            stdout="",
+            stderr="",
+        )
+        with patch.object(harness.subprocess, "run", return_value=completed):
+            self.assertEqual(harness.process_id(), "")
+
+    def test_process_id_does_not_hide_adb_transport_errors(self):
+        completed = harness.subprocess.CompletedProcess(
+            args=["adb", "shell", "pidof", harness.PACKAGE],
+            returncode=127,
+            stdout="",
+            stderr="adb: device offline",
+        )
+        with patch.object(harness.subprocess, "run", return_value=completed):
+            with self.assertRaisesRegex(RuntimeError, "pidof failed"):
+                harness.process_id()
+
     def test_wait_for_process_polls_until_requested_state(self):
         with (
             patch.object(harness, "process_id", side_effect=["", "4321"]),
