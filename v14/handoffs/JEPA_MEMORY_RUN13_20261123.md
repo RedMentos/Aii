@@ -50,3 +50,37 @@ Local execution:
 - Next executable JEPA step: connect the verified C4/C3 source lineage to the B1/B2 receiver, then run source-disjoint holdout, replay-on/off, rollback/restart and negative-source-forget tests on the exact release-base stack.
 - Auto-updater: enabled, but the latest authenticated receipt still shows the phone at the older installed SHA with CI_WAIT. No manual Termux command or new UPDATE_REQUEST is warranted; wait for a later authenticated PIPELINE_STATUS after exact push CI.
 - User action: none required for this source-only PR. No model download/swap or learning permission change is proposed.
+
+
+## Run 13 follow-up — 2026-11-23 11:37 UTC
+
+### Exact code and review state
+- Release-development base readback: `gpt6/v13-private-remote-bridge-20261111` at `dfa3945b2bbfdb65d932db74e02f402435494e84`.
+- PR #2436 branch head after this follow-up: `c611e45178da854125e11a9b852b4c015cf8046f` (still DRAFT / OPEN / NOT_RELEASED).
+- The source-forget guard intentionally scans **all pre-dispatch C4 FocalCycle packets**, plus available FocalItem and ActionSelection provenance, for the same event/generation. Earlier C4 cycles may have influenced the eventual action even if their items are absent from the final coalition. This is deliberately conservative and may cause extra rollback/replay until the producer persists complete per-cycle item lineage.
+- Added `test_memory_forget_conservatively_invalidates_nonfinal_focal_cycle_source_after_replay_row_eviction`: the earlier-cycle-only source is absent from the final-cycle T8 receipt, but forgetting it still invalidates the checkpoint after its replay row is evicted. The fixture now supports multiple ordered C4 cycles.
+
+### Verification — exact environment boundaries
+- Exact previous code head `0d290072d6f6e4d59267d369cad8457f7848df23`: GitHub Actions run 45164462030 passed optimizer-resume/source-forget on Python 3.13 and 3.14; run 45164462029 passed staged-runtime and integrated-regression. These PASS results apply to `0d29007`, **not** the new `c611e45` follow-up.
+- New head `c611e45`: no exact-head JEPA or staged/integrated run is visible yet. The only newly visible run 45166837128 is the safe-additive workflow and is SKIPPED by policy; it is not a test pass.
+- LOCAL_LINUX isolated SQLite 3.46.1 query reproduction: PASS for (a) same-event earlier C4 cycle source is conservatively selected, (b) other-event source is excluded, (c) post-action packet is excluded, and (d) PREDICTION-stage packet is excluded. This validates only the SQL predicate, not the repository integration.
+- LOCAL_LINUX full Aii checkout/pytest: BLOCKED / NOT_RUN; no checkout is mounted and GitHub DNS is unavailable. No repository test is claimed locally.
+- Redmi/Termux: REDMI_UNVERIFIED. No phone, private relay, CHAT_SEND, UPDATE_REQUEST, LOG_PAGE, shell, model/weight swap, permission change or device mutation was used.
+
+### User-visible effect and remaining connections
+- If integrated, C4 coalition refs become part of source-verified T8 receipts and the forget guard can invalidate checkpoints even when the bounded replay row has been evicted. This is a Memory deletion/rollback correctness improvement, not a user-facing chat improvement by itself.
+- The verifier still recovers only the final C4 coalition for the T8 receipt. This is not the complete pre-action C3 context (history, executive, ContextPlan and other admitted prompt sources), not trained native latent transfer, not GGUF/body-weight learning, and not Android learning.
+- Core still needs a complete source-bound pre-dispatch context receipt for the actual C3 prompt. JEPA can then validate/merge it and carry it through source-disjoint learning, B1/B2 receiver readout, replay and source-forget. Existing #2405/#2426 receiver/temporal work remains a separate stacked, unintegrated path; do not duplicate it blindly.
+
+### Research notes for the shared ledger
+- **iSDFT**, arXiv:2609.24646 (2026-09-21): full paper reviewed. It chooses the closest student distribution that meets a per-token teacher-information budget, with the local tilt solved by bisection, and adds a separate frozen-base KL anchor. Reported 73% of retention evaluations within 0.5 points of base vs 52% for the strongest baseline; the paper also reports that the anchor's main effect is retention, while information budgeting primarily controls acquisition. Official repo: https://github.com/KickItLikeShika/iSDFT. No root LICENSE file was found/read back, so no code was reused. The implementation requires Python 3.12, CUDA BF16, colocated vLLM, and keeps student + EMA teacher + frozen base models resident; requirements pin Torch 2.9, Transformers 4.57.1, vLLM 0.12 and TRL 0.24. It is not a Redmi implementation. Candidate V14 experiment only: apply an information budget to a small trainable reader/control distribution with an explicit old-policy anchor, then compare against full-teacher, fixed interpolation, and no-anchor controls. Do not replace WorldJEPA's grounded outcome objective with token distillation.
+- **STONE**, arXiv:2611.18916 (2026-11-13): abstract-level primary-source review only. It moves agreement from hard tasks to easier model-generated stepping-stone problems, then conditions a teacher on the worked stones while withholding their final answers from the student. The abstract reports results on five math benchmarks for Qwen3-4B/8B; no public implementation repository or code license was verified. Possible Dream/Replay experiment: generate source-anchored easier subproblems as non-authoritative candidates, require independent agreement and later observed/human outcome before any target use. Never promote synthetic stones to facts or tool authority.
+- No model, code, dataset or weights were downloaded or imported; no model/license swap is proposed.
+
+### Next executable step
+1. Obtain Boss review of #2436 and exact-head CI for `c611e45`; do not merge or mark C4→T8 complete without it.
+2. Coordinate with Core on the full pre-action C3 context receipt (history/executive/ContextPlan/observer/Enlightened sources), preserving producer ownership.
+3. After the current-base source chain is reviewed, connect verified T8 lineage to the existing B1/B2 temporal/episodic receiver path with source/session-disjoint holdouts, delayed-outcome negatives, retention, restart and rollback.
+4. Keep retrieval and body readouts SHADOW; optimizer promotion and native model-weight changes remain OFF.
+
+**User action:** none required.
