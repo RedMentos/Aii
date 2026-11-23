@@ -70,6 +70,7 @@ class NativeTurnBudgetTests(unittest.TestCase):
         bad=[
             turn("ERROR",generated=0),
             turn("DEADLINE",generated=1),
+            turn("DEADLINE",generated=False),
             turn("DEADLINE",phase="stream"),
             turn("DEADLINE",role="B1_DETAIL"),
             {"status":"DEADLINE","metadata":"PRIVATE MALFORMED JSON"},
@@ -94,7 +95,7 @@ class NativeTurnBudgetTests(unittest.TestCase):
         self.assertNotIn("PRIVATE",json.dumps(result))
         self.assertEqual(store.args,(budget.MAX_RECENT,))
 
-    def test_real_cognition_preanswer_is_deferred_but_postcommit_remains(self):
+    def test_real_cognition_uses_fair_slice_and_keeps_postcommit_path(self):
         class LocalStore(DummyStore):
             def __init__(self, rows):
                 super().__init__(rows)
@@ -104,7 +105,7 @@ class NativeTurnBudgetTests(unittest.TestCase):
                 self.logs.append((kind,event,metrics))
             def read_source(self,ref):
                 self.source_reads+=1
-                raise AssertionError("source should be read only when not deferred")
+                raise AssertionError("source read reached after budget check")
         class FakeRuntime:
             def __init__(self, cfg, store):
                 self.cfg=cfg
@@ -116,20 +117,22 @@ class NativeTurnBudgetTests(unittest.TestCase):
                              "observer_mode":"background"},store)
         cognition=Cognition(runtime)
         end=time.monotonic()+30
-        with self.assertRaises(Limits):
-            cognition.offer("B1_DETAIL",{"event_id":"e1"},1,end-18,
+        with self.assertRaisesRegex(AssertionError,"source read reached"):
+            cognition.offer("B1_DETAIL",{"event_id":"e1","source_ref":{}},1,end-18,
                             valid_until=end)
-        self.assertEqual(store.source_reads,0)
-        self.assertEqual(store.logs[0][0],"native_body_deferred_for_c3")
+        self.assertEqual(store.source_reads,1)
+        self.assertEqual(store.logs[0][0],"native_body_budgeted_for_c3")
         self.assertEqual(store.logs[0][2]["role"],"B1_DETAIL")
-        self.assertEqual(store.logs[0][2]["status"],"POSTCOMMIT_ELIGIBLE")
+        self.assertEqual(store.logs[0][2]["status"],"PREANSWER_BUDGETED")
+        self.assertGreaterEqual(store.logs[0][2]["preanswer_seconds_available"],1.0)
+        self.assertGreaterEqual(store.logs[0][2]["c3_reserved_seconds"],26.0)
 
-        # The identical brain role is still allowed after the outward answer:
-        # the normal background caller never supplies a global valid_until.
-        with self.assertRaisesRegex(AssertionError,"source should be read"):
+        # The same organ remains eligible after the outward answer; the
+        # background caller omits valid_until and is not treated as pre-answer.
+        with self.assertRaisesRegex(AssertionError,"source read reached"):
             cognition.offer("B1_DETAIL",{"event_id":"e1","source_ref":{}},
                             1,time.monotonic()+20)
-        self.assertEqual(store.source_reads,1)
+        self.assertEqual(store.source_reads,2)
 
     def test_cognition_does_not_defer_with_owner_background_disabled(self):
         class LocalStore(DummyStore):
@@ -149,11 +152,33 @@ class NativeTurnBudgetTests(unittest.TestCase):
                 "B1_DETAIL",{"event_id":"e2","source_ref":{}},
                 1,end-18,valid_until=end)
 
+    def test_observer_deadline_caps_a_role_slice_without_releasing_c3_reserve(self):
+        d=budget.plan(100,130,100,recent=[turn(),turn()],
+                      observer_deadline=101.5)
+        self.assertTrue(d["recovery"])
+        self.assertAlmostEqual(d["preanswer_seconds_available"],1.5)
+        self.assertGreaterEqual(d["c3_reserved_seconds"],26.0)
+        self.assertFalse(d["postcommit_body_eligible"])
+        self.assertEqual(d["minimum_role_slice_s"],1.0)
+
+        exhausted=budget.plan(100,130,103.9,recent=[turn(),turn()],
+                              observer_deadline=103.8)
+        self.assertEqual(exhausted["preanswer_seconds_available"],0)
+        self.assertTrue(exhausted["postcommit_body_eligible"])
+
+    def test_final_without_positive_native_tokens_does_not_reset_recovery(self):
+        rows=[turn("FINAL",generated=0,phase="stream"),turn(),turn()]
+        d=budget.plan(100,130,100,recent=rows)
+        self.assertTrue(d["recovery"])
+        self.assertEqual(d["recent_success_streak"],0)
+
     def test_bound_monotonic_inputs_and_conflicting_clock_rejected(self):
         with self.assertRaises(ValueError):
             budget.plan(100,float("nan"),102)
         with self.assertRaises(ValueError):
             budget.plan(100,99,100)
+        with self.assertRaises(ValueError):
+            budget.plan(100,130,100,observer_deadline=float("nan"))
 
 
 if __name__=="__main__":
