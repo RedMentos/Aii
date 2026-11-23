@@ -21,6 +21,7 @@ OBJECTIVE_REVISION = "v14-temporal-receiver-outcome-mse-v1"
 OPTIMIZER_REVISION = "ADAM_MSE_V1"
 LEGACY_OPTIMIZER_REVISION = "RIDGE_CLOSED_FORM_V1"
 MAX_ADAPTER_STEPS = 64
+RECEIVER_RETENTION_MAX_RELATIVE_REGRESSION = 0.05  # [DEFAULT] provisional old-cohort MSE tolerance
 MAX_GRADIENT_NORM = 1.0
 BASE_ADAPTER_LEARNING_RATE = 0.01
 ANCHOR_STRENGTH = 0.01
@@ -345,7 +346,9 @@ def evaluate_receiver_retention(baseline, model, receiver_heads):
         margin = max(1e-12, max(
             abs(mse_after), abs(mean_mse), abs(zero_mse), abs(shuffled_mse)
         ) * 1e-9)
-        retention_pass = mse_after <= mse_before * 1.05 + 1e-9
+        retention_pass = (
+            mse_after <= mse_before * (1.0 + RECEIVER_RETENTION_MAX_RELATIVE_REGRESSION) + 1e-9
+        )
         negative_controls_pass = (
             not prior["prior_utility_pass"]
             or all(mse_after + margin < value for value in (mean_mse, zero_mse, shuffled_mse))
@@ -361,6 +364,7 @@ def evaluate_receiver_retention(baseline, model, receiver_heads):
             ),
             "mse_before": mse_before,
             "mse_after": float(mse_after),
+            "max_relative_regression": RECEIVER_RETENTION_MAX_RELATIVE_REGRESSION,
             "mean_baseline_mse": float(mean_mse),
             "zero_latent_mse": float(zero_mse),
             "shuffled_latent_mse": float(shuffled_mse),
@@ -391,6 +395,7 @@ def _receipt_receiver_retention(role_result, overall):
             "source_disjoint": False,
             "mse_before": None,
             "mse_after": None,
+            "max_relative_regression": None,
             "mean_baseline_mse": None,
             "zero_latent_mse": None,
             "shuffled_latent_mse": None,
@@ -407,6 +412,7 @@ def _receipt_receiver_retention(role_result, overall):
         "source_disjoint": overall["source_disjoint"] is True,
         "mse_before": float(role_result["mse_before"]),
         "mse_after": float(role_result["mse_after"]),
+        "max_relative_regression": float(role_result["max_relative_regression"]),
         "mean_baseline_mse": float(role_result["mean_baseline_mse"]),
         "zero_latent_mse": float(role_result["zero_latent_mse"]),
         "shuffled_latent_mse": float(role_result["shuffled_latent_mse"]),
@@ -1188,7 +1194,7 @@ def validate_weight_delta_receipt(receipt):
         retention = receipt["target_adapter_retention_metrics"]
         retention_required = {
             "status", "reason", "cohort_sha256", "source_disjoint",
-            "mse_before", "mse_after", "mean_baseline_mse",
+            "mse_before", "mse_after", "max_relative_regression", "mean_baseline_mse",
             "zero_latent_mse", "shuffled_latent_mse",
             "prior_utility_pass", "retention_pass", "negative_controls_pass",
         }
@@ -1201,7 +1207,7 @@ def validate_weight_delta_receipt(receipt):
         ):
             raise ValueError("weight delta receipt receiver retention shape")
         metric_keys = (
-            "mse_before", "mse_after", "mean_baseline_mse",
+            "mse_before", "mse_after", "max_relative_regression", "mean_baseline_mse",
             "zero_latent_mse", "shuffled_latent_mse",
         )
         flag_keys = ("prior_utility_pass", "retention_pass", "negative_controls_pass")
@@ -1217,6 +1223,7 @@ def validate_weight_delta_receipt(receipt):
             if (
                 retention["source_disjoint"] is not True
                 or any(not _finite(retention[key], minimum=0.0) for key in metric_keys)
+                or retention["max_relative_regression"] > 1.0
                 or type(retention["prior_utility_pass"]) is not bool
                 or retention["retention_pass"] is not True
                 or retention["negative_controls_pass"] is not True
