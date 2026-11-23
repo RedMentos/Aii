@@ -58,7 +58,7 @@ def _build(home, X, Y, keys, lineage, feature="vision.features.v1", encoder="has
 def test_delete_rebuild_matches_fresh_production_ridge_fit(tmp_path):
     home = _home(tmp_path)
     X, Y, keys, lineage, images = _fixture()
-    records, mode = _build(home, X, Y, keys, lineage)
+    records, mode = _build(home, X, Y, keys, lineage, feature="vision.features.v1:global")
     assert mode == SOURCE_STATS_MODE and len(records) == 6
     record = {
         "source_stats":records, "source_stats_mode":mode, "training_sources":lineage,
@@ -163,7 +163,7 @@ def test_source_digest_and_retained_registry_mismatch_fail_closed(tmp_path):
 def test_global_rebuild_requires_complete_caption_provenance(tmp_path):
     home = _home(tmp_path)
     X, Y, keys, lineage, images = _fixture(sources=5)
-    records, mode = _build(home, X, Y, keys, lineage)
+    records, mode = _build(home, X, Y, keys, lineage, feature="vision.features.v1:global")
     record = {
         "source_stats":records, "source_stats_mode":mode, "training_sources":lineage,
         "encoder":"hashed_bow", "feature_schema":"vision.features.v1:global", "ridge":1., "n":len(X),
