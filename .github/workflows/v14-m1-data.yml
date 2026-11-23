@@ -33,7 +33,7 @@ jobs:
         if: matrix.python-version == '3.13'
         run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
       - name: Run M1 DATA tests
-        run: python -m unittest v14.m1.test_data v14.m1.test_array_data -v
+        run: python -m unittest v14.m1.test_data v14.m1.test_array_data v14.m1.test_evaluation -v
       - name: Run M1 BASE architecture tests
         if: matrix.python-version == '3.13'
         run: python -m unittest v14.m1.test_base v14.m1.test_training v14.m1.test_baselines -v
