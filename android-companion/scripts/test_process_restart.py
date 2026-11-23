@@ -12,6 +12,7 @@ import re
 import subprocess
 import time
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 from process_restart_ui import button_center, parse_hierarchy, poll_delay, transient_overlay_action, visible_labels
 
@@ -20,6 +21,7 @@ COMPONENT = PACKAGE + "/.MainActivity"
 TOGGLE_LABEL = "Enable / Stop companion"
 STOPPED_TEXT = "STOPPED (restart requires explicit re-enable)"
 ENABLED_TEXT = "ENABLED FOR THIS PROCESS"
+STOP_PROOF_MARKER = Path(".v14-stop-persisted-off")
 
 
 def adb(*args: str, check: bool = True, timeout: float = 25.0) -> str:
@@ -249,7 +251,58 @@ def launch_companion() -> None:
     time.sleep(2.0)
 
 
+
+def record_stop_persisted_off() -> None:
+    """Record proof only after the visible Stop button durably writes OFF."""
+    state = persisted_enabled()
+    if state != "false":
+        raise AssertionError("visible Stop action did not persist OFF")
+    STOP_PROOF_MARKER.write_text("STOP_ACTION_PERSISTED_OFF\\n", encoding="utf-8")
+    print("PASS: visible Stop action persisted OFF before UI confirmation")
+
+
+def verify_durable_off_after_process_death() -> None:
+    """Independently verify the observed Stop state across a real app process death."""
+    try:
+        marker = STOP_PROOF_MARKER.read_text(encoding="utf-8").strip()
+    except OSError as exc:
+        raise AssertionError("no verified visible Stop action marker; durable proof unavailable") from exc
+    if marker != "STOP_ACTION_PERSISTED_OFF":
+        raise AssertionError("visible Stop action marker is invalid")
+    if persisted_enabled() != "false":
+        raise AssertionError("companion preference was not OFF before process death")
+    old_pid = process_id()
+    if not old_pid:
+        raise AssertionError("companion PID absent before force-stop; process-death proof unavailable")
+    adb("shell", "am", "force-stop", PACKAGE)
+    wait_for_process(absent=True)
+    launch_companion()
+    new_pid = wait_for_process(absent=False)
+    if persisted_enabled() != "false":
+        raise AssertionError("companion preference did not remain OFF after process restart")
+    STOP_PROOF_MARKER.unlink(missing_ok=True)
+    print("PASS: durable OFF survived force-stop/relaunch; PID "
+          + old_pid + " -> " + new_pid)
+
+
+def wait_for_stopped_ui_or_prove_durable(timeout: float = 60.0) -> str:
+    """Keep visible UI strict; record independent durable state if UI is blocked."""
+    try:
+        return wait_for_text(STOPPED_TEXT, timeout=timeout)
+    except AssertionError as ui_failure:
+        try:
+            verify_durable_off_after_process_death()
+        except Exception as durable_failure:
+            print("DURABLE_STOP_PROOF_FAILED: " + type(durable_failure).__name__
+                  + ": " + str(durable_failure)[:1000])
+        else:
+            print("PARTIAL_PASS: durable OFF/process-death proof passed; "
+                  "visible STOPPED UI confirmation remains BLOCKED")
+        raise ui_failure
+
+
 def main() -> None:
+    STOP_PROOF_MARKER.unlink(missing_ok=True)
     adb("shell", "am", "force-stop", PACKAGE, check=False)
     launch_companion()
     wait_for_process(absent=False)
@@ -263,7 +316,8 @@ def main() -> None:
     assert persisted_enabled() == "true"
 
     tap_button(TOGGLE_LABEL)
-    stopped = wait_for_text(STOPPED_TEXT)
+    record_stop_persisted_off()
+    stopped = wait_for_stopped_ui_or_prove_durable(timeout=60.0)
     assert ENABLED_TEXT not in stopped
     assert persisted_enabled() == "false"
 
@@ -277,9 +331,10 @@ def main() -> None:
     wait_for_process(absent=True)
     launch_companion()
     wait_for_process(absent=False)
-    restarted = wait_for_text(STOPPED_TEXT, timeout=60.0)
-    assert ENABLED_TEXT not in restarted
     assert persisted_enabled() == "false"
+    restarted = wait_for_stopped_ui_or_prove_durable(timeout=60.0)
+    assert ENABLED_TEXT not in restarted
+    STOP_PROOF_MARKER.unlink(missing_ok=True)
 
     print("PASS: visible stop persisted OFF; force-stop killed PID "
           + old_pid + "; provider/activity restart returned STOPPED without "
