@@ -325,11 +325,189 @@ def test_temporal_world_jepa_updates_ema_checkpoint_and_b1_b2_shadow_receivers(t
                 assert readout["support_samples"] >= 8
                 assert readout["checkpoint_sha256"] == first["checkpoint_sha256"]
 
-        # A learned source is protected while either active or rollback state retains it.
+        # Forget invalidates a source-bearing active checkpoint before tombstoning.
         source_row = active["active"]["experience_rows"][0]
-        memory = Memory(store, {})
-        with pytest.raises(ValueError, match="temporal WorldJEPA"):
-            memory._forget_source(source_row["source_id"], source_row["event_id"])
+        checkpoint_path = learner.home / active["active"]["checkpoint"]
+        from v13.memory import Memory
+        Memory(store, {})._forget_source(source_row["source_id"], source_row["event_id"])
+        forgotten, _ = store.state(STATE_KEY, None)
+        assert forgotten["active"] is None
+        assert forgotten["previous"] is None
+        assert forgotten["scan_cursor"] == 0
+        assert forgotten["pending_rows"] == []
+        assert not checkpoint_path.exists()
+        assert store.one(
+            "SELECT deleted FROM sources WHERE id=?", (source_row["source_id"],)
+        )["deleted"] == 1
+    finally:
+        store.close()
+
+
+def test_temporal_source_forget_promotes_clean_previous_and_replays_after_restart(tmp_path):
+    home = tmp_path / "temporal-forget-clean-previous"
+    store = _make_store(home)
+    try:
+        _make_dataset(store, "forget-fallback-A", 32)
+        _permissions(store, steps=80)
+        learner = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        first = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert first["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", first
+        first_state, _ = store.state(STATE_KEY, None)
+        first_sha = first_state["active"]["checkpoint_sha256"]
+        first_cursor = first_state["scan_cursor"]
+        first_path = learner.home / first_state["active"]["checkpoint"]
+
+        _sessions, second_events = _make_dataset(
+            store, "forget-fallback-B", 32, start_index=32,
+        )
+        second = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert second["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", second
+        second_state, _ = store.state(STATE_KEY, None)
+        second_record = second_state["active"]
+        second_path = learner.home / second_record["checkpoint"]
+        second_event_set = set(second_events)
+        source_row = next(
+            row for row in second_record["experience_rows"]
+            if row["event_id"] in second_event_set
+        )
+        source_id = source_row["source_id"]
+        assert not any(
+            row["source_id"] == source_id
+            for row in second_state["previous"]["experience_rows"]
+        )
+
+        from v13.memory import Memory
+        Memory(store, {})._forget_source(source_id, source_row["event_id"])
+
+        restored, _ = store.state(STATE_KEY, None)
+        assert restored["active"]["checkpoint_sha256"] == first_sha
+        assert restored["previous"] is None
+        assert restored["scan_cursor"] == first_cursor
+        assert restored["pending_rows"]
+        assert all(row["source_id"] != source_id for row in restored["pending_rows"])
+        assert not second_path.exists()
+        assert first_path.is_file()
+        assert store.one(
+            "SELECT deleted FROM sources WHERE id=?", (source_id,)
+        )["deleted"] == 1
+
+        # The promoted checkpoint and retry queue survive a real SQLite reopen.
+        store.close()
+        store = Store(home)
+        restarted = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        retry = restarted.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert retry["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", retry
+        replayed, _ = store.state(STATE_KEY, None)
+        assert all(row["source_id"] != source_id
+                   for row in replayed["active"]["experience_rows"])
+        assert replayed["active"]["checkpoint_sha256"] == retry["checkpoint_sha256"]
+        assert replayed["active"]["metrics"]["source_disjoint"] is True
+    finally:
+        store.close()
+
+
+def test_temporal_source_forget_invalidates_both_checkpoints_then_rebuilds_from_remaining_t8(tmp_path):
+    home = tmp_path / "temporal-forget-full-replay"
+    store = _make_store(home)
+    try:
+        _sessions, first_events = _make_dataset(store, "forget-full-A", 32)
+        _permissions(store, steps=80)
+        learner = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        first = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert first["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", first
+        _make_dataset(store, "forget-full-B", 32, start_index=32)
+        second = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert second["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", second
+        before, _ = store.state(STATE_KEY, None)
+        active_path = learner.home / before["active"]["checkpoint"]
+        previous_path = learner.home / before["previous"]["checkpoint"]
+        first_event_set = set(first_events)
+        source_row = next(
+            row for row in before["active"]["experience_rows"]
+            if row["event_id"] in first_event_set
+        )
+        source_id = source_row["source_id"]
+        assert any(row["source_id"] == source_id
+                   for row in before["previous"]["experience_rows"])
+
+        from v13.memory import Memory
+        Memory(store, {})._forget_source(source_id, source_row["event_id"])
+
+        invalidated, _ = store.state(STATE_KEY, None)
+        assert invalidated["active"] is None
+        assert invalidated["previous"] is None
+        assert invalidated["scan_cursor"] == 0
+        assert invalidated["pending_rows"] == []
+        assert not active_path.exists()
+        assert not previous_path.exists()
+        assert store.one(
+            "SELECT deleted FROM sources WHERE id=?", (source_id,)
+        )["deleted"] == 1
+
+        # Restart must reconstruct only from the surviving, source-verified T8 ledger.
+        store.close()
+        store = Store(home)
+        restarted = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        rebuilt = restarted.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert rebuilt["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", rebuilt
+        after, _ = store.state(STATE_KEY, None)
+        assert all(row["source_id"] != source_id
+                   for row in after["active"]["experience_rows"])
+        assert after["active"]["checkpoint_sha256"] == rebuilt["checkpoint_sha256"]
+        assert after["active"]["metrics"]["source_disjoint"] is True
+    finally:
+        store.close()
+
+
+def test_temporal_source_forget_unrelated_source_preserves_active_checkpoint(tmp_path):
+    home = tmp_path / "temporal-forget-negative-control"
+    store = _make_store(home)
+    try:
+        _make_dataset(store, "forget-negative-control", 32)
+        _permissions(store, steps=80)
+        learner = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        trained = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert trained["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", trained
+        before, _ = store.state(STATE_KEY, None)
+        active_sha = before["active"]["checkpoint_sha256"]
+        active_path = learner.home / before["active"]["checkpoint"]
+
+        unrelated_session = store.new_session("unrelated source-forget negative control")
+        unrelated_event = store.event(unrelated_session, "not present in temporal T8")
+        unrelated_source = unrelated_event["source_ref"]["source_id"]
+        from v13.memory import Memory
+        Memory(store, {})._forget_source(unrelated_source, unrelated_event["event_id"])
+
+        after, _ = store.state(STATE_KEY, None)
+        assert after["active"]["checkpoint_sha256"] == active_sha
+        assert after["previous"] is None
+        assert active_path.is_file()
+        assert all(row["source_id"] != unrelated_source
+                   for row in after["active"]["experience_rows"])
+        assert store.one(
+            "SELECT deleted FROM sources WHERE id=?", (unrelated_source,)
+        )["deleted"] == 1
     finally:
         store.close()
 
