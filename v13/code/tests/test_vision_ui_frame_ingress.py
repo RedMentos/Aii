@@ -21,6 +21,14 @@ from v13.vision_ui_frame_ingress import (
 
 
 class _Attention:
+    def modulate(self, event_id, *, sal=None, caut=None):
+        return {
+            "event_id": event_id,
+            "salience": dict(sal or {}),
+            "caution": dict(caut or {}),
+            "truth_authority": 0,
+        }
+
     def perceive(self, event_id, segments, *, goal="", file_requests=True):
         assert file_requests is False
         return {
@@ -113,6 +121,17 @@ def image_buffer():
     draw = ImageDraw.Draw(image)
     draw.rectangle((38, 14, 59, 52), fill=(230, 20, 18))
     draw.rectangle((8, 8, 19, 24), fill=(12, 180, 220))
+    output = BytesIO()
+    image.save(output, format="PNG")
+    image.close()
+    return bytearray(output.getvalue())
+
+
+def image_buffer_variant():
+    image = Image.new("RGB", (64, 64), (8, 8, 8))
+    draw = ImageDraw.Draw(image)
+    draw.rectangle((8, 14, 29, 52), fill=(230, 20, 18))
+    draw.rectangle((40, 8, 51, 24), fill=(12, 180, 220))
     output = BytesIO()
     image.save(output, format="PNG")
     image.close()
@@ -775,3 +794,82 @@ def test_ui_student_projector_requires_live_exact_training_sources(
     assert result["packet"]["student_projector_used"] is False
     assert result["status"] == "WIRED_SYNTHETIC"
     assert result["caller_buffer_overwritten"] is True
+
+
+def test_temporal_visual_evidence_is_source_session_bound_and_drives_a4(monkeypatch):
+    from v13.vision_temporal_evidence import TILE_IDS
+
+    runtime = make_runtime(monkeypatch)
+    obs = observation()
+    first = image_buffer()
+    second = image_buffer_variant()
+    first_hash = hashlib.sha256(first).hexdigest()
+    second_hash = hashlib.sha256(second).hexdigest()
+
+    with lease_for(runtime, obs) as lease:
+        first_result = consume_with_provider_verifier(
+            runtime, obs, first, consent_lease=lease,
+            current_source="Observe the screen change.", token_budget=512,
+        )
+        next_obs = dict(obs, start_ms=1033, end_ms=1066)
+        second_result = consume_with_provider_verifier(
+            runtime, next_obs, second, consent_lease=lease,
+            current_source="Observe the screen change.", token_budget=512,
+        )
+        packets = A5UIRuntimeAdapter(runtime).context(runtime.turn_event["event_id"], lease)
+
+    assert first_result["temporal_visual_evidence"]["status"] == "WARMUP"
+    evidence = second_result["temporal_visual_evidence"]
+    assert evidence["status"] == "MEASURED"
+    assert evidence["source_ref"]["sha256"] == second_hash
+    assert evidence["capture_session_id"] == obs["capture_session_id"]
+    assert evidence["truth_authority"] == 0
+    assert evidence["learning_authority"] is False
+    assert evidence["action_authority"] is False
+    assert evidence["changed_tile_ids"]
+    assert second_result["temporal_visual_modulation"]["truth_authority"] == 0
+    assert second_result["temporal_visual_modulation"]["salience"]["novelty"] == evidence["change_score"]
+    assert second_result["a4"]["temporal_visual_modulation"] == second_result["temporal_visual_modulation"]
+    assert any("temporal_change" in segment for segment in second_result["packet"]["segments"])
+    assert packets == (second_result["packet"],)
+    assert first_result["packet"]["frame_sha256"] == first_hash
+    assert not any(first) and not any(second)
+
+
+def test_temporal_visual_evidence_registry_resets_on_receipt_and_session_end():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidenceRegistry
+
+    registry = TemporalVisualEvidenceRegistry()
+    frame = {tile: [0.1] * 16 for tile in TILE_IDS}
+    common = dict(
+        capture_session_id="session-a", generation_id="gen-a",
+        consent_receipt_ref="receipt-a", start_ms=1000, end_ms=1033,
+        tile_luminance=frame,
+    )
+    assert registry.update(**common)["status"] == "WARMUP"
+    changed = {tile: [0.8] * 16 for tile in TILE_IDS}
+    assert registry.update(**dict(common, start_ms=1033, end_ms=1066, tile_luminance=changed))["status"] == "MEASURED"
+    # A new consent receipt cannot inherit the previous frame.
+    assert registry.update(**dict(common, consent_receipt_ref="receipt-b", start_ms=1066, end_ms=1099))["status"] == "WARMUP"
+    assert registry.reset(capture_session_id="session-a") == 1
+    assert len(registry) == 0
+
+
+def test_temporal_visual_evidence_rejects_out_of_order_and_malformed_tiles():
+    from v13.vision_temporal_evidence import (
+        TILE_IDS, TemporalVisualEvidence, TemporalVisualEvidenceError,
+    )
+
+    state = TemporalVisualEvidence()
+    frame = {tile: [0.1] * 16 for tile in TILE_IDS}
+    state.update(start_ms=100, end_ms=133, tile_luminance=frame)
+    with pytest.raises(TemporalVisualEvidenceError, match="monotonically"):
+        state.update(start_ms=90, end_ms=120, tile_luminance=frame)
+    malformed = dict(frame)
+    malformed["r00"] = [float("nan")] + [0.1] * 15
+    with pytest.raises(TemporalVisualEvidenceError, match="finite"):
+        state.update(start_ms=133, end_ms=166, tile_luminance=malformed)
+    # The rejected frame did not replace the previous valid baseline.
+    result = state.update(start_ms=133, end_ms=166, tile_luminance=frame)
+    assert result["status"] == "MEASURED"
+    assert result["change_score"] == 0.0
