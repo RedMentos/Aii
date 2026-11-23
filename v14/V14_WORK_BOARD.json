@@ -402,7 +402,7 @@
         "consumer_blob_sha": "2693fb9e337c8fbb481a1d077ea30c0b2ede319f",
         "test_blob_sha": "3c7db8e5e1ef51422049fc92fa7bf17b80db9e8d"
       },
-      "proof": "PR #2448 code/test state a23366f4ab72feaf53b965c16de9cc9f818ed04d, current docs/board head 5169c2b7d9b8947530c944150bd1a23f787c6a6a, base 8d93236c753f0194224c19edc7411d8d7082b1d6. Schema v3 requires exact current PCM SHA-256 and active lease consent receipt. Only VOICED embeddings enter bounded speaker history; non-voiced windows are suppressed while A4 novelty remains available. Exact module compile/direct checks PASS for lease receipt, PCM match/mismatch, suppression, history retention, consent reset and reset API. Full repository pytest not run; last visible Actions run 45277411451 startup_failure/no jobs. No Android microphone proof. Handoff: v14/handoffs/RESEARCH_PERCEPTION_SPEAKER_PCM_BINDING_20261123_RUN28.md @ d6c0b07c6fcb2fd5529dcce022c5e0f861e1644f. Stale #2433 still contains separate transactional A4 outcome/N10 path; not ported. PR-body update and #2433 coordination comment were blocked by GitHub API 403 (account email verification required); branch files/handoff were committed. Existing sanitized owner receipt #825 confirms base SHA 8d93236 installed with auto-update enabled; separate diagnostics #826 say AI runtime STOPPED_BY_USER, autostart false, model process stopped. No new chat/update/restart/log-page action was taken; P0 #1904 remains open.",
+      "proof": "PR #2448 code/test state a23366f4ab72feaf53b965c16de9cc9f818ed04d, current docs/board head 5169c2b7d9b8947530c944150bd1a23f787c6a6a, base 8d93236c753f0194224c19edc7411d8d7082b1d6. Schema v3 requires exact current PCM SHA-256 and active lease consent receipt. Only VOICED embeddings enter bounded speaker history; non-voiced windows are suppressed. The A4 novelty/C3 impulse regression was added but NOT_RUN; no A4/C3 E2E PASS is claimed. Exact module compile/direct checks PASS for lease receipt, PCM match/mismatch, suppression, history retention, consent reset and reset API. Full repository pytest not run; last visible Actions run 45277411451 startup_failure/no jobs. No Android microphone proof. Handoff: v14/handoffs/RESEARCH_PERCEPTION_SPEAKER_PCM_BINDING_20261123_RUN28.md @ d6c0b07c6fcb2fd5529dcce022c5e0f861e1644f. Stale #2433 still contains separate transactional A4 outcome/N10 path; not ported. PR-body update and #2433 coordination comment were blocked by GitHub API 403 (account email verification required); branch files/handoff were committed. Existing sanitized owner receipt #825 confirms base SHA 8d93236 installed with auto-update enabled; separate diagnostics #826 say AI runtime STOPPED_BY_USER, autostart false, model process stopped. No new chat/update/restart/log-page action was taken; P0 #1904 remains open.",
       "run28_checkpoint": {
         "branch": "research-perception/v14-audio-duplex-bridge-20261123-run21",
         "pr": 2448,
@@ -438,9 +438,15 @@
             "environment": "CI",
             "result": "BLOCKED",
             "reason": "startup_failure; zero jobs"
+          },
+          {
+            "name": "synthetic A5-A4-C3 impulse integration regression",
+            "environment": "LOCAL_LINUX / CI",
+            "result": "NOT_RUN",
+            "reason": "Full repository pytest unavailable; exact-head Actions startup_failure with zero jobs"
           }
         ],
-        "e2e_scope": "Synthetic PCM16 impulse -> A5 RAW EAR -> A4 novelty/speaker evidence -> C3 admission summary; not a real microphone turn",
+        "e2e_scope": "Synthetic PCM16 impulse A5->A4->C3 regression is ADDED_NOT_RUN; local PASS covers only the speaker registry module, not a real consumer turn.",
         "device": "Base SHA 8d93236 installed per sanitized owner receipt #825; AI runtime STOPPED_BY_USER per diagnostics #826; PR #2448 feature REDMI_UNVERIFIED",
         "release": "NOT_RELEASED",
         "updater": "Auto-update enabled for installed base per #825; no update request/deployment for PR #2448; runtime stop respected",
