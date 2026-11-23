@@ -611,3 +611,19 @@ def test_operator_native_probe_holds_exclusive_lease_through_receiver_call(tmp_p
         assert runtime.paused is False
     finally:
         runtime.close()
+
+def test_native_probe_rejects_wrong_exclusive_lease_token_and_keeps_approval(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    try:
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        with approval.runtime_probe_lease(runtime) as token:
+            with pytest.raises(PermissionError, match="active exclusive Runtime lease"):
+                approval.consume(
+                    runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"],
+                    lease_token=token + "wrong",
+                )
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record["status"] == "PENDING"
+        assert runtime.current is None
+    finally:
+        runtime.close()
