@@ -67,7 +67,7 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
     runtime = _replace_once(runtime, worker_old, worker_new, "post-turn learning dispatch")
 
     marker = b"        mark('ingress')\n        monitor=NativePressureMonitor"
-    inserted = b"""        mark('ingress')
+    inserted = """        mark('ingress')
         # Exact acknowledgements are plain-text only and never bypass RAW EAR.
         greeting=None
         from .fast_greeting import is_text_only_event
@@ -162,7 +162,7 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
             self.notice('Antwort gespeichert · FINAL')
             self.turn_event=None
             return {'skip_online_world_update':True,'fastpath':'EXACT_GREETING_ACK'}
-        monitor=NativePressureMonitor"""
+        monitor=NativePressureMonitor""".encode("utf-8")
     runtime = _replace_once(runtime, marker, inserted, "early Runtime ingress hook")
     compile(runtime, RUNTIME_PATH, "exec")
 
