@@ -1,0 +1,277 @@
+"""Bounded-batch M1 training and validation routines.
+
+These routines only consume train/validation splits. They never request the test
+split; test access remains owned by the preregistration gate in ArrayDataset.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Iterable
+
+import numpy as np
+import torch
+from torch import Tensor, nn
+import torch.nn.functional as F
+
+from .array_data import ArrayDataset, InputBundle, WindowBatch
+from .base import (
+    DirectMAE,
+    FrozenRepresentationProbe,
+    M1JEPA,
+    variance_covariance_regularizer,
+)
+
+
+@dataclass(frozen=True)
+class FitConfig:
+    epochs: int = 20
+    batch_size: int = 256
+    learning_rate: float = 1e-3
+    weight_decay: float = 1e-4
+    patience: int = 4
+    min_delta: float = 1e-5
+    gradient_clip_norm: float = 1.0
+    collapse_weight: float = 0.05
+
+    def __post_init__(self) -> None:
+        if self.epochs < 1 or self.batch_size < 1 or self.patience < 1:
+            raise ValueError("epochs, batch_size and patience must be positive")
+        if self.learning_rate <= 0 or self.weight_decay < 0:
+            raise ValueError("invalid optimizer settings")
+        if self.gradient_clip_norm <= 0 or self.collapse_weight < 0:
+            raise ValueError("invalid gradient or regularizer setting")
+
+
+@dataclass(frozen=True)
+class FitReport:
+    best_epoch: int
+    epochs_run: int
+    best_validation_mae: float
+    final_training_loss: float
+    optimizer_steps: int
+
+
+def _torch_bundle(batch: WindowBatch, device: torch.device) -> InputBundle:
+    return InputBundle(
+        x=torch.as_tensor(batch.inputs.x, device=device, dtype=torch.float32),
+        seasonal=torch.as_tensor(batch.inputs.seasonal, device=device, dtype=torch.float32),
+        calendar=torch.as_tensor(batch.inputs.calendar, device=device, dtype=torch.float32),
+    )
+
+
+def _torch_target(batch: WindowBatch, device: torch.device) -> Tensor:
+    return torch.as_tensor(batch.target, device=device, dtype=torch.float32)
+
+
+@torch.no_grad()
+def evaluate_mae(
+    model: nn.Module,
+    dataset: ArrayDataset,
+    *,
+    split: str = "validation",
+    batch_size: int = 256,
+    device: str | torch.device = "cpu",
+) -> float:
+    target_device = torch.device(device)
+    model.to(target_device)
+    model.eval()
+    absolute_sum = 0.0
+    element_count = 0
+    for batch in dataset.iter_batches(split, batch_size=batch_size):
+        bundle = _torch_bundle(batch, target_device)
+        target = _torch_target(batch, target_device)
+        prediction = model(bundle)
+        absolute_sum += float(torch.abs(prediction - target).sum().item())
+        element_count += target.numel()
+    if element_count == 0:
+        raise ValueError(f"no valid windows available in {split} split")
+    return absolute_sum / element_count
+
+
+def _fit_supervised(
+    model: DirectMAE | FrozenRepresentationProbe,
+    dataset: ArrayDataset,
+    config: FitConfig,
+    *,
+    device: str | torch.device,
+    probe_only: bool,
+) -> FitReport:
+    target_device = torch.device(device)
+    model.to(target_device)
+    if probe_only:
+        model.encoder.requires_grad_(False)
+        parameters = [p for p in model.readout.parameters() if p.requires_grad]
+    else:
+        parameters = [p for p in model.parameters() if p.requires_grad]
+    if not parameters:
+        raise ValueError("no trainable parameters")
+    optimizer = torch.optim.AdamW(
+        parameters, lr=config.learning_rate, weight_decay=config.weight_decay
+    )
+    best_state = None
+    best_validation = float("inf")
+    best_epoch = 0
+    stale_epochs = 0
+    optimizer_steps = 0
+    final_loss = float("nan")
+    epochs_run = 0
+
+    for epoch in range(1, config.epochs + 1):
+        model.train()
+        loss_sum = 0.0
+        batches = 0
+        for batch in dataset.iter_batches("train", batch_size=config.batch_size):
+            bundle = _torch_bundle(batch, target_device)
+            target = _torch_target(batch, target_device)
+            optimizer.zero_grad(set_to_none=True)
+            prediction = model(bundle)
+            loss = F.l1_loss(prediction, target)
+            if not torch.isfinite(loss):
+                raise FloatingPointError("non-finite supervised MAE loss")
+            loss.backward()
+            nn.utils.clip_grad_norm_(parameters, config.gradient_clip_norm)
+            optimizer.step()
+            optimizer_steps += 1
+            loss_sum += float(loss.detach().item())
+            batches += 1
+        if not batches:
+            raise ValueError("no valid training windows")
+        final_loss = loss_sum / batches
+        validation = evaluate_mae(
+            model, dataset, split="validation",
+            batch_size=config.batch_size, device=target_device,
+        )
+        epochs_run = epoch
+        if validation < best_validation - config.min_delta:
+            best_validation = validation
+            best_epoch = epoch
+            best_state = {
+                key: value.detach().cpu().clone()
+                for key, value in model.state_dict().items()
+            }
+            stale_epochs = 0
+        else:
+            stale_epochs += 1
+            if stale_epochs >= config.patience:
+                break
+
+    if best_state is None:
+        raise RuntimeError("training did not produce a finite validation checkpoint")
+    model.load_state_dict(best_state)
+    return FitReport(
+        best_epoch=best_epoch,
+        epochs_run=epochs_run,
+        best_validation_mae=best_validation,
+        final_training_loss=final_loss,
+        optimizer_steps=optimizer_steps,
+    )
+
+
+def fit_direct_mae(
+    model: DirectMAE,
+    dataset: ArrayDataset,
+    config: FitConfig = FitConfig(),
+    *,
+    device: str | torch.device = "cpu",
+) -> FitReport:
+    """Train the direct raw-target MAE control using train/validation only."""
+    return _fit_supervised(model, dataset, config, device=device, probe_only=False)
+
+
+def fit_frozen_probe(
+    model: FrozenRepresentationProbe,
+    dataset: ArrayDataset,
+    config: FitConfig = FitConfig(),
+    *,
+    device: str | torch.device = "cpu",
+) -> FitReport:
+    """Fit only the MAE readout; the copied JEPA representation remains frozen."""
+    return _fit_supervised(model, dataset, config, device=device, probe_only=True)
+
+
+def fit_jepa(
+    model: M1JEPA,
+    dataset: ArrayDataset,
+    config: FitConfig = FitConfig(),
+    *,
+    device: str | torch.device = "cpu",
+) -> FitReport:
+    """Train context encoder + predictor; update target encoder by EMA each step."""
+    target_device = torch.device(device)
+    model.to(target_device)
+    parameters = [p for p in model.parameters() if p.requires_grad]
+    optimizer = torch.optim.AdamW(
+        parameters, lr=config.learning_rate, weight_decay=config.weight_decay
+    )
+    best_state = None
+    best_validation = float("inf")
+    best_epoch = 0
+    stale_epochs = 0
+    optimizer_steps = 0
+    final_loss = float("nan")
+    epochs_run = 0
+
+    for epoch in range(1, config.epochs + 1):
+        model.train()
+        loss_sum = 0.0
+        batches = 0
+        for batch in dataset.iter_batches("train", batch_size=config.batch_size):
+            bundle = _torch_bundle(batch, target_device)
+            future = _torch_target(batch, target_device)
+            optimizer.zero_grad(set_to_none=True)
+            output = model(bundle, future)
+            prediction_loss = model.latent_prediction_loss(output)
+            anti_collapse = variance_covariance_regularizer(output["context"])
+            loss = prediction_loss + config.collapse_weight * anti_collapse
+            if not torch.isfinite(loss):
+                raise FloatingPointError("non-finite JEPA objective")
+            loss.backward()
+            nn.utils.clip_grad_norm_(parameters, config.gradient_clip_norm)
+            optimizer.step()
+            model.update_target_encoder()
+            optimizer_steps += 1
+            loss_sum += float(loss.detach().item())
+            batches += 1
+        if not batches:
+            raise ValueError("no valid training windows")
+        final_loss = loss_sum / batches
+
+        # This validation score is latent prediction loss, not forecasting MAE.
+        model.eval()
+        val_sum = 0.0
+        val_batches = 0
+        with torch.no_grad():
+            for batch in dataset.iter_batches("validation", batch_size=config.batch_size):
+                output = model(_torch_bundle(batch, target_device), _torch_target(batch, target_device))
+                val_loss = model.latent_prediction_loss(output)
+                if not torch.isfinite(val_loss):
+                    raise FloatingPointError("non-finite JEPA validation loss")
+                val_sum += float(val_loss.item())
+                val_batches += 1
+        if not val_batches:
+            raise ValueError("no valid validation windows")
+        validation = val_sum / val_batches
+        epochs_run = epoch
+        if validation < best_validation - config.min_delta:
+            best_validation = validation
+            best_epoch = epoch
+            best_state = {
+                key: value.detach().cpu().clone()
+                for key, value in model.state_dict().items()
+            }
+            stale_epochs = 0
+        else:
+            stale_epochs += 1
+            if stale_epochs >= config.patience:
+                break
+
+    if best_state is None:
+        raise RuntimeError("JEPA training did not produce a finite validation checkpoint")
+    model.load_state_dict(best_state)
+    return FitReport(
+        best_epoch=best_epoch,
+        epochs_run=epochs_run,
+        best_validation_mae=best_validation,
+        final_training_loss=final_loss,
+        optimizer_steps=optimizer_steps,
+    )
