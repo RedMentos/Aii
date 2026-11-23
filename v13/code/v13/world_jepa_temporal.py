@@ -2047,13 +2047,3 @@ def combined_source_forget_guard(store, source_id):
             "temporal_rows_requeued": requeued,
         }
         yield report
-        # The caller's Memory transaction completed successfully. Record only
-        # bounded identifiers/counts; never copy source text or packet payloads.
-        store.log("temporal_source_forget", None, {
-            "component": "world_predictor",
-            "count": len(affected),
-            "retained_cases_saved": requeued,
-            "source_id": source_id,
-            "status": "PASS",
-            "mode": "shadow",
-        })
