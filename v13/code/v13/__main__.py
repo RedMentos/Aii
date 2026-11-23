@@ -53,7 +53,7 @@ def main(argv=None):
             report=doctor(r,a.full);print(json.dumps(report,ensure_ascii=False,indent=2));return 2 if report['data_integrity_errors'] else 0
         if a.command=='download':r.models.install(a.model);return 0
         if a.command=='probe':
-            from .verification import probe
+            from .verification import probe, public_probe_summary
             if a.mode=='sustained':
                 from .proofs import probe_sustained
                 result=probe_sustained(r,a.cycles)
@@ -66,7 +66,7 @@ def main(argv=None):
             elif a.mode=='step12':
                 from .proofs import probe_step12
                 result=probe_step12(r)
-            else:result=probe(r)
+            else:result=public_probe_summary(probe(r))
             print(json.dumps(result,ensure_ascii=False,indent=2));return 0 if result['status'] in {'SMOKE_PASS','JEF_MODES_PASS','VERTICAL_CHECKS_PASS','BODY_STATE_CHECKS_PASS','BOUNDED_STABILITY_PASS'} else 2
         if a.command=='ask':
             if a.no_observers:r.cfg['observer_mode']='off'
