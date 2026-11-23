@@ -1,5 +1,9 @@
 name: V14 M1 DATA tests
 
+concurrency:
+  group: v14-m1-data-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
