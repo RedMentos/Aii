@@ -109,7 +109,7 @@
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
       "proof_environment": "NOT_RUN_LOCAL; NO_EXACT_HEAD_CI; REDMI_UNVERIFIED",
-      "next_step": "Wait for the combined Boss #2443 code head a5e536a to obtain a complete exact-head staged/integrated/optimizer-resume/migration/privacy/deployment matrix. Then rebase JEPA #2454 onto that exact green head (no force-push), rebind JEPA-owned nested pins from read-back bytes, coordinate Core stage/deployer pins, and run temporal + postcommit + staged/integrated + source-forget/restart/rollback on Python 3.13 and 3.14. Production ActionSelection multi-SourceRef producer remains a cross-organ dependency; keep B1/B2 receivers SHADOW.",
+      "next_step": "After the combined Boss #2443 matrix is green, rebase #2454 onto that exact head (no force-push), rebind JEPA-owned pins, then first measure B1/B2 target-adapter retention on a persisted prior source-disjoint receiver cohort (current WeightDeltaReceipt explicitly reports target_adapter_retention=NOT_MEASURED). Compare old/new adapters on the identical cohort with shuffled/no-history negatives; only then run the full Python 3.13/3.14 temporal/postcommit/staged/integrated/source-forget/restart/rollback matrix. Core owns stage/deployer pins; keep B1/B2 SHADOW.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-23T21:14:38.127Z",
       "latest_candidate_pr": {
@@ -163,7 +163,7 @@
         "ci": "PR_HEAD_STAGED_249_10SKIP_47_INTEGRATED_424_3SKIP_58_PY313_314_64_EACH; MERGED_PUSH_30_OF_30_SUCCESS",
         "scope": "production Runtime/SleepRuntime Store-backed WorldJEPA numeric consumer with persistent Adam/inverse/RNG optimizer state, gated legacy optimizer bootstrap, per-role held-out-vs-mean/zero/shuffled Planner receiver gate, Android no-clobber renameat2 checkpoint publication"
       },
-      "proof": "Run15 code/test checkpoint 978e257399a9a23eff8119b3f9611a1ba6d410de (source commit 3122e30830a94848f4ffe17fb55146d8c5a614d0) adds previous-checkpoint byte/source/digest verification before rollback state publication, same-Store warm-cache invalidation/reload, and missing/corrupt fallback negative controls. The exact Aii project tests were NOT_RUN locally (no checkout; GitHub DNS failure) and no exact-head CI is attached to PR #2454. No native B1/B2 body-weight, cross-organ latent, or Redmi learning proof. The positive warm-cache test explicitly clears the cache before asserting WARMED, because the update path itself already leaves a warm model.",
+      "proof": "Run15 code/test checkpoint 978e257399a9a23eff8119b3f9611a1ba6d410de (source commit 3122e30830a94848f4ffe17fb55146d8c5a614d0) adds previous-checkpoint byte/source/digest verification before rollback state publication, same-Store warm-cache invalidation/reload, and missing/corrupt fallback negative controls. The exact Aii project tests were NOT_RUN locally (no checkout; GitHub DNS failure) and no exact-head CI is attached to PR #2454. No native B1/B2 body-weight, cross-organ latent, or Redmi learning proof. The positive warm-cache test explicitly clears the cache before asserting WARMED, because the update path itself already leaves a warm model. Current WorldJEPA predictor retention is measured against fixed EMA target anchors, but the B1/B2 WeightDeltaReceipt still reports target_adapter_retention=NOT_MEASURED; the receiver loop is not complete until that old-cohort adapter-retention path is persisted and measured.",
       "latest_temporal_candidate": {
         "pr": 2454,
         "branch": "jepa-memory/v14-temporal-boss-2443-rebase-20261123-run14",
@@ -195,7 +195,9 @@
         "handoff_commit": "05ec1f4527860960677bda93d7736ad0c1a289a1",
         "superseded_test_commit": "f56e7067e6f2df5900231324dd5b2d55ea277477",
         "latest_pr_head_before_status_sync": "99ebac7797977360e9baf23bd621d62b6eb457dc",
-        "compare_to_parent_latest": "35_AHEAD_47_BEHIND"
+        "compare_to_parent_latest": "35_AHEAD_47_BEHIND",
+        "target_adapter_retention": "NOT_MEASURED",
+        "world_predictor_retention": "MEASURED_IN_EXPERIMENTAL_GATE"
       },
       "collaboration_write_blocker": "GitHub PR comments and PR metadata updates returned HTTP 403 because the linked GitHub account has no verified email. Repository content commits/readbacks succeeded. Optional account email verification would restore PR discussion/metadata writes; no device action is needed."
     },
