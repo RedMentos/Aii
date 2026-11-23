@@ -26,11 +26,18 @@ def soft_limit(role, cfg, remaining):
     if role not in ("C3_LANGUAGE", "B1_DETAIL", "B2_GIST"):
         return None
     if (type(remaining) not in (int, float) or not math.isfinite(remaining)
-            or remaining >= 55 or remaining <= 0):
+            or remaining <= 0):
         return None
-    # B1/B2 output is JSON-constrained. The native phase budget includes
-    # grammar generation; C3 needs first-token and answer reserve as well.
-    reserved = 10 if role == "C3_LANGUAGE" else 9
+    # C3 always has a bounded first-prefill envelope, even when the overall
+    # turn deadline is generous. This is a BOOT latency policy, not a claim
+    # about measured Redmi token rate. B1/B2 keep their existing short-window
+    # policy until real device timings justify changing their admission.
+    if role == "C3_LANGUAGE":
+        reserved = 10
+    else:
+        if remaining >= 55:
+            return None
+        reserved = 9
     n = int(max(0, remaining-reserved) * 13)
     return max(96, min(520, n))
 
