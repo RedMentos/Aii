@@ -228,3 +228,16 @@ Next internal actions: finish #2370 exact CI; combine #2396→#2391 after final 
 ## Late CI refresh — 2026-11-23T01:03:20Z
 
 JEPA #2396's Temporal WorldJEPA T8 Windows workflow has now completed SUCCESS. Its other three workflows still fail at the Termux12 training-resume builder pin; QA #2391 must rebase after the JEPA code and recompute the full pin chain. This does not establish optimizer-resume, native GGUF training, persistent weight changes or Redmi learning. Boss #2370 remains 15 queued / 1 cancelled / 1 skipped with no new-head result. No user action.
+
+## Perception checkpoint — 2026-11-23 (A3 UI lineage consumer + R-105)
+
+**No user action required.** No manual Termux command, update request, model download/swap, permission change or device mutation was performed.
+
+- New draft PR: https://github.com/RedMentos/Aii/pull/2401, exact head 62551749d0b7b0de7434e82b6381f305cf178b30, stacked on JEPA #2397 (f63a5877774f58b6928b4e8dd7125651e9d8173d) and Perception #2395. It adds a second source-lineage gate at the real UI-frame consumer: the A3 tile projector is used only if every training source is still present in the VISION index and as a live IMAGE row in the Store with the exact digest. Five new synthetic negative cases cover forgotten, mismatched, tombstoned, legacy-missing and malformed lineage.
+- LOCAL_LINUX isolated guard logic: **6/6 PASS**. Full repository pytest/package compile: **BLOCKED / NOT_RUN** because no Aii checkout is mounted and git ls-remote cannot resolve github.com. Exact-head GitHub ingress and staged/integrated workflows were **IN_PROGRESS** at the last readback; do not call them green until rechecked. No Android/Termux/Redmi test; REDMI_UNVERIFIED.
+- The new frame path is still a consent-bound one-shot Perception adapter, not a real MediaProjection provider or normal Runtime/C3 consumer. Core #2379 and QA #2356 integration remain open; JEPA/QA source-forget composition remains a dependency. PR #2401 is DRAFT / NOT_RELEASED.
+- R-105 reviewed the full ECL preprint (arXiv:2607.29353v1, 2026-07-31). Its TCN embedder + scenario-specific head split is a useful experiment, but hardware evidence is custom Chameleon ASIC, not Android; 4-bit ZSL lost 19.6 points vs FP32. ECL repo/weights license not verified; no code or weights imported.
+
+The last confirmed private V13OBS #115 receipt before this checkpoint reported installed release aed1d2b826290c95c70356b5d8b864b5ef382be4, updater enabled and Runtime/Dashboard UP_TO_DATE; that receipt is not a current-run install proof. Fresh read-only relay requests #671 HEALTH, #672 PIPELINE_STATUS and #673 DIAGNOSTICS were issued; no device comments/receipts had arrived at the last poll. Do not infer new installation or health from the old receipt.
+
+**Next internal action:** poll exact #2401 CI, repair only a Perception-owned failing consumer test if observed, and coordinate QA to compose #2397/#2395 into the lifecycle builder before integration. Core must combine the MediaProjection provider with this same UI lease and a real C3 consumer. Continue whole-Canon work; no model or permission change is requested from the user.
