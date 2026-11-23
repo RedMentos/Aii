@@ -1862,7 +1862,7 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 
 ## JEPA & Memory — run 16, 2026-11-23
 
-**Candidate head:** `1cfac4a1518a959a2022b81e796e3dfc0b6b2cf0`, draft PR [#2454](https://github.com/RedMentos/Aii/pull/2454). Handoff: [JEPA_MEMORY_RUN16_RECEIVER_RETENTION_20261123.md](https://github.com/RedMentos/Aii/blob/3066dac6aaaa5573b13c1dc0e0864f144e08c2c2/v14/handoffs/JEPA_MEMORY_RUN16_RECEIVER_RETENTION_20261123.md).
+**Code/test checkpoint:** `d60fcb66b24f44b061a48c173b5de87fc05ecbe0`, draft PR [#2454](https://github.com/RedMentos/Aii/pull/2454). Handoff: [JEPA_MEMORY_RUN16_RECEIVER_RETENTION_20261123.md](https://github.com/RedMentos/Aii/blob/b4daf28a0551847f1ff3e3363e3078e2702e3516/v14/handoffs/JEPA_MEMORY_RUN16_RECEIVER_RETENTION_20261123.md).
 
 ### New code candidate
 
@@ -1875,7 +1875,7 @@ This remains a SHADOW float receiver adapter consumed by the existing bodyview r
 
 ### Verification
 
-- Latest exact-head Actions run [#45272190117](https://github.com/RedMentos/Aii/actions/runs/45272190117): `startup_failure`, **0 jobs**. Combined status: 0 contexts / pending. No CI test ran.
+- Latest exact code-head Actions run [#45273031215](https://github.com/RedMentos/Aii/actions/runs/45272190117): `startup_failure`, **0 jobs**. Combined status: 0 contexts / pending. No CI test ran.
 - Local Aii project tests: **NOT_RUN / BLOCKED**. Container has Python 3.13.5, NumPy 2.3.5 and pytest 9.0.2, but no Aii checkout and GitHub DNS resolution fails.
 - Synthetic Python numeric control: **PASS** for unchanged retention, encoder drift, compensated receiver, degraded receiver rejection and source-overlap detection. This is not the project test suite.
 - PR #2454 remains DRAFT / mergeable=false, 59 ahead / 47 behind current Boss #2443 head `cdf6b64067ac426ba32194100d3764f6e74c105f`; merge base `6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4`. Do not rebase until the combined Boss exact-head matrix is green. Core #2457 must then rebase onto the verified JEPA head.
