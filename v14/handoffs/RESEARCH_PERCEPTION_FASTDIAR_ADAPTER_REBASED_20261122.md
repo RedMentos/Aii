@@ -154,3 +154,11 @@ LOCAL_LINUX CPython 3.13.5 isolated hash-binding helper: 5/5 PASS (matching dige
 - Exact-head CI workflows 45092084821 / 45092084985 / 45092084865 / 45092084961 / 45092084889 / 45092084896 / 45092084916 / 45092084867 are queued or pending at this read; safe-additive is SKIPPED and release-event workflow CANCELLED. No CI PASS is claimed. Full local Aii checkout is unavailable (no mount; GitHub DNS lookup fails), so full local pytest is NOT_RUN.
 - Core handoff posted on PR #2370: rebind its own `SOURCE_BLOBS["v13/audio_voice_cues.py"]` to `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`, then refresh downstream stage/deployer pins. Core can keep Teacher Ear OFF and omit `audio_teacher_ear.py` until it deliberately supplies the module and both default-false opt-ins. No hash guard should be weakened.
 - Redmi/device: `REDMI_UNVERIFIED`. No AudioRecord provider, live microphone, model inference, user transcript, permission change, update request, model/weight change or device mutation occurred. Installed release remains `aed1d2b826290c95c70356b5d8b864b5ef382be4` according to the latest private receipt; this candidate is not installed.
+
+
+## Import-time absence regression — 2026-11-23
+
+- Added `test_audio_voice_cues_module_imports_without_optional_teacher_file`: copies the actual `v13` package into an isolated temporary tree while excluding `audio_teacher_ear.py`, then imports `v13.audio_voice_cues` in a fresh subprocess. This directly guards the Core acoustic-only source-copy case; the earlier consumer test separately proves no transcript admission/persistence and no consent bypass.
+- New test blob: `a45c711ce7aac12beb5f9c567096c0e406962a08`; exact GitHub readback matched. New test commit: `3f99bdcc6c133f44a897d59e5ef2a9292176f917`. Current code branch head is now `3f99bdcc6c133f44a897d59e5ef2a9292176f917`.
+- LOCAL_LINUX isolated subprocess pattern check: PASS on CPython 3.13.5. This exercises the import isolation pattern with a minimal package; it is not the full copied Aii package test. Full Aii checkout remains unavailable, so the new repository test has not been executed locally.
+- Exact-head CI was triggered by the new commit and is queued/pending at the last read. No CI pass or Redmi result is claimed.
