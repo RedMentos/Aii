@@ -9,10 +9,10 @@ import test_process_restart_instrumented as harness
 
 
 class InstrumentationDriverTests(unittest.TestCase):
-    def test_instrumentation_foregrounds_activity_before_running_allowlisted_test(self):
-        output = "INSTRUMENTATION_RESULT: stream=\n\nOK (1 test)\nINSTRUMENTATION_CODE: -1"
+    def test_instrumentation_unlocks_emulator_without_prelaunching_target(self):
+        output = "INSTRUMENTATION_RESULT: stream=\\n\\nOK (1 test)\\nINSTRUMENTATION_CODE: -1"
         with (
-            patch.object(harness, "prepare_foreground_activity") as prepare,
+            patch.object(harness, "prepare_emulator_for_instrumentation") as prepare,
             patch.object(harness, "adb", return_value=output) as adb_call,
         ):
             self.assertEqual(harness.run_instrumentation(harness.INITIAL_METHOD), output)
@@ -26,7 +26,7 @@ class InstrumentationDriverTests(unittest.TestCase):
     def test_instrumentation_rejects_failure_even_if_runner_returns_text(self):
         output = "FAILURES!!!\nTests run: 1, Failures: 1\nINSTRUMENTATION_CODE: -1"
         with (
-            patch.object(harness, "prepare_foreground_activity"),
+            patch.object(harness, "prepare_emulator_for_instrumentation"),
             patch.object(harness, "adb", return_value=output),
         ):
             with self.assertRaisesRegex(AssertionError, "reported failure"):
@@ -34,7 +34,7 @@ class InstrumentationDriverTests(unittest.TestCase):
 
     def test_instrumentation_rejects_missing_success_marker(self):
         with (
-            patch.object(harness, "prepare_foreground_activity"),
+            patch.object(harness, "prepare_emulator_for_instrumentation"),
             patch.object(harness, "adb", return_value="INSTRUMENTATION_CODE: -1"),
         ):
             with self.assertRaisesRegex(AssertionError, "exactly one passing test"):
@@ -42,7 +42,7 @@ class InstrumentationDriverTests(unittest.TestCase):
 
     def test_unlisted_instrumentation_method_never_reaches_adb(self):
         with (
-            patch.object(harness, "prepare_foreground_activity") as prepare,
+            patch.object(harness, "prepare_emulator_for_instrumentation") as prepare,
             patch.object(harness, "adb") as adb_call,
         ):
             with self.assertRaisesRegex(ValueError, "not allowlisted"):
@@ -50,75 +50,30 @@ class InstrumentationDriverTests(unittest.TestCase):
         prepare.assert_not_called()
         adb_call.assert_not_called()
 
-    def test_prepare_foreground_activity_uses_known_launcher_sequence(self):
-        start_output = "Starting: Intent { cmp=" + harness.COMPONENT + " }"
+    def test_prepare_emulator_wakes_unlocks_and_requires_stopped_target(self):
         with (
-            patch.object(harness, "adb", side_effect=["", "", start_output]) as adb_call,
-            patch.object(harness, "time", wraps=harness.time) as time_module,
-            patch.object(harness, "process_id", return_value="1234") as pid,
-            patch.object(harness, "wait_for_activity_focus") as wait_focus,
+            patch.object(harness, "adb", return_value="") as adb_call,
+            patch.object(harness, "process_id", return_value="") as pid,
         ):
-            harness.prepare_foreground_activity()
+            harness.prepare_emulator_for_instrumentation()
 
         self.assertEqual(
             adb_call.call_args_list,
             [
                 call("shell", "input", "keyevent", "KEYCODE_WAKEUP"),
                 call("shell", "wm", "dismiss-keyguard"),
-                call("shell", "am", "start", "-n",
-                     harness.COMPONENT, timeout=45.0),
             ],
         )
-        time_module.sleep.assert_called_once_with(2.0)
         pid.assert_called_once_with()
-        wait_focus.assert_called_once_with(start_output=start_output, pid="1234")
 
-    def test_prepare_foreground_activity_fails_if_start_did_not_create_process(self):
+    def test_prepare_emulator_rejects_host_prelaunched_target(self):
         with (
-            patch.object(harness, "adb", side_effect=["", "", "Error: Activity not found"]),
-            patch.object(harness.time, "sleep"),
-            patch.object(harness, "process_id", return_value=""),
-            patch.object(harness, "diagnostic_logcat", return_value="no app launch"),
-            patch.object(harness, "wait_for_activity_focus") as wait_focus,
+            patch.object(harness, "adb", return_value="") as adb_call,
+            patch.object(harness, "process_id", return_value="1234"),
         ):
-            with self.assertRaisesRegex(AssertionError, "did not create companion process"):
-                harness.prepare_foreground_activity()
-        wait_focus.assert_not_called()
-
-    def test_wait_for_activity_focus_requires_window_focus_and_resumed_activity(self):
-        launcher_window = "mCurrentFocus=Window{abc u0 com.android.launcher3/.Launcher}"
-        target_window = (
-            "mCurrentFocus=Window{def u0 "
-            + harness.PACKAGE + "/.MainActivity}"
-        )
-        target_activity = (
-            "mResumedActivity: ActivityRecord{ghi u0 "
-            + harness.PACKAGE + "/.MainActivity t1}"
-        )
-        with (
-            patch.object(
-                harness, "adb",
-                side_effect=[
-                    launcher_window, target_activity,
-                    target_window, target_activity,
-                ],
-            ) as adb_call,
-            patch.object(harness.time, "monotonic",
-                         side_effect=[0.0, 0.1, 0.2]),
-            patch.object(harness.time, "sleep") as sleep,
-        ):
-            harness.wait_for_activity_focus(timeout=1.0, start_output="Status: ok", pid="1234")
-
-        self.assertEqual(
-            adb_call.call_args_list,
-            [
-                call("shell", "dumpsys", "window", timeout=20.0),
-                call("shell", "dumpsys", "activity", "activities", timeout=20.0),
-                call("shell", "dumpsys", "window", timeout=20.0),
-                call("shell", "dumpsys", "activity", "activities", timeout=20.0),
-            ],
-        )
-        sleep.assert_called_once_with(0.5)
+            with self.assertRaisesRegex(AssertionError, "must be stopped"):
+                harness.prepare_emulator_for_instrumentation()
+        self.assertEqual(adb_call.call_count, 2)
 
     def test_process_id_accepts_pidof_exit_one_as_no_process(self):
         completed = harness.subprocess.CompletedProcess(
