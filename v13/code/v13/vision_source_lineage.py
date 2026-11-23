@@ -55,6 +55,35 @@ def projector_uses_source(record: dict, source_id: str) -> bool:
                 or sid in seen):
             return True
         seen.add(sid)
+    stats_mode = record.get("source_stats_mode")
+    stats_records = record.get("source_stats")
+    if stats_mode == "EXACT_SOURCE_STATS_V1":
+        if type(stats_records) is not list or not stats_records:
+            return True
+        stats_seen = {}
+        for item in stats_records:
+            if type(item) is not dict or set(item) != {"source_id", "source_sha256", "path", "sha256", "n"}:
+                return True
+            sid = item.get("source_id")
+            source_sha = item.get("source_sha256")
+            path = item.get("path")
+            artifact_sha = item.get("sha256")
+            count = item.get("n")
+            if (type(sid) is not str or not sid or sid in stats_seen
+                    or type(source_sha) is not str or not _SHA256.fullmatch(source_sha)
+                    or type(artifact_sha) is not str or not _SHA256.fullmatch(artifact_sha)
+                    or type(path) is not str or not path.startswith("data/vision/")
+                    or type(count) is not int or count < 1):
+                return True
+            stats_seen[sid] = source_sha
+        if stats_seen != {item["source_id"]: item["sha256"] for item in lineage}:
+            return True
+    elif stats_mode in ("SOURCE_CAP_EXCEEDED", "UNAVAILABLE_STORAGE"):
+        if stats_records != []:
+            return True
+    elif stats_mode is not None or stats_records is not None:
+        return True
+
     captions = record.get("captions")
     if type(captions) is dict:
         prefix = source_id + ":"
