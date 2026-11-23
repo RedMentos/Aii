@@ -179,14 +179,14 @@ class LiveHookTests(Base):
         channels=attention_mods[0]['channels']
         self.assertAlmostEqual(channels['reward_error'],-.25,6)
         self.assertAlmostEqual(channels['surprise'],.25,6)
-        self.assertAlmostEqual(channels['calibration_error'],.25,6)
+        self.assertNotIn('calibration_error',channels)
         receipt=self.r.store.state('ATTENTION_OUTCOME_RECEIPT:'+done[0]['response'])[0]
         self.assertAlmostEqual(receipt['prediction_error'],-.25,6)
 
         next_event=self.ev('follow-up after omission')
         recent=self.a.recent_modulators(next_event,self.r.session)
         self.assertAlmostEqual(recent['surprise'],.25,6)
-        self.assertAlmostEqual(recent['calibration_error'],.25,6)
+        self.assertAlmostEqual(recent['reward_error'],-.25,6)
         modulated=self.a.modulate(next_event,modulators=recent)
         self.assertGreater(modulated['salience'],0)
         self.assertGreater(modulated['caution'],0)

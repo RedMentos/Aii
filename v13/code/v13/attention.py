@@ -79,7 +79,8 @@ def caution(**x):
 def from_modulators(ch):
     """Map WP-N10 modulator channels onto salience/caution inputs (shared vocabulary, separate effects)."""
     s={'novelty':max(0.,ch.get('novelty',0.)),'prediction_error':max(0.,ch.get('surprise',0.),ch.get('world_prediction_error',0.))}
-    c={'world_surprise':max(0.,ch.get('world_prediction_error',0.)),'source_risk':max(0.,ch.get('calibration_error',0.))}
+    c={'world_surprise':max(0.,ch.get('world_prediction_error',0.)),
+       'source_risk':max(0.,ch.get('calibration_error',0.),-ch.get('reward_error',0.))}
     if ch.get('rule_violation',0.)>0:s['goal_violation']=ch['rule_violation']
     return {k:v for k,v in s.items() if v},{k:v for k,v in c.items() if v}
 def offer_features(offer):
@@ -261,7 +262,6 @@ class Attention:
                       (KEY,(state_row['version'] if state_row else 0)+1,dumps(st)))
             if self.n is not None:
                 channels={'reward_error':prediction_error,'surprise':abs(prediction_error)}
-                if prediction_error<0:channels['calibration_error']=-prediction_error
                 if u>0:channels['task_success']=u
                 elif u<0:channels['action_error']=-u
                 modulator=self.n.signal_in_transaction(c,resp['event_id'],path=PATH,
@@ -282,10 +282,9 @@ class Attention:
                 'predicted_usefulness':predicted_usefulness,'prediction_error':prediction_error,
                 'modulator_packet_id':modulator['packet_id'] if modulator else None}
     def recent_modulators(self,event_id,session=None,limit=RECENT_EVENTS):
-        """N10 channels of the last `limit` prior events (same session), max per channel, decayed RELAX per event back.
-        Feeds modulate(); only positive magnitudes count (salience/caution are unsigned)."""
+        """N10 channels of recent prior events, decayed by RELAX. Keep reward_error signed so negative residuals raise caution."""
         rows=self.s.rows("SELECT p.event_id,p.payload FROM packets p JOIN events e ON e.id=p.event_id WHERE p.kind='ModulatorPacket' AND e.rowid<(SELECT rowid FROM events WHERE id=?) AND (? IS NULL OR e.session_id=?) ORDER BY p.rowid DESC LIMIT 64",(event_id,session,session))
-        order=[];ch={}
+        order=[];ch={};reward_error=None
         for r in rows:
             if r['event_id'] not in order:
                 if len(order)>=limit:break
@@ -294,7 +293,11 @@ class Attention:
             try:from .neuromod import channels_from;c=channels_from(json.loads(r['payload']))
             except Exception:continue
             for k,v in c.items():
-                if v>0:ch[k]=max(ch.get(k,0.),w*v)
+                if k=='reward_error':
+                    candidate=w*v
+                    if reward_error is None or abs(candidate)>abs(reward_error):reward_error=candidate
+                elif v>0:ch[k]=max(ch.get(k,0.),w*v)
+        if reward_error is not None:ch['reward_error']=reward_error
         return {k:round(v,6) for k,v in ch.items()}
     def source_outcome(self,event_id,source_text,output):
         """§4B.4 source-bound A4 re-look outcome; only the stored, hash-matching span may label."""
