@@ -20,6 +20,7 @@ RECOVERY_MAX_DEADLINE_S = 50
 NATIVE_FIRST_RESERVE_FRACTION = .87
 DEFAULT_PREANSWER_FRACTION = .45
 MIN_ROLE_SLICE_S = 1.0
+RECOVERY_FOCAL_RESERVE_S = 1.0
 
 
 def register_store_telemetry():
@@ -128,16 +129,25 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
         reserve=deadline-ordinary_end
         allotted=ordinary_end
         reason="NORMAL_COGNITIVE_PREANSWER"
-    if observer_deadline is not None:
-        allotted=min(allotted,observer_deadline)
-    # Expired observer windows are honest (zero). The existing observer
-    # scheduler and focal loop must not block C3 to make up missed time.
-    remaining = max(0,allotted-now)
+    # The total pre-answer envelope includes both initial body work and C4.
+    # During C3 recovery, reserve its final second for focal selection/re-entry;
+    # B1/B2 receive only the earlier body window. Normal turns keep the old
+    # shared observer/focal envelope unchanged.
+    preanswer_end=max(start,allotted)
+    focal_reserve=(min(RECOVERY_FOCAL_RESERVE_S,max(0.,preanswer_end-start))
+                   if recover else 0.)
+    body_end=max(start,preanswer_end-focal_reserve)
+    # Per-role callers may further cap the body window. Do not subtract the
+    # focal reserve twice when Cognition checks an already allocated role slice.
+    effective_body_end=body_end if observer_deadline is None else min(body_end,observer_deadline)
+    remaining=max(0.,effective_body_end-now)
     return {
         "schema": SCHEMA,
         "recovery": recover,
         "reason": reason,
-        "preanswer_end_monotonic": max(start, allotted),
+        "preanswer_end_monotonic": preanswer_end,
+        "body_preanswer_end_monotonic": body_end,
+        "focal_reserved_seconds": round(focal_reserve,3),
         "preanswer_seconds_available": round(remaining,3),
         "c3_reserved_seconds": round(reserve,3),
         "recent_real_prefill_failures": failures,
