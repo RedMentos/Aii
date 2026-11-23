@@ -210,3 +210,14 @@ This supersedes the previous unresolved-trigger note above.
 - Redmi companion process-death, real tap input, Accessibility/MediaProjection, and Android app-control integration remain REDMI_UNVERIFIED.
 
 Next: retrieve exact run 45163946321 completion/logs. If emulator boot times out, classify as CI infrastructure BLOCKED rather than a test PASS; if instrumentation fails, fix the actual failure and rerun. Keep PR draft until a completed emulator result and current-base integration review exist.
+
+## QA run 11 second follow-up — exact code head 12c190fc (2026-11-23)
+
+- Exact run 45163946321 reached Android API-33 emulator, installed both APKs, then failed in the host driver at `wait_for_process(present=True)` immediately after the first ActivityScenario returned. The ActivityScenario closes MainActivity on completion; Android may naturally terminate the now-unbound target process. Requiring a PID to remain present after instrumentation was an invalid harness assumption, not proof that Stop persistence failed.
+- Fix committed at `12c190fc856b75a2095e9e9be63718f45f7bc311`: the instrumented target Activity records its own PID plus `SystemClock.elapsedRealtimeNanos()` to two fixed app-private test markers. The host reads only those allowlisted markers via `run-as`, accepts natural teardown exit or force-stops if still resident, verifies absence before the second instrumentation run, and requires a later target-process start time after provider restart. Both instrumentation tests still assert persisted OFF.
+- Added unit coverage for marker allowlisting/format, natural ActivityScenario teardown, resident-process force-stop, failure to disappear, and non-advancing process start time.
+- Exact head workflows: push run 45166539659 and PR run 45166550118 are IN_PROGRESS; the PR helper-test step has completed, Gradle setup is still running, and the emulator process-death step has not started yet. Separate private-bridge security run 45166539786 is SUCCESS. No emulator PASS is claimed.
+- Redmi companion remains REDMI_UNVERIFIED. The target app was not installed or changed on the user's phone; this is only disposable GitHub emulator CI.
+- Branch remains a draft QA stack; do not merge to current release without rebase/transplant and full review.
+
+Next: inspect the completed helper/Gradle job and wait for the new emulator test. If the PID marker is missing or the second start time does not advance, treat that as a real instrumentation failure and fix the exact path; do not revert to requiring the process to remain alive after ActivityScenario teardown.
