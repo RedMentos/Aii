@@ -61,3 +61,15 @@ Run exact-head Python 3.13/3.14 Core and staged Runtime CI, fix any failures, th
 - Current Core PR #2450 branch has advanced through the code/test and handoff commits; verify the live PR head before using this checkpoint. The signed-envelope revalidation, expiry-safe recovery and bidirectional status-forgery controls remain present.
 - This is a privacy/output-boundary regression, not a device action or proof of Android execution.
 - Exact-head Actions remains blocked at workflow startup (BuildFailed / startup_failure, zero jobs); no project pytest result is available. The local cryptographic invariant probe from Run 2 remains the only local PASS.
+
+
+## Run 4 — final branch/PR/CI readback (2026-11-23)
+
+- Exact current branch and PR #2450 head: `8bc50de8aec7ec4fa8b1e2b9c9f3f0d642b1404d`; PR #2450 remains OPEN, metadata `draft=false`, mergeable=true, base QA head `6dab323f1b59663682d0af65ffbd75c5de489578`. Its description still contains the old “DRAFT” wording; the PR metadata is authoritative for draft state. No release merge has occurred.
+- Latest exact-head Actions run `45266675329` is a push run ending `startup_failure`, `path=BuildFailed`, workflow ID `428247013`, zero jobs. Earlier runs `45264814820`, `45264803102`, `45265670309`, `45266269969`, `45266257875` show the same zero-job startup failure. The previous green #2450 checks are only for old head `d09fe403`; no exact-head CI PASS exists.
+- Parent QA #2356 is still at `6dab323f`: staged/integrated, Core outcome and Android outcome contract PASS; Android companion process-restart workflow FAIL. This parent gate remains blocking.
+- GitHub API explicitly rejected separate PR creation and PR comment creation with HTTP 403 because the connected account has no verified email address. Existing PR #2450 can still be updated through branch commits. This is a user-side account prerequisite for creating additional PRs/comments; do not infer that it caused the separate Actions startup failures.
+- Local CPython 3.13.5 synthetic P-256 invariant probe remains PASS for both status-forgery directions and delayed verification timestamp. It is not a project-module pytest run. Full local Aii tests remain BLOCKED by absent checkout and GitHub DNS failure.
+- No Redmi/emulator action was taken; REDMI_UNVERIFIED. The last private device receipt remains STOPPED_BY_USER.
+
+**Next:** user should verify at least one email address on the connected GitHub account if further standalone PRs or review comments are required. Separately, investigate the zero-job Actions startup failure and rerun exact Python 3.13/3.14 project tests. Keep PR #2450 unmerged until its exact-head CI and parent Android process-restart gate pass.
