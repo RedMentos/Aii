@@ -1855,3 +1855,6 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 
 
 **GitHub collaboration note:** PR conversation comments and PR metadata updates returned HTTP 403 because the linked GitHub account has no verified email; repository content commits and readbacks still succeeded. Optional account email verification would restore those collaboration writes. This is not a blocker for the current code-only work and does not require device action.
+
+
+**Remaining receiver-retention gap (do not overclaim):** the experimental WorldJEPA predictor has its fixed-EMA retention gate, and B1/B2 use bounded Adam with parameter hashes/delta norms, gradient measurements, source-disjoint current holdouts and shuffled/zero-latent controls. However, `finalize_weight_delta_receipts()` still writes `target_adapter_retention: NOT_MEASURED`. The next JEPA code task after rebase is to persist the prior receiver holdout outcomes, evaluate old/new B1/B2 adapters on the identical source-disjoint retained cohort, add shuffled/no-history negatives and record the measured result in the receipt. Until then the receiver loop is partial/SHADOW, not fully retained.
