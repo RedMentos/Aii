@@ -459,11 +459,13 @@ class WorldJEPAStoreConsumer:
         if type(rows) is not list or len(rows) > MAX_ROWS:
             raise ValueError("replay memory budget")
         row_ids = []
+        base_row_keys = {
+            "action_id", "source_id", "fingerprint", "source_sha256", "outcome_sha256",
+            "created", "s", "a", "y",
+        }
+        source_hashes = {}
         for row in rows:
-            if type(row) is not dict or set(row) != {
-                "action_id", "source_id", "fingerprint", "source_sha256", "outcome_sha256",
-                "created", "s", "a", "y",
-            }:
+            if type(row) is not dict or set(row) not in (base_row_keys, base_row_keys | {"source_refs"}):
                 raise ValueError("invalid replay memory row")
             if (type(row["source_id"]) is not str or not row["source_id"]
                     or len(row["source_id"]) > 256
@@ -477,6 +479,11 @@ class WorldJEPAStoreConsumer:
             _sha(row["outcome_sha256"])
             _vector(row["s"], 4)
             _vector(row["y"], 3)
+            for ref in _row_source_refs(row):
+                prior = source_hashes.get(ref["source_id"])
+                if prior is not None and prior != ref["sha256"]:
+                    raise ValueError("persisted source digest changed")
+                source_hashes[ref["source_id"]] = ref["sha256"]
             row_ids.append(row["action_id"])
         if len(set(row_ids)) != len(row_ids):
             raise ValueError("duplicate replay row")
@@ -490,18 +497,24 @@ class WorldJEPAStoreConsumer:
                 or set(train_ids + holdout_ids) != set(row_ids)):
             raise ValueError("train/holdout cursor mismatch")
         row_by_id = {row["action_id"]: row for row in rows}
-        source_hashes = {}
-        for row in rows:
-            prior = source_hashes.get(row["source_id"])
-            if prior is not None and prior != row["source_sha256"]:
-                raise ValueError("persisted source digest changed")
-            source_hashes[row["source_id"]] = row["source_sha256"]
-        train_sources = {row_by_id[action_id]["source_id"] for action_id in train_ids}
-        holdout_sources = {row_by_id[action_id]["source_id"] for action_id in holdout_ids}
+        train_sources = {
+            ref["source_id"] for action_id in train_ids
+            for ref in _row_source_refs(row_by_id[action_id])
+        }
+        holdout_sources = {
+            ref["source_id"] for action_id in holdout_ids
+            for ref in _row_source_refs(row_by_id[action_id])
+        }
         if train_sources & holdout_sources:
             raise ValueError("persisted source holdout overlap")
-        train_source_hashes = {row_by_id[action_id]["source_sha256"] for action_id in train_ids}
-        holdout_source_hashes = {row_by_id[action_id]["source_sha256"] for action_id in holdout_ids}
+        train_source_hashes = {
+            ref["sha256"] for action_id in train_ids
+            for ref in _row_source_refs(row_by_id[action_id])
+        }
+        holdout_source_hashes = {
+            ref["sha256"] for action_id in holdout_ids
+            for ref in _row_source_refs(row_by_id[action_id])
+        }
         if train_source_hashes & holdout_source_hashes:
             raise ValueError("persisted source digest holdout overlap")
         def persisted_content(action_id):
@@ -541,12 +554,12 @@ class WorldJEPAStoreConsumer:
             raise ValueError("pending T8 buffer budget")
         active_ids = set(active["fingerprints"]) if active is not None else set()
         seen, source_hashes = set(), {}
-        required = {
+        base_row_keys = {
             "action_id", "source_id", "fingerprint", "source_sha256", "outcome_sha256",
             "created", "s", "a", "y",
         }
         for row in rows:
-            if type(row) is not dict or set(row) != required:
+            if type(row) is not dict or set(row) not in (base_row_keys, base_row_keys | {"source_refs"}):
                 raise ValueError("invalid pending T8 row")
             action_id, source_id = row["action_id"], row["source_id"]
             if (type(action_id) is not str or not action_id or len(action_id) > 128
@@ -556,14 +569,15 @@ class WorldJEPAStoreConsumer:
                     or not _finite_number(row["created"])):
                 raise ValueError("pending T8 identity mismatch")
             _sha(row["fingerprint"])
-            source_sha = _sha(row["source_sha256"])
+            _sha(row["source_sha256"])
             _sha(row["outcome_sha256"])
             _vector(row["s"], 4)
             _vector(row["y"], 3)
-            prior = source_hashes.get(source_id)
-            if prior is not None and prior != source_sha:
-                raise ValueError("pending source digest changed")
-            source_hashes[source_id] = source_sha
+            for ref in _row_source_refs(row):
+                prior = source_hashes.get(ref["source_id"])
+                if prior is not None and prior != ref["sha256"]:
+                    raise ValueError("pending source digest changed")
+                source_hashes[ref["source_id"]] = ref["sha256"]
             seen.add(action_id)
 
     def _read_state(self):
