@@ -11,6 +11,7 @@ on:
       - "v13/code/v13/android_companion_ui_frames.py"
       - "v13/code/tests/test_android_companion_ui_frames.py"
       - "v13/code/tests/test_android_companion_transport_frames.py"
+      - "v14/handoffs/CORE_MEDIA_PROJECTION_FRAME_PROVIDER_CURRENT_BASE_20261123.md"
       - ".github/workflows/v14-core-media-projection-provider.yml"
   pull_request:
     branches:
@@ -21,6 +22,7 @@ on:
       - "v13/code/v13/android_companion_ui_frames.py"
       - "v13/code/tests/test_android_companion_ui_frames.py"
       - "v13/code/tests/test_android_companion_transport_frames.py"
+      - "v14/handoffs/CORE_MEDIA_PROJECTION_FRAME_PROVIDER_CURRENT_BASE_20261123.md"
       - ".github/workflows/v14-core-media-projection-provider.yml"
 
 permissions:
