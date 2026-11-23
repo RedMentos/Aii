@@ -9,13 +9,13 @@ The diagnostic native receiver verified the receiver GGUF by pathname, then laun
 - `v13/code/v13/native_latent_receiver.py` opens the receiver model beneath the canonical `home/models` root by descriptor-relative, no-follow traversal.
 - The final descriptor must be a non-empty regular file; FIFO opens are nonblocking and rejected.
 - SHA-256 and stable device/inode/size/mtime/ctime are verified on the open descriptor.
-- The native child receives that exact descriptor through `subprocess.Popen(pass_fds=...)` and loads `/proc/self/fd/N`, not the mutable original pathname. Post-load verification re-hashes the descriptor; rename-only ctime changes are tolerated while device/inode/size/mtime and bytes remain stable, whereas in-place changes are rejected.
+- The native child receives that exact descriptor through `subprocess.Popen(pass_fds=...)` and loads `/proc/self/fd/N`, not the mutable original pathname. Post-load verification re-hashes the descriptor and requires the full device/inode/size/mtime/ctime identity to remain stable. A concurrent rename/replacement still cannot redirect the child to new bytes; the metadata drift causes the receipt to be rejected.
 - The descriptor remains open through native completion and its hash/identity are rechecked before accepting the receipt.
 - The staged receiver overlay's source SHA-256 pin is refreshed; the new tests are in the existing native receiver workflow path.
 
 ## Evidence boundary
 
-- LOCAL_LINUX_ISOLATED: CPython 3.13.5 exact-helper reproduction passed descriptor inheritance across atomic pathname replacement; the child read the verified original SHA-256. Nonblocking FIFO rejection and post-open in-place mutation detection passed. `py_compile` passed for the isolated harness.
+- LOCAL_LINUX_ISOLATED: CPython 3.13.5 exact-helper reproduction passed descriptor inheritance across atomic pathname replacement; the child read the verified original SHA-256 after the pathname was replaced, then the parent rejected the receipt on ctime/identity drift. Nonblocking FIFO rejection and post-open in-place mutation detection passed. `py_compile` passed for the isolated harness.
 
 - LOCAL_LINUX primitive check: POSIX child inherited an open model descriptor, the pathname was atomically replaced before the child opened `/proc/self/fd/N`, and the child still read the original bytes.
 - Full Aii checkout tests: NOT_RUN here because GitHub DNS is unavailable and no checkout is mounted. Exact-source GitHub CI is required.
