@@ -20,7 +20,7 @@ The regression no longer relies on a removed vision helper or on a sleep-only ob
 ## Evidence boundary
 
 - Parent #2459 exact-head CI: PASS, 7/7 workflows.
-- This new PR exact-head CI: PENDING; no pass is claimed before its own run completes.
+- Exact code-bearing head `79a1734dfae5604a829eb0371c9d4dc7436286a8`: CI PASS. Vision source-lineage passed 29 tests on Python 3.13 and 29 on Python 3.14; compile and regression steps passed (run `45253808193`). Staged runtime passed 255 tests, 10 skipped, 47 subtests; source recall passed 15 tests; integrated regression passed 437 tests, 3 skipped, 58 subtests (run `45253808195`).
 - LOCAL_LINUX full Aii suite: BLOCKED / NOT_RUN; no checkout is mounted in the execution environment.
 - Redmi/Termux: REDMI_UNVERIFIED. No device access, model/weight change, user-data mutation or remote action was performed.
 - No runtime behavior or model authority changed; this is a regression-test-only change.
