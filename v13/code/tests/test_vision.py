@@ -291,7 +291,7 @@ class Vision(unittest.TestCase):
         self.assertFalse(worker.is_alive(), 'training worker did not finish')
         self.assertIsInstance(outcome.get('error'), ValueError)
         self.assertIn('Stale state write', str(outcome['error']))
-        self.assertIsNone(vision.load(self.store)[state_key])
+        self.assertIsNone(vision.load(self.store).get(state_key))
         self.assertEqual(
             list((self.home / 'data/vision').glob(artifact_prefix + '*.npz')), []
         )
