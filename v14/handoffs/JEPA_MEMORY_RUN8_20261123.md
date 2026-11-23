@@ -7,7 +7,7 @@
   - `v13/code/v13/bodyview.py`: bounded prompt-facing omission status for temporal B1/B2 receiver; no authority.
   - `v13/code/tests/test_v14_world_jepa_postcommit_runtime.py`: route-conditioned synthetic B2 outcome cohort plus omission-status regression.
 - Parent experiment remains PR #2405 (DRAFT / NOT_RELEASED). QA #2402 owns the A3 source-forget staged composition; do not silently rebase over its work.
-- **Integration ancestry:** PR #2405 currently targets QA branch `qa/v14-jepa-source-lifecycle-rebase-20261123-run16` at `c5d847ca36567ea265610b235941bf251f1425fa`, but compare with the JEPA head is still `diverged` (57 ahead / 22 behind; merge base `de4143790bc9ff7e3dc32c40fbc2a4fe9d09dd64`). The base ref is current, but the head ancestry is stale. Do not merge or blindly rebase; QA/Boss must recompose the JEPA changes without overwriting the A3 source-forget chain.
+- **Integration ancestry:** PR #2405 currently targets QA branch `qa/v14-jepa-source-lifecycle-rebase-20261123-run16` at `c5d847ca36567ea265610b235941bf251f1425fa`, but compare with the JEPA head is still `diverged` (59 ahead / 22 behind; merge base `de4143790bc9ff7e3dc32c40fbc2a4fe9d09dd64`). The base ref is current, but the head ancestry is stale. Do not merge or blindly rebase; QA/Boss must recompose the JEPA changes without overwriting the A3 source-forget chain.
 
 
 ## Why
