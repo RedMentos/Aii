@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T00:05:08.222Z",
+  "updated_at": "2026-11-23T00:16:05.798Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; exact SHA readback 30/30 observed check-runs SUCCESS. Authenticated private PIPELINE_STATUS #619 confirms the same SHA installed, auto-update enabled, runtime/dashboard UP_TO_DATE and last_error NONE. DIAGNOSTICS #620 still shows a slow 2-token stored turn and B1/B2 TIME_BUDGET. Current candidates remain DRAFT / CI pending; functional and whole-Canon acceptance remain open.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -176,18 +176,19 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Registry, licensing, alternatives for C3/B1/B2 and controller",
       "acceptance": "Dated candidate matrix, reproducible local/Redmi timing-quality comparisons, isolated try/rollback, UI proposal without replacing active models",
-      "proof_environment": "LOCAL_LINUX isolated helper + CI_PENDING; no Android capture",
-      "next_step": "Perception #2375 head eb6752d3d5cd42f5f3f964b4480c7954564cb6d9 has 4 FAIL / 5 SUCCESS / 1 policy SKIPPED: missing _summary import and pre-consumer buffer-zeroization ownership tests. Review comment posted. No model candidate was downloaded, swapped or measured on Redmi.",
+      "proof_environment": "Official upstream release + PyPI metadata review; no local Termux/Redmi install or model inference",
+      "next_step": "R-100 in draft PR #2393 verifies the official sherpa-onnx v2.0.3 CPython 3.14 / Android API 24+ ARM64 wheel metadata (2.7 MB) and companion binary/core wheel metadata; PyPI provenance is absent and Termux/Bionic compatibility is unverified. No package or model was downloaded. Next: only after explicit user approval, test wheel tags + ELF dependencies in a disposable Termux venv, then compare English/German quality and RSS/TTFT; do not swap the installed voice path.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T22:09:19.069Z",
+      "last_checkpoint": "2026-11-23T00:16:05.798Z",
       "latest_candidate_pr": {
-        "pr": 2142,
-        "head_sha": "67c1300093dd99ffcf818f370fff29b58fd7fc3b",
-        "tested_code_sha": "40deb8a56686455b361ba41e63cb57b981b5a71b",
-        "ci": "PASS_44861145442_23_TESTS",
-        "scope": "read-only sequential C3 candidate lab; native inference NOT_RUN"
+        "pr": 2393,
+        "head_sha": "0448ccb0b9d49ac5dbb5150a618479864ea49d58",
+        "base": "boss/v14-run11-current-evidence-sync-20261122",
+        "state": "OPEN_DRAFT",
+        "ci": "RUNTIME_DEPLOYMENT_INTEGRITY_QUEUED",
+        "scope": "sherpa-onnx 2.0.3 Android CPython 3.14 wheel audit; no installation or model download"
       },
-      "proof": "Perception RAW EAR FIR anti-alias producer and comparator were integrated with Core pins in #2327→9097d634; candidate CI 27 SUCCESS / 1 expected SKIPPED. Isolated Linux parity/decimator timing is host-only. Android audio capture and calibrated speaker model remain open. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture."
+      "proof": "Perception RAW EAR FIR anti-alias producer and comparator were integrated with Core pins in #2327→9097d634; candidate CI 27 SUCCESS / 1 expected SKIPPED. Isolated Linux parity/decimator timing is host-only. Android audio capture and calibrated speaker model remain open. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. R-100 / PR #2393: runtime wheel candidate only; no provenance, no dependency closure proof, no model-weight license or performance claim."
     },
     {
       "id": "V14-006",
@@ -198,19 +199,19 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "SYNTHETIC adapter candidate / CI_PENDING; no Android provider",
-      "next_step": "Research #2380 was merged into Boss docs branch (not release); R-091 remains input-effect research, not semantic utility; R-092 is Android AudioRecord platform geometry/signed RAW EAR ingress. #2375 remains WIRED_SYNTHETIC with failures; #2379 is a one-shot MediaProjection provider candidate with 7 checks in progress. No live screen/mic capture.",
+      "proof_environment": "CI / SYNTHETIC frame and local projector fixtures; no Android MediaProjection or Redmi capture",
+      "next_step": "Perception #2375 exact head e21a85 has 5/5 GitHub workflows SUCCESS on synthetic frames; the A5 packet reaches the lease-gated UI context cache and returns a 320-char A5 envelope, but normal Runtime→C3 dispatch is still separate. Core #2379 must be rebased on a combined QA+Perception base, then consume the bounded envelope through C3 under the same live lease. #2369 fixed its own stale comparator pin; exact-head comparator/staged jobs are still queued/in progress.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T22:09:19.069Z",
+      "last_checkpoint": "2026-11-23T00:16:05.798Z",
       "latest_candidate_pr": {
-        "pr": 2312,
-        "head_sha": "5221314d3c01ab6d874ecc0a8b8ff72c34e504a2",
-        "base": "qa/v14-companion-os-permission-contract-20261122",
-        "state": "OPEN_DRAFT_PARTIAL_CI_PENDING",
-        "scope": "signed one-shot RAW EAR consumer; Android-guaranteed 44.1 kHz mono PCM16; 88,200-byte / 117,600-character one-second cap; exact source/generation/signature/consent/replay checks; no microphone provider or learning/action authority",
-        "ci": "RUN_44992975596_PENDING; RUN_44992975599_QUEUED"
+        "pr": 2375,
+        "head_sha": "e21a85a329ea25a2208fcfa64edc216884b55bf1",
+        "base": "gpt6/v13-private-remote-bridge-20261111@aed1d2b826290c95c70356b5d8b864b5ef382be4",
+        "state": "OPEN_DRAFT",
+        "ci": "5_WORKFLOWS_SUCCESS_SYNTHETIC",
+        "scope": "one-shot frame producer adapter; not Android capture or C3 consumption"
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture."
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. #2375 e21a85: 5/5 workflows SUCCESS; synthetic frame → RAW EYE/A4/A5 cache only. A3 test fits a tiny synthetic hashed-label projector; no gradient/JEPA/retention claim. #2379 still has separate Runtime→C3 work."
     },
     {
       "id": "V14-007",
@@ -253,11 +254,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
-      "proof_environment": "CI only; no APK install, pairing or Redmi OS action",
-      "next_step": "Rebase the Core MediaProjection provider against a combined companion+Perception base, wire the consent lease through the real C3 consumer, and prove process restart/revocation before any Android claim.",
+      "proof_environment": "GitHub CI + private V13OBS release receipt; no APK install, MediaProjection session, microphone capture or Redmi control proof",
+      "next_step": "Boss/Core: compose QA companion #2356 + Perception #2375 + Core #2379 on one exact ancestor; wire the signed frame receipt and same UIObservationLease through RAW EYE→bounded A5 envelope→real C3 prompt consumer, and test revocation/cancel/restart. Private V13OBS #115 confirms the installed release is aed1d2 and auto-updater is UP_TO_DATE, but no new MediaProjection or AudioRecord capture is proven.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T22:09:19.069Z",
-      "proof": "#2375 e21a85 contains provider entrypoint; #2379 still fails import on stale base; #2356 process restart blocked by emulator System UI ANR.",
+      "last_checkpoint": "2026-11-23T00:16:05.798Z",
+      "proof": "#2375 e21a85 contains provider entrypoint; #2379 still fails import on stale base; #2356 process restart blocked by emulator System UI ANR. Private V13OBS #115 at 2026-11-23T00:05:52Z: runtime/dashboard RUNNING, updater enabled and UP_TO_DATE at aed1d2; this is release deployment only, not new provider capability proof.",
       "last_verified_at": "2026-11-23T00:05:08.222Z"
     },
     {
@@ -391,10 +392,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "LOCAL_LINUX isolated + CI candidate; no Android audio",
-      "next_step": "RAW EAR #2384 head 5cd8ffae has bounded feature summary + direct negative tests, but duplicate test functions and exact workflows queued. AudioRecord provider/RECORD_AUDIO still absent/OFF.",
+      "proof_environment": "GitHub CI synthetic/diagnostic adapter; full local Aii tests BLOCKED by GitHub DNS; no Termux/Redmi audio",
+      "next_step": "Perception #2369 corrected the RAW EAR comparator test/workflow pin to current audio_voice_cues.py blob 5dbb0fd5; current PR head 930f9a has model-lab/privacy/consent checks PASS but comparator and staged/integrated checks remain QUEUED/IN_PROGRESS. Core #2370 composer still pins stale blob b18e450 and must rebind its own chain. FASTDIAR is diagnostic-only; no diarization model or real speech corpus has run.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T22:09:19.069Z",
+      "last_checkpoint": "2026-11-23T00:16:05.798Z",
       "latest_candidate_pr": {
         "pr": 2275,
         "head_sha": "b19ff77cc769e670a46b6467798fba94a6d19046",
@@ -402,7 +403,7 @@
         "ci": "FAIL_RAW_EAR_44958073016_STAGED_44958072992",
         "tested_code_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c"
       },
-      "proof": "RAW EAR FIR anti-alias decimator is integrated in 9097d634 and candidate CI passed. Speaker-change decision remains DEFER without verified calibration; no identity model, Android mic or learned acoustic weights. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture."
+      "proof": "RAW EAR FIR anti-alias decimator is integrated in 9097d634 and candidate CI passed. Speaker-change decision remains DEFER without verified calibration; no identity model, Android mic or learned acoustic weights. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. #2369: code/test pin fix 9cca6f0, handoff head 930f9a; exact CI partial only. Private V13OBS #115 still shows B1/B2 no offers, but it is not evidence for speaker-change quality. No FASTDIAR model, weights or private audio were used."
     },
     {
       "id": "V14-019",
