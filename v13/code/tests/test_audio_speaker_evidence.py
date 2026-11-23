@@ -164,6 +164,10 @@ def test_consent_receipt_change_starts_fresh_speaker_epoch():
     assert evidence["reference_frame_end_ms"] is None
     assert evidence["cosine_similarity"] is None
     assert len(registry) == 1
+    assert registry.reset(source_id=SOURCE, generation_id="gen-consent", consent_receipt_ref="wrong-receipt") == 0
+    assert len(registry) == 1
+    assert registry.reset(source_id=SOURCE, generation_id="gen-consent", consent_receipt_ref=next_receipt) == 1
+    assert len(registry) == 0
 
     # A batch from the prior receipt cannot be admitted under the current lease.
     with pytest.raises(SpeakerEvidenceError, match="consent receipt"):
@@ -504,7 +508,10 @@ def test_a5_a4_c3_consumer_preserves_unverified_similarity_without_vectors(tmp_p
         persisted = json.dumps(result["packet"], sort_keys=True)
         assert '"vector"' not in persisted
         assert '"speaker_label": null' in persisted
-        assert result["packet"]["segments"][0]["acoustic"]["speaker_change_evidence"]["threshold_status"] == "CALLER_ASSERTED_UNVERIFIED"
+        speaker_packet = result["packet"]["segments"][0]["acoustic"]["speaker_change_evidence"]
+        assert speaker_packet["threshold_status"] == "CALLER_ASSERTED_UNVERIFIED"
+        assert "consent_receipt_ref" not in speaker_packet
+        assert RECEIPT not in json.dumps(speaker_packet)
     finally:
         runtime.store.close()
 
