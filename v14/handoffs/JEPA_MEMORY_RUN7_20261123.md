@@ -85,3 +85,10 @@ The private V13OBS issue #115 is the newest receipt read during this run. Instal
 
 
 The first R-107 documentation PR #2411 was closed as duplicate after its base branch advanced; replacement PR #2413 is based directly on current #2410 head and contains the same append-only ledger entry. No research content was lost.
+
+
+## Exact-head CI follow-up — 2026-11-23
+
+- The exact code/test head 30c5522e4ff676d591a81427091d990e09389f37 completed and FAILED the temporal-jepa suite in both Python 3.13.18 and 3.14.10: 20 passed, 1 failed. The failing consumer test showed that adding the explicit epistemic note pushed the 700-character prompt envelope over budget; bodyview removed the entire optional temporal context. This was a real prompt-budget regression, not a note assertion mismatch. Offline-bridge-security on that head passed.
+- Fixed on exact current code/test head b44340d4346a316e78deddf381c7762758c6fa18: per-action support counts remain in the full source-bound audit but are no longer duplicated in each compact B1/B2 prompt row. The prompt still carries the explicit prediction/not-fact-permission note, numeric prediction, uncertainty, 12-hex checkpoint, source fingerprints, and native-body/authority false fields. Added regressions for compact B1/B2 row shapes and audit support counts >=8.
+- Exact current-head checks were queued at readback: temporal-jepa Python 3.13 + 3.14 and offline-bridge-security. No PASS is claimed until these exact jobs finish. The prior 30c failure remains in history; do not erase it.
