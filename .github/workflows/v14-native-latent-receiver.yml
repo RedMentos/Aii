@@ -10,6 +10,8 @@ on:
       - gpt6/v13-private-remote-bridge-20261111
     paths:
       - "v13/code/v13/native_latent_receiver.py"
+      - "v13/code/v13/native_probe_approval.py"
+      - "v13/code/scripts/integrated_native_probe_approval_overlay_20261123.py"
       - "v13/code/v13/native/latent_receiver/**"
       - "v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py"
       - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
@@ -38,7 +40,7 @@ jobs:
       - name: Install focused Runtime test dependencies
         run: python -m pip install pytest==9.2.0 numpy==2.3.5 psutil PyYAML
       - name: Compile staged receiver and deploy chain
-        run: python -m py_compile v13/code/v13/native_latent_receiver.py v13/code/v13/cognition.py v13/code/v13/callosum.py v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py v13/code/scripts/termux_runtime_recovery_candidate_20261121.py v13/code/scripts/stage_integrated_candidate.py v13/code/v13/runtime_deploy.py v13/code/tests/test_native_latent_receiver.py v13/code/tests/test_native_latent_receiver_runtime.py v13/code/tests/test_native_latent_receiver_stage.py
+        run: python -m py_compile v13/code/v13/native_latent_receiver.py v13/code/v13/native_probe_approval.py v13/code/v13/cognition.py v13/code/v13/callosum.py v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py v13/code/scripts/integrated_native_probe_approval_overlay_20261123.py v13/code/scripts/termux_runtime_recovery_candidate_20261121.py v13/code/scripts/stage_integrated_candidate.py v13/code/v13/runtime_deploy.py v13/code/tests/test_native_latent_receiver.py v13/code/tests/test_native_latent_receiver_runtime.py v13/code/tests/test_native_latent_receiver_approval.py v13/code/tests/test_native_latent_receiver_stage.py
       - name: Test source tap identity and exact staged Runtime
         env:
           PYTHONPATH: v13/code
