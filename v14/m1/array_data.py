@@ -185,6 +185,8 @@ class ArrayDataset:
                     f"{(raw.get('Date') or '').strip()} {(raw.get('Time') or '').strip()}",
                     UCI_TIMESTAMP_FORMAT,
                 )
+                if stamp.second != 0 or stamp.microsecond != 0:
+                    raise ValueError(f"timestamp is not aligned to a whole minute at line {line_no}")
                 if previous is not None and stamp - previous != timedelta(minutes=1):
                     raise ValueError(f"non-contiguous minute timestamp at line {line_no}")
                 previous = stamp
