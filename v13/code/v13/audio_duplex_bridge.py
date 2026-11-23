@@ -379,13 +379,17 @@ def on_audio_input(runtime, audio_result, consent_lease, *, temporal_state=None,
     return decision
 
 
-def consume_pcm16_voice_window_with_duplex(runtime, pcm, *, consent_lease, **kwargs):
-    """Run the existing A5->A4->C3 PCM consumer and duplex bridge under one lease.
+def consume_pcm16_voice_window_with_duplex(
+    runtime, pcm, *, consent_lease, teacher_runtime=None,
+    teacher_opt_in=False, transcript_consent=False, **kwargs
+):
+    """Run RAW EAR/A4, duplex control, and an optional ephemeral A2 teacher.
 
     The caller must open audio_consent_lease(...) first and pass the same
     handle, temporal state and VAD stream through this function. No microphone
     is opened here; the only input is caller-supplied PCM already authorized
-    by the provider.
+    by the provider. The optional teacher runs only after the immediate duplex
+    decision, so ASR prefill cannot delay a permitted barge-in.
     """
     if not isinstance(consent_lease, AudioConsentLease) or consent_lease.active is not True:
         raise PermissionError("a live AudioConsentLease is required")
@@ -402,4 +406,28 @@ def consume_pcm16_voice_window_with_duplex(runtime, pcm, *, consent_lease, **kwa
         runtime, result, consent_lease,
         temporal_state=temporal_state, vad_stream=vad_stream,
     )
+    if teacher_runtime is not None:
+        from .audio_teacher_ear import enrich_audio_result_with_sherpa_teacher
+        try:
+            result["teacher_ear"] = enrich_audio_result_with_sherpa_teacher(
+                runtime, result, pcm,
+                teacher_runtime=teacher_runtime,
+                consent_lease=consent_lease,
+                teacher_opt_in=teacher_opt_in,
+                transcript_consent=transcript_consent,
+                temporal_state=temporal_state,
+                vad_stream=vad_stream,
+                token_budget=kwargs.get("token_budget", 512),
+            )
+        except Exception as exc:
+            result["teacher_ear"] = {
+                "status": "UNAVAILABLE",
+                "reason": type(exc).__name__,
+                "authority": "NONE",
+            }
+            runtime.store.log(
+                "teacher_ear_unavailable",
+                result["packet"].get("event_id"),
+                {"reason": type(exc).__name__},
+            )
     return result
