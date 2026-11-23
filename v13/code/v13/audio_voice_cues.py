@@ -701,6 +701,9 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         raise ValueError("vad_stream must be a SileroVADStream instance")
     if type(teacher_asr_opt_in) is not bool or type(transcript_persist_opt_in) is not bool:
         raise ValueError("Teacher Ear opt-in flags must be booleans")
+    if (type(consent_receipt) is not str or not consent_receipt.strip()
+            or len(consent_receipt) > 256):
+        raise PermissionError("a bounded local audio consent receipt is required")
     if transcript_persist_opt_in and not teacher_asr_opt_in:
         raise PermissionError("transcript persistence requires separate Teacher Ear ASR opt-in")
     if teacher_ear is not None and not isinstance(teacher_ear, SherpaOnlineTeacher):
