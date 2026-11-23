@@ -31,7 +31,6 @@ import android.view.WindowMetrics;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class MediaProjectionCaptureService extends Service {
     static final String ACTION_CAPTURE = "com.redmentos.v14.companion.CAPTURE_ONE_FRAME";
@@ -49,8 +48,7 @@ public final class MediaProjectionCaptureService extends Service {
     private VirtualDisplay virtualDisplay;
     private ImageReader imageReader;
     private MediaProjection.Callback projectionCallback;
-    private final AtomicBoolean frameClaimed = new AtomicBoolean(false);
-    private volatile boolean captureComplete;
+    private final CaptureSessionGate captureGate = new CaptureSessionGate();
     private int captureWidth;
     private int captureHeight;
     private int sourceWidth;
@@ -67,20 +65,24 @@ public final class MediaProjectionCaptureService extends Service {
 
     @Override public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && ACTION_DISCARD.equals(intent.getAction())) {
-            CompanionProvider.clearScreenFrame();
             stopCapture(true);
             stopSelf(startId);
             return START_NOT_STICKY;
         }
         if (intent == null || !ACTION_CAPTURE.equals(intent.getAction())) {
-            CompanionProvider.clearScreenFrame();
             stopCapture(true);
             stopSelf(startId);
             return START_NOT_STICKY;
         }
+
+        // One service instance represents one consent result and one frame.
+        // A duplicate ACTION_CAPTURE is ignored without stopping the active request.
+        if (!captureGate.begin()) return START_NOT_STICKY;
+
         if (!CompanionProvider.isEnabled(this)
                 || !CapabilityRegistry.isCurrentTermuxTrusted(this)
                 || ProjectionFrameStore.hasFrame(SystemClock.elapsedRealtime())) {
+            captureGate.complete();
             stopSelf(startId);
             return START_NOT_STICKY;
         }
@@ -89,14 +91,20 @@ public final class MediaProjectionCaptureService extends Service {
                 ? intent.getParcelableExtra(EXTRA_RESULT_DATA, Intent.class)
                 : intent.getParcelableExtra(EXTRA_RESULT_DATA);
         if (resultCode != Activity.RESULT_OK || resultData == null) {
+            captureGate.complete();
             stopSelf(startId);
             return START_NOT_STICKY;
         }
         try {
             startCaptureForeground();
+            if (!captureGate.activate()) {
+                stopForeground(true);
+                stopSelf(startId);
+                return START_NOT_STICKY;
+            }
             beginProjection(resultCode, resultData);
             worker.postDelayed(() -> {
-                if (!captureComplete) failCapture("capture timeout");
+                if (!captureGate.isComplete()) failCapture("capture timeout");
             }, CAPTURE_TIMEOUT_MS);
         } catch (Exception e) {
             failCapture(e.getClass().getSimpleName());
@@ -114,7 +122,7 @@ public final class MediaProjectionCaptureService extends Service {
         }
     }
 
-    private void beginProjection(int resultCode, Intent resultData) throws Exception {
+    private synchronized void beginProjection(int resultCode, Intent resultData) throws Exception {
         MediaProjectionManager manager =
                 (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
         if (manager == null) throw new IllegalStateException("MediaProjection manager unavailable");
@@ -145,13 +153,13 @@ public final class MediaProjectionCaptureService extends Service {
         imageReader.setOnImageAvailableListener(this::onImageAvailable, worker);
         projectionCallback = new MediaProjection.Callback() {
             @Override public void onStop() {
-                if (!captureComplete) failCapture("OS projection revoked");
+                if (!captureGate.isComplete()) failCapture("OS projection revoked");
             }
 
             @Override public void onCapturedContentResize(int width, int height) {
                 // This is a one-frame snapshot. Abort on rotation/resize instead of
                 // reusing a stale surface or creating a second virtual display.
-                if (!captureComplete && (width != sourceWidth || height != sourceHeight)) {
+                if (!captureGate.isComplete() && (width != sourceWidth || height != sourceHeight)) {
                     failCapture("display resized during one-shot capture");
                 }
             }
@@ -171,7 +179,7 @@ public final class MediaProjectionCaptureService extends Service {
     }
 
     private void onImageAvailable(ImageReader reader) {
-        if (captureComplete || !frameClaimed.compareAndSet(false, true)) return;
+        if (!captureGate.claimFrame()) return;
         Image image = null;
         Bitmap padded = null;
         Bitmap cropped = null;
@@ -180,7 +188,7 @@ public final class MediaProjectionCaptureService extends Service {
         try {
             image = reader.acquireLatestImage();
             if (image == null) {
-                frameClaimed.set(false);
+                captureGate.releaseFrameClaim();
                 return;
             }
             long frameEndElapsed = SystemClock.elapsedRealtime();
@@ -234,9 +242,22 @@ public final class MediaProjectionCaptureService extends Service {
             org.json.JSONObject receipt = UIFrameReceiptFactory.create(
                     bytes, source.getWidth(), source.getHeight(),
                     captureStartElapsed, frameEndElapsed, new ReceiptSigner());
-            ProjectionFrameStore.publish(bytes, receipt, frameEndElapsed);
+            synchronized (CompanionProvider.ACTION_GATE_LOCK) {
+                // Stop/disable and pairing rotation use this same outer lock before
+                // clearing the frame store. Revalidate at the final publication point,
+                // not only when the OS consent result first arrives.
+                if (!captureGate.canPublish()
+                        || !CompanionProvider.isEnabled(this)
+                        || !CapabilityRegistry.isCurrentTermuxTrusted(this)) {
+                    throw new SecurityException("capture session revoked before publication");
+                }
+                ProjectionFrameStore.publish(bytes, receipt, frameEndElapsed);
+                if (!captureGate.completeFrame()) {
+                    ProjectionFrameStore.clear();
+                    throw new IllegalStateException("capture session changed during publication");
+                }
+            }
             bytes = null; // ownership transferred to the one-shot in-memory store
-            captureComplete = true;
             releaseProjection();
             updateNotification("One frame ready for paired Termux; expires in 20 seconds");
             worker.postDelayed(() -> {
@@ -256,16 +277,19 @@ public final class MediaProjectionCaptureService extends Service {
     }
 
     private void failCapture(String reason) {
-        if (captureComplete) return;
-        captureComplete = true;
-        CompanionProvider.clearScreenFrame();
+        boolean completed;
+        synchronized (CompanionProvider.ACTION_GATE_LOCK) {
+            completed = captureGate.complete();
+            if (completed) ProjectionFrameStore.clear();
+        }
+        if (!completed) return;
         updateNotification("Screen frame not available: " + reason);
         releaseProjection();
         stopForeground(true);
         stopSelf();
     }
 
-    private void releaseProjection() {
+    private synchronized void releaseProjection() {
         if (virtualDisplay != null) {
             virtualDisplay.release();
             virtualDisplay = null;
@@ -284,8 +308,10 @@ public final class MediaProjectionCaptureService extends Service {
     }
 
     private void stopCapture(boolean clearFrame) {
-        if (clearFrame) CompanionProvider.clearScreenFrame();
-        captureComplete = true;
+        synchronized (CompanionProvider.ACTION_GATE_LOCK) {
+            captureGate.complete();
+            if (clearFrame) ProjectionFrameStore.clear();
+        }
         releaseProjection();
         stopForeground(true);
     }
@@ -325,7 +351,6 @@ public final class MediaProjectionCaptureService extends Service {
     }
 
     @Override public void onDestroy() {
-        CompanionProvider.clearScreenFrame();
         stopCapture(true);
         if (workerThread != null) {
             workerThread.quitSafely();
