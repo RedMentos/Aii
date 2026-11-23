@@ -4,18 +4,24 @@ on:
     branches:
       - boss/v14-native-latent-probe-rebase-20261122
       - core/v14-native-receiver-release-rebase-20261122-run14
+      - core/v14-native-probe-jepa-stack-20261123-run1
+      - core/v14-native-probe-jepa-stack-20261123-run2
   pull_request:
     branches:
       - boss/v14-recall-store-pin-rebind-20261122
       - gpt6/v13-private-remote-bridge-20261111
+      - jepa-memory/v14-temporal-boss-2443-rebase-20261123-run14
     paths:
       - "v13/code/v13/native_latent_receiver.py"
+      - "v13/code/v13/native_probe_approval.py"
+      - "v13/code/scripts/integrated_native_probe_approval_overlay_20261123.py"
       - "v13/code/v13/native/latent_receiver/**"
       - "v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py"
       - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
       - "v13/code/scripts/stage_integrated_candidate.py"
       - "v13/code/v13/runtime_deploy.py"
       - "v13/code/tests/test_native_latent_receiver*.py"
+      - "v13/code/tests/test_native_probe_approval_overlay.py"
       - "v13/code/tests/test_callosum.py"
       - ".github/workflows/v14-native-latent-receiver.yml"
 permissions:
@@ -38,12 +44,42 @@ jobs:
       - name: Install focused Runtime test dependencies
         run: python -m pip install pytest==9.2.0 numpy==2.3.5 psutil PyYAML
       - name: Compile staged receiver and deploy chain
-        run: python -m py_compile v13/code/v13/native_latent_receiver.py v13/code/v13/cognition.py v13/code/v13/callosum.py v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py v13/code/scripts/termux_runtime_recovery_candidate_20261121.py v13/code/scripts/stage_integrated_candidate.py v13/code/v13/runtime_deploy.py v13/code/tests/test_native_latent_receiver.py v13/code/tests/test_native_latent_receiver_runtime.py v13/code/tests/test_native_latent_receiver_stage.py
+        run: python -m py_compile v13/code/v13/native_latent_receiver.py v13/code/v13/native_probe_approval.py v13/code/v13/cognition.py v13/code/v13/callosum.py v13/code/scripts/integrated_native_latent_receiver_candidate_20261122.py v13/code/scripts/integrated_native_probe_approval_overlay_20261123.py v13/code/scripts/termux_runtime_recovery_candidate_20261121.py v13/code/scripts/stage_integrated_candidate.py v13/code/v13/runtime_deploy.py v13/code/tests/test_native_latent_receiver.py v13/code/tests/test_native_latent_receiver_runtime.py v13/code/tests/test_native_latent_receiver_approval.py v13/code/tests/test_native_latent_receiver_stage.py v13/code/tests/test_native_probe_approval_overlay.py
+      - name: Verify stage/deployer/overlay source pins
+        run: |
+          python - <<'PY'
+          import hashlib
+          import importlib.util
+          import re
+          from pathlib import Path
+
+          code = Path("v13/code")
+          stage_path = code / "scripts/stage_integrated_candidate.py"
+          overlay_path = code / "scripts/integrated_native_probe_approval_overlay_20261123.py"
+          operator_path = code / "v13/operator.py"
+          approval_path = code / "v13/native_probe_approval.py"
+          deploy_text = (code / "v13/runtime_deploy.py").read_text(encoding="utf-8")
+          deploy_pin = re.search(r'STAGER_SHA256 = "([a-f0-9]{64})"', deploy_text)
+          assert deploy_pin and deploy_pin.group(1) == hashlib.sha256(stage_path.read_bytes()).hexdigest()
+
+          spec = importlib.util.spec_from_file_location("v14_native_probe_overlay_pin_check", overlay_path)
+          overlay = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(overlay)
+          assert overlay._git_blob_sha1(operator_path.read_bytes()) == overlay.SOURCE_PINS[overlay.OPERATOR_PATH]
+          assert overlay._git_blob_sha1(approval_path.read_bytes()) == overlay.SOURCE_PINS[overlay.APPROVAL_PATH]
+
+          stage_text = stage_path.read_text(encoding="utf-8")
+          stage_overlay_pin = re.search(r"NATIVE_PROBE_OVERLAY_GIT_BLOB = '([a-f0-9]{40})'", stage_text)
+          raw = overlay_path.read_bytes()
+          actual_blob = hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw).hexdigest()
+          assert stage_overlay_pin and stage_overlay_pin.group(1) == actual_blob
+          print("PASS: deployer -> stage builder -> overlay -> operator/module pins")
+          PY
       - name: Test source tap identity and exact staged Runtime
         env:
           PYTHONPATH: v13/code
           PYTHONDONTWRITEBYTECODE: "1"
-        run: python -m pytest -q v13/code/tests/test_native_taps.py v13/code/tests/test_native_latent_receiver_stage.py
+        run: python -m pytest -q v13/code/tests/test_native_taps.py v13/code/tests/test_native_latent_receiver.py v13/code/tests/test_native_latent_receiver_runtime.py v13/code/tests/test_native_latent_receiver_approval.py v13/code/tests/test_native_latent_receiver_stage.py v13/code/tests/test_native_probe_approval_overlay.py
       - name: Scan public diff for private data and secrets
         run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/gpt6/v13-private-remote-bridge-20261111 --head HEAD --no-worktree
   linux-pinned-api:
