@@ -115,7 +115,7 @@ Report candidate, accepted and rejected windows and rejection fraction for each 
 - FrozenRepresentationProbe freezes the learned JEPA context encoder and trains only a capacity-declared MAE readout.
 - A VICReg-style variance/covariance regularizer is exposed separately for anti-collapse diagnostics and the explicit VICReg control.
 
-The BASE tests check output shapes, stop-gradient behavior, EMA updates, shared-weight recurrence, gradient flow through every recurrence application, and direct-MAE/probe output dimensions. These are structural tests, not evidence that the forecasting objective works.
+The BASE tests check output shapes, stop-gradient behavior, EMA updates, shared-weight recurrence, gradient flow through every recurrence application, and direct-MAE/probe output dimensions. These are structural tests, not evidence that the forecasting objective works.\n\n`training.py` adds bounded-batch train/validation loops for JEPA, direct-MAE and the frozen-representation probe. It uses MAE for raw-target controls, latent L1 plus a separately weighted variance/covariance anti-collapse term for JEPA, EMA target updates after every optimizer step, gradient clipping, validation-based checkpoint selection and early stopping. The test split is never requested by these loops. JEPA's validation score is explicitly labelled latent-prediction L1, not forecasting MAE.
 
 ## Not yet implemented
 
