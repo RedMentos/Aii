@@ -136,6 +136,9 @@ def _validate_audio_result(runtime, audio_result, consent_lease):
     evidence = temporal_receipt.get("evidence")
     if type(evidence) is not dict or temporal != evidence:
         raise ValueError("A4 temporal voice result differs from persisted temporal receipt")
+    if (a4.get("temporal_receipt_id") != receipt_id
+            or audio_result.get("temporal_receipt_id") != receipt_id):
+        raise ValueError("A4 temporal receipt id differs from persisted PerceptPacket")
     if (a4.get("packet_id") != packet_id or a4.get("source_id") != source_id
             or a4.get("finality") != segment.get("finality")):
         raise ValueError("A4 receipt metadata differs from persisted PerceptPacket")
