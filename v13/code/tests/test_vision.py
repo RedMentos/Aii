@@ -83,6 +83,9 @@ class Vision(unittest.TestCase):
         with self.assertRaises(ValueError): vision.look(self.rt, rec, enc)
         pj = vision.train(self.rt, enc); self.assertEqual(pj['n'], 9); self.assertEqual(pj['authority'], 'LAB_SHADOW_ONLY')
         self.assertTrue((self.home/pj['path']).is_file())
+        stats = vision.status(self.rt)['projector']
+        self.assertEqual(stats['source_stats_mode'], 'EXACT_SOURCE_STATS_V1')
+        self.assertEqual(stats['source_stats_count'], 9)
         guess = vision.look(self.rt, vision.ingest(self.store, png((20, 20, 220), box=(8, 8, 33, 33))), enc)
         self.assertEqual(guess['authority'], 'STUDENT_ESTIMATE'); self.assertIn('blue', guess['nearest'][0]['caption'])
         sha = rec['ref']['sha256']; projector_path = self.home/pj['path']
@@ -95,6 +98,7 @@ class Vision(unittest.TestCase):
         self.assertIsNotNone(rebuilt); self.assertEqual(rebuilt['n'], 8)
         self.assertNotIn(rec['ref']['source_id'], {item['source_id'] for item in rebuilt['training_sources']})
         self.assertEqual(len(rebuilt['source_stats']), 8)
+        self.assertEqual(vision.status(self.rt)['projector']['source_stats_count'], 8)
         self.assertTrue(forgotten['blob_deleted'])
         self.assertFalse((self.home/'data/blobs'/sha).exists())
         with self.assertRaises(ValueError): vision.read_image(self.store, rec['ref'])
@@ -159,7 +163,7 @@ class Vision(unittest.TestCase):
         self.assertFalse(vision.status(self.rt)['teacher']['removed'])
 
 
-    def test_tile_projector_is_invalidated_when_its_training_source_is_forgotten(self):
+    def test_tile_projector_is_rebuilt_when_its_training_source_is_forgotten(self):
         t = FakeTeacher(); enc = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
         colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20)]
         records = []
