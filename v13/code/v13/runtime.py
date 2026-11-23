@@ -187,14 +187,17 @@ class Runtime:
                     self._session_local.session_id=owner['session_id']
                     if time.monotonic()-queued>self.cfg['queue_ttl_seconds']:self._rejected(payload,'Warteschlangen-Zeitlimit; bitte erneut senden.')
                     else:
-                        self._turn(payload)
-                        # Local plasticity runs after the turn's committed action
-                        # record, never on an uncommitted prediction. Failure is
-                        # isolated from user-visible output and logged for repair.
-                        try:self.online_world_update(limit=64)
-                        except Exception as exc:
-                            self.store.log('online_world_learning_error',payload['event_id'],
-                                           {'error':type(exc).__name__})
+                        turn_result=self._turn(payload)
+                        # A source-only greeting acknowledgement creates no
+                        # action-conditioned transition, so do not rescan the
+                        # learning stream for a turn that produced no action.
+                        if not (isinstance(turn_result,dict) and turn_result.get('skip_online_world_update') is True):
+                            # Local plasticity runs after the turn's committed action
+                            # record, never on an uncommitted prediction.
+                            try:self.online_world_update(limit=64)
+                            except Exception as exc:
+                                self.store.log('online_world_learning_error',payload['event_id'],
+                                               {'error':type(exc).__name__})
                 elif kind=='download':self.models.install(payload or 'all',self.notice,self.cancel_event)
                 elif kind=='shadow':
                     if payload=='memory_retrieval':self.notice(self.learner.shadow_retrieval())
@@ -371,6 +374,87 @@ class Runtime:
         meta['stage_marks_s']={}
         def mark(name):meta['stage_marks_s'][name]=time.monotonic()-start;meta['turn_stage']=name
         mark('ingress')
+        # User-approved output rules always outrank the built-in greeting
+        # acknowledgement. The exact-match check is local and model-free.
+        mark('policy_check')
+        policy_match_ok=True
+        try:
+            from .output_policy import match as match_output_policy
+            fixed_policy=match_output_policy(self.store,text)
+        except Exception as exc:
+            fixed_policy=None;policy_match_ok=False
+            self.store.log('output_policy_unavailable',eid,{'stage':'early_policy_check','error':type(exc).__name__})
+        from .fast_greeting import match_unclaimed as match_greeting_unclaimed
+        greeting=match_greeting_unclaimed(text,policy_match_ok=policy_match_ok,fixed_policy=fixed_policy)
+        if greeting:
+            # Exact acknowledgements must still respect the same cancellation and
+            # absolute turn deadline as the full organ path.
+            check(self.cancel_event,deadline)
+            mark('greeting_fastpath')
+                answer_ref=self.store.source(greeting['reply'],'BUILTIN_GREETING_ACK')
+                meta.update(
+                    output_authority='APPROVED_FIXED_RULE',
+                    output_policy={
+                        'kind':'BUILTIN_GREETING_ACK',
+                        'rule_id':greeting['rule_id'],
+                        'rule_version':'1',
+                        'query_ref':e['source_ref'],
+                        'answer_ref':answer_ref,
+                    },
+                    exact_policy_matched=True,
+                    fastpath={
+                        'kind':'EXACT_GREETING_ACK',
+                        'normalized_input':greeting['normalized'],
+                        'skipped_organs':['A1','A2','A3','A4','B1_DETAIL','B2_GIST','C2','C4','C3_LANGUAGE','B3_ENLIGHTENED_SPACE','JEPA'],
+                    },
+                    skipped_native_stages=[
+                        'SEGMENTATION','NATIVE_ALIGNMENT','SALIENCE','MEMORY_RECALL',
+                        'B1_B2_OBSERVERS','C2_CONTROL','C4_FOCAL_LOOP','C3_DECODE',
+                        'WORLD_JEPA_PREDICTION','B3_LATENT_EXCHANGE','TOOL_PLANNING',
+                    ],
+                    context_source_refs=[e['source_ref'],answer_ref],
+                )
+                decision=packet(
+                    'OutputPolicyDecision','C5_REPORT_BROKER',eid,g,
+                    [e['source_ref'],answer_ref],
+                    rule_id=greeting['rule_id'],rule_version='1',
+                    query_ref=e['source_ref'],answer_ref=answer_ref,
+                    output_authority='APPROVED_FIXED_RULE',model_generated=False,
+                )
+                self.store.add_packet('OutputPolicyDecision',decision)
+                committed=txctl.commit_output(self.store,mid,eid,meta)
+                if committed is not True or not txctl.has_output_commit(self.store,mid,eid):
+                    raise RuntimeError('Greeting output commit was not durably recorded')
+                meta['first_output_monotonic_ns']=time.monotonic_ns()
+                self.store.append_message(mid,greeting['reply'])
+                meta.update(
+                    self_candidate_hash=digest(greeting['reply']),
+                    duration_s=time.monotonic()-start,
+                    characters=len(greeting['reply']),
+                    model_generated=False,
+                    fastpath_kind='EXACT_GREETING_ACK',
+                    skip_online_world_update=True,
+                    learning_authority=0,
+                    experience_eligible=False,
+                    external_action_authority=False,
+                )
+                self.store.finish_message(mid,'FINAL',meta)
+                try:txctl.settle_turn(self,eid,'FINAL')
+                except Exception as exc:self.store.log('provisional_unavailable',eid,{'error':type(exc).__name__})
+                try:self.executive.update(e,self.session,status='FINAL')
+                except Exception as exc:self.store.log('executive_finish_deferred',eid,{'error':type(exc).__name__})
+                try:
+                    from .broker import Broker
+                    Broker(self).finalize(
+                        e,mid,meta,'FINAL',greeting['reply'],
+                        direct=True,exact_requested=False,clarify=False,
+                        tool_result=None,pending=None,
+                    )
+                except Exception as exc:self.store.log('broker_unavailable',eid,{'error':type(exc).__name__})
+                self.store.log('turn_finished',eid,meta|{'status':'FINAL'})
+                self.notice('Antwort gespeichert · FINAL')
+                self.turn_event=None
+                return {'skip_online_world_update':True,'fastpath':'EXACT_GREETING_ACK'}
         monitor=NativePressureMonitor(self.home,self.cfg,pids=lambda:self.pool.pids()+self.needle.pids(),cancel=self.cancel_event,guard=self.guard,phase=lambda:meta.get('turn_stage'),request_cancel=self._pressure_cancel)
         try:
             monitor.start()
@@ -383,8 +467,9 @@ class Runtime:
                 try:meta['reflex']=[reflexctl.controller(self).critical(eid,self.pool,resource)]  # WP-F §5.3 OOM/heat reflex
                 except Exception as exc:self.store.log('reflex_unavailable',eid,{'error':type(exc).__name__})
                 raise Limits('Ressourcenlimit: zu wenig freier RAM oder zu heiß; :resources')
-            from .output_policy import match
-            mark('policy_check');fixed_policy=match(self.store,text)
+            if not policy_match_ok:
+                from .output_policy import match
+                fixed_policy=match(self.store,text)
             mark('perception_and_state')
             if fixed_policy:
                 self.store.add_packet('PerceptPacket',packet('PerceptPacket','A5_PERCEPT',eid,g,[e['source_ref']],source_ref=e['source_ref'],segments=segments(text,e['source_ref'],240,percept_mode(self.cfg)),modality='text'))
