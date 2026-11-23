@@ -190,7 +190,7 @@ def apply_sources(code_dir, sources):
     semantic_name = 'v13/world_semantic_evidence_candidate.py'
     local_name = 'v13/local_error_route_shadow_candidate.py'
     semantic_pin = 'd1cd5cc66213098cd87bcb65ec0cbfa63515dda7ec69fb026d5e3575dce64da3'
-    local_pin = '9f4a665d92af9ae4bedd559d036887c356f87615e4d0f49cce30c79f03838875'
+    local_pin = '34944ff94efb2bfc962d0150b04d411fb256d5e62e86e1fc70ae396a36fd488c'
     action_pin = '86f79e8f3c26928f0a16399070f1b8d729760697a3b9e02ea9f6315ab6fcf87a'
     for name, expected in ((semantic_name, semantic_pin), (local_name, local_pin)):
         actual = hashlib.sha256(result[name]).hexdigest()
