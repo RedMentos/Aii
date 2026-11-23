@@ -1,3 +1,15 @@
+## Latest Perception code checkpoint — 2026-11-23T01:11:33.901Z
+
+**Keine Aktion nötig.** No manual Termux command, update request, model/weight swap or permission change.
+
+- PR #2369's newest code/test commit is `3f99bdcc6c133f44a897d59e5ef2a9292176f917`; current branch head after handoff update is `6dcf1fddd7b68d3cfe9526b764d086090fa054f9` (DRAFT / NOT_RELEASED). Audio source blob remains `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`; new subprocess import test blob `a45c711ce7aac12beb5f9c567096c0e406962a08`.
+- The new repository test copies the actual `v13` package into an isolated temp tree without `audio_teacher_ear.py`, then imports `v13.audio_voice_cues` in a fresh subprocess. LOCAL_LINUX minimal subprocess-pattern check PASS on CPython 3.13.5. The full copied-package test itself is NOT_RUN locally because the Aii checkout is not mounted. Exact-head CI for `6dcf1fddd7b68d3cfe9526b764d086090fa054f9` is queued/pending; no CI pass claimed.
+- Earlier isolated helper/permission checks remain 5/5 PASS; no teacher text is admitted or persisted when the optional module is absent, and current lease + both opt-ins remain required.
+- Core #2370 still needs to rebind its own source pin; staged audio is not accepted. JEPA #2397 focused overlay remains 2/2 CI PASS, but staged/integrated still fails at QA's stale `vision.py` pin; QA #2391 must consume #2397 and exact helper hashes.
+- Redmi state unchanged: private V13OBS #115 last read 00:52:16Z; installed release `aed1d2b826290c95c70356b5d8b864b5ef382be4`, auto-update enabled, Runtime/Dashboard UP_TO_DATE, but stored turns remain slow and B1/B2 TIME_BUDGET. No new device turn or candidate deployment.
+
+---
+
 ## Latest verified status — Perception follow-up (2026-11-23T01:08:32.561Z)
 
 **Keine Aktion nötig.** Kein manueller Termux-Befehl, keine Update-Anfrage, kein Modell-/Weight-Swap und keine Berechtigungsänderung erforderlich.
