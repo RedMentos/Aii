@@ -218,7 +218,7 @@ def test_provider_refuses_disabled_companion_or_unbound_frame_uri(tmp_path):
         provider.close()
 
 
-def test_ui_frame_grant_binds_verifier_to_exact_lease_and_zeroizes_every_exit(monkeypatch):
+def test_ui_frame_grant_binds_public_provider_entrypoint_to_exact_lease_and_zeroizes(monkeypatch):
     observation = {"source_id": "ui-source", "capture_session_id": "mp-session",
                    "consent_receipt_ref": "receipt-1"}
     frame = bytearray(b"jpeg-frame")
@@ -226,22 +226,19 @@ def test_ui_frame_grant_binds_verifier_to_exact_lease_and_zeroizes_every_exit(mo
     lease = SimpleNamespace(active_for=lambda runtime, generation: True)
     runtime = SimpleNamespace(turn_event={"brain_generation_id": "generation-1"})
     seen = {}
-    verifier = object()
     ingress = types.ModuleType("v13.vision_ui_frame_ingress")
 
-    def issue_provider_frame_verifier(actual_lease, actual_observation, actual_verify):
-        seen.update(lease=actual_lease, observation=actual_observation, verify=actual_verify)
-        return verifier
-
-    def consume_projected_frame(runtime_arg, observation_arg, frame_buffer, **kwargs):
-        assert runtime_arg is runtime
-        assert observation_arg is observation
-        assert kwargs["consent_lease"] is lease
-        assert kwargs["frame_verifier"] is verifier
+    def consume_projected_frame_from_provider(runtime_arg, observation_arg, frame_buffer, **kwargs):
+        seen.update(
+            runtime=runtime_arg,
+            observation=observation_arg,
+            frame_buffer=frame_buffer,
+            lease=kwargs["consent_lease"],
+            verify=kwargs["verify_fn"],
+        )
         return {"status": "WIRED_SYNTHETIC"}
 
-    ingress._issue_provider_frame_verifier = issue_provider_frame_verifier
-    ingress.consume_projected_frame = consume_projected_frame
+    ingress.consume_projected_frame_from_provider = consume_projected_frame_from_provider
     monkeypatch.setitem(sys.modules, "v13.vision_ui_frame_ingress", ingress)
 
     grant = UIFrameGrant(
@@ -250,10 +247,40 @@ def test_ui_frame_grant_binds_verifier_to_exact_lease_and_zeroizes_every_exit(mo
         SimpleNamespace(),
     )
     assert grant.consume(runtime, current_source="source") == {"status": "WIRED_SYNTHETIC"}
-    assert seen == {"lease": lease, "observation": observation, "verify": verify_fn}
-    assert frame == bytearray(b"\x00" * len(frame))
+    assert seen == {
+        "runtime": runtime,
+        "observation": observation,
+        "frame_buffer": frame,
+        "lease": lease,
+        "verify": verify_fn,
+    }
+    assert frame == bytearray(b"\\x00" * len(frame))
     with pytest.raises(FrameReceiptDenied, match="already consumed"):
         grant.consume(runtime, current_source="source")
+
+
+def test_ui_frame_grant_zeroizes_when_public_provider_consumer_raises(monkeypatch):
+    observation = {"source_id": "ui-source", "capture_session_id": "mp-session",
+                   "consent_receipt_ref": "receipt-1"}
+    frame = bytearray(b"jpeg-frame")
+    lease = SimpleNamespace(active_for=lambda runtime, generation: True)
+    runtime = SimpleNamespace(turn_event={"brain_generation_id": "generation-1"})
+    ingress = types.ModuleType("v13.vision_ui_frame_ingress")
+
+    def consume_projected_frame_from_provider(*args, **kwargs):
+        raise RuntimeError("perception consumer failed")
+
+    ingress.consume_projected_frame_from_provider = consume_projected_frame_from_provider
+    monkeypatch.setitem(sys.modules, "v13.vision_ui_frame_ingress", ingress)
+    grant = UIFrameGrant(
+        {"observation": observation, "frame_buffer": frame, "verify_frame": lambda *_: True},
+        lease,
+        SimpleNamespace(),
+    )
+    with pytest.raises(RuntimeError, match="perception consumer failed"):
+        grant.consume(runtime, current_source="source")
+    assert frame == bytearray(b"\\x00" * len(frame))
+
 
 
 def test_ui_frame_grant_rejects_foreign_or_stale_lease_and_zeroizes(monkeypatch):

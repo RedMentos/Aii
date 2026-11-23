@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - core/v14-media-projection-provider-current-base-20261123
+      - core/v14-media-projection-provider-perception-api-20261123
     paths:
       - "android-companion/**"
       - "v13/code/v13/android_companion_transport.py"

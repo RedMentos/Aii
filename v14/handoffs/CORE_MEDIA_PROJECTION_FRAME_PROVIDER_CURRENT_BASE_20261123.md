@@ -2,34 +2,34 @@
 
 Date: 2026-11-23
 Role: Core & Harness
-Branch: `core/v14-media-projection-provider-current-base-20261123`
-Base branch: `core/v14-capability-registry-mediaprojection-20261123`
-Base SHA: `429f62ad4e0d1c8561f148a862267a1749f96d38`
-Status at checkpoint creation: DRAFT / CI NOT YET VERIFIED / NOT RELEASED
+Branch: `core/v14-media-projection-provider-perception-api-20261123`
+Parent implementation branch: `core/v14-media-projection-provider-current-base-20261123`
+Stack base branch: `core/v14-capability-registry-mediaprojection-20261123`
+Stack base SHA: `429f62ad4e0d1c8561f148a862267a1749f96d38`
+Parent provider commit: `7e7f82310eb5e58d2fbc249c28f897eea7a5da27`
+Status: DRAFT / exact-head CI pending / NOT_RELEASED
 
-## Product change
+## Connected functionality
 
-This branch carries the Core-owned one-shot Android MediaProjection provider onto the current capability-registry stack. It does not copy or edit Perception- or QA-owned files.
+- The Android companion advertises `screen_capture` as `READY_WITH_PER_SESSION_OS_CONSENT` only while paired and enabled. The user explicitly starts capture in the companion UI and approves Android's OS dialog for each session.
+- The foreground service captures one frame only. Frame bytes are memory-only, capped at 8 MiB with a 20-second elapsed-time TTL, and exposed through a paired-caller-only one-shot ContentProvider pipe.
+- Stop/disable, pair rotation, process restart, expiry and explicit discard revoke the frame and active read leases.
+- Termux uses the fixed companion provider URI, validates the signed P-256 receipt, nonce/token, frame length and SHA-256, and zeroizes the mutable buffer.
+- The Core consumer now calls Perception's public `consume_projected_frame_from_provider(..., verify_fn=...)` entrypoint instead of importing its private verifier factory. This keeps verifier issuance and caller-buffer cleanup inside the Perception receiver's owned API. The outer Core grant also zeroizes on every exit.
 
-- The Android companion advertises `screen_capture` as `READY_WITH_PER_SESSION_OS_CONSENT` only while paired and enabled. The manifest declares the MediaProjection foreground-service contract.
-- The user starts capture from the companion UI and must accept Android's OS consent dialog for each session. The service captures one frame only; no continuous recording and no screenshot file/SQLite persistence.
-- Frame bytes stay in memory, capped at 8 MiB with a 20-second elapsed-time TTL. The provider exposes one paired-caller-only, one-use read pipe. Stop, disable, pair rotation, process restart, expiry and explicit discard revoke the frame and active pipe leases.
-- Termux transport is restricted to the fixed companion ContentProvider URI, verifies the signed frame receipt, nonce/token freshness, byte count and SHA-256, and zeroizes the mutable frame buffer after use.
-- `AndroidUIFrameGrant.consume()` holds the revocable A5 UI lease while delegating RAW EYE processing to `vision_ui_frame_ingress`. If that Perception consumer is absent, it fails closed. Perception PR #2375 remains a required integration dependency; this branch does not claim a complete RAW EYE→C3 turn.
+## Cross-owner integration
 
-## Provenance and evidence
+- Perception PR #2375 is at exact head `e21a85a329ea25a2208fcfa64edc216884b55bf1`; its RAW EYE workflow passed on Python 3.13 and 3.14, plus its staged regression and privacy scan. The public provider entrypoint is now the Core/Perception contract.
+- Perception-owned source, tests and research files are not edited or copied into this branch.
+- QA-owned process-restart and permission tests remain separate. Parent capability-registry PR #2406 is still required to pass its exact-head emulator workflow before integration.
 
-- Reused Core provider implementation from PR #2379 at source head `77fd5d63696940f255bb849b58da89c32150b370`; only Core-owned files are included.
-- Parent capability contract is PR #2406 at `429f62ad4e0d1c8561f148a862267a1749f96d38` (stacked base; its exact-head CI is checked separately).
-- PR #2379's provider workflow passed at its old head; its separate Perception ingress workflow failed on an older `_summary` NameError. The newer Perception PR #2375 contains the corresponding fix, but remains a separate owner PR.
-- Local checkout/test attempt is BLOCKED: this runner has no repository checkout and `git ls-remote https://github.com/RedMentos/Aii.git` failed with DNS resolution error for github.com. No local compile/test is claimed.
-- New branch CI must run Python 3.13 and 3.14 compile/tests plus Android Gradle assemble/unit tests. Results will be appended after exact-head readback.
-- Physical Redmi / Termux capture, OS consent, native frame delivery and user-visible C3 consumption remain REDMI_UNVERIFIED.
+## Evidence and limits
 
-## Safety and open integration
-
-No model authority, action authority, learning authority, network access or shell authority is granted by a captured frame. The frame is ephemeral input only. Full RAW EYE/A5/C3 use requires the separate Perception receiver and a later same-turn Runtime integration review. No installed app, permission, model, weight or device data was changed.
+- Previous provider-stack commit `ea074fcf6f19247d5d8019019216dc68f4b38ad2` passed the provider workflow: Android Gradle assemble/unit tests and Python 3.13/3.14 compile + tests; staged context/integrated regression also passed. This follow-up changes the public Perception call contract and adds a consumer-exception zeroization test, so its own exact-head CI must pass.
+- Local tests are BLOCKED in this runner: there is no repository checkout and `git ls-remote https://github.com/RedMentos/Aii.git` failed because github.com DNS did not resolve. No local compile/test is claimed.
+- Physical Redmi/Termux capture, OS consent, frame delivery and same-turn C3 consumption remain REDMI_UNVERIFIED.
+- A signed frame receipt proves only the companion's capture metadata and frame bytes; it does not grant action or learning authority. No model, weight, permission or installed app is changed by this PR.
 
 ## Next executable step
 
-Read back this branch's exact commit, run the new CI workflows, fix any regression on this branch, then coordinate a single integration with Perception PR #2375 and QA's current companion process-restart checks. Do not mark the feature Android-verified or released without a real consented Redmi receipt.
+Verify exact-head CI on this branch, then coordinate the single integration of Core provider + Perception RAW EYE + the existing C3 turn consumer with Boss. Only after a consented Redmi receipt and actual C3 consumer evidence may the Android frame path advance beyond WIRED_SYNTHETIC/CI.

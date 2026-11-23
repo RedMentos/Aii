@@ -440,23 +440,17 @@ class UIFrameGrant:
             if not self.lease.active_for(runtime, generation_id):
                 raise FrameReceiptDenied("UI frame lease is no longer active")
             try:
-                from .vision_ui_frame_ingress import (
-                    _issue_provider_frame_verifier,
-                    consume_projected_frame,
-                )
+                from .vision_ui_frame_ingress import consume_projected_frame_from_provider
             except Exception as exc:
                 raise FrameReceiptDenied(
                     "the V14 RAW EYE consumer is not installed in this checkout"
                 ) from exc
-            verifier = _issue_provider_frame_verifier(
-                self.lease, self.observation, self.bundle["verify_frame"]
-            )
-            return consume_projected_frame(
+            return consume_projected_frame_from_provider(
                 runtime,
                 self.observation,
                 frame_buffer,
                 consent_lease=self.lease,
-                frame_verifier=verifier,
+                verify_fn=self.bundle["verify_frame"],
                 current_source=current_source,
                 goal=goal,
                 token_budget=token_budget,
