@@ -62,6 +62,7 @@ def test_world_jepa_source_builder_pin_chain_is_exact():
 
     memory_world = "scripts/integrated_memory_world_candidate_20261111.py"
     feedback = "scripts/integrated_feedback_bootstrap_candidate_20261111.py"
+    assert pin(feedback, r"'v13/local_error_route_shadow_candidate[.]py': '([0-9a-f]{64})'") == sha("v13/local_error_route_shadow_candidate.py")
     context = "scripts/integrated_context_recall_candidate_20261111.py"
     training = "scripts/integrated_world_training_resume_candidate_20261111.py"
     termux12 = "scripts/termux_runtime_recovery_candidate_20261112.py"
