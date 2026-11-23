@@ -354,13 +354,18 @@ class Vision(unittest.TestCase):
         ingest_done = threading.Event()
         forget_result = {}
         ingest_result = {}
-        original_unlink = vision.unlink_source_blob
+        # The real cleanup path is source_lifecycle_candidate.cleanup_unreferenced:
+        # it holds Store.tx while unlinking the canonical blob and any archive.
+        # Pause the exact canonical unlink, not a vision helper that no longer exists.
+        from v13 import source_lifecycle_candidate as lifecycle
+        original_unlink = lifecycle.os.unlink
 
-        def delayed_unlink(home, key):
-            unlink_entered.set()
-            if not release_unlink.wait(15):
-                raise TimeoutError('test did not release source blob cleanup')
-            return original_unlink(home, key)
+        def delayed_unlink(name, *args, **kwargs):
+            if name == sha and kwargs.get('dir_fd') is not None:
+                unlink_entered.set()
+                if not release_unlink.wait(15):
+                    raise TimeoutError('test did not release source blob cleanup')
+            return original_unlink(name, *args, **kwargs)
 
         def forget_worker():
             try:
@@ -377,7 +382,7 @@ class Vision(unittest.TestCase):
             finally:
                 ingest_done.set()
 
-        with patch.object(vision, 'unlink_source_blob', delayed_unlink):
+        with patch.object(lifecycle.os, 'unlink', delayed_unlink):
             forget_thread = threading.Thread(target=forget_worker)
             forget_thread.start()
             self.assertTrue(unlink_entered.wait(10), 'forget did not reach blob cleanup')
