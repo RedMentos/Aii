@@ -673,11 +673,18 @@ def test_sherpa_teacher_enters_c3_ephemerally_without_persisting_transcript(tmp_
         runtime.close()
 
 
-def test_sherpa_teacher_requires_both_opt_ins_before_loading(tmp_path, monkeypatch):
+@pytest.mark.parametrize(
+    "teacher_opt_in, transcript_consent",
+    [(False, True), (True, False)],
+)
+def test_sherpa_teacher_requires_both_opt_ins_before_loading(
+    tmp_path, monkeypatch, teacher_opt_in, transcript_consent,
+):
     monkeypatch.delitem(sys.modules, "sherpa_onnx", raising=False)
     with pytest.raises(PermissionError, match="separate opt-ins"):
         load_sherpa_teacher_runtime(
-            tmp_path, teacher_opt_in=False, transcript_consent=True,
+            tmp_path, teacher_opt_in=teacher_opt_in,
+            transcript_consent=transcript_consent,
         )
     assert "sherpa_onnx" not in sys.modules
 
@@ -700,7 +707,7 @@ def test_sherpa_teacher_manifest_hash_rejects_symlinked_model_component(tmp_path
         hash_sherpa_model_files(model_root, files)
 
 
-def test_sherpa_teacher_defers_provisional_audio_and_opt_out_without_inference(tmp_path, monkeypatch):
+def test_sherpa_teacher_defers_provisional_audio_without_inference(tmp_path, monkeypatch):
     runtime, started = make_runtime(tmp_path, "auto")
     teacher, recognizer, _model_root = make_sherpa_teacher(tmp_path, monkeypatch)
     try:
@@ -770,5 +777,33 @@ def test_sherpa_teacher_rejects_pcm_hash_mismatch_before_decoder(tmp_path, monke
                 )
             assert recognizer.calls == 0
         wait_idle(runtime)
+    finally:
+        runtime.close()
+
+
+def test_sherpa_teacher_does_not_infer_without_current_transcript_consent(tmp_path, monkeypatch):
+    runtime, started = make_runtime(tmp_path, "auto")
+    teacher, recognizer, _model_root = make_sherpa_teacher(tmp_path, monkeypatch)
+    try:
+        first = runtime.submit("Tell me a long story about the history of Portugal")
+        assert started.wait(10)
+        _audio_event, generation, pcm, kwargs = make_audio(runtime)
+        kwargs["finality"] = "FINAL"
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+        ) as lease:
+            result = consume_pcm16_voice_window_with_duplex(
+                runtime, pcm, consent_lease=lease,
+                teacher_runtime=teacher, teacher_opt_in=True,
+                transcript_consent=False, **kwargs,
+            )
+            assert result["teacher_ear"]["status"] == "DEFERRED_NOT_CONSENTED"
+            assert recognizer.calls == 0
+            assert not any(
+                item.source_id.startswith("audio_teacher_")
+                for item in result["c3_admission"].selected
+            )
+        wait_idle(runtime)
+        assert answer(runtime, first)["status"] == "FINAL"
     finally:
         runtime.close()
