@@ -154,9 +154,9 @@ def _focal_cycle_source_refs(store, event_id, generation_id, before_packet_rowid
     if coalition:
         item_rows = store.rows(
             """SELECT payload FROM packets
-               WHERE kind='FocalItem' AND event_id=? AND generation_id=? AND created<=?
-               ORDER BY created DESC,rowid DESC LIMIT 65""",
-            (event_id, generation_id, action_created),
+               WHERE kind='FocalItem' AND event_id=? AND generation_id=? AND rowid<?
+               ORDER BY rowid DESC LIMIT 65""",
+            (event_id, generation_id, before_packet_rowid),
         )
         if type(item_rows) is not list or len(item_rows) >= 65:
             raise ValueError("FocalItem source scan bound")

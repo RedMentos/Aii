@@ -122,3 +122,10 @@ This candidate is based on the Run 13 C4→T8 branch but is intended to replace 
 - LOCAL_LINUX full repository checkout/pytest: BLOCKED / NOT_RUN; Python 3.13.5 is available, but `git ls-remote https://github.com/RedMentos/Aii.git` fails because github.com DNS is unavailable.
 - No Redmi/Termux receipt, model download, weight mutation, permission change, or deployment was performed. REDMI_UNVERIFIED.
 - Exact-head GitHub workflows are required to validate the new regression and source-composition pins before review. This remains a source-provenance/rollback integrity fix, not native JEPA latent transfer or GGUF weight learning.
+
+
+### Exact-head CI repair — 2026-11-23
+- The first exact-head run on `de4406ca7df0a537dc8786cd40865765ddd80e66` caught a refactor omission: the final-coalition FocalItem scan still referenced the removed `action_created` local. Optimizer-resume failed on both Python 3.13 and 3.14 with the same `NameError` in three source-forget regressions; the staged-runtime job passed. This was a real regression and is not counted as a pass.
+- Fixed the FocalItem verification query to use the same committed-ActionSelection rowid boundary as FocalCycle. This also excludes same-timestamp post-selection FocalItems from final-coalition matching.
+- LOCAL_LINUX isolated SQLite 3.46.1 predicate reproduction: PASS. It demonstrates that the old timestamp-only T8/source-forget predicates include a post-action packet sharing the action timestamp, while the new rowid cutoff excludes it. This is a focused SQL reproduction, not the repository pytest suite.
+- New exact-head Python 3.13/3.14 optimizer-resume, staged-runtime and integrated-regression runs are required after this fix. Full local repository tests remain BLOCKED / NOT_RUN; Redmi remains REDMI_UNVERIFIED.
