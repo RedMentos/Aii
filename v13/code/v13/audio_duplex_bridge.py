@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import time
 import uuid
 
@@ -49,7 +50,7 @@ def decide_audio_overlap(activity_hint: str, voice_onset: bool, mode: str = "aut
     return "CONTINUE", "AUDIO_OVERLAP_CANDIDATE"
 
 
-def _validate_audio_result(runtime, audio_result, consent_lease):
+def _validate_audio_result(runtime, audio_result, consent_lease, *, temporal_state=None, vad_stream=None):
     if not isinstance(consent_lease, AudioConsentLease) or consent_lease.active is not True:
         raise PermissionError("a live AudioConsentLease is required for audio duplex dispatch")
     if type(audio_result) is not dict or audio_result.get("status") != _AUDIO_STATUS:
@@ -76,10 +77,14 @@ def _validate_audio_result(runtime, audio_result, consent_lease):
             or type(event_id) is not str or not event_id
             or type(receipt) is not str or not receipt):
         raise ValueError("audio source identity is invalid")
-    if not consent_lease.matches(runtime, source_id, generation_id, receipt):
+    if not consent_lease.matches(
+        runtime, source_id, generation_id, receipt,
+        temporal_state=temporal_state, vad_stream=vad_stream,
+        require_state=True,
+    ):
         raise PermissionError("audio result is outside its active source-bound consent lease")
     event = runtime.store.one(
-        "SELECT id, generation_id FROM events WHERE id=?", (event_id,)
+        "SELECT id, session_id, generation_id, created FROM events WHERE id=?", (event_id,)
     )
     if not event or event["generation_id"] != generation_id:
         raise ValueError("audio event is missing or belongs to another generation")
@@ -155,11 +160,11 @@ def _validate_audio_result(runtime, audio_result, consent_lease):
         raise ValueError("audio temporal receipt is stale or from another monotonic epoch")
     return (
         event_id, packet_id, receipt_id, source_id, generation_id,
-        receipt, activity_hint, voice_onset,
+        receipt, activity_hint, voice_onset, event["session_id"], event["created"],
     )
 
 
-def _persist_temporal_voice_receipt(runtime, audio_result, consent_lease):
+def _persist_temporal_voice_receipt(runtime, audio_result, consent_lease, *, temporal_state=None, vad_stream=None):
     """Bind the temporal A4 output to the already-persisted PerceptPacket before dispatch."""
     if not isinstance(consent_lease, AudioConsentLease) or consent_lease.active is not True:
         raise PermissionError("a live AudioConsentLease is required for temporal receipt persistence")
@@ -189,7 +194,11 @@ def _persist_temporal_voice_receipt(runtime, audio_result, consent_lease):
             or type(packet_id) is not str or not packet_id
             or type(consent_receipt) is not str or not consent_receipt):
         raise ValueError("audio temporal receipt identity is invalid")
-    if not consent_lease.matches(runtime, source_id, generation_id, consent_receipt):
+    if not consent_lease.matches(
+        runtime, source_id, generation_id, consent_receipt,
+        temporal_state=temporal_state, vad_stream=vad_stream,
+        require_state=True,
+    ):
         raise PermissionError("audio temporal receipt is outside its active consent lease")
     if "temporal_voice_receipt" in acoustic:
         raise ValueError("audio packet already has a temporal voice receipt")
@@ -278,18 +287,21 @@ def _claim_one_use_audio_receipt(runtime, event_id, packet_id, temporal_receipt_
     raise RuntimeError("audio duplex replay guard could not claim receipt atomically")
 
 
-def on_audio_input(runtime, audio_result, consent_lease):
-    """Decide/cancel under Runtime.lock, then persist through duplex.record.
+def on_audio_input(runtime, audio_result, consent_lease, *, temporal_state=None, vad_stream=None):
+    """Decide/cancel only for a fresh audio event bound to the active Runtime turn.
 
-    Call from the same thread that owns the live AudioConsentLease. The lock
-    order is provider lease -> Runtime.lock; the provider must not acquire its
-    revocation lock while holding Runtime.lock. Store I/O occurs after the
-    Runtime lock is released, mirroring Runtime.submit's text duplex path.
+    The provider lease remains held by the caller. Store reads happen outside
+    Runtime.lock; the active turn is snapshotted and rechecked under the lock
+    before cancellation, so a turn switch during validation cannot redirect a
+    stale onset into a later answer.
     """
     (
-        event_id, packet_id, temporal_receipt_id, _source_id, _generation_id,
-        _consent_receipt, activity_hint, voice_onset,
-    ) = _validate_audio_result(runtime, audio_result, consent_lease)
+        event_id, packet_id, temporal_receipt_id, _source_id, generation_id,
+        _consent_receipt, activity_hint, voice_onset, audio_session_id, audio_created,
+    ) = _validate_audio_result(
+        runtime, audio_result, consent_lease,
+        temporal_state=temporal_state, vad_stream=vad_stream,
+    )
     mode = runtime.cfg.get("duplex_mode", "auto")
     outcome = decide_audio_overlap(activity_hint, voice_onset, mode)
     # Claim every receipt, even when the decision is CONTINUE or mode=off.
@@ -297,13 +309,50 @@ def on_audio_input(runtime, audio_result, consent_lease):
     _claim_one_use_audio_receipt(runtime, event_id, packet_id, temporal_receipt_id)
     if outcome is None:
         return None
-    decision_name, relation = outcome
+
+    # Snapshot only in-memory turn identity while holding Runtime.lock.
     with runtime.lock:
         current = runtime.turn_event if runtime.current == "turn" else None
         if type(current) is not dict:
             return None
         from_event = current.get("event_id")
+        current_generation = current.get("brain_generation_id")
         if type(from_event) is not str or not from_event or from_event == event_id:
+            return None
+        if current_generation != generation_id:
+            raise ValueError("audio generation does not match the active Runtime turn")
+
+    # Validate both event rows without holding Runtime.lock. The audio event
+    # must be newer than the active turn, in the same session and generation.
+    current_row = runtime.store.one(
+        "SELECT session_id, generation_id, created FROM events WHERE id=?",
+        (from_event,),
+    )
+    if not current_row:
+        raise ValueError("active Runtime turn event is missing")
+    if current_row["session_id"] != audio_session_id:
+        raise ValueError("audio event belongs to another Runtime session")
+    if current_row["generation_id"] != generation_id:
+        raise ValueError("active Runtime turn event generation is stale")
+    current_created = current_row["created"]
+    if (type(current_created) not in (int, float)
+            or not math.isfinite(float(current_created))
+            or type(audio_created) not in (int, float)
+            or not math.isfinite(float(audio_created))):
+        raise ValueError("audio/current Runtime event timestamp is invalid")
+    now = time.time()
+    if audio_created <= current_created:
+        raise ValueError("audio event predates the active Runtime turn")
+    if audio_created > now or now - audio_created > (_REPLAY_TTL_NS / 1_000_000_000):
+        raise ValueError("audio event is stale or from the future")
+
+    # Recheck the exact turn snapshot after Store I/O. If it changed, consume
+    # this one-shot receipt but never cancel or attach it to the newer turn.
+    with runtime.lock:
+        current = runtime.turn_event if runtime.current == "turn" else None
+        if (type(current) is not dict
+                or current.get("event_id") != from_event
+                or current.get("brain_generation_id") != generation_id):
             return None
         started = time.monotonic()
         decision = {
@@ -339,9 +388,17 @@ def consume_pcm16_voice_window_with_duplex(runtime, pcm, *, consent_lease, **kwa
     """
     if not isinstance(consent_lease, AudioConsentLease) or consent_lease.active is not True:
         raise PermissionError("a live AudioConsentLease is required")
+    temporal_state = kwargs.get("temporal_state")
+    vad_stream = kwargs.get("vad_stream")
     result = consume_pcm16_voice_window(
         runtime, pcm, consent_lease=consent_lease, **kwargs
     )
-    _persist_temporal_voice_receipt(runtime, result, consent_lease)
-    result["duplex"] = on_audio_input(runtime, result, consent_lease)
+    _persist_temporal_voice_receipt(
+        runtime, result, consent_lease,
+        temporal_state=temporal_state, vad_stream=vad_stream,
+    )
+    result["duplex"] = on_audio_input(
+        runtime, result, consent_lease,
+        temporal_state=temporal_state, vad_stream=vad_stream,
+    )
     return result
