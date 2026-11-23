@@ -15,6 +15,7 @@ import io
 import math
 import os
 import stat
+import threading
 import time
 import zipfile
 from contextlib import contextmanager
@@ -32,6 +33,7 @@ from .a5_ui_admission_bridge import (
 )
 from .contracts import packet as make_packet, validate
 from .percept_admission import Percept, admit
+from .vision_temporal_evidence import TemporalVisualEvidenceRegistry
 
 REVISION = "v14-a5-media-projection-raw-eye-v1"
 MAX_FRAME_BYTES = 8 * 1024 * 1024
@@ -45,6 +47,7 @@ MAX_PROJECTOR_UNPACKED_BYTES = 8 * 1024 * 1024
 MAX_PROJECTOR_OUTPUT_DIM = 4096
 
 _FRAME_VERIFIER_ISSUER = object()
+_TEMPORAL_REGISTRY_INIT_LOCK = threading.Lock()
 
 
 def _bounded_vision_config(cfg):
@@ -61,6 +64,28 @@ def _bounded_vision_config(cfg):
     result["grid"] = GRID
     result["tile_px"] = TILE_PX
     return result
+
+
+def _runtime_temporal_visual_registry(runtime):
+    """Create the small ephemeral temporal registry once per Runtime."""
+    with _TEMPORAL_REGISTRY_INIT_LOCK:
+        registry = getattr(runtime, "_a5_temporal_visual_registry", None)
+        if registry is None:
+            registry = TemporalVisualEvidenceRegistry()
+            runtime._a5_temporal_visual_registry = registry
+        elif not isinstance(registry, TemporalVisualEvidenceRegistry):
+            raise ValueError("Runtime temporal visual evidence state is invalid")
+        return registry
+
+
+def reset_temporal_visual_evidence(runtime, *, capture_session_id: str) -> int:
+    """Erase one capture session's luminance history after provider revocation/end."""
+    registry = getattr(runtime, "_a5_temporal_visual_registry", None)
+    if registry is None:
+        return 0
+    if not isinstance(registry, TemporalVisualEvidenceRegistry):
+        raise ValueError("Runtime temporal visual evidence state is invalid")
+    return registry.reset(capture_session_id=capture_session_id)
 
 
 def _overwrite_caller_buffer(buffer):
@@ -459,6 +484,7 @@ def consume_projected_frame(
         raise TypeError("frame_buffer must be a mutable bytearray")
     image = None
     frame_snapshot = None
+    generation_id = None
     try:
         if not frame_buffer:
             raise ValueError("empty MediaProjection frame")
@@ -640,9 +666,59 @@ def consume_projected_frame(
         if not consent_lease.active_for(runtime, generation_id):
             raise PermissionError("UI observation was cancelled or revoked before A4 admission")
 
-        a4 = attention_module.controller(runtime).perceive(
+        tile_luminance = {
+            region["region_id"]: tuple(float(value) for value in features[-16:])
+            for region, _box, features, _salience in region_records
+            if region["region_id"].startswith("r")
+        }
+        temporal_visual = _runtime_temporal_visual_registry(runtime).update(
+            capture_session_id=observation["capture_session_id"],
+            generation_id=generation_id,
+            consent_receipt_ref=observation["consent_receipt_ref"],
+            start_ms=observation["start_ms"],
+            end_ms=observation["end_ms"],
+            tile_luminance=tile_luminance,
+        )
+        temporal_visual_packet = dict(temporal_visual)
+        temporal_visual_packet.update({
+            "source_ref": dict(frame_ref),
+            "capture_session_id": observation["capture_session_id"],
+            "consent_receipt_ref": observation["consent_receipt_ref"],
+            "clock": observation["clock"],
+            "start_ms": observation["start_ms"],
+            "end_ms": observation["end_ms"],
+        })
+        # Add only numeric, source-bound tile deltas to the existing A5
+        # PerceptPacket. These are diagnostics, never OCR/object/action facts.
+        for segment in segments[2:]:
+            source_ref = segment.get("source_ref")
+            region_id = source_ref.get("region_id") if isinstance(source_ref, dict) else None
+            delta = temporal_visual.get("tile_delta", {}).get(region_id)
+            if delta is None:
+                continue
+            suffix = f" temporal_delta={delta:.4f} authority=DIAGNOSTIC_ONLY"
+            text_value = segment.get("text", "")
+            segment["text"] = text_value[:max(0, MAX_SUMMARY_CHARS - len(suffix))] + suffix
+            segment["temporal_change"] = delta
+            segment["temporal_change_method"] = temporal_visual["method"]
+
+        attention = attention_module.controller(runtime)
+        temporal_modulation = None
+        if temporal_visual["status"] == "MEASURED" and temporal_visual["change_score"] > 0.0:
+            temporal_modulation = attention.modulate(
+                event["event_id"], sal={"novelty": temporal_visual["change_score"]},
+            )
+        a4 = attention.perceive(
             event["event_id"], segments, goal=goal, file_requests=False
         )
+        a4["temporal_visual_evidence"] = {
+            "status": temporal_visual["status"],
+            "change_score": temporal_visual["change_score"],
+            "changed_tile_ids": list(temporal_visual["changed_tile_ids"]),
+            "source_ref": dict(frame_ref),
+            "truth_authority": 0,
+        }
+        a4["temporal_visual_modulation"] = temporal_modulation
         admission = admit(percepts, token_budget, max_items=12)
         context_items = [
             A5Item(
@@ -669,6 +745,7 @@ def consume_projected_frame(
             finality=observation["finality"], frame_sha256=frame_sha256,
             frame_size=[width, height],
             feature_method="HANDCRAFTED_RAW_EYE_V1", feature_revision=REVISION,
+            temporal_visual_evidence=temporal_visual_packet,
             frame_binding_status="PROVIDER_CALLBACK_ACCEPTED",
             raw_capture_persisted=False, derived_packet_persisted=False,
             teacher_used=False, student_projector_used=bool(student_scores),
@@ -715,6 +792,8 @@ def consume_projected_frame(
             "student_projector_used": bool(student_scores),
             "student_projector_status": student_status,
             "student_goal_margins": {key: round(value, 4) for key, value in student_scores.items()},
+            "temporal_visual_evidence": temporal_visual_packet,
+            "temporal_visual_modulation": temporal_modulation,
             "learning_authority": False,
             "action_authority": False,
             "truth_authority": 0,
@@ -726,6 +805,15 @@ def consume_projected_frame(
         if frame_snapshot is not None:
             _overwrite_caller_buffer(frame_snapshot)
         _overwrite_caller_buffer(frame_buffer)
+        if generation_id is not None and isinstance(consent_lease, UIObservationLease):
+            try:
+                if not consent_lease.active_for(runtime, generation_id):
+                    reset_temporal_visual_evidence(
+                        runtime, capture_session_id=consent_lease.capture_session_id,
+                    )
+            except Exception:
+                # Cleanup must not mask the original cancellation/provider error.
+                pass
 
 
 def consume_projected_frame_from_provider(
@@ -750,20 +838,27 @@ def consume_projected_frame_from_provider(
 
 
 @contextmanager
-def consume_projected_frame_scope(runtime, observation, frame_buffer, **kwargs):
-    """Scope one UI frame through all downstream consumers, then revoke its cache/source.
+def consume_projected_frame_scope(runtime, observation, frame_buffer, *, end_of_stream=False, **kwargs):
+    """Scope one UI frame through downstream consumers, then revoke its cache/source.
 
-    Nest this inside the same active UIObservationLease and keep that outer lease
-    open while C3 reads the returned packet. Exiting this scope revokes only this
-    frame's source/cache; it does not revoke the Android MediaProjection session.
-    Cleanup also runs if the downstream consumer raises.
+    Keep the outer UIObservationLease open while C3 reads the returned packet.
+    Set end_of_stream=True on the final frame to erase this session's temporal
+    luminance history; provider revocation should also call the reset helper.
     """
+    if type(end_of_stream) is not bool:
+        raise ValueError("end_of_stream must be boolean")
     validated = validate_ui_observation(observation)
     try:
         result = consume_projected_frame(runtime, validated, frame_buffer, **kwargs)
         yield result
     finally:
-        revoke_ui_observation(runtime, validated["source_id"])
+        try:
+            revoke_ui_observation(runtime, validated["source_id"])
+        finally:
+            if end_of_stream:
+                reset_temporal_visual_evidence(
+                    runtime, capture_session_id=validated["capture_session_id"],
+                )
 
 
 __all__ = [
@@ -771,4 +866,5 @@ __all__ = [
     "consume_projected_frame",
     "consume_projected_frame_from_provider",
     "consume_projected_frame_scope",
+    "reset_temporal_visual_evidence",
 ]
