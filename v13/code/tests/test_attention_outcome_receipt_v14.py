@@ -110,7 +110,17 @@ class AttentionOutcomeReceiptV14(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Ergebnis schon verbucht"):
             self.a.outcome(ids[0], -1.0)
         self.assertEqual(self.policy(), before)
-        self.assertIsNotNone(self.r.store.state(RECEIPT_PREFIX + ids[0])[0])
+        receipt = self.r.store.state(RECEIPT_PREFIX + ids[0])[0]
+        self.assertIsNotNone(receipt)
+        self.assertTrue(receipt["modulator_packet_id"])
+        persisted = self.r.store.rows(
+            "SELECT payload FROM packets WHERE id=? AND kind='ModulatorPacket'",
+            (receipt["modulator_packet_id"],),
+        )
+        self.assertEqual(len(persisted), 1)
+        persisted_packet = json.loads(persisted[0]["payload"])
+        self.assertIn("reward_error", persisted_packet["channels"])
+        self.assertIn("surprise", persisted_packet["channels"])
 
     def test_concurrent_same_response_is_credited_once(self):
         rid = self.granted()[0]
