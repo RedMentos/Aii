@@ -221,3 +221,9 @@ Next: retrieve exact run 45163946321 completion/logs. If emulator boot times out
 - Branch remains a draft QA stack; do not merge to current release without rebase/transplant and full review.
 
 Next: inspect the completed helper/Gradle job and wait for the new emulator test. If the PID marker is missing or the second start time does not advance, treat that as a real instrumentation failure and fix the exact path; do not revert to requiring the process to remain alive after ActivityScenario teardown.
+
+### Process-start marker correction — code head ce636ac (2026-11-23)
+
+The first PID-marker implementation used `SystemClock.elapsedRealtimeNanos()`, which records the time of the test callback rather than the process's actual start. That would not prove a new process. Corrected in `ce636ac690009e196f22c6f9ad91c527d51fa957` to `Process.getStartElapsedRealtime()`, which returns the process start timestamp before application code executes. This API was added in API 24; the companion app's minSdk is 26, so the call is available on the declared supported range. Official API reference: https://developer.android.com/reference/android/os/Process#getStartElapsedRealtime
+
+Exact new-head PR workflow run 45166877746 is QUEUED at this checkpoint. Earlier 12c190fc runs are still useful only for the harness/Gradle checks; they do not validate this final process-start marker correction.
