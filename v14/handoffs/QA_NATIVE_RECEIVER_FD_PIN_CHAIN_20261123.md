@@ -1,6 +1,6 @@
 # QA — native receiver descriptor handoff through staged Runtime
 
-Date: 2026-11-23 04:xx Europe/Berlin
+Date: 2026-11-23 04:10 Europe/Berlin
 
 ## Branch and dependency
 
