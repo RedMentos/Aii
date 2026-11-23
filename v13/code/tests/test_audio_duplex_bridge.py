@@ -371,6 +371,32 @@ def test_audio_receipt_replay_guard_fails_closed_at_its_bound(tmp_path):
         runtime.close()
 
 
+
+def test_pcm16_duplex_wrapper_forwards_the_same_live_temporal_state(tmp_path):
+    runtime, started = make_runtime(tmp_path, "auto")
+    try:
+        first = runtime.submit("Tell me a long story about the history of Denmark")
+        assert started.wait(10)
+        _audio_event, generation, pcm, kwargs = make_audio(runtime)
+        temporal_state = TemporalVoiceEvidence()
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+            temporal_state=temporal_state,
+        ) as lease:
+            result = consume_pcm16_voice_window_with_duplex(
+                runtime, pcm, consent_lease=lease,
+                temporal_state=temporal_state, **kwargs,
+            )
+            assert result["duplex"]["decision"] == "CONTINUE"
+            assert result["duplex"]["record_status"] == "RECORDED"
+            assert not runtime.cancel_event.is_set()
+        wait_idle(runtime)
+        assert answer(runtime, first)["status"] == "FINAL"
+        assert duplex.status(runtime)["counters"]["CONTINUE"] == 1
+    finally:
+        runtime.close()
+
+
 def test_bridge_requires_the_same_temporal_state_bound_to_the_consent_lease(tmp_path):
     runtime, started = make_runtime(tmp_path, "interrupt")
     try:
