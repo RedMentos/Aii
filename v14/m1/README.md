@@ -2,7 +2,7 @@
 
 **Status:** [ENTWURF] — not preregistered, not locked, no result claimed.
 
-This package starts with the DATA layer. It is deliberately isolated under v14/m1/; it does not replace the V14 master or alter the V13/V14 runtime. The pre-existing development branch was backed up before these files were added.
+This package starts with the DATA layer. It is deliberately isolated under v14/m1/; it does not replace the full V14 master or alter the old V13/V14 runtime. The complete pre-rebuild repository is preserved under `archive/LEGACY_PRE_REBUILD_20261123/`, with the recovery map in `archive/ARCHIVE_MANIFEST.md`. The immutable snapshot is also available on branch `backup/pre-v14-data-rebuild-20261123` at commit `32373358983a16560af60f4283e9ad0dc448b5a4`.
 
 ## DATA implementation
 

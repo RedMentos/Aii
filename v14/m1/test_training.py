@@ -25,7 +25,7 @@ class TrainingLoopTests(unittest.TestCase):
                 (value, float(value * 0.5 + np.sin(i / 5.0) * 0.1)),
             ))
         cfg = DataConfig(
-            input_length=5, horizon=2, max_candidate_input_length=5,
+            input_length=5, horizon=2, max_candidate_input_length=5, primary_channel="a",
             seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
         )
         self.dataset = ArrayDataset(rows, ("a", "b"), cfg)

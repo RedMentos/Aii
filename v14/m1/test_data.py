@@ -116,8 +116,20 @@ class WindowTests(unittest.TestCase):
         rows = synthetic_rows(1000, {100})
         windows, stats = make_split(rows, self.channels, self.cfg, "train", self.bounds["train"])
         self.assertGreater(stats.rejected_windows, 0)
-        affected = [w for w in windows if abs(w.origin_index - 100) <= 4]
-        self.assertFalse(affected)
+        accepted_origins = {window.origin_index for window in windows}
+        self.assertIn(96, accepted_origins)   # valid window before the missing row
+        self.assertIn(105, accepted_origins)  # valid window after the missing row
+        for window in windows:
+            origin = window.origin_index
+            required_indices = set(
+                range(origin - self.cfg.input_length + 1, origin + self.cfg.horizon + 1)
+            )
+            required_indices.update(
+                origin + step - lag
+                for step in range(1, self.cfg.horizon + 1)
+                for lag in self.cfg.seasonal_lags
+            )
+            self.assertNotIn(100, required_indices)
 
     def test_missing_seasonal_source_rejects_window(self):
         # Index 51 is outside the local X/target window around origin 100,
@@ -241,6 +253,7 @@ class WindowTests(unittest.TestCase):
             second = write_manifest(manifest, path)
             self.assertEqual(first, second)
             self.assertEqual(len(first), 64)
+            self.assertEqual(first, hashlib.sha256(path.read_bytes()).hexdigest())
 
 
 class UCIParserTests(unittest.TestCase):

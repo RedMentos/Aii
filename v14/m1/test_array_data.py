@@ -69,7 +69,12 @@ class DirectUCIArrayTests(unittest.TestCase):
             self.assertEqual(dataset.values.shape, (1000, 2))
             self.assertTrue(np.isnan(dataset.values[12, 0]))
             batch = next(dataset.iter_batches("train", batch_size=16))
-            self.assertEqual(batch.inputs.x.shape, (16, 5, 2))
+            # batch_size is a hard upper bound. The first candidate chunk includes
+            # windows rejected because row 12 is missing, so a partial batch is valid.
+            self.assertGreater(batch.inputs.x.shape[0], 0)
+            self.assertLessEqual(batch.inputs.x.shape[0], 16)
+            self.assertEqual(batch.inputs.x.shape[1:], (5, 2))
+            self.assertEqual(len(batch.origin_indices), batch.inputs.x.shape[0])
 
     def test_two_pass_array_loader_rejects_nonfinite_values(self):
         with tempfile.TemporaryDirectory() as directory:
