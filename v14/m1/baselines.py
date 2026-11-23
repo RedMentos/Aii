@@ -98,6 +98,31 @@ class LinearInputBaseline(nn.Module):
         return output.reshape(output.shape[0], self.horizon, self.channels)
 
 
+class RidgeAR(LinearInputBaseline):
+    """Conventional squared-error autoregression with an L2 coefficient penalty."""
+    pass
+
+
+class L1AR(LinearInputBaseline):
+    """Absolute-error autoregression with an L2 coefficient penalty (not Ridge)."""
+    pass
+
+
+class RawWindowProbe(LinearInputBaseline):
+    """Linear probe on the full raw X/S/calendar information bundle."""
+    pass
+
+
+class TrainMean(TrainConstantBaseline):
+    def __init__(self, horizon: int, channels: int):
+        super().__init__(horizon, channels, "mean")
+
+
+class TrainMedian(TrainConstantBaseline):
+    def __init__(self, horizon: int, channels: int):
+        super().__init__(horizon, channels, "median")
+
+
 class RawWindowMLP(nn.Module):
     """Nonlinear raw-input control; receives X, S and calendar, not X alone."""
     def __init__(self, input_width: int, horizon: int, channels: int, hidden_dim: int = 256):
