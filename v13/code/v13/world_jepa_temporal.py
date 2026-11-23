@@ -698,6 +698,8 @@ class TemporalWorldJEPAStoreConsumer:
         self.store = store
         self.seed = seed
         self.ensemble = ensemble
+        self._ephemeral_model = None
+        self._ephemeral_checkpoint_sha = None
         self.home = Path(store.home) / "world_jepa_temporal"
         if self.home.exists() and self.home.is_symlink():
             raise ValueError("temporal checkpoint directory symlink")
@@ -1261,7 +1263,12 @@ class TemporalWorldJEPAStoreConsumer:
                    float(latest["censored"]),
                    float(history_length) / float(max(HISTORY_LENGTHS))]
             )
-            model = self._load_model(active)
+            model = self._ephemeral_model
+            if (model is None
+                    or self._ephemeral_checkpoint_sha != active["checkpoint_sha256"]):
+                model = self._load_model(active)
+                self._ephemeral_model = model
+                self._ephemeral_checkpoint_sha = active["checkpoint_sha256"]
             query_latent = np.asarray(
                 model.latent(np.asarray([query_x], dtype=np.float64), target=False),
                 dtype=np.float64,
@@ -1334,6 +1341,7 @@ class TemporalWorldJEPAStoreConsumer:
                 raise ValueError("nonfinite temporal episodic distances")
 
             verified_cache = {}
+            rejected_cache = set()
             items = []
             rejected_windows = 0
             for action in world_model.ACTIONS[:limit]:
@@ -1357,13 +1365,17 @@ class TemporalWorldJEPAStoreConsumer:
                     missing = []
                     for action_id in window["action_ids"]:
                         receipt = verified_cache.get(action_id)
-                        if receipt is None:
+                        if receipt is None and action_id not in rejected_cache:
                             missing.append(action_id)
                         else:
                             receipts.append(receipt)
                     if missing:
                         verified, rejected = verify_rows(
                             self.store, [row_by_id[action_id] for action_id in missing]
+                        )
+                        verified_ids = {receipt.action_id for receipt in verified}
+                        rejected_cache.update(
+                            action_id for action_id in missing if action_id not in verified_ids
                         )
                         rejected_windows += int(rejected > 0)
                         for receipt in verified:
@@ -1570,6 +1582,8 @@ class TemporalWorldJEPAStoreConsumer:
                    float(latest["censored"]), float(history_length) / float(max(HISTORY_LENGTHS))]
             )
             model = self._load_model(active)
+            self._ephemeral_model = model
+            self._ephemeral_checkpoint_sha = active["checkpoint_sha256"]
             X = np.repeat(np.asarray([x], dtype=np.float64), len(actions), axis=0)
             A = np.asarray([world_model.onehot(action) for action in actions], dtype=np.float64)
             latent, spread = model.predict(X, A)
