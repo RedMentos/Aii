@@ -28,6 +28,8 @@ on:
       - 'v13/code/v13/brain_panel.py'
       - 'v13/code/v13/native_offer_prompt_receipt.py'
       - 'v13/code/v13/runners.py'
+      - 'v13/code/v13/native_prompt_admission.py'
+      - 'v13/code/tests/test_native_prompt_admission.py'
       - 'v13/code/tests/test_v14_causal_stream_offer_receipt.py'
       - 'v14/V14_USER_NEXT_ACTION.md'
       - 'v13/code/scripts/run_c4_c3_current_candidate_test_20261122.py'
@@ -53,6 +55,8 @@ on:
       - 'v13/code/v13/brain_panel.py'
       - 'v13/code/v13/native_offer_prompt_receipt.py'
       - 'v13/code/v13/runners.py'
+      - 'v13/code/v13/native_prompt_admission.py'
+      - 'v13/code/tests/test_native_prompt_admission.py'
       - 'v13/code/tests/test_v14_causal_stream_offer_receipt.py'
       - 'v14/V14_USER_NEXT_ACTION.md'
       - 'v13/code/tests/test_termux_runtime_recovery_stage.py'
@@ -91,6 +95,8 @@ jobs:
             v13/code/v13/brain_panel.py \
             v13/code/v13/native_offer_prompt_receipt.py \
             v13/code/v13/runners.py \
+            v13/code/v13/native_prompt_admission.py \
+            v13/code/tests/test_native_prompt_admission.py \
             v13/code/tests/test_v14_causal_stream_offer_receipt.py \
             v13/code/tests/test_same_turn_body_delivery_qa.py \
             v13/code/scripts/integrated_c4_c3_receipt_candidate_20261122.py \
@@ -105,6 +111,11 @@ jobs:
             v13/code/scripts/integrated_memory_world_candidate_20261111.py \
             v13/code/scripts/integrated_world_training_resume_candidate_20261111.py \
             v13/code/tests/test_v14_store_source_blob_serialization.py
+      - name: Exercise source-preserving C3 prompt admission
+        env:
+          PYTHONPATH: v13/code
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python -m pytest -q v13/code/tests/test_native_prompt_admission.py
       - name: Exercise final staged fair-budget composition
         env:
           PYTHONPATH: v13/code
