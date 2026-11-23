@@ -1,3 +1,19 @@
+# JEPA & Memory Run 8 — B2 receiver integration and omission observability (2026-11-23)
+
+**Current status:** code/test head `a474a1e13f437d30f76313bfcaef52bb394b0e77` on `jepa-memory/v14-temporal-episodic-recall-20261123-run7`; PR #2405 remains DRAFT / NOT_RELEASED. Exact-head CI has not yet returned a run at this readback. No phone update or model/weight/permission change.
+
+- `v13/code/v13/bodyview.py`: when a temporal receiver is omitted, B1/B2 now receive a bounded `world_jepa_temporal_status` with the omission reason and (when present) action/utility reason. It grants no decision authority and does not fabricate a prediction.
+- `v13/code/tests/test_v14_world_jepa_postcommit_runtime.py`: the B2 receiver integration fixture now creates balanced route-conditioned FINAL/FAILED outcomes. The old `index % 5` status pattern was only weakly correlated with the four-route cycle, so it did not reliably create the P(FINAL | action) signal the receiver is intended to learn. Source/session-disjoint holdouts and all utility/negative-control gates remain unchanged. A new regression checks omission visibility and authority.
+- **LOCAL_LINUX synthetic fixture sanity:** CPython 3.13.5 x86_64; 192 generated source rows across 48 independent four-event sessions; source-hash split 97 train / 95 holdout; every route has at least 19 train and 20 holdout examples; two balanced outcome classes. PASS for fixture coverage only, not a JEPA/receiver utility pass.
+- **LOCAL_LINUX full repository tests:** BLOCKED / NOT_RUN. No Aii checkout is mounted and `git ls-remote https://github.com/RedMentos/Aii.git` fails because this environment cannot resolve github.com. Exact Python compile/pytest must therefore be supplied by the branch's GitHub Actions.
+- **Redmi:** REDMI_UNVERIFIED. Latest sanitized owner-consented observation in #1904 still has installed SHA `aed1d2b826290c95c70356b5d8b864b5ef382be4`, auto-update enabled, 57.74 s stored turn / 41.63 s TTFT / 38.95 s prefill / 2 generated tokens, and B1/B2 TIME_BUDGET with zero valid offers in the reported aggregate. No new turn or device mutation was performed.
+- **Deployment:** NOT_DEPLOYED. GitHub branch updates are not phone installation. No UPDATE_REQUEST, model swap, learning promotion or permission change.
+- **Next:** wait for exact-head Python 3.13/3.14, staged Runtime and offline-security checks; diagnose any failure from its log. If green, hand the exact code/test SHAs to QA/Boss to recompose on current #2402/A3 source-forget base and rerun the full immutable stage/deployer chain. Keep B2 body-state product default OFF and keep native latent/GGUF learning claims OPEN.
+
+**User action:** none. No manual Termux command or model approval is needed for this test-only integration checkpoint.
+
+---
+
 # JEPA-Statuskorrektur — 2026-11-22T10:00:40.871Z
 
 PR #2331 steht inzwischen auf `535eba6f668b3990416c361368f36e3e8f1e599e`, hat aber **9 fehlgeschlagene Checks** (4 laufen, 2 queued, 4 erfolgreich, 1 übersprungen). Die Fehler liegen weiter in der verschachtelten Source-Pin-Kette: sechs direkte Consumer-Pins stimmen nicht mit den aktuellen Datei-Bytes überein. Die vollständigen Hashes stehen im Boss-Review-Kommentar [7077507340](https://github.com/RedMentos/Aii/pull/2331#issuecomment-7077507340). Das ist noch kein JEPA-Lern-/Unlearning-Erfolg; PR bleibt DRAFT, Promotion OFF.
