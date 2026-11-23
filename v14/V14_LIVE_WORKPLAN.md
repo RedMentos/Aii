@@ -1235,3 +1235,34 @@ The 679f audio run showed that rebinding only Context-source recall was insuffic
 ### Next integration step
 
 Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, migration, owner-read and deployer workflows. Fix only measured current-head failures. Keep the PR DRAFT and NOT_RELEASED. The #2280 C4 receipt, #2281 Age-rights, #2282 shared-blob race, #2283 rollback, #2285 audio QA and #2275 RAW EAR changes must be rebased and tested on this same base; old-base green results are not accepted. Private PIPELINE_STATUS #453 is still unanswered, so REDMI_UNVERIFIED. User action: none.
+
+
+## Boss integration checkpoint — 2026-11-23 run 11
+
+### Integrated functional slice
+PR #2425 merged into the fixed release branch as 4dc7595f383e7ba932ee8e9fcf52c5541210ed5e. The C3 native prompt-admission path now has a normal-turn prefill envelope (max 520 tokens using the existing BOOT estimate), explicit removal reasons, and a history-preservation rule: if only complete old history would need to be removed, normal turns keep it intact and report the target as unsatisfied. Whole-turn history removal remains limited to the short-deadline recovery band. B1/B2 scheduling, source-bound offers, models, weights, Age, permissions and product learning defaults were not changed.
+
+The first candidate head c6cf584 failed because the diagnostic native receiver still pinned the prior runners.py bytes. The final exact branch head ff2664e rebound the receiver pin and all downstream recovery→stage→deployer pins from exact source bytes. No hash gate was weakened.
+
+### Test evidence
+- PR head ff2664e: 14 substantive PR workflows SUCCESS; safe-additive check SKIPPED by policy; PR-event release queue CANCELLED.
+- Exact merged push SHA 4dc7595f383e7ba932ee8e9fcf52c5541210ed5e: 21/21 observed Actions workflow runs SUCCESS. Staged-runtime, integrated-regression, two-checkout migration, runtime deployment integrity, source contracts, owner-read, JEPA, Android broker/outcome and A5/RAW EAR jobs completed successfully.
+- LOCAL_LINUX full Aii suite: BLOCKED / NOT_RUN; no mounted checkout and GitHub DNS unavailable.
+- REDMI: NOT YET VERIFIED for 4dc7595f383e7ba932ee8e9fcf52c5541210ed5e; no after-update receipt or latency measurement.
+
+### Device update boundary
+Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE and last_error NONE. DIAGNOSTICS #735 repeats a stored 57.739 s turn / 41.627 s TTFT / 38.945 s prefill / 751 tokens / 2 generated tokens; B1/B2 remain TIME_BUDGET 53.2/54.2 s. HEALTH #736 reports 1,178 MiB MemAvailable and 1,006 MiB disk free, with health runtime unavailable. UPDATE_REQUEST #737 is acknowledged QUEUED; this is not an installation receipt. No user turn, LOG_PAGE, shell or model/weight/permission/data change occurred.
+
+### Whole-system blockers retained
+- P0: native B1/B2 useful source-bound offers delivered and consumed by C4/C3; correct native answer; 20-turn mixed acceptance.
+- P0: recompose #2370 fair-budget implementation on current release; current head bea37b9 is 158 ahead / 12 behind and its 18-entry CI matrix was 16 queued / 1 skipped / 1 cancelled. It is not merge-ready.
+- P0/P1: #2426 source-forget temporal logic passes its focused temporal/postcommit tests, but QA-owned memory.py pin breaks optimizer/staged composition and migration is PARTIAL. Generic Store generation promotion/rollback versus forget race from #2355 is separate and not integrated.
+- P0: trained B3 cross-organ latent utility, local approved native-probe dispatch, Android UI/background control, Android AudioRecord and trainable speech output.
+- P1: production Context OS overflow/Memorilla consumer, distinct sparse MoE B1/B2, cross-organ gradients and bounded self-edit.
+- P0: semantic clause-level Canon mapping remains incomplete despite the preserved 1,255-heading inventory.
+
+### Next executable order
+1. Read fresh PIPELINE_STATUS after #737; mark installed only if exact SHA is returned.
+2. Recompose the B1/B2→C4→C3 fair-budget path on 4dc7595f383e7ba932ee8e9fcf52c5541210ed5e, retaining both bodies and source-bound offer receipts. Do not cherry-pick from a 12-commit-behind divergent branch without rebuilding its exact source chain.
+3. Coordinate QA/JEPA #2426 pin repair and port #2355 Store serialization onto the current guard; run Python 3.13/3.14, staged, migration, optimizer and negative interleaving tests.
+4. Continue independent whole-Canon vertical slices after integration; do not let C3 latency work replace voice, Android agency, World/Self/Memory, JEPA, B3 or self-optimization scope.
