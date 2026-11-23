@@ -227,8 +227,8 @@ class Runtime:
                         from .proofs import probe_step12
                         self.notice(dumps(probe_step12(self)))
                     else:
-                        from .verification import probe
-                        self.notice(dumps(probe(self)))
+                        from .verification import probe, public_probe_summary
+                        self.notice(dumps(public_probe_summary(probe(self))))
                 else:raise ValueError('Job unbekannt')
             except BaseException as exc:
                 self.store.log('job_error',None,{'kind':kind,'error':type(exc).__name__,'detail':str(exc)[:1000]});self.notice(f'{kind}: {type(exc).__name__}: {exc}')
