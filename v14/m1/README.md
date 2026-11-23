@@ -8,6 +8,8 @@ This package starts with the DATA layer. It is deliberately isolated under v14/m
 
 - data.py: UCI minute-file parser, timestamp continuity checks, parameterized windows, chronological split, strict NaN rejection, seasonal lags, future calendar features, split/month rejection statistics, canonical manifest and hashes.
 - test_data.py: synthetic logic tests only. These are not a UCI real-data run.
+- Numeric ingestion rejects non-finite values (`inf`, `-inf`, `Infinity`) and normalizes common case-insensitive missing markers such as `NaN` to missing values. Alternate row adapters and the test loader repeat finite-value and timestamp/channel integrity checks.
+- Every seasonal lag must be at least the forecast horizon, ensuring each horizon-aligned seasonal value is already known at the forecast origin.
 - UCI data is not downloaded by this module. The real-data run must use the user's local extracted UCI file and record its parsed-data fingerprint.
 
 ### Split and L handling
@@ -44,6 +46,8 @@ It appends a test-access event to the specified JSONL log. A hash is a tamper-ev
 8. Manifest and dataset/config/split hashes are deterministic.
 9. Test split is unavailable without the exact preregistration hash.
 10. Test split rejects config, data or split drift even if the preregistration file itself hashes correctly.
+11. Non-finite measurements are rejected at ingestion and at direct dataset/test-loader entry points.
+12. Seasonal lags shorter than the horizon are rejected at configuration time; exact horizon alignment and missing seasonal-source rejection are tested.
 
 ## M1a protocol corrections to preserve
 
