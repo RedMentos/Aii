@@ -29,6 +29,7 @@ import time
 import zlib
 from pathlib import Path
 from .common import Unavailable,atomic_write,digest,dumps,uid,now
+from .vision_source_lineage import unlink_projector_artifact
 from .vision_source_lineage import source_lineage, invalidate_projectors, unlink_projector_artifact, unlink_source_blob
 
 KEY='WP_N15_VISION';REVISION='wp-n15-vision-v1';AUTHORITY='REFERENCE_NOT_FACT';STUDENT='STUDENT_ESTIMATE'
@@ -286,8 +287,13 @@ def train(runtime,encoder=None,cfg=DEFAULTS):
     p=Projector(cfg['ridge']).fit(X,Y);path=runtime.home/'data/vision'/('projector-'+uid('vis')[4:]+'.npz');sha=p.save(path)
     st['projector']={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,'metrics':cv,'created':now(),
                      'captions':{sid:c for sid,c in zip(ids,caps)},'training_sources':training_sources,'authority':'LAB_SHADOW_ONLY'}
-    save(runtime.store,st)
-    if old and old['path']!=st['projector']['path']:(runtime.home/old['path']).unlink(missing_ok=True)
+    try:
+        save(runtime.store,st)
+    except Exception:
+        unlink_projector_artifact(runtime.home, st['projector'])
+        raise
+    if old and old.get('path')!=st['projector']['path']:
+        unlink_projector_artifact(runtime.home, old)
     runtime.store.log('vision',None,{'action':'train','n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow','value':round(cv['held_out_top1'],4)})
     return st['projector']
 
@@ -331,8 +337,13 @@ def train_tiles(runtime,encoder=None,cfg=DEFAULTS):
     p=Projector(cfg['ridge']).fit(X,Y);path=runtime.home/'data/vision'/('tiles-'+uid('vis')[4:]+'.npz');sha=p.save(path)
     st['tile_projector']={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,'created':now(),
                           'salient_tiles':sum(t!=BACKGROUND for t in texts),'training_sources':training_sources,'authority':'LAB_SHADOW_ONLY'}
-    save(runtime.store,st)
-    if old and old['path']!=st['tile_projector']['path']:(runtime.home/old['path']).unlink(missing_ok=True)
+    try:
+        save(runtime.store,st)
+    except Exception:
+        unlink_projector_artifact(runtime.home, st['tile_projector'])
+        raise
+    if old and old.get('path')!=st['tile_projector']['path']:
+        unlink_projector_artifact(runtime.home, old)
     runtime.store.log('vision',None,{'action':'train_tiles','n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow'})
     return st['tile_projector']
 
