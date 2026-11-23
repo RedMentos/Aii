@@ -80,3 +80,30 @@ def test_safe_unlink_rejects_symlinked_parent_without_touching_outside_file(tmp_
 def test_blob_unlink_rejects_bad_hash_and_path_traversal(tmp_path):
     assert unlink_source_blob(tmp_path, "../" + "a" * 64) is False
     assert unlink_projector_artifact(tmp_path, {"path": "data/vision/../../escape.npz"}) is False
+
+
+def test_exact_source_stats_must_match_every_projector_source():
+    lineage = [
+        {"source_id": "src_a", "sha256": "a" * 64},
+        {"source_id": "src_b", "sha256": "b" * 64},
+    ]
+    stats = [
+        {"source_id": "src_a", "source_sha256": "a" * 64,
+         "path": "data/vision/projector-stats-a.npz", "sha256": "c" * 64, "n": 4},
+        {"source_id": "src_b", "source_sha256": "b" * 64,
+         "path": "data/vision/projector-stats-b.npz", "sha256": "d" * 64, "n": 4},
+    ]
+    valid = {"training_sources": lineage, "source_stats_mode": "EXACT_SOURCE_STATS_V1",
+             "source_stats": stats}
+    assert projector_uses_source(valid, "src_c") is False
+    assert projector_uses_source(valid, "src_a") is True
+
+    missing = dict(valid, source_stats=stats[:1])
+    assert projector_uses_source(missing, "src_c") is True
+    malformed = dict(valid, source_stats=[dict(stats[0], path="data/vision/../../outside.npz"), stats[1]])
+    assert projector_uses_source(malformed, "src_c") is True
+
+    capped = {"training_sources": lineage, "source_stats_mode": "SOURCE_CAP_EXCEEDED",
+              "source_stats": []}
+    assert projector_uses_source(capped, "src_a") is True
+    assert projector_uses_source(capped, "src_c") is False
