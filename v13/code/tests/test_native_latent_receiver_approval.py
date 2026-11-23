@@ -683,6 +683,36 @@ def test_operator_rejects_empty_native_receiver_result(tmp_path):
         runtime.close()
 
 
+
+def test_operator_routes_probe_commands_to_approval_not_raw_callosum(tmp_path, monkeypatch):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    operator = Operator(runtime)
+    calls = []
+
+    monkeypatch.setattr(
+        approval, "operator_command",
+        lambda r, args: calls.append(("approved", list(args))) or "approved",
+    )
+    monkeypatch.setattr(
+        callosum, "operator_command",
+        lambda r, args: calls.append(("raw", list(args))) or "raw",
+    )
+    try:
+        command = ":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm"
+        assert operator.run(command) == "approved"
+        assert calls == [(
+            "approved",
+            ["arm-probe", "B2_GIST", "C3_LANGUAGE", "--last-source", "--confirm"],
+        )]
+        with pytest.raises(ValueError, match="lokale Operator"):
+            operator.run(command, origin="REMOTE_OWNER")
+        assert len(calls) == 1
+        assert operator.run(":callosum status") == "raw"
+        assert calls[-1] == ("raw", ["status"])
+    finally:
+        runtime.close()
+
+
 def test_native_probe_rejects_wrong_exclusive_lease_token_and_keeps_approval(tmp_path):
     runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
     try:
