@@ -1251,6 +1251,7 @@ class TemporalWorldJEPAStoreConsumer:
                 return {
                     "status": "WAITING_FOR_MORE_T8_DATA", "windows": len(windows),
                     "train_windows": len(train), "holdout_windows": len(holdout),
+                    "receiver_retention_excluded_train_windows": receiver_retention_excluded_train_windows,
                     "scan_cursor": cursor, "has_more": has_more,
                     "checkpoint_committed": False, "native_body_weights_changed": False,
                 }
