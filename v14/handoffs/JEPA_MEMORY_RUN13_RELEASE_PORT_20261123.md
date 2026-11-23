@@ -1,3 +1,18 @@
+# JEPA & Memory — latest verified checkpoint (2026-11-23; run timing UNKNOWN)
+
+- **Code:** [commit 296b538](https://github.com/RedMentos/Aii/commit/296b538ee2b076d3e550cc1ff1845d1428aa0de6) on draft [PR #2447](https://github.com/RedMentos/Aii/pull/2447) fixes the temporal source-forget Store-row mapper call: `_mapping(raw, label)` was invalid because the helper accepts one argument. The old call caused four temporal source-forget tests to fail with TypeError. Readback confirmed the one-argument call.
+- **LOCAL_LINUX:** CPython 3.13.5 isolated helper contract PASS for dict and sqlite3.Row; AST parse PASS. Full Aii checkout/compile/pytest NOT_RUN: no repository checkout is mounted and `git ls-remote` cannot resolve github.com.
+- **CI on code commit 296b538:** combined online JEPA workflow 45229045914 PASS; incremental WorldJEPA workflow 45229045123 PASS. Temporal T8 workflow 45229045753 remains QUEUED. Optimizer-resume 45229045045 and staged/integrated 45229045070 fail on the Boss/QA-owned nested recovery-builder pin (expected `b05a5f4c...`, while this PR's resume builder has different bytes); Core consumer Python 3.13 has the same pin failure. Boss was notified on PR #2443; JEPA did not modify or weaken their pins. Other queued/in-progress checks are not counted as passes.
+- **Actual path:** T8 ActionOutcome → persisted numeric temporal predictor/EMA/optimizer/checkpoint → source/session-disjoint replay/holdout and rollback → gated B1/B2 numeric receiver in bodyview → serialized into the real `Cognition.offer` prompt. The receiver test captures the actual prompt path, but the runner is synthetic and the readout remains SHADOW; no native B1/B2 GGUF weight change or learned cross-organ latent coupling is proven.
+- **Known integration gap:** the production ActionSelection producer still needs to attach all admitted Memory/observer/Enlightened SourceRefs; JEPA must reject incomplete lineage rather than infer it. The release-base composition also still needs the Boss recovery-pin chain and source-forget lock regression synchronized.
+- **Research:** R-115 records the ICLR 2026 Cascading Eligibility Traces paper. Its delayed, peaked state-space eligibility kernel is a future additive comparison to the current exponential trace; the public implementation has no root LICENSE and old/heavy dependencies, so no code or dependency was imported.
+- **Release/device:** NOT_RELEASED / REDMI_UNVERIFIED / NOT_DEPLOYED. Current release-development tip is `8d93236c753f0194224c19edc7411d8d7082b1d6`; PR #2447 remains draft. No model/weight, permission, phone data or updater state was changed.
+- **Next:** obtain temporal T8 exact-head results; coordinate the nested builder and source-forget test instrumentation with Boss/QA #2443; then rebase the JEPA candidate on the current integration chain and rerun the complete staged, Core receiver, holdout, negative-control, restart and rollback suite.
+
+**User action: none.** Do not run a manual Termux command or request a device update for this unaccepted candidate.
+
+---
+
 
 ## Latest run update — syntax regression fixed, CI queued (2026-11-23)
 
