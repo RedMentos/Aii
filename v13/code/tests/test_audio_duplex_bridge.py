@@ -593,7 +593,7 @@ class FakeSherpaRecognizer:
         self.calls += 1
         stream.decode_steps += 1
 
-    def get_result_all(self, stream):
+    def get_result(self, stream):
         return SimpleNamespace(
             tokens=[" HELLO", " WORLD"],
             timestamps=self.timestamps,
