@@ -2512,3 +2512,13 @@ Research note: R-100 is a runtime-wheel compatibility candidate only; no wheel o
 ### Late CI refresh — 2026-11-23T01:03:20Z
 
 JEPA #2396's Temporal WorldJEPA T8 Windows workflow now reports SUCCESS; its staged startup, integrated regression and optimizer-resume workflows remain FAIL at the Termux12 training-resume source pin. Therefore the postcommit worker path has a synthetic workflow pass, while persistent optimizer resume, source-forget composition, master weight diff/retention and Android acceptance remain open. QA #2391 must rebase after the JEPA code and recompute the downstream builder pins.
+
+## Perception evidence overlay — 2026-11-23 run 16 (append-only)
+
+| Canon family | New code / consumer | Exact evidence | Acceptance boundary |
+|---|---|---|---|
+| A3 source-bound visual student → consented UI perception | PR #2401 carries the #2375 RAW EYE frame ingress on JEPA #2397/#2395 and checks every A3 tile-projector training source against both the live VISION image index and Store IMAGE row before reading projector bytes | LOCAL_LINUX isolated lineage guard 6/6 PASS; five new synthetic consumer negatives; exact head 62551749d0b7b0de7434e82b6381f305cf178b30 has two GitHub workflows IN_PROGRESS at last readback | DRAFT / NOT_RELEASED; full local repository tests BLOCKED; no Android MediaProjection receipt, no C3 delivery, REDMI_UNVERIFIED |
+| A4/A5 RAW EYE UI frame path | Same consent lease and ephemeral frame route remain; stale/legacy projector falls back to handcrafted features | Synthetic provider/lease regressions retained; exact-head CI pending | Does not replace Core #2379 provider or normal Runtime/C3 wiring; no Android capture/action authority |
+| Research-to-code / low-resource learning | R-105 ECL full-text review adds scenario-specific head + temporal embedder candidate | Chameleon ASIC results only; 4-bit ZSL -19.6 accuracy points vs FP32; separate ECL code/weight licenses not verified | Research-only; no code/weights imported; no Android or Redmi benchmark |
+
+Historical Canon heading inventory is unchanged. This overlay does not promote the A3, A4/A5 or Android-control paths to ACCEPTED.
