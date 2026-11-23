@@ -1328,3 +1328,100 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - Research ledger now carries R-084 and R-090–R-107 append-only. R-096 engram gate is synthetic and has no old-task retention win; not sparse MoE. R-107 FAR is a preprint and sony/far is CC BY-NC 4.0 with CUDA 12.8 / 14 GB GPU environment; conceptual only, no code/weights reused.
 - Next: wait for later PIPELINE_STATUS; recompose fair B1/B2→C4→C3; wire production ActionSelection context SourceRefs; rebase temporal/episodic JEPA; continue voice, Android agency, B3, sparse MoE, self-optimization and all Canon families.
 - **User action required: NONE.** Auto-updater enabled; no manual command or duplicate UPDATE_REQUEST.
+
+
+---
+
+## Boss & Integration — run 13 — 2026-11-23
+
+### Integrated candidate (not released)
+
+- Release-development ancestor: `gpt6/v13-private-remote-bridge-20261111 @ fb563d771fe2d493c4ec25abe94280981d24ef5c`.
+- Boss integration branch code checkpoint: `eeb6c8f729ff7ec41e2abd463e8815e9fac4445b` (descends from the open #2443 integration branch).
+- Composed the current-base Perception RAW EYE/A3 slice from PR #2442 exact head `4b7a8e470f1e2d46cd23c0d775d71666bf090e97`, and the A4/RAW EAR/teacher/speaker-evidence slice from PR #2441 exact head `0004f60b4fa7a0ba7ecc59f9857968c93928940d`. The research ledger now preserves R-110, R-111, R-112 and R-113 together; no historical Canon text was rewritten.
+- The existing #2443 Store/Memory source-forget serialization and deterministic same-hash publisher interleaving regression remain in the same branch. Store RLock spans tombstoning, final active-refcount check and blob cleanup.
+- Exact hash pins were rebound bottom-up: RECORD_ONLY controller guard (local-error and attention output), lifecycle composer vision input, audio source map, recovery base/overlay, stage builder and runtime deployer. No hash gate was widened or disabled.
+
+### New connected code and limits
+
+- A3 source lineage binds projector state to source/generation/encoder/preprocessing identity and invalidates it on forget/revoke. This remains bounded ridge/SHADOW, not gradient-trained JEPA or neural-backbone unlearning.
+- A5 RAW EYE accepts a one-shot provider receipt plus live UI observation lease, validates bounded frame bytes and zeroizes caller-owned frame data. Ephemeral 4×4 temporal luminance summaries and local-first novelty feed the existing A4 modulation path. The provider revoke helper exists, but Core's Android provider still needs to pass the callback; this is not a live MediaProjection/Redmi capture.
+- A4 text-span outcomes now use durable exactly-once receipts and transactional N10 modulation. RAW EAR only admits caller-supplied VOICED embeddings to speaker-reference history; non-voiced cues remain separate. Optional Teacher Ear results require separate local-teacher and transcript opt-ins. FASTDIAR is a diagnostic adapter around supplied embeddings, not a model inference runtime.
+- No Android AudioRecord provider, live ASR, speaker identity, trained latent channel, native body-weight update, or Android UI/background executor was added by these Perception snapshots.
+
+### Verification and device boundary
+
+- GitHub Actions for the final composed code head `eeb6c8f729ff7ec41e2abd463e8815e9fac4445b`: **not yet observed** at this checkpoint; no CI PASS is claimed. The earlier exact #2442/#2441 staged checks were red on the Core-owned stale source pins that this composition rebinds; their focused tests were green on their own heads. The new combined head must pass its own full matrix.
+- LOCAL_LINUX full Aii checkout/suite: BLOCKED / NOT_RUN (no checkout mounted in this worker). No local project compile or full pytest result is claimed.
+- Authenticated private PIPELINE_STATUS #819: auto-update enabled; Runtime and Dashboard UP_TO_DATE at installed `fb563d771fe2d493c4ec25abe94280981d24ef5c`; last error NONE.
+- Authenticated private DIAGNOSTICS #820: service/dashboard process RUNNING, but AI runtime `STOPPED_BY_USER`, autostart false, model process STOPPED, native residency unavailable. Last stored turn is 6.295 s total / 2.046 s TTFT / 7 generated tokens; correctness is UNKNOWN. B1/B2 remain TIME_BUDGET at 53.2/54.2 s. No CHAT_SEND, restart, LOG_PAGE, shell, model/weight/permission change or UPDATE_REQUEST was attempted. Console error sharing remains USER_NOT_OPTED_IN.
+- The authenticated receipt shows the phone still runs the release ancestor, not this candidate. Candidate is NOT_RELEASED and NOT_INSTALLED.
+
+### Next integration
+
+1. Obtain exact-head Python 3.13/3.14 staged, integrated, optimizer/source-forget, migration, audio/RAW EYE, privacy and deployment results for the combined branch; fix remaining source pins from exact bytes only.
+2. Review and compose the separate #2446 internal-hypothesis presentation-boundary mitigation after its exact tests, without removing B1/B2 source-bound offers.
+3. Recompose the P0 fair B1/B2 → C4 → C3 path on the current release ancestor; preserve both bodies and require useful offers to be delivered and consumed.
+4. Keep the phone STOPPED_BY_USER state intact. No user action is required for this code/CI work; a live Redmi acceptance run must wait until the user explicitly re-enables the runtime.
+
+
+---
+
+## Boss & Integration — run 14 — 2026-11-23
+
+### Integration checkpoint
+
+- Release-development branch remains `gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6`. Exact release readback recorded in #1984: 30/30 check-runs SUCCESS; 32/33 workflow runs SUCCESS and one cancelled, with no workflow failure.
+- Boss candidate code-bearing head: `a5e536a96f6dc2a3a515d37b08393f7136e9efff`, on `boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean`, 87 ahead / 0 behind release, 52 changed files. The following `6286c6fa0d7d8f141b3edf2cc9558299aeb8fec6` commit updates only this handoff file's companion user-action document; it adds no runtime code.
+- Fast-forward integrated QA PR #2459 into the Boss branch. Exact code head `58646862436ba3f69bce81ef4d3710105fc7c12b`: 7/7 workflows SUCCESS (Lab Age migration, Lab Age control/WebView, RuntimeDeploy integrity, controller guard, private owner-read bootstrap, JEPA optimizer-resume/source-forget Python 3.13/3.14, staged/integrated regression). Its patch rebinds five dependent immutable pins bottom-up and strengthens the same-hash source-publication race test; no hash gate was relaxed.
+- Fast-forward integrated QA PR #2460 after #2459. Code-bearing head `79a1734dfae5604a829eb0371c9d4dc7436286a8`: vision source-lineage 29/29 on Python 3.13 and 29/29 on 3.14; staged runtime 255 passed / 10 skipped / 47 subtests; source recall 15 passed; integrated regression 437 passed / 3 skipped / 58 subtests. Its regression now pauses the canonical `os.unlink(name, dir_fd=...)` and proves re-ingest attempts but cannot acquire Store.tx until cleanup releases the lock. Final handoff-only descendant `a5e536a` records this evidence.
+- The final candidate head `a5e536a` had two workflow attempts ending in `startup_failure` with no jobs; retry of the failed run was rejected because GitHub reports it cannot be retried. Therefore the exact *combined final-head* matrix is NOT PASS. PR #2443 remains DRAFT / NOT_RELEASED; do not merge to the release line or request a device update from this candidate.
+- LOCAL_LINUX full Aii suite: BLOCKED / NOT_RUN (no checkout mounted). CI evidence above is not a local full-suite result and is not Android proof.
+
+### Current authenticated Redmi boundary
+
+- Private owner-read #840 confirms installed SHA `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled, Runtime/Dashboard UP_TO_DATE and last_error NONE.
+- Private DIAGNOSTICS #841: service and dashboard RUNNING; AI `STOPPED_BY_USER`, autostart=false, model_process=STOPPED; native residency UNAVAILABLE (no verified model supervisor). B1_DETAIL/B2_GIST remain TIME_BUDGET at 53.2/54.2 s. Last stored turn is 6.295 s total / 2.046 s TTFT / 358 prompt tokens / 7 generated tokens; correctness is UNKNOWN and this is not a new test. The opted-in, redacted console excerpt confirms internal organ hypotheses remain visible in console output and the stored arithmetic sample remains incorrect (2+2→2). Console error sharing remains USER_NOT_OPTED_IN; no LOG_PAGE was requested.
+- Private HEALTH #842: 1,222 MiB MemAvailable / 5,569 MiB total and 1,618 MiB free disk. These are snapshots, not sustained model residency.
+- No CHAT_SEND, runtime restart, UPDATE_REQUEST, shell, model/weight/permission change or data mutation occurred. Preserve STOPPED_BY_USER.
+
+### Canon coverage overlay
+
+| Canon family | Candidate change / consumer | Evidence and current classification | Still open |
+|---|---|---|---|
+| A3 / A4 / A5 perception and attention | Source-bound A3 projector lineage/forget invalidation; A5 one-shot UI-frame receipt + temporal summary; A4 durable source-bound outcome/N10 modulation; caller-supplied RAW EAR/Teacher Ear/FASTDIAR diagnostics | Integrated into Boss candidate branch; focused upstream workflows exist, QA #2459/#2460 composition checks above. Candidate only; exact combined final-head CI incomplete. | Real MediaProjection provider/revocation callback, AudioRecord, learned vision/audio, semantic perception and Redmi proof |
+| Memory / source-forget / Store | Serialize Memory._forget_source with Store RLock through tombstone, final refcount check and blob cleanup; same-hash publisher and vision re-ingest interleaving regressions | #2459 7/7 workflows; #2460 code-bearing regression tests pass; no hash gate weakened | Exact combined-head CI, full local suite, crash/restart/migration on device; this is source/SQLite lineage protection, not neural weight unlearning |
+| B1_DETAIL / B2_GIST → C4 → C3 | No accepted native offer-delivery improvement in this run | Phone still TIME_BUDGET 53.2/54.2 s; Core #2458 remains draft, current head CI startup-failed; earlier head 7688c360 had 6/12 success, 4 failures, 2 skips | Both bodies must get useful pre-answer slices, emit source-bound offers, and have C4/C3 demonstrably consume them while retaining C3 reserve; real TTFT and correctness |
+| B3 / Enlightened Space | No new trained activation-to-activation receiver | Production B3 remains OFF / symbolic or diagnostic only | Trained receiver, source-disjoint held-out utility, zero/shuffle/exact/parity/OOD controls and local approval |
+| JEPA / body-weight learning / self-optimization | Source-forget protects source lineage/checkpoint lifecycle; no new model-weight optimizer consumer | No accepted native body-weight delta, cross-organ gradient or Android learning receipt | Actual persistent numeric B1/B2/C3 changes, held-out utility, retention, restart, rollback and explicit learning gates |
+| Voice / audio | Caller-supplied RAW EAR and diagnostics only; separate #2448 duplex adapter is not integrated | #2448 latest head c00d18d has 15/18 checks green and 3 skipped, but Boss found same-target-turn idempotency and cancellation-to-handoff ordering races | AudioRecord provider, signed consent/revocation, live ASR, independently trainable decoder/vocoder, full-duplex/barging-in and Redmi tests |
+| Android background/UI control | A5 UI-frame ingress candidate is observation-only | No APK install, MediaProjection/Accessibility provider, background executor or authorized tap/type action on Redmi | API-first Android actions, explicit per-capability approvals, audit/stop/cancel/recovery and device validation |
+| Sparse MoE / hardware-aware routing | New research intake R-114 only; no sparse-MoE implementation | Research-only; no weights/code imported and no B1/B2 body is thereby sparse MoE | Separate B1/B2 expert bodies, router/weight residency, swap/latency/quality/retention measurements on ARM |
+| Whole Canon / traceability | V14 master and 1,255-heading historical inventory were not edited | Master blob remains `9748ad5ba9a4d4f5c3d004a0577141f6779fcbca`; semantic coverage remains incomplete | Clause→implementation→real consumer→test→environment→negative control→rollback mapping across every Canon family |
+
+### Research intake R-114 — Sticky Routing / StickyMoE
+
+Ali Kayyam, *Sticky Routing: Training MoE Models for Memory-Efficient Inference*, arXiv:2607.08780 (2026-06-12), https://arxiv.org/abs/2607.08780. The paper proposes a differentiable L2 consistency penalty between adjacent-token router probability vectors, optionally with a segment-anchor term, alongside language-model and load-balancing losses. It reports up to 59% fewer expert switches and up to 3.92× fewer simulated cache misses on 8.8M/22M parameter models with a two-slot LRU cache. These results are not an Android benchmark and do not establish scaling to billion-parameter models.
+
+The linked `alikayyam/sticky_moe` repository README declares MIT, but the root `LICENSE` file is absent (GitHub contents lookup 404); the code license is therefore treated as unverified pending an explicit license file/author confirmation. No code, weights or data were copied. Repository readback showed its `soft` variant implements the differentiable adjacent-token loss; its `hard` variant is a detached recent-top-k logit bias, not the paper's differentiable segment-anchor loss. This distinction must remain explicit.
+
+**V14 hypothesis:** evaluate an independently implemented soft routing-locality regularizer on small synthetic B1 and B2 expert routers, separately. Reset/relax locality at semantic/task boundaries so the router can change experts when the topic or required skill changes. Measure switch rate, actual cache hit/miss and bytes loaded, p50/p95 latency, quality/perplexity, load balance, OOD behavior and old-task retention. Include `lambda=0`, shuffled-span, boundary-reset and fixed-router controls. This is internal expert-routing optimization, not a bridge between B1 and B2 and not learned latent coupling.
+
+### Next integration order
+
+1. Retry/recreate exact current-head CI for Boss #2443 when Actions can start; if mergeability remains false, inspect the actual base conflict rather than assuming the startup failure is a code failure. Keep DRAFT / NOT_RELEASED until the full staged, integrated, migration, privacy, audio, RAW EYE and deployment matrix is green.
+2. Continue the P0 Core fair B1/B2→C4→C3 path on exact release base 8d93236. Repair source pins and prove both admitted roles receive a useful slice, deliver valid OfferPackets and are consumed by C4/C3; do not trade away C3 reserve or either body.
+3. Rebase/review the output-privacy mitigation (#2446) and close #2448 audio dispatch/idempotency/cancellation races on the exact current base.
+4. Reconnect production ActionSelection SourceRefs for all admitted Memory/observer/Enlightened context, then rebase temporal/episodic JEPA and continue B3, self-optimization, Android control, voice, Memorilla and all remaining Canon families.
+5. No device action until the user independently re-enables the runtime and a later explicit, bounded device test is authorized.
+
+
+### Boss run 14 — late cross-lane re-poll (2026-11-23)
+
+- Boss PR #2443 latest readback: head `a76e330eb6c7c60967168fad3c0cd53843780838`, DRAFT, mergeable=true, 98 ahead / 0 behind release base `8d93236`. This head is documentation-only after code checkpoint `a5e536a`; its current workflow run `45265378386` ended `startup_failure` with no jobs. No full exact combined matrix is green and no release merge is appropriate.
+- Core fair B1/B2 PR #2458 remains DRAFT at `6a750bdf`; its only current run `45262375402` ended `startup_failure`, retry rejected. The prior exact head `7688c360` had 6/12 checks success, 4 failures and 2 skipped. The current code is not accepted; both roles must be explicitly admitted in the fixture and receive useful source-bound offers while retaining C3 reserve.
+- Perception audio duplex PR #2448 advanced to `f8bd430e8d670257647660f0bff335a5ef20ada1`. The source now includes a per-target-turn first-writer claim in `duplex.record`, a per-Runtime `audio_handoff_lock`, durable handoff publication before cancellation, and a next-turn reader serialized on the same lock. Deterministic tests cover two distinct valid audio receipts targeting one active turn and the commit-before-cancel/handoff-reader race. This addresses the two Boss review findings in code, and the implementation keeps Store I/O outside Runtime.lock. However the exact current-head workflow `45265408942` ended `startup_failure` with no jobs. The earlier code-bearing bridge head `2aea560` had 17/17 focused bridge tests on Python 3.13 and 3.14; its later handoff-only head `2a230e8` had staged/consumer/privacy/offline checks pass but integrated-regression was still in progress. The new race-fix head is not tested by those older results. Keep #2448 DRAFT / NOT_RELEASED; no AudioRecord provider, microphone capture or Redmi voice proof.
+- QA output-privacy PR #2446 remains DRAFT at `095fe1d9`. Exact current workflow set: JEPA receipt-integrity, transactional-update and combined online-JEPA passed; staged/integrated regression failed on old source pins. It still requires bottom-up rebase/recomposition against the current release/candidate and adversarial exception/output tests. The private #841 receipt confirms the user-visible internal-hypothesis leak; no raw console text was copied and LOG_PAGE remains unauthorized.
+- JEPA temporal PR #2447 remains DRAFT at `8be6498`: temporal T8, combined online JEPA, incremental WorldJEPA, privacy, deployment-integrity and some owner-read checks pass, but optimizer-resume, owner-read staged, Core same-turn consumer and staged/integrated workflows fail. Its B1/B2 readouts remain SHADOW adapters, not native body-weight updates. Stacked Boss rebase #2454 is currently mergeable=false with no workflow runs; Core native-probe stack #2457 has one deployment workflow success and five failures, including staged/JEPA consumers. Production B3 stays OFF; no native probe was run.
+- M1 #2452 current exact head `2104f72` has a failing M1 test workflow. M1 #2453 `f7f7520` has a passing DATA workflow only. Neither is a real UCI cohort, model training, weight update or Redmi result. Preserve all Ridge-AR, Raw-Window-Probe, persistence, train-mean and direct-MAE/JEPA controls.
+- These open branches are reviewed but not silently integrated: no exact current-base CI/consumer proof justifies merging them into the Boss candidate. Keep file ownership with Core, QA, JEPA/Memory and Perception; Boss owns only cross-lane integration and synchronized handoff/coverage.

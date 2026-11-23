@@ -29,6 +29,8 @@ import time
 import zlib
 from pathlib import Path
 from .common import Unavailable,atomic_write,digest,dumps,uid,now
+from .vision_source_lineage import source_lineage, invalidate_projectors, unlink_projector_artifact
+from .vision_validation import source_disjoint_crossval as _source_disjoint_crossval
 
 KEY='WP_N15_VISION';REVISION='wp-n15-vision-v1';AUTHORITY='REFERENCE_NOT_FACT';STUDENT='STUDENT_ESTIMATE'
 PROMPT='Describe the image in one sentence: name the main objects, their colours and where they are.'
@@ -71,18 +73,50 @@ def region_ref(ref,region):
     return {'source_id':ref['source_id'],'sha256':ref['sha256'],'char_start':0,'char_end':0,'modality':'image','region_id':region['region_id'],'box':list(region['box'])}
 
 def ingest(store,data,cfg=DEFAULTS,label=None):
-    """Store image bytes as an IMAGE source (dedup by hash) and register its regions. Returns the image record."""
-    im=decode(data,cfg);w,h=im.size;sha=digest(data);st=load(store)
-    for rec in st['images'].values():
-        if rec['ref']['sha256']==sha:return rec
-    if len(st['images'])>=cfg['max_images']:raise ValueError('Zu viele Bilder im Lab; erst :image forget')
-    path=store.home/'data/blobs'/sha
-    if not path.exists():atomic_write(path,data)
-    sid=uid('src')
-    with store.tx() as c:c.execute('INSERT INTO sources VALUES (?,?,?,?,?,?,0)',(sid,sha,'IMAGE',len(data),0,now()))
-    ref={'source_id':sid,'sha256':sha,'char_start':0,'char_end':0,'modality':'image'}
-    rec={'ref':ref,'size':[w,h],'label':(label or '')[:80],'regions':boxes(w,h,cfg['grid']),'captions':[],'created':now()}
-    st['images'][sid]=rec;save(store,st);return rec
+    """Atomically deduplicate the IMAGE source and publish its registry record."""
+    im = decode(data, cfg)
+    w, h = im.size
+    sha = digest(data)
+    path = store.home / 'data/blobs' / sha
+    with store.tx() as conn:
+        state, version = _read_state_conn(conn)
+        _validate_state_sources(conn, state)
+        matches = [
+            (sid, record) for sid, record in state['images'].items()
+            if record['ref']['sha256'] == sha
+        ]
+        if len(matches) > 1:
+            raise ValueError('ambiguous existing image records')
+        live = conn.execute(
+            "SELECT id,bytes,chars FROM sources WHERE hash=? AND kind='IMAGE' AND deleted=0",
+            (sha,),
+        ).fetchall()
+        if matches:
+            sid, record = matches[0]
+            if (len(live) != 1 or live[0]['id'] != sid
+                    or live[0]['bytes'] != len(data) or live[0]['chars'] != 0):
+                raise ValueError('image registry and live sources disagree')
+            _verify_or_create_blob(path, data, sha)
+            return record
+        if live:
+            raise ValueError('live IMAGE source missing from vision registry')
+        if len(state['images']) >= cfg['max_images']:
+            raise ValueError('Zu viele Bilder im Lab; erst :image forget')
+        _verify_or_create_blob(path, data, sha)
+        sid = uid('src')
+        conn.execute(
+            'INSERT INTO sources VALUES (?,?,?,?,?,?,0)',
+            (sid, sha, 'IMAGE', len(data), 0, now()),
+        )
+        ref = {'source_id': sid, 'sha256': sha, 'char_start': 0, 'char_end': 0, 'modality': 'image'}
+        record = {
+            'ref': ref, 'size': [w, h], 'label': (label or '')[:80],
+            'regions': boxes(w, h, cfg['grid']), 'captions': [], 'created': now(),
+        }
+        state['images'][sid] = record
+        _write_state_conn(conn, state, version)
+        return record
+
 
 def read_image(store,ref,cfg=DEFAULTS):
     """Verified pixels for a (region) SourceRef: the source row must be live, the blob hash must match."""
@@ -197,7 +231,7 @@ def retrieval(Z,Y):
     return {'top1':float((S.argmax(1)==np.arange(n)).mean()) if n else 0.,'chance':1./n if n else 0.,'mean_cosine':float(np.diag(S).mean()) if n else 0.}
 
 def crossval(X,Y,thumbs=None,folds=4,ridge=1.):
-    """K-fold held-out alignment (retrieval among held-out captions) and reconstruction (measurement only)."""
+    """Row-wise K-fold diagnostic only; regions from one image may leak across folds."""
     np=_np();X=np.asarray(X);Y=np.asarray(Y);n=len(X);idx=np.arange(n);top=[];cos=[];rec=[];base=[]
     if n<2*folds:folds=max(2,n//2)
     for k in range(folds):
@@ -207,9 +241,15 @@ def crossval(X,Y,thumbs=None,folds=4,ridge=1.):
         if thumbs is not None:
             T=np.asarray(thumbs);d=Projector(ridge).fit(p(X[tr]),T[tr]);Zte=p(X[te])
             pred=(d._x(Zte)@d.W);rec.append(float(((pred-T[te])**2).mean())*len(te));base.append(float(((T[tr].mean(0)-T[te])**2).mean())*len(te))
-    out={'n':n,'folds':folds,'held_out_top1':sum(top)/n,'chance':folds/n,'held_out_mean_cosine':sum(cos)/n}
+    out={'n':n,'folds':folds,'split':'ROW_WISE_DIAGNOSTIC_ONLY','authority':'DIAGNOSTIC_ONLY','held_out_top1':sum(top)/n,'chance':folds/n,'held_out_mean_cosine':sum(cos)/n}
     if rec:out['reconstruction']={'mse':sum(rec)/n,'mean_image_mse':sum(base)/n,'ratio':(sum(rec)/max(1e-12,sum(base))),'authority':'MEASUREMENT_ONLY'}
     return out
+
+def source_disjoint_crossval(X,Y,groups,labels,thumbs=None,folds=4,ridge=1.):
+    """Source-image-disjoint A3 validation; row-wise crossval is diagnostic only."""
+    return _source_disjoint_crossval(
+        Projector, X, Y, groups, labels, thumbs=thumbs, folds=folds, ridge=ridge
+    )
 
 # ---------------------------------------------------------------- TEACHER EYE
 class Teacher:
@@ -246,8 +286,142 @@ class Teacher:
         return {'text':' '.join(out.split())[:600],'authority':AUTHORITY,'teacher':'LFM2.5-VL-450M','revision':self.revision,'prompt':prompt,'seconds':round(time.monotonic()-t0,2)}
 
 # ---------------------------------------------------------------- lab state + operator surface
-def load(store):return store.state(KEY,None)[0] or {'revision':REVISION,'images':{},'projector':None,'last':None}
-def save(store,st):store.set_state(KEY,st)
+class _VersionedVisionState(dict):
+    """A Store-bound vision snapshot; save() rejects stale concurrent writes."""
+    __slots__ = ('_store', '_version')
+
+    def __init__(self, value, store, version):
+        super().__init__(value)
+        self._store = store
+        self._version = version
+
+
+def _empty_state():
+    return {'revision': REVISION, 'images': {}, 'projector': None, 'last': None}
+
+
+def _read_state_conn(conn):
+    row = conn.execute('SELECT payload,version FROM states WHERE key=?', (KEY,)).fetchone()
+    if row is None:
+        return _empty_state(), 0
+    version = row['version']
+    if type(version) is not int or version < 1:
+        raise ValueError('invalid vision state version')
+    try:
+        state = json.loads(row['payload'])
+    except (TypeError, ValueError) as exc:
+        raise ValueError('invalid vision state') from exc
+    if state == {}:
+        state = _empty_state()
+    if type(state) is not dict or type(state.get('images')) is not dict:
+        raise ValueError('invalid vision image registry')
+    return state, version
+
+
+def _write_state_conn(conn, state, version):
+    conn.execute('INSERT OR REPLACE INTO states VALUES (?,?,?)',
+                 (KEY, version + 1, dumps(state)))
+    return version + 1
+
+
+def _validate_state_sources(conn, state, allow_malformed_projectors=False):
+    """Every retained image/caption/projector must still refer to a live source."""
+    images = state.get('images')
+    if type(images) is not dict:
+        raise ValueError('invalid vision image registry')
+    for sid, record in images.items():
+        ref = record.get('ref') if type(record) is dict else None
+        sha = ref.get('sha256') if type(ref) is dict else None
+        if (type(sid) is not str or not sid or type(ref) is not dict
+                or ref.get('source_id') != sid or ref.get('modality') != 'image'
+                or type(sha) is not str or not re.fullmatch(r'[0-9a-f]{64}', sha)):
+            raise ValueError('invalid vision image source reference')
+        source = conn.execute('SELECT hash,kind,deleted FROM sources WHERE id=?', (sid,)).fetchone()
+        if (source is None or source['deleted'] != 0 or source['kind'] != 'IMAGE'
+                or source['hash'] != sha):
+            raise ValueError('vision registry references a non-live image source')
+        captions = record.get('captions', [])
+        if type(captions) is not list:
+            raise ValueError('invalid image captions')
+        for caption in captions:
+            caption_ref = caption.get('source_ref') if type(caption) is dict else None
+            if (type(caption_ref) is not dict or caption_ref.get('source_id') != sid
+                    or caption_ref.get('sha256') != sha or caption_ref.get('modality') != 'image'):
+                raise ValueError('image caption references a non-live source')
+
+    for key in ('projector', 'tile_projector'):
+        projector = state.get(key)
+        if projector is None:
+            continue
+        if type(projector) is not dict:
+            if allow_malformed_projectors:
+                continue
+            raise ValueError('invalid vision projector record')
+        captions = projector.get('captions')
+        if captions is not None:
+            if type(captions) is not dict:
+                raise ValueError('invalid vision projector captions')
+            for training_key in captions:
+                if type(training_key) is not str or ':' not in training_key:
+                    raise ValueError('invalid vision projector caption lineage')
+                if training_key.split(':', 1)[0] not in images:
+                    raise ValueError('vision projector caption references a non-live source')
+        lineage = projector.get('training_sources')
+        if lineage in (None, []):
+            continue  # legacy/unknown lineage is retained only until explicit forget invalidates it
+        if type(lineage) is not list:
+            raise ValueError('invalid vision projector source lineage')
+        seen = set()
+        for item in lineage:
+            if type(item) is not dict or set(item) != {'source_id', 'sha256'}:
+                raise ValueError('invalid vision projector source lineage item')
+            source_id, source_sha = item['source_id'], item['sha256']
+            image = images.get(source_id) if type(source_id) is str else None
+            image_ref = image.get('ref') if type(image) is dict else None
+            if (not source_id or source_id in seen or type(source_sha) is not str
+                    or not re.fullmatch(r'[0-9a-f]{64}', source_sha)
+                    or type(image_ref) is not dict or image_ref.get('sha256') != source_sha):
+                raise ValueError('vision projector lineage references a non-live source')
+            seen.add(source_id)
+
+
+def load(store):
+    state, version = store.state(KEY, None)
+    if state is None or state == {}:
+        state = _empty_state()
+    if type(state) is not dict or type(state.get('images')) is not dict:
+        raise ValueError('invalid vision image registry')
+    if type(version) is not int or version < 0:
+        raise ValueError('invalid vision state version')
+    return _VersionedVisionState(state, store, version)
+
+
+def save(store, st):
+    """CAS-publish one snapshot; never overwrite a concurrent forget/ingest."""
+    if type(st) is not _VersionedVisionState or st._store is not store:
+        raise ValueError('versioned vision state from this Store required')
+    with store.tx() as conn:
+        row = conn.execute('SELECT version FROM states WHERE key=?', (KEY,)).fetchone()
+        current = row['version'] if row else 0
+        if type(current) is not int or current != st._version:
+            raise ValueError('Stale state write')
+        _validate_state_sources(conn, st)
+        next_version = _write_state_conn(conn, st, current)
+    st._version = next_version
+    return next_version
+
+
+def _verify_or_create_blob(path, data, sha):
+    if path.is_symlink() or path.parent.is_symlink() or path.parent.parent.is_symlink():
+        raise ValueError('image blob path or parent is a symlink')
+    if not path.parent.is_dir():
+        raise ValueError('image blob directory is unavailable')
+    if path.exists():
+        if not path.is_file() or digest(path.read_bytes()) != sha:
+            raise ValueError('existing image blob does not match its content hash')
+    else:
+        atomic_write(path, data)
+
 
 def _find(st,arg):
     if arg in (None,'last'):
@@ -280,14 +454,23 @@ def dataset(store,cfg=DEFAULTS):
 def train(runtime,encoder=None,cfg=DEFAULTS):
     X,caps,T,ids=dataset(runtime.store,cfg)
     if len(X)<cfg['min_train']:raise ValueError('Zu wenig beschriebene Bilder (%d < %d); erst :image describe'%(len(X),cfg['min_train']))
-    name,enc=encoder or text_encoder(runtime,cfg);Y=enc(caps);cv=crossval(X,Y,T,ridge=cfg['ridge'])
+    name,enc=encoder or text_encoder(runtime,cfg);Y=enc(caps)
+    groups=[key.split(':',1)[0] for key in ids]
+    cv=source_disjoint_crossval(X,Y,groups,caps,thumbs=T,ridge=cfg['ridge'])
+    st=load(runtime.store);training_sources=source_lineage(st['images'],ids);old=st.get('projector')
     p=Projector(cfg['ridge']).fit(X,Y);path=runtime.home/'data/vision'/('projector-'+uid('vis')[4:]+'.npz');sha=p.save(path)
-    st=load(runtime.store);old=st.get('projector')
     st['projector']={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,'metrics':cv,'created':now(),
-                     'captions':{sid:c for sid,c in zip(ids,caps)},'authority':'LAB_SHADOW_ONLY'}
-    save(runtime.store,st)
-    if old and old['path']!=st['projector']['path']:(runtime.home/old['path']).unlink(missing_ok=True)
-    runtime.store.log('vision',None,{'action':'train','n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow','value':round(cv['held_out_top1'],4)})
+                     'captions':{sid:c for sid,c in zip(ids,caps)},'training_sources':training_sources,'authority':'LAB_SHADOW_ONLY'}
+    try:
+        save(runtime.store,st)
+    except Exception:
+        unlink_projector_artifact(runtime.home, st['projector'])
+        raise
+    if old and old.get('path')!=st['projector']['path']:
+        unlink_projector_artifact(runtime.home, old)
+    log={'action':'train','n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow','validation_status':cv['status'],'validation_split':cv['split'],'utility_status':cv.get('utility_status')}
+    if cv.get('held_out_top1') is not None:log['held_out_top1']=round(cv['held_out_top1'],4);log['chance']=round(cv['chance'],4)
+    runtime.store.log('vision',None,log)
     return st['projector']
 
 def look(runtime,rec,encoder=None,cfg=DEFAULTS,k=3):
@@ -326,13 +509,22 @@ def train_tiles(runtime,encoder=None,cfg=DEFAULTS):
     X,texts,keys=tile_dataset(runtime.store,cfg)
     if len(set(texts)-{BACKGROUND})<2 or len(X)<cfg['min_train']:raise ValueError('Zu wenig beschriebene Bildbereiche für Kacheln; erst :image describe (g, Hälften, Quadranten)')
     name,enc=encoder or text_encoder(runtime,cfg);uniq=sorted(set(texts));E=dict(zip(uniq,enc(uniq)));Y=_np().stack([E[t] for t in texts])
+    groups=[key.split(':',1)[0] for key in keys]
+    cv=source_disjoint_crossval(X,Y,groups,texts,ridge=cfg['ridge'])
+    st=load(runtime.store);training_sources=source_lineage(st['images'],keys);old=st.get('tile_projector')
     p=Projector(cfg['ridge']).fit(X,Y);path=runtime.home/'data/vision'/('tiles-'+uid('vis')[4:]+'.npz');sha=p.save(path)
-    st=load(runtime.store);old=st.get('tile_projector')
     st['tile_projector']={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,'created':now(),
-                          'salient_tiles':sum(t!=BACKGROUND for t in texts),'authority':'LAB_SHADOW_ONLY'}
-    save(runtime.store,st)
-    if old and old['path']!=st['tile_projector']['path']:(runtime.home/old['path']).unlink(missing_ok=True)
-    runtime.store.log('vision',None,{'action':'train_tiles','n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow'})
+                          'salient_tiles':sum(t!=BACKGROUND for t in texts),'metrics':cv,'training_sources':training_sources,'authority':'LAB_SHADOW_ONLY'}
+    try:
+        save(runtime.store,st)
+    except Exception:
+        unlink_projector_artifact(runtime.home, st['tile_projector'])
+        raise
+    if old and old.get('path')!=st['tile_projector']['path']:
+        unlink_projector_artifact(runtime.home, old)
+    log={'action':'train_tiles','n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow','validation_status':cv['status'],'validation_split':cv['split'],'utility_status':cv.get('utility_status')}
+    if cv.get('held_out_top1') is not None:log['held_out_top1']=round(cv['held_out_top1'],4);log['chance']=round(cv['chance'],4)
+    runtime.store.log('vision',None,log)
     return st['tile_projector']
 
 def tile_scores(p,im,regions,query_vec,background_vec,cfg=DEFAULTS):
@@ -357,19 +549,82 @@ def teacher_switch(store,on):
     st=load(store);st['teacher_removed']=not on;save(store,st);return {'teacher':'on' if on else 'removed'}
 
 def forget(store,rec):
-    st=load(store);sid=rec['ref']['source_id'];st['images'].pop(sid,None)
-    if st.get('projector'):st['projector']['captions']={k:v for k,v in st['projector']['captions'].items() if k.split(':')[0]!=sid}
-    save(store,st)
-    with store.tx() as c:c.execute('UPDATE sources SET deleted=1 WHERE id=?',(sid,))
-    if not store.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(rec['ref']['sha256'],)):(store.home/'data/blobs'/rec['ref']['sha256']).unlink(missing_ok=True)
-    return {'forgotten':sid}
+    """Atomically revoke source-derived projectors and serialize last-blob cleanup with ingest."""
+    ref = rec.get('ref') if type(rec) is dict else None
+    sid = ref.get('source_id') if type(ref) is dict else None
+    sha = ref.get('sha256') if type(ref) is dict else None
+    if (type(sid) is not str or not sid or type(sha) is not str
+            or not re.fullmatch(r'[0-9a-f]{64}', sha)):
+        raise ValueError('invalid image source reference')
+
+    invalidated = []
+    with store.tx() as conn:
+        state, version = _read_state_conn(conn)
+        _validate_state_sources(conn, state, allow_malformed_projectors=True)
+        current = state['images'].get(sid)
+        current_ref = current.get('ref') if type(current) is dict else None
+        if type(current_ref) is not dict or current_ref.get('sha256') != sha:
+            raise ValueError('Image source is missing or changed; refusing stale forget request')
+        source = conn.execute(
+            'SELECT hash,kind,deleted FROM sources WHERE id=?', (sid,)
+        ).fetchone()
+        if (source is None or source['hash'] != sha or source['kind'] != 'IMAGE'
+                or source['deleted'] != 0):
+            raise ValueError('image source is not live or does not match')
+        state['images'].pop(sid, None)
+        invalidated = invalidate_projectors(state, sid)
+        for key in ('projector', 'tile_projector'):
+            record = state.get(key)
+            if record is not None and type(record) is not dict:
+                state[key] = None
+                invalidated.append((key, record))
+        changed = conn.execute(
+            'UPDATE sources SET deleted=1 WHERE id=? AND deleted=0', (sid,)
+        )
+        if changed.rowcount != 1:
+            raise ValueError('image source changed during forget')
+        _validate_state_sources(conn, state)
+        _write_state_conn(conn, state, version)
+
+    # Check references and unlink while holding the same Store write lock used
+    # by ingest. A concurrent re-ingest can only run before or after this block.
+    cleanup_failed = []
+    try:
+        # Share the global source-reference check with text Memory. Remove both
+        # plain and archived blobs only when no live source of any modality
+        # still references this hash; publication and final cleanup share Store.tx.
+        from .source_lifecycle_candidate import cleanup_unreferenced
+        cleanup_status = cleanup_unreferenced(store, sid)
+    except OSError:
+        cleanup_status = 'FAILED'
+        cleanup_failed.append('image_blob')
+    blob_retained_shared = cleanup_status == 'PRESERVED_LIVE'
+    blob_deleted = cleanup_status == 'REMOVED'
+    if cleanup_status not in ('REMOVED', 'PRESERVED_LIVE', 'FAILED'):
+        cleanup_failed.append('image_blob')
+    projector_files_deleted = {}
+    for key, record in invalidated:
+        deleted = unlink_projector_artifact(store.home, record)
+        projector_files_deleted[key] = deleted
+        if not deleted:
+            cleanup_failed.append(key + '_artifact')
+
+    return {
+        'forgotten': sid,
+        'invalidated_projectors': [key for key, _ in invalidated],
+        'projector_files_deleted': projector_files_deleted,
+        'blob_deleted': blob_deleted,
+        'blob_retained_shared': blob_retained_shared,
+        'retrain_required': [key for key, _ in invalidated],
+        'cleanup_failed': cleanup_failed,
+    }
 
 def status(runtime):
     st=load(runtime.store);t=Teacher(runtime.home,runtime.models);ok,missing=t.available();pj=st.get('projector');tp=st.get('tile_projector')
     return {'revision':REVISION,'scope':'LAB_SHADOW_ONLY (Age-0-Kern bleibt Text)','images':len(st['images']),
             'described':sum(1 for r in st['images'].values() if r['captions']),'teacher':{'available':ok,'missing':missing,'authority':AUTHORITY,'removed':bool(st.get('teacher_removed'))},
             'projector':{k:pj[k] for k in ('n','encoder','metrics','created')} if pj else None,
-            'tile_projector':{k:tp[k] for k in ('n','salient_tiles','encoder','created')} if tp else None}
+            'tile_projector':({k:tp[k] for k in ('n','salient_tiles','encoder','created')}|{'metrics':tp.get('metrics')}) if tp else None}
 
 def operator_command(runtime,args):
     """:image [status|add <Pfad> [Label]|list|describe [id|last] [g|rIJ|hl|hr|ht|hb|qtl|qtr|qbl|qbr]|train|tiles|look [id|last]|locate <id|last> <Text>|find <id|last> <Text>|teacher on|off|forget <id>]"""

@@ -1,3 +1,70 @@
+# CURRENT USER ACTION / RELEASE STATUS — Boss integration run 14 (2026-11-23)
+
+**No device action is required or authorized.** Preserve the Redmi AI runtime in `STOPPED_BY_USER`; do not send `CHAT_SEND`, restart, `UPDATE_REQUEST`, `LOG_PAGE`, shell commands, or model/weight/permission/data mutations.
+
+- **Release line / phone:** `gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6`. Exact release readback: 30/30 check-runs SUCCESS; 32/33 workflow runs SUCCESS and one cancelled, no workflow failures. Private #840 confirms this exact SHA installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE, last_error NONE.
+- **Fresh device diagnostics:** #841 confirms service/dashboard RUNNING but AI `STOPPED_BY_USER`, autostart=false, model_process=STOPPED, native residency UNAVAILABLE (no verified model supervisor). B1_DETAIL/B2_GIST remain TIME_BUDGET at 53.2/54.2 s. Last stored turn: 6.295 s total, 2.046 s TTFT, 358 prompt tokens, 7 generated; correctness UNKNOWN, not a new test. The opted-in, redacted console excerpt still shows internal organ hypotheses leaking into visible console output and the stored arithmetic result remains wrong (2+2→2). Console error logs remain USER_NOT_OPTED_IN; do not request LOG_PAGE or reproduce private text. #842 reports 1,222 MiB MemAvailable and 1,618 MiB free disk.
+- **Boss candidate:** branch `boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean`, based on release SHA `8d93236c753f0194224c19edc7411d8d7082b1d6`; code-bearing checkpoint `a5e536a96f6dc2a3a515d37b08393f7136e9efff`. Subsequent commits are documentation-only; current branch head is shown on PR #2443. QA #2459 and #2460 were fast-forward integrated. #2459 exact head `58646862436ba3f69bce81ef4d3710105fc7c12b`: 7/7 workflows SUCCESS. #2460 code-bearing head `79a1734dfae5604a829eb0371c9d4dc7436286a8`: vision 29/29 on Python 3.13 and 3.14; staged 255 passed / 10 skipped / 47 subtests; source recall 15 passed; integrated 437 passed / 3 skipped / 58 subtests.
+- **Combined-candidate boundary:** #2460's handoff-only descendant `a5e536a` had two workflow attempts ending `startup_failure` with no jobs; retry was rejected as not retryable. Last Boss PR metadata readback at `5166643ac74fbca318511c0918dea06e98a11ff9`: DRAFT, mergeable=false, 106 ahead / 0 behind; this documentation-only head has no workflow runs. GitHub's mergeability flag has alternated true/false across documentation-only descendants despite the compare remaining ahead/0 behind, so treat mergeability as unresolved. The prior docs-only push run `45266057847` and the code-bearing combined head `a5e536a` both had `startup_failure` attempts with no jobs. This is not exact combined-head acceptance. PR #2443 remains DRAFT / NOT_RELEASED.
+- **Fair B1/B2 path:** Core #2458 remains DRAFT at `6a750bdfb31096ee3064cc24ad1c72759cb6fd86`; current run `45262375402` startup-failed and cannot be retried. Prior head `7688c360` had 6/12 checks green, 4 failures and 2 skipped. No accepted native offer delivery or Redmi performance gain.
+- **Audio / voice:** Perception #2448 current head `f8bd430e8d670257647660f0bff335a5ef20ada1` now contains a per-target-turn first-writer claim, a shared per-Runtime audio-handoff lock, durable handoff publication before cancellation, and deterministic duplicate-target / handoff-reader race tests. These address the two Boss review findings in source, but the exact current-head run `45265408942` ended `startup_failure`; older 17/17 bridge tests on Python 3.13/3.14 predate these race fixes. Keep DRAFT / NOT_RELEASED. No AudioRecord, microphone capture or Redmi voice proof.
+- **Output privacy:** QA #2446 remains DRAFT at `095fe1d9`; its JEPA receipt/update/combined-online workflows pass, but staged/integrated regression fails on source pins. The private #841 receipt confirms the visible internal-hypothesis leak; do not expose private text or request LOG_PAGE.
+- **JEPA / native probe:** #2447 head `8be6498` has temporal/online/incremental/privacy/deployment checks passing, but optimizer-resume, owner-read staged, Core same-turn consumer and staged/integrated checks fail. B1/B2 readouts remain SHADOW adapters, not native body-weight updates. Stacked #2454 is mergeable=false with no workflow runs; #2457 has one deployment success and five failures. Production B3 remains OFF and no native probe was run.
+- **M1:** #2452 head `2104f72` has a failing M1 test workflow; #2453 head `f7f7520` has a passing DATA workflow only. No real UCI cohort, test unlock, model training or weight update.
+- **LOCAL_LINUX:** full Aii checkout/suite BLOCKED / NOT_RUN (no checkout mounted). GitHub CI is not local or Redmi evidence.
+- **Research R-114:** StickyMoE (arXiv:2607.08780, 2026-06-12) proposes differentiable adjacent-token router-probability consistency plus a segment-anchor variant to reduce expert switching. The reported 8.8M/22M models and two-slot LRU cache are small/simulated, not Android results. Upstream README declares MIT but the repository has no root LICENSE file; no code or weights were reused. It is a research hypothesis for each body's *internal* expert router, with semantic-boundary resets and quality/cache/latency/retention controls—not B1/B2 latent coupling.
+- **GitHub connector limitation:** creating private owner-read issues and changing PR metadata/merging returned HTTP 403 because the linked GitHub account has no verified email. File-content commits succeeded, so the V14 handoff, workplan, research ledger, Canon coverage and board were updated. Verifying an email on the linked GitHub account would restore those blocked issue/PR operations; no device action depends on this.
+
+**Next:** retry the exact combined Boss CI when Actions can start; keep #2443 DRAFT. Continue the P0 fair B1_DETAIL/B2_GIST→C4→C3 repair, then rebase/review output privacy, validate the audio race fixes on their exact head, complete production ActionSelection SourceRefs and continue JEPA, B3, Android control, voice, sparse MoE, Memorilla and all remaining Canon families. No manual Termux command or device restart is needed.
+
+---
+
+# CURRENT USER ACTION / RELEASE STATUS — Boss integration run 13 (2026-11-23)
+
+**No user action is required for the current code/CI work. Do not run a manual Termux command, restart the AI runtime, or send a duplicate update request.** The phone's AI runtime is explicitly `STOPPED_BY_USER`; that state is being preserved.
+
+- Current release-development ancestor: `fb563d771fe2d493c4ec25abe94280981d24ef5c`.
+- Authenticated private PIPELINE_STATUS #819: auto-update enabled; Runtime/Dashboard UP_TO_DATE at exactly `fb563d771fe2d493c4ec25abe94280981d24ef5c`; last_error NONE.
+- Authenticated private DIAGNOSTICS #820: service and dashboard process RUNNING, but AI runtime STOPPED_BY_USER, autostart=false, model_process=STOPPED; native residency UNAVAILABLE because no verified model supervisor. No CHAT_SEND, restart, LOG_PAGE, shell, permission/model/weight change, or UPDATE_REQUEST was made.
+- Last stored turn only: FINAL, 6.295 s total, 2.046 s TTFT, 7 generated tokens. Correctness is UNKNOWN. B1/B2 still report TIME_BUDGET at 53.2/54.2 s; no useful same-turn offer delivery/consumption or 20-turn acceptance is proven.
+- The opted-in, redacted console excerpt confirms internal B1/B2/C3 hypothesis material was visible in the user-facing console. Console error logs remain USER_NOT_OPTED_IN; do not request LOG_PAGE or quote private output.
+- Boss integration candidate: branch `boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean`, code checkpoint `eeb6c8f729ff7ec41e2abd463e8815e9fac4445b`, followed by workplan checkpoint `2b22be0d4a29b8da4e8088eaf306e6d526f4cf40`. It combines serialized Memory source-forget, source-bound A3/A5 RAW EYE temporal ingress, A4 durable source outcomes, and caller-supplied RAW EAR/Teacher-Ear/FASTDIAR diagnostic paths. These are candidate code paths, not a released or installed build.
+- Exact combined-head CI has not yet been observed; LOCAL_LINUX full Aii suite remains BLOCKED / NOT_RUN. Redmi remains on `fb563d7`; the candidate is NOT_RELEASED / NOT_INSTALLED.
+- No microphone capture, Android UI/background execution, trained cross-organ latent coupling, native JEPA/body-weight update, or production B3 activation is established by this candidate.
+
+**Next:** verify the combined exact-head CI and fix only measured pin/composition failures; then address the separate output-privacy PR #2446 and continue the P0 B1_DETAIL/B2_GIST → C4 → C3 same-turn path. A real Redmi acceptance run must wait for the user to re-enable the AI runtime.
+
+---
+
+# Perception / RAW EYE — current verified handoff (2026-11-23 15:48 UTC)
+
+**User action: NONE.** Do not issue a manual Termux command or UPDATE_REQUEST. The latest sanitized private receipt says the installed base is still fb563d771fe2d493c4ec25abe94280981d24ef5c and auto-update reports UP_TO_DATE, but the AI runtime is STOPPED_BY_USER, the model process is STOPPED and native residency is unavailable. This Perception branch is not installed.
+
+## New executable Perception function
+
+- PR [#2442](https://github.com/RedMentos/Aii/pull/2442), branch research-perception/v14-vision-lifecycle-current-20261123-run19. Latest branch head: eebfd4115949e7206b82e7f3e843486bc6839fc4; exact code head: 18384cd3113e25d357955c19b38bd01dfbedb528. Later commits are handoff/research documentation only.
+- Added a bounded 256-sample median common-mode luminance shift plus per-tile local residual. The original raw frame-difference score and ON/OFF surfaces remain; A4 now prefers local novelty and retains a weak 0.15 global-transition signal. That weight is an uncalibrated BOOT heuristic.
+- Consumer path on the candidate: source-bound A5 frame summaries → temporal visual evidence → existing A4 modulation. No raw image persistence, OCR/object truth, action authority, native latent exchange or body-weight update is claimed.
+
+## Exact evidence and blockers
+
+- LOCAL_LINUX x86_64 / Python 3.13.5: helper py_compile PASS, 6/6 isolated pytest PASS, 0.0806 ms/call over 10,000 calls and 15,008-byte one-call tracemalloc peak. Full Aii local suite NOT_RUN/BLOCKED.
+- GitHub exact-head CI: frame ingress 39/39 PASS on Python 3.13 and 3.14; source-lineage 29/29 PASS on both; public privacy scan CLEAN.
+- Staged-runtime and integrated-regression FAIL because the Core-owned source lifecycle composer rejects the changed vision.py SHA. Staged result: 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests; two migration cases return PARTIAL. No source pin was weakened.
+- Sanitized device aggregate still shows C3 later-turn prefill around 33–37 s with 2–3 generated tokens, B1/B2 zero valid offers and no native latent exchange proof. The auto-updater's UP_TO_DATE status is not chat acceptance.
+- REDMI_UNVERIFIED for all candidate code; NOT_RELEASED.
+
+## Next internal ownership
+
+1. Core: rebind the exact Perception vision.py SHA in its fail-closed source lifecycle builder and recompute dependent pins bottom-up. Coordinate with the parallel attention.py pin blocker in PR #2441.
+2. QA: rerun staged/integrated, migration, privacy and consent-revocation checks on the composed exact head.
+3. Perception: after Core/provider composition, run source/session-disjoint global-vs-local/flicker/scroll/app-transition ablations and prove the same-turn A5→A4→C3 consumer.
+4. Boss/Integrator: incorporate this append-only evidence into the shared board and final user-facing action state; preserve all other Canon lanes.
+
+Research R-113 records the full Crowder et al. (2008) article and Ebelin et al. (2024) abstract/official MIT reference repository review. No external code or weights were imported. Global/local separation is a diagnostic heuristic, not semantic vision.
+
+---
+
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.

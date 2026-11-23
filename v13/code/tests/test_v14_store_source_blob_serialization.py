@@ -306,3 +306,21 @@ def test_staged_store_read_open_is_linearized_with_revocation(tmp_path):
     assert result.returncode == 0, (
         f"staged Store read/revoke race failed: {result.stdout}\n{result.stderr}"
     )
+
+
+def test_lifecycle_stage_preserves_transactional_vision_consumer():
+    """Do not replay obsolete image-lifecycle patches over the pinned V14 consumer."""
+    import importlib.util
+
+    code_dir = Path(__file__).resolve().parents[1]
+    builder_path = code_dir / "scripts" / "source_lifecycle_lock_integration_candidate.py"
+    spec = importlib.util.spec_from_file_location("source_lifecycle_vision_candidate", builder_path)
+    builder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(builder)
+
+    original = (code_dir / "v13" / "vision.py").read_bytes()
+    replacements = builder.build_sources(code_dir / "v13")
+    assert replacements["vision.py"] == original
+    assert b"with store.tx() as conn" in original
+    assert b"cleanup_unreferenced" in original
+    assert b"cleanup_unreferenced(store, sid)" in original

@@ -11,11 +11,12 @@ PINS = {
     'v13/runtime.py': {
         'c23a5a133deaff66f6be560509580b83394064bbff5a72d35d47c14461536978',
         'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2',
+        'a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38',
     },
     'v13/fastforward.py': {'0cc1b4b3002e0e4c400d7889a746fb42055a708ff1a12be81a59ab10d39bad05'},
     'v13/jefbridge.py': {'875000521db3d7a8efe0186d202dbea99fa7ca47c6b4b2c27f83b7231cb2c5ff'},
-    'v13/actionlearn.py': {'eff43a5f6590130b478d5c288debaa548b01ac1133d4b46ba500ec63beee546e'},
-    'v13/attention.py': {'0d3c0d00492d809c818874cf83ddd723867e77cfc5c50236dac18eddc8422739'},
+    'v13/actionlearn.py': {'eff43a5f6590130b478d5c288debaa548b01ac1133d4b46ba500ec63beee546e', '603e874d8fbb37f41aee1fae5fcb6c07007310388dc2c653f1b84ec5d264a7d6'},
+    'v13/attention.py': {'58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e'},
     'v13/deliberation.py': {'5c0ed4f22cc7c9966867ade83bae0481e1f049cbbde74b684241aad742edc45c'},
     'v13/callosum.py': {'de55ba637b9e0c0fe6ea12f74385b0f9f782735cc2f52098f5b227a52902d5fc'},
     'v13/workspace_learn.py': {'b6e3d2149fe7b7cc461c0edadd1a95b65b99b0d14e39da29206f7343fea74524'},
@@ -81,8 +82,13 @@ def apply_sources(code_dir, sources):
     for name in tuple(checked):
         if name == 'v13/runtime.py':
             continue
-        checked[name] = _replace(checked[name], b'from .common import dumps\n',
-            b'from .common import dumps\nfrom .record_only_gate import updates_allowed,blocked_status\n', name + ' import')
+        if name == 'v13/attention.py':
+            before = b'from .common import dumps, digest\n'
+        else:
+            before = b'from .common import dumps\n'
+        checked[name] = _replace(checked[name], before,
+            before + b'from .record_only_gate import updates_allowed,blocked_status\n',
+            name + ' import')
 
     name = 'v13/fastforward.py'
     raw = checked[name]
@@ -140,10 +146,10 @@ def apply_sources(code_dir, sources):
 
     name = 'v13/attention.py'
     raw = checked[name]
-    raw = _replace(raw, b"        key=req['reason']+'|'+req['target'];sc=step(self.n,PATH)  # WP-U6 \xc2\xa712.7\n",
+    raw = _replace(raw, b"        key=req['reason']+'|'+req['target'];sc=step(self.n,PATH)\n",
         b"        key=req['reason']+'|'+req['target']\n"
         b"        if not updates_allowed(self.s):return {'key':key,'n':0,'mean':0.,'status':blocked_status(self.s)}\n"
-        b"        sc=step(self.n,PATH)  # WP-U6 \xc2\xa712.7\n", 'attention outcome')
+        b"        sc=step(self.n,PATH)\n", 'attention outcome')
     checked[name] = raw
 
     name = 'v13/deliberation.py'
@@ -183,8 +189,8 @@ def apply_sources(code_dir, sources):
     # output. Their verification still rejects other input changes.
     semantic_name = 'v13/world_semantic_evidence_candidate.py'
     local_name = 'v13/local_error_route_shadow_candidate.py'
-    semantic_pin = '609c9d187e11551663aea238bf07af962f8458582139bd9707c89b6f347dd8f3'
-    local_pin = '36de730d7eab40681740c1165ea0510c2412ea1180bc7f6dd7120a6cf894c471'
+    semantic_pin = 'd1cd5cc66213098cd87bcb65ec0cbfa63515dda7ec69fb026d5e3575dce64da3'
+    local_pin = '34944ff94efb2bfc962d0150b04d411fb256d5e62e86e1fc70ae396a36fd488c'
     action_pin = '86f79e8f3c26928f0a16399070f1b8d729760697a3b9e02ea9f6315ab6fcf87a'
     for name, expected in ((semantic_name, semantic_pin), (local_name, local_pin)):
         actual = hashlib.sha256(result[name]).hexdigest()
@@ -192,7 +198,13 @@ def apply_sources(code_dir, sources):
             raise ValueError('semantic dependency changed: ' + name + ' expected=' + expected + ' actual=' + actual)
     if hashlib.sha256(checked['v13/actionlearn.py']).hexdigest() != action_pin:
         raise ValueError('guarded ActionLearn output changed')
-    old_action_pin, = PINS['v13/actionlearn.py']
+    action_pin_candidates = sorted(
+        pin for pin in PINS['v13/actionlearn.py']
+        if result[semantic_name].count(pin.encode('ascii')) == 1
+    )
+    if len(action_pin_candidates) != 1:
+        raise ValueError('semantic ActionLearn dependency is missing or ambiguous')
+    old_action_pin = action_pin_candidates[0]
     semantic = _replace(result[semantic_name], old_action_pin.encode('ascii'),
                         action_pin.encode('ascii'), 'semantic ActionLearn dependency')
     result[semantic_name] = semantic

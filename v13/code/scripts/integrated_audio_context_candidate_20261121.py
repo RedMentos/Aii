@@ -13,14 +13,14 @@ SOURCE_BLOBS = {
     "v13/runtime.py": "30360f40eb784be5ea975ee85e94a57f0b154164",
     "v13/cognition.py": "06de0acf2c6d30d50301d5073f5569822edff813",
     "v13/audio_perception_bridge.py": "719034281ee32af4207c8ec407fbf358b9800ad7",
-    "v13/audio_voice_cues.py": "b18e450162b062b09368a12b1ca18924ed8c5025",
-    "v13/audio_speaker_evidence.py": "37aa9c392bbb68d60ccff9749c75b41b8783c539",
+    "v13/audio_voice_cues.py": "1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288",
+    "v13/audio_speaker_evidence.py": "08b17a39923e0f59a5dbbb9f173954936e59f85a",
     "v13/audio_temporal_evidence.py": "098ce2ec6bb0b744166d711a3401b7acf0252de1",
     "v13/audio_ear.py": "86e93ae5b55e76ecd68864a7f51bd477e601e9b6",
     "v13/audio_percept_contract.py": "f3ee37426fc3e3a8cf70f8a107e7074783118a66",
     "v13/a5_audio_admission_bridge.py": "6d8790f29525b4c32c84b5b63d834cfd70a7037e",
     "v13/percept_admission.py": "4f44dc42e8784d1ae3aa71b3cc3c8cb184de8ea4",
-    "v13/attention.py": "0f6a81e7380aa6716bbac4e4ef5834d108601a70",
+    "v13/attention.py": "ecaf39b1b8ea0edad7f4a39774230b3cbed1d5eb",
     "v13/contracts.py": "7b21d9c5076015716851b5d432a5730e4e17da92",
 }
 

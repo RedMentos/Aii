@@ -7,8 +7,8 @@ PINS = {
     'archive.py': 'adbdd844c2275d527a689eda789a3f247759967677e573b92bf7af7ad68404bf',
     'store.py': '40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb',
     'common.py': '0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a',
-    'memory.py': '61e881ad8b3f8cb60a96339599a1627cd5af7b5a5bfd29fe5f371c17f5a29ebc',
-    'vision.py': '758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5',
+    'memory.py': '8512bf0acd13b53970dba69e4a0fe30e81b1b3562fbe09b7771e4132e421fed8',
+    'vision.py': 'd204393a1c17e9fbe068b11a096ae6977438c9fc3091474b45b28162d2b00e41',
     'archive_reader_guard_candidate.py': '84c06a9f5c0b6054f836615023822ff577984d3efe9ddfb07cae569ec124f438',
     'archive_stream_range_candidate.py': 'd2d021adcc844c1f321312cbfa60a4affb0a6b7fddc09e41a234cdf83f1eec98',
     'source_lifecycle_candidate.py': '3ace74b802d3e3e7340eabcccb03275d348deae2297fe8a1b4d2e1eab17d62b0',
@@ -97,51 +97,13 @@ READ_SOURCE_NEW = b'''    def read_source(self,ref):
         if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef out of bounds")
         return txt[ref["char_start"]:ref["char_end"]]
 '''
-MEMORY_OLD = b'''            src=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
-            if not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(src['hash'],)):(self.s.home/'data/blobs'/src['hash']).unlink(missing_ok=True);(self.s.home/'data/blobs'/(src['hash']+'.z')).unlink(missing_ok=True)
+MEMORY_OLD = b'''                source=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
+                if source and not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(source['hash'],)):
+                    (self.s.home/'data/blobs'/source['hash']).unlink(missing_ok=True)
+                    (self.s.home/'data/blobs'/(source['hash']+'.z')).unlink(missing_ok=True)
 '''
-MEMORY_NEW = b'''            from .source_lifecycle_candidate import cleanup_unreferenced
-            cleanup_unreferenced(self.s,sid)
-'''
-VISION_OLD = b'''def ingest(store,data,cfg=DEFAULTS,label=None):
-    """Store image bytes as an IMAGE source (dedup by hash) and register its regions. Returns the image record."""
-    im=decode(data,cfg);w,h=im.size;sha=digest(data);st=load(store)
-    for rec in st['images'].values():
-        if rec['ref']['sha256']==sha:return rec
-    if len(st['images'])>=cfg['max_images']:raise ValueError('Zu viele Bilder im Lab; erst :image forget')
-    path=store.home/'data/blobs'/sha
-    if not path.exists():atomic_write(path,data)
-    sid=uid('src')
-    with store.tx() as c:c.execute('INSERT INTO sources VALUES (?,?,?,?,?,?,0)',(sid,sha,'IMAGE',len(data),0,now()))
-    ref={'source_id':sid,'sha256':sha,'char_start':0,'char_end':0,'modality':'image'}
-    rec={'ref':ref,'size':[w,h],'label':(label or '')[:80],'regions':boxes(w,h,cfg['grid']),'captions':[],'created':now()}
-    st['images'][sid]=rec;save(store,st);return rec
-'''
-VISION_NEW = b'''def ingest(store,data,cfg=DEFAULTS,label=None):
-    from .source_lifecycle_candidate import vision_ingest
-    return vision_ingest(store,data,cfg,label)
-'''
-VISION_FORGET_OLD = b'''def forget(store,rec):
-    st=load(store);sid=rec['ref']['source_id'];st['images'].pop(sid,None)
-    if st.get('projector'):st['projector']['captions']={k:v for k,v in st['projector']['captions'].items() if k.split(':')[0]!=sid}
-    save(store,st)
-    with store.tx() as c:c.execute('UPDATE sources SET deleted=1 WHERE id=?',(sid,))
-    if not store.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(rec['ref']['sha256'],)):(store.home/'data/blobs'/rec['ref']['sha256']).unlink(missing_ok=True)
-    return {'forgotten':sid}
-'''
-VISION_FORGET_NEW = b'''def forget(store,rec):
-    from .source_lifecycle_candidate import vision_forget
-    return vision_forget(store,rec)
-'''
-VISION_STATE_OLD = b'''def load(store):return store.state(KEY,None)[0] or {'revision':REVISION,'images':{},'projector':None,'last':None}
-def save(store,st):store.set_state(KEY,st)
-'''
-VISION_STATE_NEW = b'''def load(store):
-    from .source_lifecycle_candidate import load_vision_state
-    return load_vision_state(store)
-def save(store,st):
-    from .source_lifecycle_candidate import save_vision_state
-    save_vision_state(store,st)
+MEMORY_NEW = b'''                from .source_lifecycle_candidate import cleanup_unreferenced
+                cleanup_unreferenced(self.s,sid)
 '''
 RESTORE_OLD = '''def restore(store,h):
     p=_dir(store)/h;zp=p.with_name(h+'.z')
@@ -180,15 +142,15 @@ def build_sources(source_dir):
     raw['archive.py'] = module.build_sources(source_dir)['archive.py']
     if hashlib.sha256(raw['archive.py']).hexdigest() != OLD_ARCHIVE_INTEGRATED_SHA:
         raise ValueError('unexpected materialized archive revision')
+    # The pinned V14 vision.py already owns transactional image-source publication,
+    # registry updates and projector invalidation. Preserve those exact bytes instead
+    # of replaying legacy V13 anchors that no longer exist in this source revision.
     for filename, old, new in (
             ('store.py', STORE_OLD, STORE_NEW),
             ('store.py', RECOVER_OLD, RECOVER_NEW),
             ('store.py', EVENT_OLD, EVENT_NEW),
             ('store.py', READ_SOURCE_OLD, READ_SOURCE_NEW),
             ('memory.py', MEMORY_OLD, MEMORY_NEW),
-            ('vision.py', VISION_OLD, VISION_NEW),
-            ('vision.py', VISION_FORGET_OLD, VISION_FORGET_NEW),
-            ('vision.py', VISION_STATE_OLD, VISION_STATE_NEW),
             ('archive.py', RESTORE_OLD, RESTORE_NEW)):
         raw[filename] = _replace_once(raw[filename], old, new, filename)
     archive_sha = hashlib.sha256(raw['archive.py']).hexdigest().encode()
