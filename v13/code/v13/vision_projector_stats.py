@@ -427,14 +427,16 @@ def rebuild_without_source(home, projector_record, source_id, source_sha256,
             captions = projector_record.get("captions")
             if type(captions) is not dict or len(captions) != projector_record.get("n"):
                 raise ValueError("global projector caption lineage is incomplete")
-            caption_sources = set()
+            caption_counts = {}
             for key, value in captions.items():
                 if (type(key) is not str or ":" not in key or type(value) is not str or not value
                         or key.split(":", 1)[0] not in lineage_map):
                     raise ValueError("global projector caption source binding is invalid")
-                caption_sources.add(key.split(":", 1)[0])
-            if caption_sources != set(lineage_map):
-                raise ValueError("global projector captions do not cover its source lineage")
+                sid = key.split(":", 1)[0]
+                caption_counts[sid] = caption_counts.get(sid, 0) + 1
+            expected_counts = {sid: loaded[sid][1]["n"] for sid in lineage_map}
+            if caption_counts != expected_counts:
+                raise ValueError("global projector caption counts differ from source statistics")
         remaining_records = []
         remaining_lineage = []
         remaining_stats = []
