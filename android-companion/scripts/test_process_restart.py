@@ -225,7 +225,26 @@ def persisted_enabled() -> str:
 
 
 def process_id() -> str:
-    return adb("shell", "pidof", PACKAGE, check=False).strip()
+    result = subprocess.run(
+        ["adb", "shell", "pidof", PACKAGE],
+        capture_output=True,
+        text=True,
+        timeout=10.0,
+    )
+    stdout = result.stdout.strip()
+    stderr = result.stderr.strip()
+    # Only toybox's exact exit-1/no-output result means the package is absent.
+    # A disconnected/offline ADB transport can also return 1 and must not be
+    # accepted as evidence that the process died.
+    if result.returncode == 0 and re.fullmatch(r"\d+(?:\s+\d+)*", stdout):
+        return stdout
+    if result.returncode == 1 and not stdout and not stderr:
+        return ""
+    raise RuntimeError(
+        "adb pidof failed or returned an ambiguous result (exit="
+        + str(result.returncode) + "): stdout=" + stdout[-500:]
+        + "; stderr=" + stderr[-500:]
+    )
 
 
 def wait_for_process(absent: bool, timeout: float = 45.0) -> str:
