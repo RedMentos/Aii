@@ -128,3 +128,29 @@ def test_worker_guard_rejects_ambiguous_duplicate_turn_calls():
     with pytest.raises(ValueError, match="expected one _turn"):
         _patch_worker_learning(source)
 
+def test_worker_guard_rejects_learning_outside_the_turn_branch():
+    source = (
+        "class Runtime:\\n"
+        "    def _worker(self, payload):\\n"
+        "        if payload:\\n"
+        "            self._turn(payload)\\n"
+        "        try:self.online_world_update(limit=64)\\n"
+        "        except Exception:pass\\n"
+    ).encode("utf-8")
+    with pytest.raises(ValueError, match="not dominated"):
+        _patch_worker_learning(source)
+
+
+def test_worker_guard_rejects_additional_unbounded_learning_dispatch():
+    source = (
+        "class Runtime:\\n"
+        "    def _worker(self, payload):\\n"
+        "        self._turn(payload)\\n"
+        "        try:self.online_world_update(limit=64)\\n"
+        "        except Exception:pass\\n"
+        "        try:self.online_world_update(limit=2048)\\n"
+        "        except Exception:pass\\n"
+    ).encode("utf-8")
+    with pytest.raises(ValueError, match="expected one online_world_update"):
+        _patch_worker_learning(source)
+
