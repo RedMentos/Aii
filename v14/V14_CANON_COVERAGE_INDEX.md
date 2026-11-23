@@ -2376,7 +2376,7 @@ No result in this late poll changes the Redmi boundary: private #840/#841/#842 s
 | Canon family / path | Candidate code change | Evidence class for the new sub-path | Acceptance status |
 |---|---|---|---|
 | T8 ActionOutcome → WorldJEPA → B1/B2 | Persist fixed source-disjoint receiver cohort; exclude it from later train; compare prior and updated encoder+head on identical old `X/A/Y` | CODE_PRESENT_UNVERIFIED; exact project tests not executed | NOT_IMPLEMENTED_FOR_ACCEPTANCE |
-| B1_DETAIL / B2_GIST receiver readout | WeightDeltaReceipt v3 adds old/new cohort MSE, mean/zero/shuffled controls and cohort/source-disjoint evidence | CODE_PRESENT_UNVERIFIED; synthetic numeric reproduction only | NOT_IMPLEMENTED_FOR_ACCEPTANCE |
+| B1_DETAIL / B2_GIST receiver readout | WeightDeltaReceipt v3 adds old/new cohort MSE, the provisional [DEFAULT] 5% relative regression tolerance, mean/zero/shuffled controls and cohort/source-disjoint evidence | CODE_PRESENT_UNVERIFIED; synthetic numeric reproduction only | NOT_IMPLEMENTED_FOR_ACCEPTANCE |
 | SourceRef / Forget / bounded replay | Receiver cohort source IDs/hashes are scanned by source-forget even after experience-row eviction | CODE_PRESENT_UNVERIFIED; regression test committed but not executed | NOT_IMPLEMENTED_FOR_ACCEPTANCE |
 | Checkpoint / restart / rollback | Existing rollback code remains unchanged; new receiver cohort is part of the persisted record and therefore follows active/previous checkpoint selection | No new runtime evidence this run | NOT_ACCEPTED |
 | Native B1/B2 body weights / trained latent coupling | No native model weights or trained inter-body latent path changed | NONE | NOT_IMPLEMENTED |
