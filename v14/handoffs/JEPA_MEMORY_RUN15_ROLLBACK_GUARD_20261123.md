@@ -42,7 +42,7 @@ GitHub PR conversation comments and PR metadata updates returned HTTP 403 becaus
 ## Exact branch readback after shared-document sync
 
 - JEPA branch head before this final Board refresh: `83475a095072afdd7611f0a5bf2ce60cde97b005`; code-bearing fix is `978e257399a9a23eff8119b3f9611a1ba6d410de` (source commit `3122e30830a94848f4ffe17fb55146d8c5a614d0`); handoff file commit is `05ec1f4527860960677bda93d7736ad0c1a289a1`. The branch is 18 commits ahead / 47 behind Boss #2443 head `cdf6b64067ac426ba32194100d3764f6e74c105f`, merge base `6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4`.
-- Core native-probe PR #2457 head `f8d0427` is 10 ahead / 14 behind the JEPA branch, merge base `bf2913b150d8decbf6e33c43920d21acc83439b3`. Do not refresh its stage/deployer pins until the parent and JEPA exact-head matrices are green.
+- Latest readback before this status sync: JEPA PR #2454 head `99ebac7797977360e9baf23bd621d62b6eb457dc` is 35 ahead / 47 behind Boss #2443. Core native-probe PR #2457 head `f8d0427100019da42e23d29a14e43440c641e0f3` is 10 ahead / 31 behind JEPA, merge base `bf2913b150d8decbf6e33c43920d21acc83439b3`. Do not refresh its stage/deployer pins until the parent and JEPA exact-head matrices are green.
 - Exact JEPA code-head CI remains zero runs / zero combined statuses. Boss #2443 combined candidate remains unverified; its child QA results do not substitute for combined-head proof.
 
 
