@@ -107,3 +107,10 @@ The first R-107 documentation PR #2411 was closed as duplicate after its base br
 - The prior 89c0c7f head retained the temporal view within the 700-character budget, but exposed a second test assumption: the cold B1 negative-control offer correctly writes its own QueryPacket, so the event has three QueryPackets (cold B1, warm B1, warm B2), not two. The failure was at the test's count assertion after the temporal receiver prompt assertions had passed.
 - Fixed the test to select only QueryPackets whose referenced BODY_STATE source has schema V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/2, then require exactly the two warm B1/B2 temporal receiver queries. The cold query remains a required negative control and is not miscounted as a temporal receiver. Source-ref provenance and full audit checks remain for both warm queries.
 - Exact-head Python 3.13, Python 3.14 and offline-bridge-security checks for b955b58 are IN_PROGRESS/QUEUED at readback; no PASS yet. The 89c head had 20/21 pass and one test-count assertion failure in Python 3.13; Python 3.14 was still in progress at that time. Postcommit tests were skipped after the temporal test failure; they must run on a green exact head.
+
+
+## Omitted-vs-created receiver audit correction — current exact candidate (2026-11-23)
+
+- Exact code/test SHA: 3b5da6cd8c74b42835e4ea7ea17988afa99a888b.
+- The prior b955b58 head confirmed the compact prompt and authority checks but the query filter still counted the cold B1 negative-control BODY_STATE because it carries the same audit schema with status OMITTED. The test now distinguishes temporal receiver queries by audit status READOUT_CREATED and separately requires at least one non-temporal/omitted query, so the cold negative control remains visible without being misclassified as a trained receiver.
+- Exact-head temporal-jepa Python 3.13, temporal-jepa Python 3.14 and offline-bridge-security were IN_PROGRESS at readback (workflow 45111861235 / 45111861096). No PASS is claimed yet. Earlier b955 head: both temporal jobs failed only at the overly broad query filter (20 passed / 1 failed each); offline bridge security passed.
