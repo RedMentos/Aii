@@ -129,6 +129,8 @@ def parse_uci(path: str | Path) -> tuple[tuple[str, ...], list[MinuteRow]]:
                 f"{raw['Date'].strip()} {raw['Time'].strip()}",
                 UCI_TIMESTAMP_FORMAT,
             )
+            if timestamp.second != 0 or timestamp.microsecond != 0:
+                raise ValueError(f"timestamp is not aligned to a whole minute at line {line_no}")
             if previous is not None and timestamp - previous != timedelta(minutes=1):
                 raise ValueError(f"non-contiguous minute timestamp at line {line_no}")
             previous = timestamp
@@ -151,6 +153,8 @@ def rows_from_records(
     previous: datetime | None = None
     for timestamp, record in records:
         stamp = datetime.fromisoformat(timestamp) if isinstance(timestamp, str) else timestamp
+        if stamp.second != 0 or stamp.microsecond != 0:
+            raise ValueError("timestamp is not aligned to a whole minute")
         if previous is not None and stamp - previous != timedelta(minutes=1):
             raise ValueError("timestamps must be contiguous at one-minute resolution")
         previous = stamp
