@@ -41,16 +41,21 @@ def _unit_vector(vector, dimension):
     return array("f", (value / norm for value in values))
 
 
-def _validate_batch(value, source_id, generation_id, start_ms, end_ms):
+def _validate_batch(value, source_id, generation_id, consent_receipt_ref, start_ms, end_ms):
     required = {
-        "schema", "source_id", "generation_id", "model_id", "model_revision",
-        "model_sha256", "embedding_dim", "frame_step_ms", "lookback_frames",
+        "schema", "source_id", "generation_id", "consent_receipt_ref",
+        "model_id", "model_revision", "model_sha256", "embedding_dim",
+        "frame_step_ms", "lookback_frames",
         "confidence_threshold", "calibration_id", "frames",
     }
     if type(value) is not dict or set(value) != required or value.get("schema") != SCHEMA:
         raise SpeakerEvidenceError("speaker embedding schema mismatch")
     if value.get("source_id") != source_id or value.get("generation_id") != generation_id:
         raise SpeakerEvidenceError("speaker embedding source/generation mismatch")
+    if (type(consent_receipt_ref) is not str or not consent_receipt_ref.strip()
+            or len(consent_receipt_ref) > 256
+            or value.get("consent_receipt_ref") != consent_receipt_ref):
+        raise SpeakerEvidenceError("speaker embedding consent receipt mismatch")
     for key in ("model_id", "model_revision"):
         item = value.get(key)
         if type(item) is not str or not item.strip() or len(item) > 128:
@@ -95,6 +100,7 @@ def _validate_batch(value, source_id, generation_id, start_ms, end_ms):
         result.append((end, _unit_vector(frame.get("vector"), dimension)))
         previous = end
     return {
+        "consent_receipt_ref": consent_receipt_ref,
         "model_id": value["model_id"],
         "model_revision": value["model_revision"],
         "model_sha256": digest.lower(),
@@ -132,7 +138,7 @@ class SpeakerChangeEvidenceRegistry:
         self._lock = threading.RLock()
 
     def update(self, *, source_id, generation_id, start_ms, end_ms,
-               activity_hint, embeddings):
+               activity_hint, embeddings, consent_receipt_ref=None):
         if type(source_id) is not str or not source_id.strip() or len(source_id) > 128:
             raise SpeakerEvidenceError("speaker source id is invalid")
         if type(generation_id) is not str or not generation_id.strip() or len(generation_id) > 128:
@@ -141,19 +147,36 @@ class SpeakerChangeEvidenceRegistry:
             raise SpeakerEvidenceError("speaker window timestamps are invalid")
         if activity_hint not in _ACTIVITY:
             raise SpeakerEvidenceError("speaker activity hint is invalid")
-        batch = _validate_batch(embeddings, source_id, generation_id, start_ms, end_ms)
+        if consent_receipt_ref is None and type(embeddings) is dict:
+            consent_receipt_ref = embeddings.get("consent_receipt_ref")
+        batch = _validate_batch(
+            embeddings, source_id, generation_id, consent_receipt_ref, start_ms, end_ms,
+        )
         metadata = {k: batch[k] for k in (
             "model_id", "model_revision", "model_sha256", "embedding_dim",
             "frame_step_ms", "lookback_frames", "lookback_ms",
             "confidence_threshold", "calibration_id",
         )}
-        key = (source_id, generation_id)
+        key = (source_id, generation_id, consent_receipt_ref)
         with self._lock:
+            generation_changed = any(
+                old_key[0] == source_id and old_key[1] != generation_id
+                for old_key in self._states
+            )
+            receipt_changed = any(
+                old_key[0] == source_id and old_key[1] == generation_id
+                and old_key[2] != consent_receipt_ref
+                for old_key in self._states
+            )
             for old_key in list(self._states):
-                if old_key[0] == source_id and old_key[1] != generation_id:
+                if old_key[0] == source_id and old_key != key:
                     del self._states[old_key]
             state = self._states.get(key)
-            reset_reason = None
+            reset_reason = (
+                "CONSENT_RECEIPT_CHANGED" if receipt_changed
+                else "SOURCE_OR_GENERATION_CHANGED" if generation_changed
+                else None
+            )
             if state is None:
                 state = _Stream(metadata, self.max_frames)
             elif state.metadata != metadata:
@@ -280,7 +303,7 @@ class SpeakerChangeEvidenceRegistry:
                 "action_authority": False,
             }
 
-    def reset(self, *, source_id=None, generation_id=None):
+    def reset(self, *, source_id=None, generation_id=None, consent_receipt_ref=None):
         if source_id is None and generation_id is not None:
             raise ValueError("generation_id requires source_id")
         if source_id is not None and (
@@ -291,12 +314,21 @@ class SpeakerChangeEvidenceRegistry:
             type(generation_id) is not str or not generation_id.strip() or len(generation_id) > 128
         ):
             raise ValueError("generation_id is invalid")
+        if consent_receipt_ref is not None and (
+            type(consent_receipt_ref) is not str
+            or not consent_receipt_ref.strip()
+            or len(consent_receipt_ref) > 256
+        ):
+            raise ValueError("consent_receipt_ref is invalid")
+        if consent_receipt_ref is not None and source_id is None:
+            raise ValueError("consent_receipt_ref requires source_id")
         with self._lock:
             keys = [
                 key for key in self._states
                 if source_id is None or (
                     key[0] == source_id and
-                    (generation_id is None or key[1] == generation_id)
+                    (generation_id is None or key[1] == generation_id) and
+                    (consent_receipt_ref is None or key[2] == consent_receipt_ref)
                 )
             ]
             for key in keys:
