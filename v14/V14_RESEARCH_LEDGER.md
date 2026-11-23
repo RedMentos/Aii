@@ -1098,3 +1098,8 @@ No new primary-source research was performed in this Boss integration run. Exist
 **V14 mapping / testable hypothesis:** keep A4 attention/salience and A5 timed raw-ear evidence as separable, source-bound signals; do not reduce attention to one scalar multiplier or overwrite acoustic evidence with ASR text. A future consented/synthetic test should compare attended versus competing/noise conditions, retain timing/provenance and measure whether different perceptual streams contribute complementary information. Treat this as a research hypothesis only until the full paper and a reproducible model are reviewed.
 
 **Status:** ABSTRACT_ONLY / PREPRINT / CC_BY_NC_ND / NO_CODE / NO_IMPLEMENTATION_CLAIM.
+
+
+## Boss integration note — 2026-11-23T00:05:08.222Z
+
+PR #2387 was merged into the Boss documentation branch only. R-096–R-099 remain research records, not runtime features: R-096 is a peer-reviewed mechanism with CC BY 4.0 article text but no code import; R-097 is a preprint/design reference with no matching implementation found; R-098 is an arXiv preprint with repository license not established; R-099 was abstract-only and is CC BY-NC-ND 4.0. No model, dependency, weights, Android provider or learning path was imported. No retention gain, latency gain or Android benchmark is claimed. Any follow-up must be a bounded, falsifiable V14 experiment with license and resource checks.
