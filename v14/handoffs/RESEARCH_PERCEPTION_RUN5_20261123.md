@@ -46,3 +46,13 @@ Owner-consented read-only receipts:
 - QA should review non-voiced suppression and the impulse consumer regression.
 - Redmi audio capture, speaker inference, native latent exchange and Android performance remain REDMI_UNVERIFIED.
 - User action: NONE.
+
+
+## Additional A4 → N10 closed-loop implementation (commit ebe09ea32d78ee2daad16e41954217ab3f617dcd)
+- Added Neuromod.signal_in_transaction(connection, ...), which validates an active Store transaction and inserts a typed ModulatorPacket through that same connection.
+- Attention.outcome now computes policy prediction residual δ = usefulness − prior mean, persists the policy update + durable response receipt + N10 ModulatorPacket atomically, and stores predicted usefulness, residual and packet ID in the receipt.
+- The emitted N10 channels are signed reward_error=δ and surprise=|δ|, plus task_success/action_error for the outcome sign. Negative reward_error remains signed through recent_modulators and maps to next-event caution; surprise maps to salience.
+- Added tests for negative omission → next-event caution/salience, injected rollback after packet insertion, successful retry, and exact-once modulator count.
+- Local Python SQLite transaction reproduction: PASS (packet, policy and receipt all roll back together on injected exception; all commit together on retry). This is a contract reproduction only, not the project test suite.
+- Exact project CI on the new head has not yet started; the previous merged-head CI still has the known Core controller-guard pin failure on v13/attention.py. Current new blob: attention.py ecaf39b1b8ea0edad7f4a39774230b3cbed1d5eb; neuromod.py fbb02147cbcfff10896736a20838fbce08d7409b.
+- Core must recompute the controller-guard SHA-256 for attention.py and rebind the staged audio composer pins. No Core-owned guard or composer file was edited by Perception.
