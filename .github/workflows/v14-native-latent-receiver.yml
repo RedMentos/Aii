@@ -6,6 +6,7 @@ on:
       - core/v14-native-receiver-release-rebase-20261122-run14
       - core/v14-llama-server-cache-diagnostics-20261122
       - core/v14-native-probe-operator-dispatch-20261122
+      - core/v14-native-probe-resource-preflight-20261123
   pull_request:
     branches:
       - boss/v14-recall-store-pin-rebind-20261122
