@@ -8,9 +8,10 @@ import pytest
 
 from v13.runtime import Runtime
 from v13.models import model_key
-from v13.contracts import validate
+from v13.contracts import packet, validate
 from v13.callosum import controller
 from v13.operator import Operator
+from v13 import brain_panel
 from v13 import native_latent_receiver as native
 from v13 import native_probe_approval as approval
 
@@ -84,22 +85,27 @@ def setup_runtime(tmp_path):
 def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path, monkeypatch):
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
     order = []
-    tap = {
-        "packet_id": "tap-packet-1",
-        "event_id": event["event_id"],
-        "brain_generation_id": event["brain_generation_id"],
-        "source_ref": event["source_ref"],
-        "role": "B2_GIST",
-        "tap_id": "qwen35.result_norm.final.v1",
-        "model_revision": "qwen35-r1",
-        "tokenizer_revision": None,
-        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 2},
-    }
-    runtime.cognition.tap = lambda role, e, ref, deadline: (order.append("tap") or tap)
-    runtime.cognition.read_tap = lambda packet: {
-        "token_ids": [101, 202],
-        "vectors": [[0.25, -0.5], [1.0, 0.75]],
-    }
+    class FakeTapRunner:
+        tap_id = "qwen35.result_norm.final.v1"
+        tap_dim = 2
+
+        def tap(self, text, cancel, deadline):
+            order.append("tap")
+            assert text == "private source text stays local"
+            return {
+                "tap_id": self.tap_id,
+                "token_ids": [101, 202],
+                "vectors": [[0.25, -0.5], [1.0, 0.75]],
+                "metrics": {
+                    "tap_id": self.tap_id,
+                    "whole_sequence_prefill": True,
+                    "pooling": "none",
+                    "prompt_tokens": 2,
+                },
+            }
+
+    runtime.pool.get_tap = lambda role: FakeTapRunner()
+    runtime.learner.predict_states = lambda role, vectors: None
     runtime.pool.unload = lambda: order.append("unload")
 
     def fake_probe(**kwargs):
@@ -110,6 +116,7 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
         assert kwargs["tokenizer_revision"] is None
         assert kwargs["position_ids"] == [0, 1]
         assert kwargs["position_mode"] == native.POSITION_MODE
+        assert kwargs["vectors"] == [[0.25, -0.5], [1.0, 0.75]]
         assert kwargs["source_id"] == event["source_ref"]["source_id"]
         assert kwargs["generation_id"] == event["brain_generation_id"]
         return receipt(digest, sender_digest)
@@ -138,6 +145,27 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
     assert status["native_receiver_probe"]["status"] == "NATIVE_INPUT_EFFECT"
     assert status["native_receiver_probe"]["production_route"] is False
     assert "LATENT blocked" in status["gate"]
+
+    panel = brain_panel.status(runtime)
+    trace = panel["native_latent_receiver"]
+    expected_token_digest = hashlib.sha256(
+        b"v14.native-latent-sender-token-ids/1:"
+        + b"".join(value.to_bytes(4, "big") for value in [101, 202])
+    ).hexdigest()
+    assert trace["status"] == "NATIVE_INPUT_EFFECT"
+    assert trace["sender_role"] == "B2_GIST"
+    assert trace["receiver_role"] == "C3_LANGUAGE"
+    assert trace["sender_token_count"] == 2
+    assert trace["sender_token_ids_sha256"] == expected_token_digest
+    assert trace["receiver_input_kind"] == "EMBEDDING_ROWS_NOT_TOKEN_IDS"
+    assert trace["receiver_input_rows"] == 2
+    assert trace["receiver_input_dim"] == 2
+    assert trace["receiver_input_sha256"] == "a" * 64
+    assert trace["native_input_consumed"] is True
+    assert trace["input_effect_detected"] is True
+    assert trace["semantic_use_proven"] is False
+    assert trace["production_route"] is False
+    assert "token_ids" not in trace
 
     promoted = dict(packet, production_route=True)
     with pytest.raises(native.NativeReceiverError, match="cannot grant"):
@@ -352,5 +380,31 @@ def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last
             operator.run(":callosum native-probe B2_GIST C3_LANGUAGE --last-source")
         with pytest.raises(ValueError):
             operator.run(":callosum native-probe C3_LANGUAGE B2_GIST --last-source --confirm")
+    finally:
+        runtime.close()
+
+
+
+def test_brain_panel_fails_closed_when_receiver_has_no_linked_sender_tap(tmp_path):
+    runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
+    try:
+        assert brain_panel.status(runtime)["native_latent_receiver"]["status"] == "NOT_RUN"
+        native.register_packet_contract()
+        fields = receipt(digest, sender_digest)
+        fields.update({
+            "source_ref": event["source_ref"],
+            "sender_tap_packet_id": "missing-tap-packet",
+        })
+        receiver = packet(
+            "LatentReceiverPacket", "B3_NATIVE_RECEIVER_PROBE",
+            event["event_id"], event["brain_generation_id"],
+            [event["source_ref"]], **fields,
+        )
+        native.validate_packet(receiver)
+        runtime.store.add_packet("LatentReceiverPacket", receiver)
+        trace = brain_panel.status(runtime)["native_latent_receiver"]
+        assert trace["status"] == "TAP_PACKET_UNAVAILABLE"
+        assert "sender_token_ids_sha256" not in trace
+        assert "token_ids" not in trace
     finally:
         runtime.close()
