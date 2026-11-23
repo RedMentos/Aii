@@ -1058,15 +1058,41 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_mea
             cancel_event=threading.Event(),
         )
         runtime._temporal_world_jepa_consumer = learner
+        cognition = Cognition(runtime)
+
+        # A cold foreground call must fail closed without entering a slow model load.
+        learner._ephemeral_model = None
+        learner._ephemeral_checkpoint_sha = None
+        original_load = learner._load_model
+        cold_load_calls = 0
+
+        def slow_cold_load(record):
+            nonlocal cold_load_calls
+            cold_load_calls += 1
+            time.sleep(0.2)
+            return original_load(record)
+
+        learner._load_model = slow_cold_load
+        try:
+            cold_offer = cognition.offer(
+                "B1_DETAIL", event, 0, time.monotonic() + 5.0
+            )
+            assert cold_offer["role"] == "B1_DETAIL"
+            cold_payload = json.loads(runner.calls[-1][1]["content"])
+            assert "world_jepa_temporal" not in cold_payload["body_state"]
+            assert cold_load_calls == 0
+        finally:
+            learner._load_model = original_load
+
         warm = learner.warm_active_checkpoint()
         assert warm["status"] == "WARMED"
-        cognition = Cognition(runtime)
         for role in ("B1_DETAIL", "B2_GIST"):
             result = cognition.offer(role, event, 0, time.monotonic() + 5.0)
             assert result["role"] == role
 
+        assert len(runner.calls) == 3
         prompts = {}
-        for messages in runner.calls:
+        for messages in runner.calls[1:]:
             payload = json.loads(messages[1]["content"])
             assert "body_state" in payload
             state = payload["body_state"]
