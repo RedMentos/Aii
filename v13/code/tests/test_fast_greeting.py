@@ -52,6 +52,15 @@ def test_text_guard_rejects_audio_and_audio_backed_transcript():
         "source_ref": {"modality": "text"},
         "_audio_window": {"pcm16": b"\x00\x00"},
     })
+    assert is_text_only_event({
+        "source_ref": {"modality": "text"},
+        "_audio_window": None,
+    })
+    for malformed in ("malformed", b"", [], 0, False):
+        assert not is_text_only_event({
+            "source_ref": {"modality": "text"},
+            "_audio_window": malformed,
+        })
     assert not is_text_only_event({"source_ref": None})
     assert not is_text_only_event(None)
 
