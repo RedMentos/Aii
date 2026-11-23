@@ -119,13 +119,25 @@ class ProcessRestartWaitRecoveryTests(unittest.TestCase):
         ):
             with self.assertRaisesRegex(AssertionError, "after two safe Wait actions"):
                 harness.wait_for_text(harness.STOPPED_TEXT, timeout=2.0)
+        taps = [
+            call for call in adb_call.call_args_list
+            if len(call.args) >= 3 and call.args[:3] == ("shell", "input", "tap")
+        ]
         self.assertEqual(
-            adb_call.call_args_list,
+            taps,
             [
                 unittest.mock.call("shell", "input", "tap", "150", "25"),
                 unittest.mock.call("shell", "input", "tap", "150", "25"),
             ],
         )
+        self.assertTrue(any(
+            len(call.args) >= 2 and call.args[:2] == ("shell", "dumpsys")
+            for call in adb_call.call_args_list
+        ))
+        self.assertTrue(any(
+            len(call.args) >= 1 and call.args[0] == "logcat"
+            for call in adb_call.call_args_list
+        ))
         self.assertNotIn("Close app", repr(adb_call.call_args_list))
 
     def test_wait_budget_rejects_more_than_two_safe_waits(self) -> None:
