@@ -57,3 +57,6 @@ R-118 remains the relevant fully reviewed FD-VAD preprint (arXiv:2609.35791, sub
 4. Boss owns the shared work board and `V14_USER_NEXT_ACTION.md`; this handoff and R-119 are the Perception evidence to port there.
 
 **User action:** none required. No model, permission or device change was requested or performed.
+
+
+Additional LOCAL_LINUX sanity: invalid receipt values `None`, empty string and 257-character string were rejected; a valid bounded receipt was accepted; the opaque VAD key changed across receipts and did not contain the receipt literal. PASS (small isolated Python check; not a repository test).
