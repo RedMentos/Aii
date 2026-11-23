@@ -150,7 +150,7 @@ def _head_sha(head):
 
 
 
-def _validate_receiver_retention_holdout(record):
+def validate_receiver_retention_holdout(record):
     required = {
         "schema", "created_checkpoint_sha256", "window_ids", "action_ids",
         "source_ids", "source_sha256s", "lineage_source_ids",
@@ -228,7 +228,7 @@ def pack_receiver_retention_holdout(holdout_arrays, holdout_rows, checkpoint_sha
     }
     record = dict(payload)
     record["cohort_sha256"] = _digest(payload)
-    _validate_receiver_retention_holdout(record)
+    validate_receiver_retention_holdout(record)
     return record
 
 
@@ -242,7 +242,7 @@ def prepare_receiver_retention_baseline(active_record, model, train_rows):
         return {"status": "NOT_MEASURED", "reason": "NO_PRIOR_COHORT",
                 "source_disjoint": False, "cohort_sha256": None, "roles": {}}
     cohort = cohorts[-1]
-    _validate_receiver_retention_holdout(cohort)
+    validate_receiver_retention_holdout(cohort)
     train_source_ids = set(_window_lineage_field_ids(
         train_rows, "lineage_source_ids", "source_ids"
     ))
@@ -312,7 +312,7 @@ def evaluate_receiver_retention(baseline, model, receiver_heads):
             "roles": {},
         }
     cohort = baseline["cohort"]
-    _validate_receiver_retention_holdout(cohort)
+    validate_receiver_retention_holdout(cohort)
     X = np.asarray(cohort["X"], dtype=np.float64)
     A = np.asarray(cohort["A"], dtype=np.float64)
     Y = np.asarray(cohort["Y"], dtype=np.float64)
