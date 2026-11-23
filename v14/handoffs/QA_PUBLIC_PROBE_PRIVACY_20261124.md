@@ -8,3 +8,6 @@ LOCAL_LINUX isolated CPython tests: 7/7 PASS for the first implementation of the
 
 ## Delivery blocker
 The branch commits and exact source readback succeeded, but GitHub rejected both pull-request creation attempts with HTTP 403: "At least one email address must be verified to do that." The push-triggered workflow also ended in startup_failure with no jobs, and GitHub would not retry that run. The code is committed on the QA branch but has no PR and no exact staged/integrated CI evidence yet. A verified GitHub account email (or an authorized alternate review path) is required before the PR/CI handoff can be completed.
+
+## Latest branch readback
+Current QA branch head after the final test-fixture compile check: 3835345e2a1a09f11267bf2ec29ac590be4fbbf0. The staged overlay and RuntimeDeploy hash binding remain unchanged by that test-only commit. The latest push-triggered workflow attempt (45289844996) also ended startup_failure with no jobs; no staged/integrated result is available.
