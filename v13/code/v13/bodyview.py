@@ -303,7 +303,10 @@ def _temporal_world_jepa_body_readout(r, e, role):
                 "query_history_source_sha256s", history_sources
             ),
             "candidate_window_count": episodic.get("candidate_window_count", 0),
+            "train_window_count_before_cap": episodic.get("train_window_count_before_cap", 0),
             "train_window_count": episodic.get("train_window_count", 0),
+            "candidate_cap": episodic.get("candidate_cap", 0),
+            "candidate_sampling": episodic.get("candidate_sampling", "UNAVAILABLE"),
             "verified_item_count": episodic.get("verified_item_count", 0),
             "rejected_windows": episodic.get("rejected_windows", 0),
             "train_split_only": episodic.get("train_split_only") is True,
