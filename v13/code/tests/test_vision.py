@@ -198,5 +198,46 @@ class Vision(unittest.TestCase):
         self.assertFalse(path.exists())
 
 
+
+    def test_forget_invalidates_both_a3_projectors_and_survives_store_restart(self):
+        t = FakeTeacher(); enc = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        records = []
+        for i, colour in enumerate([(220, 20, 20), (20, 20, 220), (20, 180, 20)] * 2):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            for region in ('g', 'qtl', 'qtr'):
+                vision.describe(self.rt, rec, region, t)
+            records.append(rec)
+        projector = vision.train(self.rt, enc)
+        tile_projector = vision.train_tiles(self.rt, enc)
+        projector_path = self.home/projector['path']
+        tile_path = self.home/tile_projector['path']
+        result = vision.forget(self.store, records[-1])
+        self.assertEqual(set(result['invalidated_projectors']), {'projector', 'tile_projector'})
+        self.assertTrue(all(result['projector_files_deleted'].values()))
+        self.assertFalse(projector_path.exists())
+        self.assertFalse(tile_path.exists())
+        self.store.close()
+        self.store = Store(self.home)
+        self.rt.store = self.store
+        state = vision.load(self.store)
+        self.assertIsNone(state['projector'])
+        self.assertIsNone(state['tile_projector'])
+        self.assertNotIn(records[-1]['ref']['source_id'], state['images'])
+
+    def test_stale_forget_ref_does_not_invalidate_current_projector(self):
+        t = FakeTeacher(); enc = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        records = []
+        for i, colour in enumerate([(220, 20, 20), (20, 20, 220), (20, 180, 20), (220, 20, 20)]):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            vision.describe(self.rt, rec, 'g', t)
+            records.append(rec)
+        projector = vision.train(self.rt, enc)
+        stale = {'ref': dict(records[-1]['ref'], sha256='0' * 64)}
+        with self.assertRaises(ValueError):
+            vision.forget(self.store, stale)
+        self.assertEqual(vision.load(self.store)['projector']['sha256'], projector['sha256'])
+        self.assertTrue((self.home/projector['path']).is_file())
+
+
 if __name__ == '__main__':
     unittest.main()
