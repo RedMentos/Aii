@@ -384,11 +384,13 @@ class Runtime:
         except Exception as exc:
             fixed_policy=None;policy_match_ok=False
             self.store.log('output_policy_unavailable',eid,{'stage':'early_policy_check','error':type(exc).__name__})
-        if policy_match_ok and fixed_policy is None:
-            from .fast_greeting import match as greeting_match
-            greeting=greeting_match(text)
-            if greeting:
-                mark('greeting_fastpath')
+        from .fast_greeting import match_unclaimed as match_greeting_unclaimed
+        greeting=match_greeting_unclaimed(text,policy_match_ok=policy_match_ok,fixed_policy=fixed_policy)
+        if greeting:
+            # Exact acknowledgements must still respect the same cancellation and
+            # absolute turn deadline as the full organ path.
+            check(self.cancel_event,deadline)
+            mark('greeting_fastpath')
                 answer_ref=self.store.source(greeting['reply'],'BUILTIN_GREETING_ACK')
                 meta.update(
                     output_authority='APPROVED_FIXED_RULE',
@@ -420,7 +422,9 @@ class Runtime:
                     output_authority='APPROVED_FIXED_RULE',model_generated=False,
                 )
                 self.store.add_packet('OutputPolicyDecision',decision)
-                txctl.commit_output(self.store,mid,eid,meta)
+                committed=txctl.commit_output(self.store,mid,eid,meta)
+                if committed is not True or not txctl.has_output_commit(self.store,mid,eid):
+                    raise RuntimeError('Greeting output commit was not durably recorded')
                 meta['first_output_monotonic_ns']=time.monotonic_ns()
                 self.store.append_message(mid,greeting['reply'])
                 meta.update(
