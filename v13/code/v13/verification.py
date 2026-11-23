@@ -297,16 +297,16 @@ def public_probe_summary(report):
             return {}
         out = {}
         value = metrics.get('status')
-        if value in metric_statuses:
+        if type(value) is str and value in metric_statuses:
             out['status'] = value
         value = metrics.get('role')
-        if value in roles:
+        if type(value) is str and value in roles:
             out['role'] = value
         value = metrics.get('last_phase')
-        if value in phases:
+        if type(value) is str and value in phases:
             out['last_phase'] = value
         value = metrics.get('error_kind')
-        if value in error_kinds:
+        if type(value) is str and value in error_kinds:
             out['error_kind'] = value
         for key in (
             'prompt_tokens', 'generated_tokens', 'requested_tokens',
@@ -329,7 +329,7 @@ def public_probe_summary(report):
             if admission.get('revision') == admission_revision:
                 safe_admission['revision'] = admission_revision
             value = admission.get('status')
-            if value in admission_statuses:
+            if type(value) is str and value in admission_statuses:
                 safe_admission['status'] = value
             for key in ('original_prompt_tokens', 'prompt_tokens', 'target_tokens'):
                 value = admission.get(key)
@@ -340,7 +340,8 @@ def public_probe_summary(report):
             layers = admission.get('removed_layers')
             if type(layers) is list:
                 safe_admission['removed_layers'] = [
-                    value for value in layers if value in removed_layers
+                    value for value in layers
+                    if type(value) is str and value in removed_layers
                 ][:32]
             out['prompt_admission'] = safe_admission
         return out
@@ -405,8 +406,8 @@ def public_probe_summary(report):
     safe_missing = []
     if type(missing) is list:
         for value in missing:
-            code = missing_proof_codes.get(value)
-            if code is None and value in safe_proof_codes:
+            code = missing_proof_codes.get(value) if type(value) is str else None
+            if code is None and type(value) is str and value in safe_proof_codes:
                 code = value
             if code is not None and code not in safe_missing:
                 safe_missing.append(code)
@@ -417,7 +418,7 @@ def public_probe_summary(report):
     return {
         'schema': 'v13.public-native-probe/1',
         'proof_kind': 'NATIVE_SMOKE',
-        'status': status if status in top_statuses else 'UNKNOWN',
+        'status': status if type(status) is str and status in top_statuses else 'UNKNOWN',
         'phone_measured': report.get('phone_measured') if type(report.get('phone_measured')) is bool else False,
         'full_runner_proof': report.get('full_runner_proof') if type(report.get('full_runner_proof')) is bool else False,
         'model_revisions': safe_revisions,
