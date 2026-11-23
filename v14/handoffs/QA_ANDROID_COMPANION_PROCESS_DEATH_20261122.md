@@ -72,3 +72,39 @@ Queued is not PASS. Full local Aii checkout, Android SDK and adb execution are u
 ## Next action
 
 Read exact-head CI for `0034b2c`. If the emulator still ANRs, preserve the failure and diagnose emulator/System-UI versus companion main-thread state from the bounded logcat and process/window evidence; do not increase the Wait budget again or weaken the process-death acceptance. If the emulator job passes, hand the exact evidence to Boss/Core for integration while retaining Redmi as unverified.
+
+---
+
+## QA run 11 — separate durable Stop evidence from System-UI ANR (2026-11-23 06:14 UTC)
+
+### Exact prior emulator evidence
+
+- Parent QA stack #2356 was read at head `b327c80861e640a9b2afb574698279ca4ed6307d`.
+- Exact workflow run `45116548718`:
+  - Android companion Gradle/Robolectric job `137500616062` failed during dependency resolution for Android Gradle Plugin transitive artifacts (including jose4j, slf4j, Gson and ASM). This is a dependency-fetch failure, not a demonstrated Java compile or test regression.
+  - Emulator process-restart job `137500616248` built and installed the APK, then failed at the visible STOPPED-state wait after the safe System-UI Wait budget was exhausted. The harness refused Close app. The visible UI lifecycle remains FAIL/BLOCKED; this run did not establish the STOPPED label or process-death acceptance.
+- The exact emulator log does not prove a Redmi result and does not justify another renderer or Wait-count experiment.
+
+### QA-only follow-up branch
+
+- Branch: `qa/v14-companion-stop-durability-20261123-run1`.
+- Base: parent QA head `b327c80861e640a9b2afb574698279ca4ed6307d`.
+- Current code/test head: `3c42a26694c3827eddcb574521535618777114f8`.
+- The visible Stop button now writes an ephemeral host-side marker only after the companion's actual SharedPreferences `enabled=false` value is read back. A later UIAutomator/System-UI failure cannot create this marker by itself.
+- If the visible STOPPED label is blocked after that verified Stop action, the harness separately:
+  1. verifies the marker and OFF preference,
+  2. force-stops the companion,
+  3. observes the PID disappear,
+  4. relaunches MainActivity,
+  5. verifies the persisted preference remains OFF.
+- It prints a clearly labelled `PARTIAL_PASS` for this independent durable-state proof, then re-raises the original UI assertion. The overall visible-UI lifecycle gate therefore remains failed; durable state is not relabelled as UI success.
+- The post-restart path also reads the provider-startup OFF state before attempting the UI label.
+- Added unit coverage for marker provenance, missing-marker rejection, force-stop/relaunch state verification, and preserving UI failure after a partial pass. Moved the unittest main guard to the end so all appended harness tests are discovered.
+- Added the exact QA stack base and this branch to the Android workflow trigger filters. No production Android capability or permission changed.
+
+### Verification boundary / next action
+
+- New exact-head CI has not yet been observed on `3c42a266`; all changes remain unverified until the workflow result is read back.
+- No full local Aii checkout, Gradle or Android SDK is available in this worker. No LOCAL_LINUX full-suite or local emulator PASS is claimed.
+- Physical Redmi remains `REDMI_UNVERIFIED`. No phone install, pairing, CHAT_SEND, UPDATE_REQUEST, permission change, model/weight change or user-data mutation occurred.
+- Next: open the stacked draft PR and inspect its exact-head Android unit/emulator plus staged/integrated checks. If the durable fallback passes while System UI remains unresponsive, report only the partial persistence proof and keep visible UI acceptance blocked. Do not increase wait counts or switch renderers again.
