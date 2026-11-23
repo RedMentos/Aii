@@ -13,7 +13,7 @@ import threading
 
 REGION_IDS = tuple(f"r{row}{column}" for row in range(4) for column in range(4))
 FEATURE_DIM = 37
-_SHA256 = re.compile(r"[0-9a-f]{64}\\Z")
+_SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 
 
 class TemporalUIAttentionError(ValueError):
