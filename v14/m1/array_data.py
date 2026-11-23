@@ -223,7 +223,7 @@ class ArrayDataset:
         return (
             self.config.input_length * c
             + self.config.horizon * len(self.config.seasonal_lags) * c
-            + self.config.horizon * 4
+            + (self.config.horizon * 4 if self.config.include_calendar else 0)
         )
 
     def _candidate_origins(self, split: str) -> range:
@@ -275,7 +275,11 @@ class ArrayDataset:
         target = self.values[origins[:, None] + target_offsets[None, :]]
         seasonal = self.values[sources]
         forecast_ids = self._minute_ids[origins[:, None] + target_offsets[None, :]]
-        calendar = self._calendar(forecast_ids)
+        calendar = (
+            self._calendar(forecast_ids)
+            if cfg.include_calendar
+            else np.empty((len(origins), cfg.horizon, 0), dtype=np.float32)
+        )
         return WindowBatch(
             origin_indices=origins.copy(),
             inputs=InputBundle(x=x, seasonal=seasonal, calendar=calendar),
