@@ -48,12 +48,20 @@ def process_id() -> str:
     # Android toybox pidof commonly returns 1 when the package has no PID.
     # That is the expected state after force-stop; command/transport errors
     # remain fatal and must not be interpreted as process death.
-    if result.returncode not in (0, 1):
-        raise RuntimeError(
-            "adb pidof failed (exit=" + str(result.returncode) + "): "
-            + result.stderr[-1000:]
-        )
-    return result.stdout.strip()
+    stdout = result.stdout.strip()
+    stderr = result.stderr.strip()
+    # Only the exact toybox "not found" shape (exit 1, empty stdout/stderr)
+    # means the target is absent. adb transport errors can also return 1;
+    # treating those as absence would invalidate the process-death proof.
+    if result.returncode == 0 and re.fullmatch(r"\\d+(?:\\s+\\d+)*", stdout):
+        return stdout
+    if result.returncode == 1 and not stdout and not stderr:
+        return ""
+    raise RuntimeError(
+        "adb pidof failed or returned an ambiguous result (exit="
+        + str(result.returncode) + "): stdout=" + stdout[-500:]
+        + "; stderr=" + stderr[-500:]
+    )
 
 
 def diagnostic_logcat() -> str:
