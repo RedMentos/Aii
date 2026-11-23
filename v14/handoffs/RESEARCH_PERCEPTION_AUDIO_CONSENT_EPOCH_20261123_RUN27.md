@@ -60,3 +60,6 @@ R-118 remains the relevant fully reviewed FD-VAD preprint (arXiv:2609.35791, sub
 
 
 Additional LOCAL_LINUX sanity: invalid receipt values `None`, empty string and 257-character string were rejected; a valid bounded receipt was accepted; the opaque VAD key changed across receipts and did not contain the receipt literal. PASS (small isolated Python check; not a repository test).
+
+
+Coordination limitation: attempts to post the PR/whole-Canon comments and update PR metadata were denied by GitHub with HTTP 403 because the connected account requires at least one verified email address. No comment or PR-body update is claimed. This branch handoff and R-119 are persisted/read back; the shared work board and `V14_USER_NEXT_ACTION.md` remain Boss-owned and were not modified in this run.
