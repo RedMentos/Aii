@@ -749,6 +749,18 @@ def test_speaker_history_does_not_cross_consent_receipt_epochs():
     assert len(registry) == 1
 
 
+def test_speaker_embedding_batch_without_consent_receipt_is_rejected():
+    registry = SpeakerChangeEvidenceRegistry()
+    legacy = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
+    del legacy["consent_receipt_ref"]
+    with pytest.raises(SpeakerEvidenceError, match="schema mismatch"):
+        registry.update(
+            source_id=SOURCE, generation_id="gen-a",
+            consent_receipt_ref=RECEIPT,
+            start_ms=100, end_ms=1100, activity_hint="VOICED", embeddings=legacy,
+        )
+
+
 def test_speaker_embedding_batch_with_another_consent_receipt_is_rejected():
     registry = SpeakerChangeEvidenceRegistry()
     forged = speaker_batch(
