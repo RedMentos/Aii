@@ -81,13 +81,17 @@ def _world_jepa_body_readout(r, e, text, role):
         actions = tuple(world_model.ACTIONS)
         matrix = receiver_matrix(
             r.store, state, actions, home=getattr(r, "home", None),
-            nonblocking=True,
+            nonblocking=True, warm_only=True,
         )
         entries = []
         unsupported_actions = []
         for action in actions:
             item = matrix[action][role]
             if not isinstance(item, dict):
+                return None, None
+            if (item.get("native_body_consumed") is not False
+                    or item.get("native_body_weights_changed") is not False
+                    or item.get("decision_authority") != "NONE"):
                 return None, None
             if item.get("status") == "ACTION_SUPPORT_INSUFFICIENT":
                 unsupported_actions.append(action)
@@ -167,6 +171,7 @@ def _world_jepa_body_readout(r, e, text, role):
             "rows": prediction_rows,
             "support": "TRAIN>=8",
             "native_body_consumed": False,
+            "native_body_weights_changed": False,
             "decision_authority": "NONE",
             "note": "prediction only; not fact/source/permission",
         }

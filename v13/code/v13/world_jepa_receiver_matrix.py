@@ -10,7 +10,7 @@ import math
 import numpy as np
 
 from . import world_model
-from .world_jepa_consumer import WorldJEPAStoreConsumer, receiver_utility_gate
+from .world_jepa_consumer import ModelNotWarmError, WorldJEPAStoreConsumer, receiver_utility_gate
 
 RECEIVER_ROLES = ("B1_DETAIL", "B2_GIST", "SELF_MODEL")
 MIN_ACTION_SUPPORT = 8
@@ -86,8 +86,12 @@ def _readout_output(role, prediction):
     }
 
 
-def receiver_matrix(store, state, actions, home=None, *, nonblocking=False):
+def receiver_matrix(store, state, actions, home=None, *, nonblocking=False, warm_only=False):
     """Read role heads for candidate actions with exactly one checkpoint load."""
+    if type(nonblocking) is not bool or type(warm_only) is not bool:
+        raise ValueError("receiver lock/cache flags must be bool")
+    if warm_only and not nonblocking:
+        raise ValueError("warm-only receiver must be nonblocking")
     vector = _state_vector(state)
     if (type(actions) not in (list, tuple) or not actions
             or len(actions) > len(world_model.ACTIONS)
@@ -96,16 +100,21 @@ def receiver_matrix(store, state, actions, home=None, *, nonblocking=False):
             or len(set(actions)) != len(actions)):
         raise ValueError("invalid receiver action list")
     root = Path(home if home is not None else store.home) / "world_jepa"
-    learner = WorldJEPAStoreConsumer(
-        store, root, learning_enabled=False, recover_pending=not nonblocking
-    )
+    learner = getattr(store, "_v14_world_jepa_consumer", None)
+    if (not isinstance(learner, WorldJEPAStoreConsumer)
+            or Path(getattr(learner, "home", root)) != root):
+        learner = WorldJEPAStoreConsumer(
+            store, root, learning_enabled=False, recover_pending=not nonblocking
+        )
+        setattr(store, "_v14_world_jepa_consumer", learner)
     try:
         with learner._locked(False, blocking=not nonblocking):
             stored, _ = learner._read_state()
             active = stored["active"]
             if active is None:
+                learner._clear_model_cache()
                 raise ValueError("WorldJEPA checkpoint unavailable")
-            model = learner._load_model(active)
+            model = learner._load_model(active, allow_cold=not warm_only, cache=True)
             support_counts = _train_split_action_support(active, actions)
             if support_counts is None:
                 raise ValueError("WorldJEPA train-split support unavailable")
@@ -187,6 +196,20 @@ def receiver_matrix(store, state, actions, home=None, *, nonblocking=False):
                     "status": "BUSY",
                     "role": role,
                     "error": "LOCK_BUSY",
+                    "decision_authority": "NONE",
+                    "native_body_consumed": False,
+                    "native_body_weights_changed": False,
+                }
+                for role in RECEIVER_ROLES
+            }
+            for action in actions
+        }
+    except ModelNotWarmError:
+        return {
+            action: {
+                role: {
+                    "status": "MODEL_NOT_WARM",
+                    "role": role,
                     "decision_authority": "NONE",
                     "native_body_consumed": False,
                     "native_body_weights_changed": False,

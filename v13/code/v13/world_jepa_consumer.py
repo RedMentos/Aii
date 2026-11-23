@@ -296,6 +296,10 @@ def _fit_role_receivers(model, train, holdout, train_rows, holdout_rows):
     return heads, metrics
 
 
+class ModelNotWarmError(RuntimeError):
+    """The exact checkpoint is not cached; foreground callers must not cold-load it."""
+
+
 class WorldJEPAStoreConsumer:
     """Consume Store-verified T8 transitions into persistent WorldJEPA/receiver state.
 
@@ -331,6 +335,10 @@ class WorldJEPAStoreConsumer:
         self.learning_enabled = learning_enabled
         self.seed = seed
         self.ensemble = ensemble
+        # Read-only B1/B2 consumers may reuse only a source/checkpoint-exact cache.
+        # Training loads remain private copies so rejected updates cannot mutate it.
+        self._cached_model_key = None
+        self._cached_model = None
         # Recover a prior process that stopped between publish and pending-name cleanup.
         # Read-only foreground consumers may skip recovery and take a nonblocking
         # shared lock instead; a pending/incomplete checkpoint then fails closed.
@@ -546,11 +554,28 @@ class WorldJEPAStoreConsumer:
             raise ValueError("missing or unsafe WorldJEPA checkpoint")
         return path
 
-    def _load_model(self, record):
+    def _clear_model_cache(self):
+        self._cached_model_key = None
+        self._cached_model = None
+
+    def _load_model(self, record, *, allow_cold=True, cache=False):
+        if type(allow_cold) is not bool or type(cache) is not bool:
+            raise ValueError("model cache flags must be bool")
+        if not cache and not allow_cold:
+            raise ValueError("warm-only reads require the shared cache")
+        key = (record["checkpoint_sha256"], record["source_sha256"])
+        if cache and self._cached_model is not None and self._cached_model_key == key:
+            return self._cached_model
+        if cache and not allow_cold:
+            raise ModelNotWarmError("exact WorldJEPA checkpoint is not warm")
         path = self._checkpoint_path(record)
-        return world_jepa_shadow_checkpoint.load(
+        model = world_jepa_shadow_checkpoint.load(
             path, record["source_sha256"], record["checkpoint_sha256"]
         )
+        if cache:
+            self._cached_model_key = key
+            self._cached_model = model
+        return model
 
     def _prune_checkpoints(self, state):
         keep = {

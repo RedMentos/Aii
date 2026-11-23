@@ -16,6 +16,7 @@ on:
       - "v13/code/tests/test_world_jepa_training_resume_stage_20261111.py"
       - "v13/code/tests/world_jepa_training_resume_disposable_cases_20261111.py"
       - "v13/code/tests/test_v14_world_jepa_postcommit_runtime.py"
+      - "v13/code/tests/test_boss_world_jepa_warm_cache.py"
       - ".github/workflows/v14-jepa-training-resume-py314.yml"
   workflow_dispatch:
 
@@ -103,3 +104,5 @@ jobs:
         run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_v14_world_jepa_runtime_port.py -k "memory_forget or source_forget_guard"
       - name: Run B1/B2 WorldJEPA body-receiver regressions
         run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_v14_world_jepa_runtime_port.py -k "bodyview_jepa_receiver"
+      - name: Run foreground WorldJEPA warm-cache and prompt-boundary regressions
+        run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_boss_world_jepa_warm_cache.py
