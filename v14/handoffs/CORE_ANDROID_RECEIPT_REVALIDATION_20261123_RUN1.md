@@ -53,3 +53,11 @@ Run exact-head Python 3.13/3.14 Core and staged Runtime CI, fix any failures, th
 - Redmi remains `REDMI_UNVERIFIED`; the last known owner-authenticated receipt was STOPPED_BY_USER. No device command, restart, chat send, update request, permission change, model/weight swap or data mutation was performed.
 
 **Next:** resolve why GitHub Actions creates `startup_failure`/zero-job runs for the updated branch, then obtain exact Python 3.13/3.14 CI and independent QA review. Keep #2450 NOT_RELEASED until its parent Android process-restart/System-UI ANR gate is green. Boss should mirror this Core handoff into the shared `V14_USER_NEXT_ACTION.md`/board; Core does not overwrite the concurrently owned shared board.
+
+
+## Run 3 — receipt material redaction at the user-facing boundary (2026-11-23)
+
+- Added regression assertions that neither the signed envelope, receipt nonce nor signature appears in the Android poll result or Android history output. The exact signed envelope remains internal to the source-bound Store packet solely for recovery authentication.
+- Current Core PR #2450 branch has advanced through the code/test and handoff commits; verify the live PR head before using this checkpoint. The signed-envelope revalidation, expiry-safe recovery and bidirectional status-forgery controls remain present.
+- This is a privacy/output-boundary regression, not a device action or proof of Android execution.
+- Exact-head Actions remains blocked at workflow startup (BuildFailed / startup_failure, zero jobs); no project pytest result is available. The local cryptographic invariant probe from Run 2 remains the only local PASS.
