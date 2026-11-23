@@ -1,4 +1,8 @@
-name: V14 M1 DATA tests
+name: V14 M1 tests
+
+concurrency:
+  group: v14-m1-${{ github.ref }}
+  cancel-in-progress: true
 
 on:
   push:
