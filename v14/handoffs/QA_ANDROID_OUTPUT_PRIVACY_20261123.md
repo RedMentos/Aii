@@ -161,3 +161,12 @@ No device action, chat send, restart, model/weight change, permission change, or
 - Latest exact source Git blob readback: \`verification.py\` \`c8c6ab663c10db00ac17b2e4aa18a500cf8f0a7e\`; \`runtime.py\` \`451c14238e35e1040308638c8197f5f2390cd186\`; \`__main__.py\` \`54444e0be17a2f773530056fd996c69f03547c33\`; \`test_prompts.py\` \`3bff42d6e0af5d574f24573b5f134bbde383c008\`. These are Git blob IDs, not source SHA-256 pins.
 - Full LOCAL_LINUX tests: BLOCKED / NOT_RUN. The current PR branch is 10 commits behind release-dev \`8d93236c753f0194224c19edc7411d8d7082b1d6\`; Boss must coordinate rebase and bottom-up pin rebind after #2443. No source-integrity gate was weakened.
 - Redmi remains STOPPED_BY_USER per receipt #826. No device action was attempted.
+
+
+## Test-harness correction and pre-stage regression gate — 2026-11-23
+
+- The first exact staged run exposed one defect in the new test harness itself: the \`Runtime.__new__\` worker fixture omitted \`_session_local\`, causing \`AttributeError\` in the worker cleanup. Added \`runtime._session_local = threading.local()\` in commit \`f9ee637b5a569e874020fba2afcbc06273470bbc\`. This is a test-fixture correction, not a production runtime change.
+- Added an explicit pre-composition step to the existing \`.github/workflows/v13-integrated-context-stage-20261111.yml\` workflow so \`tests/test_prompts.py\` runs before source-stage pin checks. Workflow commit/current PR head: \`ee809a0e7839b2074185c0d70325ec03b847076a\`. This is not a new standalone workflow.
+- Exact-head workflow runs at last poll: staged/integrated \`45227342231\`, JEPA receipt \`45227342248\`, JEPA transactional update \`45227342438\`, combined online JEPA \`45227342247\` all QUEUED. Safe-additive candidate tests \`45227342215\` remain SKIPPED by policy. No new test PASS is claimed.
+- The previous staged run \`45226042195\` showed the new worker test failed only because of the missing fixture attribute; the remaining failures were the expected immutable \`runtime.py\` and \`verification.py\` source-pin mismatches. The new pre-composition step is intended to give independent direct evidence for the privacy tests while preserving those stage gates.
+- Current PR head is \`ee809a0e7839b2074185c0d70325ec03b847076a\`; latest code/test commit is \`f9ee637b5a569e874020fba2afcbc06273470bbc\`. The branch remains based on \`fb563d771fe2d493c4ec25abe94280981d24ef5c\` and 10 commits behind release-dev \`8d93236c753f0194224c19edc7411d8d7082b1d6\`. Boss owns the coordinated rebase and exact source-pin chain.
