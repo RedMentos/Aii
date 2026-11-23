@@ -1860,3 +1860,19 @@ def test_receiver_retention_compares_same_persisted_cohort_and_blocks_training_o
     tampered["Y"][0][0] += 0.25
     with pytest.raises(ValueError, match="receiver retention cohort digest"):
         validate_receiver_retention_holdout(tampered)
+
+    class EmptyStore:
+        def rows(self, *args, **kwargs):
+            return []
+
+    evicted_record = {
+        "experience_rows": [],
+        "retention_holdouts": [],
+        "receiver_retention_holdouts": [cohort],
+        "learning_intents": {},
+        "revoked_source_ids": [],
+        "scan_cursor": 0,
+    }
+    assert _record_references_source(
+        EmptyStore(), evicted_record, rows[0]["source_ids"][0]
+    ) is True
