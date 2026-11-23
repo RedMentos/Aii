@@ -5,9 +5,13 @@
 
 ## Separation and preservation
 
-The previous V14 tree was moved intact to `archive/V14_PRE_REBUILD_20261123/`. It is preserved as source material and is not the active implementation path. V13 remains unchanged on this branch. This rebuild has its own branch: `v14/rebuild-isolated-20261123`.
+The complete pre-rebuild repository root — including the previous V14 project, V13 source, documentation, CI workflows, experiments and supporting files — is preserved as one tree-level archive under `archive/LEGACY_PRE_REBUILD_20261123/`. See `archive/ARCHIVE_MANIFEST.md` for the recovery map.
 
-The pre-rebuild Git snapshot is also preserved on `backup/pre-v14-data-rebuild-20261123`.
+The previous full V14 master is preserved at `archive/LEGACY_PRE_REBUILD_20261123/v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md`. The unchanged historical V13 Canon is preserved at `archive/LEGACY_PRE_REBUILD_20261123/v13/blueprint/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md`.
+
+Immutable snapshot: branch `backup/pre-v14-data-rebuild-20261123`, commit `32373358983a16560af60f4283e9ad0dc448b5a4`, original repository-root tree `5b8e8842331ed45f006fcfd8f265f5fd739bcf6a`.
+
+This branch is an isolated V14 M1 experiment workspace. `v14/m1/` does not replace the complete V14 architecture or the old runtime. The full V14 project remains preserved in the archive until a separate, explicit integration plan is reviewed.
 
 ## Current implementation
 
