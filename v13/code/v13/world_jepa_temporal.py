@@ -1974,8 +1974,16 @@ def combined_source_forget_guard(store, source_id):
         state = _validate_state(state)
         active = state["active"]
         previous = state["previous"]
-        active_uses = _record_references_source(active, source_id)
-        previous_uses = _record_references_source(previous, source_id)
+        pending_action_ids = {
+            row["action_id"] for row in state["pending_rows"]
+            if row["source_id"] == source_id
+        }
+        active_uses = _record_references_source(
+            store, active, source_id, pending_action_ids
+        )
+        previous_uses = _record_references_source(
+            store, previous, source_id, pending_action_ids
+        )
 
         affected = []
         if active_uses:
