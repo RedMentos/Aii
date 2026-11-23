@@ -475,3 +475,46 @@ def test_audio_generation_must_match_the_active_turn_before_interrupt(tmp_path):
         assert answer(runtime, first)["status"] == "FINAL"
     finally:
         runtime.close()
+
+
+def test_audio_consent_lease_cannot_be_reused_from_another_thread(tmp_path):
+    runtime, started = make_runtime(tmp_path, "interrupt")
+    worker_errors = []
+    try:
+        first = runtime.submit("Tell me a long story about the history of Iceland")
+        assert started.wait(10)
+        _audio_event, generation, pcm, kwargs = make_audio(runtime)
+        temporal_state = TemporalVoiceEvidence()
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+            temporal_state=temporal_state,
+        ) as lease:
+            result = consume_pcm16_voice_window(
+                runtime, pcm, consent_lease=lease,
+                temporal_state=temporal_state, **kwargs,
+            )
+            _persist_temporal_voice_receipt(
+                runtime, result, lease, temporal_state=temporal_state,
+            )
+
+            def dispatch_from_other_thread():
+                try:
+                    on_audio_input(
+                        runtime, result, lease, temporal_state=temporal_state,
+                    )
+                except Exception as exc:
+                    worker_errors.append(exc)
+
+            worker = threading.Thread(target=dispatch_from_other_thread)
+            worker.start()
+            worker.join(timeout=10)
+            assert not worker.is_alive()
+            assert len(worker_errors) == 1
+            assert isinstance(worker_errors[0], PermissionError)
+            assert "source-bound consent lease" in str(worker_errors[0])
+            assert not runtime.cancel_event.is_set()
+
+        wait_idle(runtime)
+        assert answer(runtime, first)["status"] == "FINAL"
+    finally:
+        runtime.close()
