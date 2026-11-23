@@ -13,7 +13,7 @@ import math
 import re
 import threading
 
-SCHEMA = "v14.raw-ear-speaker-embeddings/1"
+SCHEMA = "v14.raw-ear-speaker-embeddings/2"
 METHOD = "COSINE_LOOKBACK_DIAGNOSTIC_V1"
 _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 _ACTIVITY = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}
@@ -122,7 +122,7 @@ class _Stream:
 
 
 class SpeakerChangeEvidenceRegistry:
-    """Bounded per-source/generation cosine look-back state; vectors remain RAM-only."""
+    """Bounded per-source/generation/consent-epoch cosine look-back state; vectors remain RAM-only."""
 
     def __init__(self, *, max_streams=16, max_frames=128, reset_gap_ms=2000):
         if type(max_streams) is not int or not 1 <= max_streams <= 256:
