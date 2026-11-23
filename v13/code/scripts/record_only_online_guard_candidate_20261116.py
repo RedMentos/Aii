@@ -9,7 +9,7 @@ from hashlib import sha256
 from pathlib import Path
 
 SOURCE_SHA256 = {
-    'v13/runtime.py': 'c64ed6170bbc49c3a60d24d2566d10e9d53586c6608534c738a10b8834718c52',
+    'v13/runtime.py': '45fe67f66ad3bac2491c877be3a0c63f20b20014bf7ccfa15b1df236dd08b8ba',
     'v13/online_world.py': 'ebd6044651ccd031c947a2e8d0d188232c2bab2da79b19ea6c513c433d59e8c8',
     'v13/agi/__init__.py': '75333b385dbc2d581e8fc028b433b0a93847dc80b64f83d9aedf104cc45c8661',
     'v13/operator.py': 'b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186',
