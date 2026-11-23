@@ -121,3 +121,10 @@ Read-only private receipts, no new chat turn or device action:
 - No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, shell, permission, model/weight or user-data mutation.
 
 The Boss WorldJEPA cache candidate remains CI-green but not installed; this device receipt does not establish any improvement from that candidate. The Android companion lifecycle and MediaProjection paths remain REDMI_UNVERIFIED.
+
+## CI trigger correction — 2026-11-23 06:34 UTC
+
+- PR #2415's actual base is `qa/v14-companion-final-qa-20261122`, whose workflow did not include that branch in its own `pull_request.branches` filter. A filter change only in the head PR cannot trigger itself.
+- Mis-targeted draft PR #2416 (based on Core's branch, whose workflow contains only Gradle/Robolectric and no process-restart emulator job) was closed after its Gradle/Robolectric-only run `45124508756` passed. That run is not evidence for the process-death test.
+- Correct trigger prerequisite is ready-for-review PR #2417, based on the actual QA branch and adding the missing QA-base filter plus exact QA push branches. It has no exact workflow run yet because the base filter must first be integrated.
+- #2415 remains DRAFT / CI_PENDING / NOT_RELEASED. Do not count its test additions as executed until the new exact-head run is visible.
