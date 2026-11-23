@@ -11,6 +11,12 @@ from collections import OrderedDict
 import math
 import threading
 
+from .vision_temporal_adaptation import (
+    compute_attention_novelty,
+    decompose_temporal_change,
+    weighted_tile_score,
+)
+
 TILE_IDS = tuple(f"r{row}{col}" for row in range(4) for col in range(4))
 LUMINANCE_VALUES_PER_TILE = 16
 METHOD = "RAW_EYE_TEMPORAL_LUMINANCE_DELTA_V1"
@@ -67,6 +73,7 @@ class TemporalVisualEvidence:
         self._previous = None
         self._on_surface = {tile: 0.0 for tile in TILE_IDS}
         self._off_surface = {tile: 0.0 for tile in TILE_IDS}
+        self._local_surface = {tile: 0.0 for tile in TILE_IDS}
         self._last_activity_ms = None
 
     def reset(self) -> None:
@@ -74,6 +81,7 @@ class TemporalVisualEvidence:
         self._previous = None
         self._on_surface = {tile: 0.0 for tile in TILE_IDS}
         self._off_surface = {tile: 0.0 for tile in TILE_IDS}
+        self._local_surface = {tile: 0.0 for tile in TILE_IDS}
         self._last_activity_ms = None
 
     def update(self, *, start_ms: int, end_ms: int, tile_luminance: dict) -> dict:
@@ -98,6 +106,10 @@ class TemporalVisualEvidence:
                 "mean_change": 0.0, "peak_change": 0.0, "changed_tile_ids": [],
                 "tile_delta": {}, "polarity_delta_by_tile": {}, "polarity_activity_by_tile": {},
                 "temporal_activity_score": 0.0, "on_activity": 0.0, "off_activity": 0.0,
+                "global_luminance_shift": 0.0, "global_change_score": 0.0,
+                "local_tile_delta": {}, "local_change_score": 0.0,
+                "local_temporal_activity_score": 0.0, "locally_changed_tile_ids": [],
+                "attention_novelty": 0.0,
                 "surface_expired": False, "tau_ms": self.tau_ms, "window_ms": self.window_ms,
                 "gap_ms": gap_ms, "state_reset": reset_reason is not None,
                 "reset_reason": reset_reason, "truth_authority": 0,
@@ -109,11 +121,16 @@ class TemporalVisualEvidence:
         if surface_expired:
             self._on_surface = {tile: 0.0 for tile in TILE_IDS}
             self._off_surface = {tile: 0.0 for tile in TILE_IDS}
+            self._local_surface = {tile: 0.0 for tile in TILE_IDS}
         else:
             decay = math.exp(-elapsed_ms / self.tau_ms)
             self._on_surface = {tile: value * decay for tile, value in self._on_surface.items()}
             self._off_surface = {tile: value * decay for tile, value in self._off_surface.items()}
+            self._local_surface = {tile: value * decay for tile, value in self._local_surface.items()}
 
+        common_mode_delta, local_tile_delta = decompose_temporal_change(
+            self._previous, current, TILE_IDS, LUMINANCE_VALUES_PER_TILE,
+        )
         tile_delta, polarity_delta = {}, {}
         for tile_id in TILE_IDS:
             before, after = self._previous[tile_id], current[tile_id]
@@ -123,6 +140,9 @@ class TemporalVisualEvidence:
             polarity_delta[tile_id] = {"on": on_delta, "off": off_delta}
             self._on_surface[tile_id] = min(1.0, self._on_surface[tile_id] + on_delta)
             self._off_surface[tile_id] = min(1.0, self._off_surface[tile_id] + off_delta)
+            self._local_surface[tile_id] = min(
+                1.0, self._local_surface[tile_id] + local_tile_delta[tile_id],
+            )
         if any(value > 0.0 for value in tile_delta.values()):
             self._last_activity_ms = end_ms
 
@@ -132,6 +152,12 @@ class TemporalVisualEvidence:
         change_score = min(1.0, max(0.0, 0.6 * top4_change + 0.4 * mean_change))
         activity = sorted((self._on_surface[t] + self._off_surface[t] for t in TILE_IDS), reverse=True)
         temporal_activity_score = min(1.0, max(0.0, 0.6 * sum(activity[:4]) / 4.0 + 0.4 * sum(activity) / len(activity)))
+        local_change_score = weighted_tile_score(local_tile_delta.values())
+        local_temporal_activity_score = weighted_tile_score(self._local_surface.values())
+        global_change_score = min(1.0, abs(common_mode_delta))
+        attention_novelty = compute_attention_novelty(
+            local_change_score, local_temporal_activity_score, global_change_score,
+        )
         on_activity = sum(self._on_surface.values()) / len(TILE_IDS)
         off_activity = sum(self._off_surface.values()) / len(TILE_IDS)
         changed = [tile for tile in TILE_IDS if tile_delta[tile] >= self.changed_tile_threshold]
@@ -144,6 +170,13 @@ class TemporalVisualEvidence:
             "polarity_delta_by_tile": {k: {p: round(v, 6) for p, v in row.items()} for k, row in polarity_delta.items()},
             "polarity_activity_by_tile": {t: {"on": round(self._on_surface[t], 6), "off": round(self._off_surface[t], 6)} for t in TILE_IDS},
             "temporal_activity_score": round(temporal_activity_score, 6),
+            "global_luminance_shift": round(common_mode_delta, 6),
+            "global_change_score": round(global_change_score, 6),
+            "local_tile_delta": {k: round(v, 6) for k, v in local_tile_delta.items()},
+            "local_change_score": round(local_change_score, 6),
+            "local_temporal_activity_score": round(local_temporal_activity_score, 6),
+            "locally_changed_tile_ids": [tile for tile in TILE_IDS if local_tile_delta[tile] >= self.changed_tile_threshold],
+            "attention_novelty": attention_novelty,
             "on_activity": round(on_activity, 6), "off_activity": round(off_activity, 6),
             "surface_expired": surface_expired, "tau_ms": self.tau_ms, "window_ms": self.window_ms,
             "gap_ms": gap_ms, "state_reset": reset_reason is not None, "reset_reason": reset_reason,
