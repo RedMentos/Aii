@@ -1433,7 +1433,7 @@ The linked `alikayyam/sticky_moe` repository README declares MIT, but the root `
 
 ### Code checkpoint
 
-- Working branch `jepa-memory/v14-temporal-boss-2443-rebase-20261123-run14`; code-bearing commit `05ec1f4527860960677bda93d7736ad0c1a289a1`; documentation-only descendants update this handoff, Board, Next Action, Workplan, Research Ledger and Canon overlay. Parent is Boss PR #2443, current branch head `cdf6b64067ac426ba32194100d3764f6e74c105f`; release ancestor remains `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- Working branch `jepa-memory/v14-temporal-boss-2443-rebase-20261123-run14`; code/test checkpoint `f56e7067e6f2df5900231324dd5b2d55ea277477` (source commit `3122e30830a94848f4ffe17fb55146d8c5a614d0`); documentation-only descendants update this handoff, Board, Next Action, Workplan, Research Ledger and Canon overlay. Parent is Boss PR #2443, current branch head `cdf6b64067ac426ba32194100d3764f6e74c105f`; release ancestor remains `8d93236c753f0194224c19edc7411d8d7082b1d6`.
 - `v13/code/v13/world_jepa_temporal.py`: rollback now loads/verifies the prior checkpoint before committing the rollback pointer. A missing/corrupt prior file cannot replace the valid active model or cause its pruning. Successful rollback invalidates same-Store warm caches and warms the invoking consumer from the already verified restored model.
 - `v13/code/tests/test_v14_world_jepa_temporal_runtime.py`: the positive two-checkpoint rollback/restart path checks warm-cache SHA identity; parameterized missing/corrupt fallback controls assert no Store-state/version change and preserve the current active checkpoint.
 - Handoff: `v14/handoffs/JEPA_MEMORY_RUN15_ROLLBACK_GUARD_20261123.md`.
