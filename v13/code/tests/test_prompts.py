@@ -29,8 +29,8 @@ class EnglishFirstPrompts(unittest.TestCase):
 class ConductAndPrivacy(unittest.TestCase):
     def test_internal_organ_offers_are_private_without_changing_receipt_prefixes(self):
         for lang, markers, expected_prefix in (
-            ('en', ('private:', 'never reveal'), 'Internal hypotheses: '),
-            ('de', ('privat:', 'nie offenlegen'), 'Interne Hypothesen: '),
+            ('en', ('Do not reveal', 'internal offers'), 'Internal hypotheses: '),
+            ('de', ('nicht offenlegen', 'Interne Angebote'), 'Interne Hypothesen: '),
         ):
             cfg = DEFAULTS | {'answer_language': lang}
             system = prompts.text(cfg, 'system')
