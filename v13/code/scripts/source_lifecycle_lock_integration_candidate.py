@@ -5,15 +5,15 @@ from pathlib import Path
 
 PINS = {
     'archive.py': 'adbdd844c2275d527a689eda789a3f247759967677e573b92bf7af7ad68404bf',
-    'store.py': 'c413e135c765876263835140541a253a6494ebe57714ee43e18ace0c31548521',
+    'store.py': 'ed135f3c4e8b8b1d9f670214f91f30e45eb25a18074b7496d25a59a96d82a918',
     'common.py': '0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a',
-    'memory.py': '61e881ad8b3f8cb60a96339599a1627cd5af7b5a5bfd29fe5f371c17f5a29ebc',
+    'memory.py': 'af82976a324fd0a5452a8afaebdcc421b8e83fdbca77975d86648a48403b9075',
     'vision.py': '758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5',
     'archive_reader_guard_candidate.py': '84c06a9f5c0b6054f836615023822ff577984d3efe9ddfb07cae569ec124f438',
     'archive_stream_range_candidate.py': 'd2d021adcc844c1f321312cbfa60a4affb0a6b7fddc09e41a234cdf83f1eec98',
     'source_lifecycle_candidate.py': '3ace74b802d3e3e7340eabcccb03275d348deae2297fe8a1b4d2e1eab17d62b0',
 }
-GUARD_SCRIPT_SHA = '93000723a15220fc4eb007b074e92c2829ebd1a434f70b7051aade1740d97e79'
+GUARD_SCRIPT_SHA = '1a9b15653c20e3e53fb80a014a32a3f4ab41c4eafcfc81dba16f3d2bcafa5bb4'
 OLD_ARCHIVE_INTEGRATED_SHA = '3f421423ce890b90033470e15150b1ba9830642e6b5e92e61b654801602e90b4'
 
 STORE_OLD = b'''        with self.mutex:
@@ -97,11 +97,13 @@ READ_SOURCE_NEW = b'''    def read_source(self,ref):
         if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef out of bounds")
         return txt[ref["char_start"]:ref["char_end"]]
 '''
-MEMORY_OLD = b'''            src=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
-            if not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(src['hash'],)):(self.s.home/'data/blobs'/src['hash']).unlink(missing_ok=True);(self.s.home/'data/blobs'/(src['hash']+'.z')).unlink(missing_ok=True)
+MEMORY_OLD = b'''                source=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
+                if source and not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(source['hash'],)):
+                    (self.s.home/'data/blobs'/source['hash']).unlink(missing_ok=True)
+                    (self.s.home/'data/blobs'/(source['hash']+'.z')).unlink(missing_ok=True)
 '''
-MEMORY_NEW = b'''            from .source_lifecycle_candidate import cleanup_unreferenced
-            cleanup_unreferenced(self.s,sid)
+MEMORY_NEW = b'''                from .source_lifecycle_candidate import cleanup_unreferenced
+                cleanup_unreferenced(self.s,sid)
 '''
 VISION_OLD = b'''def ingest(store,data,cfg=DEFAULTS,label=None):
     """Store image bytes as an IMAGE source (dedup by hash) and register its regions. Returns the image record."""
