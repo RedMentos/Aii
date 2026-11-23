@@ -3,7 +3,7 @@
 Run started 16:31:56 Europe/Berlin; completion time UNKNOWN.
 
 - Current release-development HEAD verified: `fb563d771fe2d493c4ec25abe94280981d24ef5c`.
-- JEPA temporal T8 / EMA / replay / B1-B2 SHADOW runtime port: [PR #2447](https://github.com/RedMentos/Aii/pull/2447), current branch head `581de80f164ab19ab559c946ce49a7af52be06ba` (code commit `3767e9916fad125dd36d745f869f48db566e9632`), draft; exact-head CI queued.
+- JEPA temporal T8 / EMA / replay / B1-B2 SHADOW runtime port: [PR #2447](https://github.com/RedMentos/Aii/pull/2447), current branch current branch head `e7c4cba13670eca11fa592df8b76d390009928b8` (runtime code commit `3767e9916fad125dd36d745f869f48db566e9632`), draft; code-identical CI queued on `581de80f164ab19ab559c946ce49a7af52be06ba`.
 - The existing Memory source-forget entry point now composes temporal checkpoint invalidation and clears a changed warm cache. A new regression exercises forget plus replay through `Memory._forget_source`.
 - Full local checkout/tests BLOCKED by GitHub DNS failure in this runner. No local full-suite PASS claimed. No Android receipt or Redmi test: REDMI_UNVERIFIED.
 - Still open: Boss/QA staged-builder rebind and #2443 Store-RLock/blob-unlink race; Core production ActionSelection must attach all admitted context SourceRefs. This PR does not prove native latent transfer, GGUF weight learning or native B1/B2 weight changes.
