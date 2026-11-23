@@ -5,7 +5,7 @@
 - Branch: `core/v14-capability-registry-mediaprojection-20261123`
 - Base: Core capability-registry PR #2394, exact base SHA `41b43cb139d68caf8c459cec668061b4eda6b6db`
 - PR: #2406 (DRAFT / NOT_RELEASED)
-- Exact head: `db46bec44cf52626b4aeea3caeeaee635008acce`
+- Exact head: `55252f592ab575a4ce8fd3c494ea2a77ca2784e4`
 - Parent contract source: Android companion MediaProjection provider PR #2379, whose current Java registry advertises `screen_capture` as `READY_WITH_PER_SESSION_OS_CONSENT` / `MEDIA_PROJECTION_ONE_SHOT`.
 
 ## Defect and repair
@@ -20,11 +20,16 @@ This branch:
 - keeps network, shell and model authority false;
 - makes `require_ready("screen_capture")` a contract check only. It does not launch capture, invoke Android's OS consent UI, read a frame, or grant learning authority.
 
+## Receipt recovery regression coverage
+
+Added `CompanionProviderRecoveryTest.java` on the same Core branch. It injects receipt-signing failures after `EXECUTING` and `DENYING` claims, simulates provider restart, verifies `OUTCOME_UNKNOWN` / `USER_DENIED`, proves the external dispatch count does not increase during recovery, checks idempotence, and checks that an approval notification remains while a claimed action lacks a durable receipt and is removed only after recovery persists one.
+
 ## Verification
 
 - LOCAL_LINUX_ISOLATED, CPython 3.13.5: `py_compile` PASS and 6 focused parser-contract unit tests PASS against an isolated local copy of the implementation logic.
-- Full Aii checkout: BLOCKED; no checkout is mounted and `git ls-remote` cannot resolve github.com from this runner.
-- Exact GitHub Actions at head `db46bec`: Core companion outcome workflow PASS (run 45101897353); private bridge tests PASS (run 45101897302); staged/integrated regression run 45102050069 was IN_PROGRESS at this checkpoint.
+- LOCAL_LINUX_ANDROID: BLOCKED; JDK 21 is present, but Android SDK/Gradle and a full Aii checkout are not mounted.
+- Exact GitHub Actions at prior code head `adcae3c`: Core companion outcome workflow PASS (run 45102166756); private bridge tests PASS (run 45102163855); staged/integrated regression PASS (run 45102166766).
+- Exact current head `55252f5`: Android Gradle/Robolectric run 45103043061, Core companion outcome 45103043077, staged/integrated 45103043067 and private bridge 45103039968 were QUEUED at handoff update. No current-head PASS claimed yet.
 - Android emulator / Redmi: NOT_RUN / REDMI_UNVERIFIED. No APK installation, screenshot, OS permission, model, weight, or user-data change.
 
 ## Integration dependencies and next step
