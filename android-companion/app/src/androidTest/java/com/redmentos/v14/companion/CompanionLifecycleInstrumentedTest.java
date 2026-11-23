@@ -33,6 +33,21 @@ public final class CompanionLifecycleInstrumentedTest {
         return InstrumentationRegistry.getInstrumentation().getTargetContext();
     }
 
+    private void awaitWindowFocus(ActivityScenario<MainActivity> scenario) {
+        long deadline = android.os.SystemClock.uptimeMillis() + 5000L;
+        do {
+            final boolean[] focused = {false};
+            scenario.onActivity(activity -> focused[0] =
+                    activity.hasWindowFocus()
+                            && activity.getWindow().getDecorView().hasWindowFocus());
+            if (focused[0]) return;
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+            android.os.SystemClock.sleep(100L);
+        } while (android.os.SystemClock.uptimeMillis() < deadline);
+        throw new AssertionError(
+                "ActivityScenario launched MainActivity but it did not obtain window focus");
+    }
+
     private void assertVisibleState(String expected) {
         onView(withText(containsString(expected))).check(matches(isDisplayed()));
     }
@@ -47,7 +62,7 @@ public final class CompanionLifecycleInstrumentedTest {
     public void testVisibleStopButtonPersistsOff() {
         try (ActivityScenario<MainActivity> ignored =
                      ActivityScenario.launch(MainActivity.class)) {
-            assertVisibleState(STOPPED);
+            awaitWindowFocus(ignored);\n            assertVisibleState(STOPPED);
             assertFalse("a fresh process must start stopped", persistedEnabled());
 
             onView(withText(TOGGLE)).check(matches(isDisplayed())).perform(
