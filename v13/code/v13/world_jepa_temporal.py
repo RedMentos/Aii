@@ -1312,9 +1312,14 @@ class TemporalWorldJEPAStoreConsumer:
                     continue
                 train_windows.append((window, target))
             train_windows.sort(
-                key=lambda pair: (pair[1]["created"], pair[1]["action_id"]), reverse=True
+                key=lambda pair: (pair[1]["created"], pair[1]["action_id"])
             )
-            train_windows = train_windows[:MAX_RECALL_CANDIDATES]
+            train_window_count_before_cap = len(train_windows)
+            if len(train_windows) > MAX_RECALL_CANDIDATES:
+                sample_indices = np.linspace(
+                    0, len(train_windows) - 1, num=MAX_RECALL_CANDIDATES, dtype=np.int64
+                )
+                train_windows = [train_windows[int(index)] for index in sample_indices]
             if not train_windows:
                 return {
                     "status": "NO_DISJOINT_TRAIN_EPISODES", "items": [],
@@ -1436,7 +1441,10 @@ class TemporalWorldJEPAStoreConsumer:
                 "query_history_action_ids": query_action_ids,
                 "query_history_source_sha256s": query_source_hashes,
                 "candidate_window_count": len(windows),
+                "train_window_count_before_cap": train_window_count_before_cap,
                 "train_window_count": len(train_windows),
+                "candidate_cap": MAX_RECALL_CANDIDATES,
+                "candidate_sampling": "TEMPORALLY_STRATIFIED_TRAIN_ONLY",
                 "verified_item_count": len(items),
                 "rejected_windows": rejected_windows,
                 "train_split_only": True,
