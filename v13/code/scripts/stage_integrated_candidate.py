@@ -124,7 +124,10 @@ def stage(code_dir: Path, destination: Path) -> dict:
             expected_staged_operator = (code_dir / 'v13/operator.py').read_bytes()
         expected_staged_runtime = replacements.get('v13/runtime.py')
         if expected_staged_runtime is None:
-            raise ValueError('pinned recovery builder did not emit staged Runtime bytes')
+            staged_runtime_path = staging / 'v13/runtime.py'
+            if staged_runtime_path.is_symlink() or not staged_runtime_path.is_file():
+                raise ValueError('staged Runtime is missing or unsafe')
+            expected_staged_runtime = staged_runtime_path.read_bytes()
         native_probe_files = native_probe_overlay_module.apply_staged_native_probe(
             code_dir, staging,
             expected_staged_operator=expected_staged_operator,
