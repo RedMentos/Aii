@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from typing import Iterable
 
 import numpy as np
+import math
 import torch
 from torch import Tensor, nn
 import torch.nn.functional as F
@@ -36,9 +37,9 @@ class FitConfig:
     def __post_init__(self) -> None:
         if self.epochs < 1 or self.batch_size < 1 or self.patience < 1:
             raise ValueError("epochs, batch_size and patience must be positive")
-        if self.learning_rate <= 0 or self.weight_decay < 0:
+        if not math.isfinite(self.learning_rate) or not math.isfinite(self.weight_decay) or self.learning_rate <= 0 or self.weight_decay < 0:
             raise ValueError("invalid optimizer settings")
-        if self.gradient_clip_norm <= 0 or self.collapse_weight < 0:
+        if not math.isfinite(self.gradient_clip_norm) or not math.isfinite(self.collapse_weight) or self.gradient_clip_norm <= 0 or self.collapse_weight < 0:
             raise ValueError("invalid gradient or regularizer setting")
 
 
@@ -90,7 +91,7 @@ def evaluate_mae(
 
 
 def _fit_supervised(
-    model: DirectMAE | FrozenRepresentationProbe,
+    model: nn.Module,
     dataset: ArrayDataset,
     config: FitConfig,
     *,
@@ -99,7 +100,7 @@ def _fit_supervised(
     objective: str = "mae",
     l2_penalty: float = 0.0,
 ) -> FitReport:
-    if objective not in {"mae", "mse"} or l2_penalty < 0:
+    if objective not in {"mae", "mse"} or not math.isfinite(l2_penalty) or l2_penalty < 0:
         raise ValueError("objective must be mae or mse and l2_penalty must be non-negative")
     if l2_penalty and not hasattr(model, "linear"):
         raise ValueError("explicit L2 coefficient penalty requires a linear baseline")
