@@ -815,7 +815,7 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         assert any(
             row.get("status") == "PASS"
             and row.get("component") == "world_predictor"
-            and row.get("mode") == "temporal_shadow"
+            and row.get("mode") == "shadow"
             and row.get("sha256") == temporal_checkpoint_sha
             and row.get("optimizer_steps", 0) > 0
             and row.get("target_changed") is True
