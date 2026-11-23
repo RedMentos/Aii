@@ -69,11 +69,15 @@ def projector_uses_source(record: dict, source_id: str) -> bool:
             path = item.get("path")
             artifact_sha = item.get("sha256")
             count = item.get("n")
+            rel = Path(path) if type(path) is str else None
             if (type(sid) is not str or not sid or sid in stats_seen
                     or type(source_sha) is not str or not _SHA256.fullmatch(source_sha)
                     or type(artifact_sha) is not str or not _SHA256.fullmatch(artifact_sha)
-                    or type(path) is not str or not path.startswith("data/vision/")
-                    or type(count) is not int or count < 1):
+                    or rel is None or rel.is_absolute() or len(rel.parts) != 3
+                    or rel.parts[:2] != ("data", "vision")
+                    or not rel.name.endswith(".npz")
+                    or not (rel.name.startswith("projector-stats-") or rel.name.startswith("tiles-stats-"))
+                    or "\\" in path or type(count) is not int or count < 1):
                 return True
             stats_seen[sid] = source_sha
         if stats_seen != {item["source_id"]: item["sha256"] for item in lineage}:
