@@ -18,7 +18,9 @@ from .base import (
     DirectMAE,
     FrozenRepresentationProbe,
     M1JEPA,
+    VICRegControl,
     variance_covariance_regularizer,
+    vicreg_loss,
 )
 
 
@@ -303,6 +305,145 @@ def fit_jepa(
         epochs_run=epochs_run,
         best_validation_score=best_validation,
         validation_metric="latent_prediction_L1",
+        final_training_loss=final_loss,
+        optimizer_steps=optimizer_steps,
+    )
+
+
+def _augment_bundle(
+    bundle: InputBundle,
+    *,
+    generator: torch.Generator,
+    noise_std: float,
+    channel_drop_probability: float,
+) -> InputBundle:
+    x = torch.as_tensor(bundle.x)
+    seasonal = torch.as_tensor(bundle.seasonal, device=x.device, dtype=x.dtype)
+    calendar = torch.as_tensor(bundle.calendar, device=x.device, dtype=x.dtype)
+    if not 0.0 <= channel_drop_probability < 1.0 or not math.isfinite(noise_std) or noise_std < 0:
+        raise ValueError("invalid VICReg view augmentation settings")
+    batch, _, channels = x.shape
+    keep = (
+        torch.rand((batch, 1, channels), device=x.device, generator=generator)
+        >= channel_drop_probability
+    ).to(dtype=x.dtype)
+    if channel_drop_probability:
+        keep = keep / (1.0 - channel_drop_probability)
+    x_noise = torch.randn(x.shape, device=x.device, dtype=x.dtype, generator=generator)
+    s_noise = torch.randn(seasonal.shape, device=x.device, dtype=x.dtype, generator=generator)
+    return InputBundle(
+        x=(x + noise_std * x_noise) * keep,
+        seasonal=(seasonal + noise_std * s_noise) * keep[:, None, :, :],
+        calendar=calendar,
+    )
+
+
+def fit_vicreg_control(
+    model: VICRegControl,
+    dataset: ArrayDataset,
+    config: FitConfig = FitConfig(),
+    *,
+    noise_std: float = 0.01,
+    channel_drop_probability: float = 0.05,
+    random_seed: int = 20261123,
+    device: str | torch.device = "cpu",
+) -> FitReport:
+    """Train the explicit VICReg control on two augmented train views; validate separately."""
+    if not math.isfinite(noise_std) or noise_std < 0:
+        raise ValueError("noise_std must be finite and non-negative")
+    if not 0.0 <= channel_drop_probability < 1.0:
+        raise ValueError("channel_drop_probability must be in [0, 1)")
+    target_device = torch.device(device)
+    model.to(target_device)
+    optimizer = torch.optim.AdamW(
+        model.parameters(), lr=config.learning_rate, weight_decay=config.weight_decay
+    )
+    best_state = None
+    best_validation = float("inf")
+    best_epoch = 0
+    stale_epochs = 0
+    optimizer_steps = 0
+    final_loss = float("nan")
+    epochs_run = 0
+
+    for epoch in range(1, config.epochs + 1):
+        model.train()
+        generator = torch.Generator(device=target_device)
+        generator.manual_seed(random_seed + epoch)
+        loss_sum = 0.0
+        batches = 0
+        for batch in dataset.iter_batches("train", batch_size=config.batch_size):
+            base = _torch_bundle(batch, target_device)
+            first = _augment_bundle(
+                base, generator=generator, noise_std=noise_std,
+                channel_drop_probability=channel_drop_probability,
+            )
+            second = _augment_bundle(
+                base, generator=generator, noise_std=noise_std,
+                channel_drop_probability=channel_drop_probability,
+            )
+            optimizer.zero_grad(set_to_none=True)
+            z1, z2 = model(first, second)
+            loss = vicreg_loss(z1, z2)
+            if not torch.isfinite(loss):
+                raise FloatingPointError("non-finite VICReg objective")
+            loss.backward()
+            nn.utils.clip_grad_norm_(model.parameters(), config.gradient_clip_norm)
+            optimizer.step()
+            optimizer_steps += 1
+            loss_sum += float(loss.detach().item())
+            batches += 1
+        if not batches:
+            raise ValueError("no valid training windows")
+        final_loss = loss_sum / batches
+
+        model.eval()
+        val_generator = torch.Generator(device=target_device)
+        val_generator.manual_seed(random_seed)
+        val_sum = 0.0
+        val_batches = 0
+        with torch.no_grad():
+            for batch in dataset.iter_batches("validation", batch_size=config.batch_size):
+                base = _torch_bundle(batch, target_device)
+                first = _augment_bundle(
+                    base, generator=val_generator, noise_std=noise_std,
+                    channel_drop_probability=channel_drop_probability,
+                )
+                second = _augment_bundle(
+                    base, generator=val_generator, noise_std=noise_std,
+                    channel_drop_probability=channel_drop_probability,
+                )
+                z1, z2 = model(first, second)
+                score = vicreg_loss(z1, z2)
+                if not torch.isfinite(score):
+                    raise FloatingPointError("non-finite VICReg validation objective")
+                val_sum += float(score.item())
+                val_batches += 1
+        if not val_batches:
+            raise ValueError("no valid validation windows")
+        validation = val_sum / val_batches
+        epochs_run = epoch
+        if validation < best_validation - config.min_delta:
+            best_validation = validation
+            best_epoch = epoch
+            best_state = {
+                key: value.detach().cpu().clone()
+                for key, value in model.state_dict().items()
+            }
+            stale_epochs = 0
+        else:
+            stale_epochs += 1
+            if stale_epochs >= config.patience:
+                break
+
+    if best_state is None:
+        raise RuntimeError("VICReg training did not produce a finite validation checkpoint")
+    model.load_state_dict(best_state)
+    return FitReport(
+        best_epoch=best_epoch,
+        epochs_run=epochs_run,
+        best_validation_score=best_validation,
+        validation_metric="VICReg_objective",
         final_training_loss=final_loss,
         optimizer_steps=optimizer_steps,
     )
