@@ -170,3 +170,11 @@ No device action, chat send, restart, model/weight change, permission change, or
 - Exact-head workflow runs at last poll: staged/integrated \`45227342231\`, JEPA receipt \`45227342248\`, JEPA transactional update \`45227342438\`, combined online JEPA \`45227342247\` all QUEUED. Safe-additive candidate tests \`45227342215\` remain SKIPPED by policy. No new test PASS is claimed.
 - The previous staged run \`45226042195\` showed the new worker test failed only because of the missing fixture attribute; the remaining failures were the expected immutable \`runtime.py\` and \`verification.py\` source-pin mismatches. The new pre-composition step is intended to give independent direct evidence for the privacy tests while preserving those stage gates.
 - Current PR head is \`ee809a0e7839b2074185c0d70325ec03b847076a\`; latest code/test commit is \`f9ee637b5a569e874020fba2afcbc06273470bbc\`. The branch remains based on \`fb563d771fe2d493c4ec25abe94280981d24ef5c\` and 10 commits behind release-dev \`8d93236c753f0194224c19edc7411d8d7082b1d6\`. Boss owns the coordinated rebase and exact source-pin chain.
+
+
+## Latest private Redmi boundary — owner DIAGNOSTICS receipt #826 (2026-11-23 16:43:08 UTC)
+
+- Authenticated private receipt #826 is the source for the reported console privacy defect; the user explicitly opted in to a bounded/redacted console excerpt for this diagnostic. No raw excerpt or private transcript was copied into this public repository or handoff.
+- Pipeline: \`auto_enabled=true\`, \`dashboard=UPDATED\`, \`runtime=CI_WAIT\`, \`last_result=PARTIAL\`, \`last_error=NONE\`, \`updated_commit=8d93236c753f0194224c19edc7411d8d7082b1d6\`. A fetched/target commit is not proof that the runtime launcher switched.
+- AI runtime: \`STOPPED_BY_USER\`, autostart false, model process STOPPED, B1/B2/C2/C3 native process count zero. Service and dashboard remain running.
+- No restart, CHAT_SEND, UPDATE_REQUEST, LOG_PAGE, shell, model/weight/permission change or data mutation was performed. The device remains intentionally stopped; no native validation of this PR is possible until a later explicit user restart.
