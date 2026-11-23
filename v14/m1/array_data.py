@@ -206,7 +206,7 @@ class ArrayDataset:
                 month_ids[index] = stamp.year * 100 + stamp.month
                 record = [stamp.isoformat(), parsed]
                 digest.update(json.dumps(record, separators=(",", ":"), allow_nan=False).encode("utf-8"))
-                digest.update(b"\\n")
+                digest.update(b"\n")
                 index += 1
         after = source.stat()
         if index != row_count or (before.st_size, before.st_mtime_ns, before.st_ino) != (
