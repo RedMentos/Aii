@@ -1721,3 +1721,13 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - TERMUX/REDMI: REDMI_UNVERIFIED. No AudioRecord provider/microphone capture, speaker model inference, Android latency/RSS, new installed SHA or after-update receipt. Existing installed-device evidence is not changed by this PR. No model/weight/permission/data change and no UPDATE_REQUEST.
 - Research: FASTDIAR arXiv:2610.02941v1 was reviewed in full. Its confidence gate is a separate 800-ms self-similarity filter; low-confidence frames remain labelable after 960 ms but do not update cluster anchors. It is not implemented here; no calibrated speaker identity is claimed. MIT code license does not establish checkpoint-weight rights; heavyweight PyTorch stack is not selected for Termux.
 - Next internal action: Perception polls the exact new-head CI and fixes only failures in its own files; Core rebinds the two audio source blobs and recomputes downstream recovery/stage/deployer hashes bottom-up; QA independently reviews non-voiced suppression and the A4 impulse regression. Boss updates the shared board. **User action: none.**
+
+
+
+## Research & Perception — private device receipt correction (2026-11-23)
+
+A newer owner-consented, read-only private V13OBS snapshot was read from the private observation issue. Its pipeline receipt at **2026-11-23 10:25:09 UTC** reports installed release-development SHA `8bf44cb50e855a6dba0c91f64f60d8daddcbdc9c`, `auto_enabled=true`, `last_result=UPDATED`, Runtime/Dashboard `UPDATED`, and `last_error=NONE`. This supersedes earlier 4dc7595 / queued-UPDATE_REQUEST metadata; it is not a receipt for Perception PR #2433.
+
+The same snapshot reports service/model process RUNNING and 8 managed sessions, but this does not establish useful cognition or sustained native residency. The last stored turn is unchanged and not a new test: FINAL, 57.739 s total, 41.627 s TTFT, 38.945 s prefill, 751 prompt tokens, 2 generated tokens; correctness UNKNOWN. B1_DETAIL/B2_GIST remain TIME_BUDGET at 53.2/54.2 s; the latest five-turn aggregate has B1 4/4 native failures and B2 2/2, with 0 valid offers. Native probe remains SMOKE_PARTIAL. No 20-turn acceptance, no fresh PSS/RSS sample, and no native latent exchange are proven.
+
+No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, shell, model/weight/permission change or device mutation was performed. PR #2433 remains NOT_RELEASED and is not installed. This is an installation readback only; the P0 real-chat/offer-delivery gate remains OPEN.
