@@ -32,6 +32,10 @@ from .world_jepa_learning_intent import (
     create_learning_intents,
     fit_role_receivers_with_intents,
     finalize_weight_delta_receipts,
+    pack_receiver_retention_holdout,
+    prepare_receiver_retention_baseline,
+    evaluate_receiver_retention,
+    validate_receiver_retention_holdout,
     validate_learning_intent,
     validate_weight_delta_receipt,
 )
@@ -800,14 +804,19 @@ def _record_valid(record):
     }
     optional_learning = {"learning_intents", "weight_delta_receipts"}
     optional_revocations = {"revoked_source_ids"}
+    optional_receiver_retention = {"receiver_retention_holdouts"}
     if type(record) is not dict:
         raise ValueError("invalid temporal checkpoint record")
     record_keys = set(record)
     extra = record_keys - required
-    if extra not in (
-        set(), optional_learning, optional_revocations,
+    allowed_extra = (
+        set(), optional_learning, optional_revocations, optional_receiver_retention,
         optional_learning | optional_revocations,
-    ):
+        optional_learning | optional_receiver_retention,
+        optional_revocations | optional_receiver_retention,
+        optional_learning | optional_revocations | optional_receiver_retention,
+    )
+    if extra not in allowed_extra:
         raise ValueError("invalid temporal checkpoint record")
     if extra & optional_learning and not optional_learning <= record_keys:
         raise ValueError("incomplete temporal learning-intent record")
@@ -892,6 +901,12 @@ def _record_valid(record):
                     or not set(holdout["source_sha256s"]) <= set(lineage_hashes)):
                 raise ValueError("temporal retention lineage")
         _sha(holdout["target_sha256"])
+    if "receiver_retention_holdouts" in record_keys:
+        cohorts = record["receiver_retention_holdouts"]
+        if type(cohorts) is not list or len(cohorts) > 1:
+            raise ValueError("temporal receiver retention cohort budget")
+        for cohort in cohorts:
+            validate_receiver_retention_holdout(cohort)
     if type(record["metrics"]) is not dict:
         raise ValueError("temporal metrics")
     if optional_learning <= record_keys:
@@ -1201,6 +1216,31 @@ class TemporalWorldJEPAStoreConsumer:
                     window for window in train
                     if any(action_id in eligible_ids for action_id in window["action_ids"])
                 ]
+            receiver_retention_excluded_train_windows = 0
+            prior_receiver_cohorts = (
+                list(active.get("receiver_retention_holdouts", [])) if active else []
+            )
+            if prior_receiver_cohorts:
+                prior_cohort = prior_receiver_cohorts[-1]
+                blocked_sources = set(prior_cohort["lineage_source_ids"])
+                blocked_hashes = set(prior_cohort["lineage_source_sha256s"])
+                blocked_actions = set(prior_cohort["action_ids"])
+                before_filter = len(train)
+                train = [
+                    window for window in train
+                    if not (
+                        set(window.get("lineage_source_ids", window["source_ids"])) & blocked_sources
+                        or set(window.get("lineage_source_sha256s", window["source_sha256s"])) & blocked_hashes
+                        or set(window["action_ids"]) & blocked_actions
+                    )
+                ]
+                receiver_retention_excluded_train_windows = before_filter - len(train)
+                split = dict(split)
+                split["train_session_count"] = len({window["session_id"] for window in train})
+                split["train_source_count"] = len({
+                    source for window in train
+                    for source in window.get("lineage_source_ids", window["source_ids"])
+                })
             if len(train) < MIN_PARTITION:
                 next_state = dict(state)
                 next_state["scan_cursor"] = cursor
@@ -1225,6 +1265,9 @@ class TemporalWorldJEPAStoreConsumer:
                           cancel_check=cancel_check)
             else:
                 model = self._load_model(active)
+            receiver_retention_baseline = prepare_receiver_retention_baseline(
+                active, model, train
+            )
             before_snapshot = _snapshot(model)
             # Hold EMA target coordinates fixed for this comparison. Comparing
             # prediction_loss before/after would move the target with the EMA.
@@ -1366,6 +1409,39 @@ class TemporalWorldJEPAStoreConsumer:
                 learning_intents, model, train_arrays, holdout_arrays,
                 train, holdout, active, modulation,
             )
+            receiver_retention = evaluate_receiver_retention(
+                receiver_retention_baseline, model, receiver_heads
+            )
+            receiver_retention_gate_accepted = receiver_retention["status"] in {
+                "NOT_MEASURED", "MEASURED_PASS"
+            }
+            if not receiver_retention_gate_accepted:
+                next_state = dict(state)
+                next_state["scan_cursor"] = cursor
+                next_state["pending_rows"] = sorted(
+                    pending.values(), key=lambda item: (item["created"], item["action_id"])
+                )
+                self.store.set_state(STATE_KEY, next_state, expected=version)
+                attempt_metrics = _json_safe({
+                    "receiver_retention": receiver_retention,
+                    "receiver_retention_pass": False,
+                    "receiver_retention_excluded_train_windows": receiver_retention_excluded_train_windows,
+                    "train_windows": len(train),
+                    "holdout_windows": len(holdout),
+                    "parent_checkpoint_sha256": active["checkpoint_sha256"] if active else None,
+                    "neuromodulation": modulation,
+                })
+                return {
+                    "status": "RECEIVER_RETENTION_GATE_REJECTED",
+                    "metrics": attempt_metrics,
+                    "receiver_retention": receiver_retention,
+                    "receiver_retention_pass": False,
+                    "receiver_retention_excluded_train_windows": receiver_retention_excluded_train_windows,
+                    "scan_cursor": cursor,
+                    "has_more": has_more,
+                    "checkpoint_committed": False,
+                    "native_body_weights_changed": False,
+                }
             action_support = {}
             for window in train:
                 action_support[window["a"]] = action_support.get(window["a"], 0) + 1
@@ -1411,6 +1487,9 @@ class TemporalWorldJEPAStoreConsumer:
                 "collapse": collapse,
                 "neuromodulation": modulation,
                 "receiver_gates": receiver_gates,
+                "receiver_retention": receiver_retention,
+                "receiver_retention_gate_accepted": receiver_retention_gate_accepted,
+                "receiver_retention_excluded_train_windows": receiver_retention_excluded_train_windows,
                 "rejected_receipts": rejected,
                 "scanned_rows": scanned,
                 "has_more": has_more,
@@ -1420,7 +1499,13 @@ class TemporalWorldJEPAStoreConsumer:
             learning_intents, weight_delta_receipts = finalize_weight_delta_receipts(
                 learning_intents, receiver_delta_meta, receiver_metrics,
                 receiver_gates, checkpoint["sha256"], metrics,
+                receiver_retention=receiver_retention,
             )
+            receiver_retention_holdouts = list(prior_receiver_cohorts)
+            if not receiver_retention_holdouts:
+                receiver_retention_holdouts = [pack_receiver_retention_holdout(
+                    holdout_arrays, holdout, checkpoint["sha256"]
+                )]
             record = {
                 "checkpoint": checkpoint_name,
                 "checkpoint_sha256": checkpoint["sha256"],
@@ -1437,6 +1522,7 @@ class TemporalWorldJEPAStoreConsumer:
                 "weight_delta_receipts": weight_delta_receipts,
                 "action_support": action_support,
                 "retention_holdouts": retention_holdouts,
+                "receiver_retention_holdouts": receiver_retention_holdouts,
                 "metrics": metrics,
                 "scan_cursor": cursor,
                 "fit_steps": model._fit_steps,
@@ -2224,6 +2310,9 @@ def _record_references_source(store, record, source_id, pending_action_ids=()):
         return True
     for holdout in record.get("retention_holdouts", []):
         if source_id in holdout.get("lineage_source_ids", holdout.get("source_ids", [])):
+            return True
+    for holdout in record.get("receiver_retention_holdouts", []):
+        if source_id in holdout.get("lineage_source_ids", []):
             return True
     for intent in record.get("learning_intents", {}).values():
         if (source_id in intent.get("source_ids", [])
