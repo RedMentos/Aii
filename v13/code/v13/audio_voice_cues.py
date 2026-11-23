@@ -1,11 +1,12 @@
 """Additive timed RAW EAR voice/prosody cue adapter for A5, A4 and C3.
 
 This module is deliberately separate from the Core-pinned A5 bridge. It uses
-caller-supplied PCM16 only; it never opens a microphone, stores raw PCM, runs
-ASR, assigns speaker identity, or grants learning/action authority. An optional
-caller-supplied frame-embedding batch may produce only a source-bound change-or-
-overlap hint; no model is loaded here. Acoustic classes and prosody scores remain
-deterministic heuristics, not a trained VAD, speech classifier, or calibrated probability.
+caller-supplied PCM16 only and never opens a microphone or stores raw PCM.
+Acoustic/prosodic cues remain primary. Optional Sherpa ASR runs only with a
+separate teacher_asr_opt_in and live source-bound lease; its hypothesis is
+untrusted and is persisted or admitted to C3 only with a second explicit
+transcript_persist_opt_in. No ASR, model load, learning or action authority is
+enabled by default. Acoustic classes remain deterministic heuristics.
 """
 from __future__ import annotations
 
@@ -18,6 +19,7 @@ from statistics import median
 
 from . import attention as attctl
 from .audio_temporal_evidence import TemporalVoiceEvidence, TemporalVoiceEvidenceRegistry
+from .audio_teacher_ear import SherpaOnlineTeacher
 from .audio_speaker_evidence import SpeakerChangeEvidenceRegistry, SpeakerEvidenceError
 from .audio_silero_vad import SileroVADStream, validate_vad_evidence
 from .a5_audio_admission_bridge import audio_to_admission
@@ -687,12 +689,27 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                vad_stream: SileroVADStream | None = None,
                                consent_lease: AudioConsentLease | None = None,
                                voice_backend: str = "python",
-                                speaker_embeddings: dict | None = None):
+                                speaker_embeddings: dict | None = None,
+                                teacher_ear: SherpaOnlineTeacher | None = None,
+                                teacher_asr_opt_in: bool = False,
+                                transcript_persist_opt_in: bool = False):
     """Persist source-bound acoustic cues under an owned or caller-held consent lease."""
     if type(voice_backend) is not str or voice_backend not in {"python", "numpy"}:
         raise ValueError("voice_backend must be 'python' or 'numpy'")
     if vad_stream is not None and not isinstance(vad_stream, SileroVADStream):
         raise ValueError("vad_stream must be a SileroVADStream instance")
+    if type(teacher_asr_opt_in) is not bool or type(transcript_persist_opt_in) is not bool:
+        raise ValueError("Teacher Ear opt-in flags must be booleans")
+    if transcript_persist_opt_in and not teacher_asr_opt_in:
+        raise PermissionError("transcript persistence requires separate Teacher Ear ASR opt-in")
+    if teacher_ear is not None and not isinstance(teacher_ear, SherpaOnlineTeacher):
+        raise TypeError("teacher_ear must be a SherpaOnlineTeacher")
+    if teacher_ear is not None and not teacher_asr_opt_in:
+        raise PermissionError("teacher_ear supplied without explicit opt-in")
+    if teacher_asr_opt_in and teacher_ear is None:
+        raise ValueError("teacher_asr_opt_in requires a configured local teacher")
+    if teacher_asr_opt_in and consent_lease is None:
+        raise PermissionError("Teacher Ear requires an explicit caller-held AudioConsentLease")
     # A Runtime-wide caller may already hold the same provider lease through
     # C3 generation. Reuse its bound handle without callback re-entry.
     with _audio_consent_scope(
@@ -762,6 +779,36 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             audio_segment["unmeasured"].append("pitch")
         if round(cues["voiced_fraction"] * cues["frame_count"]) < 2:
             audio_segment["unmeasured"].append("prosody")
+
+        teacher_result = None
+        if teacher_asr_opt_in:
+            teacher_result = teacher_ear.transcribe_pcm16(
+                pcm,
+                sample_rate=sample_rate,
+                start_ms=audio_segment["start_ms"],
+                end_ms=audio_segment["end_ms"],
+                runtime=runtime,
+                source_id=source_id,
+                generation_id=generation_id,
+                consent_receipt_ref=consent_receipt,
+                consent_lease=consent_lease,
+                temporal_state=temporal_state,
+                vad_stream=vad_stream,
+                finality=finality,
+                teacher_asr_opt_in=True,
+            )
+            teacher_source = teacher_result.get("source_ref", {})
+            if (teacher_source.get("source_id") != source_id
+                    or teacher_source.get("generation_id") != generation_id
+                    or teacher_source.get("consent_receipt_ref") != consent_receipt
+                    or teacher_source.get("source_sha256") != audio_packet["source_ref"]["sha256"]):
+                raise ValueError("Teacher Ear hypothesis is not bound to this exact audio source")
+            if teacher_result.get("status") == "MEASURED":
+                audio_segment["unmeasured"] = [
+                    item for item in audio_segment["unmeasured"] if item != "ASR"
+                ]
+            if transcript_persist_opt_in:
+                audio_segment["acoustic"]["teacher_ear"] = teacher_result
 
         expected_source_id, expected_receipt = source_id, consent_receipt
         source_id, receipt, rms, zcr, audio_segment = _validate_runtime_binding(
@@ -877,6 +924,13 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                     if speaker_evidence.get("threshold_status") == "CALLER_ASSERTED_UNVERIFIED"
                     else " spk_cal=UNAVAILABLE"
                 )
+        # A teacher hypothesis is user speech, not truth. It reaches C3 only
+        # when the separate transcript-persistence/admission opt-in is active.
+        if (transcript_persist_opt_in and teacher_result is not None
+                and teacher_result.get("status") == "MEASURED"):
+            teacher_text = teacher_result["segments"][0]["text"]
+            if teacher_text:
+                summary += " asr_hypothesis_untrusted=" + teacher_text[:64]
         # The structured packet retains every cue; reserve the bounded C3
         # summary tail for the speaker score/kind and explicit three-state decision.
         decision_suffix = f" spk_dec={speaker_change_decision}"
@@ -899,4 +953,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         }
         if vad_evidence is not None:
             result["vad_evidence"] = vad_evidence
+        if teacher_result is not None:
+            result["teacher_ear"] = teacher_result
+            result["teacher_transcript_persisted"] = transcript_persist_opt_in
         return result
