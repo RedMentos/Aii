@@ -161,3 +161,33 @@ For code head \`60e7e92d9d2544e32c75e5ef4b131a7cd705616f\`:
 - Android Gradle/Robolectric + AndroidTest compilation/install artifacts: **PASS**.
 - Offline bridge security: **PASS**.
 - Both emulator process-restart jobs remain **IN_PROGRESS**; no actual Espresso tap or lifecycle result is claimed until their logs complete.
+
+
+
+---
+
+## Run 4 follow-up — remove duplicate host Activity launch (2026-11-23)
+
+### Exact emulator failure
+
+- Code head `60e7e92d9d2544e32c75e5ef4b131a7cd705616f`, Android workflow run `45148385555`, emulator job `137603247340`.
+- APK assembly, installation and AndroidTest compilation succeeded.
+- The host launch/focus preflight completed, but Espresso then failed with `RootViewWithoutFocusException`: the Activity root existed while `has-window-focus=false`. No visible Enable/Stop tap or process-death acceptance occurred.
+- This was an emulator harness failure, not a companion Stop/persistence failure.
+
+### Source-level cause hypothesis and correction
+
+The host launched `MainActivity` with `adb am start` before starting instrumentation. The Espresso method then launched the same Activity again through `ActivityScenario.launch`. That gave the test two competing Activity-launch owners and made the previously checked host window different from the root Espresso interacted with.
+
+The new candidate removes the host-side `am start` entirely. The host only wakes/unlocks the emulator and verifies the target process is stopped. `ActivityScenario` is now the single owner of MainActivity launch. The AndroidTest adds a bounded in-process window-focus check on the exact ActivityScenario instance before any Espresso assertion or tap. The host still independently verifies PID creation, force-stop disappearance and fresh-process restart.
+
+This is a falsifiable harness hypothesis, not yet a proven fix.
+
+### Verification status
+
+- Current exact-head emulator attempt: **FAIL** at Espresso focus before any Stop tap.
+- New source/test patch: awaiting exact-head Python helper, Android Gradle/Robolectric, AndroidTest compile, emulator lifecycle and offline-bridge-security checks.
+- No full local Android SDK/emulator is available; no local Android execution is claimed.
+- Redmi physical device remains REDMI_UNVERIFIED. No APK install, pairing, permission change, companion action, chat send, update request, model/weight change or user-data mutation occurred.
+
+**Next:** read back the exact new-head emulator result. If focus is still absent, inspect ActivityTaskManager/WindowManager state after the ActivityScenario launch rather than adding another external launch or bypassing Espresso.
