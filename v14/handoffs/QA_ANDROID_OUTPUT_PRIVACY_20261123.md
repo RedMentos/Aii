@@ -200,3 +200,32 @@ No device action, chat send, restart, model/weight change, permission change, or
 
 - Computed the SHA-256 of the exact \`integrated_world_training_resume_candidate_20261111.py\` UTF-8 content read from Boss head \`5e14ba961ed4838892b3ac0ba503ea5387405fd5\`: \`dcddb9382ba9fc2d8e740dcf2eb38e5ab3e9270051fb1ab0ec9722a708dda879\` (Git blob \`3cf3b9425978cf550d34c433f8cdd6f6c055c732\`). The hash implementation was checked against the standard \`abc\` SHA-256 vector. The current recovery-12 pin still expects \`10e0bf2d00d92fd565c8b9539d4f8c947a0621ee31de0906f9af25ef6a52e881\`. QA comment #7108766286 supplies the exact value.
 - On Boss head \`5e14ba9\`, the old-phone migration test still fails: both synthetic Git checkouts advance to the target and dashboard updates, but the new worker returns \`PARTIAL\` / \`runtime=ERROR\` / \`last_error=UPDATE\`. Cause is not yet isolated. The stale recovery pin may explain it; the earlier CI-wait/circular-gate explanation is unproven and has been explicitly qualified in comment #7108818581. Re-run after the pin chain is repaired; if it remains, expose only a sanitized reason code and separately assert checkout, dashboard, and runtime activation.
+
+
+## Exact cross-lane matrix at Boss head 5e14ba9
+
+The exact 5e14 branch matrix completed after the previous poll:
+
+**PASS**
+- \`V13 runtime deployment integrity\` — \`45227978979\`
+- \`V14 RAW EAR pre-processing consent revocation QA\` — \`45227979250\`
+- \`V14 MediaProjection RAW EYE frame ingress\` — \`45227978629\`
+- \`V14 Perception public privacy scan\` — \`45227978623\`
+
+**FAIL**
+- \`V14 JEPA training-resume/source-forget Python 3.13/3.14\` — \`45227978678\` (recovery-12 pin mismatch)
+- \`V13 Lab Age control state and WebView truth\` — \`45227979184\` (same recovery-12 pin mismatch)
+- \`V13 Laboratory Age two-checkout updater migration\` — \`45227978884\` (both synthetic checkouts advance and dashboard updates; new runtime activation still PARTIAL/ERROR)
+- \`V13 controller record-only guard\` — \`45227979456\` (recovery chain pin)
+- \`V13 staged context and integrated regression\` — \`45227979418\` (recovery/stage chain)
+- \`V13 private owner-read Termux bootstrap\` — \`45227979343\` (exact source-composition gate)
+- \`V14 Core audio + exact arithmetic Runtime\` — \`45227979317\` (source-composition gate)
+- \`V14 vision source-lineage and forget regressions\` — \`45227979312\` (stale \`vision.unlink_source_blob\` test hook)
+  
+**QUEUED at final poll**
+- RAW EAR prosody-to-attention \`45227979181\`
+- RAW EAR optional NumPy backend \`45227979036\`
+- Core same-turn B1/B2/C4/C3 and source-read revocation \`45227979115\`
+- RAW EAR vs WebRTC/libfvad comparison \`45227979137\`
+
+A4 source-bound attention, FASTDIAR, A5 UI lease, and release-event integration were cancelled; safe-additive candidate tests were skipped by policy. This is not a green release matrix. The exact recovery-12 SHA and vision test-hook comments are linked in public PR #2443; no edits were made to Boss's branch.
