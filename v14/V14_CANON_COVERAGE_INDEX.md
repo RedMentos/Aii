@@ -2522,3 +2522,8 @@ JEPA #2396's Temporal WorldJEPA T8 Windows workflow now reports SUCCESS; its sta
 | Research-to-code / low-resource learning | R-105 ECL full-text review adds scenario-specific head + temporal embedder candidate | Chameleon ASIC results only; 4-bit ZSL -19.6 accuracy points vs FP32; separate ECL code/weight licenses not verified | Research-only; no code/weights imported; no Android or Redmi benchmark |
 
 Historical Canon heading inventory is unchanged. This overlay does not promote the A3, A4/A5 or Android-control paths to ACCEPTED.
+
+
+## Perception CI readback — 2026-11-23
+
+PR #2401 exact head 21b0c05219629fa6b29833ba60647e133cd0acda now has focused MediaProjection/RAW EYE CI PASS: 30 passed under Python 3.13.18 and 30 passed under Python 3.14.10. The first focused run failed at py_compile because the branch omitted test_vision_ui_frame_provider_entrypoint.py; Perception copied that existing test from #2375 (blob fcf8337b36472ce19cbcaddfb9f2ad17dab55f52) and reran the exact branch successfully. The staged/integrated workflow still FAILS: staged 19 failed / 231 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 failed. Dominant blocker remains QA's immutable source-lifecycle pin rejecting vision.py; migration checks also return PARTIAL. Do not merge #2401 or claim the A3 source-forget chain accepted until QA composes #2397/#2395 and all staged/migration/privacy/owner-read gates pass. Full local suite BLOCKED; no Android capture/C3 receipt; REDMI_UNVERIFIED.
