@@ -8,10 +8,12 @@ import pytest
 
 from v13.runtime import Runtime
 from v13.models import model_key
-from v13.contracts import validate
+from v13.contracts import packet, validate
 from v13.callosum import controller
 from v13.operator import Operator
+from v13 import brain_panel
 from v13 import native_latent_receiver as native
+from v13 import native_probe_approval as approval
 
 
 def receipt(model_sha, sender_sha):
@@ -83,22 +85,27 @@ def setup_runtime(tmp_path):
 def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path, monkeypatch):
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
     order = []
-    tap = {
-        "packet_id": "tap-packet-1",
-        "event_id": event["event_id"],
-        "brain_generation_id": event["brain_generation_id"],
-        "source_ref": event["source_ref"],
-        "role": "B2_GIST",
-        "tap_id": "qwen35.result_norm.final.v1",
-        "model_revision": "qwen35-r1",
-        "tokenizer_revision": None,
-        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 2},
-    }
-    runtime.cognition.tap = lambda role, e, ref, deadline: (order.append("tap") or tap)
-    runtime.cognition.read_tap = lambda packet: {
-        "token_ids": [101, 202],
-        "vectors": [[0.25, -0.5], [1.0, 0.75]],
-    }
+    class FakeTapRunner:
+        tap_id = "qwen35.result_norm.final.v1"
+        tap_dim = 2
+
+        def tap(self, text, cancel, deadline):
+            order.append("tap")
+            assert text == "private source text stays local"
+            return {
+                "tap_id": self.tap_id,
+                "token_ids": [101, 202],
+                "vectors": [[0.25, -0.5], [1.0, 0.75]],
+                "metrics": {
+                    "tap_id": self.tap_id,
+                    "whole_sequence_prefill": True,
+                    "pooling": "none",
+                    "prompt_tokens": 2,
+                },
+            }
+
+    runtime.pool.get_tap = lambda role: FakeTapRunner()
+    runtime.learner.predict_states = lambda role, vectors: None
     runtime.pool.unload = lambda: order.append("unload")
 
     def fake_probe(**kwargs):
@@ -109,6 +116,7 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
         assert kwargs["tokenizer_revision"] is None
         assert kwargs["position_ids"] == [0, 1]
         assert kwargs["position_mode"] == native.POSITION_MODE
+        assert kwargs["vectors"] == [[0.25, -0.5], [1.0, 0.75]]
         assert kwargs["source_id"] == event["source_ref"]["source_id"]
         assert kwargs["generation_id"] == event["brain_generation_id"]
         return receipt(digest, sender_digest)
@@ -119,7 +127,16 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
         "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], time.monotonic() + 30
     )
     assert packet["status"] == "NATIVE_INPUT_EFFECT"
-    assert packet["sender_tap_packet_id"] == "tap-packet-1"
+    assert isinstance(packet["sender_tap_packet_id"], str) and packet["sender_tap_packet_id"]
+    tap_row = runtime.store.one(
+        "SELECT payload FROM packets WHERE id=? AND kind='LatentTapPacket'",
+        (packet["sender_tap_packet_id"],),
+    )
+    assert tap_row is not None
+    sender_tap = json.loads(tap_row["payload"])
+    assert sender_tap["packet_id"] == packet["sender_tap_packet_id"]
+    assert sender_tap["source_ref"] == event["source_ref"]
+    assert sender_tap["role"] == "B2_GIST"
     assert packet["source_ref"] == event["source_ref"]
     assert packet["provenance"] == [event["source_ref"]]
     assert packet["native_input_consumed"] is True
@@ -137,6 +154,27 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
     assert status["native_receiver_probe"]["status"] == "NATIVE_INPUT_EFFECT"
     assert status["native_receiver_probe"]["production_route"] is False
     assert "LATENT blocked" in status["gate"]
+
+    panel = brain_panel.status(runtime)
+    trace = panel["native_latent_receiver"]
+    expected_token_digest = hashlib.sha256(
+        b"v14.native-latent-sender-token-ids/1:"
+        + b"".join(value.to_bytes(4, "big") for value in [101, 202])
+    ).hexdigest()
+    assert trace["status"] == "NATIVE_INPUT_EFFECT"
+    assert trace["sender_role"] == "B2_GIST"
+    assert trace["receiver_role"] == "C3_LANGUAGE"
+    assert trace["sender_token_count"] == 2
+    assert trace["sender_token_ids_sha256"] == expected_token_digest
+    assert trace["receiver_input_kind"] == "EMBEDDING_ROWS_NOT_TOKEN_IDS"
+    assert trace["receiver_input_rows"] == 2
+    assert trace["receiver_input_dim"] == 2
+    assert trace["receiver_input_sha256"] == "a" * 64
+    assert trace["native_input_consumed"] is True
+    assert trace["input_effect_detected"] is True
+    assert trace["semantic_use_proven"] is False
+    assert trace["production_route"] is False
+    assert "token_ids" not in trace
 
     promoted = dict(packet, production_route=True)
     with pytest.raises(native.NativeReceiverError, match="cannot grant"):
@@ -299,7 +337,8 @@ def test_native_receive_rejects_sender_model_symlink(tmp_path, monkeypatch):
         runtime.close()
 
 
-def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source(tmp_path):
+def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source(tmp_path, monkeypatch):
+    monkeypatch.setattr(approval.os, "isatty", lambda fd: fd == 0)
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
     runtime.last_answer = lambda: {"event_id": event["event_id"], "status": "FINAL"}
     calls = []
@@ -314,9 +353,13 @@ def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last
         "training_authority": 0,
         "native_receiver_authority": 0,
     }
-    runtime.cognition.native_receive = lambda sender, receiver, e, ref, deadline: (
-        calls.append((sender, receiver, e["event_id"], ref, deadline)) or packet
-    )
+    def native_receive(sender, receiver, e, ref, deadline):
+        assert runtime.current == "probe"
+        assert runtime.paused is True
+        calls.append((sender, receiver, e["event_id"], ref, deadline))
+        return packet
+
+    runtime.cognition.native_receive = native_receive
     runtime.pool.unload = lambda: calls.append("unload")
     operator = Operator(runtime)
     try:
@@ -335,7 +378,9 @@ def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last
         assert result["local_approval_consumed"] is True
         assert result["approval_id"] == armed["approval_id"]
         probe_index = next(i for i, value in enumerate(calls) if isinstance(value, tuple))
-        assert calls[:probe_index].count("idle") >= 2
+        # The local arm checks idle before creating the lease; consume now
+        # validates the exclusive lease instead of calling require_idle again.
+        assert calls[:probe_index].count("idle") == 1
         assert calls[probe_index][:4] == (
             "B2_GIST", "C3_LANGUAGE", event["event_id"], event["source_ref"]
         )
@@ -344,5 +389,35 @@ def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last
             operator.run(":callosum native-probe B2_GIST C3_LANGUAGE --last-source")
         with pytest.raises(ValueError):
             operator.run(":callosum native-probe C3_LANGUAGE B2_GIST --last-source --confirm")
+    finally:
+        runtime.close()
+
+
+
+def test_brain_panel_fails_closed_when_receiver_has_no_linked_sender_tap(tmp_path):
+    runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
+    try:
+        assert brain_panel.status(runtime)["native_latent_receiver"]["status"] == "NOT_RUN"
+        native.register_packet_contract()
+        fields = receipt(digest, sender_digest)
+        fields.update({
+            "source_ref": event["source_ref"],
+            "sender_tap_packet_id": "missing-tap-packet",
+            "production_route": False,
+            "semantic_use_proven": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+        })
+        receiver = packet(
+            "LatentReceiverPacket", "B3_NATIVE_RECEIVER_PROBE",
+            event["event_id"], event["brain_generation_id"],
+            [event["source_ref"]], **fields,
+        )
+        native.validate_packet(receiver)
+        runtime.store.add_packet("LatentReceiverPacket", receiver)
+        trace = brain_panel.status(runtime)["native_latent_receiver"]
+        assert trace["status"] == "TAP_PACKET_UNAVAILABLE"
+        assert "sender_token_ids_sha256" not in trace
+        assert "token_ids" not in trace
     finally:
         runtime.close()

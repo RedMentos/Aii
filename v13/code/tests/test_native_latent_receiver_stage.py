@@ -28,9 +28,12 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     overlay_spec.loader.exec_module(overlay)
     with pytest.raises(ValueError, match="separate from source tree"):
         overlay.apply_staged(CODE, CODE)
-    manifest = overlay.apply_staged(CODE, destination)
     assert manifest["native_probe_approval_overlay"]["status"] == "SHADOW_REVIEW_ONLY"
     assert manifest["native_probe_approval_overlay"]["ttl_seconds"] == 120
+    assert manifest["native_probe_approval_overlay"]["source_sha256"] == hashlib.sha256(overlay_path.read_bytes()).hexdigest()
+    assert set(manifest["native_probe_approval_overlay"]["replaced_files"]) == {
+        "v13/callosum.py", "v13/operator.py", "v13/native_probe_approval.py"
+    }
     cognition = (destination / "v13/cognition.py").read_text(encoding="utf-8")
     callosum = (destination / "v13/callosum.py").read_text(encoding="utf-8")
     operator_help = (destination / "v13/operator.py").read_text(encoding="utf-8")
@@ -190,6 +193,8 @@ def test_native_receiver_source_pins_and_complete_stage_chain_are_current():
     stage_spec.loader.exec_module(stage)
     assert stage.BUILDER == "scripts/termux_runtime_recovery_candidate_20261121.py"
     assert stage.BUILDER_SHA == hashlib.sha256(termux_path.read_bytes()).hexdigest()
+    assert stage.NATIVE_PROBE_APPROVAL_OVERLAY == "scripts/integrated_native_probe_approval_candidate_20261122.py"
+    assert stage.NATIVE_PROBE_APPROVAL_OVERLAY_SHA256 == hashlib.sha256((CODE / stage.NATIVE_PROBE_APPROVAL_OVERLAY).read_bytes()).hexdigest()
 
     deploy_source = (CODE / "v13/runtime_deploy.py").read_text(encoding="utf-8")
     match = re.search(r'^STAGER_SHA256 = "([0-9a-f]{64})"$', deploy_source, re.MULTILINE)

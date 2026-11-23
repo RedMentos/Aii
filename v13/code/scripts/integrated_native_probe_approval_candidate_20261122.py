@@ -45,28 +45,29 @@ OPERATOR_PREFIX_NEW = r"""    c=controller(r)
         sender,receiver=args[1],args[2]
         if sender not in {'B1_DETAIL','B2_GIST'} or receiver not in {'B1_DETAIL','B2_GIST','C3_LANGUAGE'} or sender==receiver:
             raise ValueError('Native probe requires distinct B1/B2 sender and B1/B2/C3 receiver')
-        r.require_idle()
-        last=r.last_answer()
-        if not last or last.get('status')!='FINAL':raise ValueError('Native probe requires a completed FINAL answer')
-        row=r.store.one('SELECT packet,session_id FROM events WHERE id=?',(last['event_id'],))
-        if not row or row['session_id']!=r.session:raise ValueError('Last source is not in the active session')
-        event=json.loads(row['packet'])
-        ref=event.get('source_ref')
-        if not isinstance(ref,dict) or not ref.get('source_id'):raise ValueError('Last event has no valid SourceRef')
-        from .native_probe_approval import consume as consume_native_probe
-        approval=consume_native_probe(r,sender,receiver,event,ref)
-        r.models.path_for(receiver)
-        deadline=time.monotonic()+120.0
-        try:
-            packet=r.cognition.native_receive(sender,receiver,event,ref,deadline)
-        finally:
-            r.pool.unload()
-        return dumps({**packet,'queued':False,'completed':True,
-                      'sender_role':sender,'receiver_role':receiver,
-                      'approval_id':approval['approval_id'],'local_approval_consumed':True,
-                      'requires_explicit_confirmation':False,'production_route':False,
-                      'semantic_use_proven':False,'training_authority':0,'native_receiver_authority':0,
-                      'notice':'Synchronous probe after one-shot local TTY approval; existing models only, no weight or routing change'})
+        from .native_probe_approval import runtime_probe_lease, consume as consume_native_probe
+        with runtime_probe_lease(r) as lease_token:
+            last=r.last_answer()
+            if not last or last.get('status')!='FINAL':raise ValueError('Native probe requires a completed FINAL answer')
+            row=r.store.one('SELECT packet,session_id FROM events WHERE id=?',(last['event_id'],))
+            if not row or row['session_id']!=r.session:raise ValueError('Last source is not in the active session')
+            event=json.loads(row['packet'])
+            ref=event.get('source_ref')
+            if not isinstance(ref,dict) or not ref.get('source_id'):raise ValueError('Last event has no valid SourceRef')
+            approval=consume_native_probe(r,sender,receiver,event,ref,lease_token=lease_token)
+            r.models.path_for(receiver)
+            deadline=time.monotonic()+120.0
+            try:
+                packet=r.cognition.native_receive(sender,receiver,event,ref,deadline)
+            finally:
+                r.pool.unload()
+            return dumps({**packet,'queued':False,'completed':True,
+                          'sender_role':sender,'receiver_role':receiver,
+                          'approval_id':approval['approval_id'],'local_approval_consumed':True,
+                          'resource_preflight':approval['resource_preflight'],'runtime_exclusive':True,
+                          'requires_explicit_confirmation':False,'production_route':False,
+                          'semantic_use_proven':False,'training_authority':0,'native_receiver_authority':0,
+                          'notice':'Synchronous probe under an exclusive Runtime lease after one-shot local TTY approval; body models unloaded; no weight or routing change'})
 """
 
 OPERATOR_HELP_OLD = '''    """:callosum [status|shadow|active|degrade|promote <direction>|native-probe <B1_DETAIL|B2_GIST> <B1_DETAIL|B2_GIST|C3_LANGUAGE> --last-source --confirm]"""\n'''
@@ -188,6 +189,16 @@ def apply_staged(code_dir: Path, staging_dir: Path) -> dict:
         "ttl_seconds": 120,
         "native_probe_deadline_seconds": 120,
         "runtime_instance_scoped": True,
+        "runtime_exclusive_lease": True,
+        "blocks_new_turns_and_background_jobs": True,
+        "resource_preflight": {
+            "requires_zero_resident_native_processes": True,
+            "minimum_extra_headroom_bytes": 268435456,
+            "minimum_model_headroom_ratio": 0.20,
+            "uses_runtime_mem_available_bytes": True,
+            "fail_closed": True,
+            "estimate_is_not_an_oom_guarantee": True,
+        },
         "production_route": False,
         "training_authority": 0,
         "native_receiver_authority": 0,
