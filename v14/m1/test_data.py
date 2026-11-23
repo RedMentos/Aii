@@ -188,6 +188,27 @@ class WindowTests(unittest.TestCase):
             self.assertEqual(len(events), 1)
             self.assertEqual(json.loads(events[0])["preregistration_sha256"], digest)
 
+    def test_test_loader_fails_closed_when_access_log_cannot_be_written(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            prereg = {
+                "data_config_sha256": data_config_sha256(self.cfg),
+                "split_boundaries_sha256": split_boundaries_sha256(self.rows, self.cfg),
+                "dataset_sha256": dataset_sha256(self.rows, self.channels),
+            }
+            raw = json.dumps(prereg, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            prereg_path = root / "prereg.json"
+            prereg_path.write_bytes(raw)
+            log_directory = root / "log-is-a-directory"
+            log_directory.mkdir()
+            with self.assertRaises(OSError):
+                load_test_split(
+                    self.rows, self.channels, self.cfg,
+                    preregistration_path=prereg_path,
+                    preregistration_sha256=hashlib.sha256(raw).hexdigest(),
+                    access_log_path=log_directory,
+                )
+
     def test_test_loader_rejects_config_drift_even_with_valid_file_hash(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
