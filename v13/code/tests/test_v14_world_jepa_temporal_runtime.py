@@ -46,9 +46,12 @@ def _add_session(store, label, session_index, *, status_overrides=None, event_co
         generation = event["brain_generation_id"]
         action_index = (session_index + offset) % len(world_model.ACTIONS)
         route = world_model.ACTIONS[action_index]
+        context_source_refs = (
+            context_source_refs_factory(session_index, offset) or []
+            if context_source_refs_factory is not None else []
+        )
+        assistant_message_id = store.message(session, event_id, "assistant")
         selection_source_refs = [event["source_ref"]]
-        if context_source_refs_factory is not None:
-            selection_source_refs.extend(context_source_refs_factory(session_index, offset) or [])
         selection = contracts.packet(
             "ActionSelection", "C2_CONTROL", event_id, generation,
             selection_source_refs,
@@ -71,6 +74,17 @@ def _add_session(store, label, session_index, *, status_overrides=None, event_co
             {
                 "action_duration_s": 0.2 + action_index * 0.7 + (session_index % 9) * 0.03,
                 "characters": 12 + action_index * 28 + (session_index % 11) * 1.5,
+            },
+        )
+        message_status = status if status in {
+            "FINAL", "CANCELLED", "DEADLINE", "ERROR", "INTERRUPTED"
+        } else "ERROR"
+        store.finish_message(
+            assistant_message_id, message_status,
+            {
+                "action_selection": selection["packet_id"],
+                "context_source_refs": [event["source_ref"], *context_source_refs],
+                "selected_offer_ids": [],
             },
         )
         event_ids.append(event_id)
