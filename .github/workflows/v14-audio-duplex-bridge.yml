@@ -13,8 +13,10 @@ on:
   pull_request:
     branches:
       - "gpt6/v13-private-remote-bridge-20261111"
+      - "research-perception/**"
     paths:
       - "v13/code/v13/audio_duplex_bridge.py"
+      - "v13/code/v13/audio_teacher_ear.py"
       - "v13/code/v13/audio_voice_cues.py"
       - "v13/code/tests/test_audio_duplex_bridge.py"
       - ".github/workflows/v14-audio-duplex-bridge.yml"
