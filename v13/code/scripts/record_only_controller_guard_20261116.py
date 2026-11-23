@@ -146,10 +146,10 @@ def apply_sources(code_dir, sources):
 
     name = 'v13/attention.py'
     raw = checked[name]
-    raw = _replace(raw, b"        key=req['reason']+'|'+req['target'];sc=step(self.n,PATH)  # WP-U6 \xc2\xa712.7\n",
+    raw = _replace(raw, b"        key=req['reason']+'|'+req['target'];sc=step(self.n,PATH)\n",
         b"        key=req['reason']+'|'+req['target']\n"
         b"        if not updates_allowed(self.s):return {'key':key,'n':0,'mean':0.,'status':blocked_status(self.s)}\n"
-        b"        sc=step(self.n,PATH)  # WP-U6 \xc2\xa712.7\n", 'attention outcome')
+        b"        sc=step(self.n,PATH)\n", 'attention outcome')
     checked[name] = raw
 
     name = 'v13/deliberation.py'
