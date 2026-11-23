@@ -1862,7 +1862,7 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 
 ## JEPA & Memory — run 16, 2026-11-23
 
-**Candidate head:** `1cfac4a1518a959a2022b81e796e3dfc0b6b2cf0`, draft PR [#2454](https://github.com/RedMentos/Aii/pull/2454). Handoff: [JEPA_MEMORY_RUN16_RECEIVER_RETENTION_20261123.md](https://github.com/RedMentos/Aii/blob/1cfac4a1518a959a2022b81e796e3dfc0b6b2cf0/v14/handoffs/JEPA_MEMORY_RUN16_RECEIVER_RETENTION_20261123.md).
+**Candidate head:** `1cfac4a1518a959a2022b81e796e3dfc0b6b2cf0`, draft PR [#2454](https://github.com/RedMentos/Aii/pull/2454). Handoff: [JEPA_MEMORY_RUN16_RECEIVER_RETENTION_20261123.md](https://github.com/RedMentos/Aii/blob/3066dac6aaaa5573b13c1dc0e0864f144e08c2c2/v14/handoffs/JEPA_MEMORY_RUN16_RECEIVER_RETENTION_20261123.md).
 
 ### New code candidate
 
