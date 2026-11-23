@@ -20,3 +20,10 @@
 - LOCAL_LINUX isolated harness: py_compile of the exact bridge module PASS; 3/3 tests PASS using the exact bridge code with minimal Store/lease/duplex stubs: forged temporal evidence rejected before cancel; replay rejected in interrupt, auto/CONTINUE and off modes across a later active turn; packet compare-and-swap refuses to overwrite a changed persisted packet. This is not the full repository Runtime integration suite.
 - Exact-head GitHub Actions for code head fea6002 are pending/queued at last poll; no CI PASS is claimed. The full local Aii checkout remains unavailable due the missing mount and github.com DNS failure.
 - QA's two inline review threads remain open for reviewer recheck; no self-resolution or merge was performed.
+
+
+## Base synchronization
+
+- The target branch advanced while this PR was open. I merged current release base 8d93236c753f0194224c19edc7411d8d7082b1d6 into this branch with a two-parent merge commit 342fb4f5954c69a29fed9b164c96c76f0146c735. No force-push; the branch was updated with expected-head protection.
+- The base delta was inspected first: only the M1 data workflow/fixtures and QA Android handoff changed, with no overlap against the six files in this PR. The merge tree retained all six PR files and R-114.
+- The code-bearing implementation SHA remains fea6002c4fa7def9f1dd83f51a8320fc526e4f17. The merge commit only synchronizes the release ancestor; this handoff update is documentation-only.
