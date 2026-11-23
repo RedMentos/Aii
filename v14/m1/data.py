@@ -10,7 +10,7 @@ import csv
 import hashlib
 import json
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable, Mapping, Sequence
 
@@ -297,8 +297,10 @@ def build_dataset(
     bounds = build_chronological_boundaries(len(rows), config)
     datasets: dict[str, list[Window]] = {}
     stats: dict[str, SplitStats] = {}
-    for name, interval in bounds.items():
-        datasets[name], stats[name] = make_split(rows, channels, config, name, interval)
+    # Test data is intentionally not materialized here. It has a separate
+    # preregistration-gated entry point below.
+    for name in ("train", "validation"):
+        datasets[name], stats[name] = make_split(rows, channels, config, name, bounds[name])
     manifest: dict[str, object] = {
         "schema": "v14.m1.data-manifest.v1",
         "channels": list(channels),
@@ -309,7 +311,7 @@ def build_dataset(
         "effective_gap": config.effective_gap,
         "split_boundaries": {k: list(v) for k, v in bounds.items()},
         "split_stats": {k: asdict(v) for k, v in stats.items()},
-        "test_access": "NOT_ACCESSED_BY_DATA_PIPELINE",
+        "test_access": "LOCKED_REQUIRES_HASH_BOUND_PREREGISTRATION",
     }
     return datasets, stats, manifest
 
@@ -320,3 +322,76 @@ def write_manifest(manifest: Mapping[str, object], path: str | Path) -> str:
     digest = hashlib.sha256(payload).hexdigest()
     Path(path).write_bytes(payload + b"\n")
     return digest
+
+
+
+def _canonical_sha256(value: object) -> str:
+    payload = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def data_config_sha256(config: DataConfig) -> str:
+    """Hash all split/window-affecting settings, including the preregistered L ceiling."""
+    return _canonical_sha256(asdict(config))
+
+
+def split_boundaries_sha256(rows: Sequence[MinuteRow], config: DataConfig) -> str:
+    bounds = {k: list(v) for k, v in build_chronological_boundaries(len(rows), config).items()}
+    return _canonical_sha256(bounds)
+
+
+def dataset_sha256(rows: Sequence[MinuteRow], channels: Sequence[str]) -> str:
+    """Stable fingerprint of parsed timestamps and values; missing values remain null."""
+    digest = hashlib.sha256()
+    digest.update(json.dumps(list(channels), separators=(",", ":")).encode("utf-8"))
+    for row in rows:
+        record = [row.timestamp.isoformat(), list(row.values)]
+        digest.update(json.dumps(record, separators=(",", ":"), allow_nan=False).encode("utf-8"))
+        digest.update(b"\n")
+    return digest.hexdigest()
+
+
+def load_test_split(
+    rows: Sequence[MinuteRow],
+    channels: Sequence[str],
+    config: DataConfig,
+    *,
+    preregistration_path: str | Path,
+    preregistration_sha256: str,
+    access_log_path: str | Path,
+) -> tuple[list[Window], SplitStats]:
+    """Open test windows only after exact preregistration/config/data hash checks.
+
+    Preregistration JSON must contain:
+      data_config_sha256, split_boundaries_sha256, dataset_sha256.
+    The supplied preregistration hash is checked against the exact file bytes.
+    """
+    path = Path(preregistration_path)
+    raw = path.read_bytes()
+    actual_prereg_hash = hashlib.sha256(raw).hexdigest()
+    if actual_prereg_hash != preregistration_sha256:
+        raise PermissionError("preregistration file hash mismatch")
+    prereg = json.loads(raw.decode("utf-8"))
+    expected = {
+        "data_config_sha256": data_config_sha256(config),
+        "split_boundaries_sha256": split_boundaries_sha256(rows, config),
+        "dataset_sha256": dataset_sha256(rows, channels),
+    }
+    for key, value in expected.items():
+        if prereg.get(key) != value:
+            raise PermissionError(f"preregistration mismatch: {key}")
+    bounds = build_chronological_boundaries(len(rows), config)
+    windows, stats = make_split(rows, channels, config, "test", bounds["test"])
+    event = {
+        "event": "TEST_SPLIT_OPENED",
+        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+        "preregistration_sha256": actual_prereg_hash,
+        **expected,
+        "accepted_windows": stats.accepted_windows,
+        "rejected_windows": stats.rejected_windows,
+    }
+    log_path = Path(access_log_path)
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    with log_path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(event, sort_keys=True, separators=(",", ":")) + "\n")
+    return windows, stats
