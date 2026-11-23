@@ -1159,3 +1159,41 @@ def test_outer_audio_lease_is_thread_bound_and_nonserializable(tmp_path):
             assert RECEIPT not in repr(lease)
     finally:
         runtime.store.close()
+
+
+
+def test_silero_recurrent_state_resets_when_consent_receipt_changes(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    session = _FakeSileroSession()
+    vad = SileroVADStream(
+        session, model_sha256="c" * 64, model_revision="synthetic-consent-epoch",
+    )
+    renewed_receipt = "fixture:renewed-consent"
+    valid_receipts = {RECEIPT, renewed_receipt}
+
+    def check(source_id, receipt):
+        return source_id == SOURCE_ID and receipt in valid_receipts
+
+    guard = _guard_for(check)
+    try:
+        first = consume_pcm16_voice_window(
+            runtime, tone(140), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=check, consent_guard=guard, vad_stream=vad,
+            finality="FINAL",
+        )
+        renewed = consume_pcm16_voice_window(
+            runtime, tone(140), sample_rate=16000, start_ms=1100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=renewed_receipt,
+            consent_check=check, consent_guard=guard, vad_stream=vad,
+            finality="FINAL",
+        )
+        assert first["vad_evidence"]["state_reset_reason"] == "NEW_STREAM"
+        assert renewed["vad_evidence"]["state_reset_reason"] == "STREAM_CHANGED"
+        assert renewed["vad_evidence"]["first_frame_start_ms"] == 1100
+        assert renewed["a4"]["learning_authority"] is False
+        assert renewed["a4"]["action_authority"] is False
+    finally:
+        runtime.store.close()
