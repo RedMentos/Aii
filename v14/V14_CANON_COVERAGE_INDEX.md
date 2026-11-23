@@ -2343,3 +2343,18 @@ This overlay records the QA fast-forward integrations and current device boundar
 - Private #842: 1,222 MiB MemAvailable and 1,618 MiB free disk; instantaneous snapshot only.
 - Boss code-bearing candidate head `a5e536a`; documentation descendants are later commits only. QA #2459 and #2460 are fast-forward integrated into the Boss branch. The combined `a5e536a` workflow attempts ended `startup_failure` with no jobs; exact combined current-head CI is therefore incomplete. PR #2443 remains DRAFT / NOT_RELEASED / NOT_INSTALLED.
 - LOCAL_LINUX full Aii suite BLOCKED / NOT_RUN; no checkout mounted. No Android action, CHAT_SEND, restart, UPDATE_REQUEST, LOG_PAGE, shell, model/weight/permission change or user-data mutation was performed.
+
+
+### Run-14 late poll — current PR heads and evidence boundaries (2026-11-23)
+
+| Lane | Current exact head / observed tests | Decision |
+|---|---|---|
+| Boss source-forget + Perception composition (#2443) | Current docs-only head `a76e330`, DRAFT, mergeable=true, 98 ahead / 0 behind. Its workflow run `45265378386` ended `startup_failure` with no jobs. Code-bearing checkpoint remains `a5e536a`; child #2459/#2460 evidence is recorded above. | Keep DRAFT / NOT_RELEASED until full exact combined staged, integrated, migration, privacy, audio, RAW EYE and deploy matrix completes. |
+| Fair B1/B2 scheduler (#2458) | Head `6a750bdf`; current workflow `45262375402` startup_failure, retry unavailable. Prior head `7688c360`: 6/12 success, 4 failures, 2 skipped. | No accepted fair two-body offer path or Redmi improvement. Continue source-pin repair and prove both roles get and deliver useful slices under C3 reserve. |
+| Audio duplex (#2448) | Head `f8bd430e` adds per-target-turn first-writer ownership, shared per-Runtime handoff lock, commit-before-cancel ordering and deterministic duplicate-target / handoff-reader race tests. Current workflow `45265408942` startup_failure; prior code head `2aea560` had focused bridge 17/17 on Python 3.13/3.14, but does not include the latest race fix. | Boss findings are addressed in source but unverified on this head. Keep DRAFT / NOT_RELEASED; no AudioRecord, microphone or Redmi voice proof. |
+| Output privacy (#2446) | Head `095fe1d9`; JEPA receipt/update/combined-online checks pass, staged/integrated fails on old source pins. | P0 visible hypothesis leak remains until the closed allowlists and exception redaction are composed on the current source chain and exact staged/integrated checks pass. |
+| Temporal JEPA / WorldJEPA (#2447) | Head `8be6498`; temporal, combined online, incremental, privacy and deployment checks pass; optimizer-resume, owner-read staged, Core same-turn consumer and staged/integrated checks fail. | Numeric predictor/EMA/SHADOW evidence only. No native B1/B2 body-weight update or trained cross-organ latent acceptance. |
+| JEPA rebase / native probe (#2454/#2457) | #2454 head `bc9eaea`, mergeable=false, no workflow runs; #2457 head `f8d0427`, one deployment success and five failures including staged/JEPA consumers. | Keep stacked drafts; no production B3 authority and no native probe run. |
+| M1 DATA / Raw-Window-Probe (#2452/#2453) | #2452 head `2104f72` M1 test workflow fails; #2453 head `f7f7520` DATA workflow passes only. | M1 remains [ENTWURF]; no real UCI cohort, test unlock, training, weight update or Redmi evidence. Preserve full baseline/control list. |
+
+No result in this late poll changes the Redmi boundary: private #840/#841/#842 still confirm release 8d93236 installed, auto-update on, AI STOPPED_BY_USER, B1/B2 TIME_BUDGET, correctness unproven and no candidate installation. Full LOCAL_LINUX Aii suite remains BLOCKED / NOT_RUN.
