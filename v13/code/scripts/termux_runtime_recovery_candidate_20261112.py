@@ -8,10 +8,10 @@ import importlib.util
 from pathlib import Path
 
 BUILDERS = {
-    'scripts/integrated_world_training_resume_candidate_20261111.py': 'f3ad0cb640bb26cf9563f2bab803a624595c035c16b85584410849c1e831b3d2',
-    'scripts/termux_probe_recovery_candidate_20261112.py': '54453503162cf6dd298c2b52fb9e615e79bc7530b1b3f80be11e49b77a041169',
-    'scripts/termux_chat_recovery_candidate_20261112.py': 'abe5600abf62c5d3fe62a373d3511d90dad8c26b232c76faee64e1e29072ee88',
-    'scripts/termux_idle_recovery_candidate_20261112.py': '54dc9d7b441b5afec03eae11927aac50b843fffeacb3029a06741a80c82f237e',
+    'scripts/integrated_world_training_resume_candidate_20261111.py': 'd2ed179dddd3e9083c5b578bead3e594f7f9768540f387e3dc5683b349f153a7',
+    'scripts/termux_probe_recovery_candidate_20261112.py': '27aec15dc1f003fd2c90d3d5a08d5a4a9af223ab57c188720ea9cd18aebc1b2b',
+    'scripts/termux_chat_recovery_candidate_20261112.py': 'befbaca164fd5453d4c93017eca1b556f2d771b1b7cf54879c6764e4716587c7',
+    'scripts/termux_idle_recovery_candidate_20261112.py': '2cc656b102b9950fdb9cb81970708692573189995218bff8a18f95ff01fa97d7',
 }
 
 
@@ -40,10 +40,10 @@ def build_sources(code_dir, *, include_postcommit=True):
     result.update(chat.apply_sources(composed))
     result = idle.apply_sources(code_dir, result)
     arithmetic = load(code_dir, 'scripts/integrated_arithmetic_candidate_20261116.py',
-                      '4d3674fa665277b999bafcbde443519e69c2b6bd5d38e6775272dada20a8e57b')
+                      'd5277eb16e292c0c20b3e061a7e3bfbae309844b5bb14a8254e9a62df8a6b8d1')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
-                              '67b5a6411e66d92f4d518ddb28b7bdd6ffc72ce5a83076119e49e942a4167bec')
+                              'b568613863fef6a687a3237d089b91d8b612ce4163ccb5795df9e21af51c1489')
     result = arithmetic_outcome.apply_sources(code_dir, result)
 
     # Snapshot every generated consumer pin before the later Store telemetry
@@ -127,7 +127,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             ):
         raise ValueError('base-composer downstream source pins are inconsistent')
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
-                     '7edb098aee9bc6865128e9b6e17fb7947d74f5fdde7eeb16999a04c0f08bfc74')
+                     '1afd1acc954f864b5b2136b4d58a9170b5a259cb95d75799971fd6568c4efd91')
     result = observers.apply_sources(code_dir, result)
     # Apply only the reviewed ContextOS input and the exact checked builder.
     # The dependent recall module pins ContextOS, so rebind that one pin.
@@ -135,7 +135,7 @@ def build_sources(code_dir, *, include_postcommit=True):
     if path.is_symlink() or not path.is_file():
         raise ValueError('Context budget builder missing or unsafe')
     candidate = path.read_bytes()
-    if hashlib.sha256(candidate).hexdigest() != '410e63568c3e99e920f3bc3497f35f7cc5a0575dc2f24a4b37eb3ff3a6fb835a':
+    if hashlib.sha256(candidate).hexdigest() != 'e904eba285af6c5079a91e886e7b6d9b9a6c2ecbcd352adcd351ddef3b150fa7':
         raise ValueError('Context budget builder source changed')
     namespace = {'__name__': 'v13_checked_context_budget', '__file__': str(path)}
     exec(compile(candidate, str(path), 'exec'), namespace)
@@ -173,7 +173,7 @@ def build_sources(code_dir, *, include_postcommit=True):
         if path.is_symlink() or not path.is_file():
             raise ValueError('Postcommit observer builder missing or unsafe')
         raw_candidate = path.read_bytes()
-        if hashlib.sha256(raw_candidate).hexdigest() != '3d23bf53182e5db5242da6915f450ec3b9ef87c471e007abeb16819364c2cc03':
+        if hashlib.sha256(raw_candidate).hexdigest() != '3dc5d9385274b28f25a4b82fb49f76071e8eb801038e8f1320353fb71f375e2b':
             raise ValueError('Postcommit observer builder source changed')
         namespace = {'__name__': 'v13_checked_postcommit', '__file__': str(path)}
         exec(compile(raw_candidate, str(path), 'exec'), namespace)
@@ -192,7 +192,7 @@ def build_sources(code_dir, *, include_postcommit=True):
         if late_path.is_symlink() or not late_path.is_file():
             raise ValueError('LateWatch source missing or unsafe')
         late = late_path.read_bytes()
-        if hashlib.sha256(late).hexdigest() != '91237751f6cba760a94af68189d638e6f8ba713a5467c04fd65d43bdc024c8b3':
+        if hashlib.sha256(late).hexdigest() != 'fc2e86be3f2f3e629a9e54c3f1c31266f495060e60a42e636f7a924f5ffadfc0':
             raise ValueError('LateWatch source changed')
         old_sig = b"def start(r,e,version,offers,deadline,meta,runner,eligible=True):\n"
         new_sig = b"def start(r,e,version,offers,deadline,meta,runner,eligible=True,allowed_roles=None):\n"
@@ -216,11 +216,11 @@ def build_sources(code_dir, *, include_postcommit=True):
         if late.count(old_sig) != 1 or late.count(old_roles) != 1:
             raise ValueError('LateWatch role anchor changed')
         late = late.replace(old_sig, new_sig, 1).replace(old_roles, new_roles, 1)
-        if hashlib.sha256(late).hexdigest() != '58c0fd348591ba595b314664764533ff428fa3d696645ba636b4867e01c2b400':
+        if hashlib.sha256(late).hexdigest() != '841aeaa9d7d0b0950b6c3ad799d2b8f8dd44fcee93159bd2a48c66f341460b12':
             raise ValueError('LateWatch output changed')
         result['v13/latewatch.py'] = late
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
-                             'fd7c46a2228061dc8e2cb0cdabbda000e5cd4dfa8485ed54e7550d785236281d')
+                             'f6867ae84f3634be40d2eed33e2646ad8269cb85bb07e55f5c49e2d69a9e337b')
         result = control_guard.apply_sources(code_dir, result)
         # The guard rewrites the semantic module and its local-error consumer as
         # one reviewed generation. Snapshot that exact pair before Store overlays.
@@ -232,7 +232,7 @@ def build_sources(code_dir, *, include_postcommit=True):
         # pre-postcommit builder must retain its earlier exact Runtime hash.
         # RAW Age/operator/UI remain pristine for the old phone updater.
         laboratory = load(code_dir, 'scripts/lab_age_stage_candidate_20261118.py',
-                          '158c7a34ce16d7afa10d9eb473c4d089ebd4538e8e1164c5756027319ea2e2cb')
+                          'ffad7bb200badbe4a5565f183ac38957d3a2d04b0c79202678197add859d97f4')
         result = laboratory.apply_sources(code_dir, result)
     # Integrate the reviewed C4 source-span rule into the ordinary pinned stage.
     # The overlay is exact-blob-pinned and changes only the FocalLoop redundancy calculation.
