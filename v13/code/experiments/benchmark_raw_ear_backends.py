@@ -9,7 +9,6 @@ Run from v13/code:
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import math
 import platform
@@ -118,7 +117,6 @@ def benchmark_speaker_tracker(iterations):
     for _ in range(12):
         vector = [rng.uniform(-1.0, 1.0) for _ in range(192)]
         vectors.append(vector)
-    current_chunk_sha256 = hashlib.sha256(tone()).hexdigest()
     batches = []
     for index in range(iterations):
         start_ms = 1000 + index * 1000
@@ -130,10 +128,10 @@ def benchmark_speaker_tracker(iterations):
             "schema": SCHEMA,
             "source_id": "benchmark:raw-ear",
             "generation_id": "benchmark:generation",
+            "consent_receipt_ref": "benchmark:consent-epoch",
             "model_id": "synthetic:192d",
             "model_revision": "fixture-v1",
             "model_sha256": "a" * 64,
-            "current_chunk_sha256": current_chunk_sha256,
             "embedding_dim": 192,
             "frame_step_ms": 80,
             "lookback_frames": 10,
@@ -150,9 +148,9 @@ def benchmark_speaker_tracker(iterations):
         result = registry.update(
             source_id="benchmark:raw-ear",
             generation_id="benchmark:generation",
+            consent_receipt_ref="benchmark:consent-epoch",
             start_ms=start_ms,
             end_ms=start_ms + 1000,
-            current_chunk_sha256=current_chunk_sha256,
             activity_hint="VOICED",
             embeddings=batches[index],
         )
