@@ -1868,6 +1868,7 @@ def test_receiver_retention_compares_same_persisted_cohort_and_blocks_training_o
         "source_disjoint": True,
         "mse_before": 0.0,
         "mse_after": 0.0,
+        "max_relative_regression": 0.05,
         "mean_baseline_mse": 0.5,
         "zero_latent_mse": 0.6,
         "shuffled_latent_mse": 0.7,
