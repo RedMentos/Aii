@@ -1232,13 +1232,11 @@ def source_forget_guard(store, source_id):
                 return True
             if any(row["id"] not in pending_ids for row in scanned):
                 return True
-            # Conservatively inspect every source-bearing C4 FocalCycle packet
-            # created before dispatch, not only the final cycle. Earlier cycles
-            # may have influenced the eventual action even when their items are
-            # absent from the final coalition. This intentionally broader scope
-            # can cause extra rollback/replay until the producer persists complete
-            # per-cycle item lineage. Include the available FocalItem provenance
-            # and event-only C5 ActionSelection provenance as well.
+            # Inspect every source-bearing pre-dispatch C4 cycle. The T8
+            # verifier carries the same bounded union into receipt/source-disjoint
+            # holdout provenance, so forgetting and learning share one causal set.
+            # Final FocalItem and event-only C5 ActionSelection provenance remain
+            # part of the scan. Incomplete or cap-ambiguous cycles fail closed.
             selected = store.rows(
                 """SELECT DISTINCT a.id FROM actions a
                    JOIN events e ON e.id=a.event_id
