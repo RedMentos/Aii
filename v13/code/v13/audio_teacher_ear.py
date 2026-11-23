@@ -1,0 +1,295 @@
+"""Optional, source-bound sherpa-onnx Teacher Ear for RAW EAR.
+
+The acoustic/prosodic path remains primary. This adapter is opt-in, uses only
+caller-supplied PCM16, never opens a microphone or downloads a model, and emits
+an untrusted window-timed ASR hypothesis. Transcript persistence is a separate
+caller decision in the Runtime consumer.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass
+import hashlib
+import os
+from pathlib import Path, PurePosixPath
+import re
+import stat
+import threading
+import unicodedata
+from types import MappingProxyType
+from typing import Mapping
+
+_REQUIRED_FILES = ("encoder", "decoder", "joiner", "tokens")
+_SHA256 = re.compile(r"[0-9a-f]{64}\Z")
+_MAX_WINDOW_MS = 1000
+_MAX_PCM_BYTES = 96_000  # 48 kHz mono PCM16, one second
+_MAX_TEXT_CHARS = 512
+
+
+class TeacherEarError(ValueError):
+    """Invalid teacher configuration, input, or model output."""
+
+
+@dataclass(frozen=True)
+class TeacherEarManifest:
+    model_id: str
+    model_revision: str
+    language: str
+    license_id: str
+    model_root: str
+    encoder: str
+    decoder: str
+    joiner: str
+    tokens: str
+    file_sha256: Mapping[str, str]
+    num_threads: int = 1
+    sample_rate: int = 16000
+    max_total_bytes: int = 64 * 1024 * 1024
+
+    def __post_init__(self) -> None:
+        for name in ("model_id", "model_revision", "language", "license_id", "model_root"):
+            value = getattr(self, name)
+            if type(value) is not str or not value.strip() or len(value) > 512:
+                raise TeacherEarError(f"{name} is invalid")
+        if type(self.num_threads) is not int or not 1 <= self.num_threads <= 2:
+            raise TeacherEarError("num_threads must be 1 or 2")
+        if type(self.sample_rate) is not int or not 8000 <= self.sample_rate <= 48000:
+            raise TeacherEarError("sample_rate must be in [8000, 48000]")
+        if type(self.max_total_bytes) is not int or not 1 <= self.max_total_bytes <= 256 * 1024 * 1024:
+            raise TeacherEarError("max_total_bytes is invalid")
+        hashes = dict(self.file_sha256) if isinstance(self.file_sha256, Mapping) else None
+        if hashes is None or set(hashes) != set(_REQUIRED_FILES):
+            raise TeacherEarError("file_sha256 must pin encoder, decoder, joiner and tokens")
+        for key, digest in hashes.items():
+            if type(digest) is not str or not _SHA256.fullmatch(digest):
+                raise TeacherEarError(f"invalid {key} SHA-256")
+        object.__setattr__(self, "file_sha256", MappingProxyType(hashes))
+        for key in _REQUIRED_FILES:
+            rel = getattr(self, key)
+            if type(rel) is not str or not rel or len(rel) > 512:
+                raise TeacherEarError(f"{key} path is invalid")
+            pure = PurePosixPath(rel)
+            if pure.is_absolute() or any(part in {"", ".", ".."} for part in pure.parts):
+                raise TeacherEarError(f"{key} path must be relative and contained")
+
+    def verified_files(self) -> dict[str, Path]:
+        """Hash exact local files; reject symlinks, path escape and oversized bundles."""
+        raw_root = Path(self.model_root).expanduser()
+        if raw_root.is_symlink():
+            raise TeacherEarError("model root must not be a symlink")
+        try:
+            root = raw_root.resolve(strict=True)
+        except OSError as exc:
+            raise TeacherEarError("model root is unavailable") from exc
+        if not root.is_dir():
+            raise TeacherEarError("model root must be a directory")
+        verified: dict[str, Path] = {}
+        total = 0
+        for key in _REQUIRED_FILES:
+            parts = PurePosixPath(getattr(self, key)).parts
+            candidate = root
+            for index, part in enumerate(parts):
+                candidate = candidate / part
+                try:
+                    info = candidate.lstat()
+                except OSError as exc:
+                    raise TeacherEarError(f"{key} file is unavailable") from exc
+                if stat.S_ISLNK(info.st_mode):
+                    raise TeacherEarError(f"{key} path must not contain symlinks")
+                if index < len(parts) - 1 and not stat.S_ISDIR(info.st_mode):
+                    raise TeacherEarError(f"{key} parent path is not a directory")
+            if not stat.S_ISREG(info.st_mode):
+                raise TeacherEarError(f"{key} must be a regular file")
+            try:
+                resolved = candidate.resolve(strict=True)
+                resolved.relative_to(root)
+            except (OSError, ValueError) as exc:
+                raise TeacherEarError(f"{key} path escapes model root") from exc
+            flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+            try:
+                fd = os.open(candidate, flags)
+                with os.fdopen(fd, "rb") as handle:
+                    opened = os.fstat(handle.fileno())
+                    if not stat.S_ISREG(opened.st_mode):
+                        raise TeacherEarError(f"{key} is not a regular file")
+                    total += opened.st_size
+                    if total > self.max_total_bytes:
+                        raise TeacherEarError("model bundle exceeds configured size ceiling")
+                    digest = hashlib.sha256()
+                    while True:
+                        chunk = handle.read(1024 * 1024)
+                        if not chunk:
+                            break
+                        digest.update(chunk)
+            except OSError as exc:
+                raise TeacherEarError(f"cannot safely open {key} file") from exc
+            if digest.hexdigest() != self.file_sha256[key]:
+                raise TeacherEarError(f"{key} SHA-256 mismatch")
+            verified[key] = resolved
+        return verified
+
+
+def _clean_hypothesis(value: str) -> str:
+    if type(value) is not str:
+        raise TeacherEarError("recognizer returned a non-text result")
+    normalized = unicodedata.normalize("NFC", value)
+    cleaned = "".join(
+        ch for ch in normalized
+        if unicodedata.category(ch) != "Cc" or ch in "\t\n\r"
+    )
+    cleaned = " ".join(cleaned.split())
+    if len(cleaned) > _MAX_TEXT_CHARS:
+        cleaned = cleaned[:_MAX_TEXT_CHARS]
+    return cleaned
+
+
+class SherpaOnlineTeacher:
+    """Lazy, CPU-only wrapper around sherpa_onnx.OnlineRecognizer.from_transducer."""
+
+    def __init__(self, manifest: TeacherEarManifest, *, recognizer=None, numpy_module=None):
+        if not isinstance(manifest, TeacherEarManifest):
+            raise TypeError("manifest must be a TeacherEarManifest")
+        self.manifest = manifest
+        self._recognizer = recognizer
+        self._np = numpy_module
+        self._lock = threading.RLock()
+        self._verified = None
+
+    def _load(self):
+        if self._recognizer is not None:
+            if self._np is None:
+                try:
+                    import numpy as np
+                except ImportError as exc:
+                    raise RuntimeError("NumPy is required for sherpa-onnx audio input") from exc
+                self._np = np
+            return self._recognizer
+        files = self.manifest.verified_files()
+        try:
+            import numpy as np
+            import sherpa_onnx
+        except ImportError as exc:
+            raise RuntimeError("optional sherpa-onnx and NumPy are not installed") from exc
+        self._np = np
+        self._verified = files
+        self._recognizer = sherpa_onnx.OnlineRecognizer.from_transducer(
+            encoder=str(files["encoder"]),
+            decoder=str(files["decoder"]),
+            joiner=str(files["joiner"]),
+            tokens=str(files["tokens"]),
+            num_threads=self.manifest.num_threads,
+            sample_rate=self.manifest.sample_rate,
+            feature_dim=80,
+            decoding_method="greedy_search",
+            provider="cpu",
+            enable_endpoint_detection=False,
+            debug=False,
+        )
+        return self._recognizer
+
+    @staticmethod
+    def _lease_matches(lease, runtime, source_id, generation_id, receipt,
+                       temporal_state, vad_stream) -> bool:
+        matches = getattr(lease, "matches", None)
+        if not callable(matches):
+            return False
+        try:
+            return matches(
+                runtime, source_id, generation_id, receipt,
+                temporal_state=temporal_state, vad_stream=vad_stream,
+                require_state=True,
+            ) is True
+        except Exception:
+            return False
+
+    def transcribe_pcm16(
+        self,
+        pcm16,
+        *,
+        sample_rate: int,
+        start_ms: int,
+        end_ms: int,
+        runtime,
+        source_id: str,
+        generation_id: str,
+        consent_receipt_ref: str,
+        consent_lease,
+        temporal_state=None,
+        vad_stream=None,
+        finality: str = "PROVISIONAL",
+        teacher_asr_opt_in: bool = False,
+    ) -> dict:
+        if teacher_asr_opt_in is not True:
+            raise PermissionError("separate Teacher Ear ASR opt-in is required")
+        if type(source_id) is not str or not source_id.strip() or len(source_id) > 128:
+            raise TeacherEarError("source_id is invalid")
+        if type(generation_id) is not str or not generation_id.strip() or len(generation_id) > 128:
+            raise TeacherEarError("generation_id is invalid")
+        if type(consent_receipt_ref) is not str or not consent_receipt_ref.strip() or len(consent_receipt_ref) > 256:
+            raise PermissionError("audio consent receipt is required")
+        if type(start_ms) is not int or type(end_ms) is not int or start_ms < 0 or end_ms <= start_ms or end_ms - start_ms > _MAX_WINDOW_MS:
+            raise TeacherEarError("audio interval must be a positive window of at most 1000 ms")
+        if type(sample_rate) is not int or not 8000 <= sample_rate <= 48000:
+            raise TeacherEarError("sample_rate must be in [8000, 48000]")
+        if finality not in {"FINAL", "PROVISIONAL"}:
+            raise TeacherEarError("finality must be FINAL or PROVISIONAL")
+        if type(pcm16) not in (bytes, bytearray) or not pcm16 or len(pcm16) % 2 or len(pcm16) > _MAX_PCM_BYTES:
+            raise TeacherEarError("PCM16 must be a non-empty bounded mono byte buffer")
+        measured_ms = (len(pcm16) // 2) * 1000.0 / sample_rate
+        if abs(measured_ms - (end_ms - start_ms)) > 2.0:
+            raise TeacherEarError("PCM16 duration does not match its source interval")
+        if not self._lease_matches(
+            consent_lease, runtime, source_id, generation_id, consent_receipt_ref,
+            temporal_state, vad_stream,
+        ):
+            raise PermissionError("live source-bound AudioConsentLease required")
+
+        with self._lock:
+            recognizer = self._load()
+            waveform = self._np.frombuffer(bytes(pcm16), dtype="<i2").astype(self._np.float32)
+            waveform /= 32768.0
+            stream = recognizer.create_stream()
+            stream.accept_waveform(sample_rate, waveform)
+            # sherpa-onnx's documented streaming example flushes a short zero tail.
+            stream.accept_waveform(
+                sample_rate,
+                self._np.zeros(int(sample_rate * 0.5), dtype=self._np.float32),
+            )
+            decode_steps = 0
+            while recognizer.is_ready(stream):
+                recognizer.decode_stream(stream)
+                decode_steps += 1
+                if decode_steps > 4096:
+                    raise TeacherEarError("recognizer exceeded bounded decode steps")
+            hypothesis = _clean_hypothesis(recognizer.get_result(stream))
+
+        if not self._lease_matches(
+            consent_lease, runtime, source_id, generation_id, consent_receipt_ref,
+            temporal_state, vad_stream,
+        ):
+            raise PermissionError("AudioConsentLease expired or changed during Teacher Ear inference")
+        return {
+            "method": "SHERPA_ONNX_ONLINE_TRANSDUCER",
+            "status": "MEASURED" if hypothesis else "EMPTY",
+            "model_id": self.manifest.model_id,
+            "model_revision": self.manifest.model_revision,
+            "language": self.manifest.language,
+            "license_id": self.manifest.license_id,
+            "source_ref": {
+                "source_id": source_id,
+                "source_sha256": hashlib.sha256(bytes(pcm16)).hexdigest(),
+                "generation_id": generation_id,
+                "consent_receipt_ref": consent_receipt_ref,
+            },
+            "model_file_sha256": dict(self.manifest.file_sha256),
+            "segments": ([{
+                "start_ms": start_ms,
+                "end_ms": end_ms,
+                "timestamp_granularity": "WINDOW",
+                "finality": finality,
+                "text": hypothesis,
+                "hypothesis_not_truth": True,
+            }] if hypothesis else []),
+            "truth_authority": 0,
+            "learning_authority": False,
+            "action_authority": False,
+        }
