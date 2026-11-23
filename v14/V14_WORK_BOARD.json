@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T12:44:40Z",
+  "updated_at": "2026-11-23T15:49:17.756Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -197,18 +197,47 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Perception: preserve the #2327 RAW EAR FIR anti-alias feature path and its staged A5/A4/C3 regression; do not equate caller-supplied PCM with Android microphone capture. Next, reconcile the signed one-shot consumer with QA's companion provider and measure Android lifecycle/route/silence/revocation only after explicit device permission.",
+      "next_step": "Core: rebind the exact vision.py SHA in source_lifecycle_lock_integration_candidate.py and recompute dependent pins bottom-up, coordinated with the parallel attention.py pin in PR #2441. QA: rerun staged/integrated, migration, privacy and consent-revocation checks. Perception: after provider composition, run source/session-disjoint global/local/flicker/scroll/app-transition ablations and prove same-turn A5→A4→C3.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-23T15:49:17.756Z",
       "latest_candidate_pr": {
+        "pr": 2442,
+        "url": "https://github.com/RedMentos/Aii/pull/2442",
+        "branch": "research-perception/v14-vision-lifecycle-current-20261123-run19",
+        "head_sha": "b7fde067040da4292369f953a88c349dcc8b33de",
+        "code_sha": "18384cd3113e25d357955c19b38bd01dfbedb528",
+        "status": "OPEN_DRAFT_FOCUSED_CI_GREEN_STAGED_PIN_FAIL",
+        "scope": "A5 source-bound RAW EYE temporal global/local decomposition; local-first A4 novelty; A3 source-disjoint projector lineage retained",
+        "ci": {
+          "frame_ingress_py313": "PASS_39_OF_39",
+          "frame_ingress_py314": "PASS_39_OF_39",
+          "source_lineage_py313": "PASS_29_OF_29",
+          "source_lineage_py314": "PASS_29_OF_29",
+          "privacy": "CLEAN",
+          "staged_runtime": "FAIL_19_FAILED_234_PASSED_10_SKIPPED_2_ERRORS_41_SUBTESTS",
+          "integrated_regression": "FAIL_SAME_CORE_VISION_PY_PIN"
+        },
+        "local_linux": {
+          "environment": "x86_64_PYTHON_3.13.5",
+          "helper_py_compile": "PASS",
+          "helper_pytest": "PASS_6_OF_6",
+          "helper_mean_ms": "0.0806",
+          "one_call_tracemalloc_peak_bytes": 15008,
+          "full_repository_suite": "BLOCKED_NOT_RUN"
+        },
+        "device": "REDMI_UNVERIFIED_NOT_DEPLOYED",
+        "research_ledger": "R-113",
+        "handoff": "v14/handoffs/RESEARCH_PERCEPTION_VISION_CURRENT_BASE_20261123_RUN19.md"
+      },
+      "proof": "PR #2442 exact code head 18384cd: frame-ingress 39/39 PASS on Python 3.13/3.14; source-lineage 29/29 PASS on both; privacy CLEAN. Staged/integrated fail on Core-owned stale vision.py SHA pin (unsupported lifecycle source); migration PARTIAL. LOCAL_LINUX helper 6/6 PASS, 0.0806 ms/call and 15,008-byte one-call traced peak; full Aii suite blocked/not run. Latest sanitized private receipt: installed base fb563d, updater UP_TO_DATE, runtime STOPPED_BY_USER, model STOPPED, native residency unavailable; B1/B2 zero valid offers, no native latent proof. Not deployed; REDMI_UNVERIFIED.",
+      "previous_candidate_pr": {
         "pr": 2312,
         "head_sha": "5221314d3c01ab6d874ecc0a8b8ff72c34e504a2",
         "base": "qa/v14-companion-os-permission-contract-20261122",
         "state": "OPEN_DRAFT_PARTIAL_CI_PENDING",
         "scope": "signed one-shot RAW EAR consumer; Android-guaranteed 44.1 kHz mono PCM16; 88,200-byte / 117,600-character one-second cap; exact source/generation/signature/consent/replay checks; no microphone provider or learning/action authority",
         "ci": "RUN_44992975596_PENDING; RUN_44992975599_QUEUED"
-      },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture."
+      }
     },
     {
       "id": "V14-007",
