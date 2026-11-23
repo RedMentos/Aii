@@ -5,6 +5,8 @@ from __future__ import annotations
 import unittest
 import xml.etree.ElementTree as ET
 
+import test_process_restart as harness
+
 from process_restart_ui import button_center, transient_overlay_action
 
 
@@ -192,6 +194,7 @@ class ProcessRestartFinalSnapshotRecoveryTests(unittest.TestCase):
         with (
             patch.object(harness, "hierarchy_xml", return_value=overlay_xml),
             patch.object(harness, "adb", return_value="") as adb_call,
+            patch.object(harness, "process_id", return_value=""),
             patch.object(harness.time, "monotonic", side_effect=clock),
         ):
             with self.assertRaisesRegex(AssertionError, "UI did not show expected state"):
@@ -409,6 +412,56 @@ class ProcessRestartPostRestartDurabilityTests(unittest.TestCase):
                         harness.wait_for_restarted_stopped_ui_or_report_durable()
                 self.assertIn("DURABLE_STOP_PROOF_FAILED", output.getvalue())
                 self.assertNotIn("PARTIAL_PASS", output.getvalue())
+
+
+class ProcessRestartPidofTests(unittest.TestCase):
+    def test_pidof_exit_one_without_output_means_absent(self):
+        from unittest.mock import patch
+        completed = harness.subprocess.CompletedProcess(
+            args=["adb", "shell", "pidof", harness.PACKAGE],
+            returncode=1, stdout="", stderr="",
+        )
+        with patch.object(harness.subprocess, "run", return_value=completed):
+            self.assertEqual(harness.process_id(), "")
+
+    def test_pidof_numeric_output_means_present(self):
+        from unittest.mock import patch
+        completed = harness.subprocess.CompletedProcess(
+            args=["adb", "shell", "pidof", harness.PACKAGE],
+            returncode=0, stdout="1234 5678\n", stderr="",
+        )
+        with patch.object(harness.subprocess, "run", return_value=completed):
+            self.assertEqual(harness.process_id(), "1234 5678")
+
+    def test_pidof_exit_one_with_transport_error_fails_closed(self):
+        from unittest.mock import patch
+        completed = harness.subprocess.CompletedProcess(
+            args=["adb", "shell", "pidof", harness.PACKAGE],
+            returncode=1, stdout="", stderr="error: device offline",
+        )
+        with patch.object(harness.subprocess, "run", return_value=completed):
+            with self.assertRaisesRegex(RuntimeError, "ambiguous result"):
+                harness.process_id()
+
+    def test_pidof_exit_one_with_unexpected_stdout_fails_closed(self):
+        from unittest.mock import patch
+        completed = harness.subprocess.CompletedProcess(
+            args=["adb", "shell", "pidof", harness.PACKAGE],
+            returncode=1, stdout="not-a-pid", stderr="",
+        )
+        with patch.object(harness.subprocess, "run", return_value=completed):
+            with self.assertRaisesRegex(RuntimeError, "ambiguous result"):
+                harness.process_id()
+
+    def test_pidof_exit_zero_without_pid_fails_closed(self):
+        from unittest.mock import patch
+        completed = harness.subprocess.CompletedProcess(
+            args=["adb", "shell", "pidof", harness.PACKAGE],
+            returncode=0, stdout="", stderr="",
+        )
+        with patch.object(harness.subprocess, "run", return_value=completed):
+            with self.assertRaisesRegex(RuntimeError, "ambiguous result"):
+                harness.process_id()
 
 
 if __name__ == "__main__":

@@ -10,6 +10,7 @@ on:
       - qa/v14-companion-stop-durability-20261123-run1
       - qa/v14-companion-stop-durability-followup-20261123-run2
       - qa/v14-companion-stop-durability-followup-20261123-run3
+      - qa/v14-companion-instrumented-process-death-20261123-run4
     paths:
       - "android-companion/**"
       - ".github/workflows/v14-android-companion.yml"
@@ -34,8 +35,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Test emulator UI recovery helpers
-        run: python3 android-companion/scripts/test_process_restart_ui.py
+      - name: Test process-restart harness helpers
+        run: |
+          python3 android-companion/scripts/test_process_restart_ui.py
+          python3 android-companion/scripts/test_process_restart_instrumented_unit.py
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -48,7 +51,7 @@ jobs:
           packages: "platform-tools platforms;android-35 build-tools;35.0.0"
       - name: Build and test isolated companion
         run: |
-          gradle --no-daemon -p android-companion :app:assembleDebug :app:testDebugUnitTest
+          gradle --no-daemon -p android-companion :app:assembleDebug :app:assembleDebugAndroidTest :app:testDebugUnitTest
 
   android-companion-process-restart:
     runs-on: ubuntu-latest
@@ -85,7 +88,7 @@ jobs:
       - name: Exercise stop and process-death restart on Android emulator
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2, Apache-2.0
         with:
-          emulator-options: -no-window -gpu lavapipe -no-snapshot -noaudio -no-boot-anim -accel auto -cores 2 -memory 3072 -partition-size 512
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -accel auto -cores 2 -memory 3072 -partition-size 512
           api-level: 33
           target: default
           arch: x86_64
@@ -93,4 +96,4 @@ jobs:
           disable-animations: true
           emulator-boot-timeout: 900
           script: |
-            bash -n android-companion/scripts/wait_for_emulator.sh && bash android-companion/scripts/wait_for_emulator.sh && gradle --no-daemon -p android-companion :app:installDebug && python3 android-companion/scripts/test_process_restart.py
+            bash -n android-companion/scripts/wait_for_emulator.sh && bash android-companion/scripts/wait_for_emulator.sh && gradle --no-daemon -p android-companion :app:installDebug :app:installDebugAndroidTest && python3 android-companion/scripts/test_process_restart_instrumented.py

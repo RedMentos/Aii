@@ -197,3 +197,33 @@ This supersedes the previous unresolved-trigger note above.
 
 - Read exact completion of emulator job `137547472794` and base job `137546050275`. If System UI ANR persists, retain the visible UI failure and only report a durable partial result if the actual Stop tap, persisted OFF marker, PID disappearance and post-restart OFF are all observed. Do not select Close app or relax the test.
 - Update #1984 and this handoff with final emulator result. No user action is needed.
+
+
+## QA run 11 follow-up — exact head d13a6ea (2026-11-23)
+
+- Previous exact emulator run 45161240451 failed at the initial STOPPED status assertion. The status TextView had a non-empty global visible rectangle, but its center was outside that rectangle; the helper returned early merely because some part of the view was visible.
+- Code fix is committed on this QA branch at `d13a6ea38856aca13db47fdb74bf4b1b42d1527c`: center-aware visibility; scroll target center into the ScrollView viewport; apply the same scroll-and-assert path to the status TextView and Stop button. The test still distinguishes programmatic invocation of the actual button listener from physical touch injection.
+- Exact run 45163946321: `android-companion` helper/unit + Gradle/Robolectric build job SUCCESS. `android-companion-process-restart` Android emulator job is still IN_PROGRESS; no emulator result is available yet. The workflow step includes emulator boot with a 900-second boot timeout; it has not emitted a completed job log at this checkpoint.
+- Local environment check: Java is present, but no Aii checkout, Gradle, adb or Android SDK is mounted. Local Android test is BLOCKED/NOT_RUN. GitHub emulator CI is the only executable Android environment available in this worker.
+- Current release branch is `dfa3945b2bbfdb65d932db74e02f402435494e84`; the private owner-read relay separately confirms the Redmi runtime/dashboard updated to this SHA. That does not verify the companion app or physical Android control.
+- PR #2427 remains DRAFT and is stacked on `qa/v14-companion-stop-durability-followup-20261123-run3`. The branch diverges from the current release branch (common ancestor d3ac638; current release is substantially ahead), so it must not be merged directly. Integrator should transplant/rebase the reviewed QA delta onto a current compatible base after the emulator result and dependency review.
+- Redmi companion process-death, real tap input, Accessibility/MediaProjection, and Android app-control integration remain REDMI_UNVERIFIED.
+
+Next: retrieve exact run 45163946321 completion/logs. If emulator boot times out, classify as CI infrastructure BLOCKED rather than a test PASS; if instrumentation fails, fix the actual failure and rerun. Keep PR draft until a completed emulator result and current-base integration review exist.
+
+## QA run 11 second follow-up — exact code head 12c190fc (2026-11-23)
+
+- Exact run 45163946321 reached Android API-33 emulator, installed both APKs, then failed in the host driver at `wait_for_process(present=True)` immediately after the first ActivityScenario returned. The ActivityScenario closes MainActivity on completion; Android may naturally terminate the now-unbound target process. Requiring a PID to remain present after instrumentation was an invalid harness assumption, not proof that Stop persistence failed.
+- Fix committed at `12c190fc856b75a2095e9e9be63718f45f7bc311`: the instrumented target Activity records its own PID plus `SystemClock.elapsedRealtimeNanos()` to two fixed app-private test markers. The host reads only those allowlisted markers via `run-as`, accepts natural teardown exit or force-stops if still resident, verifies absence before the second instrumentation run, and requires a later target-process start time after provider restart. Both instrumentation tests still assert persisted OFF.
+- Added unit coverage for marker allowlisting/format, natural ActivityScenario teardown, resident-process force-stop, failure to disappear, and non-advancing process start time.
+- Exact head workflows: push run 45166539659 and PR run 45166550118 are IN_PROGRESS; the PR helper-test step has completed, Gradle setup is still running, and the emulator process-death step has not started yet. Separate private-bridge security run 45166539786 is SUCCESS. No emulator PASS is claimed.
+- Redmi companion remains REDMI_UNVERIFIED. The target app was not installed or changed on the user's phone; this is only disposable GitHub emulator CI.
+- Branch remains a draft QA stack; do not merge to current release without rebase/transplant and full review.
+
+Next: inspect the completed helper/Gradle job and wait for the new emulator test. If the PID marker is missing or the second start time does not advance, treat that as a real instrumentation failure and fix the exact path; do not revert to requiring the process to remain alive after ActivityScenario teardown.
+
+### Process-start marker correction — code head ce636ac (2026-11-23)
+
+The first PID-marker implementation used `SystemClock.elapsedRealtimeNanos()`, which records the time of the test callback rather than the process's actual start. That would not prove a new process. Corrected in `ce636ac690009e196f22c6f9ad91c527d51fa957` to `Process.getStartElapsedRealtime()`, which returns the process start timestamp before application code executes. This API was added in API 24; the companion app's minSdk is 26, so the call is available on the declared supported range. Official API reference: https://developer.android.com/reference/android/os/Process#getStartElapsedRealtime
+
+Exact new-head PR workflow run 45166877746 is QUEUED at this checkpoint. Earlier 12c190fc runs are still useful only for the harness/Gradle checks; they do not validate this final process-start marker correction.
