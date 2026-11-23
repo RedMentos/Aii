@@ -22,6 +22,31 @@ DEFAULT_PREANSWER_FRACTION = .45
 MIN_ROLE_SLICE_S = 1.0
 
 
+def register_store_telemetry():
+    """Extend the mutable Store telemetry allowlist without editing shared Store code."""
+    from . import store
+
+    store.TELEMETRY_FIELDS.update({
+        "preanswer_seconds_available",
+        "c3_reserved_seconds",
+        "recent_real_prefill_failures",
+        "minimum_role_slice_s",
+    })
+    store.TELEMETRY_ENUMS.update({
+        "PREANSWER_BUDGETED",
+        "POSTCOMMIT_ELIGIBLE",
+        "native_turn_budget_plan",
+        "native_turn_budget_unavailable",
+        "native_body_budgeted_for_c3",
+        "native_body_deferred_for_c3",
+    })
+
+
+# Runtime imports this module before emitting budget telemetry. Keeping the
+# registration here avoids changing Store's shared source/pin contract.
+register_store_telemetry()
+
+
 def zero_token_prefill_failure(row):
     """Source-blind, strict evidence from a completed real assistant turn."""
     if not isinstance(row, dict) or row.get("status") != "DEADLINE":
