@@ -134,3 +134,15 @@ Boss #2370 exact head bae7d031: 0 SUCCESS / 15 QUEUED / 1 IN_PROGRESS / 6 CANCEL
 ## Latest CI detail — 2026-11-22T22:36:01.944Z
 
 #2370: private owner-read bootstrap run 45077837232 SUCCESS (CI only), JEPA Runtime transactional update in progress, 14 other workflows queued. #2379: one-shot MediaProjection provider run 45077108220 SUCCESS, staged/integrated regression queued; branch still stale vs current #2356. No phone capture or user action.
+
+
+## Research & Perception verified checkpoint — 2026-11-23
+
+**User action: none.** No Termux command, model download, weight swap, permission change, updater request, device capture or device mutation was performed.
+
+- Perception PR #2369: exact comparator test/workflow source pin was corrected from stale `81ae3e453c9ef378b072dfc9d243098427e24baa` to current `audio_voice_cues.py` blob `5dbb0fd5e17eb9bcb190d7a3743bdd1ef1ecbb9d`. Code/test commit `9cca6f0a0c6a3be0e8b5d64c02faed7be33aa0d8`; current branch head after handoff is `930f9aab2aaca46dbf0f9ef876b2b1ef68ea85ab`. Exact-head CI has privacy scan, optional NumPy backend, consent-revocation QA and model-lab PASS; comparator and staged/integrated jobs remain QUEUED at last read. The separate staged failure is Core-owned: its composer still pins the old audio blob `b18e450162b062b09368a12b1ca18924ed8c5025`; exact mismatch and required Teacher Ear ephemeral-C3 boundary were handed to #2370. PR remains DRAFT / NOT_RELEASED.
+- Perception PR #2375: MediaProjection→RAW EYE→A4/A5 context path has exact-head GitHub CI PASS, but its tests use synthetic frames. The optional A3 test fits a small synthetic hashed-label projector and scores a shifted synthetic frame; it is not neural gradient learning, JEPA, retention, real screen semantics or Android evidence. The producer returns a bounded 320-character A5 envelope, but normal Runtime→C3 dispatch remains separate.
+- Core PR #2379: one-shot signed MediaProjection provider remains DRAFT and stacked on the older QA companion base. Boss must combine the accepted companion and #2375 Perception base before re-running provider→RAW EYE→C3 integration. No actual Android frame or Redmi capture has been verified.
+- Research PR #2393 adds R-100: sherpa-onnx v2.0.3 has a CPython 3.14 Android API 24+ ARM64 wheel (2.7 MB); companion binary/core wheels are listed, but PyPI provenance attestations are absent. Runtime code is Apache-2.0; models are separate. This is a compatibility candidate only, not installed or benchmarked; German/English quality remains open.
+
+**Next internal action:** Core/Boss should recompute its exact audio source-pin chain, combine QA + Perception + MediaProjection branches, and make the bounded A5 envelope a real C3 input under the same live lease; then run the exact staged/integrated suite. Research & Perception should poll #2369's queued comparator and staged workflows, then only fix Perception-owned failures. Redmi remains REDMI_UNVERIFIED for all these new paths; the release SHA/updater does not prove them installed or working.
