@@ -235,7 +235,11 @@ def _temporal_world_jepa_body_readout(r, e, role):
 
         episodic_rows = []
         if episodic.get("status") in {"EPISODIC_RECALL_SHADOW", "EPISODIC_RECALL_PARTIAL"}:
-            for item in episodic.get("items", []):
+            episodic_items = sorted(
+                episodic.get("items", []),
+                key=lambda item: float(item.get("distance", float("inf"))),
+            )[:2]
+            for item in episodic_items:
                 outcome = item.get("observed_outcome")
                 distance = item.get("distance")
                 source_sha = item.get("source_sha256")
