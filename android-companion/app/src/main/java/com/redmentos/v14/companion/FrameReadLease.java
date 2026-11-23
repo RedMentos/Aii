@@ -11,9 +11,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Revocable owner of one consumed frame and its one-shot pipe.
  *
- * The writer may finish before the paired reader drains the kernel pipe buffer.
- * Keep the read end registered until expiry/stop so clear() can discard buffered
- * screenshot bytes even after the Java source array has been zeroized.
+ * Binder may duplicate the read descriptor for the paired Termux process. Closing
+ * this process's descriptor cannot recall bytes already delivered or buffered for
+ * that remote descriptor. Revocation therefore guarantees no further writes,
+ * zeroizes the in-process source array, closes the provider's descriptor and
+ * requires the downstream UIObservationLease to remain active through C3 use.
  */
 final class FrameReadLease {
     private final byte[] frame;
