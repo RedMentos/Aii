@@ -17,6 +17,8 @@ from typing import Iterator, Mapping, Sequence
 
 import numpy as np
 
+MAX_WINDOW_BATCH_BYTES = 256 * 1024 * 1024
+
 from .data import (
     DataConfig,
     MinuteRow,
@@ -284,6 +286,19 @@ class ArrayDataset:
         """Yield only valid windows; peak window memory is bounded by batch_size."""
         if type(batch_size) is not int or batch_size < 1 or batch_size > 8192:
             raise ValueError("batch_size must be an integer in [1, 8192]")
+        c = len(self.channels)
+        elements_per_window = (
+            self.config.input_length * c
+            + self.config.horizon * len(self.config.seasonal_lags) * c
+            + self.config.horizon * c
+            + self.config.horizon * 4
+        )
+        estimated_bytes = batch_size * elements_per_window * np.dtype(np.float32).itemsize
+        if estimated_bytes > MAX_WINDOW_BATCH_BYTES:
+            raise ValueError(
+                f"window batch would require about {estimated_bytes} bytes; "
+                f"limit is {MAX_WINDOW_BATCH_BYTES}"
+            )
         origins_range = self._candidate_origins(split)
         for offset in range(origins_range.start, origins_range.stop, batch_size):
             origins = np.arange(offset, min(offset + batch_size, origins_range.stop), dtype=np.int64)
@@ -296,6 +311,15 @@ class ArrayDataset:
         """Scan candidates without materializing windows; report exact monthly rejection counts."""
         if type(batch_size) is not int or batch_size < 1 or batch_size > 8192:
             raise ValueError("batch_size must be an integer in [1, 8192]")
+        c = len(self.channels)
+        seasonal_work_bytes = batch_size * self.config.horizon * len(self.config.seasonal_lags) * (
+            c * np.dtype(np.float32).itemsize + 2 * np.dtype(np.int64).itemsize
+        )
+        if seasonal_work_bytes > MAX_WINDOW_BATCH_BYTES:
+            raise ValueError(
+                f"statistics batch would require about {seasonal_work_bytes} bytes; "
+                f"limit is {MAX_WINDOW_BATCH_BYTES}"
+            )
         origins_range = self._candidate_origins(split)
         accepted_by_month: dict[str, int] = {}
         rejected_by_month: dict[str, int] = {}
