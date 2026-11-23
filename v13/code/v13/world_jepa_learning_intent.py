@@ -100,6 +100,24 @@ def _window_field_ids(windows, field, *, sha256=False):
     return _unique(sorted(set(values)), field, sha256=sha256)
 
 
+def _window_lineage_field_ids(windows, lineage_field, fallback_field, *, sha256=False):
+    values = []
+    for window in windows:
+        current = window.get(lineage_field, window.get(fallback_field))
+        if type(current) is not list:
+            raise ValueError("learning-intent window field " + lineage_field)
+        values.extend(current)
+    for value in values:
+        if sha256:
+            _sha(value)
+        elif (
+            type(value) is not str or not 1 <= len(value) <= 160
+            or value.strip() != value or not value.isprintable()
+        ):
+            raise ValueError("learning-intent window field " + lineage_field)
+    return _unique(sorted(set(values)), lineage_field, sha256=sha256)
+
+
 def _head_parameters(head):
     if type(head) is not dict or not {"weights", "bias"} <= set(head):
         raise ValueError("receiver adapter head shape")
@@ -144,10 +162,18 @@ def create_learning_intents(train_windows, holdout_windows, active_record,
     validation_ids = _window_ids(holdout_windows)
     if set(train_ids) & set(validation_ids):
         raise ValueError("learning intent train/validation window overlap")
-    train_source_ids = _window_field_ids(train_windows, "source_ids")
-    validation_source_ids = _window_field_ids(holdout_windows, "source_ids")
-    train_source_hashes = _window_field_ids(train_windows, "source_sha256s", sha256=True)
-    validation_source_hashes = _window_field_ids(holdout_windows, "source_sha256s", sha256=True)
+    train_source_ids = _window_lineage_field_ids(
+        train_windows, "lineage_source_ids", "source_ids"
+    )
+    validation_source_ids = _window_lineage_field_ids(
+        holdout_windows, "lineage_source_ids", "source_ids"
+    )
+    train_source_hashes = _window_lineage_field_ids(
+        train_windows, "lineage_source_sha256s", "source_sha256s", sha256=True
+    )
+    validation_source_hashes = _window_lineage_field_ids(
+        holdout_windows, "lineage_source_sha256s", "source_sha256s", sha256=True
+    )
     train_transitions = _window_field_ids(train_windows, "action_ids")
     validation_transitions = _window_field_ids(holdout_windows, "action_ids")
     if (

@@ -34,7 +34,8 @@ def _make_store(home):
     return store
 
 
-def _add_session(store, label, session_index, *, status_overrides=None, event_count=4):
+def _add_session(store, label, session_index, *, status_overrides=None, event_count=4,
+                 context_source_refs_factory=None):
     status_overrides = status_overrides or {}
     session = store.new_session(label)
     event_ids = []
@@ -45,9 +46,12 @@ def _add_session(store, label, session_index, *, status_overrides=None, event_co
         generation = event["brain_generation_id"]
         action_index = (session_index + offset) % len(world_model.ACTIONS)
         route = world_model.ACTIONS[action_index]
+        selection_source_refs = [event["source_ref"]]
+        if context_source_refs_factory is not None:
+            selection_source_refs.extend(context_source_refs_factory(session_index, offset) or [])
         selection = contracts.packet(
             "ActionSelection", "C2_CONTROL", event_id, generation,
-            [event["source_ref"]],
+            selection_source_refs,
             selected={
                 "action_id": "TEXT_REPORT", "action_type": "TEXT_REPORT",
                 "score": 0.0, "permission_class": "local_text_only",
@@ -139,6 +143,103 @@ def test_temporal_page_and_dense_windows_keep_known_omissions_and_reject_unknown
             assert len(window["action_ids"]) in (3, 4)
             assert len(set(window["source_sha256s"])) == len(window["source_sha256s"])
             assert window["generation_id"]
+    finally:
+        store.close()
+
+
+def test_temporal_action_selection_context_lineage_is_persisted_and_source_disjoint(tmp_path):
+    store = _make_store(tmp_path / "temporal-context-lineage")
+    try:
+        shared = store.source("shared recalled context source", "MEMORY")
+        session_ids = []
+        for index in range(4):
+            session, _events = _add_session(
+                store, "context-lineage", index, event_count=8,
+                context_source_refs_factory=(
+                    (lambda _session, _offset, ref=shared: [ref])
+                    if index in (0, 1) else None
+                ),
+            )
+            session_ids.append(session)
+        receipts, rejected, _cursor, _scanned, _censored, has_more = verify_committed_temporal_page(
+            store, after_seq=0, limit=64
+        )
+        assert rejected == 0 and has_more is False
+        from v13.world_jepa_temporal import _receipt_row, _split_windows
+        rows = [_receipt_row(store, receipt) for receipt in receipts
+                if receipt.status != "OUTCOME_UNKNOWN"]
+        shared_rows = [row for row in rows if row["session_id"] in set(session_ids[:2])]
+        assert shared_rows
+        assert all(
+            any(ref["source_id"] == shared["source_id"] for ref in row["source_refs"])
+            for row in shared_rows
+        )
+        windows = build_temporal_windows(store, rows)
+        train, holdout, split = _split_windows(windows)
+        train_sessions = {window["session_id"] for window in train}
+        holdout_sessions = {window["session_id"] for window in holdout}
+        assert (session_ids[0] in train_sessions) == (session_ids[1] in train_sessions)
+        assert (session_ids[0] in holdout_sessions) == (session_ids[1] in holdout_sessions)
+        train_lineage = {
+            source for window in train for source in window["lineage_source_ids"]
+        }
+        holdout_lineage = {
+            source for window in holdout for source in window["lineage_source_ids"]
+        }
+        assert not train_lineage & holdout_lineage
+        assert split["source_disjoint"] is True
+        assert shared["source_id"] in train_lineage or shared["source_id"] in holdout_lineage
+    finally:
+        store.close()
+
+
+def test_temporal_source_forget_detects_evicted_action_selection_context_and_censored_outcomes(tmp_path):
+    store = _make_store(tmp_path / "temporal-context-forget")
+    try:
+        from v13.world_jepa_temporal import _receipt_row, _record_references_source
+        context = store.source("context source to forget", "MEMORY")
+        _session, event_ids = _add_session(
+            store, "context-forget", 0, event_count=4, status_overrides={0: "INTERRUPTED"},
+            context_source_refs_factory=lambda _session, _offset: [context],
+        )
+        receipts, rejected, _cursor, _scanned, _censored, _more = verify_committed_temporal_page(
+            store, after_seq=0, limit=16
+        )
+        assert rejected == 0
+        target_receipt = next(receipt for receipt in receipts if receipt.event_id == event_ids[0])
+        target = store.one(
+            "SELECT a.id AS action_id,a.rowid AS scan_seq FROM actions a WHERE a.event_id=?",
+            (event_ids[0],),
+        )
+        assert target is not None and target_receipt.status == "INTERRUPTED"
+        _receipt_row(store, target_receipt)
+        evicted_record = {
+            "scan_cursor": target["scan_seq"],
+            "experience_rows": [],
+            "retention_holdouts": [],
+            "learning_intents": {},
+        }
+        assert _record_references_source(
+            store, evicted_record, context["source_id"]
+        ) is True
+        assert _record_references_source(
+            store, evicted_record, context["source_id"], {target["action_id"]}
+        ) is False
+        assert _record_references_source(
+            store, dict(evicted_record, scan_cursor=target["scan_seq"] - 1),
+            context["source_id"],
+        ) is False
+        assert _record_references_source(
+            store, evicted_record, "unrelated-context-source"
+        ) is False
+        with store.tx() as connection:
+            connection.execute("UPDATE sources SET deleted=1 WHERE id=?", (context["source_id"],))
+        try:
+            _receipt_row(store, target_receipt)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("revoked ActionSelection context source was accepted")
     finally:
         store.close()
 

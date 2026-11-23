@@ -56,6 +56,8 @@ CENSORED = {"CANCELLED", "ABORTED", "INTERRUPTED"}
 UNKNOWN = {"OUTCOME_UNKNOWN"}
 TERMINAL = {"FINAL", "FAILED", "ERROR", "DEADLINE", "REJECTED"} | CENSORED | UNKNOWN
 SHA256 = set("0123456789abcdef")
+MAX_ACTION_SOURCE_REFS = 64
+_SOURCE_REF_KEYS = {"source_id", "sha256", "char_start", "char_end", "modality"}
 
 
 def _json_hash(value):
@@ -97,6 +99,129 @@ def _mapping(row):
         raise ValueError("invalid Store row") from exc
 
 
+def _json_object(raw, name):
+    if type(raw) is dict:
+        return raw
+    if type(raw) is not str:
+        raise ValueError(name)
+
+    def unique(pairs):
+        value = {}
+        for key, item in pairs:
+            if key in value:
+                raise ValueError(name + " duplicate key")
+            value[key] = item
+        return value
+
+    value = json.loads(raw, object_pairs_hook=unique)
+    if type(value) is not dict:
+        raise ValueError(name)
+    return value
+
+
+def _validated_source_ref(store, value):
+    if type(value) is not dict or set(value) != _SOURCE_REF_KEYS:
+        raise ValueError("ActionSelection source ref shape")
+    source_id, source_sha = value.get("source_id"), value.get("sha256")
+    start, end, modality = value.get("char_start"), value.get("char_end"), value.get("modality")
+    if (type(source_id) is not str or not source_id or len(source_id) > 256
+            or type(source_sha) is not str or len(source_sha) != 64
+            or any(ch not in SHA256 for ch in source_sha)
+            or type(start) is not int or type(end) is not int or not 0 <= start <= end
+            or type(modality) is not str or not modality or len(modality) > 64):
+        raise ValueError("ActionSelection source ref identity")
+    if type(store.read_source(value)) is not str:
+        raise ValueError("ActionSelection source ref read")
+    return {
+        "source_id": source_id, "sha256": source_sha,
+        "char_start": start, "char_end": end, "modality": modality,
+    }
+
+
+def _selection_source_refs(store, receipt):
+    rows = store.rows(
+        """SELECT payload FROM packets
+           WHERE kind='ActionSelection' AND event_id=? AND generation_id=? AND created<=?
+           ORDER BY created DESC LIMIT 17""",
+        (receipt.event_id, receipt.generation_id, receipt.created),
+    )
+    if type(rows) is not list or len(rows) >= 17:
+        raise ValueError("ActionSelection source scan bound")
+    committed = []
+    for raw in rows:
+        packet_row = _mapping(raw)
+        selection = _json_object(packet_row.get("payload"), "ActionSelection source payload")
+        if (selection.get("event_id") != receipt.event_id
+                or selection.get("brain_generation_id") != receipt.generation_id):
+            raise ValueError("ActionSelection source binding")
+        stage = selection.get("stage")
+        if stage not in (None, "PREDICTION", "COMMIT"):
+            raise ValueError("ActionSelection source stage")
+        if stage != "PREDICTION":
+            committed.append(selection)
+    if len(committed) != 1:
+        raise ValueError("ActionSelection source cardinality")
+    raw_refs = committed[0].get("provenance")
+    if type(raw_refs) is not list or not 1 <= len(raw_refs) <= MAX_ACTION_SOURCE_REFS:
+        raise ValueError("ActionSelection source refs")
+    refs, seen, source_hashes = [], set(), {}
+    for raw_ref in raw_refs:
+        ref = _validated_source_ref(store, raw_ref)
+        key = (ref["source_id"], ref["sha256"], ref["char_start"],
+               ref["char_end"], ref["modality"])
+        if key in seen:
+            raise ValueError("duplicate ActionSelection source ref")
+        prior = source_hashes.get(ref["source_id"])
+        if prior is not None and prior != ref["sha256"]:
+            raise ValueError("ActionSelection source digest changed")
+        source_hashes[ref["source_id"]] = ref["sha256"]
+        seen.add(key)
+        refs.append(ref)
+    if receipt.source_ref not in refs:
+        raise ValueError("ActionSelection omitted event source")
+    refs.sort(key=lambda item: (
+        item["source_id"], item["sha256"], item["char_start"],
+        item["char_end"], item["modality"],
+    ))
+    return refs
+
+
+def _row_source_pairs(row):
+    primary = (row.get("source_id"), _sha(row.get("source_sha256")))
+    raw = row.get("source_refs")
+    if raw is None:
+        return [primary]
+    if type(raw) is not list or not 1 <= len(raw) <= MAX_ACTION_SOURCE_REFS:
+        raise ValueError("invalid temporal source ref set")
+    pairs, seen, source_hashes = set(), set(), {}
+    for item in raw:
+        if type(item) is not dict or set(item) != _SOURCE_REF_KEYS:
+            raise ValueError("invalid temporal source ref")
+        source_id, digest = item.get("source_id"), item.get("sha256")
+        start, end, modality = item.get("char_start"), item.get("char_end"), item.get("modality")
+        if (type(source_id) is not str or not source_id or len(source_id) > 256
+                or type(start) is not int or type(end) is not int or not 0 <= start <= end
+                or type(modality) is not str or not modality or len(modality) > 64):
+            raise ValueError("invalid temporal source ref identity")
+        _sha(digest)
+        key = (source_id, digest, start, end, modality)
+        if key in seen:
+            raise ValueError("duplicate temporal source ref")
+        prior = source_hashes.get(source_id)
+        if prior is not None and prior != digest:
+            raise ValueError("temporal source identity changed digest")
+        source_hashes[source_id] = digest
+        seen.add(key)
+        pairs.add((source_id, digest))
+    if primary not in pairs:
+        raise ValueError("primary event source omitted from source refs")
+    return sorted(pairs)
+
+
+def _row_has_source(row, source_id):
+    return any(item[0] == source_id for item in _row_source_pairs(row))
+
+
 def empty_state():
     return {
         "schema": SCHEMA,
@@ -133,6 +258,17 @@ def _receipt_row(store, receipt):
     source_id = proof.get("source_id")
     if type(source_id) is not str or not source_id or len(source_id) > 256:
         raise ValueError("temporal source identity")
+    source_refs = _selection_source_refs(store, receipt)
+    fingerprint = _sha(receipt.fingerprint)
+    if len(source_refs) > 1:
+        fingerprint = _json_hash({
+            "receipt_fingerprint": fingerprint,
+            "source_refs": [
+                [item["source_id"], item["sha256"], item["char_start"],
+                 item["char_end"], item["modality"]]
+                for item in source_refs
+            ],
+        })
     return {
         "action_id": receipt.action_id,
         "event_id": event_id,
@@ -140,7 +276,8 @@ def _receipt_row(store, receipt):
         "session_id": session_id,
         "source_id": source_id,
         "source_sha256": _sha(proof.get("source_sha256")),
-        "fingerprint": _sha(receipt.fingerprint),
+        "source_refs": source_refs,
+        "fingerprint": fingerprint,
         "outcome_sha256": _sha(proof.get("outcome_sha256")),
         "created": float(receipt.created),
         "status": status,
@@ -157,7 +294,8 @@ def _validate_row(row):
         "source_sha256", "fingerprint", "outcome_sha256", "created", "status",
         "censored", "s", "a", "y",
     }
-    if type(row) is not dict or set(row) != required:
+    if (type(row) is not dict or not required <= set(row)
+            or set(row) - required not in (set(), {"source_refs"})):
         raise ValueError("invalid temporal T8 row")
     for key in ("action_id", "event_id", "generation_id", "session_id", "source_id"):
         if type(row[key]) is not str or not row[key] or len(row[key]) > 256:
@@ -172,6 +310,7 @@ def _validate_row(row):
             or not _finite_vector(row["s"], 4)
             or not _finite_vector(row["y"], 3)):
         raise ValueError("invalid temporal T8 values")
+    _row_source_pairs(row)
 
 
 def _window_id(action_ids, history_length):
@@ -265,6 +404,11 @@ def build_temporal_windows(store, rows, cancel_check=None):
                 x, x2 = _temporal_features(history, target, history_length)
                 action_ids = [item["action_id"] for item in sequence]
                 window_id = _window_id(action_ids, history_length)
+                lineage_pairs = sorted({
+                    pair
+                    for item in sequence
+                    for pair in _row_source_pairs(item)
+                })
                 windows.append({
                     "window_id": window_id,
                     "session_id": session_id,
@@ -272,6 +416,9 @@ def build_temporal_windows(store, rows, cancel_check=None):
                     "action_ids": action_ids,
                     "source_ids": [item["source_id"] for item in sequence],
                     "source_sha256s": [item["source_sha256"] for item in sequence],
+                    "lineage_source_ids": sorted({source_id for source_id, _digest in lineage_pairs}),
+                    "lineage_source_sha256s": sorted({digest for _source_id, digest in lineage_pairs}),
+                    "lineage_source_pairs": [list(pair) for pair in lineage_pairs],
                     "X": x,
                     "A": world_model.onehot(target["a"]),
                     "X2": x2,
@@ -305,13 +452,13 @@ def _split_windows(windows):
     owner_by_source = {}
     for window in windows:
         session = window["session_id"]
-        for source_key in window["source_ids"]:
+        for source_key in window.get("lineage_source_ids", window["source_ids"]):
             previous = owner_by_source.get(source_key)
             if previous is None:
                 owner_by_source[source_key] = session
             else:
                 union(session, previous)
-        for source_key in window["source_sha256s"]:
+        for source_key in window.get("lineage_source_sha256s", window["source_sha256s"]):
             _sha(source_key)
             previous = owner_by_source.get(source_key)
             if previous is None:
@@ -327,7 +474,9 @@ def _split_windows(windows):
         sources = sorted({
             source_sha
             for window in windows if window["session_id"] in members
-            for source_sha in window["source_sha256s"]
+            for source_sha in window.get(
+                "lineage_source_sha256s", window["source_sha256s"]
+            )
         })
         # Session IDs are random runtime identifiers. Partition order must depend
         # only on stable source-content digests, otherwise identical fixtures can
@@ -343,8 +492,24 @@ def _split_windows(windows):
     holdout = [window for window in windows if fold_by_session[window["session_id"]] == "holdout"]
     if len(train) < MIN_PARTITION or len(holdout) < MIN_PARTITION:
         raise ValueError("insufficient source-disjoint temporal partitions")
-    train_sources = {source for window in train for source in window["source_sha256s"]}
-    holdout_sources = {source for window in holdout for source in window["source_sha256s"]}
+    train_source_ids = {
+        source for window in train
+        for source in window.get("lineage_source_ids", window["source_ids"])
+    }
+    holdout_source_ids = {
+        source for window in holdout
+        for source in window.get("lineage_source_ids", window["source_ids"])
+    }
+    train_sources = {
+        source for window in train
+        for source in window.get("lineage_source_sha256s", window["source_sha256s"])
+    }
+    holdout_sources = {
+        source for window in holdout
+        for source in window.get("lineage_source_sha256s", window["source_sha256s"])
+    }
+    if train_source_ids & holdout_source_ids:
+        raise ValueError("temporal source id leakage")
     if train_sources & holdout_sources:
         raise ValueError("temporal source digest leakage")
     train_sessions = {window["session_id"] for window in train}
@@ -357,6 +522,8 @@ def _split_windows(windows):
         "holdout_session_count": len(holdout_sessions),
         "train_source_count": len(train_sources),
         "holdout_source_count": len(holdout_sources),
+        "train_source_id_count": len(train_source_ids),
+        "holdout_source_id_count": len(holdout_source_ids),
     }
 
 
@@ -496,16 +663,18 @@ def _temporal_neuromodulation(store, train_windows, row_by_id, model):
 
 
 def _source_sha(rows):
-    material = [
-        {
+    material = []
+    for row in sorted(rows, key=lambda item: item["action_id"]):
+        item = {
             "action_id": row["action_id"],
             "source_id": row["source_id"],
             "source_sha256": row["source_sha256"],
             "fingerprint": row["fingerprint"],
             "outcome_sha256": row["outcome_sha256"],
         }
-        for row in sorted(rows, key=lambda item: item["action_id"])
-    ]
+        if row.get("source_refs") is not None:
+            item["source_refs"] = row["source_refs"]
+        material.append(item)
     return _json_hash(material)
 
 
@@ -546,6 +715,14 @@ def _pack_holdout(windows, model):
         "target_sha256": _json_hash(target_values),
         "source_ids": sorted({source for window in windows for source in window["source_ids"]}),
         "source_sha256s": sorted({source for window in windows for source in window["source_sha256s"]}),
+        "lineage_source_ids": sorted({
+            source for window in windows
+            for source in window.get("lineage_source_ids", window["source_ids"])
+        }),
+        "lineage_source_sha256s": sorted({
+            source for window in windows
+            for source in window.get("lineage_source_sha256s", window["source_sha256s"])
+        }),
     }
 
 
@@ -657,11 +834,16 @@ def _record_valid(record):
     if type(record["retention_holdouts"]) is not list or len(record["retention_holdouts"]) > 3:
         raise ValueError("temporal retention cohort budget")
     for holdout in record["retention_holdouts"]:
-        if (type(holdout) is not dict
-                or set(holdout) != {
-                    "window_ids", "X", "A", "X2", "target_latents", "target_sha256",
-                    "source_ids", "source_sha256s",
-                }):
+        legacy_holdout_keys = {
+            "window_ids", "X", "A", "X2", "target_latents", "target_sha256",
+            "source_ids", "source_sha256s",
+        }
+        lineage_holdout_keys = legacy_holdout_keys | {
+            "lineage_source_ids", "lineage_source_sha256s",
+        }
+        if type(holdout) is not dict or set(holdout) not in (
+            legacy_holdout_keys, lineage_holdout_keys
+        ):
             raise ValueError("temporal retention record shape")
         _unpack_holdout(holdout)
         if (type(holdout["window_ids"]) is not list
@@ -672,6 +854,17 @@ def _record_valid(record):
             raise ValueError("temporal retention provenance")
         for source_sha in holdout["source_sha256s"]:
             _sha(source_sha)
+        if set(holdout) == lineage_holdout_keys:
+            lineage_ids = holdout["lineage_source_ids"]
+            lineage_hashes = holdout["lineage_source_sha256s"]
+            if (type(lineage_ids) is not list or type(lineage_hashes) is not list
+                    or any(type(source) is not str or not source for source in lineage_ids)):
+                raise ValueError("temporal retention lineage")
+            for source_sha in lineage_hashes:
+                _sha(source_sha)
+            if (not set(holdout["source_ids"]) <= set(lineage_ids)
+                    or not set(holdout["source_sha256s"]) <= set(lineage_hashes)):
+                raise ValueError("temporal retention lineage")
         _sha(holdout["target_sha256"])
     if type(record["metrics"]) is not dict:
         raise ValueError("temporal metrics")
@@ -1401,6 +1594,21 @@ class TemporalWorldJEPAStoreConsumer:
 
             query_action_ids = [receipt.action_id for receipt in verified_history]
             query_source_hashes = [receipt.source_ref["sha256"] for receipt in verified_history]
+            try:
+                query_source_ref_sets = [
+                    _selection_source_refs(self.store, receipt) for receipt in verified_history
+                ]
+            except (ValueError, TypeError, KeyError):
+                return {
+                    "status": "QUERY_SOURCE_CONTEXT_REVOKED", "items": [],
+                    "decision_authority": "NONE", "native_memory_consumed": False,
+                }
+            query_lineage_pairs = sorted({
+                (ref["source_id"], ref["sha256"])
+                for ref_set in query_source_ref_sets for ref in ref_set
+            })
+            query_lineage_source_ids = {source_id for source_id, _digest in query_lineage_pairs}
+            query_lineage_source_hashes = {digest for _source_id, digest in query_lineage_pairs}
             query_action_set = set(query_action_ids)
             query_source_set = set(query_source_hashes)
             train_windows = []
@@ -1411,7 +1619,15 @@ class TemporalWorldJEPAStoreConsumer:
                     continue
                 if query_action_set.intersection(window["action_ids"]):
                     continue
-                if query_source_set.intersection(window["source_sha256s"]):
+                window_lineage_ids = set(
+                    window.get("lineage_source_ids", window["source_ids"])
+                )
+                window_lineage_hashes = set(
+                    window.get("lineage_source_sha256s", window["source_sha256s"])
+                )
+                if (query_source_set.intersection(window["source_sha256s"])
+                        or query_lineage_source_ids.intersection(window_lineage_ids)
+                        or query_lineage_source_hashes.intersection(window_lineage_hashes)):
                     continue
                 target = row_by_id.get(window["action_ids"][-1])
                 if target is None or target["status"] not in OBSERVED_RECALL_STATUSES:
@@ -1433,6 +1649,8 @@ class TemporalWorldJEPAStoreConsumer:
                     "train_window_count": 0,
                     "query_history_action_ids": query_action_ids,
                     "query_history_source_sha256s": query_source_hashes,
+                    "query_lineage_source_ids": sorted(query_lineage_source_ids),
+                    "query_lineage_source_sha256s": sorted(query_lineage_source_hashes),
                     "decision_authority": "NONE", "native_memory_consumed": False,
                 }
 
@@ -1511,7 +1729,27 @@ class TemporalWorldJEPAStoreConsumer:
                         receipts = [verified_cache.get(action_id) for action_id in window["action_ids"]]
                     if any(receipt is None for receipt in receipts):
                         continue
-                    if ([receipt.source_ref["source_id"] for receipt in receipts]
+                    try:
+                        receipt_source_ref_sets = [
+                            _selection_source_refs(self.store, receipt) for receipt in receipts
+                        ]
+                    except (ValueError, TypeError, KeyError):
+                        rejected_windows += 1
+                        continue
+                    receipt_lineage_pairs = sorted({
+                        (ref["source_id"], ref["sha256"])
+                        for ref_set in receipt_source_ref_sets for ref in ref_set
+                    })
+                    expected_lineage_pairs = sorted(
+                        tuple(pair) for pair in window.get(
+                            "lineage_source_pairs",
+                            [[source, digest] for source, digest in zip(
+                                window["source_ids"], window["source_sha256s"]
+                            )],
+                        )
+                    )
+                    if (receipt_lineage_pairs != expected_lineage_pairs
+                            or [receipt.source_ref["source_id"] for receipt in receipts]
                             != window["source_ids"]
                             or [receipt.source_ref["sha256"] for receipt in receipts]
                             != window["source_sha256s"]):
@@ -1534,10 +1772,13 @@ class TemporalWorldJEPAStoreConsumer:
                         "generation_id": target_receipt.generation_id,
                         "target_status": target_receipt.status,
                         "source_ref": target_receipt.source_ref,
+                        "source_refs": receipt_source_ref_sets[-1],
                         "source_sha256": target_receipt.source_ref["sha256"],
                         "window_action_ids": list(window["action_ids"]),
                         "window_source_sha256s": list(window["source_sha256s"]),
                         "window_source_refs": [receipt.source_ref for receipt in receipts],
+                        "window_source_ref_sets": receipt_source_ref_sets,
+                        "window_lineage_source_pairs": [list(pair) for pair in receipt_lineage_pairs],
                         "observed_outcome": {
                             "duration_s": round(min(86400.0, max(0.0, duration_s)), 2),
                             "success": target_receipt.status == "FINAL",
@@ -1563,6 +1804,8 @@ class TemporalWorldJEPAStoreConsumer:
                 "history_length": history_length,
                 "query_history_action_ids": query_action_ids,
                 "query_history_source_sha256s": query_source_hashes,
+                "query_lineage_source_ids": sorted(query_lineage_source_ids),
+                "query_lineage_source_sha256s": sorted(query_lineage_source_hashes),
                 "candidate_window_count": len(windows),
                 "train_window_count_before_cap": train_window_count_before_cap,
                 "train_window_count": len(train_windows),
@@ -1664,6 +1907,13 @@ class TemporalWorldJEPAStoreConsumer:
                 "source_sha256": active["source_sha256"],
                 "history_action_ids": [row["action_id"] for row in history_rows],
                 "history_source_sha256s": [row["source_sha256"] for row in history_rows],
+                "history_lineage_source_ids": sorted({
+                    source for row in history_rows for source, _digest in _row_source_pairs(row)
+                }),
+                "history_lineage_source_sha256s": sorted({
+                    digest for row in history_rows for _source, digest in _row_source_pairs(row)
+                }),
+                "history_source_ref_sets": [row.get("source_refs", []) for row in history_rows],
                 "support_samples": support,
                 "receiver_utility": utility,
                 "learning_intent_id": intent.get("intent_id") if intent else None,
@@ -1742,6 +1992,13 @@ class TemporalWorldJEPAStoreConsumer:
                 raise ValueError("nonfinite temporal receiver matrix")
             history_action_ids = [row["action_id"] for row in history_rows]
             history_source_sha256s = [row["source_sha256"] for row in history_rows]
+            history_lineage_source_ids = sorted({
+                source for row in history_rows for source, _digest in _row_source_pairs(row)
+            })
+            history_lineage_source_sha256s = sorted({
+                digest for row in history_rows for _source, digest in _row_source_pairs(row)
+            })
+            history_source_ref_sets = [row.get("source_refs", []) for row in history_rows]
             active_intents = active.get("learning_intents", {})
             active_receipts = active.get("weight_delta_receipts", {})
             learning_intent_ids = {
@@ -1770,6 +2027,9 @@ class TemporalWorldJEPAStoreConsumer:
                         "history_length": history_length,
                         "history_action_ids": history_action_ids,
                         "history_source_sha256s": history_source_sha256s,
+                        "history_lineage_source_ids": history_lineage_source_ids,
+                        "history_lineage_source_sha256s": history_lineage_source_sha256s,
+                        "history_source_ref_sets": history_source_ref_sets,
                         "receiver_utility": utility,
                         "learning_intent_id": intent.get("intent_id") if intent else None,
                         "weight_delta_receipt_id": receipt.get("receipt_id") if receipt else None,
@@ -1837,6 +2097,9 @@ class TemporalWorldJEPAStoreConsumer:
                 "history_length": history_length,
                 "history_action_ids": history_action_ids,
                 "history_source_sha256s": history_source_sha256s,
+                "history_lineage_source_ids": history_lineage_source_ids,
+                "history_lineage_source_sha256s": history_lineage_source_sha256s,
+                "history_source_ref_sets": history_source_ref_sets,
                 "checkpoint_sha256": active["checkpoint_sha256"],
                 "source_sha256": active["source_sha256"],
                 "learning_intent_ids": learning_intent_ids,
@@ -1907,10 +2170,10 @@ def _record_references_source(store, record, source_id, pending_action_ids=()):
     """
     if record is None:
         return False
-    if any(row.get("source_id") == source_id for row in record.get("experience_rows", [])):
+    if any(_row_has_source(row, source_id) for row in record.get("experience_rows", [])):
         return True
     for holdout in record.get("retention_holdouts", []):
-        if source_id in holdout.get("source_ids", []):
+        if source_id in holdout.get("lineage_source_ids", holdout.get("source_ids", [])):
             return True
     for intent in record.get("learning_intents", {}).values():
         if (source_id in intent.get("source_ids", [])
@@ -1928,7 +2191,10 @@ def _record_references_source(store, record, source_id, pending_action_ids=()):
                JOIN events e ON e.id=a.event_id
                WHERE a.rowid<=? AND e.source_id=?
                  AND a.outcome IS NOT NULL AND a.expected LIKE ?
-                 AND a.status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED')
+                 AND a.status IN (
+                   'FINAL','FAILED','ERROR','DEADLINE','REJECTED',
+                   'CANCELLED','ABORTED','INTERRUPTED'
+               )
                ORDER BY a.rowid ASC LIMIT ?""",
             (cursor, source_id, '%"forecast"%', MAX_ROWS + 1),
         )
@@ -1936,6 +2202,31 @@ def _record_references_source(store, record, source_id, pending_action_ids=()):
             raise ValueError("temporal source-forget history query")
         for row in rows:
             if _mapping(row).get("id") not in pending:
+                return True
+        selected_rows = store.rows(
+            """SELECT DISTINCT a.id AS action_id
+               FROM actions a
+               JOIN events e ON e.id=a.event_id
+               JOIN packets p ON p.kind='ActionSelection'
+                    AND p.event_id=a.event_id AND p.generation_id=e.generation_id
+               WHERE a.rowid<=? AND a.outcome IS NOT NULL AND a.expected LIKE ?
+                 AND a.status IN (
+                     'FINAL','FAILED','ERROR','DEADLINE','REJECTED',
+                     'CANCELLED','ABORTED','INTERRUPTED'
+                 )
+                 AND p.created<=a.created
+                 AND COALESCE(json_extract(p.payload,'$.stage'),'COMMIT')!='PREDICTION'
+                 AND EXISTS (
+                     SELECT 1 FROM json_each(p.payload,'$.provenance') AS source_ref
+                     WHERE json_extract(source_ref.value,'$.source_id')=?
+                 )
+               ORDER BY a.rowid ASC LIMIT ?""",
+            (cursor, '%"forecast"%', source_id, MAX_ROWS + 1),
+        )
+        if type(selected_rows) is not list or len(selected_rows) > MAX_ROWS:
+            return True
+        for row in selected_rows:
+            if _mapping(row).get("action_id") not in pending:
                 return True
     return False
 
@@ -1976,7 +2267,7 @@ def combined_source_forget_guard(store, source_id):
         previous = state["previous"]
         pending_action_ids = {
             row["action_id"] for row in state["pending_rows"]
-            if row["source_id"] == source_id
+            if _row_has_source(row, source_id)
         }
         active_uses = _record_references_source(
             store, active, source_id, pending_action_ids
@@ -2022,7 +2313,7 @@ def combined_source_forget_guard(store, source_id):
         pending_by_id = {
             row["action_id"]: row
             for row in state["pending_rows"]
-            if row["source_id"] != source_id
+            if not _row_has_source(row, source_id)
         }
         removed_pending = len(state["pending_rows"]) - len(pending_by_id)
         requeued = 0
@@ -2036,7 +2327,7 @@ def combined_source_forget_guard(store, source_id):
                 scan_cursor = previous["scan_cursor"]
                 retained_ids = set(previous["fingerprints"])
                 for row in active["experience_rows"]:
-                    if row["action_id"] in retained_ids or row["source_id"] == source_id:
+                    if row["action_id"] in retained_ids or _row_has_source(row, source_id):
                         continue
                     if row["action_id"] not in pending_by_id:
                         pending_by_id[row["action_id"]] = row
