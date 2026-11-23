@@ -191,3 +191,15 @@ This is a falsifiable harness hypothesis, not yet a proven fix.
 - Redmi physical device remains REDMI_UNVERIFIED. No APK install, pairing, permission change, companion action, chat send, update request, model/weight change or user-data mutation occurred.
 
 **Next:** read back the exact new-head emulator result. If focus is still absent, inspect ActivityTaskManager/WindowManager state after the ActivityScenario launch rather than adding another external launch or bypassing Espresso.
+
+
+
+### Exact-head update — 2026-11-23 09:56 UTC
+
+- Current code/test head: `4da9781266d9a1947a97f7f8cf99854e04ab3a36`.
+- Exact workflow run: `45151041687`.
+- Completed Android helper/build job `137612193615`: **23/23 UI helper tests + 11/11 instrumentation-driver tests PASS**; Android Gradle/Robolectric unit tests and AndroidTest APK compilation both completed with `BUILD SUCCESSFUL`.
+- LOCAL_LINUX_ISOLATED: a separate four-case harness for the changed host launch ownership and fail-closed checks passed **4/4**. No full Aii checkout was available.
+- Emulator process-restart job `137612193066` remains IN_PROGRESS at this readback. No visible Stop, PID-death or restart PASS is claimed yet.
+- The earlier `60e7e92` RootViewWithoutFocusException remains a recorded FAIL; the duplicate host Activity launch is removed on the current head, but the hypothesis is not accepted until the exact current-head emulator sequence completes.
+- Physical Redmi remains REDMI_UNVERIFIED; no companion APK/device action occurred.
