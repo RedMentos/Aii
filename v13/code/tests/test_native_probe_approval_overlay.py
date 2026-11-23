@@ -23,9 +23,10 @@ def _trees(tmp_path):
     return code_dir, staging
 
 
-def _apply(code_dir, staging):
+def _apply(code_dir, staging, expected_runtime=None):
     expected = (code_dir / "v13/operator.py").read_bytes()
-    expected_runtime = (staging / "v13/runtime.py").read_bytes()
+    if expected_runtime is None:
+        expected_runtime = (staging / "v13/runtime.py").read_bytes()
     return OVERLAY.apply_staged_native_probe(
         code_dir, staging,
         expected_staged_operator=expected,
@@ -89,6 +90,7 @@ def test_overlay_rejects_duplicate_help_insertion_point(tmp_path, monkeypatch):
 def test_overlay_rejects_staged_runtime_drift(tmp_path):
     code_dir, staging = _trees(tmp_path)
     path = staging / "v13/runtime.py"
-    path.write_bytes(path.read_bytes() + b"\\n# tampered staged Runtime\\n")
+    expected_runtime = path.read_bytes()
+    path.write_bytes(expected_runtime + b"\\n# tampered staged Runtime\\n")
     with pytest.raises(ValueError, match="staged Runtime differs from verified recovery builder output"):
-        _apply(code_dir, staging)
+        _apply(code_dir, staging, expected_runtime=expected_runtime)
