@@ -1,3 +1,36 @@
+## JEPA & Memory — Run 10: source-bound temporal forget and replay (2026-11-23T08:34:51+01:00)
+
+**Hypothesis / defect:** \`combined_source_forget_guard\` refused every forget request when the source was present in either the active or rollback temporal WorldJEPA checkpoint. That made an otherwise source-verifiable T8 experience effectively undeletable after it had entered the temporal learner. A safe operation must invalidate every checkpoint/adapter/retention anchor that contains the source, preserve a verified clean rollback when possible, and otherwise rebuild only from the surviving T8 ledger.
+
+**Implementation on \`jepa-memory/v14-temporal-safe-forget-20261123-run10\`:**
+- \`v13/code/v13/world_jepa_temporal.py\`: added source-reference inspection across experience rows, retention holdouts and LearningIntent train/validation provenance. Checkpoint paths are checked for symlinks/non-files. A retained fallback checkpoint is hash-loaded before promotion.
+- If only the active checkpoint contains the source and \`previous\` is clean, the clean previous checkpoint becomes active, the tainted checkpoint is unlinked, non-forgotten active-only rows are requeued, and the scan cursor is rewound to the previous checkpoint's cursor.
+- If both active and previous checkpoints contain the source (or no clean rollback exists), both are removed, pending copies are cleared, and the T8 scan cursor resets to zero so the next permitted learning pass reconstructs from the durable ledger after source tombstoning.
+- If only the rollback checkpoint contains the source, it is removed while the live checkpoint is preserved. Pending rows for the forgotten source are always removed.
+- \`v13/code/v13/memory.py\`: added bounded numeric fields to the existing successful \`forget\` audit (\`component=world_predictor\`, invalidated checkpoint count, replayable rows, PASS/SHADOW). The Store-lock and generic generation-promotion code was not changed.
+- \`v13/code/tests/test_v14_world_jepa_temporal_runtime.py\`: replaced the former expected-refusal assertion and added active-only fallback/restart replay, both-checkpoints-invalidated/full-replay, and unrelated-source negative-control coverage.
+
+**Test hypothesis / exact checks added (not yet executed in this run):**
+- \`test_temporal_source_forget_promotes_clean_previous_and_replays_after_restart\`
+- \`test_temporal_source_forget_invalidates_both_checkpoints_then_rebuilds_from_remaining_t8\`
+- \`test_temporal_source_forget_unrelated_source_preserves_active_checkpoint\`
+- Existing single-checkpoint forget test now requires checkpoint removal, durable source tombstone and bounded telemetry.
+- Required CI: \`V14 Temporal WorldJEPA T8 Windows\` and \`V14 JEPA training-resume and source-forget Python 3.13/3.14\`, plus staged/integrated and privacy checks after QA source-pin rebinding.
+
+**Prior verified integration checkpoint:** PR [#2418](https://github.com/RedMentos/Aii/pull/2418) was merged into the QA composition branch at merge SHA \`5b30404df29a3c7a969ceb28730c3d38d4a4393b\`. Its exact pre-merge head \`f6e66196f4aa58e52ebcbb2d861637ed52d7402f\` has CI PASS: temporal T8/JEPA run \`45130485147\`, optimizer-resume/source-forget run \`45130485231\`, staged/integrated run \`45130485153\`, owner-read/bootstrap run \`45130485156\`, runtime deployment integrity run \`45130485378\`. These are hosted CI proofs for synthetic Store/Runtime data, not local Linux or Android evidence.
+
+**Environment and evidence boundary:**
+- \`LOCAL_LINUX_FULL_REPOSITORY\`: BLOCKED / NOT_RUN. No Aii checkout is mounted; \`git ls-remote https://github.com/RedMentos/Aii.git\` failed with \`Could not resolve host: github.com\`. Do not report local pytest/compile as PASS.
+- \`GITHUB_CI\`: prior #2418 matrix PASS as listed above; this new branch's exact-head CI is pending until its PR is opened and runs complete.
+- \`TERMUX/REDMI\`: REDMI_UNVERIFIED for this candidate. Latest private V13OBS #115 readback updated \`2026-11-23T07:41:56Z\`: installed handoff \`aed1d2b826290c95c70356b5d8b864b5ef382be4\`, auto-update enabled and Runtime/Dashboard UP_TO_DATE; last native turn 57.74 s / 41.63 s TTFT / 38.95 s prefill / 751 prompt tokens / 2 generated tokens. B1/B2 still TIME_BUDGET, zero valid offers; native latent exchange and semantic use are unproven. No new turn or device mutation was requested.
+- Release remains \`NOT_RELEASED\`. No model/weight swap, permission change or UPDATE_REQUEST.
+
+**Risks / separate blockers:** This is conservative checkpoint invalidation plus replay, not synaptic unlearning and not proof that every other organ has removed derived influence. The generic \`Store.switch_generation\`/source-forget race remains a separate QA P1 (tracked on the current Boss/QA integration lane); this change does not authorize generic weight promotion. B1/B2 receiver use remains SHADOW; native body weights, GGUF training and native learned latent transfer are unchanged/unproven.
+
+**Next executable step:** open a stacked review PR to the current QA composition branch, obtain exact-head Python 3.13/3.14 temporal + optimizer/source-forget CI, then have QA rebind any staged source pins affected by the \`memory.py\` telemetry-only change. Do not release or deploy before the full composed matrix and device evidence.
+
+---
+
 ## JEPA & Memory — Run 9: current QA-base recompose (2026-11-23T06:44:52.384Z)
 
 **Hypothesis / defect:** PR #2405 carried the intended temporal JEPA/episodic-recall code but its ancestry was stale and diverged from QA's current source-forget head (64 ahead / 22 behind at the previous compare). QA's exact integration matrix also exposed a prompt-facing contract omission: successful temporal body state needed the explicit `native_body_weights_changed=false` boundary, not only the audit copy.
