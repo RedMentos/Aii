@@ -26,7 +26,7 @@ from .world_jepa_consumer import (
     ROLE_TARGETS,
 )
 from .world_jepa_runtime import permission_state
-from .world_jepa_store_authority import verify_committed_temporal_page
+from .world_jepa_store_authority import verify_committed_temporal_page, verify_rows
 
 
 STATE_KEY = "v14.world_jepa.temporal_consumer"
@@ -40,6 +40,9 @@ MAX_SESSION_EVENTS = 256
 MIN_WINDOWS = 16
 MIN_PARTITION = 8
 HISTORY_LENGTHS = (2, 3)
+MAX_RECALL_CANDIDATES = 256
+MAX_RECALL_VERIFY_PER_ACTION = 3
+OBSERVED_RECALL_STATUSES = {"FINAL", "FAILED", "ERROR", "DEADLINE", "REJECTED"}
 CENSORED = {"CANCELLED", "ABORTED", "INTERRUPTED"}
 UNKNOWN = {"OUTCOME_UNKNOWN"}
 TERMINAL = {"FINAL", "FAILED", "ERROR", "DEADLINE", "REJECTED"} | CENSORED | UNKNOWN
@@ -1185,6 +1188,252 @@ class TemporalWorldJEPAStoreConsumer:
                 "status": "ROLLED_BACK",
                 "checkpoint_sha256": previous["checkpoint_sha256"],
                 "pending_rows": len(pending),
+                "native_body_weights_changed": False,
+            }
+
+    def episodic_recall(self, session_id, history_length=2, limit=4,
+                        nonblocking=False, budget_s=0.05):
+        """Retrieve source-verified train-split T8 episodes in the learned temporal space.
+
+        Only the current query history and verified numeric outcomes are used.
+        Holdout windows never enter the recall index; candidate SourceRefs are
+        revalidated before they are returned. The result is prompt-level SHADOW
+        context, not a native-memory write or action authority.
+        """
+        if (type(session_id) is not str or not session_id
+                or history_length not in HISTORY_LENGTHS
+                or type(limit) is not int or not 1 <= limit <= len(world_model.ACTIONS)
+                or type(nonblocking) is not bool
+                or type(budget_s) not in (int, float) or isinstance(budget_s, bool)
+                or not math.isfinite(float(budget_s))
+                or not 0.005 <= float(budget_s) <= 0.25):
+            raise ValueError("invalid temporal episodic recall request")
+        deadline = time.monotonic() + float(budget_s)
+
+        def expired():
+            return time.monotonic() >= deadline
+
+        with self._locked(False, blocking=not nonblocking):
+            state, _ = self._read_state()
+            active = state["active"]
+            if active is None:
+                return {"status": "NO_CHECKPOINT", "items": [],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+            history, positions, history_error = _ordered_session_history(
+                self.store, active["experience_rows"], session_id
+            )
+            if history_error:
+                return {"status": history_error, "items": [],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+            if len(history) < history_length:
+                return {"status": "INSUFFICIENT_HISTORY", "items": [],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+            history_rows = history[-history_length:]
+            if len({row["generation_id"] for row in history_rows}) != 1:
+                return {"status": "GENERATION_GAP", "items": [],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+            if any(
+                positions.get(right["event_id"], -99) != positions.get(left["event_id"], -100) + 1
+                for left, right in zip(history_rows, history_rows[1:])
+            ):
+                return {"status": "NONCONTIGUOUS_HISTORY", "items": [],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+
+            verified_history, rejected_history = verify_rows(self.store, history_rows)
+            if rejected_history or len(verified_history) != len(history_rows):
+                return {
+                    "status": "HISTORY_PROVENANCE_REJECTED", "items": [],
+                    "rejected_history_rows": rejected_history,
+                    "decision_authority": "NONE", "native_memory_consumed": False,
+                }
+            if expired():
+                return {"status": "BUDGET_EXCEEDED", "items": [],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+
+            latest = history_rows[-1]
+            mean_outcome = np.mean(
+                np.asarray([row["y"] for row in history_rows], dtype=np.float64), axis=0
+            )
+            query_x = (
+                list(latest["s"]) + mean_outcome.tolist()
+                + [float(any(row["censored"] for row in history_rows[:-1])),
+                   float(latest["censored"]),
+                   float(history_length) / float(max(HISTORY_LENGTHS))]
+            )
+            model = self._load_model(active)
+            query_latent = np.asarray(
+                model.latent(np.asarray([query_x], dtype=np.float64), target=False),
+                dtype=np.float64,
+            )
+            if (query_latent.ndim != 2 or query_latent.shape[0] != 1
+                    or not np.isfinite(query_latent).all()):
+                raise ValueError("invalid temporal episodic query latent")
+
+            train_window_ids = set(active["train_window_ids"])
+            if not train_window_ids:
+                return {"status": "NO_TRAIN_WINDOWS", "items": [],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+            row_by_id = {row["action_id"]: row for row in active["experience_rows"]}
+            try:
+                windows = build_temporal_windows(
+                    self.store, active["experience_rows"], cancel_check=expired
+                )
+            except InterruptedError:
+                return {"status": "BUDGET_EXCEEDED", "items": [],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+            if expired():
+                return {"status": "BUDGET_EXCEEDED", "items": [],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+
+            query_action_ids = [receipt.action_id for receipt in verified_history]
+            query_source_hashes = [receipt.source_ref["sha256"] for receipt in verified_history]
+            query_action_set = set(query_action_ids)
+            query_source_set = set(query_source_hashes)
+            train_windows = []
+            for window in windows:
+                if window["window_id"] not in train_window_ids:
+                    continue
+                if len(window["action_ids"]) != history_length + 1:
+                    continue
+                if query_action_set.intersection(window["action_ids"]):
+                    continue
+                if query_source_set.intersection(window["source_sha256s"]):
+                    continue
+                target = row_by_id.get(window["action_ids"][-1])
+                if target is None or target["status"] not in OBSERVED_RECALL_STATUSES:
+                    continue
+                train_windows.append((window, target))
+            train_windows.sort(
+                key=lambda pair: (pair[1]["created"], pair[1]["action_id"]), reverse=True
+            )
+            train_windows = train_windows[:MAX_RECALL_CANDIDATES]
+            if not train_windows:
+                return {
+                    "status": "NO_DISJOINT_TRAIN_EPISODES", "items": [],
+                    "candidate_window_count": len(windows),
+                    "train_window_count": 0,
+                    "query_history_action_ids": query_action_ids,
+                    "query_history_source_sha256s": query_source_hashes,
+                    "decision_authority": "NONE", "native_memory_consumed": False,
+                }
+
+            candidate_x = np.asarray(
+                [window["X"] for window, _target in train_windows], dtype=np.float64
+            )
+            candidate_latents = np.asarray(
+                model.latent(candidate_x, target=False), dtype=np.float64
+            )
+            if (candidate_latents.ndim != 2
+                    or candidate_latents.shape[0] != len(train_windows)
+                    or candidate_latents.shape[1] != query_latent.shape[1]
+                    or not np.isfinite(candidate_latents).all()):
+                raise ValueError("invalid temporal episodic candidate latents")
+            distances = np.linalg.norm(candidate_latents - query_latent[0], axis=1)
+            if not np.isfinite(distances).all():
+                raise ValueError("nonfinite temporal episodic distances")
+
+            verified_cache = {}
+            items = []
+            rejected_windows = 0
+            for action in world_model.ACTIONS[:limit]:
+                matches = [
+                    (float(distances[index]), index)
+                    for index, (window, _target) in enumerate(train_windows)
+                    if window["a"] == action
+                ]
+                matches.sort(
+                    key=lambda item: (
+                        item[0],
+                        -train_windows[item[1]][1]["created"],
+                        train_windows[item[1]][1]["action_id"],
+                    )
+                )
+                for distance, index in matches[:MAX_RECALL_VERIFY_PER_ACTION]:
+                    if expired():
+                        break
+                    window, target = train_windows[index]
+                    receipts = []
+                    missing = []
+                    for action_id in window["action_ids"]:
+                        receipt = verified_cache.get(action_id)
+                        if receipt is None:
+                            missing.append(action_id)
+                        else:
+                            receipts.append(receipt)
+                    if missing:
+                        verified, rejected = verify_rows(
+                            self.store, [row_by_id[action_id] for action_id in missing]
+                        )
+                        rejected_windows += int(rejected > 0)
+                        for receipt in verified:
+                            verified_cache[receipt.action_id] = receipt
+                        receipts = [verified_cache.get(action_id) for action_id in window["action_ids"]]
+                    if any(receipt is None for receipt in receipts):
+                        continue
+                    if ([receipt.source_ref["source_id"] for receipt in receipts]
+                            != window["source_ids"]
+                            or [receipt.source_ref["sha256"] for receipt in receipts]
+                            != window["source_sha256s"]):
+                        rejected_windows += 1
+                        continue
+                    target_receipt = receipts[-1]
+                    if (target_receipt.action_id != target["action_id"]
+                            or target_receipt.status not in OBSERVED_RECALL_STATUSES):
+                        rejected_windows += 1
+                        continue
+                    y = target["y"]
+                    duration_s = math.expm1(min(20.0, float(y[0])))
+                    output_chars = math.expm1(min(20.0, float(y[2]) * 8.0))
+                    items.append({
+                        "action": action,
+                        "distance": distance,
+                        "window_id": window["window_id"],
+                        "action_id": target["action_id"],
+                        "event_id": target_receipt.event_id,
+                        "generation_id": target_receipt.generation_id,
+                        "target_status": target_receipt.status,
+                        "source_ref": target_receipt.source_ref,
+                        "source_sha256": target_receipt.source_ref["sha256"],
+                        "window_action_ids": list(window["action_ids"]),
+                        "window_source_sha256s": list(window["source_sha256s"]),
+                        "window_source_refs": [receipt.source_ref for receipt in receipts],
+                        "observed_outcome": {
+                            "duration_s": round(min(86400.0, max(0.0, duration_s)), 2),
+                            "success": target_receipt.status == "FINAL",
+                            "output_characters": int(round(min(1000000.0, max(0.0, output_chars)))),
+                        },
+                    })
+                    break
+                if expired():
+                    break
+
+            budget_exhausted = expired()
+            status = (
+                "EPISODIC_RECALL_PARTIAL" if budget_exhausted and items
+                else "BUDGET_EXCEEDED" if budget_exhausted
+                else "EPISODIC_RECALL_SHADOW" if items
+                else "NO_VERIFIED_TRAIN_EPISODES"
+            )
+            return {
+                "status": status,
+                "items": items,
+                "checkpoint_sha256": active["checkpoint_sha256"],
+                "training_source_sha256": active["source_sha256"],
+                "history_length": history_length,
+                "query_history_action_ids": query_action_ids,
+                "query_history_source_sha256s": query_source_hashes,
+                "candidate_window_count": len(windows),
+                "train_window_count": len(train_windows),
+                "verified_item_count": len(items),
+                "rejected_windows": rejected_windows,
+                "train_split_only": True,
+                "heldout_used": False,
+                "source_disjoint_from_query": True,
+                "text_disclosed": False,
+                "budget_exhausted": budget_exhausted,
+                "decision_authority": "NONE",
+                "native_memory_consumed": False,
+                "native_body_consumed": False,
                 "native_body_weights_changed": False,
             }
 
