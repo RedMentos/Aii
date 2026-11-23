@@ -161,52 +161,37 @@ def _validated_source_ref(store, value):
 
 
 def _selection_source_refs(store, receipt):
-    rows = store.rows(
-        """SELECT payload FROM packets
-           WHERE kind='ActionSelection' AND event_id=? AND generation_id=? AND created<=?
-           ORDER BY created DESC LIMIT 17""",
-        (receipt.event_id, receipt.generation_id, receipt.created),
-    )
-    if type(rows) is not list or len(rows) >= 17:
-        raise ValueError("ActionSelection source scan bound")
-    committed = []
-    for raw in rows:
-        packet_row = _mapping(raw)
-        selection = _json_object(packet_row.get("payload"), "ActionSelection source payload")
-        if (selection.get("event_id") != receipt.event_id
-                or selection.get("brain_generation_id") != receipt.generation_id):
-            raise ValueError("ActionSelection source binding")
-        stage = selection.get("stage")
-        if stage not in (None, "PREDICTION", "COMMIT"):
-            raise ValueError("ActionSelection source stage")
-        if stage != "PREDICTION":
-            committed.append(selection)
-    if len(committed) != 1:
-        raise ValueError("ActionSelection source cardinality")
-    raw_refs = committed[0].get("provenance")
+    """Return the complete lineage already verified into the sealed T8 receipt.
+
+    world_jepa_store_authority verifies ActionSelection plus the pre-action C4
+    FocalCycle/FocalItem trajectory. Re-reading only ActionSelection here used
+    to silently drop C4-only Memory/observer/Enlightened sources from temporal
+    windows, source-disjoint splits and retained checkpoints.
+    """
+    raw_refs = receipt.source_refs
     if type(raw_refs) is not list or not 1 <= len(raw_refs) <= MAX_ACTION_SOURCE_REFS:
-        raise ValueError("ActionSelection source refs")
-    refs, seen, source_hashes = [], set(), {}
-    for raw_ref in raw_refs:
-        ref = _validated_source_ref(store, raw_ref)
+        raise ValueError("verified temporal source refs")
+    refs = [_validated_source_ref(store, item) for item in raw_refs]
+    primary = receipt.source_ref
+    if type(primary) is not dict or primary not in refs:
+        raise ValueError("verified temporal event source missing")
+    keys = set()
+    source_hashes = {}
+    for ref in refs:
         key = (ref["source_id"], ref["sha256"], ref["char_start"],
                ref["char_end"], ref["modality"])
-        if key in seen:
-            raise ValueError("duplicate ActionSelection source ref")
+        if key in keys:
+            raise ValueError("duplicate verified temporal source ref")
         prior = source_hashes.get(ref["source_id"])
         if prior is not None and prior != ref["sha256"]:
-            raise ValueError("ActionSelection source digest changed")
+            raise ValueError("verified temporal source digest changed")
+        keys.add(key)
         source_hashes[ref["source_id"]] = ref["sha256"]
-        seen.add(key)
-        refs.append(ref)
-    if receipt.source_ref not in refs:
-        raise ValueError("ActionSelection omitted event source")
     refs.sort(key=lambda item: (
         item["source_id"], item["sha256"], item["char_start"],
         item["char_end"], item["modality"],
     ))
     return refs
-
 
 def _row_source_pairs(row):
     primary = (row.get("source_id"), _sha(row.get("source_sha256")))
