@@ -1496,6 +1496,11 @@ class TemporalWorldJEPAStoreConsumer:
                 return {"status": "NO_ROLLBACK_CHECKPOINT", "checkpoint_committed": False}
             current = state["active"]
             previous = state["previous"]
+            # Never publish a rollback pointer until the previous checkpoint bytes
+            # have passed the same path, source and digest verification as a read.
+            # Otherwise a missing/corrupt fallback could replace a usable active
+            # model and _prune() would then delete the only valid checkpoint.
+            restored_model = self._load_model(previous)
             previous_ids = set(previous["fingerprints"])
             pending = [
                 row for row in (current["experience_rows"] if current else [])
@@ -1511,6 +1516,16 @@ class TemporalWorldJEPAStoreConsumer:
             }
             self.store.set_state(STATE_KEY, next_state, expected=version)
             self._prune(next_state)
+            # A rollback changes the active checkpoint identity. Invalidate every
+            # same-Store warm reader, then warm this consumer from the bytes already
+            # verified above so B1/B2 do not remain cold or observe a stale cache.
+            with _TEMPORAL_CONSUMERS_LOCK:
+                for cached in tuple(_TEMPORAL_CONSUMERS):
+                    if cached.store is self.store:
+                        cached._ephemeral_model = None
+                        cached._ephemeral_checkpoint_sha = None
+            self._ephemeral_model = restored_model
+            self._ephemeral_checkpoint_sha = previous["checkpoint_sha256"]
             return {
                 "status": "ROLLED_BACK",
                 "checkpoint_sha256": previous["checkpoint_sha256"],
