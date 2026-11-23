@@ -35,7 +35,7 @@ from .contracts import packet as make_packet, validate
 from .percept_admission import Percept, admit
 from .vision_temporal_evidence import TemporalVisualEvidenceRegistry
 
-REVISION = "v14-a5-media-projection-raw-eye-v1"
+REVISION = "v14-a5-media-projection-raw-eye-v2-temporal"
 MAX_FRAME_BYTES = 8 * 1024 * 1024
 MAX_FRAME_PIXELS = 4_000_000
 GRID = 4
