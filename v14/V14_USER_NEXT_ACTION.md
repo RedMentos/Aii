@@ -1,3 +1,20 @@
+## Latest verified status — Perception follow-up (2026-11-23T01:08:32.561Z)
+
+**Keine Aktion nötig.** Kein manueller Termux-Befehl, keine Update-Anfrage, kein Modell-/Weight-Swap und keine Berechtigungsänderung erforderlich.
+
+- **Redmi / Release:** Private V13OBS #115 was read at 2026-11-23T00:52:16Z. Installed release remains `aed1d2b826290c95c70356b5d8b864b5ef382be4`; auto-update enabled, Runtime/Dashboard UP_TO_DATE, last_error NONE. This confirms only the installed release, not any open candidate.
+- **Last observed turns:** latest 751-token stored turn remains 57.7388 s total / 41.6269 s TTFT / 38.9453 s C3 prefill / 2 generated tokens; correctness UNKNOWN. B1/B2 remain TIME_BUDGET at 53.2/54.2 s. The same private receipt also contains a later 709-token turn with 34.959 s C3 prefill and 2 generated tokens, but semantic use is not proven. No new device turn was generated in this run.
+- **P0 whole-system scope:** #1904 remains open with native C3 prefill/deadline failures and zero valid B1/B2 offers; #1984 remains open and requires the entire Canon, not isolated module completion. Symbolic exchange is not reclassified as trained latent coupling.
+- **RAW EAR audio:** PR #2369 code/test commit `245b2ef20c975f3446ab5df3ae2007d08a3332cf`, current branch head `6e1050146fe7cbb9b57579404bfd700a494d0dce`, DRAFT / NOT_RELEASED. `audio_voice_cues.py` blob `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`. Teacher Ear is lazy/optional; missing module returns `UNAVAILABLE_MODULE`, no transcript enters C3 or persistent acoustic packet, and current lease + both separate opt-ins remain mandatory. LOCAL_LINUX isolated helper/permission tests 5/5 PASS (CPython 3.13.5); exact-head CI remains queued/pending. Full local Aii suite is BLOCKED by no checkout and GitHub DNS failure.
+- **Core audio integration:** #2370 head `d149bd5e0a2f8394e44e0ed60a208638b9f4b3b9` still pins old audio source blob `b18e4501…`. Core was notified to rebind its own `SOURCE_BLOBS` to `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288` and refresh downstream pins. Teacher Ear can stay OFF and its module omitted until Core explicitly supplies `teacher_result` plus both default-false opt-ins. Staged audio is not accepted.
+- **A3 source-forget:** #2395 remains DRAFT / NOT_RELEASED; local helper 7/7 and focused CI 2/2 PASS, staged/integrated still blocked. JEPA #2397 head `f63a5877774f58b6928b4e8dd7125651e9d8173d` now invalidates both projectors through its overlaid `vision_forget`; dedicated CI 2/2 PASS (Python 3.13/3.14). Exact staged/integrated still FAIL at QA's stale immutable `vision.py` pin. QA #2391 must rebase on #2397 and pin `vision_source_lineage.py` + exact `vision.py` SHA-256 values already posted in comment #7088869631.
+- **Other active integration:** QA #2391 latest head `376ed62baa3b87f960f40b68e9ed37ce66efd5ba` has staged/controller/migration failures still running/failed; JEPA #2396 Windows T8 workflow passed but its Termux12 training-resume pin still has three failures. Neither result is Redmi or local Linux proof.
+- **UI/vision path:** #2356/#2375/#2379 still lack one accepted combined QA+Perception+Core source ancestor and a real Android frame receipt/normal C3 consumer. No MediaProjection or AudioRecord proof exists.
+- **Research:** R-101 records the peer-reviewed ECML PKDD 2026 Research Track / Springer publication (DOI `10.1007/978-3-032-37673-2_7`); exact-unlearning is ridge-head-only, not backbone unlearning. R-100 remains wheel-metadata feasibility only; no package or model was installed.
+- **Android boundary:** no microphone, screen capture, Android UI action, model inference/download, weight update, permission change, update request or device mutation occurred. All new features remain REDMI_UNVERIFIED.
+
+---
+
 ## Latest verified status — Perception run 10 (2026-11-23T00:38:13Z)
 
 **No user action is required.** Do not run a manual Termux command, send a chat, change permissions, request an update, download a model, or swap weights for these draft candidates.
