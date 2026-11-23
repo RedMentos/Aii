@@ -17,7 +17,7 @@ BUILDER_SHA = 'a6af1c476c2bec51692e5c00f8995c7d592239f5b78b989fcf799edb6c9f75c9'
 ARITHMETIC_OVERLAY = 'scripts/integrated_arithmetic_guard_candidate_20261121.py'
 ARITHMETIC_OVERLAY_GIT_BLOB = '88c179a71387c5caba7bbd645f868a7cccf39d30'
 NATIVE_PROBE_OVERLAY = 'scripts/integrated_native_probe_approval_overlay_20261123.py'
-NATIVE_PROBE_OVERLAY_GIT_BLOB = '3cd3704fd2a0d2be0d7f0fe17b2487730889ba81'
+NATIVE_PROBE_OVERLAY_GIT_BLOB = 'bc2c39a61d55996278c6fe3adbeff357ba69d455'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 
@@ -119,7 +119,14 @@ def stage(code_dir: Path, destination: Path) -> dict:
             raise RuntimeError('native-probe approval overlay is not loadable')
         native_probe_overlay_module = importlib.util.module_from_spec(native_probe_overlay_spec)
         native_probe_overlay_spec.loader.exec_module(native_probe_overlay_module)
-        native_probe_files = native_probe_overlay_module.apply_staged_native_probe(code_dir, staging)
+        expected_staged_operator = replacements.get('v13/operator.py')
+        if expected_staged_operator is None:
+            expected_staged_operator = (code_dir / 'v13/operator.py').read_bytes()
+        if not isinstance(expected_staged_operator, bytes):
+            raise ValueError('pinned recovery builder did not emit a valid operator source')
+        native_probe_files = native_probe_overlay_module.apply_staged_native_probe(
+            code_dir, staging, expected_staged_operator=expected_staged_operator,
+        )
         if not isinstance(native_probe_files, dict) or set(native_probe_files) != {'v13/operator.py'}:
             raise ValueError('native-probe overlay produced an unexpected staged file set')
         for relative, payload in native_probe_files.items():
@@ -133,6 +140,7 @@ def stage(code_dir: Path, destination: Path) -> dict:
             'status': 'SHADOW_REVIEW_ONLY',
             'source_pins': native_probe_overlay_module.SOURCE_PINS,
             'replaced_files': sorted(native_probe_files),
+            'staged_operator_git_blob_sha1': native_probe_overlay_module._git_blob_sha1(expected_staged_operator),
             'production_route': False,
             'training_authority': 0,
             'native_receiver_authority': 0,
