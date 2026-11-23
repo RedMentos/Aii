@@ -1798,8 +1798,8 @@ def test_receiver_retention_compares_same_persisted_cohort_and_blocks_training_o
         "receiver_metrics": {},
         "metrics": {
             "receiver_gates": {
-                "B1_DETAIL": {"accepted": False},
-                "B2_GIST": {"accepted": False},
+                "B1_DETAIL": {"accepted": True},
+                "B2_GIST": {"accepted": True},
             },
         },
         "receiver_retention_holdouts": [cohort],
@@ -1827,6 +1827,65 @@ def test_receiver_retention_compares_same_persisted_cohort_and_blocks_training_o
     assert unchanged["status"] == "MEASURED_PASS"
     assert unchanged["source_disjoint"] is True
     assert all(item["retention_pass"] is True for item in unchanged["roles"].values())
+    assert all(item["negative_controls_pass"] is True for item in unchanged["roles"].values())
+
+    from v13.world_jepa_learning_intent import (
+        _digest,
+        validate_weight_delta_receipt,
+    )
+    retention_metrics = {
+        "status": "MEASURED_PASS",
+        "reason": "RETENTION_AND_CONTROLS_PASS",
+        "cohort_sha256": cohort["cohort_sha256"],
+        "source_disjoint": True,
+        "mse_before": 0.0,
+        "mse_after": 0.0,
+        "mean_baseline_mse": 0.5,
+        "zero_latent_mse": 0.6,
+        "shuffled_latent_mse": 0.7,
+        "prior_utility_pass": True,
+        "retention_pass": True,
+        "negative_controls_pass": True,
+    }
+    receipt_payload = {
+        "schema": "v14.weight_delta_receipt.v3",
+        "intent_id": "a" * 64,
+        "producer_organ": "WORLD_JEPA_TEMPORAL",
+        "target_organ": "B1_DETAIL",
+        "target_model_revision": "v14-temporal-receiver-adapter-v1",
+        "target_parameter_scope": "B1_DETAIL.temporal_receiver_head.weights+bias",
+        "source_provenance_sha256": "b" * 64,
+        "old_parameter_sha256": "c" * 64,
+        "new_parameter_sha256": "d" * 64,
+        "parameter_delta_norm": 0.1,
+        "parameter_count": 6,
+        "gradient_norm": 0.5,
+        "gradient_measured": True,
+        "gradient_steps": 2,
+        "gradient_clip_count": 0,
+        "holdout_mse_before": 1.0,
+        "holdout_mse_after": 0.5,
+        "mean_baseline_mse": 1.0,
+        "zero_latent_mse": 1.0,
+        "shuffled_latent_mse": 2.0,
+        "receiver_utility_pass": True,
+        "world_retention_pass": True,
+        "world_retention_mse_before": [1.0],
+        "world_retention_mse_after": [0.9],
+        "target_adapter_retention": "MEASURED_PASS",
+        "target_adapter_retention_metrics": retention_metrics,
+        "optimizer_revision": "ADAM_MSE_V1",
+        "checkpoint_sha256": "e" * 64,
+        "consumer": "bodyview._temporal_world_jepa_body_readout",
+        "target_adapter_parameters_changed": True,
+        "native_body_weights_changed": False,
+        "approval_id": None,
+        "decision_authority": "NONE",
+        "status": "SHADOW_RECEIPT",
+    }
+    measured_receipt = dict(receipt_payload)
+    measured_receipt["receipt_id"] = _digest(receipt_payload)
+    assert validate_weight_delta_receipt(measured_receipt) is True
 
     degraded_heads = {
         role: {
