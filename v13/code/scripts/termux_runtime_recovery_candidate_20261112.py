@@ -43,7 +43,7 @@ def build_sources(code_dir, *, include_postcommit=True):
                       '72bf8a829a7de064e7703271228bcdf02632108418c41c571126fbd8c05d5567')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
-                              'b568613863fef6a687a3237d089b91d8b612ce4163ccb5795df9e21af51c1489')
+                              '46a83d1a8383ce7d376d2b577fa301e6588e3c9bec97f7d8fa70af9955178b61')
     result = arithmetic_outcome.apply_sources(code_dir, result)
 
     # Snapshot every generated consumer pin before the later Store telemetry
@@ -220,7 +220,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             raise ValueError('LateWatch output changed')
         result['v13/latewatch.py'] = late
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
-                             '06919e3b9e0285d2c633147986ac56f7bff1c8b5bd41112fa3b0ad065cce57d1')
+                             'aa4d571c0adf8b2f655a682a57fa2e31967bfb45153a9d0040b04579482c70d4')
         result = control_guard.apply_sources(code_dir, result)
         # The guard rewrites the semantic module and its local-error consumer as
         # one reviewed generation. Snapshot that exact pair before Store overlays.

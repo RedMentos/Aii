@@ -76,6 +76,11 @@ def test_world_jepa_source_builder_pin_chain_is_exact():
     assert pin(termux12, r"integrated_world_training_resume_candidate_20261111[.]py': '([0-9a-f]{64})'") == sha(training)
     guard_builder = "scripts/record_only_controller_guard_20261116.py"
     assert pin(termux12, r"record_only_controller_guard_20261116[.]py',\s*'([0-9a-f]{64})'") == sha(guard_builder)
+    local_error = "v13/local_error_route_shadow_candidate.py"
+    assert pin(local_error, r"'neuromod[.]py':'([0-9a-f]{64})'") == sha("v13/neuromod.py")
+    arithmetic_outcome = "scripts/integrated_arithmetic_outcome_candidate_20261116.py"
+    assert pin(arithmetic_outcome, r"'v13/local_error_route_shadow_candidate[.]py': '([0-9a-f]{64})'") == sha(local_error)
+    assert pin(termux12, r"integrated_arithmetic_outcome_candidate_20261116[.]py',\s*'([0-9a-f]{64})'") == sha(arithmetic_outcome)
 
     base = read(termux12)
     git_blob = hashlib.sha1(b"blob " + str(len(base)).encode("ascii") + bytes([0]) + base).hexdigest()
