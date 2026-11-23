@@ -8,6 +8,7 @@ import pytest
 
 from v13.audio_teacher_ear import TeacherEarManifest, SherpaOnlineTeacher
 from v13.audio_voice_cues import audio_consent_lease, consume_pcm16_voice_window
+from v13.audio_temporal_evidence import TemporalVoiceEvidence
 from v13.runtime import Runtime
 
 SOURCE = "fixture:teacher-ear"
@@ -39,23 +40,36 @@ class FakeNumpy:
 
 
 class FakeStream:
+    def __init__(self):
+        self.waveforms = []
+        self.pending = False
+        self.finished = False
+        self.input_finished_calls = 0
     def accept_waveform(self, sample_rate, waveform):
         assert sample_rate == 16000
         assert isinstance(waveform, FloatArray)
+        self.waveforms.append(waveform.copy())
+        self.pending = True
+    def input_finished(self):
+        self.finished = True
+        self.input_finished_calls += 1
+        self.pending = True
 
 
 class FakeRecognizer:
     def __init__(self):
         self.stream = FakeStream()
-        self.decoded = False
+        self.text = "hello from the optional teacher"
+        self.create_stream_calls = 0
     def create_stream(self):
+        self.create_stream_calls += 1
         return self.stream
-    def is_ready(self, _stream):
-        return not self.decoded
-    def decode_stream(self, _stream):
-        self.decoded = True
+    def is_ready(self, stream):
+        return stream.pending
+    def decode_stream(self, stream):
+        stream.pending = False
     def get_result(self, _stream):
-        return "hello from the optional teacher"
+        return self.text
 
 
 def teacher():
@@ -151,5 +165,70 @@ def test_teacher_object_without_asr_opt_in_fails_before_packet_persistence(tmp_p
                 )
         count = runtime.store.one("SELECT COUNT(*) AS n FROM packets WHERE kind='PerceptPacket'")["n"]
         assert count == 0
+    finally:
+        runtime.close()
+
+
+
+def test_streaming_teacher_session_reaches_real_audio_packet_and_c3_delta_consumer(tmp_path):
+    runtime = Runtime(Path(tmp_path))
+    runtime.sleep.cycle.set_policy("enabled", "off")
+    temporal_state = TemporalVoiceEvidence()
+    ear = teacher()
+    recognizer = ear._recognizer
+    try:
+        first_event = runtime.store.event(runtime.session, "synthetic audio window one")
+        second_event = runtime.store.event(runtime.session, "synthetic audio window two")
+        generation = first_event["brain_generation_id"]
+        assert second_event["brain_generation_id"] == generation
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+            temporal_state=temporal_state,
+        ) as lease:
+            session = ear.open_stream(
+                runtime=runtime, source_id=SOURCE, generation_id=generation,
+                consent_receipt_ref=RECEIPT, consent_lease=lease,
+                temporal_state=temporal_state, teacher_asr_opt_in=True,
+            )
+            recognizer.text = "hello"
+            first = consume_pcm16_voice_window(
+                runtime, tone(seconds=0.5), sample_rate=16000, start_ms=100,
+                event_id=first_event["event_id"], generation_id=generation,
+                source_id=SOURCE, consent_receipt=RECEIPT,
+                consent_check=consent_ok, consent_guard=consent_guard,
+                finality="PROVISIONAL", consent_lease=lease,
+                temporal_state=temporal_state, token_budget=512,
+                teacher_ear=session, teacher_asr_opt_in=True,
+                transcript_persist_opt_in=False,
+            )
+            recognizer.text = "hello world"
+            second = consume_pcm16_voice_window(
+                runtime, tone(seconds=0.5), sample_rate=16000, start_ms=600,
+                event_id=second_event["event_id"], generation_id=generation,
+                source_id=SOURCE, consent_receipt=RECEIPT,
+                consent_check=consent_ok, consent_guard=consent_guard,
+                finality="FINAL", consent_lease=lease,
+                temporal_state=temporal_state, token_budget=512,
+                teacher_ear=session, teacher_asr_opt_in=True,
+                transcript_persist_opt_in=False,
+            )
+
+        assert first["teacher_ear"]["processing_mode"] == "CONTIGUOUS_STREAM"
+        assert first["teacher_ear"]["segments"][0]["text"] == "hello"
+        assert first["teacher_ear"]["stream_ref"]["chunk_count"] == 1
+        assert second["teacher_ear"]["segments"][0]["text"] == "world"
+        assert second["teacher_ear"]["stream_ref"]["chunk_count"] == 2
+        assert second["teacher_ear"]["stream_ref"]["start_ms"] == 100
+        assert second["teacher_ear"]["stream_ref"]["end_ms"] == 1100
+        assert first["teacher_ear"]["source_ref"]["source_sha256"] == first["packet"]["source_ref"]["sha256"]
+        assert second["teacher_ear"]["source_ref"]["source_sha256"] == second["packet"]["source_ref"]["sha256"]
+        assert "hello" in first["c3_admission"].selected[0].summary
+        assert "world" in second["c3_admission"].selected[0].summary
+        assert "hello world" not in second["c3_admission"].selected[0].summary
+        assert session.closed
+        assert ear._active_streams == 0
+        assert recognizer.create_stream_calls == 1
+        assert len(recognizer.stream.waveforms) == 3  # two chunks + one final-only tail
+        assert recognizer.stream.input_finished_calls == 1
     finally:
         runtime.close()
