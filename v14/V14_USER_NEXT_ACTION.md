@@ -1690,3 +1690,34 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 3. Continue whole-Canon QA; do not use the green release CI or updater receipt as evidence that the slow/incorrect native chat path is fixed.
 
 **Redmi status:** installed c4eb82 / updater up-to-date; native quality and Android companion acceptance remain UNVERIFIED. **User action: none.**
+
+
+## Boss & Integration — run 11, 2026-11-23
+
+**Current release development SHA:** 4dc7595f383e7ba932ee8e9fcf52c5541210ed5e. PR #2425 is merged. Its source-preserving C3 prefill policy sets a normal-turn soft target (maximum 520 tokens), removes only explicitly redundant control layers, preserves complete history when that alone exceeds the soft target, and restricts whole-old-turn removal to the short-deadline recovery band. B1/B2 scheduling and learning permissions were not changed.
+
+**Exact evidence:** PR head ff2664e86c289748beec7387ea1da4dce10310f2 had 14 substantive PR workflows SUCCESS. The exact merged push SHA 4dc7595f383e7ba932ee8e9fcf52c5541210ed5e has 21/21 observed Actions workflow runs SUCCESS, including staged-runtime and integrated-regression. Full LOCAL_LINUX Aii suite was NOT_RUN because no checkout is mounted and GitHub DNS is unavailable.
+
+**Redmi status:** Latest authenticated PIPELINE_STATUS #734 still reports aed1d2b826290c95c70356b5d8b864b5ef382be4 installed, auto-update enabled, runtime/dashboard UP_TO_DATE, last_error NONE. After exact push CI, UPDATE_REQUEST #737 was acknowledged QUEUED. This is not installation proof. DIAGNOSTICS #735 reports the last stored turn FINAL, 57.739 s total, 41.627 s TTFT, 38.945 s C3 prefill, 751 prompt tokens and 2 generated tokens; B1/B2 remain TIME_BUDGET at 53.2/54.2 s. Correctness is UNKNOWN. Instant native residency sample showed 0 mapped processes; HEALTH #736 showed 1,178 MiB MemAvailable and 1,006 MiB free disk, with its runtime field unavailable. No new user turn or device mutation was performed.
+
+**Next internal work:**
+1. Wait for a separate PIPELINE_STATUS after #737. Do not issue a manual Termux command or duplicate UPDATE_REQUEST.
+2. Recompose the functional fair B1/B2→C4→C3 path from #2370 onto current release. Its head bea37b9 is 158 ahead / 12 behind and its latest 18-entry matrix had 16 queued, 1 skipped and 1 cancelled; do not merge it.
+3. JEPA/QA: #2426 temporal T8 (25 tests) and postcommit (17 tests) pass on Python 3.13/3.14, but optimizer-resume/staged fail on the QA-owned memory.py pin and migration is PARTIAL. Rebind the memory.py and downstream recovery/stage/deployer chain. Separately integrate the Store-RLock and transaction-time source-liveness checks from #2355; this generic promotion/forget race is not fixed.
+4. Preserve the complete 1,255-heading historical Canon inventory and continue clause→consumer→test→platform→negative-control→rollback mapping. B3 trained latent transfer, native voice/microphone, Android UI/background providers, permanent body-weight updates, sparse MoE and cross-organ self-edit remain open.
+
+**Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
+
+**User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+
+## Research & Perception — 2026-11-23 run 4 (current checkpoint)
+
+- PR [#2433](https://github.com/RedMentos/Aii/pull/2433) remains DRAFT / NOT_RELEASED on `research-perception/v14-speaker-history-nonvoiced-20261123-run4`. Current branch checkpoint after this handoff update: `32ff6b57c82c6c2d3f720cfa3804255bc5671deb`; exact source blobs: `audio_voice_cues.py` `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`, `audio_speaker_evidence.py` `08b17a39923e0f59a5dbbb9f173954936e59f85a`, `audio_teacher_ear.py` `5a26193c94c864e6ad3af55def59bae040e59f35`, `audio_fastdiar_adapter.py` `f2ebf6d4629777162c04d8f981b7b8c7e11c727e`, and speaker consumer tests `5b2cddd3b30a98c5d13ee463fb9934f97bb31d99`.
+- Functional change: non-voiced frame embeddings no longer seed or poison speaker-reference history; the separate RAW EAR/A4 path retains non-speech activity. Added a real `consume_pcm16_voice_window → SpeakerChangeEvidenceRegistry → A4 attention → PerceptPacket/C3` synthetic consumer test for an isolated impulse: expected IMPULSIVE novelty, no false interrupt, zero accepted speaker frames, DEFER decision and no persisted vectors.
+- Exact previous-head CI at `0d97e9faec926992acc6b513381fa15edc93b08a`: FASTDIAR adapter, NumPy backend, WebRTC/libfvad comparator, consent-revocation, prosody-to-attention and privacy workflows PASS. Shared staged/integrated workflow FAILS because Core's composer expects stale `audio_voice_cues.py` blob `b18e450162b062b09368a12b1ca18924ed8c5025` instead of `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`; migration consequently reports PARTIAL. The new impulse test and ledger/handoff updates need a fresh exact-head CI result.
+- LOCAL_LINUX: full Aii checkout/pytest BLOCKED; the container has no repository checkout and GitHub DNS resolution fails. An isolated CPython 3.13.5 numerical check of the synthetic impulse returned 32,000 PCM bytes, RMS 0.007905, crest 126.49 and expected A4 novelty floor 0.35; this is not the repository test suite.
+- TERMUX/REDMI: REDMI_UNVERIFIED. No AudioRecord provider/microphone capture, speaker model inference, Android latency/RSS, new installed SHA or after-update receipt. Existing installed-device evidence is not changed by this PR. No model/weight/permission/data change and no UPDATE_REQUEST.
+- Research: FASTDIAR arXiv:2610.02941v1 was reviewed in full. Its confidence gate is a separate 800-ms self-similarity filter; low-confidence frames remain labelable after 960 ms but do not update cluster anchors. It is not implemented here; no calibrated speaker identity is claimed. MIT code license does not establish checkpoint-weight rights; heavyweight PyTorch stack is not selected for Termux.
+- Next internal action: Perception polls the exact new-head CI and fixes only failures in its own files; Core rebinds the two audio source blobs and recomputes downstream recovery/stage/deployer hashes bottom-up; QA independently reviews non-voiced suppression and the A4 impulse regression. Boss updates the shared board. **User action: none.**
