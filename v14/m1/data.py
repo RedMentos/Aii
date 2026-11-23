@@ -9,13 +9,29 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import math
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterable, Mapping, Sequence
 
 UCI_TIMESTAMP_FORMAT = "%d/%m/%Y %H:%M:%S"
-UCI_MISSING = {"", "?", "nan", "NaN", "NA", "null", "None"}
+UCI_MISSING = {"", "?"}
+
+
+def _parse_measurement(token: str | None, *, context: str) -> float | None:
+    """Parse one measurement; missing markers become None, non-finite values fail closed."""
+    value = (token or "").strip()
+    if value.casefold() in {"", "?", "nan", "na", "null", "none"}:
+        return None
+    try:
+        number = float(value.replace(",", "."))
+    except ValueError as exc:
+        raise ValueError(f"invalid numeric measurement at {context}: {value!r}") from exc
+    if not math.isfinite(number):
+        raise ValueError(f"non-finite numeric measurement at {context}: {value!r}")
+    return number
+
 DEFAULT_SEASONAL_LAGS = (1440, 10080)
 
 
@@ -44,8 +60,10 @@ class DataConfig:
             raise ValueError("validation_fraction must be in (0, 1)")
         if self.train_fraction + self.validation_fraction >= 1:
             raise ValueError("train + validation fractions must be below 1")
-        if any(x < 1 for x in self.seasonal_lags):
-            raise ValueError("seasonal lags must be positive")
+        if not self.seasonal_lags:
+            raise ValueError("at least one seasonal lag is required")
+        if any(x < self.horizon for x in self.seasonal_lags):
+            raise ValueError("every seasonal lag must be >= horizon so all seasonal values are known at the forecast origin")
         if self.split_gap is not None and self.split_gap < 0:
             raise ValueError("split_gap cannot be negative")
 
@@ -117,11 +135,8 @@ def parse_uci(path: str | Path) -> tuple[tuple[str, ...], list[MinuteRow]]:
             previous = timestamp
             values: list[float | None] = []
             for channel in channels:
-                token = (raw.get(channel) or "").strip()
-                if token in UCI_MISSING:
-                    values.append(None)
-                else:
-                    values.append(float(token.replace(",", ".")))
+                token = raw.get(channel)
+                values.append(_parse_measurement(token, context=f"line {line_no}, channel {channel}"))
             rows.append(MinuteRow(timestamp, tuple(values)))
     if not rows:
         raise ValueError("UCI file contains no data rows")
@@ -143,10 +158,7 @@ def rows_from_records(
         values: list[float | None] = []
         for channel in channels:
             value = record.get(channel)
-            if value is None or str(value).strip() in UCI_MISSING:
-                values.append(None)
-            else:
-                values.append(float(str(value).replace(",", ".")))
+            values.append(_parse_measurement(None if value is None else str(value), context=f"record {len(out)}, channel {channel}"))
         out.append(MinuteRow(stamp, tuple(values)))
     return out
 
@@ -343,6 +355,8 @@ def split_boundaries_sha256(rows: Sequence[MinuteRow], config: DataConfig) -> st
 def dataset_sha256(rows: Sequence[MinuteRow], channels: Sequence[str]) -> str:
     """Stable fingerprint of parsed timestamps and values; missing values remain null."""
     digest = hashlib.sha256()
+    if any(not math.isfinite(value) for row in rows for value in row.values if value is not None):
+        raise ValueError("dataset contains non-finite measurement values")
     digest.update(json.dumps(list(channels), separators=(",", ":")).encode("utf-8"))
     for row in rows:
         record = [row.timestamp.isoformat(), list(row.values)]
