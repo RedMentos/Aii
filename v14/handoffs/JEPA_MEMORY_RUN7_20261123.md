@@ -122,3 +122,11 @@ The first R-107 documentation PR #2411 was closed as duplicate after its base br
 - On prior head 3b5da6c, both Python 3.13.18 and 3.14.10 passed the full temporal T8/JEPA/source-forget regression step. The subsequent postcommit worker/restart/rollback step ran 15 tests and failed one fixture assertion: the receiver's source text is the complete query string "The verified action history is ready. Estimate the next action duration.", while the assertion incorrectly expected only "verified action history". The quote is still checked in the captured receiver output; the source ref correctly points to the full original query.
 - Fixed the assertion to compare the referenced source bytes with the fixture's exact receiver_text, preserving the provenance check rather than weakening it to substring matching.
 - Exact-head temporal-jepa Python 3.13, Python 3.14 and offline-bridge-security checks for 9c61fb8 are IN_PROGRESS at readback. No PASS claim yet. The postcommit test step must finish green on this exact head before integration.
+
+
+## B2 gated receiver test setup — current exact candidate (2026-11-23)
+
+- Exact code/test SHA: d098095779abaaff9b8520277436fad42dd8081a.
+- On 9c61fb8, temporal T8/JEPA tests passed but the postcommit receiver test failed because B2 body-state is OFF by product default (config.py explicitly defaults b2_offer_body_state=False after the prior STEP2 finding that body_state hijacked 41/50 B2 offers). The test was incorrectly expecting B2 to receive it without opting in.
+- The integration test now explicitly sets runtime.cfg["b2_offer_body_state"] = True for this receiver experiment only. Product default remains OFF; no default, installed setting or user preference was changed. This verifies the gated B2 path without silently reintroducing the old B2 hijack.
+- Exact-head temporal-jepa Python 3.13/3.14 and offline-bridge-security checks for d098095 are QUEUED/IN_PROGRESS at readback; no PASS claim yet. Prior 9c61 temporal tests passed in both versions, postcommit tests ran 15 and failed one B2 opt-in fixture assumption.
