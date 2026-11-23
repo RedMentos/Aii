@@ -241,13 +241,9 @@ class Attention:
             marker=dumps(ref)
             if marker not in seen:seen.add(marker);refs.append(dict(ref))
         provenance_sha256=digest(dumps(refs).encode('utf-8'))
-        key=req['reason']+'|'+req['target'];sc=step(self.n,PATH)  # WP-U6 §12.7
+        key=req['reason']+'|'+req['target'];sc=step(self.n,PATH)
         receipt_key='ATTENTION_OUTCOME_RECEIPT:'+response_packet_id
-        receipt={'response_packet_id':response_packet_id,'policy_key':key,'event_id':resp['event_id'],
-                 'source_ref_count':len(refs),'provenance_sha256':provenance_sha256,
-                 'source_class':source_class,'created_wall_time':time.time()}
-        # The last-32 list is only a diagnostic cache. The durable receipt and policy
-        # update commit together, so replay after eviction/restart cannot re-credit.
+        modulator=None
         with self.s.tx() as c:
             if c.execute('SELECT 1 FROM states WHERE key=?',(receipt_key,)).fetchone():
                 raise ValueError('Ergebnis schon verbucht')
@@ -256,21 +252,35 @@ class Attention:
             if st.get('revision')!=REVISION:raise ValueError('Attention state revision mismatch')
             q=st['policy'].setdefault(key,{'n':0,'mean':0.,'outcomes':[]})
             if response_packet_id in q.get('outcomes',[]):raise ValueError('Ergebnis schon verbucht')
+            predicted_usefulness=clamp(q.get('mean',0.),-1.,1.)
+            prediction_error=clamp(u-predicted_usefulness,-1.,1.)
             q['n']+=1
             q['mean']+=sc*max(POLICY_RATE,1/q['n'])*(u-q['mean'])
             q['outcomes']=(q.get('outcomes',[])+[response_packet_id])[-32:]
             c.execute('INSERT OR REPLACE INTO states VALUES (?,?,?)',
                       (KEY,(state_row['version'] if state_row else 0)+1,dumps(st)))
+            if self.n is not None:
+                channels={'reward_error':prediction_error,'surprise':abs(prediction_error)}
+                if prediction_error<0:channels['calibration_error']=-prediction_error
+                if u>0:channels['task_success']=u
+                elif u<0:channels['action_error']=-u
+                modulator=self.n.signal_in_transaction(c,resp['event_id'],path=PATH,
+                    source_class=source_class,refs=refs,**channels)
+            receipt={'response_packet_id':response_packet_id,'policy_key':key,'event_id':resp['event_id'],
+                     'source_ref_count':len(refs),'provenance_sha256':provenance_sha256,'source_class':source_class,
+                     'predicted_usefulness':predicted_usefulness,'prediction_error':prediction_error,
+                     'modulator_packet_id':modulator['packet_id'] if modulator else None,'created_wall_time':time.time()}
             c.execute('INSERT INTO states VALUES (?,?,?)',(receipt_key,1,dumps(receipt)))
             q=dict(q,outcomes=len(q['outcomes']))
-        if self.n is not None:
-            ch={'task_success':u} if u>0 else {'action_error':-u} if u<0 else {}
-            self.n.signal(resp['event_id'],path=PATH,source_class=source_class,refs=refs,**ch)
         self.s.log('attention_outcome',resp['event_id'],
-                   {'key':key,'usefulness':u,'n':q['n'],'mean':round(q['mean'],6),
-                    'source_bound':bool(refs),'source_ref_count':len(refs),
-                    'provenance_sha256':provenance_sha256})
-        return {'key':key,'n':q['n'],'mean':round(q['mean'],6)}
+                   {'key':key,'usefulness':u,'predicted_usefulness':predicted_usefulness,
+                    'prediction_error':prediction_error,'surprise':abs(prediction_error),
+                    'n':q['n'],'mean':round(q['mean'],6),'source_bound':bool(refs),
+                    'source_ref_count':len(refs),'provenance_sha256':provenance_sha256,
+                    'modulator_packet_id':modulator['packet_id'] if modulator else None})
+        return {'key':key,'n':q['n'],'mean':round(q['mean'],6),
+                'predicted_usefulness':predicted_usefulness,'prediction_error':prediction_error,
+                'modulator_packet_id':modulator['packet_id'] if modulator else None}
     def recent_modulators(self,event_id,session=None,limit=RECENT_EVENTS):
         """N10 channels of the last `limit` prior events (same session), max per channel, decayed RELAX per event back.
         Feeds modulate(); only positive magnitudes count (salience/caution are unsigned)."""

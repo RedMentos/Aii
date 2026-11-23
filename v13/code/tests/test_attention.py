@@ -159,8 +159,38 @@ class LiveHookTests(Base):
         self.assertTrue(attention_mods)
         self.assertTrue(all(any(ref.get('source_id')==src['source_id'] and ref.get('sha256')==src['sha256']
                                 for ref in p.get('provenance',[])) for p in attention_mods))
+        self.assertTrue(all(p['channels']['surprise']>0 for p in attention_mods))
+        self.assertTrue(all(p['channels']['reward_error']>0 for p in attention_mods))
         self.assertEqual(self.a.source_outcome(e,text,'again'),[])  # durable receipt prevents replay
         pol=self.a.report()['policy'];self.assertTrue(any(k.endswith('|A_SOURCE') and v['n']>=1 for k,v in pol.items()))
+
+    def test_source_omission_prediction_error_reaches_next_event_attention(self):
+        text='Invoice 4471 says not 30 but 45 EUR.'
+        ev=self.r.store.event(self.r.session,text);e=ev['event_id'];src=ev['source_ref']
+        out=self.a.perceive(e,segments(text,src,100),goal='How much is invoice 4471?')
+        self.assertTrue(out['requests'])
+        self.a.admit(e,out['requests'],providers={'A_SOURCE':lambda r:{'source_ref':r['source_ref']}})
+        done=self.a.source_outcome(e,text,'No exact details.')
+        self.assertTrue(done)
+        mods=[json.loads(x['payload']) for x in self.r.store.rows(
+            "SELECT payload FROM packets WHERE kind='ModulatorPacket' AND event_id=?",(e,))]
+        attention_mods=[p for p in mods if p.get('path_id')==A.PATH]
+        self.assertEqual(len(attention_mods),1)
+        channels=attention_mods[0]['channels']
+        self.assertAlmostEqual(channels['reward_error'],-.25,6)
+        self.assertAlmostEqual(channels['surprise'],.25,6)
+        self.assertAlmostEqual(channels['calibration_error'],.25,6)
+        receipt=self.r.store.state('ATTENTION_OUTCOME_RECEIPT:'+done[0]['response'])[0]
+        self.assertAlmostEqual(receipt['prediction_error'],-.25,6)
+
+        next_event=self.ev('follow-up after omission')
+        recent=self.a.recent_modulators(next_event,self.r.session)
+        self.assertAlmostEqual(recent['surprise'],.25,6)
+        self.assertAlmostEqual(recent['calibration_error'],.25,6)
+        modulated=self.a.modulate(next_event,modulators=recent)
+        self.assertGreater(modulated['salience'],0)
+        self.assertGreater(modulated['caution'],0)
+        self.assertEqual(modulated['truth_authority'],0)
 
     def test_source_outcome_rejects_tampered_source_text(self):
         text='Invoice 4471 says not 30 but 45 EUR.'

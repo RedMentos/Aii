@@ -7,6 +7,7 @@ import unittest
 
 from v13.runtime import Runtime
 from v13.attention import Attention, KEY
+from v13.neuromod import Neuromod
 
 RECEIPT_PREFIX = "ATTENTION_OUTCOME_RECEIPT:"
 
@@ -17,7 +18,8 @@ class AttentionOutcomeReceiptV14(unittest.TestCase):
         self.home = Path(self.tmp.name)
         self.r = Runtime(self.home)
         self.r.sleep.cycle.set_policy("enabled", "off")
-        self.a = Attention(self.r.store)
+        self.n = Neuromod(self.r.store)
+        self.a = Attention(self.r.store, None, self.n)
         self.event = self.r.store.event(self.r.session, "V14 source-bound attention outcome test event")
 
     def tearDown(self):
@@ -44,6 +46,7 @@ class AttentionOutcomeReceiptV14(unittest.TestCase):
             self.a.outcome(rid, 1.0)
         before = self.policy()
         self.assertEqual(before["n"], 34)
+        self.assertEqual(len(self.r.store.rows("SELECT id FROM packets WHERE kind='ModulatorPacket'")), 34)
         self.assertLessEqual(
             len(self.r.store.state(KEY)[0]["policy"]["recall|MEMORY"]["outcomes"]), 32
         )
@@ -58,6 +61,41 @@ class AttentionOutcomeReceiptV14(unittest.TestCase):
         self.assertEqual(receipt["source_ref_count"], 0)
         self.assertEqual(self.a.report()["mode"], "SHADOW")
 
+    def test_policy_receipt_and_n10_modulator_roll_back_together(self):
+        rid = self.granted()[0]
+        original = self.n.signal_in_transaction
+
+        def fail_after_insert(connection, *args, **kwargs):
+            original(connection, *args, **kwargs)
+            raise RuntimeError("injected N10 insert failure")
+
+        self.n.signal_in_transaction = fail_after_insert
+        with self.assertRaisesRegex(RuntimeError, "injected N10 insert failure"):
+            self.a.outcome(rid, 1.0)
+        self.assertIsNone(self.r.store.state(RECEIPT_PREFIX + rid)[0])
+        self.assertIsNone(self.policy())
+        self.assertEqual(
+            self.r.store.rows(
+                "SELECT id FROM packets WHERE kind='ModulatorPacket' AND event_id=?",
+                (self.event["event_id"],),
+            ),
+            [],
+        )
+
+        self.n.signal_in_transaction = original
+        self.a.outcome(rid, 1.0)
+        receipt = self.r.store.state(RECEIPT_PREFIX + rid)[0]
+        self.assertIsNotNone(receipt)
+        self.assertTrue(receipt["modulator_packet_id"])
+        self.assertEqual(self.policy()["n"], 1)
+        self.assertEqual(
+            len(self.r.store.rows(
+                "SELECT id FROM packets WHERE kind='ModulatorPacket' AND event_id=?",
+                (self.event["event_id"],),
+            )),
+            1,
+        )
+
     def test_durable_receipt_survives_runtime_restart(self):
         ids = self.granted(34)
         for rid in ids:
@@ -66,7 +104,8 @@ class AttentionOutcomeReceiptV14(unittest.TestCase):
         self.r.close()
         self.r = Runtime(self.home)
         self.r.sleep.cycle.set_policy("enabled", "off")
-        self.a = Attention(self.r.store)
+        self.n = Neuromod(self.r.store)
+        self.a = Attention(self.r.store, None, self.n)
 
         with self.assertRaisesRegex(ValueError, "Ergebnis schon verbucht"):
             self.a.outcome(ids[0], -1.0)
@@ -92,6 +131,7 @@ class AttentionOutcomeReceiptV14(unittest.TestCase):
             next(x[1] for x in results if x[0] == "REJECT"),
         )
         self.assertEqual(self.policy()["n"], 1)
+        self.assertEqual(len(self.r.store.rows("SELECT id FROM packets WHERE kind='ModulatorPacket' AND event_id=?", (self.event["event_id"],))), 1)
         self.assertIsNotNone(self.r.store.state(RECEIPT_PREFIX + rid)[0])
 
     def test_non_granted_response_never_writes_receipt_or_policy(self):
