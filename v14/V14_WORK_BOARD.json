@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T12:44:40Z",
+  "updated_at": "2026-11-23T20:34:31Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -15,10 +15,10 @@
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
       "proof_environment": "CI + authenticated ANDROID_DEVICE metadata; no correct-answer/native-organ acceptance",
-      "next_step": "Recompose a fresh fair B1/B2→C4→C3 slice on b20e9; do not merge stale #2370. Its 30 s fixture leaves ~1.95 s per body, far below the last 53.2/54.2 s phone failures. Require useful source-bound OfferPacket delivery and explicit C4/C3 consumption; preserve both bodies and nontrivial-query depth.",
+      "next_step": "Core PR #2458 is the current-base fair B1/B2 recovery candidate on 8d93236 (17 ahead / 0 behind). Exact current Runtime SHA-256 is 720342eb75a9cf3e38e43fa046dd38f6d37817c427d743f89b086da3d666eba3. Boss/Integrator must rebind the immutable JEPA/integrated-online-world and postcommit Runtime pins; QA must verify the A5 Store pin after Store was restored byte-identical to base. Then obtain executable Python 3.13/3.14 and staged/integrated CI before any release or Redmi claim.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:07:22.216Z",
-      "proof": "IH-H12 output commit/C7 gate #2434 merged at 69e77bc (39/39 checks SUCCESS); #2429 source-forget merged at b20e9b1f3dd53af472055adb43da628785494ec4 (37/37 SUCCESS). Latest phone receipt #767 still reports 8bf44cb / CI_WAIT; no post-green device receipt. Correct answer UNKNOWN.",
+      "last_checkpoint": "2026-11-23T20:34:31Z",
+      "proof": "IH-H12 output commit/C7 gate #2434 merged at 69e77bc (39/39 checks SUCCESS); #2429 source-forget merged at b20e9b1f3dd53af472055adb43da628785494ec4 (37/37 SUCCESS). Latest phone receipt #767 still reports 8bf44cb / CI_WAIT; no post-green device receipt. Correct answer UNKNOWN. Core #2458 head 8878c5e1b35dee8845d3f2e81a7dcb43d9668771 (17 ahead / 0 behind 8d93236) preserves both B1/B2 roles with per-role deadlines and C3 reserve; Store source restored to base blob f347e1c. Exact-head Actions 45260798204 startup_failure/no jobs, so no CI PASS. Exact native_turn_budget.py compile + import-time telemetry registration against isolated Store stub PASS; full Aii pytest BLOCKED. Runtime SHA-256 720342eb75a9cf3e38e43fa046dd38f6d37817c427d743f89b086da3d666eba3 pending Boss pin rebind. Redmi STOPPED_BY_USER #826; REDMI_UNVERIFIED.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -34,6 +34,28 @@
         },
         "device": "REDMI_UNVERIFIED; private receipt #505 predates merge c2e7 and reports installed c03ff0a",
         "next_action": "Poll exact #2325 CI, fix measured failures, coordinate QA #2324 rebase, then continue Android companion operator/CLI integration"
+      },
+      "core_run16_checkpoint": {
+        "date": "2026-11-23",
+        "owner": "Core & Harness",
+        "branch": "core/v14-fair-b1-b2-preanswer-budget-20261123-run1",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "code_commit": "f714a29e3900da7d355033bd4b3865f393092941",
+        "handoff_commit": "8878c5e1b35dee8845d3f2e81a7dcb43d9668771",
+        "pull_request": 2458,
+        "status": "DRAFT_CI_STARTUP_FAILURE_PIN_REBIND_PENDING",
+        "tests": {
+          "exact_native_turn_budget_py_compile": "PASS",
+          "exact_native_turn_budget_import_telemetry_stub": "PASS",
+          "budget_1_5s_window_case": "PASS",
+          "first_stub_attempt": "FAIL_FIXTURE_MISSING_BASE_KIND_STATUS_ALLOWLIST; corrected stub then PASS",
+          "full_local_repository": "BLOCKED_NO_CHECKOUT_NO_GITHUB_DNS",
+          "exact_head_ci": "STARTUP_FAILURE_NO_JOBS_RUN_45260798204"
+        },
+        "device": "REDMI_STOPPED_BY_USER_RECEIPT_826; REDMI_UNVERIFIED; no action",
+        "store_blob": "f347e1c960076e06e284369549275bc39a4195cb (matches base)",
+        "runtime_sha256": "720342eb75a9cf3e38e43fa046dd38f6d37817c427d743f89b086da3d666eba3",
+        "next_action": "Boss rebinds JEPA/integrated-online-world and postcommit Runtime source pins; QA reruns A5 Store lifecycle; then exact CI and independent review"
       }
     },
     {
