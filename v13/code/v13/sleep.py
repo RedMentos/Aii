@@ -859,14 +859,17 @@ class SleepRuntime:
             completion=('CANCELLED' if result['status']=='CANCELLED'
                         else ('FAILED' if result['status']=='ERROR' else 'DONE'))
             self.scheduler.complete(e['id'],completion,result)
+            continuation=False
             if result['status']!='CANCELLED' and (more_learning or more_temporal):
                 continuation=bool(self.schedule_world_jepa(event_id))
                 result['continuation_scheduled']=continuation
-                if type(out) is dict:
-                    out['continuation_scheduled']=continuation
-                    out['learning_has_more']=more_learning
-                    out['temporal_has_more']=more_temporal
-                    out['continuation_reason']=result['continuation_reason']
+            # Return the same compact status contract that was persisted with the
+            # scheduler completion.  Previously only continuation flags were
+            # copied to the worker result, so temporal-only continuation callers
+            # could not read temporal_status/learning_status/planner_status.
+            if type(out) is dict:
+                out.update(result)
+                out['continuation_scheduled']=continuation
             return out
         if e['action']=='lab_check':
             from .lab_native_cycle import run
