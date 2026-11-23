@@ -444,6 +444,7 @@ class Runtime:
             mark('preanswer_observers')
             # WP-D reasoning effort (G5B): one bounded plan decides wake/re-entry/focal budgets.
             observer_end=start+self.cfg['deadline_seconds']*.45
+            body_observer_end=observer_end
             minimum_body_seconds=None
             if not direct and self.cfg['observer_mode']=='background':
                 try:
@@ -453,9 +454,11 @@ class Runtime:
                                        background_enabled=True)
                     if native_budget['recovery']:
                         observer_end=min(observer_end,native_budget['preanswer_end_monotonic'])
+                        body_observer_end=min(observer_end,native_budget['body_preanswer_end_monotonic'])
                         minimum_body_seconds=native_budget['minimum_role_slice_s']
                         self.store.log('native_turn_budget_plan',eid,{
-                            'preanswer_seconds_available':round(max(0.,observer_end-time.monotonic()),3),
+                            'preanswer_seconds_available':round(max(0.,body_observer_end-time.monotonic()),3),
+                            'focal_reserved_seconds':native_budget['focal_reserved_seconds'],
                             'c3_reserved_seconds':native_budget['c3_reserved_seconds'],
                             'recent_real_prefill_failures':native_budget['recent_real_prefill_failures'],
                             'minimum_role_slice_s':minimum_body_seconds})
@@ -465,7 +468,7 @@ class Runtime:
             age_lim=effort.age_limits(agectl.controller(self),rmode)
             effort_sig=effort.signals(text,route,meta.get('route'),memories,**self.executive.effort_context(self.session,e))
             effort_sig=agi_live.before_effort(self,e,meta,effort_sig)  # WP-N13 AG9 -> effort, AG11 -> C1
-            effort_plan=effort.decide(effort_mode,effort_sig,direct=direct,observers=self.cfg['observer_mode']!='off',resource_state=state,resource_mode=rmode,observer_window_s=observer_end-time.monotonic(),minimum_body_seconds=minimum_body_seconds,cfg=self.cfg,age=age_lim)
+            effort_plan=effort.decide(effort_mode,effort_sig,direct=direct,observers=self.cfg['observer_mode']!='off',resource_state=state,resource_mode=rmode,observer_window_s=body_observer_end-time.monotonic(),minimum_body_seconds=minimum_body_seconds,cfg=self.cfg,age=age_lim)
             wake_route=effort_plan['wake'];wake_source='EFFORT_POLICY'
             if not direct and rpol['learned_wake'] and self.cfg['observer_mode']!='off':
                 wake_decision=self.learner.decide('wake',e,wake_route,min(deadline,time.monotonic()+self.cfg['control_seconds']),enabled=self.cfg['route_override']=='auto' and effort_plan['learned_wake_allowed'])
@@ -490,14 +493,15 @@ class Runtime:
                     if jo['applied']:observer_seconds=max(1.,observer_seconds*jo['scale'])
                 except Exception as exc:self.store.log('jef_observer_unavailable',eid,{'error':type(exc).__name__})
                 _,channel_head=fastpol.head(self,'channel',e,self.cfg['channel'])  # WP-T1 channel head (applies only when approved)
-                def ask(role,focus=None,use_peer=True,role_end=None):
+                def ask(role,focus=None,use_peer=True,role_end=None,preanswer=False):
                     native_end=min(observer_end,time.monotonic()+observer_seconds)
+                    if preanswer:native_end=min(native_end,body_observer_end)
                     if role_end is not None:native_end=min(native_end,role_end)
-                    p=self.cognition.offer(role,e,version,native_end,peers.get(role) if use_peer else None,valid_until=deadline,**({'focus':focus} if focus and 'focus' in inspect.signature(self.cognition.offer).parameters else {}))  # replaced/older offers take no focus
+                    p=self.cognition.offer(role,e,version,native_end,peers.get(role) if use_peer else None,valid_until=deadline,preanswer_budgeted=preanswer,**({'focus':focus} if focus and 'focus' in inspect.signature(self.cognition.offer).parameters else {}))  # replaced/older offers take no focus
                     other='B2_GIST' if role=='B1_DETAIL' else 'B1_DETAIL';peers[other]=self.cognition.communicate(p,other,**({'fast':channel_head} if channel_head and channel_head.get('learned') else {}));return p
                 sched=obsched.plan(self.cfg.get('observer_schedule',obsched.DEFAULT),roles,eid,self.cfg.get('observer_sample_rate',.5),parallel_ok=rpol['max_observer_bodies']>1 and bool(getattr(getattr(self.pool,'fabric',None),'enabled',False)))  # §22.2.4 deployment knob
                 meta['observer_schedule']={k:sched[k] for k in ('schedule','pre','parallel','post','reason')}
-                offers+=obsched.run(sched,lambda role,use_peer,role_end=None:ask(role,use_peer=use_peer,role_end=role_end),observer_end,lambda role,exc:self.store.log('offer_rejected',eid,{'role':role,'error':str(exc)[:300]}),cancelled=(Cancelled,),budgeted=not sched['parallel'])
+                offers+=obsched.run(sched,lambda role,use_peer,role_end=None:ask(role,use_peer=use_peer,role_end=role_end,preanswer=True),body_observer_end,lambda role,exc:self.store.log('offer_rejected',eid,{'role':role,'error':str(exc)[:300]}),cancelled=(Cancelled,),budgeted=not sched['parallel'])
                 def reenter(role,focus=None):
                     try:return ask(role,focus)
                     except Cancelled:raise
