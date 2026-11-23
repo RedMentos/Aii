@@ -13,6 +13,7 @@ import math
 import os
 import re
 import time
+import threading
 from pathlib import Path
 import uuid
 
@@ -747,6 +748,42 @@ class TemporalWorldJEPAStoreConsumer:
             path, record["source_sha256"], record["checkpoint_sha256"]
         )
 
+    def warm_active_checkpoint(self, *, nonblocking=True):
+        """Warm the exact active checkpoint from an idle/background path.
+
+        Foreground B1/B2 reads use warm_only=True and never synchronously load
+        a cold checkpoint. The shared flock prevents a concurrent update or
+        source-forget operation from replacing the checkpoint during loading.
+        """
+        if type(nonblocking) is not bool:
+            raise ValueError("invalid warm-cache lock mode")
+        try:
+            with self._locked(False, blocking=not nonblocking):
+                state, _ = self._read_state()
+                active = state["active"]
+                if active is None:
+                    self._ephemeral_model = None
+                    self._ephemeral_checkpoint_sha = None
+                    return {"status": "NO_CHECKPOINT", "decision_authority": "NONE"}
+                checkpoint_sha = active["checkpoint_sha256"]
+                if (self._ephemeral_model is not None
+                        and self._ephemeral_checkpoint_sha == checkpoint_sha):
+                    return {
+                        "status": "ALREADY_WARM",
+                        "checkpoint_sha256": checkpoint_sha,
+                        "decision_authority": "NONE",
+                    }
+                model = self._load_model(active)
+                self._ephemeral_model = model
+                self._ephemeral_checkpoint_sha = checkpoint_sha
+                return {
+                    "status": "WARMED",
+                    "checkpoint_sha256": checkpoint_sha,
+                    "decision_authority": "NONE",
+                }
+        except BlockingIOError:
+            return {"status": "LOCK_BUSY", "decision_authority": "NONE"}
+
     def _prune(self, state):
         keep = {
             record["checkpoint"]
@@ -1195,7 +1232,7 @@ class TemporalWorldJEPAStoreConsumer:
             }
 
     def episodic_recall(self, session_id, history_length=2, limit=4,
-                        nonblocking=False, budget_s=0.05):
+                        nonblocking=False, budget_s=0.05, warm_only=False):
         """Retrieve source-verified train-split T8 episodes in the learned temporal space.
 
         Only the current query history and verified numeric outcomes are used.
@@ -1206,7 +1243,7 @@ class TemporalWorldJEPAStoreConsumer:
         if (type(session_id) is not str or not session_id
                 or history_length not in HISTORY_LENGTHS
                 or type(limit) is not int or not 1 <= limit <= len(world_model.ACTIONS)
-                or type(nonblocking) is not bool
+                or type(nonblocking) is not bool or type(warm_only) is not bool
                 or type(budget_s) not in (int, float) or isinstance(budget_s, bool)
                 or not math.isfinite(float(budget_s))
                 or not 0.005 <= float(budget_s) <= 0.25):
@@ -1269,6 +1306,18 @@ class TemporalWorldJEPAStoreConsumer:
                 model = self._load_model(active)
                 self._ephemeral_model = model
                 self._ephemeral_checkpoint_sha = active["checkpoint_sha256"]
+            model = self._ephemeral_model
+            if (model is None
+                    or self._ephemeral_checkpoint_sha != active["checkpoint_sha256"]):
+                if warm_only:
+                    return {
+                        "status": "MODEL_NOT_WARM", "items": [],
+                        "checkpoint_sha256": active["checkpoint_sha256"],
+                        "decision_authority": "NONE", "native_memory_consumed": False,
+                    }
+                model = self._load_model(active)
+                self._ephemeral_model = model
+                self._ephemeral_checkpoint_sha = active["checkpoint_sha256"]
             query_latent = np.asarray(
                 model.latent(np.asarray([query_x], dtype=np.float64), target=False),
                 dtype=np.float64,
@@ -1276,6 +1325,10 @@ class TemporalWorldJEPAStoreConsumer:
             if (query_latent.ndim != 2 or query_latent.shape[0] != 1
                     or not np.isfinite(query_latent).all()):
                 raise ValueError("invalid temporal episodic query latent")
+            if expired():
+                return {"status": "BUDGET_EXCEEDED", "items": [],
+                        "checkpoint_sha256": active["checkpoint_sha256"],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
 
             train_window_ids = set(active["train_window_ids"])
             if not train_window_ids:
@@ -1330,17 +1383,34 @@ class TemporalWorldJEPAStoreConsumer:
                     "decision_authority": "NONE", "native_memory_consumed": False,
                 }
 
-            candidate_x = np.asarray(
-                [window["X"] for window, _target in train_windows], dtype=np.float64
-            )
-            candidate_latents = np.asarray(
-                model.latent(candidate_x, target=False), dtype=np.float64
-            )
-            if (candidate_latents.ndim != 2
-                    or candidate_latents.shape[0] != len(train_windows)
-                    or candidate_latents.shape[1] != query_latent.shape[1]
-                    or not np.isfinite(candidate_latents).all()):
-                raise ValueError("invalid temporal episodic candidate latents")
+            # Bound work between candidate batches; a foreground caller can
+            # abandon the optional recall without processing all 256 windows.
+            candidate_latent_parts = []
+            for start in range(0, len(train_windows), 32):
+                if expired():
+                    return {"status": "BUDGET_EXCEEDED", "items": [],
+                            "checkpoint_sha256": active["checkpoint_sha256"],
+                            "decision_authority": "NONE",
+                            "native_memory_consumed": False}
+                chunk = train_windows[start:start + 32]
+                candidate_x = np.asarray(
+                    [window["X"] for window, _target in chunk], dtype=np.float64
+                )
+                chunk_latents = np.asarray(
+                    model.latent(candidate_x, target=False), dtype=np.float64
+                )
+                if (chunk_latents.ndim != 2
+                        or chunk_latents.shape[0] != len(chunk)
+                        or chunk_latents.shape[1] != query_latent.shape[1]
+                        or not np.isfinite(chunk_latents).all()):
+                    raise ValueError("invalid temporal episodic candidate latents")
+                candidate_latent_parts.append(chunk_latents)
+                if expired():
+                    return {"status": "BUDGET_EXCEEDED", "items": [],
+                            "checkpoint_sha256": active["checkpoint_sha256"],
+                            "decision_authority": "NONE",
+                            "native_memory_consumed": False}
+            candidate_latents = np.concatenate(candidate_latent_parts, axis=0)
             distances = np.linalg.norm(candidate_latents - query_latent[0], axis=1)
             if not np.isfinite(distances).all():
                 raise ValueError("nonfinite temporal episodic distances")
@@ -1547,10 +1617,11 @@ class TemporalWorldJEPAStoreConsumer:
             }
 
 
-    def receiver_matrix(self, session_id, actions, history_length=2, nonblocking=False):
+    def receiver_matrix(self, session_id, actions, history_length=2, nonblocking=False,
+                        warm_only=False):
         """Batch temporal B1/B2/SELF readouts for the foreground bodyview contract."""
         if (type(session_id) is not str or not session_id
-                or history_length not in HISTORY_LENGTHS
+                or history_length not in HISTORY_LENGTHS or type(warm_only) is not bool
                 or type(actions) not in (list, tuple) or not actions
                 or len(actions) > len(world_model.ACTIONS)
                 or any(type(action) is not str or action not in world_model.ACTIONS
@@ -1562,7 +1633,19 @@ class TemporalWorldJEPAStoreConsumer:
             active = state["active"]
             if active is None:
                 return {"status": "NO_CHECKPOINT", "matrix": {},
-                        "decision_authority": "NONE", "native_body_consumed": False}
+                        "decision_authority": "NONE", "native_body_consumed": False,
+                        "native_body_weights_changed": False}
+            model = self._ephemeral_model
+            if (model is None
+                    or self._ephemeral_checkpoint_sha != active["checkpoint_sha256"]):
+                model = None
+                if warm_only:
+                    return {
+                        "status": "MODEL_NOT_WARM", "matrix": {},
+                        "checkpoint_sha256": active["checkpoint_sha256"],
+                        "decision_authority": "NONE", "native_body_consumed": False,
+                        "native_body_weights_changed": False,
+                    }
             history, positions, history_error = _ordered_session_history(
                 self.store, active["experience_rows"], session_id
             )
@@ -1589,9 +1672,10 @@ class TemporalWorldJEPAStoreConsumer:
                 + [float(any(row["censored"] for row in history_rows[:-1])),
                    float(latest["censored"]), float(history_length) / float(max(HISTORY_LENGTHS))]
             )
-            model = self._load_model(active)
-            self._ephemeral_model = model
-            self._ephemeral_checkpoint_sha = active["checkpoint_sha256"]
+            if model is None:
+                model = self._load_model(active)
+                self._ephemeral_model = model
+                self._ephemeral_checkpoint_sha = active["checkpoint_sha256"]
             X = np.repeat(np.asarray([x], dtype=np.float64), len(actions), axis=0)
             A = np.asarray([world_model.onehot(action) for action in actions], dtype=np.float64)
             latent, spread = model.predict(X, A)
@@ -1688,8 +1772,27 @@ class TemporalWorldJEPAStoreConsumer:
             }
 
 
+def runtime_consumer(runtime):
+    """Return one Runtime-scoped temporal consumer shared by idle and body paths."""
+    store = getattr(runtime, "store", None)
+    if store is None:
+        raise ValueError("Runtime store is required for temporal JEPA")
+    lock = getattr(runtime, "_temporal_world_jepa_consumer_lock", None)
+    if lock is None:
+        lock = getattr(runtime, "lock", None)
+    if lock is None:
+        lock = threading.RLock()
+        setattr(runtime, "_temporal_world_jepa_consumer_lock", lock)
+    with lock:
+        learner = getattr(runtime, "_temporal_world_jepa_consumer", None)
+        if learner is None or getattr(learner, "store", None) is not store:
+            learner = TemporalWorldJEPAStoreConsumer(store)
+            setattr(runtime, "_temporal_world_jepa_consumer", learner)
+        return learner
+
+
 def consume_temporal_after_commit(store, home=None, *, limit=PAGE_SIZE, max_pages=MAX_PAGES,
-                                  steps=None, cancel_check=None):
+                                  steps=None, cancel_check=None, consumer=None, runtime=None):
     """Runtime adapter: same local learning/optimizer gates as the base WorldJEPA."""
     gates = permission_state(store)
     if not gates["learning_enabled"]:
@@ -1698,13 +1801,21 @@ def consume_temporal_after_commit(store, home=None, *, limit=PAGE_SIZE, max_page
     if not gates["optimizer_permission"]:
         return {"status": "PENDING_OPTIMIZER_PERMISSION", "checkpoint_committed": False,
                 "native_body_weights_changed": False}
-    learner = TemporalWorldJEPAStoreConsumer(store)
-    return learner.update(
+    learner = consumer
+    if learner is None:
+        learner = runtime_consumer(runtime) if runtime is not None else TemporalWorldJEPAStoreConsumer(store)
+    if getattr(learner, "store", None) is not store:
+        raise ValueError("temporal consumer belongs to a different Store")
+    result = learner.update(
         limit=limit, max_pages=max_pages,
         steps=min(gates["steps"], 40) if steps is None else steps,
         optimizer_permission=True, replay_mode=gates["replay_mode"],
         cancel_check=cancel_check,
     )
+    if result.get("status") not in {"CANCELLED", "ERROR"}:
+        cache = learner.warm_active_checkpoint(nonblocking=True)
+        result["receiver_cache_status"] = cache.get("status", "UNKNOWN")
+    return result
 
 
 @contextmanager
