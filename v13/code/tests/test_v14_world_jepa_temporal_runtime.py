@@ -1198,8 +1198,8 @@ def test_temporal_A_B_C_A_replay_ablation_uses_matched_steps_and_retains_old_coh
         retained_action_ids = set(receiver_cohort_a["action_ids"])
         assert all(
             not (
-                set(window.get("lineage_source_ids", window["source_ids"]) & retained_source_ids
-                or set(window.get("lineage_source_sha256s", window["source_sha256s"]) & retained_source_hashes
+                set(window.get("lineage_source_ids", window["source_ids"])) & retained_source_ids
+                or set(window.get("lineage_source_sha256s", window["source_sha256s"])) & retained_source_hashes
                 or set(window["action_ids"]) & retained_action_ids
             )
             for window in training_windows
