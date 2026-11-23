@@ -1,3 +1,22 @@
+# Boss & Integration — current verified handoff (2026-11-23)
+
+**No user action is required. Do not run a manual Termux command or send a duplicate update request.** The existing authenticated auto-updater is enabled.
+
+- Current release branch gpt6/v13-private-remote-bridge-20261111 = b20e9b1f3dd53af472055adb43da628785494ec4. PR #2429 is merged; exact merge-SHA push CI is 37/37 SUCCESS, including staged-runtime and integrated-regression.
+- New code: source-bound ActionSelection SourceRef lineage, source-disjoint T8 cohorts, and Memory-forget checkpoint restore/invalidation with source-verified replay. This is Store/SQLite checkpoint rollback/replay, not native body-weight unlearning, trained B3 latent coupling or Redmi proof.
+- IH-H12 durable output-commit and C7 persisted-receipt gate is merged via #2434 at 69e77bc (39/39 exact push check-runs SUCCESS).
+- Latest PIPELINE_STATUS #767 still reports 8bf44cb / CI_WAIT from 10:55:05 UTC, before final b20e9 CI green. Auto-update is enabled; b20e9 installation is not confirmed. UPDATE_REQUEST #737 was already acknowledged QUEUED; do not duplicate.
+- Last stored diagnostics: 57.739 s total, 41.627 s TTFT, 38.945 s C3 prefill, 751 prompt tokens, 2 generated; B1/B2 TIME_BUDGET 53.2/54.2 s; correctness UNKNOWN. HEALTH: 1,209 MiB MemAvailable and 1,030 MiB disk; LEARNING_STATUS unavailable.
+- Local full Aii suite BLOCKED / NOT_RUN (no checkout and GitHub DNS unavailable). Isolated SQLite 3.46.1 JSON1 smoke passed, but it is not a project or Android test.
+- Highest next integration: recompose #2370 fair B1/B2→C4→C3 on b20e9; old branch 193 ahead / 34 behind and ~1.95 s/body synthetic slices do not solve 53.2/54.2 s native timeouts. Preserve both bodies and require useful source-bound offers consumed by C4/C3.
+- Production ActionSelection still records only the event source; all admitted Memory/observer/Enlightened context SourceRefs must be emitted by the real producer.
+- #2433 remains draft with 3 CI failures (path vs path_id assertion and stale attention.py pin). #2372 temporal JEPA and #2405 episodic recall remain stacked on non-release branches and must rebase.
+- Docs PR #2378 remains unmerged: 117 ahead / 34 behind and deletes 1,582 lines from Next Action. Research R-090–R-107 was ported append-only; historical Next Action and 1,255-heading Canon inventory are preserved.
+
+See [BOSS_INTEGRATION_RUN12_20261123.md](v14/handoffs/BOSS_INTEGRATION_RUN12_20261123.md) for exact evidence.
+
+---
+
 # QA & Android — temporal JEPA and source-lifecycle follow-up (2026-11-22)
 
 - JEPA/Memory PR [#2351](https://github.com/RedMentos/Aii/pull/2351), exact head 3df0c8a6a65dd2545bde62db92efc761d143032a, adds dense contiguous T8 temporal windows (history lengths 2/3), explicit censored omissions, unknown-gap breaks, connected session/source split, NumPy WorldJEPA + EMA/Adam/checkpoint persistence, and B1/B2/SELF shadow readouts. It is wired into SleepRuntime post-commit but has no prompt consumer or native body-weight effect. Synthetic Store/T8 fixtures only. Exact CI currently queued; PR is DRAFT / NOT_RELEASED.
@@ -1711,58 +1730,13 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
 
 
-
-## Research & Perception — 2026-11-23 run 4 (current checkpoint)
-
-- PR [#2433](https://github.com/RedMentos/Aii/pull/2433) remains DRAFT / NOT_RELEASED on `research-perception/v14-speaker-history-nonvoiced-20261123-run4`. Current branch checkpoint after this handoff update: `32ff6b57c82c6c2d3f720cfa3804255bc5671deb`; exact source blobs: `audio_voice_cues.py` `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`, `audio_speaker_evidence.py` `08b17a39923e0f59a5dbbb9f173954936e59f85a`, `audio_teacher_ear.py` `5a26193c94c864e6ad3af55def59bae040e59f35`, `audio_fastdiar_adapter.py` `f2ebf6d4629777162c04d8f981b7b8c7e11c727e`, and speaker consumer tests `5b2cddd3b30a98c5d13ee463fb9934f97bb31d99`.
-- Functional change: non-voiced frame embeddings no longer seed or poison speaker-reference history; the separate RAW EAR/A4 path retains non-speech activity. Added a real `consume_pcm16_voice_window → SpeakerChangeEvidenceRegistry → A4 attention → PerceptPacket/C3` synthetic consumer test for an isolated impulse: expected IMPULSIVE novelty, no false interrupt, zero accepted speaker frames, DEFER decision and no persisted vectors.
-- Exact previous-head CI at `0d97e9faec926992acc6b513381fa15edc93b08a`: FASTDIAR adapter, NumPy backend, WebRTC/libfvad comparator, consent-revocation, prosody-to-attention and privacy workflows PASS. Shared staged/integrated workflow FAILS because Core's composer expects stale `audio_voice_cues.py` blob `b18e450162b062b09368a12b1ca18924ed8c5025` instead of `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`; migration consequently reports PARTIAL. The new impulse test and ledger/handoff updates need a fresh exact-head CI result.
-- LOCAL_LINUX: full Aii checkout/pytest BLOCKED; the container has no repository checkout and GitHub DNS resolution fails. An isolated CPython 3.13.5 numerical check of the synthetic impulse returned 32,000 PCM bytes, RMS 0.007905, crest 126.49 and expected A4 novelty floor 0.35; this is not the repository test suite.
-- TERMUX/REDMI: REDMI_UNVERIFIED. No AudioRecord provider/microphone capture, speaker model inference, Android latency/RSS, new installed SHA or after-update receipt. Existing installed-device evidence is not changed by this PR. No model/weight/permission/data change and no UPDATE_REQUEST.
-- Research: FASTDIAR arXiv:2610.02941v1 was reviewed in full. Its confidence gate is a separate 800-ms self-similarity filter; low-confidence frames remain labelable after 960 ms but do not update cluster anchors. It is not implemented here; no calibrated speaker identity is claimed. MIT code license does not establish checkpoint-weight rights; heavyweight PyTorch stack is not selected for Termux.
-- Next internal action: Perception polls the exact new-head CI and fixes only failures in its own files; Core rebinds the two audio source blobs and recomputes downstream recovery/stage/deployer hashes bottom-up; QA independently reviews non-voiced suppression and the A4 impulse regression. Boss updates the shared board. **User action: none.**
-
-
-
-## Research & Perception — private device receipt correction (2026-11-23)
-
-A newer owner-consented, read-only private V13OBS snapshot was read from the private observation issue. Its pipeline receipt at **2026-11-23 10:25:09 UTC** reports installed release-development SHA `8bf44cb50e855a6dba0c91f64f60d8daddcbdc9c`, `auto_enabled=true`, `last_result=UPDATED`, Runtime/Dashboard `UPDATED`, and `last_error=NONE`. This supersedes earlier 4dc7595 / queued-UPDATE_REQUEST metadata; it is not a receipt for Perception PR #2433.
-
-The same snapshot reports service/model process RUNNING and 8 managed sessions, but this does not establish useful cognition or sustained native residency. The last stored turn is unchanged and not a new test: FINAL, 57.739 s total, 41.627 s TTFT, 38.945 s prefill, 751 prompt tokens, 2 generated tokens; correctness UNKNOWN. B1_DETAIL/B2_GIST remain TIME_BUDGET at 53.2/54.2 s; the latest five-turn aggregate has B1 4/4 native failures and B2 2/2, with 0 valid offers. Native probe remains SMOKE_PARTIAL. No 20-turn acceptance, no fresh PSS/RSS sample, and no native latent exchange are proven.
-
-No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, shell, model/weight/permission change or device mutation was performed. PR #2433 remains NOT_RELEASED and is not installed. This is an installation readback only; the P0 real-chat/offer-delivery gate remains OPEN.
-
-
-
-## Research & Perception — exact CI outcome (2026-11-23)
-
-On code/test head `f9384604b6a58f06d8663003817175a91d1facf6`:
-- PASS: adapter consumer on CPython 3.13.18 and 3.14.10, 92 tests each, including the new synthetic impulse through RAW EAR → A4 → C3 admission; py_compile PASS.
-- PASS: RAW EAR fastpath (3.13/3.14), prosody-to-attention (3.11/3.13), WebRTC/libfvad comparison (3.13/3.14), consent-revocation, privacy, offline-bridge security and offline backend checks.
-- FAIL: staged Runtime, integrated regression and recovery consumer on Python 3.13/3.14, all due to Core's stale `audio_voice_cues.py` source pin `b18e450162b062b09368a12b1ca18924ed8c5025` vs current `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`. Staged Runtime 16 failed / 237 passed / 10 skipped / 2 errors / 47 subtests; integrated regression 1 failed; recovery consumer 2 failed / 3 passed. The Perception consumer itself is green. No source gate was removed.
-- Current PR docs/handoff head at time of this note: `4c4c0e06386584cff7fe0bdc8d37f5493c821164`; PR #2433 remains DRAFT / NOT_RELEASED. No Redmi installation receipt for this candidate.
-- Fresh private V13OBS receipt reports installed base SHA `8bf44cb50e855a6dba0c91f64f60d8daddcbdc9c`, auto-update enabled, Runtime/Dashboard UPDATED, last_error NONE. The last stored turn is still 57.739 s / 41.627 s TTFT / 2 generated tokens; B1/B2 remain TIME_BUDGET and 0 valid offers. No new CHAT_SEND, LOG_PAGE or UPDATE_REQUEST.
-- Next: Core must rebind both audio source blobs and downstream recovery/stage/deployer hashes bottom-up; QA reruns the combined gate. Perception keeps its source hashes and negative controls. User action: none.
-
-
 ## Research & Perception — run 5 checkpoint (2026-11-23)
 
-- Current development base inspected: gpt6/v13-private-remote-bridge-20261111 at b20e9b1f3dd53af472055adb43da628785494ec4 (JEPA source-forget/context-lineage merge). This is not a phone installation receipt.
-- Perception PR #2433 (https://github.com/RedMentos/Aii/pull/2433), branch research-perception/v14-speaker-history-nonvoiced-20261123-run4, pre-merge head 9cd05b97f41f32248540a5a91efe359cfd719171, remains DRAFT / NOT_RELEASED. Fixed two A4 test assertions to read the canonical ModulatorPacket.path_id field emitted by Neuromod.signal, rather than the nonexistent path field.
-- Exact GitHub Actions run 45160985968 — “V14 A4 source-bound attention outcomes”: PASS on Python 3.13 and 3.14. This confirms source-bound A4 outcomes emit path_id and the positive/tampered-source test contract now matches the real producer. Other focused Perception and shared staged/integrated workflows were still running at the last poll; no green combined integration claim.
-- LOCAL_LINUX full Aii checkout/pytest: BLOCKED / NOT_RUN. git ls-remote https://github.com/RedMentos/Aii.git HEAD failed because GitHub DNS did not resolve; no checkout is mounted. No full local compile or repository test suite was run.
-- Private read-only device receipts: RedMentos/Aiiii issues #763 PIPELINE_STATUS, #764 DIAGNOSTICS, #765 HEALTH, #766 LEARNING_STATUS. Pipeline reports auto-update enabled, installed SHA 8bf44cb50e855a6dba0c91f64f60d8daddcbdc9c, Runtime/Dashboard CI_WAIT, last error NONE. Diagnostics repeats the last stored (not newly sent) turn: 57.739 s total, 41.627 s TTFT, 38.945 s C3 prefill, 751 prompt tokens, 2 generated tokens; B1/B2 TIME_BUDGET at 53.2/54.2 s, zero valid offers in the five-turn aggregate, native latent exchange unproven. HEALTH: 1,209 MiB MemAvailable, 1,030 MiB free disk; runtime field unavailable. LEARNING_STATUS unavailable. No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, shell, model/weight swap, permission change or device mutation was performed.
-- Research R-084 reviews Nemotron 3 Diarization and sherpa-onnx as optional speaker-teacher candidates. Neither is selected or downloaded; no Android inference is claimed.
-- Next internal action: finish the normal merge of the current development base into this Perception branch (no overlapping changed paths were found against merge-base 8bf44cb), rerun exact-head Perception plus staged/integrated CI, and coordinate Core's bottom-up audio source-pin rebinding. User action required: NONE.
-
-
-## Research & Perception — run 5 implementation update (2026-11-23)
-
-- Perception code commit: `ebe09ea32d78ee2daad16e41954217ab3f617dcd`; handoff/ledger checkpoint: `ef27c601964fa9fe7e08a155ccd5a481eecc0dee`; PR #2433 remains DRAFT / NOT_RELEASED.
-- A4 now computes a bounded source-bound policy residual δ = usefulness − prior mean. It emits N10 reward_error=δ and surprise=|δ|; negative reward_error is kept signed and raises caution on the next event, while surprise raises salience. This is a tested A4 → N10 → next-A4 loop, not a neural-weight update or truth signal.
-- Policy state, durable exactly-once receipt and N10 ModulatorPacket now commit in the same Store transaction. Tests include injected failure after packet insertion (all three must roll back), retry, negative omission, next-event modulation, replay, concurrency and restart.
-- LOCAL_PYTHON SQLite contract reproduction: PASS. Full LOCAL_LINUX Aii test suite: BLOCKED / NOT_RUN because the checkout is unavailable and git ls-remote failed on GitHub DNS. The new exact-head GitHub CI has not yet been triggered; prior merged-head A4/FASTDIAR/prosody workflows passed, while staged/integrated regression failed at the known Core-owned controller-guard pin for v13/attention.py.
-- Latest private PIPELINE_STATUS receipt #767 (11:00Z) supersedes #763: auto-update enabled, installed SHA still `8bf44cb50e855a6dba0c91f64f60d8daddcbdc9c`, Runtime/Dashboard `CI_WAIT`, last error `NONE`. DIAGNOSTICS #764 and HEALTH #765 remain the latest available detailed receipts; LEARNING_STATUS #766 unavailable. The new Perception code is not installed.
-- Current Core blocker: update the controller-guard SHA-256 allowlist for the current Perception attention.py bytes (Git blob `ecaf39b1b8ea0edad7f4a39774230b3cbed1d5eb`) and rebind the audio composer pins for audio_voice_cues.py, audio_speaker_evidence.py and attention.py. Perception did not edit Core-owned guard/composer files.
-- Research R-084: Nemotron 3 Diarization (OpenMDW-1.1, 107 MB Q8_0 GGUF, GPU-only paper measurements) and sherpa-onnx (Apache-2.0 runtime, Android arm64 support but documented diarization path offline) remain research-only. No model or dependency downloaded.
-- No Android microphone request/capture, AudioRecord provider, device update, model/weight change, permission change or data mutation. REDMI_UNVERIFIED for all new code and audio capture. User action: NONE.
+- Current product-code base remains b20e9b1f3dd53af472055adb43da628785494ec4; Boss's latest run-12 overlay is dfa3945b2bbfdb65d932db74e02f402435494e84. Perception branch is being merged normally onto this overlay; no force-push.
+- PR #2433 remains DRAFT / NOT_RELEASED. Code head before the latest overlay merge: cdc7bcc9299cdaa08dbc3b38581503fcdc381ffa. Current Perception blobs: attention.py ecaf39b1b8ea0edad7f4a39774230b3cbed1d5eb; neuromod.py fbb02147cbcfff10896736a20838fbce08d7409b; audio_voice_cues.py 1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288; audio_speaker_evidence.py 08b17a39923e0f59a5dbbb9f173954936e59f85a.
+- Exact current-code-head GitHub Actions run 45163129599 — V14 A4 source-bound attention outcomes: PASS on CPython 3.13 and 3.14, including atomic rollback, signed omission residual and next-event salience/caution. Run 45163129554 — offline-bridge-security: PASS. Prior merged-head FASTDIAR, RAW EAR NumPy, consent-revocation, WebRTC/libfvad and prosody-to-attention workflows also passed on unchanged corresponding code.
+- The previous Core same-turn and staged/integrated workflows failed before their consumers ran because record_only_controller_guard_20261116.py rejects the changed v13/attention.py SHA-256. The staged audio composer also pins an older audio_voice_cues.py blob. These Core-owned files have not been edited by Perception; Core must recompute the attention guard hash and audio source pins bottom-up. Exact Core workflows did not rerun on the latest code head.
+- LOCAL_LINUX full Aii checkout/pytest: BLOCKED / NOT_RUN. git ls-remote failed because GitHub DNS did not resolve; no checkout is mounted. A local SQLite transaction contract reproduction PASS is not the repository suite.
+- Private read-only PIPELINE_STATUS #767 at 10:55:05 UTC: auto-update enabled, installed SHA 8bf44cb50e855a6dba0c91f64f60d8daddcbdc9c, Runtime/Dashboard CI_WAIT, last_error NONE. This predates the b20e9 green integration and does not prove new code installed. DIAGNOSTICS #764: stored turn 57.739 s total / 41.627 s TTFT / 38.945 s C3 prefill / 751 prompt / 2 generated; B1/B2 TIME_BUDGET 53.2/54.2 s; correctness UNKNOWN. HEALTH #765: 1,209 MiB MemAvailable and 1,030 MiB disk; LEARNING_STATUS #766 unavailable. No device mutation or update request.
+- R-108 reviews Nemotron 3 Diarization and sherpa-onnx as optional speaker-teacher candidates; neither is selected or downloaded. R-109 records the atomic A4 → N10 negative-prediction-error loop. No Android microphone capture, AudioRecord provider, native diarization inference or trained cross-model latent exchange is claimed.
+- No model/weight download or swap, microphone permission, CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, shell or device/data mutation. User action required: NONE.

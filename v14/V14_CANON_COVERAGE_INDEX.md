@@ -2262,3 +2262,22 @@ This overlay records the merged C3 prompt-admission slice and the current integr
 | Whole Canon | Historical V13 Canon remains byte-identical inside V14 master; 1,255-heading inventory remains present. | Master blob 9748ad5ba9a4d4f5c3d004a0577141f6779fcbca; historical Canon blob 218464b12a2d27d92524c751922fa8e1c3fb0ea7. | Semantic clause→code→consumer→test→environment→negative-control→rollback traceability remains incomplete. | INVENTORY_PRESERVED / SEMANTIC_COVERAGE_INCOMPLETE |
 
 **Current release:** 4dc7595f383e7ba932ee8e9fcf52c5541210ed5e. **Current phone:** aed1d2 only; UPDATE_REQUEST #737 queued. **No user action required.**
+
+## Boss run 12 evidence overlay — 2026-11-23
+
+Append-only evidence; no historical Canon or master rewrite.
+
+| Canon family | Current implementation / consumer | Exact evidence | Missing acceptance | Classification |
+|---|---|---|---|---|
+| IH-H12 transaction/C7 | Broker.finalize requires durable assistant-message/event receipt before C7 egress. | #2434 merged 69e77bc; exact push 39/39 SUCCESS. | No Redmi after-update correctness/latency. | WIRED_RUNTIME / CI_PASS / REDMI_UNVERIFIED |
+| C3 prompt/context | Source-preserving admission; complete normal history retained, redundant layers omitted. | #2425 merged 4dc7595; current b20e9 push 37/37. | No after-update TTFT, semantic correctness or 20-turn acceptance. | WIRED_RUNTIME / CI_PASS / DEVICE_EFFECT_UNKNOWN |
+| B1/B2 | Distinct role bodies and OfferPacket/C4 contracts; #2370 stale/unmergeable. | Old-base CI 37 SUCCESS / 1 policy SKIP; 193 ahead / 34 behind; synthetic ~1.95 s/body. | No useful native offer or same-turn C4/C3 consumption; phone TIME_BUDGET 53.2/54.2 s. | SYNTHETIC_SCHEDULER_ONLY / ACCEPTANCE_OPEN |
+| World/Self/Memory/JEPA | Memory forget validates ActionSelection SourceRefs and restores clean checkpoint or invalidates tainted state/replays. | #2429 merged b20e9b1f3dd53af472055adb43da628785494ec4; Python 3.13/3.14, staged/integrated and exact push 37/37 PASS. | Production producer still only event source; no gradient unlearning, body weights, B3 transfer or Redmi proof. | WIRED_SYNTHETIC / CI_PASS / REDMI_UNVERIFIED |
+| Sleep/Dream/Replay | Source-bound checkpoint rewind/replay wired to Memory forget. | #2429 tests and exact push CI PASS. | No dream consolidation, native weight update, retention or Android lifecycle. | SHADOW_ONLY |
+| B3/Enlightened Space | Symbolic space and diagnostic receiver; production B3 OFF. | No new trained receiver proof. | Paired taps, trainable receiver, source-disjoint utility and retention. | DIAGNOSTIC_ONLY / OFF |
+| Voice/Audio | Caller PCM16/RAW EAR features; #2433 has path/path_id and attention pin failures. | Exact #2433 head a2662b9: 3 failures. | AudioRecord consent/revocation, ASR, trainable decoder/vocoder, full-duplex, Redmi evidence. | WIRED_SYNTHETIC / DRAFT |
+| Android background/UI | Companion and A5 metadata prototypes; no executor/provider active. | Existing CI-only prototypes. | APK, authenticated app launch, MediaProjection, Accessibility, tap/type, receipts, stop/cancel, rollback on Redmi. | DEVICE_UNVERIFIED |
+| Updater/install/rollback | CI-gated updater and activation journal; current code b20e9. | Exact push 37/37; #767 still reports 8bf44cb / CI_WAIT from before final green. | Fresh b20e9 install receipt, restart, process death, reboot, runtime-only rollback. | DEVICE_UPDATE_PENDING |
+| Whole Canon | V14 master blob 9748ad5b… unchanged; 1,255-heading inventory retained. | No master or historical appendix edits. | Semantic clause→code→consumer→test→environment→negative-control→rollback mapping incomplete. | INVENTORY_PRESERVED / COVERAGE_INCOMPLETE |
+
+Current release b20e9b1f3dd53af472055adb43da628785494ec4; last phone snapshot 8bf44cb / CI_WAIT; user action none.

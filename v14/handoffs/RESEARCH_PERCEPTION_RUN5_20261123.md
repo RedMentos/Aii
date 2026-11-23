@@ -1,58 +1,49 @@
 # Research & Perception — run 5 handoff (2026-11-23)
 
-## Checkpoint
-- Development base inspected: b20e9b1f3dd53af472055adb43da628785494ec4 on gpt6/v13-private-remote-bridge-20261111.
+## Current branch and integration
+- Product-code base: b20e9b1f3dd53af472055adb43da628785494ec4.
+- Latest Boss overlay: dfa3945b2bbfdb65d932db74e02f402435494ec4; this adds current V14 work-board/workplan/research/handoff updates but does not change product-code base.
 - Perception PR #2433: https://github.com/RedMentos/Aii/pull/2433.
 - Branch: research-perception/v14-speaker-history-nonvoiced-20261123-run4.
-- Exact pre-merge head: 9cd05b97f41f32248540a5a91efe359cfd719171.
-- PR remains DRAFT / NOT_RELEASED.
-- No force-push; next integration uses a normal two-parent merge with the current development base.
+- Code head before merging the new Boss overlay: cdc7bcc9299cdaa08dbc3b38581503fcdc381ffa.
+- PR remains DRAFT / NOT_RELEASED. No force-push.
 
-## Implemented and tested in this run
-- Corrected two assertions in v13/code/tests/test_attention.py: ModulatorPacket uses path_id, as emitted by Neuromod.signal; the tests incorrectly inspected path.
-- Commit: 9cd05b97f41f32248540a5a91efe359cfd719171.
-- Readback blob: dd4023cb68f4335729d3701106b18a4f56c8e3a1.
-- GitHub Actions run 45160985968 (“V14 A4 source-bound attention outcomes”) PASS on CPython 3.13 and 3.14.
-- This test validates the real A4 source-outcome → Neuromod packet contract and tampered-source negative path. It does not establish Android or model inference.
+## Implemented and exact-head tested
+1. Non-voiced speaker-history protection: only caller-supplied VOICED embeddings enter persistent speaker-reference history; non-voiced/uncertain frames remain eligible for RAW EAR/A4 novelty but are suppressed from speaker anchors. Impulse fixture asserts no false interrupt, zero accepted speaker frames, DEFER and no persisted embedding vectors.
+2. Source-bound A4 outcome: Runtime calls the A4 source-outcome path after final C3 output; source identity/hash and exact Store span are verified before the bounded cue-coverage label and durable exactly-once receipt/policy update.
+3. Atomic A4 → N10 loop: A4 computes δ = usefulness − prior policy mean, emits signed reward_error=δ and surprise=|δ|, and carries negative reward_error into next-event caution while surprise contributes salience. Policy state, durable receipt and ModulatorPacket commit in the same Store.tx via Neuromod.signal_in_transaction.
+4. Test contract correction: ModulatorPacket.path_id is the canonical field, matching Neuromod.signal.
 
-## Earlier Perception code carried by PR #2433
-The branch also carries the bounded speaker-history correction:
-consume_pcm16_voice_window → SpeakerChangeEvidenceRegistry.update → A4 → PerceptPacket/C3 admission.
-Only caller-supplied VOICED embeddings enter speaker-reference history. Non-voiced/uncertain frames are source/hash/timestamp checked and suppressed from persistent speaker anchors while remaining eligible for independent RAW EAR/A4 novelty. The impulse fixture asserts IMPULSIVE novelty, no false interrupt, zero accepted speaker frames, DEFER and no persisted embedding vectors. FASTDIAR adapter remains diagnostic-only; no model inference or calibrated identity is claimed.
+Code commits:
+- 9cd05b97f41f32248540a5a91efe359cfd719171 — canonical path_id test fix.
+- 7e24f240682121bd5c64d50065d8bd1f2e84ff88 — atomic A4/N10 packet+receipt+policy transaction.
+- ebe09ea32d78ee2daad16e41954217ab3f617dcd — preserve signed negative reward prediction error and route it to next-event caution.
+- cdc7bcc9299cdaa08dbc3b38581503fcdc381ffa — fail-closed test for signal_in_transaction outside an active transaction.
 
-## Exact tests / environment
-- PASS — GitHub Actions run 45160985968: A4 source-bound attention outcomes, Python 3.13 and 3.14.
-- PASS — exact earlier focused workflows at prior PR head: RAW EAR consent revocation and public privacy scan; those results are not a substitute for the new merged-base head.
-- IN_PROGRESS at last poll — RAW EAR NumPy backend, FASTDIAR adapter, WebRTC/libfvad comparator, prosody-to-attention, Core same-turn, staged/integrated regression.
-- LOCAL_LINUX full Aii checkout/pytest: BLOCKED / NOT_RUN; git ls-remote failed because github.com did not resolve and no repository checkout is mounted. No full local compile was run.
-- CI is not Android evidence.
+Exact GitHub Actions on code head cdc7bcc:
+- PASS run 45163129599, V14 A4 source-bound attention outcomes, Python 3.13 and 3.14.
+- PASS run 45163129554, v13-private-remote-bridge-tests / offline-bridge-security.
+- Prior merged head 8bf7bd6: PASS FASTDIAR adapter, RAW EAR NumPy backend, consent-revocation QA, WebRTC/libfvad comparator, prosody-to-attention regression, runtime deploy integrity and release-event integration.
+- Prior merged head Core same-turn and staged/integrated failed before consumer execution at record_only_controller_guard_20261116.py:65 because its SHA-256 allowlist still expects old v13/attention.py bytes; the staged audio composer also pins old audio_voice_cues.py. Core owns those files. The new code head did not receive a fresh Core PR-event run.
+- Privacy scan attempt 1 failed only at actions/checkout after repeated GitHub network timeout/early EOF; retry attempt 2 was queued on prior head 8bf7bd6.
+- LOCAL_LINUX full Aii checkout/pytest: BLOCKED / NOT_RUN (no checkout mounted; git ls-remote failed due GitHub DNS). Local SQLite transaction contract reproduction PASS, but not the project suite.
 
-## Private device readback
-Owner-consented read-only receipts:
-- #763 PIPELINE_STATUS: auto-update enabled; installed SHA 8bf44cb50e855a6dba0c91f64f60d8daddcbdc9c; Runtime/Dashboard CI_WAIT; last error NONE.
-- #764 DIAGNOSTICS: last stored turn 57.739 s total / 41.627 s TTFT / 38.945 s prefill / 751 prompt tokens / 2 generated tokens; B1/B2 TIME_BUDGET 53.2/54.2 s; 0 valid offers in five-turn aggregate; no native latent exchange proof.
-- #765 HEALTH: 1,209 MiB MemAvailable, 1,030 MiB free disk, runtime field unavailable.
-- #766 LEARNING_STATUS: unavailable.
-- No new user turn, UPDATE_REQUEST, LOG_PAGE, CHAT_SEND, shell, permission/model/weight/data change or device mutation. PR #2433 is not installed.
+## Private device evidence
+- PIPELINE_STATUS #767: installed 8bf44cb, auto-update enabled, Runtime/Dashboard CI_WAIT, last_error NONE; it predates green b20e9 integration and does not prove the current candidate installed.
+- DIAGNOSTICS #764: stored turn 57.739 s total / 41.627 s TTFT / 38.945 s C3 prefill / 751 prompt / 2 generated; B1/B2 TIME_BUDGET 53.2/54.2 s; correctness UNKNOWN.
+- HEALTH #765: 1,209 MiB MemAvailable / 5,569 MiB and 1,030 MiB disk; runtime unavailable in HEALTH; LEARNING_STATUS #766 unavailable.
+- No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, shell, microphone permission/capture, model/weight/permission/data mutation. No new code is installed.
 
 ## Research
-- R-084 added to v14/V14_RESEARCH_LEDGER.md: full Nemotron 3 Diarization paper/model-card review; OpenMDW-1.1 weights, 107 MB Q8_0 GGUF, 99.2M parameters, GPU-only reported benchmark; NeMo-Speech.cpp Apache-2.0 runtime lacks documented Android/ARM64 support. sherpa-onnx Apache-2.0 supports Android arm64 but its documented diarization example is offline and uses separate model weights.
-- No model or dependency downloaded. No candidate selected. RAW EAR remains primary; diarization remains optional teacher only.
+- R-108: full Nemotron 3 Diarization paper/model-card review. OpenMDW-1.1 weights, 107 MB Q8_0 GGUF, 99.2M parameters, GPU-only paper measurements. NeMo-Speech.cpp Apache-2.0 runtime does not document Android/ARM64 support.
+- sherpa-onnx Apache-2.0 and Android arm64 support; documented diarization path is offline and model weights have separate licenses.
+- R-109: bounded A4 policy prediction residual feeds N10 and next-event attention; atomicity and negative omission tests pass exact-head CI. It is a heuristic policy/modulator loop, not neural-weight training or truth.
+- No model or dependency downloaded; no model selected.
 
-## Integration and next action
-- Compare against merge base 8bf44cb50e855a6dba0c91f64f60d8daddcbdc9c: base has 16 changed paths, Perception branch has 16 changed paths, zero overlapping paths. A normal merge can preserve both.
-- Merge current base b20e9b1f3dd53af472055adb43da628785494ec4 into the Perception branch with a two-parent commit; rerun exact-head CI on the merged tree.
-- Core must rebind the two Perception audio source blobs and dependent recovery/stage/deployer hashes bottom-up; Perception will not edit Core-owned composer files.
-- QA should review non-voiced suppression and the impulse consumer regression.
+## Next integration
+- Core: rebind record_only_controller_guard SHA-256 for attention.py and staged audio composer pins for audio_voice_cues.py, audio_speaker_evidence.py and attention.py; recompute dependent recovery/stage/deployer hashes bottom-up. Do not weaken gates.
+- JEPA/N10: review signal_in_transaction and reward_error/surprise semantics.
+- QA: review non-voiced suppression, atomic rollback, consent revocation and future microphone-provider lifecycle. Microphone remains OFF; no AudioRecord provider.
+- Perception: run source-disjoint A4 outcome/retention ablation after cross-lane integration is green.
 - Redmi audio capture, speaker inference, native latent exchange and Android performance remain REDMI_UNVERIFIED.
 - User action: NONE.
-
-
-## Additional A4 → N10 closed-loop implementation (commit ebe09ea32d78ee2daad16e41954217ab3f617dcd)
-- Added Neuromod.signal_in_transaction(connection, ...), which validates an active Store transaction and inserts a typed ModulatorPacket through that same connection.
-- Attention.outcome now computes policy prediction residual δ = usefulness − prior mean, persists the policy update + durable response receipt + N10 ModulatorPacket atomically, and stores predicted usefulness, residual and packet ID in the receipt.
-- The emitted N10 channels are signed reward_error=δ and surprise=|δ|, plus task_success/action_error for the outcome sign. Negative reward_error remains signed through recent_modulators and maps to next-event caution; surprise maps to salience.
-- Added tests for negative omission → next-event caution/salience, injected rollback after packet insertion, successful retry, and exact-once modulator count.
-- Local Python SQLite transaction reproduction: PASS (packet, policy and receipt all roll back together on injected exception; all commit together on retry). This is a contract reproduction only, not the project test suite.
-- Exact project CI on the new head has not yet started; the previous merged-head CI still has the known Core controller-guard pin failure on v13/attention.py. Current new blob: attention.py ecaf39b1b8ea0edad7f4a39774230b3cbed1d5eb; neuromod.py fbb02147cbcfff10896736a20838fbce08d7409b.
-- Core must recompute the controller-guard SHA-256 for attention.py and rebind the staged audio composer pins. No Core-owned guard or composer file was edited by Perception.
