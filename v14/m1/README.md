@@ -7,7 +7,9 @@ This package starts with the DATA layer. It is deliberately isolated under v14/m
 ## DATA implementation
 
 - data.py: UCI minute-file parser, timestamp continuity checks, parameterized windows, chronological split, strict NaN rejection, seasonal lags, future calendar features, split/month rejection statistics, canonical manifest and hashes.
-- test_data.py: synthetic logic tests only. These are not a UCI real-data run.
+- test_data.py: synthetic logic tests for the list-based DATA helpers only. These are not a UCI real-data run.
+- array_data.py: NumPy-backed `ArrayDataset`, common `InputBundle`, vectorized missing-window checks, and bounded `WindowBatch` generation. This is the intended path for real model training; it does not materialize every overlapping window.
+- test_array_data.py: synthetic checks for bounded batches, exact input/target/seasonal alignment, monthly statistics parity and hash-gated test access.
 - Numeric ingestion rejects non-finite values (`inf`, `-inf`, `Infinity`) and normalizes common case-insensitive missing markers such as `NaN` to missing values. Alternate row adapters and the test loader repeat finite-value and timestamp/channel integrity checks.
 - Every seasonal lag must be at least the forecast horizon, ensuring each horizon-aligned seasonal value is already known at the forecast origin.
 - UCI data is not downloaded by this module. The real-data run must use the user's local extracted UCI file and record its parsed-data fingerprint.
@@ -24,9 +26,7 @@ All input-window, seasonal-lag, calendar and target construction is parameterize
 
 ### Test-year protection
 
-build_dataset() materializes only train and validation. It does not return test windows or test metrics.
-
-The only test entry point is load_test_split(). It requires:
+The small-fixture helper `build_dataset()` materializes train and validation lists and must not be used for the full UCI cohort. `ArrayDataset` stores one float32 channel matrix and creates only bounded batches of windows. Its `iter_batches('test')` refuses access until `open_test_split()` validates the exact preregistration hash and matching config/split/data fingerprints. The list-based compatibility entry point remains `load_test_split()`. It requires:
 - the exact SHA-256 of the preregistration file,
 - a matching hash of the complete DataConfig,
 - a matching hash of split boundaries,
@@ -48,6 +48,10 @@ It appends a test-access event to the specified JSONL log. A hash is a tamper-ev
 10. Test split rejects config, data or split drift even if the preregistration file itself hashes correctly.
 11. Non-finite measurements are rejected at ingestion and at direct dataset/test-loader entry points.
 12. Seasonal lags shorter than the horizon are rejected at configuration time; exact horizon alignment and missing seasonal-source rejection are tested.
+13. NumPy batch path matches the list reference for counts/monthly rejection statistics and exact X/S/calendar/target values.
+14. Test batches remain inaccessible until the hash-bound test gate opens; the gate writes an access event.
+
+**Known memory boundary:** `ArrayDataset` avoids storing millions of expanded overlapping windows, but `parse_uci()` currently first creates Python `MinuteRow` objects before conversion to the dense matrix. A two-pass direct-to-array CSV loader is still required before claiming the entire UCI ingestion path is optimized for the Redmi RAM budget.
 
 ## M1a protocol corrections to preserve
 
