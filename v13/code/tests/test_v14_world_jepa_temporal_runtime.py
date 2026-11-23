@@ -342,7 +342,7 @@ def test_temporal_world_jepa_updates_ema_checkpoint_and_b1_b2_shadow_receivers(t
         import json
         forget_log = store.one(
             "SELECT metrics FROM telemetry WHERE kind=? ORDER BY id DESC LIMIT 1",
-            ("temporal_source_forget",),
+            ("forget",),
         )
         assert forget_log is not None
         forget_metrics = json.loads(forget_log["metrics"])
@@ -410,7 +410,7 @@ def test_temporal_source_forget_promotes_clean_previous_and_replays_after_restar
         import json
         forget_log = store.one(
             "SELECT metrics FROM telemetry WHERE kind=? ORDER BY id DESC LIMIT 1",
-            ("temporal_source_forget",),
+            ("forget",),
         )
         forget_metrics = json.loads(forget_log["metrics"])
         assert forget_metrics["count"] == 1
@@ -481,7 +481,7 @@ def test_temporal_source_forget_invalidates_both_checkpoints_then_rebuilds_from_
         import json
         forget_log = store.one(
             "SELECT metrics FROM telemetry WHERE kind=? ORDER BY id DESC LIMIT 1",
-            ("temporal_source_forget",),
+            ("forget",),
         )
         forget_metrics = json.loads(forget_log["metrics"])
         assert forget_metrics["count"] == 2
