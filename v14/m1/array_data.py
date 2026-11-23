@@ -397,5 +397,10 @@ class ArrayDataset:
         log_path.parent.mkdir(parents=True, exist_ok=True)
         with log_path.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(event, sort_keys=True, separators=(",", ":")) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        # Authorize only after the audit event is durably written.
+        self._test_authorized = True
+        self._test_preregistration_sha256 = actual_hash
         return self.split_stats("test")
 
