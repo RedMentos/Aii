@@ -1616,3 +1616,31 @@ The provider-entrypoint test file required by the inherited workflow was missing
 - Exact staged/integrated run 45095844653: FAIL. Staged runtime 19 failed / 231 passed / 10 skipped / 2 errors / 41 subtests; integrated regression 1 failed. Dominant blocker: QA-owned source_lifecycle_lock_integration_candidate.py still rejects the current vision.py digest as an unsupported lifecycle source; two migration checks report PARTIAL rather than UPDATED. This is the same cross-lane source-pin problem present in #2397/#2391, not a Perception focused-test failure.
 - LOCAL_LINUX isolated lineage guard remains 6/6 PASS. Full local repository test remains BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS fails. REDMI_UNVERIFIED.
 - Next owner action: QA must preserve its training-resume repair, compose on JEPA #2397 / Perception #2395, pin vision.py plus vision_source_lineage.py and recompute all staged/deployer hashes; rerun staged/integrated and migration gates. Perception did not modify QA/JEPA source files.
+
+
+## Boss integration checkpoint — run 14 (2026-11-23T03:02:25.620Z)
+
+### Exact source-chain repair
+
+The #2370 exact-head staged failures were traced to stale SHA-256 pins after a direct Runtime source change. The full dependent chain was rebound bottom-up, without disabling or weakening source verification:
+
+Runtime → integrated online-world → JEPA guard → predictor stream → predictor history → Body/World → C3 resume → Memory/World → feedback bootstrap → Context Recall → WorldJEPA training resume → Termux12 (WorldJEPA + observer overlay) → Termux21 Git blob SHA-1 → integrated stage → runtime deployer. GitHub file readback verified **16/16 links true** on exact Boss head ec1c59591b1c309f3435941717b645d29f746830.
+
+### Verification boundary
+
+- Exact-head GitHub CI: **16 queued + 1 skipped; no current-head PASS yet**. The previous head failed at the stale Runtime hash; do not infer that the new chain has passed staged execution.
+- Local full Aii suite: **BLOCKED / NOT_RUN**. No checkout is mounted and git ls-remote fails because github.com DNS cannot resolve.
+- Redmi: still installed at aed1d2b826290c95c70356b5d8b864b5ef382be4. Auto-update is enabled and reports Runtime/Dashboard UP_TO_DATE, but no update request was sent because #2370 is not green/released.
+- Private diagnostics: 57.74 s stored turn, 41.63 s TTFT, 38.95 s prefill, 751 prompt tokens, 2 generated tokens; B1/B2 TIME_BUDGET at 53.2/54.2 s, zero valid offers; C3 probe 3.1 s. Native process map is instantaneous and reports 0 mapped processes. HEALTH/DIAGNOSTICS Runtime state disagrees; LEARNING_STATUS is unavailable.
+
+### Cross-team next work
+
+- **Boss & Integration:** poll #2370 exact head; review any newly exposed staged/integrated failures; no merge/release on hash readback alone. Keep whole-Canon ledger and release/device proof separate.
+- **JEPA & Memory:** #2402 exact head c5d847 currently fails because the prompt-consumed temporal_view omits native_body_weights_changed: false although the separate audit includes it. Add the explicit field to the prompt context; preserve the strict negative test. Continue source-forget, optimizer/checkpoint, retention and restart proof.
+- **QA & Android:** after JEPA finalizes, recompute the complete Termux12→Termux21→stage→deployer chain; rerun temporal Python 3.13/3.14, staged, integrated, optimizer-resume, migration, owner-read and runtime deployment. Continue #2356 process-death/restart acceptance.
+- **Core & Harness:** connect the signed MediaProjection provider and same UIObservationLease through RAW EYE→A5→normal C3; maintain per-capability consent, stop, audit and rollback. Preserve non-launch capabilities OFF until real OS executor and device tests exist.
+- **Research & Perception:** continue A3 source-lineage/CAS/forget composition, RAW EAR/AudioRecord producer and separate Teacher Ear opt-ins; no model/weight download without license review and explicit approval.
+
+### Product acceptance remains open
+
+No native B1/B2 offer delivery, correct-answer/latency acceptance, trained B3 latent exchange, permanent B1/B2/C3 master-weight update, cross-organ gradient, Android capture/action receipt, process-restart proof, voice decoder/vocoder, independent OS sandbox, sparse MoE or full Memorilla overflow consumer is accepted. Official Age remains 0; lab selector 10/effective 5 does not imply physical feature execution or learning authority. No Canon organ was removed or simplified.
