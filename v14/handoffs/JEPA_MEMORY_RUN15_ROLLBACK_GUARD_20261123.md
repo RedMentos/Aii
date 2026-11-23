@@ -51,3 +51,8 @@ GitHub PR conversation comments and PR metadata updates returned HTTP 403 becaus
 - Source fix: `3122e30830a94848f4ffe17fb55146d8c5a614d0`.
 - Test update: `978e257399a9a23eff8119b3f9611a1ba6d410de`; this is the current code/test checkpoint containing the source fix and regression tests. It supersedes the prior `f56e7067e6f2df5900231324dd5b2d55ea277477` test commit, whose warm-cache assertion did not account for update() already warming the active model; the current test explicitly clears that cache before testing reload.
 - Initial handoff-file commit: `05ec1f4527860960677bda93d7736ad0c1a289a1` (documentation only). Subsequent commits update Next Action, Board, Workplan, Research Ledger and Canon overlay; none changes the code-bearing checkpoint.
+
+
+## Remaining B1/B2 adapter-retention acceptance gap
+
+The current temporal WorldJEPA update measures predictor retention against fixed EMA target anchors. The B1/B2 receiver optimizer also records bounded Adam gradients, old/new parameter SHA, delta norm, current source-disjoint holdout MSE, and shuffled/zero-latent controls. However, `finalize_weight_delta_receipts()` still emits `target_adapter_retention: NOT_MEASURED`. The prior adapter's MSE on the *new* holdout is not retention on an old cohort. After the parent/rebase gate, persist previous receiver holdout outcome targets and compare old/new B1/B2 heads on the identical source/transition-disjoint cohort, with shuffled/no-history negatives; only then change the receipt status from NOT_MEASURED.
