@@ -37,3 +37,12 @@ The host driver only operates on the disposable GitHub Actions emulator. It does
 ## Next
 
 Run the exact-head Android helper/build, AndroidTest compilation and API-33 emulator process-death workflow. If green, ask Boss/Core to rebase the Python ActionIntent/receipt adapter #2450 onto this QA branch. If red, preserve the exact failure and fix the test harness without bypassing visible-state, PID, persisted-OFF or no-redispatch checks.
+
+
+## Publication / CI access limitation
+
+- Exact current branch head before this note: `25b3b905a9e37b013e2634aa94047df5cf3a796e`.
+- The code and handoff are pushed and read back on the branch above.
+- Creating a PR and posting a cross-lane comment were both rejected by GitHub with HTTP 403: the linked GitHub identity has no verified email address. No PR was created and no Boss/Core comment was posted.
+- The available connector exposes PR-triggered workflow runs only; the current branch has no PR-triggered run record and combined status returned no statuses. Therefore **no exact-head CI result is verified for this current-base port**. Do not use the older #2427 run as current-base CI.
+- Next administrative unblock: a verified email on the linked GitHub identity is required before this branch can be converted into a reviewable PR/comment handoff. The branch itself is preserved; no force-push was used.
