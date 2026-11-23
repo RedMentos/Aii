@@ -136,9 +136,13 @@ def wait_for_text(
         action = transient_overlay_action(root)
         if action == "Wait":
             if waits_used >= wait_budget:
+                budget_label = "two" if wait_budget == 2 else str(wait_budget)
+                diagnostic = foreground_diagnostic()
+                logs = failure_logcat()[:5000]
                 raise AssertionError(
-                    "System UI remained unresponsive after two safe Wait actions; "
-                    "refusing to select Close app"
+                    "System UI remained unresponsive after " + budget_label
+                    + " safe Wait action(s); refusing to select Close app; "
+                    + diagnostic + "; relevant logcat=" + logs
                 )
             handle_transient_overlay(root)
             waits_used += 1
@@ -172,14 +176,36 @@ def wait_for_text(
     # timed out repeatedly. Inspect this final bounded snapshot and, if its
     # explicit Wait button is present, use that safe action once and retry.
     # Never infer coordinates or select Close app.
-    if waits_used < wait_budget and final_xml:
+    if final_xml:
         try:
             final_root = parse_hierarchy(final_xml)
         except ET.ParseError:
             final_root = None
-        if final_root is not None and transient_overlay_action(final_root) == "Wait":
-            handle_transient_overlay(final_root)
-            return wait_for_text(needle, timeout=15.0, wait_budget=0)
+        if final_root is not None:
+            final_action = transient_overlay_action(final_root)
+            if final_action == "GOT IT":
+                # The immersive confirmation is benign and consumes no ANR-Wait
+                # budget. Handle it even when the Wait budget is zero.
+                handle_transient_overlay(final_root)
+                remaining_waits = max(0, wait_budget - waits_used)
+                return wait_for_text(
+                    needle, timeout=15.0, wait_budget=remaining_waits,
+                )
+            if final_action == "Wait":
+                if waits_used >= wait_budget:
+                    budget_label = "two" if wait_budget == 2 else str(wait_budget)
+                    diagnostic = foreground_diagnostic()
+                    logs = failure_logcat()[:5000]
+                    raise AssertionError(
+                        "System UI remained unresponsive after " + budget_label
+                        + " safe Wait action(s); refusing to select Close app; "
+                        + diagnostic + "; relevant logcat=" + logs
+                    )
+                handle_transient_overlay(final_root)
+                remaining_waits = max(0, wait_budget - waits_used - 1)
+                return wait_for_text(
+                    needle, timeout=15.0, wait_budget=remaining_waits,
+                )
 
     raise AssertionError("UI did not show expected state: " + needle
                          + "; visible labels=" + last[:1200]
