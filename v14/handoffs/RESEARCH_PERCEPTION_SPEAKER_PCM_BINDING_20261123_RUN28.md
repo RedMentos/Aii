@@ -33,15 +33,15 @@ Scope: V14-018 RAW EAR speaker evidence, A5 → A4 → C3
   - consent-receipt epoch change resets history;
   - explicit source/generation/receipt reset removes state.
 - LOCAL_LINUX: new repository regression block parsed with ast.parse().
-- BLOCKED: full repository pytest was not run because no local checkout/runtime was available in this run.
-- CI: last visible PR workflow run 45277411451 ended startup_failure with zero jobs. This is CI BLOCKED, not a code-test PASS or FAIL. Current documentation-only head a23366f4 has no workflow run attached.
+- BLOCKED: full repository pytest was not run because no local checkout/runtime was available in this run. The newly added A5→A4→C3 impulse integration regression is NOT_RUN.
+- CI: last visible PR workflow run 45277411451 ended startup_failure with zero jobs. This is CI BLOCKED, not a code-test PASS or FAIL. Later documentation-only heads have no workflow run attached.
 - TERMUX/REDMI: Existing sanitized owner receipts in #1904 (#825/#826) confirm base SHA 8d93236c753f0194224c19edc7411d8d7082b1d6 installed and auto-update enabled, but AI runtime is STOPPED_BY_USER, autostart false and model process stopped. No new CHAT_SEND, UPDATE_REQUEST, restart or LOG_PAGE was performed. PR #2448 is not merged/installed; this RAW EAR feature remains REDMI_UNVERIFIED. No AudioRecord, microphone, RSS, TTFT or Android control proof.
 
 ## Synthetic E2E scope
-Synthetic PCM16 impulse fixture exercises:
+A synthetic PCM16 impulse regression test was added for:
 RAW PCM source → A5 activity classification → A4 novelty + speaker evidence → C3 admission summary.
 Expected behavior: impulse remains novel; speaker history stays empty; speaker decision defers; external interrupt remains low; packet contains no embedding vectors.
-This is a synthetic fixture, not a live microphone turn and not Android evidence.
+**This integration test has not been executed** because the full repository test run is blocked and the exact-head Actions run started with zero jobs. The local PASS evidence below covers only the speaker registry module, not A4/C3 integration. No E2E pass is claimed. This is not a live microphone turn or Android evidence.
 
 ## Research reviewed
 - R-120: “Less can be More: What Aspects of Speech Drive End-of-Turn Detection”, arXiv:2609.11066 (2026-09-10), Interspeech 2026, DOI 10.21437/Interspeech.2026-1705. Full paper read. In its proprietary 8-kHz English telephone test, acoustic+prosody outperformed continuous acoustic+prosody+text fusion on false alarms. No public code/data/weight license or mobile measurement verified.
