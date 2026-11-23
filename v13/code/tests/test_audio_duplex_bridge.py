@@ -22,6 +22,7 @@ from v13.audio_duplex_bridge import (
     _TEMPORAL_RECEIPT_PROCESS_EPOCH,
 )
 from v13.audio_voice_cues import audio_consent_lease, consume_pcm16_voice_window
+from v13.audio_temporal_evidence import TemporalVoiceEvidence
 from v13.common import Cancelled
 from v13.runtime import Runtime
 
@@ -366,5 +367,85 @@ def test_audio_receipt_replay_guard_fails_closed_at_its_bound(tmp_path):
             _claim_one_use_audio_receipt(runtime, "new-event", "new-packet", "b" * 64)
         state, _version = runtime.store.state(_REPLAY_STATE_KEY, {})
         assert len(state["entries"]) == _REPLAY_MAX_ENTRIES
+    finally:
+        runtime.close()
+
+
+def test_bridge_requires_the_same_temporal_state_bound_to_the_consent_lease(tmp_path):
+    runtime, started = make_runtime(tmp_path, "interrupt")
+    try:
+        first = runtime.submit("Tell me a long story about the history of Japan")
+        assert started.wait(10)
+        _audio_event, generation, pcm, kwargs = make_audio(runtime)
+        held_state = TemporalVoiceEvidence()
+        different_state = TemporalVoiceEvidence()
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+            temporal_state=held_state,
+        ) as lease:
+            result = consume_pcm16_voice_window(
+                runtime, pcm, consent_lease=lease,
+                temporal_state=held_state, **kwargs,
+            )
+            _persist_temporal_voice_receipt(
+                runtime, result, lease, temporal_state=held_state,
+            )
+            with pytest.raises(PermissionError, match="source-bound consent lease"):
+                on_audio_input(
+                    runtime, result, lease, temporal_state=different_state,
+                )
+            assert not runtime.cancel_event.is_set()
+        wait_idle(runtime)
+        assert answer(runtime, first)["status"] == "FINAL"
+    finally:
+        runtime.close()
+
+
+def test_audio_event_created_before_active_turn_cannot_interrupt_it(tmp_path):
+    runtime, started = make_runtime(tmp_path, "interrupt")
+    try:
+        _audio_event, generation, pcm, kwargs = make_audio(runtime)
+        first = runtime.submit("Tell me a long story about the history of Norway")
+        assert started.wait(10)
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+        ) as lease:
+            result = consume_pcm16_voice_window(
+                runtime, pcm, consent_lease=lease, **kwargs,
+            )
+            _persist_temporal_voice_receipt(runtime, result, lease)
+            with pytest.raises(ValueError, match="predates the active Runtime turn"):
+                on_audio_input(runtime, result, lease)
+            assert not runtime.cancel_event.is_set()
+        wait_idle(runtime)
+        assert answer(runtime, first)["status"] == "FINAL"
+    finally:
+        runtime.close()
+
+
+def test_audio_generation_must_match_the_active_turn_before_interrupt(tmp_path):
+    runtime, started = make_runtime(tmp_path, "interrupt")
+    try:
+        first = runtime.submit("Tell me a long story about the history of Sweden")
+        assert started.wait(10)
+        _audio_event, generation, pcm, kwargs = make_audio(runtime)
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+        ) as lease:
+            result = consume_pcm16_voice_window(
+                runtime, pcm, consent_lease=lease, **kwargs,
+            )
+            _persist_temporal_voice_receipt(runtime, result, lease)
+            current = runtime.turn_event
+            original_generation = current["brain_generation_id"]
+            current["brain_generation_id"] = "generation-mismatch"
+            try:
+                with pytest.raises(ValueError, match="does not match the active Runtime turn"):
+                    on_audio_input(runtime, result, lease)
+                assert not runtime.cancel_event.is_set()
+            finally:
+                current["brain_generation_id"] = original_generation
+        wait_idle(runtime)
+        assert answer(runtime, first)["status"] == "FINAL"
     finally:
         runtime.close()
