@@ -50,6 +50,13 @@ class DataConfigTests(unittest.TestCase):
             validation_fraction=0.15,
         )
 
+    def test_subminute_timestamps_are_rejected(self):
+        rows = synthetic_rows(1000)
+        bad = list(rows)
+        bad[10] = MinuteRow(bad[10].timestamp.replace(second=30), bad[10].values)
+        with self.assertRaisesRegex(ValueError, "whole minute"):
+            build_dataset(bad, ("Global_active_power", "Voltage"), self.config())
+
     def test_split_is_identical_across_pilot_L_values(self):
         a = build_chronological_boundaries(1000, self.config(3))
         b = build_chronological_boundaries(1000, self.config(5))
