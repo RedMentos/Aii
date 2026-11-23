@@ -182,7 +182,8 @@
           "trained cross-organ latent coupling",
           "Redmi test or deployment"
         ]
-      }
+      },
+      "collaboration_write_blocker": "GitHub PR comments and PR metadata updates returned HTTP 403 because the linked GitHub account has no verified email. Repository content commits/readbacks succeeded. Optional account email verification would restore PR discussion/metadata writes; no device action is needed."
     },
     {
       "id": "V14-005",
