@@ -425,9 +425,13 @@ def consume_pcm16_voice_window_with_duplex(
                 "reason": type(exc).__name__,
                 "authority": "NONE",
             }
-            runtime.store.log(
-                "teacher_ear_unavailable",
-                result["packet"].get("event_id"),
-                {"reason": type(exc).__name__},
-            )
+            try:
+                runtime.store.log(
+                    "teacher_ear_unavailable",
+                    result["packet"].get("event_id"),
+                    {"reason": type(exc).__name__},
+                )
+            except Exception:
+                # The optional teacher must never break the already-completed RAW EAR path.
+                pass
     return result
