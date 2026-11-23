@@ -1,0 +1,85 @@
+name: V13 B3 paired native tap regression
+on:
+  push:
+    branches: ["gpt6/v13-b3-native-latent-repair-*"]
+    paths:
+      - ".github/workflows/b3-paired-native-capture.yml"
+      - "v13/code/v13/b3pairs.py"
+      - "v13/code/v13/b3train.py"
+      - "v13/code/scripts/b3_train_l1_shadow.py"
+      - "v13/code/v13/contracts.py"
+      - "v13/code/v13/cognition.py"
+      - "v13/code/v13/operator.py"
+      - "v13/code/v13/runtime.py"
+      - "v13/code/v13/b3bridge.py"
+      - "v13/code/tests/test_b3pairs.py"
+      - "v13/code/tests/test_b3train.py"
+      - "v13/code/tests/test_b3_completion.py"
+  pull_request:
+    paths:
+      - ".github/workflows/b3-paired-native-capture.yml"
+      - "v13/code/v13/b3pairs.py"
+      - "v13/code/v13/b3train.py"
+      - "v13/code/scripts/b3_train_l1_shadow.py"
+      - "v13/code/v13/contracts.py"
+      - "v13/code/v13/cognition.py"
+      - "v13/code/v13/operator.py"
+      - "v13/code/v13/runtime.py"
+      - "v13/code/v13/b3bridge.py"
+      - "v13/code/tests/test_b3pairs.py"
+      - "v13/code/tests/test_b3train.py"
+      - "v13/code/tests/test_b3_completion.py"
+permissions:
+  contents: read
+concurrency:
+  group: v13-b3-paired-native-capture-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  paired-capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      V13_NO_AUTOSTART: "1"
+      NO_MODEL_DOWNLOADS: "1"
+      HF_HUB_OFFLINE: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Install CPU test dependencies
+        run: python -m pip install --no-input "numpy==2.2.6" psutil PyYAML Pillow
+      - name: Test paired native capture and B3 safety gates
+        run: |
+          cd v13/code
+          env PYTHONPATH=.:tests python -m unittest -v \
+            tests.test_b3pairs \
+            tests.test_b3train \
+            tests.test_b3bridge \
+            tests.test_b3_completion \
+            tests.test_b3degrade \
+            tests.test_b3order \
+            tests.test_callosum \
+            tests.test_native_taps
+      - name: Compile touched Python modules
+        run: |
+          python -m py_compile \
+            v13/code/v13/b3pairs.py \
+            v13/code/v13/b3train.py \
+            v13/code/scripts/b3_train_l1_shadow.py \
+            v13/code/v13/contracts.py \
+            v13/code/v13/cognition.py \
+            v13/code/v13/operator.py \
+            v13/code/v13/runtime.py \
+            v13/code/v13/b3bridge.py \
+            v13/code/tests/test_b3pairs.py \
+            v13/code/tests/test_b3train.py \
+            v13/code/tests/test_b3_completion.py
+
+      - name: Smoke-test Termux L1 shadow CLI import and argument parser
+        working-directory: v13/code
+        run: python scripts/b3_train_l1_shadow.py --help >/dev/null

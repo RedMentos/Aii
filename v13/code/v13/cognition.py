@@ -184,6 +184,16 @@ class Cognition:
         data=json.loads(path.read_text())
         if data['token_ids']!=p['token_ids'] or len(data['vectors'])!=p['shape'][0] or any(len(v)!=p['shape'][1] for v in data['vectors']):raise ValueError('Tap feature shape/token mismatch')
         return data
+    def tap_pair(self,e,deadline):
+        """Capture same-source native states with distinct native resolutions.
+
+        B1 retains source-aligned fine token slots; B2 retains adaptive coarse
+        Gist slots. This is numeric latent-data capture only: no text message,
+        no receiver injection, and no body-learning authority.
+        """
+        check(self.r.cancel_event,deadline)
+        from .b3pairs import capture_pair
+        return capture_pair(self,e,deadline)
     def body_context(self,role,e):
         """B2's bounded long window; persisted IDs, exact sources, no fact promotion.
 

@@ -347,7 +347,7 @@ def doctor_fields(home,direction,receiver_revision=None):
             'latent_read_authority':0,'latent_learn_authority':0}
 
 # -- B3-H12 completion gate (LOCKED) / B3-H13 -------------------------------------------------------------
-COMPLETION=('CODE','REAL_SENDER_STATE_PATH','REAL_RECEIVER_EFFECT','RECEIVER_CALIBRATED_BRIDGE','FALLBACK_CHANNELS',
+COMPLETION=('CODE','PAIRED_NATIVE_CAPTURE_API','ADAPTIVE_GIST_RECEIVER_PATH','BIDIRECTIONAL_NATIVE_RECEIVER_PATH','PAIRED_L1_SHADOW_TRAINER_API','SOURCE_PINNED_L0_BASELINE_GATE','PAIR_RESTART_VALIDATION_TESTS','REAL_SENDER_STATE_PATH','REAL_RECEIVER_EFFECT','RECEIVER_CALIBRATED_BRIDGE','FALLBACK_CHANNELS',
             'OOD_GATE','ROUTER_STABILITY_METRICS','RESTART_PERSISTENCE','INTEGRATION_TESTS','TELEMETRY',
             'NO_MESSAGE_ABLATION','EXACT_ABLATION','SYMBOLIC_CONTROL_ABLATION','REAL_TARGET_RUNNER_MEASUREMENT')
 CANON='The callosal bridge must learn a receiver-compatible communication language before it earns the right to perturb a receiver\'s pretrained internal dynamics (B3-H13).'
@@ -363,6 +363,13 @@ def completion_gate(home,direction,row,messages=0,app=None):
     crit=gate.get('criteria') if isinstance(gate.get('criteria'),dict) else {};bridge=row.get('bridge') or {}
     stale=bool(bridge.get('stale_receiver_revision'))
     c={'CODE':(app/'v13/b3bridge.py').exists(),
+       'PAIRED_NATIVE_CAPTURE_API':(app/'v13/b3pairs.py').exists() and 'def tap_pair(' in (app/'v13/cognition.py').read_text() and ':tap pair' in (app/'v13/operator.py').read_text() and "elif kind=='tap_pair'" in (app/'v13/runtime.py').read_text(),
+       'ADAPTIVE_GIST_RECEIVER_PATH':(app/'v13/b3pairs.py').exists() and 'consume_gist' in (app/'v13/b3pairs.py').read_text() and 'gist_readout' in (app/'v13/contracts.py').read_text(),
+       'BIDIRECTIONAL_NATIVE_RECEIVER_PATH':'fine_states' in (app/'v13/b3pairs.py').read_text() and 'B1_FINE_SLOTS = 64' in (app/'v13/b3pairs.py').read_text(),
+       'PAIRED_L1_SHADOW_TRAINER_API':(app/'v13/b3train.py').exists() and 'def train_l1_shadow(' in (app/'v13/b3train.py').read_text() and (app/'scripts/b3_train_l1_shadow.py').exists() and (app/'tests/test_b3train.py').exists(),
+       'SOURCE_PINNED_L0_BASELINE_GATE':'v13.b3-l0-baselines/1' in (app/'v13/b3train.py').read_text() and 'l1_gate(gate_task)' in (app/'v13/b3train.py').read_text(),
+       'PAIRED_L1_SHADOW_TRAINER_API':(app/'v13/b3train.py').exists() and 'def train_l1_shadow(' in (app/'v13/b3train.py').read_text() and (app/'tests/test_b3train.py').exists(),
+       'PAIR_RESTART_VALIDATION_TESTS':(app/'tests/test_b3pairs.py').exists(),
        'REAL_SENDER_STATE_PATH':bool(row.get('native_taps')),
        'REAL_RECEIVER_EFFECT':bool(row.get('receiver_tap_ids')) and bool(row.get('latent_gain')),
        'RECEIVER_CALIBRATED_BRIDGE':bool(man and man.get('calibrated') and man.get('receiver_revision')) and not stale,
