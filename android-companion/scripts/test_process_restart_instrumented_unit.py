@@ -85,6 +85,16 @@ class InstrumentationDriverTests(unittest.TestCase):
         with patch.object(harness.subprocess, "run", return_value=completed):
             self.assertEqual(harness.process_id(), "")
 
+    def test_process_id_accepts_numeric_pid_output(self):
+        completed = harness.subprocess.CompletedProcess(
+            args=["adb", "shell", "pidof", harness.PACKAGE],
+            returncode=0,
+            stdout="1234 5678\n",
+            stderr="",
+        )
+        with patch.object(harness.subprocess, "run", return_value=completed):
+            self.assertEqual(harness.process_id(), "1234 5678")
+
     def test_process_id_does_not_hide_adb_transport_errors(self):
         completed = harness.subprocess.CompletedProcess(
             args=["adb", "shell", "pidof", harness.PACKAGE],
