@@ -237,3 +237,147 @@ def probe(r):
         result['status']='SMOKE_PASS' if all(p['ok'] for p in result['roles'].values()) else 'SMOKE_PARTIAL';result['missing_proofs']=['sustained thermal/energy','target-phone RSS/KV growth under pressure','native sparse body training','B3 receiver-effect ablations','long-term retention']
         path=r.home/'exports/native-probe.json';archive_previous(path);atomic_write(path,dumps(result));r.store.set_meta('latest_native_probe',str(path));return result
     finally:r.session=old;r.store.set_meta('last_session',oldlast or old)
+
+
+def public_probe_summary(report):
+    """Return a console-safe view of a native probe; raw outputs stay in its private local artifact.
+
+    The probe intentionally persists full model evidence for local QA. That artifact is
+    not the console response: C3 text, B1/B2 hypotheses and C2 structured payloads are
+    removed from both the interactive :probe notice and the one-shot CLI display.
+    """
+    if not isinstance(report, dict) or report.get('proof_kind') != 'NATIVE_SMOKE':
+        raise ValueError('Expected a native smoke report')
+
+    import math
+
+    def number(value):
+        return type(value) in (int, float) and math.isfinite(float(value))
+
+    def enum(value):
+        return (isinstance(value, str) and len(value) <= 80
+                and all(ch.isalnum() or ch in '._:/-' for ch in value))
+
+    def metric_view(metrics):
+        if not isinstance(metrics, dict):
+            return {}
+        out = {}
+        for key in ('status', 'role', 'last_phase', 'error_kind'):
+            value = metrics.get(key)
+            if enum(value):
+                out[key] = value
+        for key in (
+            'prompt_tokens', 'generated_tokens', 'requested_tokens',
+            'input_message_count', 'duration_s', 'ttft_s',
+            'elapsed_in_last_phase_s', 'tokens_per_second',
+            'n_ctx', 'n_batch', 'threads', 'context_tokens',
+        ):
+            value = metrics.get(key)
+            if number(value):
+                out[key] = value
+        durations = metrics.get('stage_durations_s')
+        if isinstance(durations, dict):
+            out['stage_durations_s'] = {
+                key: value for key, value in durations.items()
+                if enum(key) and number(value)
+            }
+        admission = metrics.get('prompt_admission')
+        if isinstance(admission, dict):
+            safe_admission = {}
+            for key in ('revision', 'status'):
+                value = admission.get(key)
+                if enum(value):
+                    safe_admission[key] = value
+            for key in ('original_prompt_tokens', 'prompt_tokens', 'target_tokens'):
+                value = admission.get(key)
+                if number(value):
+                    safe_admission[key] = value
+            if type(admission.get('source_text_rewritten')) is bool:
+                safe_admission['source_text_rewritten'] = admission['source_text_rewritten']
+            layers = admission.get('removed_layers')
+            if isinstance(layers, list):
+                safe_admission['removed_layers'] = [x for x in layers if enum(x)][:32]
+            out['prompt_admission'] = safe_admission
+        return out
+
+    safe_roles = {}
+    raw_roles = report.get('roles')
+    if isinstance(raw_roles, dict):
+        for role in ('C3_LANGUAGE', 'B1_DETAIL', 'B2_GIST', 'C2_CONTROL'):
+            entry = raw_roles.get(role)
+            if not isinstance(entry, dict):
+                continue
+            safe = {}
+            if type(entry.get('ok')) is bool:
+                safe['ok'] = entry['ok']
+            if number(entry.get('duration_s')):
+                safe['duration_s'] = entry['duration_s']
+            if isinstance(entry.get('metrics'), dict):
+                safe['metrics'] = metric_view(entry['metrics'])
+            if 'error' in entry:
+                safe['error_kind'] = 'ERROR'
+            offer = entry.get('structured_offer')
+            if isinstance(offer, dict):
+                safe['offer'] = {
+                    'present': True,
+                    'verified_quote_count': offer.get('verified_quote_count', 0)
+                        if number(offer.get('verified_quote_count')) else 0,
+                    'rejected_quote_count': offer.get('rejected_quote_count', 0)
+                        if number(offer.get('rejected_quote_count')) else 0,
+                }
+            for key in ('embedding_dim',):
+                if number(entry.get(key)):
+                    safe[key] = entry[key]
+            if number(entry.get('embedding_squared_norm')):
+                safe['embedding_squared_norm'] = entry['embedding_squared_norm']
+            embedding_hash = entry.get('embedding_hash')
+            if isinstance(embedding_hash, str) and len(embedding_hash) == 64 and all(
+                ch in '0123456789abcdef' for ch in embedding_hash
+            ):
+                safe['embedding_hash'] = embedding_hash
+            if type(entry.get('confidence_calibrated')) is bool:
+                safe['confidence_calibrated'] = entry['confidence_calibrated']
+            safe_roles[role] = safe
+
+    config = report.get('effective_config')
+    safe_config = {}
+    if isinstance(config, dict):
+        for key in (
+            'answer_tokens', 'body_residency_mb', 'context_tokens',
+            'control_seconds', 'deadline_seconds', 'observer_seconds',
+            'observer_tokens', 'output_adapter_seconds', 'retrieval_seconds',
+            'threads',
+        ):
+            if number(config.get(key)):
+                safe_config[key] = config[key]
+
+    revisions = report.get('model_revisions')
+    safe_revisions = {}
+    if isinstance(revisions, dict):
+        safe_revisions = {
+            role: value for role, value in revisions.items()
+            if role in ('C2_CONTROL', 'C3_LANGUAGE', 'B1_DETAIL', 'B2_GIST')
+            and isinstance(value, str) and len(value) <= 128
+        }
+
+    return {
+        'schema': 'v13.public-native-probe/1',
+        'proof_kind': 'NATIVE_SMOKE',
+        'status': report.get('status') if enum(report.get('status')) else 'UNKNOWN',
+        'phone_measured': bool(report.get('phone_measured')),
+        'full_runner_proof': bool(report.get('full_runner_proof')),
+        'model_revisions': safe_revisions,
+        'effective_config': safe_config,
+        'roles': safe_roles,
+        'missing_proofs': [
+            value[:160] for value in report.get('missing_proofs', [])
+            if isinstance(value, str)
+        ][:32] if isinstance(report.get('missing_proofs'), list) else [],
+        'raw_artifact': 'exports/native-probe.json',
+        'redaction': {
+            'model_outputs': 'REDACTED_FROM_CONSOLE',
+            'body_offer_hypotheses': 'REDACTED_FROM_CONSOLE',
+            'control_payloads': 'REDACTED_FROM_CONSOLE',
+            'raw_artifact_retained_locally': True,
+        },
+    }
