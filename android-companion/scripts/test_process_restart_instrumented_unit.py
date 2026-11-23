@@ -9,10 +9,14 @@ import test_process_restart_instrumented as harness
 
 
 class InstrumentationDriverTests(unittest.TestCase):
-    def test_instrumentation_command_is_allowlisted_and_reports_one_pass(self):
+    def test_instrumentation_foregrounds_activity_before_running_allowlisted_test(self):
         output = "INSTRUMENTATION_RESULT: stream=\n\nOK (1 test)\nINSTRUMENTATION_CODE: -1"
-        with patch.object(harness, "adb", return_value=output) as adb_call:
+        with (
+            patch.object(harness, "prepare_foreground_activity") as prepare,
+            patch.object(harness, "adb", return_value=output) as adb_call,
+        ):
             self.assertEqual(harness.run_instrumentation(harness.INITIAL_METHOD), output)
+        prepare.assert_called_once_with()
         adb_call.assert_called_once_with(
             "shell", "am", "instrument", "-w", "-r", "-e", "class",
             harness.TEST_CLASS + "#" + harness.INITIAL_METHOD,
@@ -21,20 +25,76 @@ class InstrumentationDriverTests(unittest.TestCase):
 
     def test_instrumentation_rejects_failure_even_if_runner_returns_text(self):
         output = "FAILURES!!!\nTests run: 1, Failures: 1\nINSTRUMENTATION_CODE: -1"
-        with patch.object(harness, "adb", return_value=output):
+        with (
+            patch.object(harness, "prepare_foreground_activity"),
+            patch.object(harness, "adb", return_value=output),
+        ):
             with self.assertRaisesRegex(AssertionError, "reported failure"):
                 harness.run_instrumentation(harness.RESTART_METHOD)
 
     def test_instrumentation_rejects_missing_success_marker(self):
-        with patch.object(harness, "adb", return_value="INSTRUMENTATION_CODE: -1"):
+        with (
+            patch.object(harness, "prepare_foreground_activity"),
+            patch.object(harness, "adb", return_value="INSTRUMENTATION_CODE: -1"),
+        ):
             with self.assertRaisesRegex(AssertionError, "exactly one passing test"):
                 harness.run_instrumentation(harness.RESTART_METHOD)
 
     def test_unlisted_instrumentation_method_never_reaches_adb(self):
-        with patch.object(harness, "adb") as adb_call:
+        with (
+            patch.object(harness, "prepare_foreground_activity") as prepare,
+            patch.object(harness, "adb") as adb_call,
+        ):
             with self.assertRaisesRegex(ValueError, "not allowlisted"):
                 harness.run_instrumentation("arbitraryMethod")
+        prepare.assert_not_called()
         adb_call.assert_not_called()
+
+    def test_prepare_foreground_activity_wakes_unlocks_and_launches_main_activity(self):
+        with (
+            patch.object(harness, "adb", return_value="Status: ok") as adb_call,
+            patch.object(harness, "wait_for_activity_focus") as wait_focus,
+        ):
+            harness.prepare_foreground_activity()
+
+        self.assertEqual(
+            adb_call.call_args_list,
+            [
+                call("shell", "input", "keyevent", "KEYCODE_WAKEUP"),
+                call("shell", "wm", "dismiss-keyguard"),
+                call("shell", "input", "keyevent", "KEYCODE_HOME"),
+                call("shell", "am", "start", "-W", "-n",
+                     harness.COMPONENT, timeout=45.0),
+            ],
+        )
+        wait_focus.assert_called_once_with()
+
+    def test_wait_for_activity_focus_requires_window_focus_and_resumed_activity(self):
+        launcher_window = "mCurrentFocus=Window{abc u0 com.android.launcher3/.Launcher}"
+        target_window = (
+            "mCurrentFocus=Window{def u0 "
+            + harness.PACKAGE + "/.MainActivity}"
+        )
+        target_activity = (
+            "mResumedActivity: ActivityRecord{ghi u0 "
+            + harness.PACKAGE + "/.MainActivity t1}"
+        )
+        with (
+            patch.object(
+                harness, "adb",
+                side_effect=[
+                    launcher_window, target_activity,
+                    target_window, target_activity,
+                ],
+            ) as adb_call,
+            patch.object(harness.time, "monotonic",
+                         side_effect=[0.0, 0.1, 0.2]),
+            patch.object(harness.time, "sleep") as sleep,
+        ):
+            harness.wait_for_activity_focus(timeout=1.0)
+
+        self.assertEqual(adb_call.call_count, 4)
+        sleep.assert_called_once_with(0.5)
 
     def test_process_id_accepts_pidof_exit_one_as_no_process(self):
         completed = harness.subprocess.CompletedProcess(
