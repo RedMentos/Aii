@@ -1896,28 +1896,136 @@ def consume_temporal_after_commit(store, home=None, *, limit=PAGE_SIZE, max_page
     return result
 
 
+def _record_references_source(record, source_id):
+    """Check every retained temporal artifact that can encode one source."""
+    if record is None:
+        return False
+    if any(row.get("source_id") == source_id for row in record.get("experience_rows", [])):
+        return True
+    for holdout in record.get("retention_holdouts", []):
+        if source_id in holdout.get("source_ids", []):
+            return True
+    for intent in record.get("learning_intents", {}).values():
+        if (source_id in intent.get("source_ids", [])
+                or source_id in intent.get("validation_source_ids", [])):
+            return True
+    return False
+
+
+def _temporal_checkpoint_path(store, record):
+    """Resolve a validated checkpoint name without following a symlink."""
+    home = Path(store.home) / "world_jepa_temporal"
+    if home.is_symlink() or (home.exists() and not home.is_dir()):
+        raise ValueError("unsafe temporal checkpoint directory during source forget")
+    if not home.exists():
+        return None
+    name = record["checkpoint"]
+    if re.fullmatch(r"jepa-[0-9a-f]{32}\.npz", name) is None:
+        raise ValueError("invalid temporal checkpoint path during source forget")
+    path = home / name
+    if path.is_symlink() or (path.exists() and not path.is_file()):
+        raise ValueError("unsafe temporal checkpoint file during source forget")
+    return path if path.exists() else None
+
+
 @contextmanager
 def combined_source_forget_guard(store, source_id):
-    """Extend the existing JEPA source-forget lock to temporal checkpoints."""
+    """Remove source-bearing temporal checkpoints before Memory tombstones a source.
+
+    If the active checkpoint contains the source, restore a clean previous
+    checkpoint and make the later rows replayable. If both retained checkpoints
+    contain it, clear them and restart the T8 scan from the beginning. This is
+    conservative checkpoint invalidation, not a claim of synaptic unlearning.
+    """
+    if type(source_id) is not str or not source_id or len(source_id) > 256:
+        raise ValueError("invalid temporal source-forget identity")
     from .world_jepa_consumer import source_forget_guard
 
     with source_forget_guard(store, source_id) as base_report:
         state, version = store.state(STATE_KEY, empty_state())
         state = _validate_state(state)
-        for label in ("active", "previous"):
-            record = state[label]
-            if record is not None and any(
-                row["source_id"] == source_id for row in record["experience_rows"]
-            ):
-                raise ValueError(
-                    "Source is retained by a temporal WorldJEPA "
-                    + label + " checkpoint; safe temporal unlearning is not implemented"
-                )
-        pending = state["pending_rows"]
-        kept = [row for row in pending if row["source_id"] != source_id]
-        removed = len(pending) - len(kept)
-        if removed:
-            next_state = dict(state)
-            next_state["pending_rows"] = kept
+        active = state["active"]
+        previous = state["previous"]
+        active_uses = _record_references_source(active, source_id)
+        previous_uses = _record_references_source(previous, source_id)
+
+        affected = []
+        if active_uses:
+            affected.append(active)
+        if previous_uses:
+            affected.append(previous)
+
+        # Validate all file paths before mutating persistent state. A clean
+        # previous checkpoint must exist before it can replace a tainted active.
+        affected_paths = {}
+        for record in affected:
+            path = _temporal_checkpoint_path(store, record)
+            if path is not None:
+                affected_paths[path.name] = path
+
+        next_active = active
+        next_previous = previous
+        scan_cursor = state["scan_cursor"]
+        pending_by_id = {
+            row["action_id"]: row
+            for row in state["pending_rows"]
+            if row["source_id"] != source_id
+        }
+        removed_pending = len(state["pending_rows"]) - len(pending_by_id)
+        requeued = 0
+
+        if active_uses:
+            if previous is not None and not previous_uses:
+                # The rollback checkpoint is source-clean. Restore it and replay
+                # only the active-only rows; the source-forget request is omitted.
+                next_active = previous
+                next_previous = None
+                scan_cursor = previous["scan_cursor"]
+                retained_ids = set(previous["fingerprints"])
+                for row in active["experience_rows"]:
+                    if row["action_id"] in retained_ids or row["source_id"] == source_id:
+                        continue
+                    if row["action_id"] not in pending_by_id:
+                        pending_by_id[row["action_id"]] = row
+                        requeued += 1
+                fallback = "PREVIOUS_CHECKPOINT_PROMOTED"
+            else:
+                # No retained checkpoint is clean. Rebuild from the durable T8
+                # ledger after deletion; deleted SourceRefs will fail verification.
+                next_active = None
+                next_previous = None
+                scan_cursor = 0
+                pending_by_id = {}
+                fallback = "FULL_T8_REPLAY_REQUIRED"
+        elif previous_uses:
+            # The live predictor is clean; only its rollback candidate is tainted.
+            next_previous = None
+            fallback = "ACTIVE_CHECKPOINT_PRESERVED"
+        else:
+            fallback = "NO_RETAINED_CHECKPOINT_REFERENCE"
+
+        next_state = {
+            "schema": SCHEMA,
+            "revision": REVISION,
+            "scan_cursor": scan_cursor,
+            "pending_rows": sorted(
+                pending_by_id.values(),
+                key=lambda row: (row["created"], row["action_id"]),
+            ),
+            "active": next_active,
+            "previous": next_previous,
+        }
+        if next_state != state:
             store.set_state(STATE_KEY, next_state, expected=version)
-        yield dict(base_report) | {"temporal_pending_rows_removed": removed}
+
+        # The state no longer references these checkpoints. The shared JEPA
+        # flock prevents readers from observing the transition mid-cleanup.
+        for path in affected_paths.values():
+            path.unlink(missing_ok=True)
+
+        yield dict(base_report) | {
+            "temporal_pending_rows_removed": removed_pending,
+            "temporal_checkpoints_invalidated": len(affected),
+            "temporal_fallback": fallback,
+            "temporal_rows_requeued": requeued,
+        }
