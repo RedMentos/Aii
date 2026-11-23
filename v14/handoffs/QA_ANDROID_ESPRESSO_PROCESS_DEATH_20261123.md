@@ -150,3 +150,14 @@ The first attempt did not record the am-start output, package PID or raw package
 - Emulator lifecycle remains **BLOCKED / NOT ACCEPTED** until the new matrix finishes and the process-death test actually reaches Espresso and passes.
 
 **Next action:** inspect exact-head helper tests, then both emulator runs. If focus still fails, use the captured am-start/PID/logcat evidence to decide between package launch failure, app crash, Android system focus failure or unsupported headless rendering; do not bypass the visible UI gate.
+
+
+### Run 5 exact-head test readback
+
+For code head \`60e7e92d9d2544e32c75e5ef4b131a7cd705616f\`:
+
+- Existing process-restart UI helper tests: **23/23 PASS** on both duplicate CI executions.
+- Instrumentation-driver tests: **12/12 PASS** on both duplicate CI executions, including process-not-created failure and the updated focus query.
+- Android Gradle/Robolectric + AndroidTest compilation/install artifacts: **PASS**.
+- Offline bridge security: **PASS**.
+- Both emulator process-restart jobs remain **IN_PROGRESS**; no actual Espresso tap or lifecycle result is claimed until their logs complete.
