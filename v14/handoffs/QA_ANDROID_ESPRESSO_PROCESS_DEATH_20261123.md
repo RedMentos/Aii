@@ -60,3 +60,39 @@ Latest known private owner-read before this candidate: installed release `aed1d2
 Read the exact-head Android companion and emulator jobs. If the instrumentation run passes, request independent review and hand it to Boss/Core for the companion QA stack. If it fails, retain the failure and inspect the instrumentation output, provider startup, and PID timeline; do not skip the emulator gate or convert the prior UIAutomator ANR into success.
 
 **User action: none.**
+
+
+---
+
+## Run 4 follow-up — emulator window-focus preflight (2026-11-23)
+
+### Reproduced failure on the first Espresso head
+
+- Exact head: \`a5fd31e3fc3bb858003ddd5ce1a851e3a0a3435d\`.
+- Android Gradle / Robolectric / AndroidTest compilation passed, but both duplicate emulator attempts failed before the initial STOPPED assertion could complete.
+- Exact Espresso failure: \`RootViewPicker$RootViewWithoutFocusException\` after 61.786 s. The Activity root existed, but WindowManager reported \`has-window-focus=false\`; no Enable/Stop tap occurred, so this was not a Stop or persistence acceptance result.
+- The previous UIAutomator System-UI ANR remains a separate failed path and is not converted into a pass.
+
+### Harness correction
+
+- New exact head: \`d5711530b4381524b33934ce45fcbbb2f02b41c3\`.
+- Before each Espresso invocation the host now wakes the disposable CI emulator, dismisses the keyguard, returns to Home, starts the explicit \`MainActivity\` component, and waits for both:
+  - WindowManager \`mCurrentFocus\` / \`mFocusedApp\` to identify the companion package.
+  - ActivityTaskManager \`mResumedActivity\` / \`topResumedActivity\` to identify the companion package.
+- If focus is not established within the bounded wait, the harness fails with the exact focus/resume lines instead of starting Espresso against an unfocused root.
+- Two new host regressions cover the wake/unlock/foreground sequence and the requirement for both focus and resumed activity. The allowlisted instrumentation methods, PID-exit handling, force-stop ordering and failure-marker checks remain intact.
+
+### Exact current-head CI
+
+- Python harness helper step: **23/23 existing UI helper tests PASS; 11/11 instrumentation-driver tests PASS**.
+- Android Gradle/Robolectric + AndroidTest compilation: **PASS**.
+- Offline bridge security: **PASS**.
+- The two exact-head emulator process-restart jobs are still **IN_PROGRESS** at this readback; no emulator lifecycle PASS is claimed yet.
+- Full local Aii checkout/Gradle/Android SDK is not available in this worker. These are GitHub CI results, not LOCAL_LINUX or physical-device tests.
+- Redmi remains **REDMI_UNVERIFIED**. No APK install, pairing, permissions, companion action, chat send, update request, model/weight change or user-data mutation was performed.
+
+### Next action
+
+Read both exact-head emulator jobs. If they pass, hand the emulator-only lifecycle evidence to Boss/Core for independent review; if they fail, preserve the new focus/resume diagnostics and keep the visible UI gate blocked. Do not bypass Espresso focus, select Close app, or treat a durable-state partial result as visible UI acceptance.
+
+**User action: none.**
