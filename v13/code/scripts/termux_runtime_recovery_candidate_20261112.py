@@ -8,7 +8,7 @@ import importlib.util
 from pathlib import Path
 
 BUILDERS = {
-    'scripts/integrated_world_training_resume_candidate_20261111.py': 'ad9bcbc637ae65840bbbb715f78ae893bd4bcba39eadd476c20158469bc4eea5',
+    'scripts/integrated_world_training_resume_candidate_20261111.py': 'dcddb9382ba9fc2d8e740dcf2eb38e5ab3e9270051fb1ab0ec9722a708dda879',
     'scripts/termux_probe_recovery_candidate_20261112.py': '27aec15dc1f003fd2c90d3d5a08d5a4a9af223ab57c188720ea9cd18aebc1b2b',
     'scripts/termux_chat_recovery_candidate_20261112.py': 'befbaca164fd5453d4c93017eca1b556f2d771b1b7cf54879c6764e4716587c7',
     'scripts/termux_idle_recovery_candidate_20261112.py': '2cc656b102b9950fdb9cb81970708692573189995218bff8a18f95ff01fa97d7',
@@ -43,7 +43,7 @@ def build_sources(code_dir, *, include_postcommit=True):
                       '1bc838137d8c20e558b5d843b88c9fd058c545a5ad3b5ebc0b5ec9667c45134d')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
-                              '6d0707cddac9480415767e6c9ecf99c7f3d16e666e79296fed5d866c8ac6928b')
+                              '7bd350bd8c628b070d1e387e6cc561352eb55d400cb628dbab779aa2983afc6b')
     result = arithmetic_outcome.apply_sources(code_dir, result)
 
     # Snapshot every generated consumer pin before the later Store telemetry
