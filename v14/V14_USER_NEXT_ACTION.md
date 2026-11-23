@@ -1772,3 +1772,13 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
 
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+## Research & Perception — 2026-11-23 run 23
+
+- PR #2448 adds the RAW EAR duplex receipt/replay guard; this follow-up binds dispatch to the exact live temporal/VAD state held by AudioConsentLease and rejects an audio event older than the active turn or from another generation/session.
+- Exact CI from the prior candidate head ce67a376c693dbab961908326f9bb59f7becc003: RAW EAR duplex workflow PASS, privacy scan PASS, staged/integrated regression PASS. New run-23 code is pending its own exact-head CI; do not transfer the earlier result to the new SHA.
+- LOCAL_LINUX full checkout: BLOCKED (no mounted Aii repository; git ls-remote fails because github.com DNS does not resolve). Full Runtime tests not run locally.
+- Runtime consumer boundary: this is still a caller-supplied PCM helper; no Android AudioRecord provider or microphone capture is present, and no normal Runtime/Operator call site currently invokes the bridge. Android/Redmi remains REDMI_UNVERIFIED. Existing auto-updater remains enabled, but the last phone receipt predates the green b20e9 release; installation is not confirmed.
+- Research R-115: Next-Turn and FastTurn full papers reviewed; FD-VAD full text not available. No model, weights or dependencies downloaded.
+- User action: none. Do not send another UPDATE_REQUEST; the prior request is already queued. Next: independent QA/Boss re-review of the exact new head, then Core-owned runtime/provider integration after the signed one-shot and companion lifecycle stack is reconciled.
