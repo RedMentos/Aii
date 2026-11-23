@@ -25,3 +25,12 @@
 2. If the real worker test fails, fix the source/cursor/dispatch cause; do not replace it with a mocked-only pass.
 3. Reconcile the JEPA branch with QA #2391's exact source-lifecycle chain after its CI is green, then rerun staged/integrated optimizer-resume and migration tests.
 4. Hand the verified PR SHA/test result to Boss for board and `V14_USER_NEXT_ACTION.md` synchronization. No user action or device command is required.
+
+
+## Exact candidate CI update (2026-11-23)
+- Tested code SHA: `3a1cecb0ddb4de3791d4ea6b66dc5d2038b3830c`.
+- Python 3.13: py_compile PASS; temporal T8/JEPA suite 21/21 PASS; postcommit Runtime/continuation/restart suite 15/15 PASS.
+- Python 3.14: py_compile PASS; temporal T8/JEPA suite 21/21 PASS; postcommit Runtime/continuation/restart suite 15/15 PASS.
+- The test now captures all real idle-worker pages and requires at least one accepted numeric JEPA update for the target event, rather than mistaking a later idempotent `NO_NEW_TRANSITIONS` continuation for the only run.
+- Separate parent/integration checks remain FAIL: `integrated-regression`, `staged-runtime`, and optimizer-resume/staged-startup jobs still stop at the QA-owned source-lifecycle pin chain. This PR does not modify that composer and is not merge/release proof.
+- Latest private V13OBS snapshot (00:36:32Z) still identifies installed release `aed1d2b826290c95c70356b5d8b864b5ef382be4`; no candidate deployment or fresh Android test occurred.
