@@ -1412,7 +1412,7 @@ def source_forget_guard(store, source_id):
             store.log("forget", None, {
                 "component": "world_predictor",
                 "count": temporal_report.get("temporal_checkpoints_invalidated", 0),
-                "retained_cases_saved": temporal_report.get("temporal_rows_requeued", 0),
+                "n": temporal_report.get("temporal_rows_requeued", 0),
                 "source_id": source_id,
                 "status": "PASS",
                 "mode": "shadow",
