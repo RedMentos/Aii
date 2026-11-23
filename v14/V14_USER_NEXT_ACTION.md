@@ -1772,3 +1772,18 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
 
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+## Core & Harness — run 20 — 2026-11-24
+
+**New connected code path:** C5 ActionGate now writes a source-bound ActionSelection provenance set from the current event, admitted B1/B2 coalition offers, Memory refs, observer/Context OS/Enlightened Space refs, and bound QueryPacket provenance (including BodyView refs). The existing T8/JEPA source consumer reads this producer record; prior C4 FocalCycle lineage remains an additional source. No raw source text is copied into ActionSelection.
+
+**Verified work:** branch core/v14-actionselection-source-lineage-20261124, current code+workflow head before this handoff 69b9a28175799b6ce70fd7ff483f12552d9889ae; handoff commit follows on the same branch. Added positive producer→consumer, SQLite restart, privacy non-copy, and invalid-digest/no-commit tests. A LOCAL_LINUX synthetic MiniStore probe passed source union, QueryPacket binding, invalid-digest rejection, and restart/readback.
+
+**Not verified:** full Aii checkout/pytest is blocked because GitHub DNS resolution failed; exact-head Actions had no visible run at last readback; no CI pass is claimed. No authenticated Redmi receipt or native test exists: REDMI_UNVERIFIED. Updater/deployment is not verified; a GitHub push is not a device update. No model, weight, permission, or user-data change was made.
+
+**PR status:** NOT_CREATED. GitHub rejected PR creation with HTTP 403 because the connected account has no verified email address. No workaround was attempted. The branch and full handoff are persisted. [Open the work branch](https://github.com/RedMentos/Aii/tree/core/v14-actionselection-source-lineage-20261124) · [Handoff](https://github.com/RedMentos/Aii/blob/core/v14-actionselection-source-lineage-20261124/v14/handoffs/CORE_ACTIONSELECTION_SOURCE_LINEAGE_20261124.md).
+
+**Next internal step:** obtain an authorized PR from this branch, run the exact Python 3.11/3.13/3.14 workflow, then coordinate with JEPA & Memory and Boss to run the source-forget/T8 consumer gates after their nested source-pin rebind. Memorilla remains additive SHADOW; real weight learning, trained B3 latent exchange, and Android action/voice remain open.
+
+**User action:** none for the device. If PR creation is expected through this GitHub connection, its account owner must verify an email address; no Termux command or device permission is needed.
