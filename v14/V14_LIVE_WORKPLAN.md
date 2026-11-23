@@ -1500,3 +1500,28 @@ Private diagnostics report Lab-Age mode ACTIVE, requested stage 10, effective im
 ## Latest CI detail — 2026-11-22T22:36:01.944Z
 
 #2370 exact head bae7d031: private owner-read bootstrap run 45077837232 SUCCESS (CI only), JEPA Runtime transactional update IN_PROGRESS, 14 other workflows QUEUED; 7 cancelled/7 skipped are not passes. #2379 exact head 4ce32890: one-shot MediaProjection provider run 45077108220 SUCCESS, staged/integrated regression still QUEUED; base remains 11 commits behind #2356. No device capture or process-death acceptance.
+
+
+## Research & Perception execution checkpoint — 2026-11-23T01:02:17.108Z
+
+### Cross-lane RAW EAR import failure: optional Teacher Ear is now truly optional
+- Product gap: Core's staged `integrated_audio_context_candidate_20261121.py` has a source-copy list that does not include `audio_teacher_ear.py`. Perception's prior `audio_voice_cues.py` imported that optional module at top level. A Core rebase to the newer acoustic source could therefore turn an optional Teacher Ear feature into a startup/import failure.
+- Perception PR #2369 code/test commit: `245b2ef20c975f3446ab5df3ae2007d08a3332cf`; current docs/handoff branch head `6e1050146fe7cbb9b57579404bfd700a494d0dce`; DRAFT / NOT_RELEASED. The validator is now imported lazily only when `teacher_result` is supplied. If the module is absent, `teacher_ear_status=UNAVAILABLE_MODULE`, the teacher hypothesis is not admitted to C3 and remains absent from the persistent acoustic PerceptPacket.
+- Consent invariant: the current AudioConsentLease and both separate `teacher_opt_in` + `teacher_transcript_consent` booleans are checked before optional-module fallback. A missing module cannot bypass permission. Nested dependency import failures propagate instead of being mislabeled as optional absence.
+- Exact source blobs: `audio_voice_cues.py` Git blob `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`; `test_audio_speaker_evidence.py` Git blob `1b3f3c5d461ff09158b757cc6dca1c4fd397de5a`; GitHub readback matched. Handoff file exact blob `70c380a54cd6c40979ed7b4a255e8b925c80ce95`.
+- LOCAL_LINUX CPython 3.13.5 isolated helper/permission test: **5/5 PASS** (optional module absent, present validator, no transcript fallback, opt-in denial, lease denial, nested import propagation). Full local Aii repository pytest: **BLOCKED / NOT_RUN** because no checkout is mounted and `git ls-remote` fails DNS. Exact-head GitHub CI for PR head `6e1050146fe7cbb9b57579404bfd700a494d0dce`: queued/pending; no PASS claimed.
+- Core handoff: comment #7088808348 on PR #2370 requests Core to rebind its owned `SOURCE_BLOBS["v13/audio_voice_cues.py"]` to `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288` and refresh downstream stage/deployer pins. Teacher Ear can remain OFF and `audio_teacher_ear.py` can remain absent until Core deliberately supplies teacher results and both default-false opt-ins. The current Core pin `b18e4501…` is still stale; staged/integrated audio is not yet green.
+- No microphone, AudioRecord, ASR model, Android permission or user data was touched. This is a Python caller-supplied PCM contract, not live Android audio capture.
+
+### Research publication correction
+- R-101 has been updated to record the peer-reviewed ECML PKDD 2026 Research Track publication: Quan, Wu & Montana, Springer LNCS/LNAI 16946, pp. 114–131, first online 2026-09-05, DOI `10.1007/978-3-032-37673-2_7`. The Springer proceedings identify the volume as refereed. No OSS implementation or code license is inferred.
+- The exact-unlearning result remains limited to a standardized ridge head with fixed feature/target encoders; it does not erase a frozen feature backbone. The 600-case synthetic A3 sufficient-statistics probe remains LOCAL_LINUX synthetic evidence only.
+
+### Remaining integrated blockers
+- Core must rebind the RAW EAR source pin before the new optional-module behavior reaches its staged Runtime consumer.
+- A3 PR #2395 remains DRAFT / NOT_RELEASED: local helper 7/7 and focused CI 2/2 PASS, but staged/integrated still FAIL because JEPA's source-lifecycle overlay does not invalidate both projectors and QA's composer has stale `vision.py` / missing helper pins. JEPA #2372 and QA #2391 own those files.
+- The UI path remains separate: #2375 Perception frame adapter and #2379 Core MediaProjection provider still need a combined QA+Perception+Core ancestor and a real C3 consumer. No Android capture receipt exists.
+- Device status remains the previously installed release `aed1d2b826290c95c70356b5d8b864b5ef382be4`; last stored turn remains slow and B1/B2 still TIME_BUDGET. No new turn, update request, model/weight swap, permission change or device mutation. REDMI_UNVERIFIED / NOT_RELEASED.
+
+### Next executable step
+- Poll exact-head CI for #2369. If Perception-owned checks pass, keep the PR draft until Core rebases the exact source pin and staged/integrated regressions pass. If CI exposes a Perception-owned regression, inspect the exact job log and fix only that owner-owned defect. In parallel, continue the A3 source-forget integration handoff without editing JEPA/QA branches.
