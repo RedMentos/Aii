@@ -1013,7 +1013,7 @@ def test_memory_forget_invalidates_both_tainted_checkpoints_then_replays(tmp_pat
     home = tmp_path / "brain-forget-both-tainted"
     store, session = _make_store(home)
     try:
-        first_events = _add_transitions(store, session, 0, 256)
+        first_actions = _add_transitions(store, session, 0, 256)
         _set_runtime_permissions(
             store, learning_enabled=True, optimizer_permission=True, steps=120
         )
