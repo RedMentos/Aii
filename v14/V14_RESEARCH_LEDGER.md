@@ -1122,7 +1122,7 @@ PR #2387 was merged into the Boss documentation branch only. R-096–R-099 remai
 
 ## R-101 — Exact source-level unlearning for standardized A3 ridge projectors (2026-11-23)
 
-**Primary paper read in full:** Yijun Quan, Wentai Wu and Giovanni Montana, *Exact Federated Continual Unlearning for Ridge Heads on Frozen Foundation Models*, arXiv:2603.12977v1, submitted 2026-03-13 (https://arxiv.org/abs/2603.12977). Preprint; no peer-reviewed acceptance was established in this review. No official code repository was identified, no code/weights were imported, and the paper-specific license was not confirmed from the primary arXiv page.
+**Primary paper read in full:** Yijun Quan, Wentai Wu and Giovanni Montana, *Exact Federated Continual Unlearning for Ridge Heads on Frozen Foundation Models*, arXiv:2603.12977v3 (revised 2026-06-14; https://arxiv.org/abs/2603.12977v3). Accepted to ECML-PKDD 2026; published in the proceedings Research Track, pp. 114–131 (https://link.springer.com/book/10.1007/978-3-032-37673-2 ; bibliographic record https://dblp.org/rec/conf/pkdd/QuanWM26). No official code repository was identified, no code/weights were imported, and the paper-specific license was not confirmed from the primary arXiv page.
 
 **Method:** for a fixed feature extractor and a ridge-regression head, the optimum depends on additive sufficient statistics S=FᵀF and G=FᵀY. The paper maintains these through add/delete requests and recomputes the exact retained-data head; Variant A uses a full fp64 solve, while Variant B uses QR/Sherman–Morrison–Woodbury updates with feasibility and periodic-reset considerations. Its Bayesian section derives a zero-KL retrain-equivalence certificate when the tracked statistics are exact.
 
@@ -1134,4 +1134,4 @@ PR #2387 was merged into the Boss documentation branch only. R-096–R-099 remai
 
 **V14 consequence:** keep PR #2395's conservative invalidation as the safe first step. After the JEPA source-lifecycle overlay and QA pin chain consume that fix, prototype per-source fp64 sufficient-stat artifacts so an explicit forget can subtract one source and reconstruct the remaining A3 head without retaining raw image/audio data. Store encoder/preprocessing revisions and exact source hashes; delete per-source stats on forget; test delete/add-back, order invariance, restart, rollback, old-task retention and malformed/legacy fallback. Do not claim neural-backbone unlearning or permission to activate live learning.
 
-**Status:** FULL_ARXIV_PREPRINT_REVIEWED / LOCAL_SYNTHETIC_STATS_EQUIVALENCE / NO_CODE_IMPORT / NO_ANDROID_PROOF.
+**Status:** FULL_ARXIV_V3_REVIEWED / PEER_REVIEWED_ECML_PKDD_2026 / LOCAL_SYNTHETIC_STATS_EQUIVALENCE / NO_CODE_IMPORT / NO_ANDROID_PROOF.
