@@ -773,3 +773,28 @@ def test_speaker_embedding_batch_with_another_consent_receipt_is_rejected():
             consent_receipt_ref=RECEIPT,
             start_ms=100, end_ms=1100, activity_hint="VOICED", embeddings=forged,
         )
+
+
+
+def test_runtime_consumer_rejects_speaker_embeddings_from_another_receipt(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    other_receipt = "fixture:other-consent"
+    forged = speaker_batch(
+        SOURCE, event["brain_generation_id"], 100, 1100,
+        lambda _: (1.0, 0.0, 0.0),
+        consent_receipt_ref=other_receipt,
+    )
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL", speaker_embeddings=forged,
+        )
+        assert result["speaker_change_evidence"]["status"] == "REJECTED"
+        assert result["a4"]["speaker_change_decision"] == "DEFER"
+        assert result["a4"]["learning_authority"] is False
+        assert result["a4"]["action_authority"] is False
+    finally:
+        runtime.store.close()
