@@ -695,6 +695,10 @@ def forget(store,rec):
         if not deleted:
             cleanup_failed.append(key+'_stats_artifact')
 
+    store.log('vision',None,{'action':'forget','recomputed_projectors':recomputed,
+                               'invalidated_projectors':[key for key,_ in invalidated],
+                               'source_stats_files_deleted':len(stats_files_deleted),
+                               'cleanup_failed_count':len(cleanup_failed)})
     return {
         'forgotten':sid,
         'recomputed_projectors':recomputed,
@@ -712,8 +716,8 @@ def status(runtime):
     st=load(runtime.store);t=Teacher(runtime.home,runtime.models);ok,missing=t.available();pj=st.get('projector');tp=st.get('tile_projector')
     return {'revision':REVISION,'scope':'LAB_SHADOW_ONLY (Age-0-Kern bleibt Text)','images':len(st['images']),
             'described':sum(1 for r in st['images'].values() if r['captions']),'teacher':{'available':ok,'missing':missing,'authority':AUTHORITY,'removed':bool(st.get('teacher_removed'))},
-            'projector':{k:pj[k] for k in ('n','encoder','metrics','created')} if pj else None,
-            'tile_projector':{k:tp[k] for k in ('n','salient_tiles','encoder','created')} if tp else None}
+            'projector':{k:pj.get(k) for k in ('n','encoder','metrics','metrics_status','created','source_stats_mode')} | {'source_stats_count':len(pj.get('source_stats',[]))} if pj else None,
+            'tile_projector':{k:tp.get(k) for k in ('n','salient_tiles','encoder','created','source_stats_mode')} | {'source_stats_count':len(tp.get('source_stats',[]))} if tp else None}
 
 def operator_command(runtime,args):
     """:image [status|add <Pfad> [Label]|list|describe [id|last] [g|rIJ|hl|hr|ht|hb|qtl|qtr|qbl|qbr]|train|tiles|look [id|last]|locate <id|last> <Text>|find <id|last> <Text>|teacher on|off|forget <id>]"""
