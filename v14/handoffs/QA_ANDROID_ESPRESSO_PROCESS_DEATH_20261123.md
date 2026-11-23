@@ -121,3 +121,32 @@ A separate read-only HEALTH request is pending to refresh MemAvailable/free-disk
 - HEALTH: MemAvailable 1,488 MiB of 5,569 MiB; free disk 993 MiB. HEALTH reports Runtime UNAVAILABLE while DIAGNOSTICS reports service/model RUNNING and Dashboard RUNNING; retain the conflict.
 - LEARNING_STATUS: UNAVAILABLE. DIAGNOSTICS says learning commit authority requires separate SHADOW mode; no active persistent weight-learning state is verified.
 - No LOG_PAGE or CHAT_SEND was issued. No permission, learning-mode, model or weight changes were made.
+
+
+---
+
+## Run 5 follow-up — launch/focus diagnostics and renderer correction (2026-11-23)
+
+### Exact failure on code head d571153
+
+Both duplicate emulator jobs completed **FAIL** before Espresso instrumentation started. APK installation and Gradle AndroidTest compilation succeeded. The host preflight then timed out with:
+
+\`AssertionError: companion MainActivity did not obtain window focus; focus=[]; resumed=[]\`
+
+The first attempt did not record the am-start output, package PID or raw package-related WindowManager/ActivityTaskManager lines, so it does **not** establish whether the Activity failed to launch, the process crashed, or the queried summary fields were absent. The emulator also emitted ColorBuffer/texture binding errors. No Enable/Stop tap or process-death acceptance occurred.
+
+### New correction
+
+- Code-bearing head: \`60e7e92d9d2544e32c75e5ef4b131a7cd705616f\`.
+- The launch path now matches the previously used companion launcher: wake, dismiss keyguard, explicit \`am start -n\` (without \`-W\` or an unnecessary HOME key), wait 2 s, require a package PID, then require focus + resumed state.
+- Focus inspection now uses the top-level \`dumpsys window\` summary (which carries \`mCurrentFocus\`) plus \`dumpsys activity activities\`. On failure it records bounded am-start output, PID, package-related lines and filtered emulator logcat.
+- Added a negative unit test for am-start returning without creating the app process.
+- The emulator renderer changed from \`lavapipe\` to headless \`swiftshader_indirect\` because the prior emulator logs reported invalid ColorBuffer/texture binding.
+
+### New exact-head CI
+
+- The new code-bearing head \`60e7e92d9d2544e32c75e5ef4b131a7cd705616f\` has a fresh push + PR CI matrix started; all five check runs were QUEUED/IN_PROGRESS at last readback.
+- The previous \`d571153\` unit/compile/security results remain historical; they do not prove this new diagnostic path.
+- Emulator lifecycle remains **BLOCKED / NOT ACCEPTED** until the new matrix finishes and the process-death test actually reaches Espresso and passes.
+
+**Next action:** inspect exact-head helper tests, then both emulator runs. If focus still fails, use the captured am-start/PID/logcat evidence to decide between package launch failure, app crash, Android system focus failure or unsupported headless rendering; do not bypass the visible UI gate.
