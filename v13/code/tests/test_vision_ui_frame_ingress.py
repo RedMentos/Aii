@@ -21,6 +21,14 @@ from v13.vision_ui_frame_ingress import (
 
 
 class _Attention:
+    def __init__(self):
+        self.modulations = []
+
+    def modulate(self, event_id, *, sal=None, **kwargs):
+        result = {"event_id": event_id, "sal": dict(sal or {}), "kwargs": kwargs}
+        self.modulations.append(result)
+        return result
+
     def perceive(self, event_id, segments, *, goal="", file_requests=True):
         assert file_requests is False
         return {
@@ -61,9 +69,11 @@ def make_runtime(monkeypatch, with_store=False):
     )
     if with_store:
         runtime.store = _Store(threading.RLock())
+    attention = _Attention()
+    runtime._test_attention = attention
     monkeypatch.setattr(
         "v13.vision_ui_frame_ingress.attention_module.controller",
-        lambda _runtime: _Attention(),
+        lambda _runtime: attention,
     )
     return runtime
 
@@ -92,10 +102,10 @@ def observation(finality="FINAL", method="MEDIA_PROJECTION", event_kind="SCREEN_
     return value
 
 
-def image_buffer():
+def image_buffer(panel_color=(230, 20, 18)):
     image = Image.new("RGB", (64, 64), (8, 8, 8))
     draw = ImageDraw.Draw(image)
-    draw.rectangle((38, 14, 59, 52), fill=(230, 20, 18))
+    draw.rectangle((38, 14, 59, 52), fill=panel_color)
     draw.rectangle((8, 8, 19, 24), fill=(12, 180, 220))
     output = BytesIO()
     image.save(output, format="PNG")
@@ -292,6 +302,58 @@ def test_media_projection_frame_reaches_a5_a4_and_existing_ui_context(monkeypatc
         assert result["context_packet_count"] == 1
         assert result["caller_buffer_overwritten"] is True
         assert not any(frame)
+
+
+def test_temporal_ui_change_modulates_a4_and_only_proposes_user_approved_relook(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation()
+    prompt = "Describe only the visible UI state; preserve this exact request."
+
+    with lease_for(runtime, obs) as lease:
+        first_frame = image_buffer()
+        first = consume_with_provider_verifier(
+            runtime, obs, first_frame, consent_lease=lease,
+            current_source=prompt, goal="red panel", token_budget=512,
+        )
+        assert first["temporal_attention"]["status"] == "WARMUP"
+        assert first["reobserve_proposal"]["status"] == "NONE"
+        assert runtime._test_attention.modulations == []
+
+        next_obs = dict(obs)
+        next_obs["start_ms"] = 1033
+        next_obs["end_ms"] = 1066
+        changed_frame = image_buffer(panel_color=(20, 220, 20))
+        second = consume_with_provider_verifier(
+            runtime, next_obs, changed_frame, consent_lease=lease,
+            current_source=prompt, goal="red panel", token_budget=512,
+        )
+
+        temporal = second["temporal_attention"]
+        assert temporal["status"] == "MEASURED"
+        assert temporal["max_change"] >= temporal["interrupt_threshold"]
+        assert temporal["changed_regions"]
+        assert temporal["authority"] == "HEURISTIC_RAW_FEATURE_DELTA"
+        assert temporal["calibrated"] is False
+        assert temporal["truth_authority"] == 0
+        assert second["reobserve_proposal"]["status"] == "PROPOSED"
+        assert second["reobserve_proposal"]["requires_user_approval"] is True
+        assert second["reobserve_proposal"]["automatic_capture"] is False
+        assert second["reobserve_proposal"]["action_authority"] is False
+        assert second["reobserve_proposal"]["learning_authority"] is False
+        assert second["temporal_modulation"] is not None
+        assert runtime._test_attention.modulations[-1]["sal"]["novelty"] > 0.0
+        assert runtime._test_attention.modulations[-1]["sal"]["external_interrupt"] > 0.0
+        assert second["packet"]["temporal_attention"] == temporal
+        assert second["packet"]["reobserve_proposal"] == second["reobserve_proposal"]
+        assert second["packet"]["learning_authority"] is False
+        assert second["packet"]["action_authority"] is False
+        assert second["packet"]["truth_authority"] == 0
+        assert any(
+            segment.get("temporal_change_score", 0.0) > 0.0
+            for segment in second["packet"]["segments"]
+        )
+        assert second["caller_buffer_overwritten"] is True
+        assert not any(changed_frame)
 
 
 def test_bounded_frame_config_cannot_expand_capture_limits():
