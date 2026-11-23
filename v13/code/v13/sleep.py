@@ -719,7 +719,8 @@ class SleepRuntime:
             self.r.store.log('v14_world_jepa_temporal_postcommit',event_id,{
                 'status':temporal_telemetry_status,
                 'component':'world_predictor',
-                'mode':'temporal_shadow',
+                # The event kind identifies the temporal path; use Store's allowlisted SHADOW mode.
+                'mode':'shadow',
                 'sha256':temporal.get('checkpoint_sha256'),
                 'optimizer_steps':temporal_metrics.get('optimizer_steps',0),
                 'target_changed':float(temporal_metrics.get('ema_target_delta_norm',0.0))>0.0,

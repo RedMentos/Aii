@@ -815,7 +815,7 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         assert any(
             row.get("status") == "PASS"
             and row.get("component") == "world_predictor"
-            and row.get("mode") == "temporal_shadow"
+            and row.get("mode") == "shadow"
             and row.get("sha256") == temporal_checkpoint_sha
             and row.get("optimizer_steps", 0) > 0
             and row.get("target_changed") is True
@@ -829,6 +829,63 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         assert "runtime-jepa-" not in repr(temporal_state)
         assert "worker-jepa-lifecycle" not in repr(telemetry)
         assert "worker-jepa-lifecycle" not in repr(temporal_telemetry)
+        # Verify the trained temporal readout reaches the real B1/B2 Cognition.offer
+        # prompt consumer with its role-specific horizon and BODY_STATE provenance.
+        receiver_text = "The verified action history is ready. Estimate the next action duration."
+        receiver_event = runtime.store.event(runtime.session, receiver_text)
+        seen_queries = {}
+        original_pool_get = runtime.pool.get
+
+        class CaptureReceiverRunner:
+            def __init__(self, role):
+                self.role = role
+                self.last_metrics = {"status": "FINAL", "duration_s": 0.0}
+
+            def generate(self, messages, cancel, deadline, max_tokens, schema):
+                query = json.loads(messages[1]["content"])
+                seen_queries[self.role] = query
+                return iter([json.dumps({
+                    "summary": "A source-quoted next-action estimate.",
+                    "quotes": ["verified action history"],
+                    "uncertainty": "low",
+                    "needs_reentry": False,
+                })])
+
+        runtime.pool.get = lambda role: CaptureReceiverRunner(role)
+        try:
+            receiver_specs = (
+                ("B1_DETAIL", 2, "DURATION+OUTPUT_CHARS"),
+                ("B2_GIST", 3, "P_FINAL_NOT_CORRECTNESS"),
+            )
+            for role, expected_history, expected_target in receiver_specs:
+                delivered = runtime.cognition.offer(
+                    role, receiver_event, 0, time.monotonic() + 30.0
+                )
+                query = seen_queries[role]
+                body_state = query.get("body_state")
+                assert type(body_state) is dict, (role, query.keys())
+                temporal_view = body_state.get("world_jepa_temporal")
+                assert type(temporal_view) is dict, (role, body_state)
+                assert temporal_view.get("status") == "SHADOW_READOUT_ONLY"
+                assert temporal_view.get("history_length") == expected_history
+                assert temporal_view.get("target") == expected_target
+                assert temporal_view.get("rows")
+                assert temporal_view.get("decision_authority") == "NONE"
+                assert temporal_view.get("native_body_consumed") is False
+                assert temporal_view.get("native_body_weights_changed") is False
+                query_row = runtime.store.one(
+                    "SELECT payload FROM packets WHERE kind='QueryPacket' AND event_id=? "
+                    "ORDER BY rowid DESC LIMIT 1",
+                    (receiver_event["event_id"],),
+                )
+                assert query_row is not None
+                query_packet = json.loads(query_row["payload"])
+                body_state_ref = query_packet["bodyview"]["body_state_ref"]
+                assert body_state_ref in query_packet["provenance"]
+                assert len(delivered["evidence_refs"]) == 1
+                assert runtime.store.read_source(delivered["evidence_refs"][0]) == "verified action history"
+        finally:
+            runtime.pool.get = original_pool_get
     finally:
         runtime.close()
 
