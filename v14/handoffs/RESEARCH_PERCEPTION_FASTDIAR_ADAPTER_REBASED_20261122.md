@@ -162,3 +162,28 @@ LOCAL_LINUX CPython 3.13.5 isolated hash-binding helper: 5/5 PASS (matching dige
 - New test blob: `a45c711ce7aac12beb5f9c567096c0e406962a08`; exact GitHub readback matched. New test commit: `3f99bdcc6c133f44a897d59e5ef2a9292176f917`. Current code branch head is now `3f99bdcc6c133f44a897d59e5ef2a9292176f917`.
 - LOCAL_LINUX isolated subprocess pattern check: PASS on CPython 3.13.5. This exercises the import isolation pattern with a minimal package; it is not the full copied Aii package test. Full Aii checkout remains unavailable, so the new repository test has not been executed locally.
 - Exact-head CI was triggered by the new commit and is queued/pending at the last read. No CI pass or Redmi result is claimed.
+
+
+## 2026-11-23 run 18 — exact comparator pin repair and Teacher-Ear model research
+
+### Perception-owned CI repair
+
+- Previous exact head: `6dcf1fddd7b68d3cfe9526b764d086090fa054f9`.
+- Two Perception/model-lab checks failed because the RAW EAR V3 comparator still expected Git blob `5dbb0fd5e17eb9bcb190d7a3743bdd1ef1ecbb9d`, while the exact `audio_voice_cues.py` source on this branch is blob `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`.
+- Updated both `v14/experiments/test_raw_ear_vad_compare.py` and `.github/workflows/v14-raw-ear-vad-comparison.yml` to the exact current source blob.
+- Commits: test pin `f56196e`; workflow pin `b4894a0`. GitHub readback verified both files contain the new blob and no longer contain the stale one. Current branch head: `b4894a001d711527f97c9c8f5c888c7a54c40312`.
+- Exact-head workflows were queued at last poll; no PASS is claimed yet. No local Aii checkout was available, so full local pytest/compile remains BLOCKED. The exact CI run is the next verification.
+
+### Cross-lane integration blockers (not Perception-owned)
+
+- Core PR #2370 still pins `v13/audio_voice_cues.py` to `b18e450162b062b09368a12b1ca18924ed8c5025`, while this Perception branch now provides `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`. The staged audio composer cannot consume this branch until Core rebinds the exact source and reruns its staged consumer tests. The new optional `audio_teacher_ear.py` is a separate blob `5a26193c94c864e6ad3af55def59bae040e59f35`; keep Teacher Ear OFF in the staged consumer until Core explicitly pins and tests it with both opt-ins.
+- QA PR #2402 composes the source-lifecycle candidate against the exact `vision.py` bytes from Perception #2395. Perception #2404 changes `vision.py`, so that QA composition must either rebind to #2404's exact bytes or keep #2404 outside that staged chain. This is a cross-owner pin conflict, not a passing integration.
+- Neither PR merge nor GitHub push is an Android deployment. Redmi remains REDMI_UNVERIFIED for this branch.
+
+### Research note — Moonshine v2 German Tiny as a Teacher-Ear candidate (not approved for download)
+
+- Read the full primary preprint `Moonshine v2: Ergodic Streaming Encoder ASR for Latency-Critical Speech Applications`, arXiv:2602.12241v1, submitted 2026-02-12. It uses a position-free sliding-window encoder; the first/last two layers use 16-left/4-right frames (about 80 ms lookahead), and the authors conservatively describe up to 320 ms before encoder states are finalized. The English Tiny paper model is 33.57M parameters; its Apple M3 response-latency result is 50 ms after end-of-speech with 8.03% compute load. These are English/M3 results, not German/Redmi measurements.
+- The official `moonshine-ai/moonshine-streaming-tiny-de` model card identifies checkpoint `de12k_tiny_stageC_best.safetensors`, snapshot 2026-08-24, 27.0M parameters, German 12,288-token vocabulary, MIT license. On its seeded 400-utterance read-speech sample it reports FLEURS WER 11.89 and MLS WER 10.92 (macro 11.405); the shipped int8 ORT package reports 12.004 versus 11.086 for the float checkpoint under the same stopping rule. The evaluation is only two read-speech panels, not spontaneous conversation, heavy dialect, children's speech, or noisy far-field. Training includes roughly 103,000 hours of podcast pseudo-labels plus 3,700 hours of human-transcribed read speech; the model card warns about inherited teacher errors and repetition loops on short/noisy clips.
+- Official Moonshine Voice docs expose Android Maven `ai.moonshine:moonshine-voice:0.1.5`. Its base `Transcriber.add_audio()` accepts caller-supplied mono chunks at arbitrary sample rates and emits provisional text updates plus final line events; default update interval is 500 ms. This is a better integration shape than `MicTranscriber`: V14 should keep capture in its own explicit, OS-permissioned AudioRecord provider and feed PCM to the transcriber, rather than letting a library open the microphone itself. Keep `identify_speakers` off; it is optional and not needed for text hypotheses.
+- Concrete next experiment after explicit model approval: compare Moonshine German Tiny against the current sherpa/Whisper candidate on a fixed, consented conversational German corpus, using the exact Android Java runtime and 0.5 s PCM chunks; measure first partial, final latency, WER, RSS/PSS, CPU, thermal drift, short/noisy repetition failures, and restart cleanup on the Redmi. Do not add the Maven dependency, download weights, or change the active model until separately approved. Teacher output remains a source-bound ephemeral hypothesis with independent teacher and transcript opt-ins; RAW EAR acoustic cues remain first-class and are never replaced by ASR text.
+
