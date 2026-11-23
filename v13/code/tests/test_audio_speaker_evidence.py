@@ -291,7 +291,7 @@ def test_nonvoiced_embeddings_never_seed_or_poison_speaker_history(activity):
         source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
         activity_hint="VOICED", consent_receipt_ref=RECEIPT, current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=first,
     )
-    state = registry._states[(SOURCE, "gen-a")]
+    state = registry._states[(SOURCE, "gen-a", RECEIPT)]
     voiced_history = tuple(state.frames)
     assert len(voiced_history) == len(first["frames"])
     assert state.last_voiced_end_ms == first["frames"][-1]["end_ms"]
@@ -340,7 +340,7 @@ def test_nonvoiced_first_window_does_not_seed_speaker_history():
         activity_hint="SILENCE", consent_receipt_ref=RECEIPT, current_chunk_sha256=CURRENT_CHUNK_SHA256,
         embeddings=first,
     )
-    state = registry._states[(SOURCE, "gen-empty")]
+    state = registry._states[(SOURCE, "gen-empty", RECEIPT)]
     assert suppressed["status"] == "SUPPRESSED_NON_VOICED"
     assert suppressed["history_frame_count"] == 0
     assert len(state.frames) == 0
@@ -373,7 +373,7 @@ def test_long_nonvoiced_gap_resets_stale_speaker_reference_history():
         embeddings=silence,
     )
     assert suppressed["status"] == "SUPPRESSED_NON_VOICED"
-    assert suppressed["history_frame_count"] == len(registry._states[(SOURCE, "gen-gap")].frames)
+    assert suppressed["history_frame_count"] == len(registry._states[(SOURCE, "gen-gap", RECEIPT)].frames)
 
     resumed = speaker_batch(SOURCE, "gen-gap", 2500, 3500, lambda _: (1.0, 0.0, 0.0))
     result = registry.update(
@@ -742,7 +742,7 @@ def test_registry_stores_compact_float32_vectors_in_memory():
         source_id=SOURCE, generation_id="gen-compact", start_ms=100, end_ms=1100,
         activity_hint="VOICED", consent_receipt_ref=RECEIPT, current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=batch,
     )
-    stored = registry._states[(SOURCE, "gen-compact")].frames[0][1]
+    stored = registry._states[(SOURCE, "gen-compact", RECEIPT)].frames[0][1]
     assert isinstance(stored, array)
     assert stored.typecode == "f"
     assert stored.itemsize == 4
