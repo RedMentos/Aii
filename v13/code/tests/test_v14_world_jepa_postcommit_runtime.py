@@ -601,12 +601,9 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
             "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED') "
             "ORDER BY created DESC,id DESC LIMIT 1"
         )["event_id"]
-        runtime.store.set_state(PERMISSION_KEY, {
-            "learning_enabled": True,
-            "optimizer_permission": True,
-            "steps": 120,
-            "replay_mode": "uniform",
-        })
+        # Install the observer before opening the local lab gates. The real
+        # Runtime worker polls SleepRuntime while idle; enabling first can let
+        # an unobserved update consume the cohort before this test captures it.
         original_run = runtime.sleep._run_world_jepa
         captured_runs = {}
 
@@ -617,6 +614,12 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
 
         runtime.sleep._run_world_jepa = capture_run
         runtime.sleep.last_tick = -1e18
+        runtime.store.set_state(PERMISSION_KEY, {
+            "learning_enabled": True,
+            "optimizer_permission": True,
+            "steps": 120,
+            "replay_mode": "uniform",
+        })
         runtime.wake.set()
 
         def learned_and_planned():
