@@ -1615,6 +1615,8 @@ def test_memory_forget_composes_temporal_guard_clears_warm_cache_and_replays(tmp
         assert retrained["metrics"]["parameter_delta_norm"] > 0
         assert retrained["metrics"]["ema_target_delta_norm"] > 0
         current, _ = store.state(STATE_KEY, None)
+        assert source_id in current["revoked_source_ids"]
+        assert source_id in current["active"]["revoked_source_ids"]
         assert not _record_references_source(store, current["active"], source_id)
         assert all(
             source_id not in {ref["source_id"] for ref in item.get("source_refs", [])}
