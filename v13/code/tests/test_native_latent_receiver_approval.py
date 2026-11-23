@@ -11,6 +11,11 @@ from v13.models import model_key
 from v13.operator import Operator
 from v13.runtime import Runtime
 from v13 import native_probe_approval as approval
+
+
+@pytest.fixture(autouse=True)
+def _interactive_tty_for_approval_tests(monkeypatch):
+    monkeypatch.setattr(approval.os, "isatty", lambda fd: fd == 0)
 import v13.callosum as callosum
 
 
@@ -443,5 +448,199 @@ def test_native_probe_deadline_is_hard_capped_at_120_seconds(tmp_path, monkeypat
         ))
         assert result["local_approval_consumed"] is True
         assert captured == [1120.0]
+    finally:
+        runtime.close()
+
+
+def _set_empty_native_census(runtime):
+    runtime.pool.pids = lambda: []
+    runtime.needle.pids = lambda: []
+    runtime.memory.semantic_keys.encoder.pids = lambda: []
+
+
+def test_runtime_probe_lease_blocks_new_turns_and_restores_runtime(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    try:
+        with approval.runtime_probe_lease(runtime) as token:
+            assert runtime.current == "probe"
+            assert runtime.paused is True
+            assert runtime._native_probe_lease_nonce == token
+            with pytest.raises(Exception, match="Probe läuft"):
+                runtime.submit("This turn must not enter the queue during a native probe")
+            assert runtime.jobs.empty()
+        assert runtime.current is None
+        assert runtime.paused is False
+        assert not hasattr(runtime, "_native_probe_lease_nonce")
+    finally:
+        runtime.close()
+
+
+def test_runtime_probe_lease_refuses_existing_work_or_user_pause(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    try:
+        runtime.current = "turn"
+        with pytest.raises(ValueError, match="idle Runtime"):
+            with approval.runtime_probe_lease(runtime):
+                pass
+        runtime.current = None
+        runtime.paused = True
+        runtime.store.set_queue_paused(True)
+        with pytest.raises(ValueError, match="paused Runtime"):
+            with approval.runtime_probe_lease(runtime):
+                pass
+        runtime.store.set_queue_paused(False)
+        runtime.paused = False
+    finally:
+        runtime.close()
+
+
+def test_native_probe_resource_preflight_refuses_resident_c2_and_keeps_approval(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    unloads = []
+    runtime.pool.unload = lambda: unloads.append("unload")
+    runtime.pool.pids = lambda: []
+    runtime.needle.pids = lambda: [4321]
+    runtime.memory.semantic_keys.encoder.pids = lambda: []
+    runtime.resources = lambda: {"mem_available_bytes": 10**12}
+    try:
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        with approval.runtime_probe_lease(runtime) as token:
+            with pytest.raises(PermissionError, match="C2 still has 1"):
+                approval.consume(
+                    runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"],
+                    lease_token=token,
+                )
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record["status"] == "PENDING"
+        assert unloads == ["unload"]
+        assert runtime.current is None
+    finally:
+        runtime.close()
+
+
+def test_native_probe_resource_preflight_refuses_low_mem_and_keeps_approval(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    unloads = []
+    runtime.pool.unload = lambda: unloads.append("unload")
+    _set_empty_native_census(runtime)
+    runtime.resources = lambda: {"mem_available_bytes": 1}
+    try:
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        with approval.runtime_probe_lease(runtime) as token:
+            with pytest.raises(PermissionError, match="MemAvailable is insufficient"):
+                approval.consume(
+                    runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"],
+                    lease_token=token,
+                )
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record["status"] == "PENDING"
+        assert unloads == ["unload"]
+    finally:
+        runtime.close()
+
+
+def test_native_probe_resource_preflight_passes_with_headroom_and_zero_residency(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    unloads = []
+    runtime.pool.unload = lambda: unloads.append("unload")
+    _set_empty_native_census(runtime)
+    runtime.resources = lambda: {"mem_available_bytes": 10**12}
+    try:
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        with approval.runtime_probe_lease(runtime) as token:
+            result = approval.consume(
+                runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"],
+                lease_token=token,
+            )
+            assert result["resource_preflight"]["status"] == "PASS"
+            assert result["resource_preflight"]["resident_native_processes"] == 0
+            assert result["resource_preflight"]["body_models_unloaded"] is True
+            assert result["resource_preflight"]["headroom_margin_bytes"] > 0
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record["status"] == "CONSUMED"
+        assert unloads == ["unload"]
+    finally:
+        runtime.close()
+
+
+def test_cancelled_exclusive_probe_does_not_consume_local_approval(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    try:
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        with approval.runtime_probe_lease(runtime) as token:
+            runtime.cancel_event.set()
+            with pytest.raises(InterruptedError, match="cancelled"):
+                approval.consume(
+                    runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"],
+                    lease_token=token,
+                )
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record["status"] == "PENDING"
+        assert runtime.current is None
+    finally:
+        runtime.close()
+
+
+def test_operator_native_probe_holds_exclusive_lease_through_receiver_call(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    calls = []
+
+    def fake_native_receive(sender, receiver, current_event, source_ref, deadline):
+        assert runtime.current == "probe"
+        assert runtime.paused is True
+        with pytest.raises(Exception, match="Probe läuft"):
+            runtime.submit("Concurrent user turn must be rejected")
+        calls.append((sender, receiver, current_event["event_id"], source_ref["source_id"]))
+        return {
+            "status": "NATIVE_INPUT_EFFECT",
+            "native_input_consumed": True,
+            "input_effect_detected": True,
+            "production_route": False,
+            "semantic_use_proven": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+        }
+
+    runtime.cognition.native_receive = fake_native_receive
+    operator = Operator(runtime)
+    try:
+        operator.run(":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+        result = json.loads(operator.run(
+            ":callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm"
+        ))
+        assert result["runtime_exclusive"] is True
+        assert result["resource_preflight"]["status"] == "PASS"
+        assert result["local_approval_consumed"] is True
+        assert len(calls) == 1
+        assert runtime.current is None
+        assert runtime.paused is False
+    finally:
+        runtime.close()
+
+def test_native_probe_rejects_wrong_exclusive_lease_token_and_keeps_approval(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    try:
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        with approval.runtime_probe_lease(runtime) as token:
+            with pytest.raises(PermissionError, match="active exclusive Runtime lease"):
+                approval.consume(
+                    runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"],
+                    lease_token=token + "wrong",
+                )
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record["status"] == "PENDING"
+        assert runtime.current is None
+    finally:
+        runtime.close()
+
+
+def test_arm_rejects_non_interactive_stdin(tmp_path, monkeypatch):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    monkeypatch.setattr(approval.os, "isatty", lambda fd: False)
+    try:
+        with pytest.raises(PermissionError, match="interactive local TTY"):
+            approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record is None
     finally:
         runtime.close()
