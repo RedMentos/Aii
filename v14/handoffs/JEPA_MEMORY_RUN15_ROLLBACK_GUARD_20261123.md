@@ -32,3 +32,8 @@ Testable V14 adaptation (not yet implemented): label holdouts by evidence timesc
 ## Decisions and authority
 - Learning/optimizer permissions remain OFF by default. No device action, native GGUF/body-weight update, B3 latent promotion, model swap or release is authorized by this commit.
 - No user action is required for this code work.
+
+
+## Collaboration API limitation
+
+GitHub PR conversation comments and PR metadata updates returned HTTP 403 because the linked GitHub account has no verified email. Contents-API file commits and exact readbacks succeeded. No comment was posted and the PR description could not be refreshed; the authoritative run-15 status is therefore in this handoff, the branch's Board/Next Action/Workplan/Research Ledger/Canon overlay, and the code commit itself. Optional account email verification would restore those discussion/metadata writes; no user/device action is required for the code candidate.
