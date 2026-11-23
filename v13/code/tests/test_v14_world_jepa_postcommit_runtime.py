@@ -752,3 +752,125 @@ def test_planner_withholds_each_role_when_its_own_negative_control_fails(tmp_pat
             assert read_world_planner_shadow(store, event_ids[-1])["status"] == "SHADOW_PLANNER_READY"
     finally:
         store.close()
+
+
+
+def test_memory_forget_serializes_same_hash_source_publication(tmp_path):
+    """A same-hash source must not be inserted between forget's refcount check and unlink."""
+    from pathlib import Path
+    from unittest.mock import patch
+    from v13.memory import Memory
+
+    (tmp_path / "data" / "db").mkdir(parents=True)
+    (tmp_path / "data" / "blobs").mkdir(parents=True)
+    store = Store(tmp_path)
+    session = store.new_session("source-forget/blob-publication race")
+    text_value = "same content must survive a concurrent re-ingest"
+    event = store.event(session, text_value)
+    original_ref = event["source_ref"]
+    blob = tmp_path / "data" / "blobs" / original_ref["sha256"]
+    assert blob.is_file()
+
+    refcount_checked = threading.Event()
+    allow_forget = threading.Event()
+    producer_started = threading.Event()
+    producer_lock_attempted = threading.Event()
+    producer_blob_check = threading.Event()
+    producer_done = threading.Event()
+    errors = []
+    published = {}
+
+    original_mutex = store.mutex
+    original_one = store.one
+    original_source = store.source
+    original_exists = Path.exists
+
+    class TrackingRLock:
+        def acquire(self, *args, **kwargs):
+            if threading.current_thread().name == "generic-source-producer":
+                producer_lock_attempted.set()
+            return original_mutex.acquire(*args, **kwargs)
+
+        def release(self):
+            return original_mutex.release()
+
+        def __enter__(self):
+            self.acquire()
+            return self
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            self.release()
+            return False
+
+        def __getattr__(self, name):
+            return getattr(original_mutex, name)
+
+    def pause_after_refcount(sql, args=()):
+        result = original_one(sql, args)
+        if (threading.current_thread().name == "forgetter"
+                and sql.strip().lower().startswith(
+                    "select id from sources where hash=? and deleted=0")):
+            refcount_checked.set()
+            if not allow_forget.wait(5):
+                raise TimeoutError("test did not release source-forget refcount check")
+        return result
+
+    def observe_blob_check(path, *args, **kwargs):
+        if path == blob and threading.current_thread().name == "generic-source-producer":
+            producer_blob_check.set()
+        return original_exists(path, *args, **kwargs)
+
+    def forget():
+        try:
+            Memory._forget_source(
+                SimpleNamespace(s=store), original_ref["source_id"], event["event_id"]
+            )
+        except BaseException as exc:
+            errors.append(("forget", repr(exc)))
+
+    def publish():
+        producer_started.set()
+        try:
+            published["ref"] = original_source(text_value, kind="USER")
+        except BaseException as exc:
+            errors.append(("publish", repr(exc)))
+        finally:
+            producer_done.set()
+
+    store.mutex = TrackingRLock()
+    store.one = pause_after_refcount
+    forgetter = threading.Thread(target=forget, name="forgetter")
+    producer = threading.Thread(target=publish, name="generic-source-producer")
+    try:
+        with patch.object(Path, "exists", observe_blob_check):
+            forgetter.start()
+            assert refcount_checked.wait(5), "forget did not reach its final blob refcount check"
+            producer.start()
+            assert producer_started.wait(5), "generic source producer did not start"
+            assert producer_lock_attempted.wait(5), "producer did not request the Store lock"
+            assert not producer_blob_check.wait(0.1), (
+                "Store.source checked blob existence while forget still owned the Store lock"
+            )
+            assert not producer_done.is_set(), (
+                "Store.source completed before forget finished its refcount/unlink section"
+            )
+            allow_forget.set()
+            assert producer_done.wait(5), "producer did not resume after forget released the Store lock"
+            forgetter.join(5)
+            producer.join(5)
+        assert not forgetter.is_alive() and not producer.is_alive(), "race workers did not finish"
+        assert not errors, f"concurrent forget/re-ingest raised: {errors!r}"
+        assert store.one(
+            "SELECT deleted FROM sources WHERE id=?", (published["ref"]["source_id"],)
+        )["deleted"] == 0
+        assert store.read_source(published["ref"]) == text_value
+        assert blob.is_file(), "active source row points at a deleted content-addressed blob"
+    finally:
+        allow_forget.set()
+        if forgetter.is_alive():
+            forgetter.join(5)
+        if producer.is_alive():
+            producer.join(5)
+        store.one = original_one
+        store.mutex = original_mutex
+        store.close()
