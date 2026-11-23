@@ -133,6 +133,12 @@ The BASE tests check output shapes, stop-gradient behavior, EMA updates, shared-
 
 `fit_supervised_baseline()` streams bounded batches and selects checkpoints by validation MAE. For RidgeAR use `objective="mse"` and `l2_penalty>0`; for L1AR use `objective="mae"` and `l2_penalty>0`. The regularizer is explicit on coefficients and does not double-count AdamW weight decay. All models use the same train/validation window stream; none can request test batches through these helpers.
 
+## Evaluation and paired statistics
+
+`evaluation.py` reports exact lead-time MAE at 15, 30 and 60 minutes and the primary endpoint as the mean absolute error across all lead times 15–60 inclusive. It also provides per-origin primary MAE and a paired temporal-block bootstrap.
+
+The bootstrap expects aligned per-window errors shaped `[seeds, windows]` and raw origin indices. It resamples contiguous time blocks by the declared raw-index block length, applies the same sampled blocks to both models and every seed, computes paired differences within each seed, averages across seeds inside each replicate, and forms the confidence interval across replicate-level averages. Seed effects and seed dispersion are reported separately; seeds are not treated as independent time observations.
+
 ## Not yet implemented
 
 Training orchestration, the complete baseline suite, probe fitting/selection, the validation pilot, preregistration authoring/locking, MAE-vs-JEPA result comparisons, and any UCI real-data run. No gate has passed.
