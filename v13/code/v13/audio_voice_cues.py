@@ -10,6 +10,7 @@ enabled by default. Acoustic classes remain deterministic heuristics.
 """
 from __future__ import annotations
 
+import hashlib
 import math
 import struct
 from contextlib import contextmanager
@@ -723,9 +724,14 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         cues = extract_voice_cues(pcm, sample_rate, backend=voice_backend)
         vad_evidence = None
         if vad_stream is not None:
+            # The recurrent Silero state is scoped to the exact consent epoch,
+            # not merely the reusable source/generation labels.
+            stream_id = hashlib.sha256(
+                f"{source_id}\0{generation_id}\0{consent_receipt}".encode("utf-8")
+            ).hexdigest()
             vad_evidence = vad_stream.push_pcm16(
                 pcm, sample_rate=sample_rate,
-                stream_id=f"{source_id}:{generation_id}", start_ms=start_ms,
+                stream_id=stream_id, start_ms=start_ms,
             )
             cues["vad"] = validate_vad_evidence(vad_evidence)
             cues = validate_voice_cues(cues)
@@ -748,6 +754,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             try:
                 speaker_evidence = _runtime_speaker_evidence_registry(runtime).update(
                     source_id=source_id, generation_id=generation_id,
+                    consent_receipt_ref=consent_receipt,
                     start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
                     activity_hint=cues["activity_hint"], embeddings=speaker_embeddings,
                 )
@@ -828,6 +835,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             temporal_voice = _runtime_temporal_voice_registry(runtime).update(
                 source_id=source_id,
                 generation_id=generation_id,
+                consent_receipt_ref=consent_receipt,
                 start_ms=audio_segment["start_ms"],
                 end_ms=audio_segment["end_ms"],
                 cues=cues,
@@ -838,6 +846,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             temporal_voice = temporal_state.update(
                 source_id=source_id,
                 generation_id=generation_id,
+                consent_receipt_ref=consent_receipt,
                 start_ms=audio_segment["start_ms"],
                 end_ms=audio_segment["end_ms"],
                 cues=cues,
