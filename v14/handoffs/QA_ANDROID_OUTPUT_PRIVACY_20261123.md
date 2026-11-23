@@ -122,3 +122,29 @@ This is a prompt-level mitigation, not a hard information-flow sandbox. A genera
 Review the exact-head staged-runtime, integrated-regression, and private-bridge results after the handoff sync. Keep the B1/B2-to-C3 input path intact. When the user-controlled Redmi runtime is explicitly re-enabled, run a bounded output-only regression for ordinary turns and turns containing internal offers; do not restart or send a turn before that state changes.
 
 No device action, chat send, restart, model/weight change, permission change, or user-data mutation was performed.
+
+
+## QA & Android run 3 — closed metadata grammar and probe exception boundary (2026-11-23 18:xx CET)
+
+### Code checkpoint
+- QA branch: \`qa/v14-internal-hypothesis-output-20261123-run1\`.
+- New commits:
+  - \`fd6ebb3d76c099f8d755880441993ea542b09b72\`: field-specific allowlists in \`v13/code/v13/verification.py\`.
+  - \`33f2dc5baea4b43678dace17bf1f5cbcacfb5995\`: non-string metadata values fail closed before allowlist lookup.
+  - \`5e90f18d62a915fd0f80062c49735e04b5e891af\`: interactive probe worker emits only fixed \`PROBE_ERROR\` to console and telemetry on exceptions.
+  - \`279e5c8120cfe8a14a37d593b2de2c92de4b3c51\`: one-shot \`v13 probe\` CLI emits a fixed safe error object.
+  - \`632dc2a9ef729e1985f92db366415b8c14e3a1d7\`: adversarial regression tests.
+- The public probe summary now uses closed sets for status/role/phase/error-kind, duration keys, prompt-admission revision/status/removal labels, fixed proof codes, and strict 64-hex model revision digests. It rejects non-string/unhashable values before set/dict lookup. No arbitrary model-revision or missing-proof text is copied.
+- Interactive worker and CLI exception paths no longer persist or print \`str(exc)\` for probe failures. Raw model output/offer/control content remains only in the existing private local artifact; no new upload/logging path was added.
+
+### Tests and evidence
+- Added tests for secret sentinels in every previously permissive metadata field, the interactive worker exception path (console + telemetry), and one-shot CLI exceptions.
+- Exact-head GitHub Actions on test commit \`632dc2a9ef729e1985f92db366415b8c14e3a1d7\`: staged/integrated run \`45226042195\`, JEPA receipt \`45226042201\`, transactional update \`45226042174\`, and combined online JEPA \`45226042185\` were **QUEUED** at the last poll; safe-additive candidate workflow \`45226042312\` was **SKIPPED by policy**. No CI PASS is claimed yet.
+- Full LOCAL_LINUX repository suite remains BLOCKED / NOT_RUN (no mounted checkout and GitHub DNS unavailable in the earlier probe). No local test PASS is claimed.
+- The PR remains DRAFT / NOT_RELEASED. The branch is still based on \`fb563d771fe2d493c4ec25abe94280981d24ef5c\`, 10 commits behind the current release-development head \`8d93236c753f0194224c19edc7411d8d7082b1d6\). Boss owns the safe rebase and downstream immutable source-builder pin composition; do not weaken pins.
+- Redmi remains STOPPED_BY_USER per authenticated receipt #826. No restart, CHAT_SEND, UPDATE_REQUEST, LOG_PAGE, shell, model/weight/permission change, or device mutation was performed. No fresh receipt confirms any new QA candidate installed.
+
+### Next gate
+1. Wait for exact-head staged/integrated and JEPA checks; repair only reproduced failures.
+2. After Boss's #2443 source-forget integration is accepted, rebase #2446 onto the resulting release head, rebind the exact downstream source-pin chain bottom-up, and rerun staged-runtime, integrated-regression, migration and privacy tests.
+3. Keep the phone stopped. A post-install adversarial native probe test requires a later explicit user restart; it is not authorized by this code-only run.
