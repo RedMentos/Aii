@@ -123,3 +123,12 @@ The current Core source-lifecycle builder at the release base still pins vision.
 - Staged-runtime run 45207966638: **FAIL**, 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests. The repeated exception is unsupported lifecycle source: vision.py from source_lifecycle_lock_integration_candidate.py:172. The two migration checks consequently report PARTIAL rather than UPDATED.
 - Integrated-regression run 45207966638: **FAIL**, one staged-composition test; same exact unsupported lifecycle source: vision.py root cause. No separate semantic failure was exposed.
 - No Perception-owned guard/pin was weakened. The exact code-level source hash mismatch and Core ownership remain as stated above. This is focused CI success plus an integrated blocker, not merge/release acceptance.
+
+
+## Local helper cost probe — 2026-11-23
+
+On the available LOCAL_LINUX container (x86_64, Python 3.13.5), the exact helper byte sequence (Git blob 694d3b0bacc940ed6fa514415132d838800882ac) was run on 16 tiles × 16 luminance samples:
+
+- 10,000 complete decompose → pool → novelty calls: **0.0806 ms/call** mean wall-clock on this host.
+- One-call tracemalloc: **15,008 bytes peak**, 5,936 bytes current at sample time.
+- This is a small-host CPU/memory probe only. It does not include Pillow/frame decode, the temporal registry, A4, native model inference or Android scheduling. Do not project the number to ARM/Redmi.
