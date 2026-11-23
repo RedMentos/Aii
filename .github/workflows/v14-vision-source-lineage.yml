@@ -16,8 +16,10 @@ on:
     paths:
       - "v13/code/v13/vision.py"
       - "v13/code/v13/vision_source_lineage.py"
+      - "v13/code/v13/vision_projector_stats.py"
       - "v13/code/tests/test_vision.py"
       - "v13/code/tests/test_vision_source_lineage.py"
+      - "v13/code/tests/test_vision_projector_stats.py"
       - ".github/workflows/v14-vision-source-lineage.yml"
 
 permissions:
