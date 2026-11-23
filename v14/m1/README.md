@@ -32,7 +32,7 @@ The small-fixture helper `build_dataset()` materializes train and validation lis
 - a matching hash of split boundaries,
 - a matching fingerprint of parsed dataset rows and channel order.
 
-It appends a test-access event to the specified JSONL log. A hash is a tamper-evident identifier, not a cryptographic authorization system: repository permissions and immutable CI artifacts should protect the preregistration and access log in the actual experiment environment.
+It appends, flushes and fsyncs a test-access event to the specified JSONL log before test windows are materialized. If the audit log cannot be written, test access fails closed. A hash is a tamper-evident identifier, not a cryptographic authorization system: repository permissions and immutable CI artifacts should protect the preregistration and access log in the actual experiment environment.
 
 ## Required DATA acceptance tests
 

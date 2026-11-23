@@ -1,3 +1,17 @@
+# M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
+
+The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
+
+Overlapping windows are generated only when requested in bounded NumPy batches. Prefix counts make strict missing-window checks independent of input length; estimated batch allocation is capped at 256 MiB. Every model receives the same `InputBundle` (X, seasonal S, calendar). The test split remains locked until exact preregistration/config/split/data hashes match and the access log has been flushed and fsynced.
+
+**Evidence boundary:** exact Python 3.13/3.14 M1 CI is queued, not passed. No local full suite, real UCI cohort, training, weight update or Redmi validation. M1 remains [ENTWURF].
+
+**Next:** wait for CI and fix failures; then implement BASE adapters on the common InputBundle, followed by the two-stage JEPA/direct-MAE PROBE. Keep the full baseline list and M1a/b/c controls.
+
+**No user action is required.** Do not run a manual Termux command or send another update request; the phone updater state is separate from M1.
+
+---
+
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:43 UTC)
 
 The DATA path now has a bounded-memory route for the real UCI file:

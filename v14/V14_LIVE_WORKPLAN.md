@@ -1,3 +1,14 @@
+## M1 DATA audit-first and direct-array checkpoint — 2026-11-23 12:44 UTC
+
+- `ArrayDataset.from_uci()` validates/counts the source on pass one, fills a float32 matrix and computes the exact parsed-data fingerprint on pass two, and rejects file changes between passes. It does not allocate Python `MinuteRow` objects for the real cohort.
+- Window construction is lazy and batched. Prefix missing-counts avoid rescanning L for every candidate; estimated batch allocation is hard-capped at 256 MiB. The shared `InputBundle` exposes X, horizon-aligned seasonal S and calendar tensors to all primary models; calendar ablation has a zero-width calendar tensor.
+- Both test entry points now verify exact preregistration/config/split/data hashes and persist+fsync the access event before test windows are materialized or unlocked. Failed audit writes fail closed.
+- New regression coverage includes two-pass parser hash parity, malformed/truncated CSV, off-grid timestamps, non-finite values, seasonal alignment, monthly statistics parity, batch bounds, audit persistence failure and test-gate enforcement.
+- Latest code snapshot: `a0088effa5e820b86e69751744d7f6dcda99a780`. Exact Python 3.13/3.14 GitHub Actions remain queued; no test result is claimed. No local full suite, real UCI cohort, training, weight update or Redmi validation. M1 remains [ENTWURF].
+- Next: wait for exact CI; fix failures; then implement BASE adapters and the full baseline set before PROBE. Preserve M1a/b/c and every input-parity control.
+
+---
+
 ## M1 DATA memory-path checkpoint — 2026-11-23 12:43 UTC
 
 - The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass CSV validation/counting, direct float32 matrix fill, parsed-data fingerprint parity with the list parser, and source-file stat checks across both passes. The list parser remains a small-fixture/reference adapter.
