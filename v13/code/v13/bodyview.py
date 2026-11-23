@@ -216,6 +216,7 @@ def _temporal_world_jepa_body_readout(r, e, role):
             "native_body_consumed": False,
             "native_body_weights_changed": False,
             "decision_authority": "NONE",
+            "note": "prediction_only",
         }
         # Unsupported-action detail remains in the stored audit. Do not spend
         # the 700-character B1/B2 prompt budget on optional diagnostics.
