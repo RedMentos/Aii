@@ -148,3 +148,16 @@ No device action, chat send, restart, model/weight change, permission change, or
 1. Wait for exact-head staged/integrated and JEPA checks; repair only reproduced failures.
 2. After Boss's #2443 source-forget integration is accepted, rebase #2446 onto the resulting release head, rebind the exact downstream source-pin chain bottom-up, and rerun staged-runtime, integrated-regression, migration and privacy tests.
 3. Keep the phone stopped. A post-install adversarial native probe test requires a later explicit user restart; it is not authorized by this code-only run.
+
+
+## Exact staged CI readback — code/test checkpoint 2026-11-23
+
+- Follow-on unhashable-value test commit: \`4d3ab4b8fd97f3f4d0372f41300f03aba967cec2\` (current PR head; handoff/body metadata updated separately).
+- Exact staged/integrated run for preceding code/test commit \`632dc2a9ef729e1985f92db366415b8c14e3a1d7\`: run \`45226042195\` **FAIL** in both jobs.
+  - \`integrated-regression\`: \`integrated_online_world_candidate_20261110.py\` rejects the changed \`v13/runtime.py\` at its immutable SHA check.
+  - \`staged-runtime\`: the same runtime pin mismatch plus \`termux_probe_recovery_candidate_20261112.py\` rejecting the changed \`v13/verification.py\`.
+  - Therefore the newly added privacy tests were not exercised through the composed staged consumer. No claim of test pass.
+- Exact workflow evidence on \`632dc2a\`: \`45226042201\` JEPA receipt integrity PASS; \`45226042174\` JEPA transactional update PASS; \`45226042185\` combined online JEPA PASS; \`45226042312\` safe-additive candidate SKIPPED by policy.
+- Latest exact source Git blob readback: \`verification.py\` \`c8c6ab663c10db00ac17b2e4aa18a500cf8f0a7e\`; \`runtime.py\` \`451c14238e35e1040308638c8197f5f2390cd186\`; \`__main__.py\` \`54444e0be17a2f773530056fd996c69f03547c33\`; \`test_prompts.py\` \`3bff42d6e0af5d574f24573b5f134bbde383c008\`. These are Git blob IDs, not source SHA-256 pins.
+- Full LOCAL_LINUX tests: BLOCKED / NOT_RUN. The current PR branch is 10 commits behind release-dev \`8d93236c753f0194224c19edc7411d8d7082b1d6\`; Boss must coordinate rebase and bottom-up pin rebind after #2443. No source-integrity gate was weakened.
+- Redmi remains STOPPED_BY_USER per receipt #826. No device action was attempted.
