@@ -22,7 +22,7 @@ Fourteen code/test/workflow paths were copied from the reviewed Perception sourc
 - `audio_teacher_ear.py`: optional caller-supplied timed ASR hypothesis with independent local-teacher and transcript opt-ins; ephemeral, unverified, no model load, no transcript persistence, no truth/learning/action authority.
 - `audio_fastdiar_adapter.py`: diagnostic wrapper around caller-supplied 192-D frame embeddings and a locally hashed checkpoint. It does not run FASTDIAR inference, VAD, clustering or identity assignment. The upstream code is MIT at the pinned revision, but the checkpoint-weight license remains unspecified.
 - Regression tests and three focused workflows for A4 source outcomes, FASTDIAR adapter and RAW EAR comparison were carried over.
-- Research ledger appends R-110 on time-series JEPA evidence; it does not alter the preregistered M1 cohort.
+- Research ledger appends R-110 on time-series JEPA evidence and R-111 on SPIN/GPA-style online continual-learning optimization; neither changes the preregistered M1 cohort or adopts a new optimizer.
 
 ## Exact source identities
 
@@ -44,6 +44,16 @@ The prior Perception CI printed SHA-256 for the unchanged `attention.py` bytes a
 - **Integration blocker:** the Core-owned `record_only_controller_guard_20261116.py` still pins the previous `attention.py` bytes. Core must rebind that allowlist and all dependent recovery/stage/deployer pins bottom-up. The staged audio composer also needs the exact new `audio_voice_cues.py` source pin. Do not weaken fail-closed hashes or edit Core-owned guards from this lane.
 - **REDMI_UNVERIFIED:** no Android microphone/AudioRecord provider, MediaProjection, APK/Termux test or native speaker/ASR inference was run. Last authenticated device receipt #775 recorded `dfa3945` installed, auto-update enabled and no runtime error; it does not cover this candidate or prove useful chat/audio behavior.
 - **Deployment:** NOT_RELEASED. No UPDATE_REQUEST, manual command, model download/swap, permission change or user-data mutation.
+
+
+## R-111 research note — SPIN / GPA-style online continual learning
+
+- Full arXiv HTML review completed for Wu, Wang and Lin, *From Generic to Dedicated: A Novel Optimizer for Online Continual Learning*, arXiv:2610.27835, submitted 2026-10-20 (preprint).
+- SPIN couples a fast plasticity iterate and slow stability iterate, evaluates gradients at their parameter interpolation, and slowly moves the stability iterate toward the updated fast iterate. The paper's Appendix G explicitly connects the construction to Generalized Primal Averaging (GPA); do not treat it as a wholly new primitive.
+- Reported CIFAR-100 examples: GSA AAA 45.40→51.37 and MOSE final accuracy 46.95→48.33 under AdamW→SPIN-AdamW; mean relative forgetting 30.83→28.63 across the 11 methods. These are paper results from GPU/ResNet-18 experiments, not V14 or Android evidence.
+- The paper reports extra optimizer-state memory (SPIN-SGD 240.75 MB / 1.13 ms per step versus SGD 155.86 MB / 1.04 ms on its CIFAR-100 setup). The authors list this overhead and the quasi-steady-state assumptions as limitations.
+- No official code repository, code license or checkpoint/weight license was found by exact paper-title/arXiv-ID GitHub search. Nothing was imported or downloaded.
+- Candidate only: after the existing JEPA/adapter baseline, compare AdamW, AdamW+EMA and GPA/SPIN on a small adapter with matched parameter/compute/memory budgets, source/session-disjoint sequential shifts, retention, gradients, parameter diffs, RSS/PSS, restart and rollback. No optimizer adoption or live weight change is authorized.
 
 ## Next owners
 
