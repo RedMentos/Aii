@@ -721,3 +721,82 @@ def test_audio_handoff_commit_is_visible_before_cancel_and_reader_cannot_win_rac
         if dispatch_thread is not None:
             dispatch_thread.join(timeout=2)
         runtime.close()
+
+
+
+def test_concurrent_distinct_audio_receipts_claim_one_active_turn_once(tmp_path):
+    runtime, started = make_runtime(tmp_path, "interrupt")
+    release_generation = threading.Event()
+    barrier = threading.Barrier(2)
+    results = []
+    errors = []
+    dispatch_threads = []
+
+    def blocked_generate(messages, cancel, deadline, *args, **kwargs):
+        started.set()
+        assert release_generation.wait(10)
+        if cancel.is_set():
+            raise Cancelled("audio barge-in")
+        yield "finished "
+
+    runtime.pool.get.return_value.generate = blocked_generate
+    first = runtime.submit("Tell me a long story about the history of Norway")
+    assert started.wait(10)
+    audio_inputs = [make_audio(runtime), make_audio(runtime)]
+
+    def dispatch(audio_input):
+        audio_event, generation, pcm, kwargs = audio_input
+        temporal_state = TemporalVoiceEvidence()
+        try:
+            with audio_consent_lease(
+                runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+                temporal_state=temporal_state,
+            ) as lease:
+                result = consume_pcm16_voice_window(
+                    runtime, pcm, consent_lease=lease,
+                    temporal_state=temporal_state, **kwargs,
+                )
+                _persist_temporal_voice_receipt(
+                    runtime, result, lease, temporal_state=temporal_state,
+                )
+                barrier.wait(timeout=10)
+                decision = on_audio_input(
+                    runtime, result, lease, temporal_state=temporal_state,
+                )
+                results.append((audio_event["event_id"], decision))
+        except Exception as exc:
+            errors.append(exc)
+
+    try:
+        dispatch_threads = [
+            threading.Thread(target=dispatch, args=(audio_input,))
+            for audio_input in audio_inputs
+        ]
+        for thread in dispatch_threads:
+            thread.start()
+        for thread in dispatch_threads:
+            thread.join(timeout=15)
+            assert not thread.is_alive()
+
+        assert not errors
+        accepted = [(event_id, decision) for event_id, decision in results if decision is not None]
+        assert len(accepted) == 1
+        winning_event, winning_decision = accepted[0]
+        assert winning_decision["decision"] == "INTERRUPT"
+        assert winning_decision["record_status"] == "RECORDED"
+
+        audio_event_ids = {item[0]["event_id"] for item in audio_inputs}
+        assert winning_event in audio_event_ids
+        state, _version = runtime.store.state(duplex.KEY, None)
+        assert len(state["pending"]) == 1
+        assert set(state["pending"]) == {winning_event}
+        assert state["pending"][winning_event]["from_event"] == first
+        assert state["interrupted"][first]["by"] == winning_event
+        assert state["counters"]["INTERRUPT"] == 1
+        assert runtime.cancel_event.is_set()
+    finally:
+        release_generation.set()
+        for thread in dispatch_threads:
+            thread.join(timeout=2)
+        wait_idle(runtime)
+        runtime.close()
