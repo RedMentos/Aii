@@ -49,6 +49,18 @@ class ConductAndPrivacy(unittest.TestCase):
 
 
 class ProbeOutputPrivacy(unittest.TestCase):
+    def test_console_probe_rejects_non_native_report_and_ignores_oversized_metrics(self):
+        from v13.verification import public_probe_summary
+        with self.assertRaises(ValueError):
+            public_probe_summary({'proof_kind': 'OTHER', 'roles': {'C3_LANGUAGE': {'actual_output': 'SECRET'}}})
+        summary = public_probe_summary({
+            'proof_kind': 'NATIVE_SMOKE',
+            'status': 'SMOKE_PARTIAL',
+            'effective_config': {'threads': 6, 'oversized_number': 10**1000},
+            'roles': {},
+        })
+        self.assertEqual(summary['effective_config'], {'threads': 6})
+
     def test_console_probe_redacts_model_outputs_offers_and_control_payloads(self):
         import json
         from v13.verification import public_probe_summary
@@ -59,7 +71,7 @@ class ProbeOutputPrivacy(unittest.TestCase):
             'phone_measured': True,
             'full_runner_proof': False,
             'model_revisions': {'C3_LANGUAGE': 'revision-c3'},
-            'effective_config': {'threads': 6, 'answer_tokens': 48, 'private_setting': 'SECRET_CONFIG'},
+            'effective_config': {'threads': 6, 'answer_tokens': 48, 'private_setting': 'SECRET_CONFIG', 'oversized_number': 10**1000},
             'missing_proofs': ['B3 receiver utility'],
             'roles': {
                 'C3_LANGUAGE': {
