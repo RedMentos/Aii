@@ -16,6 +16,10 @@ from v13.audio_duplex_bridge import (
     decide_audio_overlap,
     on_audio_input,
     _persist_temporal_voice_receipt,
+    _claim_one_use_audio_receipt,
+    _REPLAY_MAX_ENTRIES,
+    _REPLAY_STATE_KEY,
+    _TEMPORAL_RECEIPT_PROCESS_EPOCH,
 )
 from v13.audio_voice_cues import audio_consent_lease, consume_pcm16_voice_window
 from v13.common import Cancelled
@@ -311,5 +315,56 @@ def test_audio_receipt_is_consumed_even_when_duplex_mode_is_off(tmp_path):
             assert not runtime.cancel_event.is_set()
             wait_idle(runtime)
             assert answer(runtime, second)["status"] == "FINAL"
+    finally:
+        runtime.close()
+
+
+def test_audio_receipt_claim_is_linearizable_under_concurrent_dispatch(tmp_path):
+    runtime, _started = make_runtime(tmp_path, "auto")
+    barrier = threading.Barrier(2)
+    results = []
+
+    def claim():
+        barrier.wait(timeout=5)
+        try:
+            _claim_one_use_audio_receipt(runtime, "same-event", "same-packet", "a" * 64)
+        except ValueError as exc:
+            results.append(("rejected", str(exc)))
+        else:
+            results.append(("claimed", ""))
+
+    threads = [threading.Thread(target=claim) for _ in range(2)]
+    try:
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join(timeout=10)
+        assert all(not thread.is_alive() for thread in threads)
+        assert sorted(result[0] for result in results) == ["claimed", "rejected"]
+        state, _version = runtime.store.state(_REPLAY_STATE_KEY, {"revision": 1, "entries": []})
+        assert len(state["entries"]) == 1
+    finally:
+        runtime.close()
+
+
+def test_audio_receipt_replay_guard_fails_closed_at_its_bound(tmp_path):
+    runtime, _started = make_runtime(tmp_path, "auto")
+    now_ns = time.monotonic_ns()
+    entries = [
+        {
+            "receipt_key": f"{index:064x}",
+            "process_epoch": _TEMPORAL_RECEIPT_PROCESS_EPOCH,
+            "expires_monotonic_ns": now_ns + 60_000_000_000,
+        }
+        for index in range(_REPLAY_MAX_ENTRIES)
+    ]
+    try:
+        runtime.store.set_state(
+            _REPLAY_STATE_KEY, {"revision": 1, "entries": entries},
+        )
+        with pytest.raises(RuntimeError, match="replay guard is full"):
+            _claim_one_use_audio_receipt(runtime, "new-event", "new-packet", "b" * 64)
+        state, _version = runtime.store.state(_REPLAY_STATE_KEY, {})
+        assert len(state["entries"]) == _REPLAY_MAX_ENTRIES
     finally:
         runtime.close()
