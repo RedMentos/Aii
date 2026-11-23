@@ -30,7 +30,7 @@ class StageTest(unittest.TestCase):
         overlay = (
             "SOURCE_PINS = {}\n"
             "def apply_staged_arithmetic(code_dir, staged_root):\n"
-            "    return {'v13/runtime.py': (staged_root / 'v13/runtime.py').read_bytes() + b'\\\\nARITHMETIC'}\n"
+            "    return {'v13/runtime.py': (staged_root / 'v13/runtime.py').read_bytes() + b'\\nARITHMETIC'}\n"
         ).encode('utf-8')
         overlay_path = self.code / module.ARITHMETIC_OVERLAY
         overlay_path.write_bytes(overlay)
@@ -45,7 +45,7 @@ class StageTest(unittest.TestCase):
         source = (
             'def build_sources(code_dir):\n' + body
             + "    result.setdefault('v13/runtime.py', b'ORIGINAL')\n"
-            + "    result['v13/runtime.py'] += b'\\\\nEXACT_GREETING_ACK'\n"
+            + "    result['v13/runtime.py'] += b'\\nEXACT_GREETING_ACK'\n"
             + "    result.setdefault('v13/fast_greeting.py', b'FAST_GREETING')\n"
             + '    return result\n'
         )
