@@ -323,15 +323,15 @@ class AndroidCompanionController:
                 or not signed_receipt["signature"]
                 or len(signed_receipt["signature"]) > 256
                 or type(verified_at) not in (int, float)
-                or not math.isfinite(float(verified_at))):
+                or (type(verified_at) is float and not math.isfinite(verified_at))):
             raise ControlDenied("stored receipt recovery is missing its signed envelope")
         signed_body = signed_receipt["body"]
         issued_at = signed_body.get("issued_at")
         expires_at = signed_body.get("expires_at")
         if (type(issued_at) not in (int, float)
                 or type(expires_at) not in (int, float)
-                or not math.isfinite(float(issued_at))
-                or not math.isfinite(float(expires_at))
+                or (type(issued_at) is float and not math.isfinite(issued_at))
+                or (type(expires_at) is float and not math.isfinite(expires_at))
                 or expires_at < issued_at
                 or expires_at - issued_at > 60
                 or not issued_at <= float(verified_at) <= expires_at):
