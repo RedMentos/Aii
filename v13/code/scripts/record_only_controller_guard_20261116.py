@@ -11,10 +11,11 @@ PINS = {
     'v13/runtime.py': {
         'c23a5a133deaff66f6be560509580b83394064bbff5a72d35d47c14461536978',
         'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2',
+        'a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38',
     },
     'v13/fastforward.py': {'0cc1b4b3002e0e4c400d7889a746fb42055a708ff1a12be81a59ab10d39bad05'},
     'v13/jefbridge.py': {'875000521db3d7a8efe0186d202dbea99fa7ca47c6b4b2c27f83b7231cb2c5ff'},
-    'v13/actionlearn.py': {'eff43a5f6590130b478d5c288debaa548b01ac1133d4b46ba500ec63beee546e'},
+    'v13/actionlearn.py': {'eff43a5f6590130b478d5c288debaa548b01ac1133d4b46ba500ec63beee546e', '603e874d8fbb37f41aee1fae5fcb6c07007310388dc2c653f1b84ec5d264a7d6'},
     'v13/attention.py': {'58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e'},
     'v13/deliberation.py': {'5c0ed4f22cc7c9966867ade83bae0481e1f049cbbde74b684241aad742edc45c'},
     'v13/callosum.py': {'de55ba637b9e0c0fe6ea12f74385b0f9f782735cc2f52098f5b227a52902d5fc'},
