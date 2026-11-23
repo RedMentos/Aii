@@ -237,7 +237,7 @@ def _load_local_tile_projector(runtime, cfg, query_text: str) -> dict:
     # This independent consumer check keeps stale/legacy projectors out of the
     # UI path even if a composed source-forget overlay is missing or stale.
     lineage = record.get("training_sources")
-    images = state.get("images") if type(state) is dict else None
+    images = state.get("images") if isinstance(state, dict) else None
     if type(lineage) is not list or not lineage or len(lineage) > 256 or type(images) is not dict:
         return {"status": "PROJECTOR_LINEAGE_UNKNOWN"}
     seen_sources = set()
