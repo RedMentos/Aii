@@ -65,3 +65,11 @@ Finish exact-head consumer 3.14 and integrated-regression CI. If all checks pass
 ### Next executable step
 
 Resolve the Actions startup failure or obtain a real exact-head run, then execute `python -m pytest -q v13/code/tests/test_audio_duplex_bridge.py` plus staged/integrated consumers on one exact SHA. Keep the PR draft until those results and independent Boss/QA review are available. Core/QA still owns the later signed Android AudioRecord provider and audible-playback path; capture remains OFF.
+
+
+## Run 27 research addendum — scoped EOT modality evidence (2026-11-23)
+
+- Added R-119 to `v14/V14_RESEARCH_LEDGER.md`, commit `fa20f378360e14e4e5a59a5d2b2c56e574762487`, blob `04ac6a84703a8534ceae7b7549e35f9960d3f245`.
+- Source: Sharon et al., arXiv:2609.11066 (2026-09-10). Only the abstract was verified from the primary record; the Pith page is an explicitly AI-generated, non-human secondary audit. The ledger deliberately marks the entry ABSTRACT_ONLY / SECONDARY_AI_AUDIT_ONLY. No full-paper claim, code/weight license, reproduction or model import is made.
+- Practical implication is consistent with the current implementation boundary: RAW EAR acoustic/prosodic timing remains primary; the separately opted-in Teacher Ear transcript stays an untrusted side channel and does not drive the current duplex interruption decision. Future A4 experiments should compare matched acoustic/prosodic/text variants and explicitly test non-silent turn transitions, backchannels, overlap and multilingual data.
+
