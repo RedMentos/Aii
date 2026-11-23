@@ -112,7 +112,11 @@ public final class MediaProjectionCaptureGateTest {
         byte[] frame = new byte[]{9, 8, 7};
         String token = "b".repeat(32);
 
-        assertTrue(publish(gate, frame, token, (ctx, pkg) -> FINGERPRINT));
+        assertTrue(publish(gate, frame, token, (ctx, pkg) -> {
+            assertTrue(Thread.holdsLock(CompanionProvider.ACTION_GATE_LOCK));
+            assertEquals("com.termux", pkg);
+            return FINGERPRINT;
+        }));
         assertEquals("FRAME_READY", ProjectionFrameStore.status(102L).getString("status"));
         assertTrue(gate.isComplete());
 
@@ -128,7 +132,11 @@ public final class MediaProjectionCaptureGateTest {
         byte[] frame = new byte[]{5, 6, 7};
         String token = "c".repeat(32);
 
-        assertFalse(publish(gate, frame, token, (ctx, pkg) -> ROTATED_FINGERPRINT));
+        assertFalse(publish(gate, frame, token, (ctx, pkg) -> {
+            assertTrue(Thread.holdsLock(CompanionProvider.ACTION_GATE_LOCK));
+            assertEquals("com.termux", pkg);
+            return ROTATED_FINGERPRINT;
+        }));
         assertEquals("NO_FRAME", ProjectionFrameStore.status(102L).getString("status"));
         CompanionProvider.completeScreenFrameSession(gate, true);
     }
