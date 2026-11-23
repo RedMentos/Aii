@@ -1522,3 +1522,36 @@ Role-specific next work: Boss finish #2370 exact CI and whole-candidate review; 
 ## Late CI refresh — 2026-11-23T01:03:20Z
 
 JEPA #2396 Temporal WorldJEPA T8 Windows workflow is now SUCCESS. The same exact head still has three failures at the Termux12 training-resume builder pin; QA #2391 remains 12 FAIL / 2 SUCCESS and must rebase after final JEPA code. This is synthetic T8 worker evidence only. Boss #2370 exact head remains 15 queued / 1 cancelled / 1 skipped, no new-head result.
+
+
+## Research & Perception cross-lane checkpoint — 2026-11-23T01:08:51.138Z
+
+### Audio RAW EAR / optional Teacher Ear
+- PR #2369 code/test commit `245b2ef20c975f3446ab5df3ae2007d08a3332cf`, branch head `6e1050146fe7cbb9b57579404bfd700a494d0dce`, DRAFT / NOT_RELEASED.
+- `audio_voice_cues.py` now loads `audio_teacher_ear.validate_teacher_ear_result` lazily only when a teacher result is supplied. If the optional module is absent, acoustic RAW EAR A5/A4/C3 remains importable; teacher status is explicitly `UNAVAILABLE_MODULE`, no teacher Percept enters C3, and no transcript enters the persistent acoustic PerceptPacket.
+- The active AudioConsentLease and both separate `teacher_opt_in` and `teacher_transcript_consent` flags are checked before fallback. Missing code cannot weaken consent. Nested dependency failures propagate.
+- Exact GitHub source blobs: `audio_voice_cues.py` `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`; consumer regression `test_audio_speaker_evidence.py` `1b3f3c5d461ff09158b757cc6dca1c4fd397de5a`; readback matched. LOCAL_LINUX CPython 3.13.5 isolated helper/permission tests **5/5 PASS**. Full local Aii test suite BLOCKED / NOT_RUN (no checkout; GitHub DNS unavailable). Exact-head CI still queued/pending.
+- Core #2370 latest head `d149bd5e0a2f8394e44e0ed60a208638b9f4b3b9` still pins the previous `audio_voice_cues.py` blob `b18e4501…`. Perception comment #7088808348 asks Core to rebind its owned `SOURCE_BLOBS` to `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288` and refresh downstream stage/deployer pins. Core may keep Teacher Ear OFF and omit its module until it deliberately passes both opt-ins. No staged audio pass yet.
+- No AudioRecord/Android microphone provider, ASR inference, model download, transcript training or device action was run.
+
+### A3 vision source-forget / JEPA overlay
+- Perception #2395 remains DRAFT / NOT_RELEASED; source-bound global/tile projector lineage and fail-closed forgetting are implemented. LOCAL_LINUX helper 7/7 PASS; focused exact-head CI 2/2 PASS; staged/integrated remains blocked.
+- JEPA #2397, stacked on #2395, exact head `f63a5877774f58b6928b4e8dd7125651e9d8173d`: `source_lifecycle_candidate.vision_forget` now invokes shared `invalidate_projectors`, invalidates global/tile projectors for the forgotten or unknown/legacy source, persists retryable artifact-cleanup work before unlink, and preserves shared live blobs. Dedicated Python 3.13/3.14 workflow **2/2 PASS**.
+- #2397's exact staged/integrated workflow still FAILS at the QA-owned source pin: `ValueError: unsupported lifecycle source: vision.py`. Staged result: 19 failed / 231 passed / 10 skipped / 2 errors; integrated regression 1 failed. The direct overlay workflow passing does not make the staged consumer accepted.
+- QA #2391 current head `376ed62baa3b87f960f40b68e9ed37ce66efd5ba` remains based on JEPA #2372 rather than #2397. Perception sent comment #7088869631 with exact bytes: `vision.py` SHA-256 `d4a5e3e0b3faf27489e6ea8c1476876910d2708033ab9ae4267b665dd8f180dd`; `vision_source_lineage.py` SHA-256 `bb63636c9ae84d345fe1f4e37254de3be87c26990cb320ca058859fd0b51b72f`. QA must rebase/compose on #2397, pin/copy the helper, rebind vision.py, and rerun staged/integrated + migration/privacy/owner-read gates. Perception did not edit JEPA/QA files.
+
+### Research update
+- R-101's publication metadata is now exact: Quan, Wu & Montana, ECML PKDD 2026 Research Track, Springer LNCS/LNAI 16946, pp. 114–131, first online 2026-09-05, DOI `10.1007/978-3-032-37673-2_7`. Springer describes the proceedings as refereed and lists the chapter under exclusive license. No code/weights imported.
+- The result remains exact unlearning for a standardized ridge head with fixed features, not a frozen feature backbone. The 600-case sufficient-statistics probe is local synthetic evidence only.
+- R-100 remains wheel metadata only: no PyPI provenance, Termux/Bionic dependency closure, model-weight license or performance evidence; no package or model downloaded.
+
+### Whole-system/device status
+- P0 #1904 and full-Canon #1984 remain open. Private V13OBS #115 read 2026-11-23T00:52:16Z still shows installed release `aed1d2b826290c95c70356b5d8b864b5ef382be4`, updater enabled / Runtime+Dashboard UP_TO_DATE, but stored turns remain slow and B1/B2 TIME_BUDGET. No new device turn was generated.
+- #2396 Windows T8 workflow success is not local Linux, Termux or Redmi proof; the same workplan reports three Termux12 training-resume pin failures. No native latent exchange or numeric weight update is proven.
+- MediaProjection #2375/#2379/#2356 remain separate; no accepted combined source ancestor, real C3 UI consumer, or Android frame receipt.
+
+### Next executable work
+1. Poll exact-head #2369 CI. If Perception-owned jobs fail, fix only the exact failing Perception defect; keep PR draft.
+2. QA #2391 must compose #2397 + #2395 using the exact hashes above; rerun staged/integrated and all release/privacy gates before either PR can be accepted.
+3. Core #2370 must rebind the audio source pin and rerun staged/integrated before the optional Teacher Ear compatibility fix can affect the installed runtime.
+4. Continue the separate UI capture→RAW EYE→A5→C3 path on a shared exact ancestor; require real Android receipt for any REDMI_NATIVE claim.
