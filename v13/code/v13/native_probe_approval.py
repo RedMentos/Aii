@@ -11,6 +11,7 @@ import math
 import os
 import secrets
 import stat
+import threading
 import time
 from contextlib import contextmanager
 from pathlib import Path
@@ -461,6 +462,37 @@ def revoke(runtime, *, now=None):
     return {"status": "REVOKED", "approval_id": str(record.get("nonce", ""))[:12]}
 
 
+def _native_receive_interruptibly(runtime, sender, receiver, event, source_ref, deadline):
+    """Let Ctrl+C signal the native subprocess through Runtime.cancel_event."""
+    outcome = {}
+
+    def invoke():
+        try:
+            outcome["packet"] = runtime.cognition.native_receive(
+                sender, receiver, event, source_ref, deadline,
+            )
+        except BaseException as exc:
+            outcome["error"] = exc
+
+    worker = threading.Thread(target=invoke, name="v14-native-probe", daemon=True)
+    worker.start()
+    interrupted = False
+    while worker.is_alive():
+        try:
+            worker.join(0.1)
+        except KeyboardInterrupt:
+            runtime.cancel_event.set()
+            interrupted = True
+            # The native receiver checks this event while waiting on its child
+            # process. Keep the exclusive Runtime lease until that child exits.
+    if interrupted:
+        raise InterruptedError("Native probe cancelled by local operator")
+    error = outcome.get("error")
+    if error is not None:
+        raise error
+    return outcome.get("packet")
+
+
 def operator_command(runtime, args):
     """Local :callosum native-probe workflow; every stage requires a real TTY."""
     if (len(args) == 5 and args[0] == "arm-probe"
@@ -492,8 +524,8 @@ def operator_command(runtime, args):
             runtime.models.path_for(receiver)
             deadline = time.monotonic() + 120.0
             try:
-                packet = runtime.cognition.native_receive(
-                    sender, receiver, event, source_ref, deadline,
+                packet = _native_receive_interruptibly(
+                    runtime, sender, receiver, event, source_ref, deadline,
                 )
             finally:
                 runtime.pool.unload()
