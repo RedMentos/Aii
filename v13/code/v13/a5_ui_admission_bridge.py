@@ -49,6 +49,9 @@ _REQUIRED = {
 _OPTIONAL = {"accessibility_purpose"}
 _UI_LEASE_TOKEN = object()
 _RUNTIME_CACHE_INIT_LOCK = threading.Lock()
+MAX_UI_CONTEXT_PACKETS = 64
+MAX_UI_CONTEXT_PACKETS_PER_SOURCE = 8
+
 
 
 def validate_ui_observation(observation: dict) -> dict:
@@ -124,6 +127,56 @@ def _provider_args(observation: dict) -> tuple:
         observation["capture_session_id"], "observe_ui", observation["capture_method"],
         observation["capture_scope"], observation["api_level"],
     )
+
+
+
+def _cached_ui_packet_source_id(item):
+    if type(item) is not dict:
+        return None
+    source_ref = item.get("source_ref")
+    if type(source_ref) is not dict:
+        return None
+    source_id = source_ref.get("source_id")
+    return source_id if type(source_id) is str and source_id else None
+
+
+def _cache_ui_context_packet(cache, percept_packet, source_id):
+    """Append one source-bound packet while keeping frame history strictly bounded."""
+    if type(cache) is not dict:
+        raise ValueError("Runtime A5 UI cache has an invalid type")
+    if type(source_id) is not str or not source_id:
+        raise ValueError("UI packet source id is required")
+    packet_id = percept_packet.get("packet_id") if type(percept_packet) is dict else None
+    if type(packet_id) is not str or not packet_id:
+        raise ValueError("UI PerceptPacket id is required")
+    if _cached_ui_packet_source_id(percept_packet) != source_id:
+        raise PermissionError("UI PerceptPacket source binding does not match its lease")
+    cache_key = (source_id, packet_id)
+    if cache_key in cache:
+        raise ValueError("duplicate UI PerceptPacket id for this source")
+    cache[cache_key] = percept_packet
+    source_keys = [
+        key for key, item in cache.items()
+        if key == source_id or _cached_ui_packet_source_id(item) == source_id
+    ]
+    while len(source_keys) > MAX_UI_CONTEXT_PACKETS_PER_SOURCE:
+        cache.pop(source_keys.pop(0), None)
+    while len(cache) > MAX_UI_CONTEXT_PACKETS:
+        cache.pop(next(iter(cache)))
+    return cache_key
+
+
+def _clear_cached_ui_packets(cache, source_id):
+    """Remove every legacy or multi-frame packet derived from one revoked source."""
+    if type(cache) is not dict:
+        return 0
+    stale = [
+        key for key, item in cache.items()
+        if key == source_id or _cached_ui_packet_source_id(item) == source_id
+    ]
+    for key in stale:
+        cache.pop(key, None)
+    return len(stale)
 
 
 class UIObservationLease:
@@ -432,17 +485,21 @@ def ui_to_admission(observation, *, runtime, consent_lease, goal="", token_budge
 
 
 def revoke_ui_observation(runtime, source_id):
-    """Tombstone one A5 UI source and remove every derived packet/cache reference."""
+    """Tombstone one A5 UI source and remove all derived packet/cache references."""
     if type(source_id) is not str or not source_id:
         raise ValueError("UI source id required")
     subscriptions = getattr(runtime, "_a5_ui_unsubscribe", None)
     unsubscribe = subscriptions.pop(source_id, None) if type(subscriptions) is dict else None
     cache = getattr(runtime, "_a5_ui_context_cache", None)
+    cache_cleared = _clear_cached_ui_packets(cache, source_id) > 0
     store = getattr(runtime, "store", None)
     if store is None:
         if callable(unsubscribe):
             unsubscribe()
-        return {"source_tombstoned": False, "packets_deleted": 0, "cache_cleared": False, "blob_removed": False}
+        return {
+            "source_tombstoned": False, "packets_deleted": 0,
+            "cache_cleared": cache_cleared, "blob_removed": False,
+        }
     blob_hash = None
     source_tombstoned = False
     active = 1
@@ -498,7 +555,10 @@ def revoke_ui_observation(runtime, source_id):
         if callable(unsubscribe) and type(subscriptions) is dict:
             subscriptions[source_id] = unsubscribe
         raise
-    cache_cleared = cache.pop(source_id, None) is not None if type(cache) is dict else False
+    finally:
+        # Cache revocation is independent of Store cleanup. A missing/failed
+        # Store must never leave a derived packet visible to a later consumer.
+        cache_cleared = (_clear_cached_ui_packets(cache, source_id) > 0) or cache_cleared
     if callable(unsubscribe):
         unsubscribe()
     return {
@@ -536,6 +596,30 @@ class A5UIRuntimeAdapter:
         return consume_ui_observation(
             self.runtime, observation, consent_lease=grant,
             goal=goal, token_budget=token_budget, priority=priority,
+        )
+
+    def cache_packet(self, percept_packet, consent_lease):
+        """Append one source-bound frame packet under its active observation lease."""
+        event = getattr(self.runtime, "turn_event", None)
+        generation_id = event.get("brain_generation_id") if isinstance(event, dict) else None
+        if (type(consent_lease) is not UIObservationLease
+                or not consent_lease.active_for(self.runtime, generation_id)):
+            raise PermissionError("active UI observation lease is required for packet caching")
+        source_id = _cached_ui_packet_source_id(percept_packet)
+        if source_id != consent_lease.source_id:
+            raise PermissionError("UI packet source is not bound to the active lease")
+        if (percept_packet.get("event_id") != event.get("event_id")
+                or percept_packet.get("brain_generation_id") != generation_id
+                or percept_packet.get("modality") != "ui"):
+            raise ValueError("UI PerceptPacket event/generation binding mismatch")
+        if (percept_packet.get("raw_capture_persisted") is not False
+                or percept_packet.get("derived_packet_persisted") is not False
+                or percept_packet.get("action_authority") is not False
+                or percept_packet.get("learning_authority") is not False
+                or percept_packet.get("truth_authority") != 0):
+            raise PermissionError("UI PerceptPacket attempted persistence or authority escalation")
+        return _cache_ui_context_packet(
+            self.runtime._a5_ui_context_cache, percept_packet, source_id,
         )
 
     def context(self, event_id, grants):
@@ -576,7 +660,14 @@ class A5UIRuntimeAdapter:
         return tuple(packets)
 
     def revoke(self, source_id):
-        return revoke_ui_observation(self.runtime, source_id)
+        try:
+            return revoke_ui_observation(self.runtime, source_id)
+        finally:
+            # Direct Core callers use this adapter rather than the scoped
+            # Perception helper. Clear frame-difference state on every revoke,
+            # including Store cleanup failures and the no-Store fast path.
+            from .vision_temporal_attention import reset_runtime_ui_temporal_attention
+            reset_runtime_ui_temporal_attention(self.runtime, source_id)
 
     def close(self):
         """Clear local UI state after provider revocation and Runtime worker exit.
@@ -595,4 +686,10 @@ class A5UIRuntimeAdapter:
             if callable(setter):
                 setter()
             raise RuntimeError("A5 UI close requires provider revocation and Runtime turn exit")
-        return tuple(self.revoke(source_id) for source_id in list(self.runtime._a5_ui_unsubscribe))
+        try:
+            return tuple(self.revoke(source_id) for source_id in list(self.runtime._a5_ui_unsubscribe))
+        finally:
+            # Clear orphaned descriptors too, even if no subscription entry
+            # remains or one source's Store cleanup raises.
+            from .vision_temporal_attention import reset_runtime_ui_temporal_attention
+            reset_runtime_ui_temporal_attention(self.runtime)

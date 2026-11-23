@@ -6,6 +6,8 @@ on:
       - "research-perception/**"
     paths:
       - "v13/code/v13/vision_ui_frame_ingress.py"
+      - "v13/code/v13/vision_temporal_attention.py"
+      - "v13/code/tests/test_vision_temporal_attention.py"
       - "v13/code/tests/test_vision_ui_frame_ingress.py"
       - "v13/code/tests/test_vision_ui_frame_provider_entrypoint.py"
       - "v13/code/v13/a5_ui_admission_bridge.py"
@@ -16,9 +18,13 @@ on:
       - "v13/code/v13/a5_context_envelope.py"
       - "v14/V14_RESEARCH_LEDGER.md"
       - "v14/handoffs/RESEARCH_PERCEPTION_MEDIA_PROJECTION_RAW_EYE_20261122.md"
+      - "v14/handoffs/RESEARCH_PERCEPTION_TEMPORAL_UI_ATTENTION_20261123.md"
   pull_request:
     paths:
       - "v13/code/v13/vision_ui_frame_ingress.py"
+      - "v13/code/v13/vision_temporal_attention.py"
+      - "v13/code/tests/test_vision_temporal_attention.py"
+      - "v14/handoffs/RESEARCH_PERCEPTION_TEMPORAL_LEASE_CLEANUP_20261123.md"
       - "v13/code/tests/test_vision_ui_frame_ingress.py"
       - "v13/code/tests/test_vision_ui_frame_provider_entrypoint.py"
       - "v13/code/v13/a5_ui_admission_bridge.py"
@@ -45,9 +51,9 @@ jobs:
       - name: Install pinned perception test dependencies
         run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.3.5 Pillow==12.3.0
       - name: Compile exact RAW EYE UI adapter and consumer tests
-        run: python -m py_compile v13/code/v13/vision_ui_frame_ingress.py v13/code/tests/test_vision_ui_frame_ingress.py v13/code/tests/test_vision_ui_frame_provider_entrypoint.py
+        run: python -m py_compile v13/code/v13/vision_ui_frame_ingress.py v13/code/v13/vision_temporal_attention.py v13/code/tests/test_vision_ui_frame_ingress.py v13/code/tests/test_vision_ui_frame_provider_entrypoint.py v13/code/tests/test_vision_temporal_attention.py
       - name: Run MediaProjection lease, A5, A4 and context-consumer regressions
         working-directory: v13/code
         env:
           PYTHONDONTWRITEBYTECODE: "1"
-        run: python -m pytest -q -s tests/test_vision_ui_frame_ingress.py tests/test_vision_ui_frame_provider_entrypoint.py
+        run: python -m pytest -q -s tests/test_vision_ui_frame_ingress.py tests/test_vision_ui_frame_provider_entrypoint.py tests/test_vision_temporal_attention.py
