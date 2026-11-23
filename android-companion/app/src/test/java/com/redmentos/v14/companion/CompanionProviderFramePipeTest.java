@@ -41,7 +41,7 @@ public final class CompanionProviderFramePipeTest {
         ProjectionFrameStore.clear();
     }
 
-    @Test public void companionStopClosesAnAlreadyOpenedOneShotFramePipe() throws Exception {
+    @Test public void companionStopClosesServerPipeButCannotRevokeDuplicatedRemoteDescriptor() throws Exception {
         Context context = RuntimeEnvironment.getApplication();
         assertTrue(CompanionProvider.setEnabled(context, true));
         byte[] frame = new byte[2 * 1024 * 1024];
@@ -51,16 +51,30 @@ public final class CompanionProviderFramePipeTest {
 
         ParcelFileDescriptor readEnd = CompanionProvider.openFramePipe(context, token, 101L, () -> true);
         assertTrue(readEnd.getFileDescriptor().valid());
+        // Model the descriptor duplication performed when ContentProvider.openFile()
+        // hands a PFD across Binder. Closing the provider's copy cannot revoke this copy.
+        ParcelFileDescriptor remoteReadEnd = ParcelFileDescriptor.dup(readEnd.getFileDescriptor());
+        assertTrue(remoteReadEnd.getFileDescriptor().valid());
         assertEquals(1, ProjectionFrameStore.activeReadCountForTest());
         FrameReadLease lease = ProjectionFrameStore.firstActiveReadForTest();
         assertNotNull(lease);
 
         assertTrue(CompanionProvider.setEnabled(context, false));
 
-        assertTrue("stop must terminate a blocked pipe writer",
+        assertTrue("stop must terminate the provider-side pipe writer",
                 lease.awaitWriterExitForTest(2_000L));
-        assertFalse(readEnd.getFileDescriptor().valid());
+        assertFalse("provider-side descriptor is closed", readEnd.getFileDescriptor().valid());
+        assertTrue("already duplicated remote descriptor remains valid", remoteReadEnd.getFileDescriptor().valid());
+        int received = 0;
+        try (ParcelFileDescriptor.AutoCloseInputStream input =
+                     new ParcelFileDescriptor.AutoCloseInputStream(remoteReadEnd)) {
+            byte[] chunk = new byte[16 * 1024];
+            int count;
+            while ((count = input.read(chunk)) != -1) received += count;
+        }
+        assertTrue("only bytes already buffered/delivered may remain", received <= frame.length);
         assertTrue(Arrays.equals(new byte[frame.length], frame));
+        assertEquals("NO_FRAME", ProjectionFrameStore.status(102L).getString("status"));
         assertEquals(0, ProjectionFrameStore.activeReadCountForTest());
     }
 
