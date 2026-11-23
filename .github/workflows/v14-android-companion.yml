@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Test emulator UI recovery helpers
+      - name: Test process-restart harness helpers
         run: |
           python3 android-companion/scripts/test_process_restart_ui.py
           python3 android-companion/scripts/test_process_restart_instrumented_unit.py
@@ -50,7 +50,7 @@ jobs:
           packages: "platform-tools platforms;android-35 build-tools;35.0.0"
       - name: Build and test isolated companion
         run: |
-          gradle --no-daemon -p android-companion :app:assembleDebug :app:testDebugUnitTest
+          gradle --no-daemon -p android-companion :app:assembleDebug :app:assembleDebugAndroidTest :app:testDebugUnitTest
 
   android-companion-process-restart:
     runs-on: ubuntu-latest
