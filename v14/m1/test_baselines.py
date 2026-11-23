@@ -9,7 +9,8 @@ import torch
 
 from v14.m1.array_data import ArrayDataset, InputBundle
 from v14.m1.baselines import (
-    LinearInputBaseline,\n    RidgeAR,
+    LinearInputBaseline,
+    RidgeAR,
     PersistenceBaseline,
     RandomEncoderProbe,
     RawGRU,
@@ -18,7 +19,8 @@ from v14.m1.baselines import (
     TrainConstantBaseline,
 )
 from v14.m1.base import BaseConfig
-from v14.m1.data import DataConfig, MinuteRow\nfrom v14.m1.training import FitConfig, fit_supervised_baseline
+from v14.m1.data import DataConfig, MinuteRow
+from v14.m1.training import FitConfig, fit_supervised_baseline
 
 
 class BaselineTests(unittest.TestCase):
