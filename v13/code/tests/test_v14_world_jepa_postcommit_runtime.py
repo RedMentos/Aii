@@ -152,6 +152,7 @@ def test_body_state_surfaces_temporal_omission_reason_without_authority(tmp_path
         assert "world_jepa_temporal" not in view
         assert view["authority"] == "STATE_NOT_FACT"
         assert view["role"] == "B2_GIST"
+        assert len(bodyview.dumps(view)) <= bodyview.STATE_CHARS
         persisted = json.loads(store.read_source(result["source_ref"]))
         assert persisted["world_jepa_temporal_status"] == expected
     finally:
