@@ -322,4 +322,5 @@ def test_lifecycle_stage_preserves_transactional_vision_consumer():
     replacements = builder.build_sources(code_dir / "v13")
     assert replacements["vision.py"] == original
     assert b"with store.tx() as conn" in original
-    assert b"unlink_source_blob" in original
+    assert b"cleanup_unreferenced" in original
+    assert b"cleanup_unreferenced(store, sid)" in original
