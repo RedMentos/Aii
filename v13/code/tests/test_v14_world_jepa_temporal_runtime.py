@@ -1075,6 +1075,7 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_mea
             prior = state["world_jepa_temporal"]
             assert prior["status"] == "SHADOW_READOUT_ONLY"
             assert prior["native_body_consumed"] is False
+            assert prior["native_body_weights_changed"] is False
             assert prior["decision_authority"] == "NONE"
             assert len(json.dumps(state, separators=(",", ":"))) <= 700
             prompts[state["role"]] = prior
