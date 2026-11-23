@@ -1235,3 +1235,35 @@ The 679f audio run showed that rebinding only Context-source recall was insuffic
 ### Next integration step
 
 Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, migration, owner-read and deployer workflows. Fix only measured current-head failures. Keep the PR DRAFT and NOT_RELEASED. The #2280 C4 receipt, #2281 Age-rights, #2282 shared-blob race, #2283 rollback, #2285 audio QA and #2275 RAW EAR changes must be rebased and tested on this same base; old-base green results are not accepted. Private PIPELINE_STATUS #453 is still unanswered, so REDMI_UNVERIFIED. User action: none.
+
+
+## Research & Perception — RAW EYE source revocation atomicity — 2026-11-22T17:57Z
+
+- **Candidate:** PR [#2366](https://github.com/RedMentos/Aii/pull/2366), branch `research-perception/v14-vision-source-revocation-atomic-20261122`, code head `ce5b07da720c4d8751bc4fa09042337996a1081d` at the time of PR creation. Base is the current release-development head `aed1d2b826290c95c70356b5d8b864b5ef382be4`; this is not a release.
+- **Defect:** stored IMAGE reads/A5 feature extraction and `:image forget` were not serialized. A forget could unlink a blob during in-flight visual context construction; concurrent same-hash re-ingest could publish a live row between the final refcount check and unlink.
+- **Code:** `vision.ingest/read_image/forget` now share Store RLock; the complete ephemeral `consume_visual_source` A5/A4/admission path holds that same re-entrant lock. Text path, Age, learning authority, camera/screen providers and Runtime dispatch are unchanged.
+- **LOCAL_LINUX:** CPython 3.13.5 isolated two-interleaving harness **2/2 PASS** (fake Store; not full Aii integration). Full local checkout is blocked by GitHub DNS; no repository pytest claim.
+- **CI:** exact PR Python 3.13/3.14 RAW EAR/RAW EYE, staged-runtime, integrated-regression, privacy and offline bridge checks were queued at last read. Do not promote until exact-head CI finishes.
+- **REDMI:** NOT_RUN / REDMI_UNVERIFIED. The visual adapter is still not invoked by normal Runtime; no Android camera/screen capture, teacher/VLM, trained projector, semantic recognition or phone result.
+- **Next:** review exact CI and the two committed barrier regressions; then hand the source-lifecycle contract to Core for normal Runtime invocation. No user action or deployment requested.
+
+
+## Research follow-up R-081 — surprise-gated audio episodic memory — 2026-11-22
+
+- Fully reviewed the 12-page arXiv preprint `2611.20819v1` (arXiv record 2026-11-16; PDF title page says 2026-09-26). Its full-buffer replay and novelty-gated assign/defer/create policy are relevant to A4 attention and audio episodic memory, but the useful output is end-of-meeting revisable diarization; causal-strict labels are poor due to cluster renumbering. The study is single-seed on three AMI meetings and five VoxConverse sessions; no code/checkpoint license or Redmi result is linked.
+- Candidate experiment only: use existing source-bound synthetic speaker evidence to compare fixed threshold, calibrated three-regime novelty gate and no-gate; ablate full-history vs sliding-window vs no replay; measure false-new, re-ID across silence, overlap deferral, source-disjoint AUROC, latency and session deletion. Keep it separate from JEPA weight learning and don't delay live C3 output.
+- No model/dependency/weight downloaded or changed. Do not select FASTDIAR weights until a separate checkpoint-weight license is clear.
+
+
+## Exact-head Perception follow-up — 2026-11-22T18:11Z
+
+- PR #2366 branch head `9a19b8c0af01912f40d92fecac4e6ab9a82bb128`; code/test commit `f8a9faf66b64352f8e1703e634b79f03ec3c0984`. The branch's later commits are V14 handoff/board/research updates only.
+- Exact GitHub run 45053429482 is pending and currently has no jobs; no CI pass is claimed. The previous #2363 is closed as superseded by #2366.
+- R-081's surprise-gated speaker-memory paper is recorded as a research-only ablation proposal; it does not replace JEPA/EMA, trainable weights, or the full voice Canon.
+
+
+## CI queue checkpoint — PR #2366 — 2026-11-22
+
+- Branch head at the last check: `dd0090b5e428c4dc537693388645fa88acf667dd`; code/test commit: `f8a9faf66b64352f8e1703e634b79f03ec3c0984`.
+- Exact Perception workflow run `45053728753` is pending and has not created jobs yet. Do not mark CI PASS. The isolated CPython 3.13.5 two-interleaving fake-Store harness remains 2/2 PASS.
+- #2363 was closed as superseded by #2366; normal Runtime invocation and Redmi proof remain open.

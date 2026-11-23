@@ -1,3 +1,18 @@
+# Research & Perception — latest verified candidate (2026-11-22 18:14 UTC)
+
+- PR [#2366](https://github.com/RedMentos/Aii/pull/2366), branch `research-perception/v14-vision-source-revocation-atomic-20261122`, head at last read `468d2fb3aa023db6fd13f0e70b1b592cd629d963`; code/test commit `f8a9faf66b64352f8e1703e634b79f03ec3c0984`. It serializes stored IMAGE ingest/read/forget and the ephemeral RAW EYE A5→A4/admission path; two barrier regressions cover in-flight A5 vs forget and re-ingest vs final unlink. PR #2363 is closed as superseded.
+- LOCAL_LINUX CPython 3.13.5 isolated fake-Store concurrency harness: **2/2 PASS**. Exact Perception workflow run [45053815645](https://github.com/RedMentos/Aii/actions/runs/45053815645) is pending with no jobs at last read; no CI pass is claimed. Full local Aii checkout remains blocked by GitHub DNS.
+- No Redmi test. The adapter remains unhooked from normal Runtime; no Android camera/screen provider, semantic VLM, trained projector, model/weight or permission change is claimed.
+- Installed code remains `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`, updater enabled/UP_TO_DATE; no update request or Termux action. This PR is NOT_RELEASED.
+- Research R-081: full 12-page preprint review proposes an A4 novelty-gate/full-history replay ablation, but evidence is small/single-seed, causal-strict output is poor, and no code/weight license was linked. No download.
+
+**Next internal action:** finish exact CI, then hand the source-lifecycle contract to Core for normal Runtime invocation; afterward run R-081's gate/replay ablation on existing synthetic audio. **User action: none.**
+
+---
+
+
+
+
 # QA & Android — temporal JEPA and source-lifecycle follow-up (2026-11-22)
 
 - JEPA/Memory PR [#2351](https://github.com/RedMentos/Aii/pull/2351), exact head 3df0c8a6a65dd2545bde62db92efc761d143032a, adds dense contiguous T8 temporal windows (history lengths 2/3), explicit censored omissions, unknown-gap breaks, connected session/source split, NumPy WorldJEPA + EMA/Adam/checkpoint persistence, and B1/B2/SELF shadow readouts. It is wired into SleepRuntime post-commit but has no prompt consumer or native body-weight effect. Synthetic Store/T8 fixtures only. Exact CI currently queued; PR is DRAFT / NOT_RELEASED.
@@ -1690,3 +1705,10 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 3. Continue whole-Canon QA; do not use the green release CI or updater receipt as evidence that the slow/incorrect native chat path is fixed.
 
 **Redmi status:** installed c4eb82 / updater up-to-date; native quality and Android companion acceptance remain UNVERIFIED. **User action: none.**
+
+
+## Research note R-081 — next audio-learning experiment
+
+- Full 12-page review: *Surprise-Gated Memory for Live Speaker Diarization*, arXiv:2611.20819v1. The arXiv record says 2026-11-16, while the PDF title page says 2026-09-26. It reports 52%/82% recovery of the online-to-offline DER gap only in a revisable end-of-meeting track; the causal-strict track is poor because full-buffer reclustering renumbers identities. The study uses three AMI meetings and five VoxConverse sessions, single seed, no confidence intervals, and no linked code/weight license. 
+- Practical V14 hypothesis: a calibrated surprise gate could feed A4 and a short-lived source-bound audio episode store, but must not replace JEPA or real weight learning. Compare fixed threshold vs assign/defer/create vs no gate, and full-history replay vs sliding-window vs no replay on existing synthetic fixtures. Preserve provisional/final provenance and erase session traces on end.
+- No download or device test. This is a research proposal, not an implemented capability.

@@ -2244,3 +2244,10 @@ Focused B3 paired-capture run 45040617156 remains PASS (52 tests, compile, CLI s
 - Runtime deployment 45040617193: plain UI recovery builder changed under Python 3.11 and 3.14.
 
 JEPA transactional update, combined online JEPA, JEPA receipt integrity, role-specific tap provenance, privacy scan and offline bridge checks passed; same-turn B1/B2/C4/C3 was still in progress and audio/arithmetic/native latent receiver queued. These are shared integrated builder/recovery composition failures, not the focused B3 capture/trainer test. Keep #2346 DRAFT / NOT_RELEASED.
+
+
+## RAW EYE stored-image A5 source lifecycle overlay — 2026-11-22
+
+| Canon family | Candidate implementation | Consumer / test | Evidence boundary | Classification |
+|---|---|---|---|---|
+| A0/A5 source provenance, F6 revocation and A4 visual salience | PR #2366: stored IMAGE SourceRef → 17 RAW EYE summaries → ephemeral PerceptPacket/A4/admission; Store RLock spans ingest/read/forget and full A5 construction | `vision_a5_bridge.consume_visual_source`; barrier tests in `tests/test_vision_a5_bridge.py` for in-flight forget and re-ingest/unlink interleavings | Local isolated concurrency harness 2/2 PASS; exact PR CI pending. Adapter not yet called by normal Runtime; no Android camera/screen capture or Redmi proof | CODE_PRESENT / WIRED_SYNTHETIC_CANDIDATE / CI_PENDING / NOT_RUNTIME_ACCEPTED / REDMI_UNVERIFIED |

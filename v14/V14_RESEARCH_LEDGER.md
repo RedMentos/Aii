@@ -941,3 +941,45 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
+
+
+## R-080 — RAW EYE IMAGE source lifecycle and revocation atomicity (2026-11-22)
+
+**Evidence type:** code-derived concurrency review plus an isolated local interleaving harness; not a scientific-paper result.
+
+**Observed gap:** the WP-N15 vision lab had three unsynchronized operations: IMAGE blob publication in `vision.ingest`, liveness/read/hash/decode in `vision.read_image`, and tombstone/refcount/unlink in `vision.forget`. The new A5 adapter also performed multiple tile feature extractions and A4 admission after the initial read. Without one shared lock, source revocation could complete during that derived-context window. A second interleaving could publish a new same-hash source after forget's refcount check and before unlink, leaving a live DB row without its blob.
+
+**Implementation candidate:** PR [#2366](https://github.com/RedMentos/Aii/pull/2366). It serializes ingest, read, forget and the full ephemeral visual A5/A4/admission operation under the existing Store RLock. The lock is re-entrant for nested Store transactions; the existing exclusive coordinator lock prevents a second Runtime process from opening the same home. No new dependency, model, weight or permission is introduced.
+
+**Local evidence:** CPython 3.13.5 isolated harness, 2/2 PASS: (1) in-flight visual processing holds the lock until completion, then forget tombstones/unlinks and later reads fail; (2) same-hash re-ingest blocks through forget's final refcount/unlink, then republishes a live source and readable blob. This uses a fake Store and is not a full Aii Store/A5 integration test.
+
+**CI / platform boundary:** exact PR CI is pending at the last read. The committed Store/A5 barrier tests run in the RAW EAR/RAW EYE workflow on Python 3.13 and 3.14. No full local checkout, Termux, Android, Redmi, camera, screen capture or semantic vision result is claimed. The adapter remains unhooked from normal Runtime.
+
+**Decision:** keep source-bound visual admission SHADOW/candidate-only. Do not call it Android visual perception or normal chat integration until Core wires the consumer and QA verifies source-forget/restart behavior on the integrated runtime.
+
+
+## R-081 — Surprise-gated episodic memory for streaming speaker evidence (2026-11-22)
+
+**Primary paper fully reviewed:** Louis Mouchon & Alexis Lainault, *Surprise-Gated Memory for Live Speaker Diarization*, arXiv:2611.20819v1. The arXiv record says submitted 2026-11-16; the PDF title page itself says 2026-09-26, so both dates are retained as a metadata discrepancy. It is an independent research preprint, not peer-reviewed evidence. The PDF has 12 pages; no official code repository or checkpoint license is linked in the paper. The cited parent work, *Surprise as a Signal for Plasticity and Metacognition* (arXiv:2606.31495), was inspected only at its abstract/secondary summary in this run, not claimed as a full-text review.
+
+**Method:** a frozen DiariZen/WavLM+Conformer speaker stack emits local embeddings; a calibrated PLDA-space novelty score gates three outcomes: assign to a known prototype, defer ambiguous/short/overlapped segments, or create a new one-shot prototype. A full-buffer VBx consolidation runs periodically. Memory is strictly intra-meeting and erased at the end; the runtime system does not train weights or retain speaker representations across meetings.
+
+**Reported evidence:** under the paper's frozen AMI-development calibration transferred to VoxConverse, the revisable end-of-meeting track recovers 52% of the online-to-offline DER gap on AMI-SDM (18.1 vs 22.9 naive vs 13.7 offline oracle) and 82% on VoxConverse (8.0 vs 9.9 vs 7.6). Full-buffer consolidation is load-bearing: replaying only the last two minutes is worse than no sleep on both reported test subsets. Behavioural measures include one-shot recall 0.857 and false-novelty 0.001.
+
+**Critical counterevidence / limits:** only three AMI meetings and five VoxConverse sessions, single-seed runs and no confidence intervals; the authors explicitly treat condition ordering, not small absolute differences, as the result. The causal-strict track is poor (58.2 DER AMI / 47.8 VoxConverse) because full-buffer reclustering renumbers identities; the useful product is the revisable end-of-meeting track, not stable live captions. The paper's own residual analysis says most remaining error is overlap/VAD segmentation, not memory. The backbone is a large WavLM/Conformer/DiariZen stack, not a demonstrated Redmi model. No model weights, data, code or dependencies were imported.
+
+**V14 mapping / experiment:** treat novelty as a candidate A4 attention/modulator input and a *write gate* for a short-lived, source-bound audio episode store; do not copy the frozen-backbone architecture or use its result to replace JEPA/EMA/real weight learning. On existing caller-supplied PCM/FASTDIAR-compatible fixtures only, compare (a) current fixed speaker-change evidence, (b) calibrated assign/defer/create gate, and (c) no-gate baseline. Measure source-disjoint known-vs-novel AUROC, false-new rate, re-identification after silence, overlap/short-speech deferral, latency and bounded memory. Ablate full-history replay vs sliding-window replay vs no replay. Keep causal labels provisional until identity-stability is measured; do not import delayed final labels into live C3. Require session TTL, explicit consent, source revocation, and zero traces after session end. No Android provider or model download is authorized by this research note.
+
+**Status:** RESEARCH_ONLY / NO_CODE_REUSE / NO_MODEL_DOWNLOAD / NO_WEIGHT_CHANGE. The next practical step is a tiny calibrated novelty-gate ablation over existing synthetic speaker evidence after current RAW EYE source-lock CI and FASTDIAR review are complete.
+
+
+### R-080 / PR #2366 exact-head update — 2026-11-22T18:11Z
+
+- Current branch head: `9a19b8c0af01912f40d92fecac4e6ab9a82bb128`; tested code/test commit: `f8a9faf66b64352f8e1703e634b79f03ec3c0984`.
+- GitHub run 45053429482 is pending with no jobs created at last read; do not claim CI pass. The old visual-only PR #2363 was closed as superseded.
+- Local evidence remains the isolated CPython 3.13.5 fake-Store concurrency harness, 2/2 PASS; full local Aii Store/A5 suite and Redmi remain unverified.
+
+
+### R-080 exact CI queue update — 2026-11-22
+
+PR #2366 branch head at last check `dd0090b5e428c4dc537693388645fa88acf667dd`; code/test commit `f8a9faf66b64352f8e1703e634b79f03ec3c0984`. Exact Perception run `45053728753` is pending/no jobs at last read. No CI pass, normal Runtime integration or Redmi evidence is claimed. #2363 is closed as superseded.
