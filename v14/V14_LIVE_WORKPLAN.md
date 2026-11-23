@@ -1235,3 +1235,50 @@ The 679f audio run showed that rebinding only Context-source recall was insuffic
 ### Next integration step
 
 Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, migration, owner-read and deployer workflows. Fix only measured current-head failures. Keep the PR DRAFT and NOT_RELEASED. The #2280 C4 receipt, #2281 Age-rights, #2282 shared-blob race, #2283 rollback, #2285 audio QA and #2275 RAW EAR changes must be rebased and tested on this same base; old-base green results are not accepted. Private PIPELINE_STATUS #453 is still unanswered, so REDMI_UNVERIFIED. User action: none.
+
+
+---
+
+## Boss & Integration run 17 — 2026-11-23T04:03:19.912Z
+
+### Verified release and candidate boundary
+
+- Release-development branch `gpt6/v13-private-remote-bridge-20261111`: `aed1d2b826290c95c70356b5d8b864b5ef382be4`; exact GitHub workflow runs: **21/21 SUCCESS**.
+- Private owner-read #694 confirms the same release installed on Redmi, auto-update enabled, Runtime/Dashboard UP_TO_DATE, no last error.
+- Boss candidate PR #2370: exact head `9267fda23b282060369428c28fc6e1864664b0e4`, base `aed1d2b826290c95c70356b5d8b864b5ef382be4`, DRAFT / NOT_RELEASED. Its exact-head matrix currently shows 17 entries: 14 queued, 1 pending, 1 cancelled, 1 skipped; no completed exact-head result.
+- Source-contract readback: raw Runtime SHA-256 `45fe67f66ad3bac2491c877be3a0c63f20b20014bf7ccfa15b1df236dd08b8ba`, Git blob SHA-1 `45fb9eb742e19abf00ec42fae2ee872639f4d555`; arithmetic candidate `d5277eb16e292c0c20b3e061a7e3bfbae309844b5bb14a8254e9a62df8a6b8d1`; Termux12 blob `3d2cd3d26e33c0c62d3c23fbec3c7734060deaf2`; Termux21 SHA-256 `c455a790ca83a7a22ec7639faeca4b68f622d752686dff208df95e427edabd8f`; stage SHA-256 `a1e9af64a931dc8fe722ae40a9d3410c7d785f55317a8c88beed5a2277956956`. Runtime deployer pins that exact stage. Arithmetic guard blob `77d2af11e835565a10d666377a7f2e9fdfb5c52a` and audio composer blob `ecefd90d533a5b4ad15c34e0a5e5976d41f332d8` both bind the exact Runtime blob. The full direct Termux12 source-pin set was also recomputed and matched. The SHA-256 implementation was checked against the standard `abc` vector. These are GitHub source readbacks only, not a local compile or test.
+- No local Aii checkout/full pytest/native suite is available in this worker; do not claim LOCAL_LINUX or TERMUX tests.
+
+### Actual Redmi observation
+
+- DIAGNOSTICS #695 repeats the last stored turn: FINAL, 57.739 s total, 41.627 s TTFT, 38.945 s C3 prefill, 751 admitted prompt tokens, 2 generated tokens. No correctness score or new user turn.
+- B1_DETAIL and B2_GIST both TIME_BUDGET at 53.2/54.2 s; C3 probe 3.1 s; native probe SMOKE_PARTIAL. Instant native residency is 0 mapped processes / 0 MiB PSS/RSS, not sustained residency or free RAM.
+- HEALTH #696: MemAvailable 1,402 MiB / 5,569 MiB, disk free 1,300 MiB, Runtime field UNAVAILABLE. DIAGNOSTICS says Runtime/service/dashboard RUNNING. This disagreement remains unresolved.
+- Official Age 0; lab request 10 / effective implemented stage 5; physical feature execution false; learning commit authority requires separate SHADOW.
+
+### Whole-Canon cross-agent review
+
+- **B1/B2/C4/C3:** #2370 remains the highest-impact current integration candidate; source pins are aligned but CI and actual useful offers remain unproven.
+- **B3/native receiver:** #2400 binds model bytes through an inherited descriptor; #2377 binds manifest path and file identity; combine with an explicit local one-shot approval and exact receiver consumer before any probe. Production B3 remains OFF.
+- **Android companion:** #2406 accepts the legitimate MediaProjection registry contract and adds receipt-only recovery negatives. It is stacked and has no APK/emulator/Redmi proof.
+- **Perception:** #2375 adds lease-bound projected-frame ingress and read-only A3 student estimates; #2408 is still provider composition. No real Android screen frame is observed.
+- **JEPA/Memory:** #2402/#2405 remain stacked candidates; no accepted master-weight change, cross-organ gradient, retention or source-forget safety proof.
+- **Voice:** RAW EAR caller-PCM/FIR feature work is not Android AudioRecord, ASR, decoder/vocoder, full duplex or speech learning.
+- **Age/rights:** official Age remains 0; lab test selector is separate from runtime resource budgets. No physical stage-6..10 execution.
+- **Rollback:** code/CI is not process-death, reboot or runtime-only rollback acceptance on Redmi.
+- **Canon:** all 1,255 historical headings remain preserved; semantic clause→consumer→test→environment→rollback mapping is incomplete.
+
+### Next executable step
+
+Poll exact #2370 head `9267fda23b282060369428c28fc6e1864664b0e4`, inspect only its completed logs, repair measured failures, and keep it DRAFT until the exact matrix is green. Then review the stacked Core/QA/Perception/JEPA PRs against the same base; do not merge stale-base documentation stacks or claim Android/native acceptance from CI.
+
+## Boss & Integration checkpoint — 2026-11-23T06:11:31.207Z
+
+- **Release base:** `gpt6/v13-private-remote-bridge-20261111` remains `aed1d2b826290c95c70356b5d8b864b5ef382be4`; exact release CI 21/21 SUCCESS and private #702 confirms installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE.
+- **Candidate:** Boss PR [#2370](https://github.com/RedMentos/Aii/pull/2370), exact code/test SHA `8661e80f8cbc39ec3afb8eb8d40171fe2d777e91`, base `aed1d2b826290c95c70356b5d8b864b5ef382be4`, DRAFT / NOT_RELEASED. Exact-head CI has 18 entries: 17 SUCCESS, 1 safe-additive SKIPPED, 0 failures, 0 pending. Full local Aii pytest/native suite remains BLOCKED_NO_LOCAL_CHECKOUT_OR_NETWORK.
+- **New functional slice:** `world_jepa_receiver_matrix.warm_receiver_cache()` primes the exact active Store checkpoint under a nonblocking shared lock, using the same Store-scoped consumer later used by B1/B2. `SleepRuntime._run_world_jepa` calls it after postcommit/planner work; `schedule_world_jepa` retries BUSY/resource-skipped warming without redoing completed planner work. It is read-only: no training, authority, native-body consumption or weight mutation. B1/B2 bodyview now carries explicit prediction-only epistemic boundary, `TRAIN>=8` support and compact unsupported-action evidence; optional world/self context is trimmed before that evidence.
+- **Tests:** JEPA Runtime transactional workflow #45121544612: 17 passed. Training-resume/source-forget #45121544302: Python 3.13 and 3.14 PASS. Same-turn B1/B2→C4→C3 #45121544467: Python 3.13/3.14 PASS. Staged/integrated #45121544405 PASS (integrated regression 261 passed, 10 skipped, 48 subtests; staged runtime 45 passed, 17 subtests). Native receiver #45121544517 PASS including Linux pinned API build and Android arm64-v8a cross-compile. Audio/arithmetic #45121544543 PASS on Python 3.13/3.14. All other substantive candidate workflows passed; one safe-additive workflow was intentionally SKIPPED.
+- **Evidence boundary:** CI synthetic/native-build evidence is not a Redmi run. Numeric WorldJEPA remains SHADOW; this is not true trained B3 latent coupling, native B1/B2 GGUF weight update, cross-organ gradients or accepted continual learning.
+- **Redmi:** private #702-#705 confirm installed release `aed1d2b826290c95c70356b5d8b864b5ef382be4`; last stored turn 57.739 s / TTFT 41.627 s / 2 tokens; B1/B2 TIME_BUDGET 53.2/54.2 s; C3 3.1 s; native probe SMOKE_PARTIAL; instantaneous native residency 0 mapped processes. HEALTH: 1,071 MiB available / 1,312 MiB disk; HEALTH Runtime UNAVAILABLE while DIAGNOSTICS says RUNNING. Learning status UNAVAILABLE. Official Age 0; lab request 10/effective 5; physical execution false. No new turn, LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, shell or device mutation.
+- **Other stacks:** #2405 temporal episodic recall remains diverged/not integrated pending exact source-lifecycle CI; #2409 native receiver is CI-green but QA-stacked/diagnostic with B3 OFF; #2406/#2408 companion/provider stack remains blocked by process-restart emulator evidence; #2375 A3 is synthetic only.
+- **Next:** review #2370 as a whole, then selectively recompose #2405 only after its exact code/test head is rebased and green. Keep B1/B2 Redmi latency/correctness, B3 utility, Android UI/background/voice and device rollback open. No user action.

@@ -296,6 +296,10 @@ def _fit_role_receivers(model, train, holdout, train_rows, holdout_rows):
     return heads, metrics
 
 
+class ModelNotWarmError(RuntimeError):
+    """The exact checkpoint is not cached; foreground callers must not cold-load it."""
+
+
 class WorldJEPAStoreConsumer:
     """Consume Store-verified T8 transitions into persistent WorldJEPA/receiver state.
 
@@ -305,9 +309,11 @@ class WorldJEPAStoreConsumer:
     """
 
     def __init__(self, store, checkpoint_dir=None, *, learning_enabled=False,
-                 seed=13, ensemble=2):
+                 seed=13, ensemble=2, recover_pending=True):
         if type(learning_enabled) is not bool:
             raise ValueError("learning_enabled must be bool")
+        if type(recover_pending) is not bool:
+            raise ValueError("recover_pending must be bool")
         if type(seed) is not int or not 0 <= seed <= 2**63 - 1:
             raise ValueError("seed")
         if type(ensemble) is not int or not 1 <= ensemble <= 16:
@@ -329,16 +335,26 @@ class WorldJEPAStoreConsumer:
         self.learning_enabled = learning_enabled
         self.seed = seed
         self.ensemble = ensemble
+        # Read-only B1/B2 consumers may reuse only a source/checkpoint-exact cache.
+        # Training loads remain private copies so rejected updates cannot mutate it.
+        self._cached_model_key = None
+        self._cached_model = None
         # Recover a prior process that stopped between publish and pending-name cleanup.
-        with self._locked(True):
-            world_jepa_shadow_checkpoint.cleanup_pending(self.home)
+        # Read-only foreground consumers may skip recovery and take a nonblocking
+        # shared lock instead; a pending/incomplete checkpoint then fails closed.
+        if recover_pending:
+            with self._locked(True):
+                world_jepa_shadow_checkpoint.cleanup_pending(self.home)
 
     @contextmanager
-    def _locked(self, exclusive=True):
+    def _locked(self, exclusive=True, blocking=True):
         if self.lock_path.is_symlink():
             raise ValueError("unsafe consumer lock")
         with open(self.lock_path, "a+b") as lock:
-            fcntl.flock(lock.fileno(), fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH)
+            operation = fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH
+            if not blocking:
+                operation |= fcntl.LOCK_NB
+            fcntl.flock(lock.fileno(), operation)
             try:
                 yield
             finally:
@@ -538,11 +554,28 @@ class WorldJEPAStoreConsumer:
             raise ValueError("missing or unsafe WorldJEPA checkpoint")
         return path
 
-    def _load_model(self, record):
+    def _clear_model_cache(self):
+        self._cached_model_key = None
+        self._cached_model = None
+
+    def _load_model(self, record, *, allow_cold=True, cache=False):
+        if type(allow_cold) is not bool or type(cache) is not bool:
+            raise ValueError("model cache flags must be bool")
+        if not cache and not allow_cold:
+            raise ValueError("warm-only reads require the shared cache")
+        key = (record["checkpoint_sha256"], record["source_sha256"])
+        if cache and self._cached_model is not None and self._cached_model_key == key:
+            return self._cached_model
+        if cache and not allow_cold:
+            raise ModelNotWarmError("exact WorldJEPA checkpoint is not warm")
         path = self._checkpoint_path(record)
-        return world_jepa_shadow_checkpoint.load(
+        model = world_jepa_shadow_checkpoint.load(
             path, record["source_sha256"], record["checkpoint_sha256"]
         )
+        if cache:
+            self._cached_model_key = key
+            self._cached_model = model
+        return model
 
     def _prune_checkpoints(self, state):
         keep = {

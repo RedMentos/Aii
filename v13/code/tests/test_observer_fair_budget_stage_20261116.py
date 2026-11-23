@@ -20,12 +20,35 @@ def load(path, name):
 
 
 class ObserverStageTests(unittest.TestCase):
-    def test_exact_anchors_reject_double_application_and_preserve_upstream(self):
+    def test_exact_anchors_are_idempotent_and_reject_tampering(self):
         module = load(HELPER, 'observer_layer')
         result = module.apply_sources(CODE, {'v13/upstream_example.py': b'unchanged'})
         self.assertEqual(result['v13/upstream_example.py'], b'unchanged')
+        second = module.apply_sources(CODE, result)
+        self.assertEqual(second, result)
+        tampered = dict(result)
+        tampered['v13/runtime.py'] = b'tampered runtime bytes'
         with self.assertRaisesRegex(ValueError, 'anchor changed'):
-            module.apply_sources(CODE, result)
+            module.apply_sources(CODE, tampered)
+
+    def test_existing_native_success_variant_is_recognized(self):
+        module = load(HELPER, 'observer_existing_success')
+        result = module.apply_sources(CODE, {})
+        budget = result['v13/native_turn_budget.py']
+        self.assertEqual(budget.count(b'data=row.get("metadata")'), 1)
+        self.assertIn(b'native["generated_tokens"] > 0', budget)
+
+    def test_existing_cognition_fair_slice_is_recognized_without_rewrite(self):
+        module = load(HELPER, 'observer_existing_cognition')
+        original = (CODE / 'v13/cognition.py').read_bytes()
+        result = module.apply_sources(CODE, {})
+        cognition = result['v13/cognition.py']
+        self.assertEqual(cognition, original)
+        for marker in (b'observer_deadline=deadline', b'minimum_role_slice_s',
+                       b'native_body_budgeted_for_c3', b'preanswer_seconds_available',
+                       b'native_body_deferred_for_c3'):
+            self.assertIn(marker, cognition)
+        self.assertEqual(cognition.count(b'observer_deadline=deadline'), 1)
 
     def test_final_composed_runtime_and_native_success_contract(self):
         module = load(HELPER, 'observer_pins')

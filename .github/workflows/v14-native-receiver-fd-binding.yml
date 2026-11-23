@@ -1,0 +1,42 @@
+name: V14 native receiver descriptor binding
+
+on:
+  push:
+    branches:
+      - core/v14-native-receiver-fd-bound-load-20261123
+      - boss/v14-fair-budget-current-base-20261122-run14
+  pull_request:
+    branches:
+      - gpt6/v13-private-remote-bridge-20261111
+    paths:
+      - "v13/code/v13/native_latent_receiver.py"
+      - "v13/code/tests/test_native_latent_receiver.py"
+      - ".github/workflows/v14-native-receiver-fd-binding.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  native-receiver-fd-binding:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install focused test dependency
+        run: python -m pip install pytest==9.2.0
+      - name: Compile exact receiver and test
+        run: python -m py_compile v13/code/v13/native_latent_receiver.py v13/code/tests/test_native_latent_receiver.py
+      - name: Run exact native receiver tests with fake executable
+        env:
+          PYTHONPATH: v13/code
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python -m pytest -q v13/code/tests/test_native_latent_receiver.py

@@ -10,9 +10,43 @@ import math
 import numpy as np
 
 from . import world_model
-from .world_jepa_consumer import WorldJEPAStoreConsumer, receiver_utility_gate
+from .world_jepa_consumer import ModelNotWarmError, WorldJEPAStoreConsumer, receiver_utility_gate
 
 RECEIVER_ROLES = ("B1_DETAIL", "B2_GIST", "SELF_MODEL")
+MIN_ACTION_SUPPORT = 8
+
+
+def _train_split_action_support(active, actions):
+    """Count action support from train IDs only; never count held-out rows."""
+    train_ids = active.get("train_ids")
+    rows = active.get("experience_rows")
+    if (type(train_ids) not in (list, tuple) or not train_ids
+            or type(rows) is not list):
+        return None
+    train_id_set = set()
+    for action_id in train_ids:
+        if type(action_id) is not str or not action_id or action_id in train_id_set:
+            return None
+        train_id_set.add(action_id)
+    counts = {action: 0 for action in actions}
+    seen = set()
+    for row in rows:
+        if type(row) is not dict:
+            return None
+        action_id = row.get("action_id")
+        if action_id not in train_id_set:
+            continue
+        if action_id in seen:
+            return None
+        seen.add(action_id)
+        route = row.get("a")
+        if type(route) is not str or route not in world_model.ACTIONS:
+            return None
+        if route in counts:
+            counts[route] += 1
+    if seen != train_id_set:
+        return None
+    return counts
 
 
 def _state_vector(state):
@@ -52,8 +86,72 @@ def _readout_output(role, prediction):
     }
 
 
-def receiver_matrix(store, state, actions, home=None):
+def warm_receiver_cache(store, home=None, *, nonblocking=True):
+    """Warm the exact active readout checkpoint from an idle/postcommit worker.
+
+    This is read-only: it does not train, change weights, grant authority, or
+    perform a cold load on a foreground B1/B2 request. The shared Store-scoped
+    consumer is the same instance later used by receiver_matrix().
+    """
+    if type(nonblocking) is not bool:
+        raise ValueError("receiver cache lock flag must be bool")
+    root = Path(home if home is not None else store.home) / "world_jepa"
+    learner = getattr(store, "_v14_world_jepa_consumer", None)
+    if (not isinstance(learner, WorldJEPAStoreConsumer)
+            or Path(getattr(learner, "home", root)) != root):
+        learner = WorldJEPAStoreConsumer(
+            store, root, learning_enabled=False, recover_pending=False
+        )
+        setattr(store, "_v14_world_jepa_consumer", learner)
+    try:
+        with learner._locked(False, blocking=not nonblocking):
+            stored, _ = learner._read_state()
+            active = stored.get("active") if type(stored) is dict else None
+            if active is None:
+                learner._clear_model_cache()
+                return {
+                    "status": "NO_CHECKPOINT",
+                    "decision_authority": "NONE",
+                    "native_body_consumed": False,
+                    "native_body_weights_changed": False,
+                }
+            learner._load_model(active, allow_cold=True, cache=True)
+            return {
+                "status": "WARMED",
+                "checkpoint_sha256": active["checkpoint_sha256"],
+                "source_sha256": active["source_sha256"],
+                "decision_authority": "NONE",
+                "native_body_consumed": False,
+                "native_body_weights_changed": False,
+            }
+    except BlockingIOError:
+        return {
+            "status": "BUSY",
+            "decision_authority": "NONE",
+            "native_body_consumed": False,
+            "native_body_weights_changed": False,
+        }
+    except (ValueError, TypeError, KeyError, OSError, OverflowError,
+            ArithmeticError, AttributeError) as exc:
+        try:
+            learner._clear_model_cache()
+        except Exception:
+            pass
+        return {
+            "status": "UNAVAILABLE",
+            "error": type(exc).__name__,
+            "decision_authority": "NONE",
+            "native_body_consumed": False,
+            "native_body_weights_changed": False,
+        }
+
+
+def receiver_matrix(store, state, actions, home=None, *, nonblocking=False, warm_only=False):
     """Read role heads for candidate actions with exactly one checkpoint load."""
+    if type(nonblocking) is not bool or type(warm_only) is not bool:
+        raise ValueError("receiver lock/cache flags must be bool")
+    if warm_only and not nonblocking:
+        raise ValueError("warm-only receiver must be nonblocking")
     vector = _state_vector(state)
     if (type(actions) not in (list, tuple) or not actions
             or len(actions) > len(world_model.ACTIONS)
@@ -62,14 +160,24 @@ def receiver_matrix(store, state, actions, home=None):
             or len(set(actions)) != len(actions)):
         raise ValueError("invalid receiver action list")
     root = Path(home if home is not None else store.home) / "world_jepa"
-    learner = WorldJEPAStoreConsumer(store, root, learning_enabled=False)
+    learner = getattr(store, "_v14_world_jepa_consumer", None)
+    if (not isinstance(learner, WorldJEPAStoreConsumer)
+            or Path(getattr(learner, "home", root)) != root):
+        learner = WorldJEPAStoreConsumer(
+            store, root, learning_enabled=False, recover_pending=not nonblocking
+        )
+        setattr(store, "_v14_world_jepa_consumer", learner)
     try:
-        with learner._locked(False):
+        with learner._locked(False, blocking=not nonblocking):
             stored, _ = learner._read_state()
             active = stored["active"]
             if active is None:
+                learner._clear_model_cache()
                 raise ValueError("WorldJEPA checkpoint unavailable")
-            model = learner._load_model(active)
+            model = learner._load_model(active, allow_cold=not warm_only, cache=True)
+            support_counts = _train_split_action_support(active, actions)
+            if support_counts is None:
+                raise ValueError("WorldJEPA train-split support unavailable")
             # Apply the same per-role held-out admission used by the single-readout
             # API. The Planner consumes this batched path directly, so gating only
             # WorldJEPAStoreConsumer.readout would leave a real consumer bypass.
@@ -79,13 +187,29 @@ def receiver_matrix(store, state, actions, home=None):
             }
             matrix = {}
             for action in actions:
+                matrix[action] = {}
+                support_samples = support_counts[action]
+                if support_samples < MIN_ACTION_SUPPORT:
+                    for role in RECEIVER_ROLES:
+                        matrix[action][role] = {
+                            "role": role,
+                            "status": "ACTION_SUPPORT_INSUFFICIENT",
+                            "support_samples": support_samples,
+                            "support_min_samples": MIN_ACTION_SUPPORT,
+                            "support_scope": "TRAIN_SPLIT_ONLY",
+                            "checkpoint_sha256": active["checkpoint_sha256"],
+                            "source_sha256": active["source_sha256"],
+                            "decision_authority": "NONE",
+                            "native_body_consumed": False,
+                            "native_body_weights_changed": False,
+                        }
+                    continue
                 x = np.asarray([vector + [0.0, 0.0, 0.0]], dtype=np.float64)
                 a = np.asarray([world_model.onehot(action)], dtype=np.float64)
                 latent, spread = model.predict(x, a)
                 uncertainty = float(np.asarray(spread).reshape(-1)[0])
                 if not math.isfinite(uncertainty) or uncertainty < 0:
                     raise ValueError("nonfinite receiver uncertainty")
-                matrix[action] = {}
                 for role in RECEIVER_ROLES:
                     utility = utility_by_role[role]
                     if not utility["accepted"]:
@@ -93,6 +217,9 @@ def receiver_matrix(store, state, actions, home=None):
                             "role": role,
                             "status": "RECEIVER_UTILITY_REJECTED",
                             "receiver_utility": utility,
+                            "support_samples": support_samples,
+                            "support_min_samples": MIN_ACTION_SUPPORT,
+                            "support_scope": "TRAIN_SPLIT_ONLY",
                             "checkpoint_sha256": active["checkpoint_sha256"],
                             "source_sha256": active["source_sha256"],
                             "decision_authority": "NONE",
@@ -114,11 +241,43 @@ def receiver_matrix(store, state, actions, home=None):
                         "source_sha256": active["source_sha256"],
                         "status": "SHADOW_READOUT_ONLY",
                         "receiver_utility": utility,
+                        "support_samples": support_samples,
+                        "support_min_samples": MIN_ACTION_SUPPORT,
+                        "support_scope": "TRAIN_SPLIT_ONLY",
                         "decision_authority": "NONE",
                         "native_body_consumed": False,
                         "native_body_weights_changed": False,
                     }
             return matrix
+    except BlockingIOError:
+        return {
+            action: {
+                role: {
+                    "status": "BUSY",
+                    "role": role,
+                    "error": "LOCK_BUSY",
+                    "decision_authority": "NONE",
+                    "native_body_consumed": False,
+                    "native_body_weights_changed": False,
+                }
+                for role in RECEIVER_ROLES
+            }
+            for action in actions
+        }
+    except ModelNotWarmError:
+        return {
+            action: {
+                role: {
+                    "status": "MODEL_NOT_WARM",
+                    "role": role,
+                    "decision_authority": "NONE",
+                    "native_body_consumed": False,
+                    "native_body_weights_changed": False,
+                }
+                for role in RECEIVER_ROLES
+            }
+            for action in actions
+        }
     except (ValueError, TypeError, KeyError, OSError, OverflowError,
             ArithmeticError, AttributeError) as exc:
         status = "NO_CHECKPOINT" if "checkpoint unavailable" in str(exc) else "UNAVAILABLE"

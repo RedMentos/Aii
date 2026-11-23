@@ -12,8 +12,16 @@ from pathlib import Path
 SOURCE_SHA256 = {
     # Exact release, reviewed World builder, and reviewed Termux builder output.
     'a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38',
+    '08c1ef961b0c7316da8c1c8265feb71a7a4acf009018788e7accb81eecb2337d',
+    'b4bd2eb39cffd62f04ef8932e57223b7b1adae08039509fc1457e3b82f2f15bc',
+    '85a2f94e642a787173fcc973270516a39bef4cb2145c3a19a638cb71975f9235',
+    'b5d17df38c119d124d679233c4026d237a86162e31f1320b7178ed7b592497dc',
+    '650f78dc277cc06d23f9c0776bae7168b2bb7878e778a2fb01b5203aba86c4e4',
+    'c64ed6170bbc49c3a60d24d2566d10e9d53586c6608534c738a10b8834718c52',
+    '45fe67f66ad3bac2491c877be3a0c63f20b20014bf7ccfa15b1df236dd08b8ba',
     'a217e50b6a821675e2b799d1d4de8c957708aa04aabc95a2e34da9b24c0c215b',
     '0196f880576a1f1f95840ef12eb0b35928f3f442715f3d86f17dc38c4c22305d',
+    'fcc322cf58a485166064abb20c0382fb75cdb8f1ff39b786042f9c15f60695e3',
     'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2',
 }
 
@@ -90,17 +98,31 @@ def apply_source(raw):
     source_hash = sha256(raw).hexdigest()
     if source_hash not in SOURCE_SHA256:
         raise ValueError('postcommit observer runtime hash mismatch')
-    for before, after in REPLACEMENTS:
-        # The reviewed #1990 stage already adds per-role deadline support.
-        # Preserve that signature while adding foreground-attempt tracking.
-        if (source_hash == 'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2'
-                and before == "                def ask(role,focus=None,use_peer=True):\n"):
-            before = before.replace('use_peer=True)', 'use_peer=True,role_end=None)')
-            after = after.replace('use_peer=True)', 'use_peer=True,role_end=None)')
+    for index, (before, after) in enumerate(REPLACEMENTS):
+        # Current fair-budget Runtime sources removed the older "and not offers"
+        # guard before this overlay was composed. Accept that exact known variant
+        # as well; the final replacement still applies only to a pinned source.
+        if index == 4 and raw.count(before.encode('utf-8')) == 0 and raw.count(after.encode('utf-8')) == 0:
+            before = (
+                "        if status=='FINAL' and not direct and self.cfg['observer_mode']=='background' and not (wake_decision and wake_decision['learned'] and wake_decision['action']=='none') and self.jobs.empty() and not self.stop.is_set() and rmodes.policy(self.guard.mode)['background_observers']:\n"
+            )
+        # Some pinned Runtime variants already carry the per-role deadline
+        # parameter. Adapt only the exact unique signature, never a broad match.
+        if index == 3 and raw.count(before.encode('utf-8')) == 0 and raw.count(after.encode('utf-8')) == 0:
+            role_end_before = before.replace('use_peer=True)', 'use_peer=True,role_end=None)')
+            role_end_after = after.replace('use_peer=True)', 'use_peer=True,role_end=None)')
+            if raw.count(role_end_before.encode('utf-8')) == 1 and raw.count(role_end_after.encode('utf-8')) == 0:
+                before, after = role_end_before, role_end_after
         old, new = before.encode('utf-8'), after.encode('utf-8')
-        if raw.count(old) != 1:
-            raise ValueError('postcommit observer anchor mismatch')
-        raw = raw.replace(old, new, 1)
+        old_count, new_count = raw.count(old), raw.count(new)
+        if old_count == 1 and new_count == 0:
+            raw = raw.replace(old, new, 1)
+        elif old_count == 0 and new_count == 1:
+            # The exact source hash is allowlisted above; this replacement is
+            # already present in the staged Runtime and must not be duplicated.
+            pass
+        else:
+            raise ValueError('postcommit observer anchor mismatch: replacement ' + str(index))
     compile(raw, 'v13/runtime.py', 'exec')
     return raw
 

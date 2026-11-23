@@ -1,3 +1,19 @@
+# V14 — current user-facing handoff (2026-11-23T06:11:31.207Z)
+
+**User action: none. Do not run a manual Termux command or send UPDATE_REQUEST/CHAT_SEND/LOG_PAGE. Do not download or swap models.**
+
+- Installed Redmi release remains `aed1d2b826290c95c70356b5d8b864b5ef382be4`; private owner-read #702 confirms auto-update enabled, Runtime/Dashboard UP_TO_DATE and last_error NONE.
+- Boss integration PR [#2370](https://github.com/RedMentos/Aii/pull/2370) is DRAFT at code/test SHA `8661e80f8cbc39ec3afb8eb8d40171fe2d777e91`, based on the installed release SHA. Exact-head CI: **17/17 substantive workflows SUCCESS, 1 SKIPPED, 0 failures**. This is CI evidence only; the candidate is not merged or installed.
+- New candidate path: SleepRuntime performs a bounded, nonblocking, read-only warm of the exact active numeric WorldJEPA checkpoint after postcommit work; B1/B2's Store-scoped receiver can then consume the cached shadow readout. The B1/B2 body context retains its explicit “prediction only; not fact/source/permission” boundary, train-split support threshold and unsupported-action evidence within the prompt budget. No native B1/B2 weights or permissions change.
+- Current phone evidence is still poor: last stored turn 57.739 s / TTFT 41.627 s / 2 generated tokens; B1/B2 TIME_BUDGET 53.2/54.2 s; C3 probe 3.1 s. Correctness remains UNKNOWN. Instant native residency shows 0 mapped processes.
+- HEALTH #704: 1,071 MiB MemAvailable / 5,569 MiB total, 1,312 MiB disk free. HEALTH's Runtime field is UNAVAILABLE while DIAGNOSTICS #703 reports Runtime/service/dashboard RUNNING. LEARNING_STATUS #705 is UNAVAILABLE. Preserve these as separate observations.
+- Official Age 0; lab request 10 / effective stage 5; physical feature execution is not verified. No device update or new turn was initiated.
+- Local full Aii suite is blocked because no repository checkout is mounted and GitHub DNS resolution fails in this execution environment.
+
+**Next internal step:** review the green #2370 candidate, then selectively recompose JEPA temporal episodic recall from #2405 only after its exact code/test head is rebased and green on the current source-lifecycle base. Keep Redmi B1/B2 latency/correctness, trained B3 latent utility, Android voice/UI/background control and process-death/reboot rollback OPEN. No user action is currently required.
+
+---
+
 # QA & Android — temporal JEPA and source-lifecycle follow-up (2026-11-22)
 
 - JEPA/Memory PR [#2351](https://github.com/RedMentos/Aii/pull/2351), exact head 3df0c8a6a65dd2545bde62db92efc761d143032a, adds dense contiguous T8 temporal windows (history lengths 2/3), explicit censored omissions, unknown-gap breaks, connected session/source split, NumPy WorldJEPA + EMA/Adam/checkpoint persistence, and B1/B2/SELF shadow readouts. It is wired into SleepRuntime post-commit but has no prompt consumer or native body-weight effect. Synthetic Store/T8 fixtures only. Exact CI currently queued; PR is DRAFT / NOT_RELEASED.
@@ -1690,3 +1706,20 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 3. Continue whole-Canon QA; do not use the green release CI or updater receipt as evidence that the slow/incorrect native chat path is fixed.
 
 **Redmi status:** installed c4eb82 / updater up-to-date; native quality and Android companion acceptance remain UNVERIFIED. **User action: none.**
+
+
+---
+
+## Boss & Integration — current whole-system handoff (2026-11-23T04:03:19.912Z)
+
+**No user action is required. Do not run Termux, send an UPDATE_REQUEST, CHAT_SEND or LOG_PAGE, or download/swap a model.**
+
+- **Release:** `gpt6/v13-private-remote-bridge-20261111` is exactly `aed1d2b826290c95c70356b5d8b864b5ef382be4`. Its 21 observed exact-commit GitHub workflow runs are all SUCCESS. Private PIPELINE_STATUS #694 confirms that same SHA installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE, and last_error NONE.
+- **Candidate:** Boss PR [#2370](https://github.com/RedMentos/Aii/pull/2370) is DRAFT at `9267fda23b282060369428c28fc6e1864664b0e4`, based on the release SHA. The raw Runtime SHA-256 and Git blob pins, arithmetic/RAW-EAR consumers, Termux12→Termux21→stage→runtime-deployer chain, and direct Termux12 source pins were fetched back and matched. This is source-contract readback, not execution.
+- **Candidate CI:** 17 entries observed: 14 QUEUED, 1 PENDING, 1 CANCELLED, 1 SKIPPED. No completed exact-head test is available. The candidate is NOT_RELEASED.
+- **Redmi:** private #695 repeats a stored FINAL turn of 57.739 s, TTFT 41.627 s, C3 prefill 38.945 s, 751 prompt tokens and 2 generated tokens; correctness is UNKNOWN. B1/B2 are TIME_BUDGET at 53.2/54.2 s; C3 probe 3.1 s; native probe SMOKE_PARTIAL. Instant native-residency sample reports 0 mapped processes / 0 MiB PSS/RSS; that is not free RAM or sustained residency. HEALTH #696 reports 1,402 MiB MemAvailable and 1,300 MiB disk free, but Runtime is UNAVAILABLE there while DIAGNOSTICS reports RUNNING. Preserve this discrepancy.
+- **Rights:** official Age 0; lab stage requested 10/effective implemented 5; physical feature execution false; learning commit authority requires separate SHADOW.
+- **Other lanes:** #2400 descriptor-bound receiver, #2377 manifest/file-identity guard, #2406 companion registry/receipt recovery, #2375 projected-frame/A3 student and #2408 MediaProjection composition remain separate open candidates. None establishes trained B3, an Android screenshot path, APK/device acceptance, or a production permission.
+- **Local tests:** full local Aii suite BLOCKED because no repository checkout is mounted and GitHub DNS resolution fails in this execution environment.
+
+**Next internal action:** poll exact #2370 head `9267fda23b282060369428c28fc6e1864664b0e4`; inspect logs for that SHA only; repair demonstrated failures and keep the PR draft until all exact tests pass. Then review and compose the cross-agent PRs on the same base. Do not request a device update until exact candidate CI and release review are green.

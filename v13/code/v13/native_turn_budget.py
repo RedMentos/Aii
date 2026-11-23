@@ -1,16 +1,11 @@
 """Measured-failure recovery for the *whole-turn* native compute envelope.
 
-Why this exists: on a real 30 s Redmi turn, observers held the pipeline until
-~15 s; then C3 alone needed 10.8 s for native load and still got 0 generated
-tokens before the deadline. Reducing C3's prompt to 161 tokens did not help.
-A pre-answer B1/B2 pass that repeatedly yields zero usable offers must not
-consume the last time reserved for the only external C3 output.
-
-This is *not* permanently removing either hemisphere. It temporarily moves
-their work to the already existing, bounded post-commit observer path when
-the owner uses background observers, the deadline is short, and at least two
-recent real C3 turns failed before generating any token. Long/deep turns
-retain the original 45% pre-answer observation window. Age remains unchanged.
+A short turn with repeated real C3 zero-token prefill failures reserves a
+measured minimum for the outward C3 path. The remaining pre-answer window is
+shared fairly by sequential B1/B2 passes; one body cannot consume the peer's
+entire opportunity. A body is deferred to the existing post-commit path only
+when its own remaining slice is below the minimum. Long/deep turns keep the
+ordinary 45% observer window. Age and learning rights are unchanged.
 """
 
 from __future__ import annotations
@@ -24,6 +19,7 @@ MAX_RECENT = 6
 RECOVERY_MAX_DEADLINE_S = 50
 NATIVE_FIRST_RESERVE_FRACTION = .87
 DEFAULT_PREANSWER_FRACTION = .45
+MIN_ROLE_SLICE_S = 1.0
 
 
 def zero_token_prefill_failure(row):
@@ -41,6 +37,7 @@ def zero_token_prefill_failure(row):
     native = data.get("runner")
     return (isinstance(native, dict)
             and native.get("role") == "C3_LANGUAGE"
+            and type(native.get("generated_tokens")) is int
             and native.get("generated_tokens") == 0
             and native.get("last_phase") in {"load", "template", "prefill"})
 
@@ -58,10 +55,13 @@ def recent_proof(store):
         return []
 
 
-def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=False):
+def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=False, observer_deadline=None):
     for number in (start,deadline,now):
         if type(number) not in (int, float) or not math.isfinite(number):
             raise ValueError("invalid monotonic budget")
+    if observer_deadline is not None and (
+            type(observer_deadline) not in (int, float) or not math.isfinite(observer_deadline)):
+        raise ValueError("invalid observer deadline")
     if deadline < start or now < start-1:
         raise ValueError("time plan clocks invalid")
     total = deadline-start
@@ -73,7 +73,17 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
         if not isinstance(row, dict):
             break
         status=row.get("status")
-        if status == "FINAL":
+        data=row.get("metadata")
+        if isinstance(data, str):
+            try:
+                data=json.loads(data)
+            except (ValueError, TypeError):
+                data=None
+        native=data.get("runner") if isinstance(data, dict) else None
+        if (status == "FINAL" and isinstance(native, dict)
+                and native.get("role") == "C3_LANGUAGE"
+                and type(native.get("generated_tokens")) is int
+                and native["generated_tokens"] > 0):
             recent_good += 1
         else:
             break
@@ -93,6 +103,8 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
         reserve=deadline-ordinary_end
         allotted=ordinary_end
         reason="NORMAL_COGNITIVE_PREANSWER"
+    if observer_deadline is not None:
+        allotted=min(allotted,observer_deadline)
     # Expired observer windows are honest (zero). The existing observer
     # scheduler and focal loop must not block C3 to make up missed time.
     remaining = max(0,allotted-now)
@@ -105,7 +117,8 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
         "c3_reserved_seconds": round(reserve,3),
         "recent_real_prefill_failures": failures,
         "recent_success_streak": recent_good,
-        "postcommit_body_eligible": recover,
+        "postcommit_body_eligible": recover and remaining < MIN_ROLE_SLICE_S,
+        "minimum_role_slice_s": MIN_ROLE_SLICE_S,
         "age_changed": False,
         "memory_or_native_weights_changed": False,
     }

@@ -1,4 +1,8 @@
-"""Synthetic scheduler and real staged Runtime/SQLite observer contracts."""
+"""Synthetic scheduler and real staged Runtime/SQLite observer contracts.
+
+Short C3 recovery preserves the 26 s reserve and gives the two pre-answer
+bodies only the remaining 4 s; deep turns retain the ordinary 45% window.
+"""
 import copy
 import json
 from pathlib import Path
@@ -136,17 +140,17 @@ class SchedulingTests(unittest.TestCase):
             malformed = {'status': 'DEADLINE', 'metadata': {'runner': {
                 'role': 'C3_LANGUAGE', 'generated_tokens': count, 'last_phase': 'prefill'}}}
             self.assertFalse(native_budget.zero_token_prefill_failure(malformed))
-        fair = native_budget.plan(100, 130, 104, recent=[failed, failed],
+        fair = native_budget.plan(100, 130, 100, recent=[failed, failed],
                                   background_enabled=True, observer_deadline=113.5)
         self.assertTrue(fair['recovery'])
-        self.assertEqual(fair['preanswer_end_monotonic'], 113.5)
-        self.assertAlmostEqual(fair['preanswer_seconds_available'], 9.5, places=2)
-        self.assertAlmostEqual(fair['c3_reserved_seconds'], 16.5, places=2)
+        self.assertEqual(fair['preanswer_end_monotonic'], 104.0)
+        self.assertAlmostEqual(fair['preanswer_seconds_available'], 4.0, places=2)
+        self.assertAlmostEqual(fair['c3_reserved_seconds'], 26.0, places=2)
         self.assertEqual(fair['minimum_role_slice_s'], 1.0)
-        first_slot = native_budget.plan(100, 130, 104, recent=[failed, failed],
-                                        background_enabled=True, observer_deadline=106.75)
+        first_slot = native_budget.plan(100, 130, 100, recent=[failed, failed],
+                                        background_enabled=True, observer_deadline=102.75)
         self.assertAlmostEqual(first_slot['preanswer_seconds_available'], 2.75, places=2)
-        self.assertAlmostEqual(first_slot['c3_reserved_seconds'], 16.5, places=2)
+        self.assertAlmostEqual(first_slot['c3_reserved_seconds'], 26.0, places=2)
 
 
 class RuntimeObserverTests(unittest.TestCase):
@@ -340,12 +344,61 @@ class RuntimeObserverTests(unittest.TestCase):
                 budgets = [json.loads(row['metrics']) for row in budget_rows]
                 self.assertEqual({item['role'] for item in budgets}, {'B1_DETAIL', 'B2_GIST'})
                 self.assertTrue(all(item['status'] == 'PREANSWER_BUDGETED' for item in budgets))
-                self.assertTrue(all(abs(item['c3_reserved_seconds'] - 16.5) < .01 for item in budgets))
+                self.assertTrue(all(abs(item['c3_reserved_seconds'] - 26.0) < .01 for item in budgets))
                 self.assertTrue(all(item['recent_real_prefill_failures'] == 2 for item in budgets))
+                # The 30 s turn reserves 26 s for C3; the sequential observer
+                # therefore grants a 2 s first slice and a bounded second slice.
+                self.assertAlmostEqual(calls[0][1] - start, 2.0, places=2)
+                self.assertAlmostEqual(calls[1][1] - start, 4.0, places=2)
                 self.assertEqual(r.cfg['learning_mode'], 'RECORD_ONLY')
                 self.assertFalse(r.pool.pids())
             finally:
                 r.close()
+
+
+class LongTurnBudgetTests(unittest.TestCase):
+    def test_ninety_second_composed_stage_splits_both_bodies_and_reserves_c3(self):
+        # This file is executed from the final staged tree by
+        # test_final_composed_runtime_and_native_success_contract, so these
+        # imports exercise the composed module, not the source-tree policy.
+        failed = {'status': 'DEADLINE', 'metadata': {'runner': {
+            'role': 'C3_LANGUAGE', 'generated_tokens': 0, 'last_phase': 'prefill'}}}
+        plan = native_budget.plan(
+            100.0, 190.0, 100.0, recent=[failed, failed],
+            background_enabled=True,
+        )
+        self.assertFalse(plan['recovery'])
+        self.assertEqual(plan['reason'], 'NORMAL_COGNITIVE_PREANSWER')
+        self.assertAlmostEqual(plan['preanswer_end_monotonic'], 140.5)
+        self.assertAlmostEqual(plan['preanswer_seconds_available'], 40.5)
+        self.assertAlmostEqual(plan['c3_reserved_seconds'], 49.5)
+        self.assertFalse(plan['postcommit_body_eligible'])
+        self.assertFalse(plan['age_changed'])
+        self.assertFalse(plan['memory_or_native_weights_changed'])
+
+        now = [100.0]
+        seen = []
+        schedule = obs.plan(obs.DEFAULT, ['B1_DETAIL', 'B2_GIST'], 'ninety-second-stage')
+
+        def ask(role, peer, role_end=None):
+            self.assertTrue(peer)
+            self.assertIsNotNone(role_end)
+            seconds = role_end - now[0]
+            seen.append((role, seconds, role_end))
+            now[0] = role_end
+            return role
+
+        offers = obs.run(
+            schedule, ask, plan['preanswer_end_monotonic'],
+            lambda role, exc: self.fail(f'{role} unexpectedly deferred: {exc}'),
+            clock=lambda: now[0], budgeted=True,
+        )
+        self.assertEqual(offers, ['B1_DETAIL', 'B2_GIST'])
+        self.assertEqual([item[0] for item in seen], ['B1_DETAIL', 'B2_GIST'])
+        self.assertAlmostEqual(seen[0][1], 20.25, places=2)
+        self.assertAlmostEqual(seen[1][1], 20.25, places=2)
+        self.assertAlmostEqual(seen[0][2], 120.25, places=2)
+        self.assertAlmostEqual(seen[1][2], 140.5, places=2)
 
 
 if __name__ == '__main__':

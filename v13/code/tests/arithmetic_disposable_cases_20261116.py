@@ -10,6 +10,7 @@ from v13.broker import decide, egress_type
 from v13.contracts import packet, validate
 from v13.focal import ActionGate
 from v13.operator import Operator
+from v13.arithmetic_reflex import exact_arithmetic
 from v13.runtime import Runtime
 
 
@@ -38,6 +39,16 @@ def packets(r, event, kind):
     return [json.loads(row['payload']) for row in r.store.rows(
         'SELECT payload FROM packets WHERE event_id=? AND kind=? ORDER BY rowid',
         (event, kind))]
+
+
+@pytest.mark.parametrize('expression', ['2/2', '12/11', '8/4', '2026/11', '2026-11'])
+def test_slash_or_iso_date_shapes_do_not_enter_arithmetic_without_cue(expression):
+    assert exact_arithmetic(expression) is None
+
+
+def test_explicit_math_cue_allows_slash_division():
+    assert exact_arithmetic('calculate 2/2') == '1'
+    assert exact_arithmetic('berechne 2/2') == '1'
 
 
 def test_real_arithmetic_source_action_egress_and_restart(runtime):
@@ -88,7 +99,7 @@ def test_real_arithmetic_source_action_egress_and_restart(runtime):
         restored.close()
 
 
-@pytest.mark.parametrize('question, answer', [('0*123', '0'), ('1/3', '1/3'), ('calculate -12 * 3', '-36')])
+@pytest.mark.parametrize('question, answer', [('0*123', '0'), ('calculate 1/3', '1/3'), ('calculate -12 * 3', '-36')])
 def test_zero_fraction_and_signed_output(runtime, question, answer):
     row, meta = turn(runtime, question)
     assert row['text'] == answer

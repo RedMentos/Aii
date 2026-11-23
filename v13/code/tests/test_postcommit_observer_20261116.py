@@ -39,13 +39,19 @@ class PinValidation(unittest.TestCase):
         raw = (CODE / 'v13/runtime.py').read_bytes()
         sources = (raw, world.build_sources(CODE)['v13/runtime.py'],
                    termux.build_sources(CODE, include_postcommit=False)['v13/runtime.py'])
-        self.assertTrue({hashlib.sha256(x).hexdigest() for x in sources}
-                        <= patch.SOURCE_SHA256)
+        actual_hashes = {hashlib.sha256(x).hexdigest() for x in sources}
+        missing_hashes = actual_hashes - patch.SOURCE_SHA256
+        self.assertFalse(missing_hashes, 'unapproved Runtime source hashes: ' + ', '.join(sorted(missing_hashes)))
         for source in sources:
             with self.subTest(source=hashlib.sha256(source).hexdigest()):
                 result = patch.apply_source(source)
-                self.assertNotEqual(result, source)
+                # Exact pinned sources may already contain some/all reviewed
+                # post-commit replacements; applying the overlay is idempotent.
                 self.assertEqual(result, patch.apply_source(source))
+                self.assertEqual(result.count(b'foreground_body_attempts=set()'), 1)
+                self.assertEqual(result.count(b'deferred_wake_route=None'), 1)
+                if b'foreground_body_attempts=set()' not in source:
+                    self.assertNotEqual(result, source)
         self.assertEqual((CODE / 'v13/runtime.py').read_bytes(), raw)
 
     def test_changed_unknown_and_wrong_type_fail_closed(self):
@@ -86,7 +92,8 @@ class FakeRunner:
             yield json.dumps({'summary': 'The plan needs a reserve.',
                               'quotes': ['The plan preserves a long-term reserve.'],
                               'uncertainty': 'low', 'needs_reentry': False})
-        else:
+        elif self.role == 'C3_LANGUAGE':
+            self.case.c3_prompts.append(messages)
             yield 'One combined response.'
 
 
@@ -103,6 +110,7 @@ class RuntimePostcommit(unittest.TestCase):
         self.runtime._route = Mock(return_value=('both', {'source': 'TEST_BOTH'}))
         self.runtime.learner.output_delta = Mock(return_value=None)
         self.calls = []
+        self.c3_prompts = []
         self.behavior = lambda role, state: 'ok'
         self.runners = {}
 
@@ -132,15 +140,24 @@ class RuntimePostcommit(unittest.TestCase):
         self.runtime.cfg.update(deadline_seconds=10, observer_seconds=4.4)
         self.behavior = lambda role, status: ('expire' if status != 'FINAL' else 'fail') if role == 'B1_DETAIL' else 'ok'
         event, meta = self.turn()
-        self.assertEqual(self.calls, [('B1_DETAIL', 'DRAFT'), ('C3_LANGUAGE', 'DRAFT'),
-                                      ('B2_GIST', 'FINAL'), ('B1_DETAIL', 'FINAL')])
-        self.assertEqual(meta['selected_offer_ids'], [])
+        # The short-recovery policy still gives the other body its own pre-answer slice.
+        self.assertEqual(self.calls, [('B1_DETAIL', 'DRAFT'), ('B2_GIST', 'DRAFT'),
+                                      ('C3_LANGUAGE', 'DRAFT'), ('B1_DETAIL', 'FINAL')])
+        self.assertEqual(len(meta['selected_offer_ids']), 1)
         offers = [json.loads(r['payload']) for r in self.runtime.store.rows(
             "SELECT payload FROM packets WHERE event_id=? AND kind='OfferPacket'", (event,))]
         self.assertEqual([p['role'] for p in offers], ['B2_GIST'])
+        self.assertIn(offers[0]['packet_id'], meta['selected_offer_ids'])
+        # The postcommit retry deliberately fails in this fixture. A failed
+        # observer has no OfferPacket/postcommit_offer row; its bounded failure
+        # is recorded without exception text or any effect on the committed answer.
         row = self.runtime.store.one(
-            "SELECT metrics FROM telemetry WHERE event_id=? AND kind='postcommit_offer'", (event,))
-        self.assertFalse(json.loads(row['metrics'])['affects_committed_output'])
+            "SELECT metrics FROM telemetry WHERE event_id=? AND kind='background_observer_end'", (event,))
+        self.assertIsNotNone(row)
+        metrics = json.loads(row['metrics'])
+        self.assertEqual(metrics, {'role': 'B1_DETAIL', 'error': 'Limits'})
+        self.assertEqual(len(offers), 1)
+        self.assertEqual(offers[0]['role'], 'B2_GIST')
 
     def test_one_foreground_offer_only_retries_the_missing_body(self):
         count = 0
@@ -161,6 +178,42 @@ class RuntimePostcommit(unittest.TestCase):
         self.assertNotIn(offers[1]['packet_id'], meta['selected_offer_ids'])
         self.assertEqual(self.runtime.store.read_source(offers[1]['evidence_refs'][0]),
                          'The plan preserves a long-term reserve.')
+
+    def test_both_source_bound_body_offers_are_selected_and_reach_c3(self):
+        event, meta = self.turn()
+        rows = self.runtime.store.rows(
+            "SELECT payload FROM packets WHERE event_id=? AND kind='OfferPacket' ORDER BY rowid", (event,))
+        offers = [json.loads(row['payload']) for row in rows]
+        self.assertEqual({offer['role'] for offer in offers}, {'B1_DETAIL', 'B2_GIST'})
+        packet_ids = {offer['packet_id'] for offer in offers}
+        self.assertEqual(set(meta['selected_offer_ids']), packet_ids)
+
+        event_row = self.runtime.store.one("SELECT packet FROM events WHERE id=?", (event,))
+        source_ref = json.loads(event_row['packet'])['source_ref']
+        source_text = self.runtime.store.read_source(source_ref)
+        for offer in offers:
+            self.assertEqual(offer['event_id'], event)
+            self.assertEqual(offer['brain_generation_id'], json.loads(event_row['packet'])['brain_generation_id'])
+            self.assertTrue(offer['evidence_refs'])
+            for ref in offer['evidence_refs']:
+                self.assertEqual(ref['source_id'], source_ref['source_id'])
+                quote = self.runtime.store.read_source(ref)
+                self.assertIn(quote, offer['offer']['quotes'])
+                self.assertIn(quote, source_text)
+
+        self.assertEqual(len(self.c3_prompts), 1)
+        c3_prompt = json.dumps(self.c3_prompts[0], ensure_ascii=False)
+        self.assertIn('The rent is 120 euros.', c3_prompt)
+        self.assertIn('The plan preserves a long-term reserve.', c3_prompt)
+
+        # The additive staged receipt is a transport boundary, not semantic truth.
+        receipt = self.runtime.store.one(
+            "SELECT metrics FROM telemetry WHERE event_id=? AND kind='c4_offer_context_ready'", (event,))
+        if os.environ.get('V13_TEST_POSTCOMMIT_STAGE') == '1':
+            self.assertIsNotNone(receipt)
+            metrics = json.loads(receipt['metrics'])
+            self.assertEqual(set(metrics['selected_offer_ids']), packet_ids)
+            self.assertEqual(metrics['count'], 2)
 
     def test_failed_postcommit_body_does_not_starve_other(self):
         self.runtime.cfg['observer_schedule'] = 'JEF_FIRST_THEN_BOTH'

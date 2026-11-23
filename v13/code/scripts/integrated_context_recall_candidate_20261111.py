@@ -3,15 +3,15 @@ import hashlib
 import importlib.util
 from pathlib import Path
 
-BASE_BUILDER_SHA = '2c74a4941820c0fe17b7a8136696c7e1e55ceb6d4fb75aa9d111a517f08df355'
+BASE_BUILDER_SHA = '5f6358521c280fe663caedd917a41a303b2d0385ca36e278aca37ed71705564e'
 RECALL_SHA = '56282c1d95610ce3c3266d63f48b78362d0bf32e2a7291b90a3f55e386aa1f64'
 BUDGET_SHA = 'a9fdddeb9ff67b5bb733e86bc845508d8d883afed2a035b42fc39ebc0a11526a'
 CONTEXT_SHA = '2fe8bfc4c7857f24411fea71038485900ca6fcbad2ec3361fa4ede080657861f'
-STREAM_SHA = '69267e2772143219b16fbc33118707f413b992e3e71b5715f7744508fd1f406c'
+STREAM_SHA = '7ab092333eccbc13aab6ed23968fa6d721e2c81e387836ea2fcc54a03674796c'
 RECALL_INPUT_STREAM_SHA = 'e7c9d57b999ab93f628ec07f6dc9d467d886f9a26535a161386a52f102afd6a1'
 RECALL_INPUT_STORE_SHA = 'f405894f5d61ceacce2495f4d76d003d4b500945c6d081ee561a62efd7acf11f'
 REUSE_SHA = '52de26b95606b8038b109886d81a00c2f31ad9152c81384980c9615463f5a91b'
-STORE_SHA = '929542458091d62329e3897a3c58b19998e62e01046fe9679ca8516ad593ec0e'
+STORE_SHA = '971413f6a1b8b3982a94958210388ba575e24783ece9e26b5820d0137884f620'
 
 OPERATOR_ANCHOR = b'''def operator_command(r,args):
     c=controller(r)
@@ -86,7 +86,7 @@ def build_sources(code_dir):
         hashlib.sha256(result['v13/world_semantic_evidence_candidate.py']).hexdigest().encode(), 'semantic source pin')
     stream = result['v13/archive_stream_range_candidate.py']
     if hashlib.sha256(stream).hexdigest() != STREAM_SHA:
-        raise ValueError('context recall streaming source changed')
+        raise ValueError('context recall streaming source changed: ' + hashlib.sha256(stream).hexdigest())
     stream = _replace(stream, STORE_SHA.encode(), new_store_sha, 'stream Store pin')
     stream = _replace(stream, b'import zlib\n', b'import zlib\nimport time\nfrom .source_read_budget_candidate import Budget\n', 'stream import')
     stream = _replace(stream, b'max_archive_bytes=DEFAULT_SOURCE_LIMIT, max_chars=MAX_RETURN_CHARS):',

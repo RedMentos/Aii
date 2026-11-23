@@ -9,8 +9,13 @@ from pathlib import Path
 
 PINS = {
     'v13/runtime.py': {
+        # Exact current source SHA for the fair-budget runtime input. The
+        # recovery composer validates its pinned overlay chain separately.
+        '08c1ef961b0c7316da8c1c8265feb71a7a4acf009018788e7accb81eecb2337d',
         'c23a5a133deaff66f6be560509580b83394064bbff5a72d35d47c14461536978',
         'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2',
+        'c64ed6170bbc49c3a60d24d2566d10e9d53586c6608534c738a10b8834718c52',
+        '45fe67f66ad3bac2491c877be3a0c63f20b20014bf7ccfa15b1df236dd08b8ba',
     },
     'v13/fastforward.py': {'0cc1b4b3002e0e4c400d7889a746fb42055a708ff1a12be81a59ab10d39bad05'},
     'v13/jefbridge.py': {'875000521db3d7a8efe0186d202dbea99fa7ca47c6b4b2c27f83b7231cb2c5ff'},
@@ -58,11 +63,23 @@ def apply_sources(code_dir, sources):
         path = code_dir / name
         if path.is_symlink() or not path.is_file():
             raise ValueError('controller guard source missing or unsafe: ' + name)
+        source_raw = path.read_bytes()
+        # Runtime is already transformed by the pinned upstream recovery,
+        # arithmetic and observer composers when this guard is applied. Pin
+        # the immutable on-disk source here; the caller's exact builder pins
+        # authenticate the composed bytes, and the anchors below validate
+        # that the guard can still be applied to that composition.
         raw = result.get(name)
-        if raw is None:
-            raw = path.read_bytes()
-        if hashlib.sha256(raw).hexdigest() not in allowed:
-            raise ValueError('controller guard source changed: ' + name)
+        if name == 'v13/runtime.py':
+            if hashlib.sha256(source_raw).hexdigest() not in allowed:
+                raise ValueError('controller guard source changed: ' + name)
+            if raw is None:
+                raw = source_raw
+        else:
+            if raw is None:
+                raw = source_raw
+            if hashlib.sha256(raw).hexdigest() not in allowed:
+                raise ValueError('controller guard source changed: ' + name)
         checked[name] = raw
 
     runtime = checked['v13/runtime.py']
@@ -183,8 +200,9 @@ def apply_sources(code_dir, sources):
     # output. Their verification still rejects other input changes.
     semantic_name = 'v13/world_semantic_evidence_candidate.py'
     local_name = 'v13/local_error_route_shadow_candidate.py'
-    semantic_pin = '609c9d187e11551663aea238bf07af962f8458582139bd9707c89b6f347dd8f3'
-    local_pin = '36de730d7eab40681740c1165ea0510c2412ea1180bc7f6dd7120a6cf894c471'
+    semantic_pin = '200e7b6870c16ae4cedbf2070c2fad2c2a55b9e4c4427f41703be1f7d529ca5a'
+    semantic_reference_pin = '200e7b6870c16ae4cedbf2070c2fad2c2a55b9e4c4427f41703be1f7d529ca5a'
+    local_pin = '819e95617e15b2099aca91842ee7888d994fabaf3325c38ec9e7d3bbadd3a383'
     action_pin = '86f79e8f3c26928f0a16399070f1b8d729760697a3b9e02ea9f6315ab6fcf87a'
     for name, expected in ((semantic_name, semantic_pin), (local_name, local_pin)):
         actual = hashlib.sha256(result[name]).hexdigest()
@@ -196,7 +214,7 @@ def apply_sources(code_dir, sources):
     semantic = _replace(result[semantic_name], old_action_pin.encode('ascii'),
                         action_pin.encode('ascii'), 'semantic ActionLearn dependency')
     result[semantic_name] = semantic
-    result[local_name] = _replace(result[local_name], semantic_pin.encode('ascii'),
+    result[local_name] = _replace(result[local_name], semantic_reference_pin.encode('ascii'),
         hashlib.sha256(semantic).hexdigest().encode('ascii'), 'local error semantic dependency')
 
     # Keep the existing learning/procedural suite meaningful in the staged

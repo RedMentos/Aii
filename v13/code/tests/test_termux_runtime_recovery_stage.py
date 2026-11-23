@@ -2,6 +2,7 @@
 import hashlib
 import importlib.util
 import os
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -19,6 +20,9 @@ def test_recovery_composes_with_existing_learning_and_preserves_frozen_sources(t
     dest = tmp_path / 'review'
     manifest = stage.stage(CODE, dest)
     assert manifest['status'] == 'SHADOW_REVIEW_ONLY'
+    staged_runtime = (dest / 'v13/runtime.py').read_bytes()
+    assert b'bind_learning_gate(self.store,lambda:self.cfg)' in staged_runtime
+    assert b'native_budget=plan(' in staged_runtime
     assert manifest['builder'].endswith('termux_runtime_recovery_candidate_20261121.py')
     assert b'onlineworld' in (dest / 'v13/agi/__init__.py').read_bytes()
     assert (dest / 'scripts/ask_verified_budget.py').is_file()
@@ -89,3 +93,24 @@ finally:
     assert result.returncode == 0, result.stdout + result.stderr
     for name, expected in before.items():
         assert hashlib.sha256((CODE / 'v13' / name).read_bytes()).hexdigest() == expected
+
+
+def test_record_only_guard_rejects_unpinned_runtime_source(tmp_path):
+    guard_path = CODE / 'scripts/record_only_controller_guard_20261116.py'
+    spec = importlib.util.spec_from_file_location('record_only_guard_negative', guard_path)
+    guard = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(guard)
+    sandbox = tmp_path / 'code'
+    for name in guard.PINS:
+        source = CODE / name
+        target = sandbox / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, target)
+    runtime = sandbox / 'v13/runtime.py'
+    runtime.write_bytes(runtime.read_bytes() + b'\\n# unapproved source mutation\\n')
+    try:
+        guard.apply_sources(sandbox, {})
+    except ValueError as exc:
+        assert str(exc) == 'controller guard source changed: v13/runtime.py'
+    else:
+        raise AssertionError('unapproved Runtime source mutation was accepted')

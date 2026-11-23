@@ -4,7 +4,7 @@ from pathlib import Path
 
 PINS = {
     'archive.py': 'adbdd844c2275d527a689eda789a3f247759967677e573b92bf7af7ad68404bf',
-    'store.py': '40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb',
+    'store.py': 'c413e135c765876263835140541a253a6494ebe57714ee43e18ace0c31548521',
     'common.py': '0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a',
 }
 OLD_BLOB = b'''def archive_blob(store,h):

@@ -941,3 +941,23 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
+
+
+---
+
+## R-080 — C3 small-model capability and resource candidates (2026-11-23)
+
+**Question:** Is the current 230M C3 model a plausible general reasoning core, and are there low-memory alternatives worth measuring on the Redmi Note 10 Pro?
+
+### Primary model-card evidence
+
+- **Current family — [LiquidAI/LFM2.5-230M](https://huggingface.co/LiquidAI/LFM2.5-230M):** 230M parameters, 14 layers, 19T-token training budget, 32,768 context and 10 listed languages. The official card describes it as an edge/on-device model for data extraction and lightweight agentic pipelines, and explicitly says it is not recommended for reasoning-heavy tasks such as advanced mathematics, code generation or creative writing. The card declares the `lfm1.0` license. This is a capability warning, not proof that it caused the Redmi's 2-token turn.
+- **Same-family candidate — [LiquidAI/LFM2.5-350M](https://huggingface.co/LiquidAI/LFM2.5-350M):** 350M parameters, 16 layers, 28T-token training budget, 32,768 context and a GGUF route for llama.cpp. The official card reports under-1-GB memory and 188 tok/s decode on Snapdragon Gen4, but that hardware is not the Redmi Note 10 Pro. It recommends data extraction, structured outputs and tool use, and says it is not recommended for knowledge-intensive tasks or programming. License: `lfm1.0`. It is a modest size increase, not a demonstrated general-reasoning fix.
+- **Different-family candidate — [ggml-org/Qwen3-0.6B-GGUF](https://huggingface.co/ggml-org/Qwen3-0.6B-GGUF):** Apache-2.0; Q4_0 is listed at 429 MB, Q8_0 at 805 MB and BF16/F16 at 1.51 GB. The GGUF card names Qwen3-0.6B but its metadata reports 0.8B parameters; verify exact source revision and artifact metadata before any evaluation. The larger quantized file may pressure the current device, whose fresh HEALTH snapshot reports only 1,402 MiB MemAvailable and 1,300 MiB free disk. Runtime RSS and Redmi latency are unknown.
+- **Negative comparator — [HuggingFaceTB/SmolLM2-135M-Instruct](https://huggingface.co/HuggingFaceTB/SmolLM2-135M-Instruct):** Apache-2.0 and small, but its published GSM8K 5-shot score is 1.4%; not a credible replacement for the C3 reasoning role on the evidence reviewed.
+
+### V14 decision and test plan
+
+Keep the installed C3 model unchanged. The immediate exact-arithmetic candidate in Boss PR #2370 is a deterministic, source-bound path and is preferable to asking a 230M language model to perform arithmetic unaided; it does not establish general reasoning. If the user later authorizes an experimental model trial, compare current LFM2.5-230M, LFM2.5-350M and Qwen3-0.6B Q4_0 on the same 20-turn suite with cold/warm load, prompt prefill, TTFT, decode, peak PSS/RSS, memory/disk headroom, correctness, multilingual behavior, thermal/battery impact, restart and rollback. Keep the existing model active until the measured candidate wins and the user separately approves any productive swap.
+
+**Status:** RESEARCH_ONLY / NOT_SELECTED / NOT_DOWNLOADED. No model, weight, dependency, permission or device setting changed.

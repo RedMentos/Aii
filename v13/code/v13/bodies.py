@@ -19,7 +19,7 @@ Claim limit: neither body is a sparse MoE network; the "experts" are whole disti
 """
 from pathlib import Path
 from .agi.slots import ModelSlots
-from .agi.residency import ExpertResidency
+from .agi.residency import ExpertResidency, PRESSURE_SHARE
 
 from .resource_modes import mode_of
 PRESSURE_MODE={'NORMAL':'GREEN','RECOVERY':'GREEN','PRESSURE':'ORANGE','CRITICAL':'RED'}  # legacy view; live code reads mode_of(guard) (§97.2)
@@ -104,6 +104,38 @@ class BodyFabric:
         p=Path(sl['candidate']['path']);p=p if p.is_absolute() else self.models.home/p
         return p if p.is_file() else None
     def begin_turn(self,key):self.route_key=key
+    def can_run_parallel(self):
+        """Fail closed unless distinct B1/B2 plus pinned C3 fit a measured residency budget.
+
+        The scheduler's resource mode alone is not enough: a GREEN/YELLOW mode
+        may still have a configured body budget smaller than C3+B1+B2. The
+        RunnerPool evicts on admission, so starting both asynchronously without
+        this preflight can kill the first body while the second is loading.
+        Cloud lower bounds and file-size estimates are not Android residency
+        evidence; Android requires a profile imported from this device.
+        """
+        try:
+            if not self.enabled or not distinct_bodies(self.models):
+                return False
+            from . import body_sizes
+            from .resources import device
+            mode=mode_of(getattr(self.r,'guard',None))
+            if mode not in ('GREEN','YELLOW'):
+                return False
+            allowed={'DEVICE_MEASURED'} if device().get('android') is True else {
+                'DEVICE_MEASURED','HOST_MEASURED_NOT_REDMI'
+            }
+            sizes={}
+            for role in ('C3_LANGUAGE','B1_DETAIL','B2_GIST'):
+                size,source=body_sizes.size(self.models,role,self.r.store)
+                if size is None or source not in allowed:
+                    return False
+                sizes[role]=size
+            budget=float(self.cfg.get('body_residency_mb',0))*PRESSURE_SHARE[mode]
+            fit=body_sizes.fits(sizes,budget)
+            return bool(fit and fit.get('C3+B1+B2') is True)
+        except (OSError,ValueError,TypeError,KeyError,RuntimeError,OverflowError):
+            return False
     # -- AG13 residency ----------------------------------------------------------------------------
     def admit(self,role,resident):
         """Decide before a runner for ``role`` is (re)used. Returns roles to unload first.
