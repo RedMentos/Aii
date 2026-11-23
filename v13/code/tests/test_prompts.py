@@ -29,8 +29,8 @@ class EnglishFirstPrompts(unittest.TestCase):
 class ConductAndPrivacy(unittest.TestCase):
     def test_internal_organ_offers_are_private_in_both_languages(self):
         for lang, markers in (
-            ('en', ('private inputs', 'never quote', 'not for user output')),
-            ('de', ('private Eingaben', 'zitiere sie nicht', 'nicht für die Nutzerantwort')),
+            ('en', ('private:', 'never reveal', 'Private hypotheses')),
+            ('de', ('privat:', 'nie offenlegen', 'Private Hypothesen')),
         ):
             cfg = DEFAULTS | {'answer_language': lang}
             system = prompts.text(cfg, 'system')
