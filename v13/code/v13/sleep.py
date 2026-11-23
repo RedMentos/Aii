@@ -677,7 +677,8 @@ class SleepRuntime:
             learning=consume_after_commit(
                 self.r.store,self.r.home,limit=limit,cancel_check=cancel_check)
             temporal=consume_temporal_after_commit(
-                self.r.store,self.r.home,limit=min(64,limit),cancel_check=cancel_check)
+                self.r.store,self.r.home,limit=min(64,limit),cancel_check=cancel_check,
+                runtime=self.r)
             if (learning.get('status')=='CANCELLED'
                     or temporal.get('status')=='CANCELLED' or cancel_check()):
                 result.update(status='CANCELLED',action_status=action_status,

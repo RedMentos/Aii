@@ -582,7 +582,7 @@ def test_source_forget_holds_store_lock_through_blob_unlink_against_republicatio
         store.close()
 
 
-def test_temporal_receiver_matrix_batches_bodyview_contract_with_single_readout_parity(tmp_path):
+def test_temporal_receiver_matrix_batches_bodyview_contract_with_single_readout_parity(tmp_path, monkeypatch):
     home = tmp_path / "temporal-bodyview-matrix-store"
     store = _make_store(home)
     try:
@@ -595,8 +595,57 @@ def test_temporal_receiver_matrix_batches_bodyview_contract_with_single_readout_
         )
         assert first["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", first
 
+        # Foreground reads must not synchronously load a cold checkpoint.
+        # A slow/cold model load belongs to the idle warm-up path only.
+        learner._ephemeral_model = None
+        learner._ephemeral_checkpoint_sha = None
+        original_load = learner._load_model
+
+        def unexpected_foreground_load(_record):
+            raise AssertionError("warm-only receiver attempted a cold checkpoint load")
+
+        learner._load_model = unexpected_foreground_load
+        try:
+            cold_matrix = learner.receiver_matrix(
+                sessions[0], world_model.ACTIONS, history_length=2,
+                nonblocking=True, warm_only=True,
+            )
+            assert cold_matrix["status"] == "MODEL_NOT_WARM"
+            cold_recall = learner.episodic_recall(
+                sessions[0], history_length=2, limit=4,
+                nonblocking=True, warm_only=True,
+            )
+            assert cold_recall["status"] == "MODEL_NOT_WARM"
+        finally:
+            learner._load_model = original_load
+
+        warm = learner.warm_active_checkpoint()
+        assert warm["status"] == "WARMED"
+
+        # The warm recall path has a cooperative budget: after a slow query or
+        # candidate batch it must stop before embedding the remaining candidates.
+        import time
+        model = learner._ephemeral_model
+        original_latent = model.latent
+        latent_calls = 0
+
+        def slow_latent(values, target=False):
+            nonlocal latent_calls
+            latent_calls += 1
+            time.sleep(0.03)
+            return original_latent(values, target=target)
+
+        monkeypatch.setattr(model, "latent", slow_latent)
+        recall = learner.episodic_recall(
+            sessions[0], history_length=2, limit=4, nonblocking=True,
+            budget_s=0.04, warm_only=True,
+        )
+        assert recall["status"] == "BUDGET_EXCEEDED", recall
+        assert latent_calls <= 2, latent_calls
+
         matrix = learner.receiver_matrix(
-            sessions[0], world_model.ACTIONS, history_length=2, nonblocking=True
+            sessions[0], world_model.ACTIONS, history_length=2,
+            nonblocking=True, warm_only=True,
         )
         assert matrix["status"] == "SHADOW_READOUT_ONLY"
         assert matrix["checkpoint_sha256"] == first["checkpoint_sha256"]
@@ -1030,21 +1079,53 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_mea
             pool=CapturePool(runner),
             cancel_event=threading.Event(),
         )
+        runtime._temporal_world_jepa_consumer = learner
         cognition = Cognition(runtime)
+
+        # A cold foreground call must fail closed without entering a slow model load.
+        learner._ephemeral_model = None
+        learner._ephemeral_checkpoint_sha = None
+        original_load = learner._load_model
+        cold_load_calls = 0
+
+        def slow_cold_load(record):
+            nonlocal cold_load_calls
+            cold_load_calls += 1
+            time.sleep(0.2)
+            return original_load(record)
+
+        learner._load_model = slow_cold_load
+        try:
+            cold_offer = cognition.offer(
+                "B1_DETAIL", event, 0, time.monotonic() + 5.0
+            )
+            assert cold_offer["role"] == "B1_DETAIL"
+            cold_payload = json.loads(runner.calls[-1][1]["content"])
+            assert "world_jepa_temporal" not in cold_payload["body_state"]
+            assert cold_load_calls == 0
+        finally:
+            learner._load_model = original_load
+
+        warm = learner.warm_active_checkpoint()
+        assert warm["status"] == "WARMED"
         for role in ("B1_DETAIL", "B2_GIST"):
             result = cognition.offer(role, event, 0, time.monotonic() + 5.0)
             assert result["role"] == role
 
+        assert len(runner.calls) == 3
         prompts = {}
-        for messages in runner.calls:
+        for messages in runner.calls[1:]:
             payload = json.loads(messages[1]["content"])
             assert "body_state" in payload
             state = payload["body_state"]
             assert state["authority"] == "STATE_NOT_FACT"
             assert "world_jepa_temporal" in state, state
+            assert "mode" in state["world"] and "observed_actions" in state["world"]
+            assert "scope" not in state["world"]
             prior = state["world_jepa_temporal"]
             assert prior["status"] == "SHADOW_READOUT_ONLY"
             assert prior["native_body_consumed"] is False
+            assert prior["native_body_weights_changed"] is False
             assert prior["decision_authority"] == "NONE"
             assert len(json.dumps(state, separators=(",", ":"))) <= 700
             prompts[state["role"]] = prior
@@ -1062,19 +1143,33 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_mea
         assert "not fact/permission" in detail["note"]
         assert "prediction" in gist["note"]
         assert "not fact/permission" in gist["note"]
+        assert all(len(row) == 4 for row in detail["rows"])
+        assert all(len(row) == 3 for row in gist["rows"])
 
         query_rows = store.rows(
             "SELECT payload FROM packets WHERE kind='QueryPacket' AND event_id=? ORDER BY created",
             (event["event_id"],),
         )
-        assert len(query_rows) == 2
+        temporal_query_rows = []
+        non_temporal_query_count = 0
         for row in query_rows:
             query_packet = json.loads(row["payload"])
-            role = query_packet["target_role"]
             ref = query_packet["bodyview"]["body_state_ref"]
-            assert ref in query_packet["provenance"]
             stored = json.loads(store.read_source(ref))
-            assert stored["schema"] == "V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/2"
+            audit = stored.get("temporal_world_jepa_audit")
+            if (stored.get("schema") == "V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/2"
+                    and isinstance(audit, dict)
+                    and audit.get("status") == "READOUT_CREATED"):
+                temporal_query_rows.append((query_packet, ref, stored))
+            else:
+                non_temporal_query_count += 1
+        # The cold B1 negative-control offer also emits a QueryPacket and a
+        # source-bound OMITTED audit; only the two warm readouts are receivers.
+        assert len(temporal_query_rows) == 2
+        assert non_temporal_query_count >= 1
+        for query_packet, ref, stored in temporal_query_rows:
+            role = query_packet["target_role"]
+            assert ref in query_packet["provenance"]
             audit = stored["temporal_world_jepa_audit"]
             assert audit["body_state_created"] is True
             # The source record is created before Cognition.offer consumes it.
@@ -1093,6 +1188,8 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_mea
             assert audit["native_body_consumed"] is False
             assert audit["native_body_weights_changed"] is False
             assert audit["decision_authority"] == "NONE"
+            assert audit["supported_action_samples"]
+            assert all(value >= 8 for value in audit["supported_action_samples"].values())
 
         # A writer holding the temporal JEPA lock must not stall the foreground
         # B1 offer; the optional readout is omitted and the normal body state remains.
@@ -1146,6 +1243,9 @@ def test_bodyview_records_rejected_temporal_gate_without_prompt_leak(tmp_path, m
         text = "Do not expose an unaccepted temporal prediction."
         event = store.event(sessions[0], text)
         runtime = SimpleNamespace(store=store, session=sessions[0], home=home)
+        runtime._temporal_world_jepa_consumer = learner
+        warm = learner.warm_active_checkpoint()
+        assert warm["status"] == "WARMED"
         result = bodyview.body_state(runtime, event, "B1_DETAIL", text)
         assert result is not None
         assert "world_jepa_temporal" not in result["view"]
