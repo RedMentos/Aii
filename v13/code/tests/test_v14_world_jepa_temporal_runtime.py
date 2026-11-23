@@ -903,6 +903,9 @@ def test_temporal_rollback_restores_previous_checkpoint_and_retries_pending_rows
         assert second_record["checkpoint_sha256"] != first_sha
         assert second_record["fit_steps"] > first_record["fit_steps"]
         second_sha = second_record["checkpoint_sha256"]
+        # Force a cold reader so this assertion exercises persisted checkpoint reload.
+        learner._ephemeral_model = None
+        learner._ephemeral_checkpoint_sha = None
         assert learner.warm_active_checkpoint(nonblocking=False)["status"] == "WARMED"
         assert learner._ephemeral_checkpoint_sha == second_sha
 
