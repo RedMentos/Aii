@@ -67,7 +67,7 @@ def run_instrumentation(method: str, timeout: float = 180.0) -> str:
     )
     if "FAILURES!!!" in output or "INSTRUMENTATION_FAILED" in output:
         raise AssertionError("Android instrumentation reported failure: " + output[-4000:])
-    if not re.search(r"\\bOK\\s*\\(1 test\\)", output):
+    if not re.search(r"\bOK\s*\(1 test\)", output):
         raise AssertionError(
             "Android instrumentation did not report exactly one passing test: "
             + output[-4000:]
