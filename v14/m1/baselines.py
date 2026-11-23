@@ -57,7 +57,11 @@ class TrainConstantBaseline(nn.Module):
         self.channels = channels
         self.statistic = statistic
         self.register_buffer("constant", torch.zeros(channels))
-        self.fitted = False
+        self.register_buffer("_fitted", torch.tensor(False, dtype=torch.bool))
+
+    @property
+    def fitted(self) -> bool:
+        return bool(self._fitted.item())
 
     def fit(self, dataset: ArrayDataset) -> "TrainConstantBaseline":
         start, end = dataset.bounds["train"]
@@ -69,7 +73,7 @@ class TrainConstantBaseline(nn.Module):
         if not np.isfinite(result).all():
             raise ValueError("training split has a channel with no finite values")
         self.constant.copy_(torch.as_tensor(result, dtype=self.constant.dtype, device=self.constant.device))
-        self.fitted = True
+        self._fitted.fill_(True)
         return self
 
     def forward(self, bundle: InputBundle) -> Tensor:
