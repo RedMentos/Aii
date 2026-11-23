@@ -2,8 +2,10 @@
 import io
 import tempfile
 import threading
+import time
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 from v13 import vision
 from v13.common import Unavailable
 from v13.config import initialize
@@ -237,6 +239,134 @@ class Vision(unittest.TestCase):
             vision.forget(self.store, stale)
         self.assertEqual(vision.load(self.store)['projector']['sha256'], projector['sha256'])
         self.assertTrue((self.home/projector['path']).is_file())
+
+
+    def test_stale_vision_snapshot_cannot_overwrite_a_completed_forget(self):
+        rec = vision.ingest(self.store, png((220, 20, 20)))
+        stale = vision.load(self.store)
+        vision.forget(self.store, rec)
+        stale['teacher_removed'] = True
+        with self.assertRaisesRegex(ValueError, 'Stale state write'):
+            vision.save(self.store, stale)
+        current = vision.load(self.store)
+        self.assertNotIn(rec['ref']['source_id'], current['images'])
+        self.assertFalse(current.get('teacher_removed', False))
+
+    def _assert_training_commit_rejected_after_forget(self, trainer, state_key, artifact_prefix):
+        teacher = FakeTeacher()
+        encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        records = []
+        colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20)] * 2
+        for i, colour in enumerate(colours):
+            rec = vision.ingest(self.store, png(colour, box=(5 + i, 5, 30 + i, 30)))
+            for region in ('g', 'qtl', 'qtr'):
+                vision.describe(self.rt, rec, region, teacher)
+            records.append(rec)
+
+        entered = threading.Event()
+        release = threading.Event()
+        outcome = {}
+        original_save = vision.save
+
+        def delayed_save(store, state):
+            entered.set()
+            if not release.wait(30):
+                raise TimeoutError('test did not release delayed vision save')
+            return original_save(store, state)
+
+        def train_worker():
+            try:
+                outcome['result'] = trainer(self.rt, encoder)
+            except BaseException as exc:
+                outcome['error'] = exc
+
+        with patch.object(vision, 'save', delayed_save):
+            worker = threading.Thread(target=train_worker)
+            worker.start()
+            self.assertTrue(entered.wait(30), 'training never reached its state commit')
+            vision.forget(self.store, records[-1])
+            release.set()
+            worker.join(30)
+
+        self.assertFalse(worker.is_alive(), 'training worker did not finish')
+        self.assertIsInstance(outcome.get('error'), ValueError)
+        self.assertIn('Stale state write', str(outcome['error']))
+        self.assertIsNone(vision.load(self.store)[state_key])
+        self.assertEqual(
+            list((self.home / 'data/vision').glob(artifact_prefix + '*.npz')), []
+        )
+
+    def test_global_projector_training_cannot_republish_forgotten_source(self):
+        self._assert_training_commit_rejected_after_forget(
+            vision.train, 'projector', 'projector-'
+        )
+
+    def test_tile_projector_training_cannot_republish_forgotten_source(self):
+        self._assert_training_commit_rejected_after_forget(
+            vision.train_tiles, 'tile_projector', 'tiles-'
+        )
+
+    def test_reingest_serializes_with_last_source_blob_cleanup(self):
+        data = png((220, 20, 20))
+        original = vision.ingest(self.store, data)
+        sha = original['ref']['sha256']
+        unlink_entered = threading.Event()
+        release_unlink = threading.Event()
+        ingest_started = threading.Event()
+        ingest_done = threading.Event()
+        forget_result = {}
+        ingest_result = {}
+        original_unlink = vision.unlink_source_blob
+
+        def delayed_unlink(home, key):
+            unlink_entered.set()
+            if not release_unlink.wait(15):
+                raise TimeoutError('test did not release source blob cleanup')
+            return original_unlink(home, key)
+
+        def forget_worker():
+            try:
+                forget_result['result'] = vision.forget(self.store, original)
+            except BaseException as exc:
+                forget_result['error'] = exc
+
+        def ingest_worker():
+            ingest_started.set()
+            try:
+                ingest_result['record'] = vision.ingest(self.store, data)
+            except BaseException as exc:
+                ingest_result['error'] = exc
+            finally:
+                ingest_done.set()
+
+        with patch.object(vision, 'unlink_source_blob', delayed_unlink):
+            forget_thread = threading.Thread(target=forget_worker)
+            forget_thread.start()
+            self.assertTrue(unlink_entered.wait(10), 'forget did not reach blob cleanup')
+            ingest_thread = threading.Thread(target=ingest_worker)
+            ingest_thread.start()
+            self.assertTrue(ingest_started.wait(2))
+            time.sleep(0.05)
+            self.assertFalse(ingest_done.is_set(), 'ingest crossed the active cleanup lock')
+            release_unlink.set()
+            forget_thread.join(15)
+            ingest_thread.join(15)
+
+        self.assertFalse(forget_thread.is_alive())
+        self.assertFalse(ingest_thread.is_alive())
+        self.assertNotIn('error', forget_result, str(forget_result.get('error')))
+        self.assertNotIn('error', ingest_result, str(ingest_result.get('error')))
+        self.assertTrue(forget_result['result']['blob_deleted'])
+        recreated = ingest_result['record']
+        self.assertNotEqual(recreated['ref']['source_id'], original['ref']['source_id'])
+        row = self.store.one('SELECT hash,kind,deleted FROM sources WHERE id=?',
+                             (recreated['ref']['source_id'],))
+        self.assertEqual(row['kind'], 'IMAGE')
+        self.assertEqual(row['hash'], sha)
+        self.assertEqual(row['deleted'], 0)
+        blob = self.home / 'data/blobs' / sha
+        self.assertTrue(blob.is_file())
+        self.assertEqual(vision.digest(blob.read_bytes()), sha)
 
 
 if __name__ == '__main__':
