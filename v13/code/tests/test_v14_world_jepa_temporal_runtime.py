@@ -1829,6 +1829,27 @@ def test_receiver_retention_compares_same_persisted_cohort_and_blocks_training_o
     assert all(item["retention_pass"] is True for item in unchanged["roles"].values())
     assert all(item["negative_controls_pass"] is True for item in unchanged["roles"].values())
 
+    class ShiftedLinearModel:
+        def predict(self, X, A):
+            return np.asarray(X, dtype=np.float64)[:, :2] * 2.0, None
+
+    shifted_with_old_heads = evaluate_receiver_retention(
+        baseline, ShiftedLinearModel(), heads
+    )
+    assert shifted_with_old_heads["status"] == "MEASURED_FAIL"
+    compensated_heads = {
+        role: {
+            "target_indices": list(head["target_indices"]),
+            "weights": (np.asarray(head["weights"], dtype=np.float64) / 2.0).tolist(),
+            "bias": list(head["bias"]),
+        }
+        for role, head in heads.items()
+    }
+    shifted_with_compensation = evaluate_receiver_retention(
+        baseline, ShiftedLinearModel(), compensated_heads
+    )
+    assert shifted_with_compensation["status"] == "MEASURED_PASS"
+
     from v13.world_jepa_learning_intent import (
         _digest,
         validate_weight_delta_receipt,
