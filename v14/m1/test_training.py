@@ -48,7 +48,7 @@ class TrainingLoopTests(unittest.TestCase):
         model = DirectMAE(self.base_cfg)
         report = fit_direct_mae(model, self.dataset, self.fit_cfg)
         self.assertGreater(report.optimizer_steps, 0)
-        self.assertTrue(np.isfinite(report.best_validation_mae))
+        self.assertTrue(np.isfinite(report.best_validation_score))
 
     def test_frozen_probe_does_not_update_encoder(self):
         source = M1JEPA(self.base_cfg)
@@ -58,7 +58,7 @@ class TrainingLoopTests(unittest.TestCase):
         self.assertGreater(report.optimizer_steps, 0)
         for old, current in zip(before, model.encoder.parameters(), strict=True):
             torch.testing.assert_close(old, current)
-        self.assertTrue(np.isfinite(report.best_validation_mae))
+        self.assertTrue(np.isfinite(report.best_validation_score))
 
 
 if __name__ == "__main__":
