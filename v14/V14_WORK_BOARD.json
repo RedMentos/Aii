@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T17:16:41.602Z",
-  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
+  "updated_at": "2026-11-23T18:23:01.047Z",
+  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at 8d93236c753f0194224c19edc7411d8d7082b1d6. Core native-probe candidate PR #2451 code-tested at ea7535e8ad83f16cdbf7f5df626b96123ad309f6; exact staged/runtime, native receiver, audio/arithmetic and same-turn consumer CI passed. No local full Aii suite or Redmi proof. M1 DATA remains an isolated experimental lane.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -14,11 +14,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "CI + authenticated ANDROID_DEVICE metadata; no correct-answer/native-organ acceptance",
-      "next_step": "Recompose a fresh fair B1/B2→C4→C3 slice on b20e9; do not merge stale #2370. Its 30 s fixture leaves ~1.95 s per body, far below the last 53.2/54.2 s phone failures. Require useful source-bound OfferPacket delivery and explicit C4/C3 consumption; preserve both bodies and nontrivial-query depth.",
+      "proof_environment": "CI staged/integrated Runtime regression PASS; native B1/B2 and correct-answer acceptance OPEN; REDMI_UNVERIFIED",
+      "next_step": "Core: recompose the fair sequential B1/B2 pre-answer slice on current release HEAD 8d93236 while retaining C3 reserve and same-turn C4/C3 source-bound consumption. Do not merge stale #2370 (193 ahead / 117 behind) or #2338 (4 ahead / 118 behind). Measure delivered and consumed offers separately; no native answer claim without a fresh authorized Redmi receipt.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:07:22.216Z",
-      "proof": "IH-H12 output commit/C7 gate #2434 merged at 69e77bc (39/39 checks SUCCESS); #2429 source-forget merged at b20e9b1f3dd53af472055adb43da628785494ec4 (37/37 SUCCESS). Latest phone receipt #767 still reports 8bf44cb / CI_WAIT; no post-green device receipt. Correct answer UNKNOWN.",
+      "last_checkpoint": "2026-11-23T18:23:01.047Z",
+      "proof": "IH-H12 output commit/C7 gate #2434 merged at 69e77bc (39/39 checks SUCCESS); #2429 source-forget merged at b20e9b1f3dd53af472055adb43da628785494ec4 (37/37 SUCCESS). Latest phone receipt #767 still reports 8bf44cb / CI_WAIT; no post-green device receipt. Correct answer UNKNOWN. Current PR #2451 same-turn B1/B2→C4→C3 consumer matrix run 45236111088 passed on Python 3.13/3.14 (5+12+3+2 focused tests per version). This is synthetic/Store-backed consumer evidence only; it does not prove native B1/B2 offers or answer correctness. Release HEAD remains 8d93236; no fresh Redmi receipt.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -77,11 +77,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
-      "proof_environment": "LOCAL_LINUX_ISOLATED overlay PASS; exact Python 3.13/3.14 CI pending; no full local repository run; REDMI_UNVERIFIED",
-      "next_step": "Poll exact PR #2451 Python 3.13/3.14 staged-runtime CI and privacy scan; fix failures, independently review the staged overlay and local approval boundary, then ask Boss to integrate. After an authenticated installation receipt, a separate explicit user decision may authorize one local diagnostic probe. Keep production B3 OFF until latent-vs-exact-vs-none, parity, zero, shuffle, OOD and held-out receiver utility are measured.",
+      "proof_environment": "LOCAL_LINUX_ISOLATED overlay PASS; exact Python 3.13/3.14 CI PASS; Linux pinned API PASS; Android ARM64 cross-compile PASS; full local Aii NOT_RUN; REDMI_UNVERIFIED",
+      "next_step": "Obtain independent Boss/QA review of PR #2451, then integrate on the current release branch without editing the pinned canonical operator.py. After exact release CI and a separate authenticated installation receipt, request a distinct user decision before any local one-shot native probe. Keep production B3 OFF until paired real activations, trained projection, latent-vs-exact-vs-none, zero/shuffle/OOD controls, held-out utility and retention pass.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T17:16:41.602Z",
-      "proof": "Draft PR #2451 at head 8d4c0678cfad1f0fce995c9b7df22d1f21d8da77 adds a source-bound, local-TTY one-shot native probe approval helper and a post-composition staged operator overlay. Canonical operator.py remains pinned and unchanged; the stage builder applies the overlay only after recovery/native-receiver/arithmetic composition, and runtime_deploy.py is rebound to the exact stage-builder SHA-256. The diagnostic path has no production B3 route, training authority, model/weight change or remote-chat entry. LOCAL_LINUX_ISOLATED overlay logic PASS; full local project suite BLOCKED/NOT_RUN; exact CI PENDING; REDMI_UNVERIFIED. PR #2449's direct operator.py edit remains blocked/superseded.",
+      "last_checkpoint": "2026-11-23T18:23:01.047Z",
+      "proof": "Draft PR #2451 code-tested SHA ea7535e8ad83f16cdbf7f5df626b96123ad309f6. Post-composition overlay keeps canonical operator.py byte-pinned and patches only staged operator dispatch; one-shot local TTY approval binds FINAL text SourceRef/session/generation, installed sender/receiver revisions, model manifest digest/path/inode, then consumes atomically under exclusive idle Runtime lease. Native receiver workflow #45236111168: Python 3.13/3.14 12 tests each, Linux pinned API and Android ARM64 cross-compile PASS. Staged/integrated workflow #45236111273: 255 passed/10 skipped/47 subtests and 424 passed/3 skipped/58 subtests. Audio/arithmetic #45236111290: 52 passed/26 subtests on each Python version. Same-turn consumer #45236111088 passed both Python versions. Exact deployer/stage/overlay/operator/module pins verified. Diagnostic only; no trained latent projector, receiver utility, production B3, model/weight changes or Android proof.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -113,6 +113,19 @@
         },
         "device": "REDMI_UNVERIFIED; no device probe, Termux command or update request",
         "next_action": "Poll exact #2451 CI, fix measured failures, obtain independent review and Boss integration; only then consider a separately authorized one-shot Redmi probe"
+      },
+      "latest_candidate_pr": {
+        "pr": 2451,
+        "branch": "core/v14-native-probe-staged-overlay-20261123-run2",
+        "code_tested_sha": "ea7535e8ad83f16cdbf7f5df626b96123ad309f6",
+        "status": "DRAFT_CI_GREEN_REVIEW_PENDING_NOT_RELEASED",
+        "ci_runs": [
+          45236111168,
+          45236111273,
+          45236111290,
+          45236111088
+        ],
+        "redmi": "REDMI_UNVERIFIED"
       }
     },
     {
@@ -361,10 +374,10 @@
       "owner": "Core & Harness + Boss",
       "priority": "P0",
       "status": "IN_PROGRESS_PARTIAL",
-      "last_checkpoint": "2026-11-23T17:16:41.602Z",
-      "proof_environment": "LOCAL_LINUX_ISOLATED overlay PASS; exact Python 3.13/3.14 CI pending; no full local repository run; REDMI_UNVERIFIED",
-      "proof": "Draft PR #2451 at head 8d4c0678cfad1f0fce995c9b7df22d1f21d8da77 adds a source-bound, local-TTY one-shot native probe approval helper and a post-composition staged operator overlay. Canonical operator.py remains pinned and unchanged; the stage builder applies the overlay only after recovery/native-receiver/arithmetic composition, and runtime_deploy.py is rebound to the exact stage-builder SHA-256. The diagnostic path has no production B3 route, training authority, model/weight change or remote-chat entry. LOCAL_LINUX_ISOLATED overlay logic PASS; full local project suite BLOCKED/NOT_RUN; exact CI PENDING; REDMI_UNVERIFIED. PR #2449's direct operator.py edit remains blocked/superseded.",
-      "next_step": "Poll exact PR #2451 Python 3.13/3.14 staged-runtime CI and privacy scan; fix failures, independently review the staged overlay and local approval boundary, then ask Boss to integrate. After an authenticated installation receipt, a separate explicit user decision may authorize one local diagnostic probe. Keep production B3 OFF until latent-vs-exact-vs-none, parity, zero, shuffle, OOD and held-out receiver utility are measured.",
+      "last_checkpoint": "2026-11-23T18:23:01.047Z",
+      "proof_environment": "LOCAL_LINUX_ISOLATED overlay PASS; exact Python 3.13/3.14 CI PASS; Linux pinned API PASS; Android ARM64 cross-compile PASS; full local Aii NOT_RUN; REDMI_UNVERIFIED",
+      "proof": "Draft PR #2451 code-tested SHA ea7535e8ad83f16cdbf7f5df626b96123ad309f6. Post-composition overlay keeps canonical operator.py byte-pinned and patches only staged operator dispatch; one-shot local TTY approval binds FINAL text SourceRef/session/generation, installed sender/receiver revisions, model manifest digest/path/inode, then consumes atomically under exclusive idle Runtime lease. Native receiver workflow #45236111168: Python 3.13/3.14 12 tests each, Linux pinned API and Android ARM64 cross-compile PASS. Staged/integrated workflow #45236111273: 255 passed/10 skipped/47 subtests and 424 passed/3 skipped/58 subtests. Audio/arithmetic #45236111290: 52 passed/26 subtests on each Python version. Same-turn consumer #45236111088 passed both Python versions. Exact deployer/stage/overlay/operator/module pins verified. Diagnostic only; no trained latent projector, receiver utility, production B3, model/weight changes or Android proof.",
+      "next_step": "Obtain independent Boss/QA review of PR #2451, then integrate on the current release branch without editing the pinned canonical operator.py. After exact release CI and a separate authenticated installation receipt, request a distinct user decision before any local one-shot native probe. Keep production B3 OFF until paired real activations, trained projection, latent-vs-exact-vs-none, zero/shuffle/OOD controls, held-out utility and retention pass.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -397,6 +410,19 @@
         },
         "device": "REDMI_UNVERIFIED; no device probe, Termux command or update request",
         "next_action": "Poll exact #2451 CI, fix measured failures, obtain independent review and Boss integration; only then consider a separately authorized one-shot Redmi probe"
+      },
+      "latest_candidate_pr": {
+        "pr": 2451,
+        "branch": "core/v14-native-probe-staged-overlay-20261123-run2",
+        "code_tested_sha": "ea7535e8ad83f16cdbf7f5df626b96123ad309f6",
+        "status": "DRAFT_CI_GREEN_REVIEW_PENDING_NOT_RELEASED",
+        "ci_runs": [
+          45236111168,
+          45236111273,
+          45236111290,
+          45236111088
+        ],
+        "redmi": "REDMI_UNVERIFIED"
       }
     },
     {
