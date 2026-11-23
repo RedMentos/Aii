@@ -2,7 +2,7 @@
 
 ## Checkpoint
 
-- Current branch HEAD after append-only documentation synchronization: `76f84314a326be8b3f23813ba1d87ee4cab554b9`.
+- Documentation checkpoint immediately before this handoff: `76f84314a326be8b3f23813ba1d87ee4cab554b9`; this handoff was committed afterward.
 - Code-bearing test commit: `32505a33061283522b3bde5597a74a93b12d399b`.
 - PR: [#2454](https://github.com/RedMentos/Aii/pull/2454), DRAFT / NOT_RELEASED.
 - Base: Boss branch `boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean` at `6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4`.
