@@ -50,9 +50,12 @@ class InstrumentationDriverTests(unittest.TestCase):
         prepare.assert_not_called()
         adb_call.assert_not_called()
 
-    def test_prepare_foreground_activity_wakes_unlocks_and_launches_main_activity(self):
+    def test_prepare_foreground_activity_uses_known_launcher_sequence(self):
+        start_output = "Starting: Intent { cmp=" + harness.COMPONENT + " }"
         with (
-            patch.object(harness, "adb", return_value="Status: ok") as adb_call,
+            patch.object(harness, "adb", side_effect=["", "", start_output]) as adb_call,
+            patch.object(harness, "time", wraps=harness.time) as time_module,
+            patch.object(harness, "process_id", return_value="1234") as pid,
             patch.object(harness, "wait_for_activity_focus") as wait_focus,
         ):
             harness.prepare_foreground_activity()
@@ -62,12 +65,25 @@ class InstrumentationDriverTests(unittest.TestCase):
             [
                 call("shell", "input", "keyevent", "KEYCODE_WAKEUP"),
                 call("shell", "wm", "dismiss-keyguard"),
-                call("shell", "input", "keyevent", "KEYCODE_HOME"),
-                call("shell", "am", "start", "-W", "-n",
+                call("shell", "am", "start", "-n",
                      harness.COMPONENT, timeout=45.0),
             ],
         )
-        wait_focus.assert_called_once_with()
+        time_module.sleep.assert_called_once_with(2.0)
+        pid.assert_called_once_with()
+        wait_focus.assert_called_once_with(start_output=start_output, pid="1234")
+
+    def test_prepare_foreground_activity_fails_if_start_did_not_create_process(self):
+        with (
+            patch.object(harness, "adb", side_effect=["", "", "Error: Activity not found"]),
+            patch.object(harness.time, "sleep"),
+            patch.object(harness, "process_id", return_value=""),
+            patch.object(harness, "diagnostic_logcat", return_value="no app launch"),
+            patch.object(harness, "wait_for_activity_focus") as wait_focus,
+        ):
+            with self.assertRaisesRegex(AssertionError, "did not create companion process"):
+                harness.prepare_foreground_activity()
+        wait_focus.assert_not_called()
 
     def test_wait_for_activity_focus_requires_window_focus_and_resumed_activity(self):
         launcher_window = "mCurrentFocus=Window{abc u0 com.android.launcher3/.Launcher}"
@@ -91,9 +107,17 @@ class InstrumentationDriverTests(unittest.TestCase):
                          side_effect=[0.0, 0.1, 0.2]),
             patch.object(harness.time, "sleep") as sleep,
         ):
-            harness.wait_for_activity_focus(timeout=1.0)
+            harness.wait_for_activity_focus(timeout=1.0, start_output="Status: ok", pid="1234")
 
-        self.assertEqual(adb_call.call_count, 4)
+        self.assertEqual(
+            adb_call.call_args_list,
+            [
+                call("shell", "dumpsys", "window", timeout=20.0),
+                call("shell", "dumpsys", "activity", "activities", timeout=20.0),
+                call("shell", "dumpsys", "window", timeout=20.0),
+                call("shell", "dumpsys", "activity", "activities", timeout=20.0),
+            ],
+        )
         sleep.assert_called_once_with(0.5)
 
     def test_process_id_accepts_pidof_exit_one_as_no_process(self):
