@@ -1,3 +1,25 @@
+## Research & Perception execution checkpoint — 2026-11-23 (2026-11-23T00:19:34.393Z)
+
+### Actual code / PR work
+- Perception PR #2369: corrected only the Perception-owned RAW EAR comparator fixture + workflow source pin from stale `81ae3e453c9ef378b072dfc9d243098427e24baa` to current `audio_voice_cues.py` Git blob `5dbb0fd5e17eb9bcb190d7a3743bdd1ef1ecbb9d`. Code/test commit `9cca6f0a0c6a3be0e8b5d64c02faed7be33aa0d8`; handoff-only head `930f9aab2aaca46dbf0f9ef876b2b1ef68ea85ab`. Exact PR remains DRAFT / NOT_RELEASED.
+- The previous exact run showed the comparator assertion failing in both Python 3.13 and 3.14 while libfvad/WebRTC ABI smoke passed. The stale expected blob is now corrected. On current head `930f9aab`, model-lab, privacy scan and consent-revocation QA are SUCCESS; optional NumPy, FASTDIAR and comparator are QUEUED; staged/integrated is IN_PROGRESS. Queued/in-progress is not PASS. The separate staged failure is Core-owned: #2370's composer still pins `audio_voice_cues.py` to `b18e450162b062b09368a12b1ca18924ed8c5025`; Perception posted the exact mismatch and requested Core rebind without weakening hash checks.
+- Perception PR #2375 exact head `e21a85a329ea25a2208fcfa64edc216884b55bf1`: 4 executed GitHub workflows SUCCESS + 1 expected safe-additive SKIPPED. This is synthetic frame/fixture execution: MediaProjection-shaped input → handcrafted RAW EYE numeric features → A4 → source-bound PerceptPacket/A5 lease-gated context cache, with a 320-character A5 envelope. The optional A3 test fits a tiny synthetic hashed-label projector and scores a shifted synthetic frame. It is not semantic vision, neural gradient learning, JEPA, retention or Android proof. Normal Runtime→C3 dispatch remains separate.
+- Core PR #2379 exact head `77fd5d63696940f255bb849b58da89c32150b370` is a one-shot signed MediaProjection provider candidate stacked on the older QA companion base. It must be composed with #2356 and #2375 before the exact provider→RAW EYE→bounded A5→C3 path can run. The same live UI lease must remain held through C3 generation; revoke/cancel/restart must be tested. No actual screen capture was performed.
+
+### Private device / deployment evidence
+- Private V13OBS #115 updated 2026-11-23T00:05:52Z: installed release `aed1d2b826290c95c70356b5d8b864b5ef382be4`; `auto_enabled=true`, runtime/dashboard `UP_TO_DATE`, `last_error=NONE`, runtime service/model process RUNNING. This confirms release deployment only; none of the new PRs is deployed.
+- Last turn: 57.7388 s total / 41.6269 s TTFT / 38.9453 s prefill / 751 prompt tokens / 2 generated tokens. Five-turn body summary: B1 4/4 native attempts failed / 0 valid offers; B2 2/2 failed / 0 valid offers; no prompt inclusion, semantic use or native latent exchange is proven. Native process sample reports 0 mapped processes and does not establish model residency or free RAM.
+
+### Research / persistence
+- Draft PR #2393, branch head `128656fb0f8a795c804a721a3617e5c930847b85`, adds R-100 (sherpa-onnx v2.0.3 CPython 3.14 Android API24+ ARM64 wheel metadata) and refreshes the shared board, next-action file and coverage overlay. Runtime is Apache-2.0; PyPI artifacts lack provenance; model weights are separate. Candidate only; no wheel/model download or install.
+- The work board now points V14-005 to #2393, V14-006 to #2375, V14-009 to #2379 and V14-018 to #2369. The whole-Canon coverage overlay records exact synthetic/CI/device boundaries; historical 1,255-heading inventory is unchanged.
+
+### Environment / next ownership
+- LOCAL_LINUX full Aii tests: BLOCKED — no repository checkout is mounted and `git ls-remote` fails DNS resolution for `github.com`. No local Aii pytest/Gradle run was possible. CI is GitHub-hosted; no Redmi-native capture/AudioRecord proof.
+- Next Perception action: poll #2369 comparator + staged runs; fix only Perception-owned failures. Next Core/Boss action: rebind its own audio source pin and compose QA + Perception + MediaProjection branches, then deliver the bounded source-bound A5 envelope to the real C3 consumer. No user action required; no model/weight/permission/device mutation.
+
+---
+
 ## Boss & Integration run 15 — 2026-11-23T00:05:08.222Z
 
 ### Release/device boundary
