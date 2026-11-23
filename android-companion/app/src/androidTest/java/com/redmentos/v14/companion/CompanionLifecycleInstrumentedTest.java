@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Process;
@@ -45,6 +46,8 @@ public final class CompanionLifecycleInstrumentedTest {
             "STOPPED (restart requires explicit re-enable)";
     private static final String ENABLED = "ENABLED FOR THIS PROCESS";
     private static final String TOGGLE = "Enable / Stop companion";
+    private static final String NOT_PAIRED =
+            "not paired (stored identity/current installed signer not verified)";
 
     private Context targetContext() {
         return InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -188,10 +191,24 @@ public final class CompanionLifecycleInstrumentedTest {
         });
     }
 
+    private SharedPreferences companionPreferences() {
+        return targetContext().getSharedPreferences(
+                CompanionProvider.PREFS, Context.MODE_PRIVATE);
+    }
+
     private boolean persistedEnabled() {
-        return targetContext()
-                .getSharedPreferences("v14-companion", Context.MODE_PRIVATE)
-                .getBoolean("enabled", true);
+        return companionPreferences().getBoolean("enabled", true);
+    }
+
+    private boolean persistedPaired() {
+        SharedPreferences prefs = companionPreferences();
+        return prefs.contains("paired_package") || prefs.contains("paired_cert_sha256");
+    }
+
+    private void assertUnpaired(ActivityScenario<MainActivity> scenario) {
+        assertVisibleState(scenario, NOT_PAIRED);
+        assertFalse("Stop/restart must not create a Termux package or signer pairing",
+                persistedPaired());
     }
 
     private static void assertRootCoordinateVisibilityPredicate() {
@@ -215,6 +232,7 @@ public final class CompanionLifecycleInstrumentedTest {
             scenario.onActivity(activity ->
                     recordTargetProcess(activity, "qa-process-first.pid"));
             assertVisibleState(scenario, STOPPED);
+            assertUnpaired(scenario);
             assertFalse("a fresh process must start stopped", persistedEnabled());
 
             clickVisibleToggle(scenario);
@@ -224,6 +242,7 @@ public final class CompanionLifecycleInstrumentedTest {
 
             clickVisibleToggle(scenario);
             assertVisibleState(scenario, STOPPED);
+            assertUnpaired(scenario);
             assertFalse("the explicit Stop click must persist enabled=false",
                     persistedEnabled());
         }
@@ -236,6 +255,7 @@ public final class CompanionLifecycleInstrumentedTest {
             scenario.onActivity(activity ->
                     recordTargetProcess(activity, "qa-process-restart.pid"));
             assertVisibleState(scenario, STOPPED);
+            assertUnpaired(scenario);
             assertFalse("provider startup after process death must revoke the grant",
                     persistedEnabled());
         }
