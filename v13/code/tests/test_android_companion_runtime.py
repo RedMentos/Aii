@@ -83,7 +83,7 @@ class RuntimeStub:
         self.idle_checks += 1
 
 
-def capability_snapshot(*, enabled=True, paired=True):
+def capability_snapshot(*, enabled=True, paired=True, screen_capture_ready=False):
     launch_status = (
         "OFF_TERMUX_NOT_PAIRED"
         if not paired
@@ -100,16 +100,33 @@ def capability_snapshot(*, enabled=True, paired=True):
         "learning_authority": False,
     }]
     for name in ("audio_capture", "observe_ui", "screen_capture", "tap", "swipe", "type_text", "back"):
-        capabilities.append({
-            "capability": name,
-            "status": "OFF_NOT_IMPLEMENTED",
-            "reason": "Provider is not implemented",
-            "provider": "NONE",
-            "per_action_consent": False,
-            "android_os_permission_required": name == "audio_capture",
-            "result_observed": False,
-            "learning_authority": False,
-        })
+        if name == "screen_capture" and screen_capture_ready:
+            capture_status = (
+                "OFF_TERMUX_NOT_PAIRED"
+                if not paired
+                else ("READY_WITH_PER_SESSION_OS_CONSENT" if enabled else "OFF_STOP_SWITCH")
+            )
+            capabilities.append({
+                "capability": name,
+                "status": capture_status,
+                "reason": "One frame only; Android OS consent is required for every session",
+                "provider": "MEDIA_PROJECTION_ONE_SHOT",
+                "per_action_consent": True,
+                "android_os_permission_required": True,
+                "result_observed": True,
+                "learning_authority": False,
+            })
+        else:
+            capabilities.append({
+                "capability": name,
+                "status": "OFF_NOT_IMPLEMENTED",
+                "reason": "Provider is not implemented",
+                "provider": "NONE",
+                "per_action_consent": False,
+                "android_os_permission_required": name == "audio_capture",
+                "result_observed": False,
+                "learning_authority": False,
+            })
     return {
         "schema": "v14.android-capability-registry/1",
         "android_api": 33,
@@ -781,3 +798,85 @@ def test_action_intent_persistence_failure_cancels_before_dispatch(tmp_path, mon
     finally:
         controller.broker.close()
         runtime.store.close()
+
+
+def test_capability_registry_accepts_exact_media_projection_one_shot_contract(tmp_path):
+    raw = capability_snapshot(screen_capture_ready=True)
+    registry = CapabilityRegistry.parse(raw)
+    capture = registry.require_ready("screen_capture")
+    assert capture.status == "READY_WITH_PER_SESSION_OS_CONSENT"
+    assert capture.provider == "MEDIA_PROJECTION_ONE_SHOT"
+    assert capture.per_action_consent is True
+    assert capture.android_os_permission_required is True
+    assert capture.result_observed is True
+    assert capture.learning_authority is False
+
+    runtime = make_runtime(tmp_path)
+    controller = AndroidCompanionController(
+        runtime, transport=FakeTransport(capability_override=raw)
+    )
+    assert json.loads(controller.capabilities()) == raw
+    controller.broker.close()
+    runtime.store.close()
+
+
+@pytest.mark.parametrize(
+    "enabled,paired,expected_status",
+    [
+        (False, True, "OFF_STOP_SWITCH"),
+        (True, False, "OFF_TERMUX_NOT_PAIRED"),
+        (False, False, "OFF_TERMUX_NOT_PAIRED"),
+    ],
+)
+def test_screen_capture_registry_preserves_stop_and_pairing_state(
+    enabled, paired, expected_status
+):
+    raw = capability_snapshot(
+        enabled=enabled, paired=paired, screen_capture_ready=True
+    )
+    registry = CapabilityRegistry.parse(raw)
+    assert registry.capability("screen_capture").status == expected_status
+    with pytest.raises(CapabilityRegistryError):
+        registry.require_ready("screen_capture")
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        lambda value: value["capabilities"][3].update(
+            status="READY_WITH_PER_ACTION_CONSENT"
+        ),
+        lambda value: value["capabilities"][3].update(
+            provider="PACKAGE_MANAGER_LAUNCH_INTENT"
+        ),
+        lambda value: value["capabilities"][3].update(per_action_consent=False),
+        lambda value: value["capabilities"][3].update(
+            android_os_permission_required=False
+        ),
+        lambda value: value["capabilities"][3].update(result_observed=False),
+        lambda value: value["capabilities"][3].update(learning_authority=True),
+    ],
+)
+def test_screen_capture_registry_rejects_wrong_provider_or_escalated_contract(mutation):
+    raw = capability_snapshot(screen_capture_ready=True)
+    mutation(raw)
+    with pytest.raises(CapabilityRegistryError):
+        CapabilityRegistry.parse(raw)
+
+
+def test_launch_app_remains_available_when_one_shot_screen_capture_is_advertised(
+    tmp_path, monkeypatch
+):
+    raw = capability_snapshot(screen_capture_ready=True)
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport(capability_override=raw)
+    controller = AndroidCompanionController(
+        runtime, transport=transport, clock=lambda: 1000.0
+    )
+    controller.trust(KEY_ID, True)
+    pending = json.loads(controller.launch("com.example.app", True))
+    assert pending["status"] == "PENDING_USER_APPROVAL"
+    assert len(transport.submitted) == 1
+    assert transport.submitted[0]["capability"] == "launch_app"
+    controller.broker.close()
+    runtime.store.close()
