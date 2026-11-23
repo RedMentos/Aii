@@ -149,6 +149,7 @@ def on_audio_input(runtime, audio_result, consent_lease):
             {"stage": "audio_record", "error": type(exc).__name__},
         )
         decision["record_status"] = "FAILED"
+    decision["bridge_revision"] = BRIDGE_REVISION
     return decision
 
 
