@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T12:44:40Z",
-  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
+  "updated_at": "2026-11-23T15:47:29Z",
+  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 = fb563d771fe2d493c4ec25abe94280981d24ef5c; authenticated Redmi PIPELINE_STATUS #819 confirms the same installed SHA. Runtime/Dashboard UP_TO_DATE, auto-update enabled. DIAGNOSTICS #820 reports STOPPED_BY_USER; no new chat acceptance. Experimental M1 DATA has one failing release-branch workflow; QA PR #2444 has a green 43-test Python 3.13/3.14 repair candidate, not merged.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -15,10 +15,10 @@
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
       "proof_environment": "CI + authenticated ANDROID_DEVICE metadata; no correct-answer/native-organ acceptance",
-      "next_step": "Recompose a fresh fair B1/B2→C4→C3 slice on b20e9; do not merge stale #2370. Its 30 s fixture leaves ~1.95 s per body, far below the last 53.2/54.2 s phone failures. Require useful source-bound OfferPacket delivery and explicit C4/C3 consumption; preserve both bodies and nontrivial-query depth.",
+      "next_step": "Preserve the stopped state. After explicit user re-enable, run the 20-turn mixed acceptance matrix and require correct outputs plus source-bound B1/B2 delivery and C4/C3 consumption; no restart or chat send before that.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:07:22.216Z",
-      "proof": "IH-H12 output commit/C7 gate #2434 merged at 69e77bc (39/39 checks SUCCESS); #2429 source-forget merged at b20e9b1f3dd53af472055adb43da628785494ec4 (37/37 SUCCESS). Latest phone receipt #767 still reports 8bf44cb / CI_WAIT; no post-green device receipt. Correct answer UNKNOWN.",
+      "last_checkpoint": "2026-11-23T15:47:29Z",
+      "proof": "PIPELINE_STATUS #819 confirms fb563d installed, but DIAGNOSTICS #820 reports STOPPED_BY_USER and no active model. No CHAT_SEND was issued. Last stored turn 6.295s/2.046s TTFT/358 prompt/7 generated; B1/B2 remain TIME_BUDGET 53.2/54.2s; native residency unavailable. The 20-turn acceptance and correct 2+2 remain OPEN.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -46,9 +46,9 @@
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
       "proof_environment": "ANDROID_DEVICE exact code-install receipt + CI; restart/rollback still NOT_DEVICE_VERIFIED",
-      "next_step": "Wait for a later authenticated PIPELINE_STATUS after b20e9's green exact push CI. Auto-update is enabled; do not send another UPDATE_REQUEST or ask for a manual Termux command. Mark installed only if a fresh receipt shows b20e9. Keep process-death, reboot and runtime-only rollback separate.",
+      "next_step": "Keep the user's AI Stop state. Do not send another UPDATE_REQUEST or manual Termux command. After explicit user re-enable and an authorized bounded lifecycle test, validate managed-chat stop/resume, process death, reboot, activation-journal recovery and runtime-only rollback while preserving models, SQLite and chats.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:07:22.216Z",
+      "last_checkpoint": "2026-11-23T15:47:29Z",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -66,7 +66,7 @@
           "redmi": "NO_LIVE_RECEIPT; issues #351–354 unanswered; installed SHA unknown"
         }
       },
-      "proof": "b20e9 exact push CI 37/37 SUCCESS. PIPELINE_STATUS #767 still reports 8bf44cb / CI_WAIT from before final CI green; no install receipt. #737 was already acknowledged QUEUED; no duplicate request."
+      "proof": "Exact release-development SHA fb563d771fe2d493c4ec25abe94280981d24ef5c has 20/21 observed PR-triggered workflows SUCCESS; only experimental M1 DATA is red (separate QA repair #2444 is green, not merged). PIPELINE_STATUS #819 authenticates the phone on fb563d with Runtime/Dashboard UP_TO_DATE, auto-update enabled and no error. DIAGNOSTICS #820 says STOPPED_BY_USER. Installation is verified; process-death, reboot and runtime-only rollback remain NOT_DEVICE_VERIFIED."
     },
     {
       "id": "V14-003",
@@ -409,10 +409,10 @@
       "scope": "Runtime deploy activation journal, recovery, runtime-only rollback and managed V13 chat lifecycle",
       "acceptance": "Owner-only durable journal, hash-checked backups, fsync, crash recovery, explicit rollback, managed-chat stop/resume, process-death/reboot tests and authenticated Redmi receipt",
       "proof_environment": "Phone code-install proof only; rollback not device-validated",
-      "next_step": "Keep rollback acceptance OPEN. b20e9 CI is green; wait for a fresh phone SHA receipt. After stable install and explicit bounded test authorization, validate managed-chat stop/resume, process death, reboot, activation-journal recovery and runtime-only rollback while preserving models, SQLite and chats.",
+      "next_step": "Keep rollback acceptance OPEN. Do not restart while the user stop state is active. After explicit user re-enable, run separate process-death, reboot, activation-journal recovery and runtime-only rollback tests; preserve models, SQLite and chats.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:07:22.216Z",
-      "proof": "b20e9 exact push CI 37/37. Latest phone receipt #767 still reports 8bf44cb / CI_WAIT; no install, process-death, reboot, marker recovery or runtime-only rollback receipt."
+      "last_checkpoint": "2026-11-23T15:47:29Z",
+      "proof": "PIPELINE_STATUS #819 confirms installed runtime SHA fb563d771fe2d493c4ec25abe94280981d24ef5c. This is install evidence only. DIAGNOSTICS #820 says AI STOPPED_BY_USER; no process-death, reboot, marker-recovery or runtime-only rollback test was run."
     },
     {
       "id": "V14-020",
@@ -430,47 +430,51 @@
       "proof": "v14/m1/data.py + array_data.py + test_data.py + test_array_data.py. Two-pass direct-to-array UCI ingestion; data/split hash parity; 256 MiB batch allocation ceiling; vectorized missing-window checks; monthly rejection stats; test gate logs and fsyncs before any test-window materialization/unlock. Latest M1 CI queued, not passed."
     }
   ],
-  "current_redmi_status": "Latest authenticated PIPELINE_STATUS #767 at 2026-11-23 10:55:05 UTC reports updated_commit 8bf44cb, auto-update enabled, Runtime/Dashboard CI_WAIT, last_error NONE. It predates final CI green and does not prove b20e9 installed. DIAGNOSTICS #764 repeats stored 57.739 s total / 41.627 s TTFT / 38.945 s C3 prefill / 751 prompt / 2 generated; B1/B2 TIME_BUDGET 53.2/54.2 s; correctness UNKNOWN. HEALTH #765: 1,209 MiB MemAvailable and 1,030 MiB disk; runtime UNAVAILABLE in HEALTH but RUNNING in DIAGNOSTICS. LEARNING_STATUS #766 UNAVAILABLE. No new turn, LOG_PAGE, UPDATE_REQUEST, shell, model/weight/permission change or data mutation.",
-  "last_code_release_head": "b20e9b1f3dd53af472055adb43da628785494ec4",
-  "latest_integrated_head": "b20e9b1f3dd53af472055adb43da628785494ec4",
-  "latest_integrated_head_verified_at": "2026-11-23T11:07:22.216Z",
-  "release_gate_status": "Exact release SHA b20e9b1f3dd53af472055adb43da628785494ec4: 37/37 GitHub check-runs SUCCESS, including staged-runtime and integrated-regression. Device installation NOT_CONFIRMED: PIPELINE_STATUS #767 still reports 8bf44cb / CI_WAIT from a pre-green snapshot; auto-update is enabled. Functional and native Android acceptance remain OPEN.",
+  "current_redmi_status": "Authenticated PIPELINE_STATUS #819 (2026-11-23 15:46:36Z): installed SHA fb563d771fe2d493c4ec25abe94280981d24ef5c; auto-update enabled; Runtime/Dashboard UP_TO_DATE; last_error NONE. DIAGNOSTICS #820 (15:46:38Z): AI STOPPED_BY_USER, model process STOPPED, autostart=false; native residency UNAVAILABLE (no verified supervisor); B1/B2 TIME_BUDGET 53.2/54.2s; C2 OK; C3 probe 3.1s; native probe SMOKE_PARTIAL. Last stored turn 6.295s / TTFT 2.046s / 358 admitted / 7 generated; not a new post-install test. No CHAT_SEND, restart, LOG_PAGE or device mutation.",
+  "last_code_release_head": "fb563d771fe2d493c4ec25abe94280981d24ef5c",
+  "latest_integrated_head": "fb563d771fe2d493c4ec25abe94280981d24ef5c",
+  "latest_integrated_head_verified_at": "2026-11-23T15:47:29Z",
+  "release_gate_status": "Release-development SHA fb563d771fe2d493c4ec25abe94280981d24ef5c has 20/21 observed PR-triggered workflows SUCCESS; the only red is the experimental V14 M1 DATA workflow. V13 staged/runtime/owner-read/bridge checks in the observed set are SUCCESS. QA PR #2444 fixes the M1 fixture/window failures at 88e2115 (43 tests each on Python 3.13/3.14 + offline-bridge security PASS) but is not merged. The phone has fb563d installed. Whole-system functional acceptance remains OPEN; AI is STOPPED_BY_USER.",
   "phone_receipt": {
-    "state": "B20E9_CI_GREEN_PHONE_RECEIPT_STALE_8BF44CB",
-    "pipeline_status_issue": 767,
-    "diagnostics_issue": 764,
-    "health_issue": 765,
-    "learning_status_issue": 766,
-    "update_request_issue": 737,
-    "installed_sha": "8bf44cb50e855a6dba0c91f64f60d8daddcbdc9c",
+    "state": "FB563D_INSTALLED_UP_TO_DATE_AI_STOPPED_BY_USER",
+    "pipeline_status_issue": 819,
+    "diagnostics_issue": 820,
+    "installed_sha": "fb563d771fe2d493c4ec25abe94280981d24ef5c",
     "auto_update": "ENABLED",
-    "runtime": "CI_WAIT",
-    "dashboard": "CI_WAIT",
-    "last_result": "CI_WAIT",
+    "runtime": "UP_TO_DATE",
+    "dashboard": "UP_TO_DATE",
+    "last_result": "UP_TO_DATE",
     "last_error": "NONE",
     "latest_turn": {
-      "status": "FINAL",
-      "duration_s": 57.73882742600108,
-      "ttft_s": 41.626904203003505,
-      "prefill_s": 38.945270141004585,
-      "prompt_tokens": 751,
-      "generated_tokens": 2,
-      "correctness": "UNKNOWN_NOT_SCORED"
+      "status": "FINAL_STORED_NOT_NEW_TEST",
+      "duration_s": 6.2950392680068035,
+      "ttft_s": 2.045680988987442,
+      "prompt_tokens": 358,
+      "generated_tokens": 7,
+      "correctness": "NOT_REVALIDATED"
     },
     "native_probe": {
       "status": "SMOKE_PARTIAL",
       "B1_DETAIL": "TIME_BUDGET_53.2S",
       "B2_GIST": "TIME_BUDGET_54.2S",
-      "C3": "OK_3.1S",
+      "C2_CONTROL": "OK",
+      "C3_LANGUAGE": "OK_3.1S",
       "fresh_probe_run": false
     },
     "instant_residency": {
-      "sample_kind": "INSTANT_NATIVE_PROCESSES",
+      "availability": "UNAVAILABLE",
+      "reason": "NO_VERIFIED_MODEL_SUPERVISOR",
       "mapped_processes": 0,
-      "mapped_pss_mib": 0,
-      "mapped_rss_mib": 0,
-      "readability": "UNKNOWN_NO_GROUP_CHILDREN",
-      "memory_accounting": "PROCESS_PSS_NOT_FREE_RAM_OR_SUSTAINED_RESIDENCY"
+      "mapped_pss_mib": null,
+      "mapped_rss_mib": null,
+      "memory_accounting": "NOT_FREE_RAM_OR_SUSTAINED_RESIDENCY"
+    },
+    "ai_runtime": {
+      "state": "STOPPED_BY_USER",
+      "model_process": "STOPPED",
+      "autostart": false,
+      "service": "RUNNING",
+      "dashboard_process": "RUNNING"
     },
     "lab_age": {
       "official_stage": 0,
@@ -479,20 +483,13 @@
       "physical_feature_execution_verified": false,
       "learning_commit_authority": "REQUIRES_SEPARATE_SHADOW_MODE"
     },
-    "health_snapshot": {
-      "disk_free_mib": 1030,
-      "memavailable_mib": 1209,
-      "memtotal_mib": 5569,
-      "runtime_field": "UNAVAILABLE_IN_HEALTH"
-    },
     "update_request": {
-      "issue": 737,
-      "status": "QUEUED",
-      "request_id": "af21a9865a591266329a4b70c6b1b387",
-      "install_receipt": false
+      "prior_issue": 737,
+      "status": "NO_DUPLICATE_REQUEST; current installed SHA already matches branch",
+      "install_receipt": true
     },
-    "redmi_status": "8BF44CB_LAST_AUTHENTICATED; B20E9_CI_GREEN_NOT_YET_DEVICE_VERIFIED",
-    "note": "PIPELINE_STATUS #767 predates final b20e9 CI completion. Auto-update is enabled; wait for a later read-only receipt. No duplicate request, manual command, CHAT_SEND, LOG_PAGE, shell, model/weight/permission change or user-data mutation."
+    "redmi_status": "FB563D_INSTALLED; AI_STOPPED_BY_USER; 20_TURN_ACCEPTANCE_BLOCKED",
+    "note": "Preserve the user's stopped state. No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, shell, restart, model/weight/permission change or user-data mutation."
   },
   "capability_snapshot": [
     {
@@ -1297,30 +1294,25 @@
     }
   },
   "qa_latest_checkpoint": {
-    "timestamp": "2026-11-22T12:02:49.539Z",
+    "timestamp": "2026-11-23T15:47:29Z",
     "owner": "QA & Android",
-    "base_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
-    "branch": "qa/v14-redmi-c4eb82-evidence-20261122-run11",
-    "code_commit": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
+    "base_sha": "fb563d771fe2d493c4ec25abe94280981d24ef5c",
+    "branch": "qa/v14-internal-hypothesis-output-20261123-run1",
+    "code_commit": "8b6b9e716886b1dbf3fccd8ade82d3cacb16ad3a",
+    "pull_request": 2446,
+    "status": "OPEN_DRAFT_EXACT_CI_PENDING_REDMI_UNVERIFIED",
     "evidence": {
-      "release_ci": "30/30 observed exact-SHA workflow runs SUCCESS",
-      "phone_install": "PRIVATE_PIPELINE_STATUS_550_AUTHENTICATED_UP_TO_DATE",
-      "phone_diagnostics": "PRIVATE_DIAGNOSTICS_551_RUNTIME_RUNNING; SAME_STORED_TURN; B1_B2_TIME_BUDGET",
-      "phone_health": "PRIVATE_HEALTH_549_MEMAVAILABLE_1293_MIB_DISK_FREE_1537_MIB; HEALTH_RUNTIME_FIELD_UNAVAILABLE",
-      "learning_status": "PRIVATE_LEARNING_STATUS_552_UNAVAILABLE",
-      "native_residency": "3 mapped processes / 90.7 MiB PSS; instantaneous only, not free RAM",
-      "local_full_suite": "BLOCKED_NO_CHECKOUT_DNS_FAILURE",
-      "pairing_helper": "LOCAL_JDK21_JAVAC_RELEASE17_PASS_10_ASSERTIONS",
-      "pr2342": "EXACT_ANDROID_GRADLE_ROBOLECTRIC_PASS_45018041741; PRIVATE_BRIDGE_PASS_45018031307; independent QA readback found no blocker; GitHub self-approval rejected because PR author is same account; separate Boss/Core review required",
-      "pr2338": "BLOCKED_AT_REVIEWED_HEAD: runtime.py/store.py builder pins and native_turn_budget source_ref fixture; Boss owns coordinated descendant; QA did not edit shared chain",
-      "pr2332": "REMOTE_ALLOWLIST_ONLY_NOT_EXECUTABLE: exact source readback shows operator.py -> callosum.operator_command has no native-probe branch; no local source-bound receiver invocation or distinct local approval; Boss+QA comments on PR #2332; no CHAT_OPERATOR/probe sent",
-      "latest_release": "c4eb82 installed; no new update request or manual command required",
-      "android_companion_recovery": "OPEN_DEFECT: ConsentActivity finalization failure can leave EXECUTING/DENYING without receipt after notification cleanup; no receipt-only recovery; QA comment 7078714601 on #2342; no action redispatch allowed",
-      "boss_fair_budget_pr2343": "CURRENT_HEAD_023E56D_29_AHEAD_0_BEHIND; all 13 substantive exact-head workflows queued at last poll. Recovery12 blob pin bca415 and lifecycle Store/fair-observer Runtime pins now match; remaining: STAGER expected 3b4d vs actual 53d8; recovery21 expected 4e20 vs actual 7efd; archive-stream Store old pin 40a3 vs actual store c413 and rebinder uses wrong preimage; record-only guard runtime a533 vs actual 08c1; fair-observer ask anchor absent. Prior 70c6a5 migration failure is historical. QA comment 7078835728.",
-      "boss_pr2343_byte_diagnosis": "EXACT_HASH_READBACK_71FD9E: STAGER_SHA expected 614cfc vs actual stage 4c7f2c; stage BUILDER_SHA expected 47fa3d vs actual recovery builder 1333db; archive stream store pin 40a387 vs actual store c413e and lifecycle rebinder searches wrong preimage; record-only guard runtime a533 vs actual runtime 08c1ef; observer ask anchor already changed to role_end. Good C4/base/audio/native pins verified. QA comment 7078775784.",
-      "boss_pr2343_migration": "CURRENT_HEAD_70C6A5: run 45019915717 FAIL in both old/current phone release tests; Git checkouts fast-forwarded, but one-shot runtime activation returned PARTIAL/runtime ERROR/last_error UPDATE; assertion test_two_checkout_migration_20261116.py:236"
-    },
-    "user_action_required": false
+      "implementation": "C3 EN/DE non-disclosure prompt retained; verification.public_probe_summary allowlists console-safe native probe metrics; interactive :probe and one-shot CLI use it; full raw artifact remains local.",
+      "tests": "test_prompts.py adds adversarial sentinel coverage for C3 output, B1/B2 offer hypotheses, C2 control payloads and private config; numeric metrics and verified quote counts remain.",
+      "exact_ci": "At head 8b6b9e: JEPA receipt-integrity run 45210326339 SUCCESS; combined online JEPA run 45210326439 and JEPA transactional-update run 45210326276 QUEUED at last poll; safe-additive validation skipped; staged-context exact result not yet confirmed.",
+      "local_full_suite": "BLOCKED_NO_CHECKOUT_GITHUB_DNS_FAILURE",
+      "phone_install": "PIPELINE_STATUS #819 confirms fb563d installed; Runtime/Dashboard UP_TO_DATE; auto-update enabled; last_error NONE.",
+      "phone_diagnostics": "DIAGNOSTICS #820: STOPPED_BY_USER, model STOPPED, autostart false; B1/B2 TIME_BUDGET 53.2/54.2s; C2 OK; C3 3.1s; residency UNAVAILABLE; stored turn 6.295s/2.046s TTFT/358 prompt/7 generated.",
+      "live_acceptance": "20_TURN_NOT_RUN; no CHAT_SEND or restart because user stop state is active.",
+      "m1_data": "Release branch M1 DATA workflow run 45177502749 FAIL on Python 3.13 and 3.14 (36 tests, 6 failures + 1 error); root causes are double-escaped newline fixtures and incorrect strict-NaN affected-origin bounds. QA PR #2444 head 88e2115 PASS: 43 tests each on Python 3.13/3.14 plus offline-bridge security; not merged, no real UCI run or training.",
+      "next_action": "Finish exact CI for #2446. Keep the phone stopped. After explicit user re-enable, run 20-turn matrix and separate output privacy/lifecycle tests.",
+      "user_action_required": false
+    }
   },
   "previous_boss_checkpoint": {
     "timestamp": "2026-11-22T10:00:40.871Z",
