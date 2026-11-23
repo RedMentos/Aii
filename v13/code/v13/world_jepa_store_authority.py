@@ -17,6 +17,8 @@ _SEAL = object()
 _TERMINAL = {"FINAL", "FAILED", "CANCELLED", "ERROR", "DEADLINE", "INTERRUPTED", "OUTCOME_UNKNOWN", "ABORTED", "REJECTED"}
 _OBSERVED_LEARNING_STATUSES = {"FINAL", "FAILED", "ERROR", "DEADLINE", "REJECTED"}
 MAX_ACTION_OUTCOMES_PER_EVENT = 4096
+MAX_ACTION_SOURCE_REFS = 64
+_SOURCE_REF_KEYS = {"source_id", "sha256", "char_start", "char_end", "modality"}
 
 
 def _unique(pairs):
@@ -59,6 +61,76 @@ def _vector(value, size):
             and all(type(x) in (int, float) and math.isfinite(x) for x in value))
 
 
+def _validated_source_ref(store, value):
+    if type(value) is not dict or set(value) != _SOURCE_REF_KEYS:
+        raise ValueError("ActionSelection source ref shape")
+    source_id, source_sha = value.get("source_id"), value.get("sha256")
+    start, end, modality = value.get("char_start"), value.get("char_end"), value.get("modality")
+    if (type(source_id) is not str or not source_id or len(source_id) > 256
+            or type(source_sha) is not str or not _HEX64.fullmatch(source_sha)
+            or type(start) is not int or type(end) is not int or not 0 <= start <= end
+            or type(modality) is not str or not modality or len(modality) > 64):
+        raise ValueError("ActionSelection source ref identity")
+    if type(store.read_source(value)) is not str:
+        raise ValueError("ActionSelection source ref read")
+    return {
+        "source_id": source_id, "sha256": source_sha,
+        "char_start": start, "char_end": end, "modality": modality,
+    }
+
+
+def _selection_source_refs(store, event_id, generation_id, action_created, event_source_ref):
+    rows = store.rows(
+        """SELECT payload FROM packets
+           WHERE kind='ActionSelection' AND event_id=? AND generation_id=? AND created<=?
+           ORDER BY created DESC LIMIT 17""",
+        (event_id, generation_id, action_created),
+    )
+    if type(rows) is not list or len(rows) >= 17:
+        raise ValueError("ActionSelection source scan bound")
+    committed = []
+    for raw in rows:
+        packet_row = _mapping(raw, "ActionSelection source row")
+        selection = _object(packet_row.get("payload"), "ActionSelection source payload")
+        if (selection.get("event_id") != event_id
+                or selection.get("brain_generation_id") != generation_id):
+            raise ValueError("ActionSelection source binding")
+        stage = selection.get("stage")
+        if stage not in (None, "PREDICTION", "COMMIT"):
+            raise ValueError("ActionSelection source stage")
+        if stage != "PREDICTION":
+            committed.append(selection)
+    if len(committed) != 1:
+        raise ValueError("ActionSelection source cardinality")
+    raw_refs = committed[0].get("provenance")
+    if type(raw_refs) is not list or not 1 <= len(raw_refs) <= MAX_ACTION_SOURCE_REFS:
+        raise ValueError("ActionSelection source refs")
+    refs, seen, source_hashes = [], set(), {}
+    for raw_ref in raw_refs:
+        ref = _validated_source_ref(store, raw_ref)
+        key = (ref["source_id"], ref["sha256"], ref["char_start"],
+               ref["char_end"], ref["modality"])
+        if key in seen:
+            raise ValueError("duplicate ActionSelection source ref")
+        prior = source_hashes.get(ref["source_id"])
+        if prior is not None and prior != ref["sha256"]:
+            raise ValueError("ActionSelection source digest changed")
+        source_hashes[ref["source_id"]] = ref["sha256"]
+        seen.add(key)
+        refs.append(ref)
+    if event_source_ref not in refs:
+        raise ValueError("ActionSelection omitted event source")
+    refs.sort(key=lambda item: (
+        item["source_id"], item["sha256"], item["char_start"],
+        item["char_end"], item["modality"],
+    ))
+    return tuple(
+        (item["source_id"], item["sha256"], item["char_start"],
+         item["char_end"], item["modality"])
+        for item in refs
+    )
+
+
 @dataclass(frozen=True)
 class Provenance:
     action_id: str
@@ -69,6 +141,7 @@ class Provenance:
     source_char_start: int
     source_char_end: int
     source_modality: str
+    source_refs: tuple
     outcome_sha256: str
     created: float
     outcome_created: float
@@ -119,9 +192,14 @@ class VerifiedT8Transition:
 
     @property
     def fingerprint(self):
-        return _hash({"action_id": self._proof.action_id, "event_id": self._proof.event_id,
-                      "generation_id": self._proof.generation_id, "source_id": self._proof.source_id,
-                      "source_sha256": self._proof.source_sha256, "outcome_sha256": self._proof.outcome_sha256})
+        value = {"action_id": self._proof.action_id, "event_id": self._proof.event_id,
+                 "generation_id": self._proof.generation_id, "source_id": self._proof.source_id,
+                 "source_sha256": self._proof.source_sha256, "outcome_sha256": self._proof.outcome_sha256}
+        # Preserve the historical single-event-source fingerprint. Additional
+        # admitted context refs become part of the immutable T8 identity.
+        if len(self._proof.source_refs) > 1:
+            value["source_refs"] = [list(item) for item in self._proof.source_refs]
+        return _hash(value)
 
     @property
     def source_ref(self):
@@ -137,6 +215,14 @@ class VerifiedT8Transition:
         }
 
     @property
+    def source_refs(self):
+        return [
+            {"source_id": item[0], "sha256": item[1], "char_start": item[2],
+             "char_end": item[3], "modality": item[4]}
+            for item in self._proof.source_refs
+        ]
+
+    @property
     def evidence_ref(self):
         return "T8:" + self._proof.action_id + ":" + self._proof.outcome_sha256
 
@@ -148,6 +234,7 @@ class VerifiedT8Transition:
     def public_provenance(self):
         return {"event_id": self._proof.event_id, "generation_id": self._proof.generation_id,
                 "source_id": self._proof.source_id, "source_sha256": self._proof.source_sha256,
+                "source_refs": self.source_refs,
                 "outcome_sha256": self._proof.outcome_sha256}
 
 
@@ -207,6 +294,12 @@ def _verify_one(store, row):
     # Store.read_source verifies source row, blob digest and span; text is discarded.
     if type(store.read_source(source_ref)) is not str:
         raise ValueError("source read")
+    # ActionSelection records the full admitted context lineage. Legacy
+    # single-source packets remain valid; newer producers may supply up to 64
+    # complete SourceRefs, all of which must still be live and hash-valid.
+    selected_source_refs = _selection_source_refs(
+        store, meta["event_id"], meta["generation_id"], created, source_ref
+    )
     # Scan the complete event history up to a hard bound. A small LIMIT could
     # hide an older duplicate and incorrectly certify the remaining packet as
     # the unique ActionOutcome. Over-bound histories fail closed.
@@ -235,7 +328,7 @@ def _verify_one(store, row):
     if row["y"][1] != (1.0 if status == "FINAL" else 0.0):
         raise ValueError("transition status mismatch")
     proof = Provenance(action_id, meta["event_id"], meta["generation_id"], source_id, source_sha,
-                       source_start, source_end, source_modality,
+                       source_start, source_end, source_modality, selected_source_refs,
                        _hash(outcome_packet), float(created), float(outcome_created), status, actual)
     return VerifiedT8Transition(_SEAL, row, proof)
 
