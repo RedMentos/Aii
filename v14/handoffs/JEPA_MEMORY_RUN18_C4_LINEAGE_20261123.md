@@ -37,7 +37,7 @@
 - Recompute the complete nested source-pin chain after the rebase. Do not relax immutable pins.
 
 ## Research
-- R-116: JEPA-TTT (arXiv:2610.00722; NeurIPS 2026 Workshop) reports persistent latent-predictor updates and dense replay across fixed dynamics shifts; no return-to-old dynamics or catastrophic-forgetting test. No source code/license or weights were found; nothing reused.
+- R-116: JEPA-TTT (arXiv:2610.00722; NeurIPS 2026 Workshop) reports persistent latent-predictor updates and dense replay across fixed dynamics shifts; no return-to-old dynamics or catastrophic-forgetting test. The paper is CC BY 4.0; the project-page template states CC BY-SA 4.0. No source-code repository or model weights/license were found; nothing reused.
 - Next JEPA experiment: A→B→A dynamics/outcome shift with source-disjoint old/new cohorts, replay-on/off and matched-update controls.
 
 **User action: NONE. Preserve STOPPED_BY_USER.**
