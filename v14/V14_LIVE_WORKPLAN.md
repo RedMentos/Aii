@@ -1472,7 +1472,7 @@ The temporal predictor's fixed-EMA retention gate is measured, and B1/B2 adapter
 ### Gate semantics
 
 - First update: no prior receiver cohort exists, so the receipt is `NOT_MEASURED / NO_PRIOR_CHECKPOINT`; the current holdout is persisted for the next update.
-- Later update: the previous encoder+head and updated encoder+head are evaluated on the same raw `X/A/Y` cohort. Both B1 and B2 must stay within 5% old-cohort MSE tolerance. If the prior receiver utility gate passed, the updated pair must also beat mean, zero-latent and shuffled-latent controls.
+- Later update: the previous encoder+head and updated encoder+head are evaluated on the same raw `X/A/Y` cohort. Both B1 and B2 must stay within the provisional [DEFAULT] 5% relative old-cohort MSE tolerance; the value is recorded in each v3 receipt and must be calibrated against real update data. If the prior receiver utility gate passed, the updated pair must also beat mean, zero-latent and shuffled-latent controls.
 - Any source overlap or measured retention regression prevents checkpoint commit. The fixed cohort is not trained on; source-forget can still invalidate it.
 - This is an adapter-retention guard, not full world-fact timescale stratification, not native body-weight training and not trained latent coupling.
 
