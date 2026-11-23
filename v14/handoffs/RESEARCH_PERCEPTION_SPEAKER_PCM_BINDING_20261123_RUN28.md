@@ -63,3 +63,7 @@ This is a synthetic fixture, not a live microphone turn and not Android evidence
 
 ## User action
 Keine Aktion nötig. No model download, permission change, device action, weight edit, or productive model swap was requested or performed.
+
+## GitHub metadata blocker
+- Attempt to append the run-28 summary to PR #2448 and post the coordination comment on stale PR #2433 was blocked by GitHub API 403: “At least one email address must be verified to do that.”
+- Code, tests, board, workplan, research ledger and next-action files were committed successfully to the existing branch. The PR body and #2433 comment were not updated; no merge or release action was attempted.
