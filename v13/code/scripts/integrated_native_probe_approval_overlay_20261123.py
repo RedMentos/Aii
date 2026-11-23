@@ -23,20 +23,20 @@ HELP_NEW = (
 )
 
 DISPATCH_OLD = (
-    b"        if cmd=='callosum':\\n"
-    b"            from .callosum import operator_command\\n"
-    b"            return operator_command(r,args)\\n"
+    b"        if cmd=='callosum':\n"
+    b"            from .callosum import operator_command\n"
+    b"            return operator_command(r,args)\n"
 )
 DISPATCH_NEW = (
-    b"        if cmd=='callosum' and args and args[0] in {'arm-probe','native-probe','revoke-probe'}:\\n"
-    b"            from .native_probe_approval import operator_command as probe_operator_command\\n"
-    b"            return probe_operator_command(r,args)\\n"
+    b"        if cmd=='callosum' and args and args[0] in {'arm-probe','native-probe','revoke-probe'}:\n"
+    b"            from .native_probe_approval import operator_command as probe_operator_command\n"
+    b"            return probe_operator_command(r,args)\n"
     + DISPATCH_OLD
 )
 
 
 def _git_blob_sha1(raw: bytes) -> str:
-    return hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\\0" + raw).hexdigest()
+    return hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw).hexdigest()
 
 
 def _read_pinned(root: Path, relative: str, expected: str, label: str) -> bytes:
