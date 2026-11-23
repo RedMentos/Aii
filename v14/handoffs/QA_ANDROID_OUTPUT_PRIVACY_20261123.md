@@ -124,7 +124,7 @@ Review the exact-head staged-runtime, integrated-regression, and private-bridge 
 No device action, chat send, restart, model/weight change, permission change, or user-data mutation was performed.
 
 
-## QA & Android run 3 — closed metadata grammar and probe exception boundary (2026-11-23 18:xx CET)
+## QA & Android run 3 — closed metadata grammar and probe exception boundary (2026-11-23 18:11 CET (run start))
 
 ### Code checkpoint
 - QA branch: \`qa/v14-internal-hypothesis-output-20261123-run1\`.
