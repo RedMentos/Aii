@@ -6,13 +6,11 @@ on:
       - qa/v14-companion-single-use-approval-20261121
       - qa/v14-companion-os-permission-contract-20261122
       - core/v14-android-action-journal-qa-rebase-20261123-run1
-      - core/v14-android-receipt-revalidation-20261123-run1
   pull_request:
     branches:
       - core/v14-android-companion-native-20261121
       - qa/v14-companion-single-use-approval-20261121
       - qa/v14-companion-final-qa-20261122
-      - core/v14-android-action-journal-qa-rebase-20261123-run1
     paths:
       - 'v13/code/v13/contracts.py'
       - 'v13/code/v13/android_control.py'
