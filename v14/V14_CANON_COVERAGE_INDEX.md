@@ -2285,8 +2285,8 @@ Current release b20e9b1f3dd53af472055adb43da628785494ec4; last phone snapshot 8b
 
 ## Run 13 candidate delta — 2026-11-23 (NOT ACCEPTED)
 
-- Candidate: PR #2447, branch `jepa-memory/v14-temporal-world-jepa-release-20261123-run13`, base `fb563d771fe2d493c4ec25abe94280981d24ef5c`, head `581de80f164ab19ab559c946ce49a7af52be06ba` (code commit `3767e9916fad125dd36d745f869f48db566e9632`).
-- Candidate status: CODE_ON_BRANCH / CI_QUEUED / NOT_RELEASED / REDMI_UNVERIFIED. The matrix above is not promoted to accepted or native proof by this draft PR.
+- Candidate: PR #2447, branch `jepa-memory/v14-temporal-world-jepa-release-20261123-run13`, base `fb563d771fe2d493c4ec25abe94280981d24ef5c`, head `e7c4cba13670eca11fa592df8b76d390009928b8` (runtime code commit `3767e9916fad125dd36d745f869f48db566e9632`; code-identical test head `581de80f164ab19ab559c946ce49a7af52be06ba`).
+- Candidate status: CODE_ON_BRANCH / CI_QUEUED_ON_CODE_IDENTICAL_HEAD / NOT_RELEASED / REDMI_UNVERIFIED. The matrix above is not promoted to accepted or native proof by this draft PR.
 - New candidate path: committed T8 ActionOutcome -> persistent temporal WorldJEPA predictor/EMA/Adam/checkpoint -> source/session-disjoint episodic recall -> B1/B2 numeric SHADOW receiver via bodyview; SleepRuntime postcommit scheduling; restart/rollback/replay.
 - Memory source-forget candidate: the existing Memory API guard composes temporal checkpoint invalidation under the shared JEPA flock and clears a changed warm cache. A synthetic Store-backed regression is included.
 - Not closed: exact-head CI not yet reported; full local checkout blocked by DNS; Boss #2443 Store-RLock/blob-unlink race; staged builder pin rebind; Core ActionSelection context SourceRefs; native Redmi proof; native B1/B2/GGUF weight updates; trained cross-organ latent transfer.
