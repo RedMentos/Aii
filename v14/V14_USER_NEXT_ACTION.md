@@ -1,3 +1,19 @@
+## Latest verified JEPA/Memory checkpoint — 2026-11-23
+
+Run started 16:31:56 Europe/Berlin; completion time UNKNOWN.
+
+- Current release-development HEAD verified: `fb563d771fe2d493c4ec25abe94280981d24ef5c`.
+- JEPA temporal T8 / EMA / replay / B1-B2 SHADOW runtime port: [PR #2447](https://github.com/RedMentos/Aii/pull/2447), head `3767e9916fad125dd36d745f869f48db566e9632`, draft; exact-head CI not yet reported.
+- The existing Memory source-forget entry point now composes temporal checkpoint invalidation and clears a changed warm cache. A new regression exercises forget plus replay through `Memory._forget_source`.
+- Full local checkout/tests BLOCKED by GitHub DNS failure in this runner. No local full-suite PASS claimed. No Android receipt or Redmi test: REDMI_UNVERIFIED.
+- Still open: Boss/QA staged-builder rebind and #2443 Store-RLock/blob-unlink race; Core production ActionSelection must attach all admitted context SourceRefs. This PR does not prove native latent transfer, GGUF weight learning or native B1/B2 weight changes.
+- Next: poll exact-head CI for #2447, fix reproduced failures, then coordinate builder and provenance integration. R-107 Future-Aware Recall remains a later SHADOW research candidate.
+- User action: none.
+
+Handoff: `v14/handoffs/JEPA_MEMORY_RUN13_RELEASE_PORT_20261123.md`.
+
+---
+
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
