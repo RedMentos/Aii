@@ -1,3 +1,10 @@
+## Perception run 10 evidence overlay — 2026-11-23
+
+- **A3 source provenance/forget:** PR #2395 exact head 26ccaf0825d4ebf02aedcdae781a9164b04f53d5 records source ID + SHA-256 for global and tile ridge projectors and invalidates affected or legacy-unknown weights on forget. Focused GitHub CI 2/2 PASS and local helper tests 7/7 PASS. This remains a draft candidate, not accepted: the staged JEPA overlay still replaces vision.forget() with a caption-only cleanup path, and the QA composer has stale vision.py/missing helper pins. Staged/integrated CI FAIL; Redmi unverified.
+- **Exact ridge-head unlearning research:** R-101 is a local synthetic sufficiency experiment only. It is not evidence of neural-body unlearning, actual visual semantics, native training or Android performance.
+
+---
+
 ## Research & Perception evidence overlay — 2026-11-23T00:19:01.123Z (append-only; historical 1,255-heading inventory unchanged)
 
 | Canon family | Current verified state | Acceptance boundary / next owner |
