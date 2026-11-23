@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T21:44:55.998Z",
+  "updated_at": "2026-11-23T21:47:50.514Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6. Boss candidate code-bearing checkpoint a5e536a96f6dc2a3a515d37b08393f7136e9efff on boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean; documentation-only descendants follow (last PR metadata readback 5166643ac74fbca318511c0918dea06e98a11ff9). QA #2459 and #2460 fast-forward integrated. Candidate PR #2443 remains DRAFT / NOT_RELEASED; full combined exact-head CI incomplete.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "The Boss branch is a candidate only, NOT_RELEASED/NOT_INSTALLED. CI must pass on its exact final head before any release action. Do not restart the explicitly stopped phone runtime or issue a duplicate update request. Keep synthetic, CI, local Linux and real Redmi evidence separate.",
@@ -111,7 +111,7 @@
       "proof_environment": "NO_EXACT_HEAD_CI_STARTUP_FAILURE_0_JOBS; LOCAL_PROJECT_TEST_NOT_RUN_NO_CHECKOUT; SYNTHETIC_NUMERIC_PASS_ONLY; REDMI_UNVERIFIED",
       "next_step": "Wait for combined Boss #2443 exact-head CI to be green; then rebase #2454 onto that exact head without force-push, coordinate Core #2457 rebase, and run Python 3.13/3.14 temporal/postcommit/source-forget/restart/rollback/staged/integrated tests. First verify the persisted prior receiver cohort produces a measured second-update receipt. Keep B1/B2 SHADOW.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T21:43:37.326Z",
+      "last_checkpoint": "2026-11-23T21:47:50.514Z",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -163,17 +163,17 @@
         "ci": "PR_HEAD_STAGED_249_10SKIP_47_INTEGRATED_424_3SKIP_58_PY313_314_64_EACH; MERGED_PUSH_30_OF_30_SUCCESS",
         "scope": "production Runtime/SleepRuntime Store-backed WorldJEPA numeric consumer with persistent Adam/inverse/RNG optimizer state, gated legacy optimizer bootstrap, per-role held-out-vs-mean/zero/shuffled Planner receiver gate, Android no-clobber renameat2 checkpoint publication"
       },
-      "proof": "Run15 code/test checkpoint 978e257399a9a23eff8119b3f9611a1ba6d410de (source commit 3122e30830a94848f4ffe17fb55146d8c5a614d0) adds previous-checkpoint byte/source/digest verification before rollback state publication, same-Store warm-cache invalidation/reload, and missing/corrupt fallback negative controls. The exact Aii project tests were NOT_RUN locally (no checkout; GitHub DNS failure) and no exact-head CI is attached to PR #2454. No native B1/B2 body-weight, cross-organ latent, or Redmi learning proof. The positive warm-cache test explicitly clears the cache before asserting WARMED, because the update path itself already leaves a warm model. Current WorldJEPA predictor retention is measured against fixed EMA target anchors, but the B1/B2 WeightDeltaReceipt still reports target_adapter_retention=NOT_MEASURED; the receiver loop is not complete until that old-cohort adapter-retention path is persisted and measured. Run16 candidate head 1cfac4a adds a fixed persisted B1/B2 receiver-retention cohort (raw X/A/Y + SourceRef/action provenance + checkpoint/cohort digests), source-disjoint train exclusion, old/new encoder+head evaluation, 5% MSE retention gate and mean/zero/shuffled controls, v3 WeightDeltaReceipt metrics, LearningIntent cohort IDs, and source-forget provenance. Tests for bootstrap persistence, encoder drift/compensation, degraded-head failure, overlap, tamper, source-forget after row eviction and v3 receipt validation are committed but NOT_RUN. Exact-head Actions #45272190117 startup_failure/0 jobs; local Aii suite NOT_RUN; synthetic numeric control PASS only. No Android proof.",
+      "proof": "Run15 code/test checkpoint 978e257399a9a23eff8119b3f9611a1ba6d410de (source commit 3122e30830a94848f4ffe17fb55146d8c5a614d0) adds previous-checkpoint byte/source/digest verification before rollback state publication, same-Store warm-cache invalidation/reload, and missing/corrupt fallback negative controls. The exact Aii project tests were NOT_RUN locally (no checkout; GitHub DNS failure) and no exact-head CI is attached to PR #2454. No native B1/B2 body-weight, cross-organ latent, or Redmi learning proof. The positive warm-cache test explicitly clears the cache before asserting WARMED, because the update path itself already leaves a warm model. Current WorldJEPA predictor retention is measured against fixed EMA target anchors, but the B1/B2 WeightDeltaReceipt still reports target_adapter_retention=NOT_MEASURED; the receiver loop is not complete until that old-cohort adapter-retention path is persisted and measured. Run16 code/test checkpoint d60fcb66 adds a fixed persisted B1/B2 receiver-retention cohort (raw X/A/Y + SourceRef/action provenance + checkpoint/cohort digests), source-disjoint train exclusion, old/new encoder+head evaluation, provisional [DEFAULT] 5% relative-MSE retention gate (recorded in receipt; empirical calibration pending) and mean/zero/shuffled controls, v3 WeightDeltaReceipt metrics, LearningIntent cohort IDs, and source-forget provenance. Tests for bootstrap persistence, encoder drift/compensation, degraded-head failure, overlap, tamper, source-forget after row eviction and v3 receipt validation are committed but NOT_RUN. Exact-head Actions #45273031215 startup_failure/0 jobs; local Aii suite NOT_RUN; synthetic numeric control PASS only. No Android proof.",
       "latest_temporal_candidate": {
         "pr": 2454,
         "branch": "jepa-memory/v14-temporal-boss-2443-rebase-20261123-run14",
-        "code_sha": "1cfac4a1518a959a2022b81e796e3dfc0b6b2cf0",
+        "code_sha": "d60fcb66b24f44b061a48c173b5de87fc05ecbe0",
         "branch_head_before_doc_sync": "0b6cd16b98e73af3d32884ea733c7614e0933eee",
         "parent_pr": 2443,
         "parent_head": "cdf6b64067ac426ba32194100d3764f6e74c105f",
         "status": "DRAFT_STACKED_MERGEABLE_FALSE",
         "compare_to_parent": "59_AHEAD_47_BEHIND; MERGE_BASE_6E9BAD8",
-        "ci": "EXACT_HEAD_RUN_45272190117_STARTUP_FAILURE_0_JOBS; COMBINED_STATUS_PENDING_0_CONTEXTS",
+        "ci": "EXACT_CODE_HEAD_RUN_45273031215_STARTUP_FAILURE_0_JOBS; COMBINED_STATUS_PENDING_0_CONTEXTS",
         "local_tests": "NOT_RUN_BLOCKED_NO_AII_CHECKOUT; SYNTHETIC_NUMERIC_PASS",
         "scope": "Persisted source-disjoint B1/B2 receiver holdout; old/new encoder+head retention; v3 receipt metrics; fail-closed source overlap; source-forget provenance",
         "claims_not_made": [
@@ -193,17 +193,17 @@
         },
         "source_commit": "3122e30830a94848f4ffe17fb55146d8c5a614d0",
         "test_commit": "978e257399a9a23eff8119b3f9611a1ba6d410de",
-        "handoff_commit": "3066dac6aaaa5573b13c1dc0e0864f144e08c2c2",
+        "handoff_commit": "9cc0b1af4a96b6fce657e54baa1779db6331cb06",
         "superseded_test_commit": "f56e7067e6f2df5900231324dd5b2d55ea277477",
         "latest_pr_head_before_status_sync": "72f43dfc93251451790d9b89e3e9bd8f6045c162",
         "compare_to_parent_latest": "45_AHEAD_47_BEHIND",
-        "target_adapter_retention": "CODE_PRESENT_UNVERIFIED; FIRST_UPDATE_NOT_MEASURED_BOOTSTRAP; SECOND_UPDATE_NOT_RUN",
+        "target_adapter_retention": "CODE_PRESENT_UNVERIFIED; FIRST_UPDATE_NOT_MEASURED_BOOTSTRAP; SECOND_UPDATE_NOT_EXECUTED; DEFAULT_TOLERANCE_5_PERCENT_PROVISIONAL",
         "world_predictor_retention": "MEASURED_IN_EXPERIMENTAL_GATE",
-        "documentation_head": "6299c84c08c217b63c64393952212a3af23c7c3d",
+        "documentation_head": "f93b701d0b08924beceef4ef86f83cfda1f8dd34",
         "latest_code_commits": {
-          "learning_intent": "5736a303669dc473187b5f39e25b658ce5a92225",
+          "learning_intent": "477ba539c8196d7934ed0895fbb31c18ec7f6def",
           "temporal": "166ffa1a4e141653d91e6d190e1e82dc5cd707f7",
-          "tests": "1cfac4a1518a959a2022b81e796e3dfc0b6b2cf0"
+          "tests": "d60fcb66b24f44b061a48c173b5de87fc05ecbe0"
         }
       },
       "collaboration_write_blocker": "GitHub PR comments and PR metadata updates returned HTTP 403 because the linked GitHub account has no verified email. Repository content commits/readbacks succeeded. Optional account email verification would restore PR discussion/metadata writes; no device action is needed. Run16 PR #2454 body update and issue #1984 comment also returned HTTP 403 (unverified email); code commits/readbacks remain successful."
@@ -336,7 +336,7 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Selected trainable adapters/heads and later cross-organ weights; meta update predictor; sandboxed code/structure proposals; independent OS capability boundary; approval, holdout, retention and rollback",
       "acceptance": "Prove a real numeric parameter diff on an approved target, measurable heldout utility and retention, checkpoint/restart/rollback, and cross-organ consumer benefit. Code/structure self-edit remains sandboxed and human-approved; no self-issued permissions.",
-      "proof_environment": "Experimental WorldJEPA and SHADOW receiver-head code only. Run16 adds candidate receiver-retention receipts v3, but exact project tests and second-update measurement are NOT_RUN; no native body-weight update, cross-organ gradient or approved model promotion.",
+      "proof_environment": "Experimental WorldJEPA and SHADOW receiver-head code only. Run16 adds candidate receiver-retention receipts v3 with an explicit provisional 5% relative-MSE default, but exact project tests and second-update measurement are NOT_RUN; no native body-weight update, cross-organ gradient or approved model promotion.",
       "next_step": "Keep promotion OFF. After exact-head CI and staged/integrated tests, demonstrate a measured second-update B1/B2 receiver-retention receipt and a separately approved target-organ numeric update with checkpoint/restart/rollback. This does not satisfy native base-weight or cross-organ self-optimization.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-23T20:58:33.465Z",
@@ -1271,7 +1271,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-23T21:44:55.998Z",
+    "timestamp": "2026-11-23T21:47:50.514Z",
     "release_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
     "code_candidate_sha": "a5e536a96f6dc2a3a515d37b08393f7136e9efff",
     "documentation_head": "5166643ac74fbca318511c0918dea06e98a11ff9",
@@ -1308,10 +1308,10 @@
     "pr2454_2457": "PR2454_HEAD_BC9EAEA_MERGEABLE_FALSE_NO_RUNS; PR2457_HEAD_F8D042_1_SUCCESS_5_FAILURE; NO_NATIVE_PROBE",
     "m1": "PR2452_HEAD_2104F72_M1_TEST_FAIL; PR2453_HEAD_F7F7520_DATA_ONLY_PASS; NO_REAL_COHORT_OR_TRAINING",
     "jepa_run16": {
-      "code_head": "1cfac4a1518a959a2022b81e796e3dfc0b6b2cf0",
+      "code_head": "d60fcb66b24f44b061a48c173b5de87fc05ecbe0",
       "handoff": "v14/handoffs/JEPA_MEMORY_RUN16_RECEIVER_RETENTION_20261123.md",
       "pr2454": "DRAFT; 59_AHEAD_47_BEHIND_CURRENT_BOSS; MERGEABLE_FALSE",
-      "exact_head_ci": "45272190117_STARTUP_FAILURE_0_JOBS",
+      "exact_head_ci": "45273031215_STARTUP_FAILURE_0_JOBS",
       "local_project_suite": "NOT_RUN_NO_CHECKOUT_DNS_FAILURE",
       "synthetic_numeric": "PASS",
       "receiver_retention": "PERSISTED_COHORT_CODE_PRESENT; FIRST_UPDATE_NOT_MEASURED_BOOTSTRAP; SECOND_UPDATE_NOT_EXECUTED",
@@ -1319,8 +1319,10 @@
       "private_owner_read": "NEW_READ_ISSUES_BLOCKED_HTTP_422_UNVERIFIED_EMAIL",
       "release": "NOT_RELEASED",
       "user_action_required": "NONE",
-      "documentation_head": "6299c84c08c217b63c64393952212a3af23c7c3d",
-      "pr_metadata": "PR_BODY_AND_ISSUE_1984_COMMENT_HTTP403_UNVERIFIED_EMAIL"
+      "documentation_head": "f93b701d0b08924beceef4ef86f83cfda1f8dd34",
+      "pr_metadata": "PR_BODY_AND_ISSUE_1984_COMMENT_HTTP403_UNVERIFIED_EMAIL",
+      "handoff_commit": "9cc0b1af4a96b6fce657e54baa1779db6331cb06",
+      "retention_tolerance": "PROVISIONAL_DEFAULT_0.05_RELATIVE_MSE; RECORDED_IN_RECEIPT; CALIBRATION_PENDING"
     }
   },
   "qa_latest_checkpoint": {
@@ -1374,23 +1376,24 @@
     "active_agents": "Exactly five active V14 roles: Boss & Integration, QA & Android, JEPA & Memory, Research & Perception, Core & Harness.",
     "documentation_pr2333": "DRAFT documentation/evidence synchronization PR #2333, branch boss/v14-run12-whole-system-handoff-20261122; base b3b92. Updates board/workplan/next-action/append-only coverage only; no runtime code."
   },
-  "latest_documentation_head_at_readback": "6299c84c08c217b63c64393952212a3af23c7c3d",
+  "latest_documentation_head_at_readback": "f93b701d0b08924beceef4ef86f83cfda1f8dd34",
   "latest_jepa_checkpoint": {
-    "timestamp": "2026-11-23T21:43:37.326Z",
+    "timestamp": "2026-11-23T21:47:50.514Z",
     "branch": "jepa-memory/v14-temporal-boss-2443-rebase-20261123-run14",
-    "code_head": "1cfac4a1518a959a2022b81e796e3dfc0b6b2cf0",
-    "handoff_commit": "3066dac6aaaa5573b13c1dc0e0864f144e08c2c2",
-    "user_next_action_commit": "6299c84c08c217b63c64393952212a3af23c7c3d",
-    "workplan_commit": "40a2ddbbf66ae2a6f2f0c4c953e4bb612e32ecf6",
-    "research_ledger_commit": "96612248e48500a09ca82de767aff85f9d86c03f",
-    "canon_coverage_commit": "09fff463a666f85bc36094a3f763b45984861a43",
+    "code_head": "d60fcb66b24f44b061a48c173b5de87fc05ecbe0",
+    "handoff_commit": "9cc0b1af4a96b6fce657e54baa1779db6331cb06",
+    "user_next_action_commit": "361f81a1f6c9882635c4b60c16e7f40d909bbd6d",
+    "workplan_commit": "d1b61955f0413243e1825ad48693d665c7bc7fc2",
+    "research_ledger_commit": "f99b289f05bbe9a3a219a51bbe9143c0410feebe",
+    "canon_coverage_commit": "f93b701d0b08924beceef4ef86f83cfda1f8dd34",
     "pr": 2454,
     "pr_status": "DRAFT_NOT_RELEASED_MERGEABLE_FALSE",
-    "ci": "STARTUP_FAILURE_0_JOBS",
+    "ci": "RUN_45273031215_STARTUP_FAILURE_0_JOBS",
     "local_project_tests": "NOT_RUN_NO_CHECKOUT_DNS_FAILURE",
     "synthetic_numeric": "PASS",
     "redmi": "REDMI_UNVERIFIED_NO_LIVE_RECEIPT",
     "next_action": "Wait for exact-head Boss CI green; rebase JEPA #2454 then Core #2457; run Python 3.13/3.14 and staged/integrated suites.",
-    "documentation_head": "6299c84c08c217b63c64393952212a3af23c7c3d"
+    "documentation_head": "f93b701d0b08924beceef4ef86f83cfda1f8dd34",
+    "retention_tolerance": "PROVISIONAL_DEFAULT_0.05_RELATIVE_MSE; RECORDED_IN_RECEIPT; CALIBRATION_PENDING"
   }
 }
