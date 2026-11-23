@@ -1,0 +1,56 @@
+name: V14 RAW EAR prosody-to-attention regression
+
+on:
+  pull_request:
+    branches: [gpt6/v13-private-remote-bridge-20261111, qa/v14-jepa-checkpoint-publication-20261121]
+    paths:
+      - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_silero_vad.py"
+      - "v13/code/tests/test_audio_silero_vad.py"
+      - "v13/code/v13/audio_temporal_evidence.py"
+      - "v13/code/tests/test_audio_temporal_evidence.py"
+      - "v13/code/tests/test_audio_ear_voice_cues_v14.py"
+      - ".github/workflows/v14-raw-ear-prosody-attention.yml"
+  push:
+    branches:
+      - "research-perception/**"
+    paths:
+      - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_silero_vad.py"
+      - "v13/code/tests/test_audio_silero_vad.py"
+      - "v13/code/v13/audio_temporal_evidence.py"
+      - "v13/code/tests/test_audio_temporal_evidence.py"
+      - "v13/code/tests/test_audio_ear_voice_cues_v14.py"
+      - ".github/workflows/v14-raw-ear-prosody-attention.yml"
+
+jobs:
+  raw-ear-prosody:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install isolated CPU test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy==2.2.6 psutil PyYAML pytest==9.2.0
+      - name: Compile RAW EAR producer and consumer tests
+        run: |
+          python -m py_compile \
+            v13/code/v13/audio_voice_cues.py \
+            v13/code/v13/audio_silero_vad.py \
+            v13/code/v13/audio_temporal_evidence.py \
+            v13/code/tests/test_audio_temporal_evidence.py \
+            v13/code/tests/test_audio_ear_voice_cues_v14.py \
+            v13/code/tests/test_audio_silero_vad.py
+      - name: Run exact RAW EAR -> A4 -> C3 regressions
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m pytest -q v13/code/tests/test_audio_temporal_evidence.py v13/code/tests/test_audio_ear_voice_cues_v14.py v13/code/tests/test_audio_silero_vad.py

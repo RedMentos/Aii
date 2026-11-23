@@ -1,3 +1,14 @@
+## 2026-11-16 — verbundener Antwortpfad als Review-Kandidat
+
+Der Rechenpfad aus #1987/#1989 wird ohne Änderung eingefrorener Quellen in
+die gemeinsame Runtime-Testkopie eingebunden: eigene C5-Aktion, vollständiger
+C7-Paketvertrag, C6-Typprüfung und quellgebundener World-Outcome. Normale
+Anfragen behalten B1/B2/C4/C3; ihre sequenziellen Beobachter erhalten eigene
+Zeitanteile. Deterministische Antworten gelten nicht als native C3-Erholung.
+Belege und nächste Befehle:
+`code/docs/RESPONSE_PIPELINE_INTEGRATION_20261116.md`. Kein Redmi-Nachweis,
+NOT_RELEASED; #1904, #1984 und die übrigen Canon-Familien bleiben offen.
+
 ## 2026-11-11 — World-JEPA mit Optimizer-, Inversmodell- und RNG-Fortsetzung
 
 Auf der bestehenden gemeinsamen Stage führt der neueste Builder reale Warm-start-Zustände über weitere Aufrufe und Restart fort, statt Adam-Momente/inverses Lernziel/RNG neu zu erzeugen. Actual Runtime → kleine Updates → vollständiges privates quellgebundenes NPZ → Neustart → gleicher nächster Update ergibt exakt gleiche Gewichte/EMA/Optimizer/RNG. **415 PASS / 3 CUDA SKIP / 58 Untertests** einschließlich vorhandener World-Kerntests; 13 gezielte äußere Tests einschließlich 11 Resume-Fällen. Neue Remote-CI wird nach Abschluss ergänzt. `code/docs/INTEGRATED_WORLD_TRAINING_RESUME_20261111.md`.

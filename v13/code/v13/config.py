@@ -11,6 +11,7 @@ KNOBS={
  "b2_state_slots":(4,"COUNT",0,8,"BOOT retained source-bound B2 offers; 0 disables cross-turn context"),
  "b2_context_chars":(768,"COUNT",0,4096,"BOOT total serialized earlier B2 context character cap"),
  "threads":(4,"COUNT",1,8,"Native CPU threads"),
+ "native_batch_tokens":(128,"COUNT",64,512,"Native llama-server prompt batching (-b and -ub); exact 64-token steps, measure cold/warm Redmi TTFT before promotion"),
  "deadline_seconds":(90,"DURATION_S",5,600,"Absolute user deadline"),
  "observer_seconds":(35,"DURATION_S",2,180,"Observer budget per role"),
  "control_seconds":(4.,"DURATION_S",.2,30,"Needle control budget"),
@@ -73,7 +74,7 @@ KNOBS['native_cache_ram_mb']=(128,"BYTES_MB",0,8192,"G6B BOOT llama-server --cac
 KNOBS['native_ctx_checkpoints']=(6,"COUNT",0,32,"G6B BOOT llama-server --ctx-checkpoints per slot (b10964 default 32; Qwen3.5 B2 ~19 MiB each, LFM2.5 <0.2 MiB)")
 KNOBS['observer_sample_rate']=(.5,"BUDGET_FRACTION",0.,1.,"§22.2.4 BOOT share of events that get pre-answer observer passes under observer_schedule SAMPLED_OBSERVER (deterministic per event)")
 KNOBS['control_budget_params_mb']=(0.,"THRESHOLD",0.,4096.,"WP-T14 §22.2.3 cap on approved learned control checkpoints in MB; 0 = unset")
-DEFAULTS={k:v[0] for k,v in KNOBS.items()}|{"schema_version":1,"learning_mode":"RECORD_ONLY","system_stage":0,"user_stage_cap":0,
+DEFAULTS={k:v[0] for k,v in KNOBS.items()}|{"schema_version":1,"speech_output_enabled":False,"learning_mode":"RECORD_ONLY","system_stage":0,"user_stage_cap":0,
  "memory_embedding":"auto","duplex_mode":"auto","c3_decode_mode":"server","c3_sampling":"anti_echo","answer_language":"en","b2_control":"two_body","observer_mode":"background","observer_schedule":"A_THEN_B_SEQUENTIAL","route_override":"auto","channel":"SOURCE_EXACT","teacher_enabled":False,"latents_enabled":False,"seed":13,"age_plasticity_policy":"noise_aware","segment_mode":"percept","tool_conflict_policy":"correct",
  # 2026-10-21 user decision (thread "Zitierhilfe an, Regeln ohne Halluzination"): quote help ON. Bodies point at exact source
  # sentences instead of copying them (measured WP-Z2/Z2b/Z2d settings: B2 rule quote .17 -> .97, 0 wrong); the standing
@@ -107,6 +108,7 @@ def validate(cfg):
         if isinstance(v,bool) or not isinstance(v,(int,float)) or not lo<=v<=hi:raise ValueError(f"{k}: Bereich {lo}..{hi}")
         if isinstance(default,int) and not isinstance(v,int):raise ValueError(k+" muss ganzzahlig sein")
     if cfg["system_stage"]!=0 or cfg["latents_enabled"]:raise ValueError("Age >0/latente Injection sind nicht freigegeben")
+    if not isinstance(cfg.get("speech_output_enabled",False),bool):raise ValueError("speech_output_enabled true|false")
     if cfg["learning_mode"] not in {"RECORD_ONLY","SHADOW_UPDATE","APPROVED_COMMIT"}:raise ValueError("learning_mode")
     if cfg["channel"] not in {"NO_MESSAGE","SOURCE_EXACT","CONTROL","SYMBOLIC"}:raise ValueError("channel")
     if cfg["route_override"] not in {"auto","simple","detail","gist","both"}:raise ValueError("route")

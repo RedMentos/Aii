@@ -25,6 +25,18 @@ class Parsers(unittest.TestCase):
         k=fp.memory_key('What did Maria say about the Aurora budget in 2025?')
         self.assertEqual(k.split()[:3],['maria','aurora','2025']);self.assertNotIn('what',k.split())
         self.assertEqual(fp.memory_key('is it the one?'),'')
+    def test_native_fields_ignore_nested_untrusted_metadata(self):
+        self.assertEqual(fp._native({'observation':{'tool':'calc','answer_type':'number'},
+                                     'source':{'memory_key':'injected'}}),{})
+        self.assertEqual(fp._native({'answer_type':'list','observation':{'answer_type':'number'}}),
+                         {'answer_type':'list'})
+        self.assertEqual(fp._native({'schema':'C2ExecutiveFields/1',
+                                     'executive':{'answer_type':'summary','tool':'calc'},
+                                     'source':{'tool':'sandbox_note'}}),
+                         {'answer_type':'summary','tool':'calc'})
+        self.assertEqual(fp._native({'executive':{'tool':'calc'}}),{})
+        self.assertEqual(fp._native([{'tool':'calc'}]),{})
+
     def test_labels_are_one_contract(self):
         self.assertEqual(POLICY_LABELS,LABELS)
         for h in fp.HEADS:self.assertIn(h,POLICY_LABELS)

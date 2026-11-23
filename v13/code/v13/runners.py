@@ -29,6 +29,22 @@ def kill_process(proc):
         proc.terminate()
         try:proc.wait(timeout=1.5)
         except subprocess.TimeoutExpired:proc.kill();proc.wait(timeout=2)
+def native_sampling_policy(role,cfg,schema=None):
+    """One native sampler authority path for all organs.
+
+    Anti-echo is a set of repetition/prefix controls, not permission to
+    override the owner's explicit temperature. Previously C3_DECODER silently
+    reset configured 0.1 to 0.6; on tiny C3 this makes even simple answers
+    needlessly stochastic and the WebView temperature knob misleading.
+    """
+    options={'temperature':cfg['temperature'],'top_k':50,'repeat_penalty':1.05}
+    if role=='C3_LANGUAGE' and not schema and cfg.get('c3_sampling','anti_echo')=='anti_echo':
+        from .guards import C3_DECODER
+        options.update({key:value for key,value in C3_DECODER.items()
+                        if key!='temperature'})
+    return options
+
+
 def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
     # checkpoints per slot) assume a desktop. Qwen3.5 checkpoints are ~19 MiB
@@ -49,6 +65,9 @@ class LlamaRunner:
     def _lifecycle_stamp(self):
         # Warm generation checks metadata only. Approval/model/native hashes are
         # revalidated on load, never reread for every prompt on a healthy child.
+        # Native launcher parameters must be included: otherwise switching the
+        # Redmi UI CPU-thread/context/batch knobs silently leaves the previous
+        # long-lived llama-server process unchanged, invalidating A/B results.
         paths=[self.model,self.binary]
         if self.purpose=='generate':
             paths += [self.home/'config/lora-active.json',self.home/'config/memory-server.json',self.home/'bin/llama-server-mem']
@@ -65,7 +84,13 @@ class LlamaRunner:
                 return (str(path),*( (s.st_dev,s.st_ino,s.st_size,s.st_mtime_ns,s.st_ctime_ns,s.st_mode) for s in (own,target)))
             except OSError:return (str(path),None)
         paths += self._approved_asset_paths+list(self._launch_assets.values())
-        return (('native_memory_audit',self.cfg.get('native_memory_audit',False) is True),)+tuple(stamp(p) for p in paths)
+        return (('native_memory_audit',self.cfg.get('native_memory_audit',False) is True),
+                ('threads',self.cfg.get('threads')),
+                ('context_tokens',self.cfg.get('context_tokens')),
+                ('native_batch_tokens',self.cfg.get('native_batch_tokens',128)),
+                ('native_cache_ram_mb',self.cfg.get('native_cache_ram_mb',128)),
+                ('native_ctx_checkpoints',self.cfg.get('native_ctx_checkpoints',6)),
+               )+tuple(stamp(p) for p in paths)
     @property
     def memory_delivery_binding(self):
         # The binding describes the child that completed its health handshake,
@@ -168,7 +193,7 @@ class LlamaRunner:
         lp=self.home/"logs"/(self.role+".log");rotate_log(lp);self.log_handle=open(lp,"ab");env=os.environ.copy();env.pop('V13_MEMORY_FILE',None);env["LLAMA_API_KEY"]=self.key
         # Noncausal embedding prefill must fit the whole admitted sequence in
         # one physical batch. Chunking changes the feature being measured.
-        batch=512 if (self.purpose=='tap' and self.role=='C3_LANGUAGE') or self.purpose=='embed' else 128
+        batch=512 if (self.purpose=='tap' and self.role=='C3_LANGUAGE') or self.purpose=='embed' else int(self.cfg.get('native_batch_tokens',128))
         cmd=[self.binary,"-m",str(self.model),"--host","127.0.0.1","--port",str(self.port),"-c",str(512 if self.purpose=='embed' else self.cfg["context_tokens"]),"-np","1","-t",str(self.cfg["threads"]),"-tb",str(self.cfg["threads"]),"-b",str(batch),"-ub",str(batch),"-ngl","0","--no-warmup","--no-webui","--log-disable"]
         cmd += native_cache_args(self.cfg)
         if self.purpose=='tap':cmd += ['--embedding','--pooling','none']
@@ -260,13 +285,62 @@ class LlamaRunner:
         if len(vectors)!=len(texts) or any(not v or not all(math.isfinite(x) for x in v) for v in vectors):raise Unavailable('Embedding-Antwort ungültig')
         return vectors
     def _prompt(self,messages,cancel,deadline,reserve):
+        # Native time and context length are different budgets. A 617-token
+        # C3 prefill demonstrably exhausted the Redmi's 30s turn while the
+        # 2048-token context check here said it was fine. Preserve the exact
+        # current source and fixed rules; remove only typed optional layers
+        # with explicit receipts before spending all compute on prefill.
+        from . import native_prompt_admission as admission
         work=[dict(x) for x in messages];truncated=False
-        while True:
-            check(cancel,deadline);p=self._json("POST","/apply-template",{"messages":work,"add_generation_prompt":True,"chat_template_kwargs":{"enable_thinking":False}},deadline)["prompt"]  # Qwen3.5 B2: no hidden thinking; LFM ignores it
+        removed=[];initial_tokens=None
+        # A normal history can contain 32 complete pairs. Every iteration is
+        # still bounded by the actual turn deadline and the overall step cap.
+        reduction_steps=min(80,max(16,len(work)//2+8))
+        for _ in range(reduction_steps):
+            check(cancel,deadline)
+            p=self._json("POST","/apply-template",{"messages":work,"add_generation_prompt":True,"chat_template_kwargs":{"enable_thinking":False}},deadline)["prompt"]  # Qwen3.5 B2: no hidden thinking; LFM ignores it
             tokens=self._json("POST","/tokenize",{"content":p,"add_special":True},deadline)["tokens"]
-            if len(tokens)+reserve+16<=self.cfg["context_tokens"]:return p,len(tokens),truncated
-            if len(work)>2:work.pop(1);truncated=True
-            else:raise Limits("Frage + Regeln überschreiten das native Kontextfenster. Kürzer fragen oder :budget context_tokens erhöhen.")
+            count=len(tokens)
+            # Tokenization itself consumes the turn budget. Never report a
+            # stale admission based on the time available before the requests.
+            check(cancel,deadline)
+            remaining=deadline-time.monotonic()
+            target=admission.soft_limit(self.role,self.cfg,remaining)
+            if initial_tokens is None:initial_tokens=count
+            fits_context=count+reserve+16<=self.cfg["context_tokens"]
+            fits_clock=target is None or count<=target
+            if fits_context and fits_clock:
+                self._prompt_admission={'revision':admission.REVISION,'status':'ADMITTED',
+                    'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
+                    'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
+                if self.role == 'C3_LANGUAGE':
+                    from .native_offer_prompt_receipt import inspect
+                    from .prompts import text as v13_prompt_text
+                    self._prompt_admission['offer_template_witness'] = inspect(
+                        work, p, v13_prompt_text(self.cfg, 'hypotheses'))
+                return p,count,truncated
+            candidate=admission.reduce_once(
+                work,self.role,self.cfg,
+                allow_old_turn=(self.role!="C3_LANGUAGE" or remaining<55),
+            )
+            if candidate:
+                work,kind=candidate;removed.append(kind);truncated=True
+                continue
+            if fits_context:
+                # No unsafe clipping of current user text or source-bound
+                # approved hypotheses. The caller can see the unmet budget.
+                self._prompt_admission={'revision':admission.REVISION,
+                    'status':'PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET',
+                    'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
+                    'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
+                if self.role == 'C3_LANGUAGE':
+                    from .native_offer_prompt_receipt import inspect
+                    from .prompts import text as v13_prompt_text
+                    self._prompt_admission['offer_template_witness'] = inspect(
+                        work, p, v13_prompt_text(self.cfg, 'hypotheses'))
+                return p,count,truncated
+            raise Limits("Frage + Regeln überschreiten das native Kontextfenster. Kürzer fragen oder :budget context_tokens erhöhen.")
+        raise Limits("Native Kontextzulassung: maximale sichere Reduktionsschritte erreicht")
     def generate(self,messages,cancel,deadline,max_tokens=None,schema=None,seed=13,first_token_bias=None,confidence_field='summary'):
         if self.purpose!='generate':raise Unavailable('Tap-Runner erzeugt keine Antworten; Generation-Runner anfordern')
         audit_requested=self.cfg.get('native_memory_audit',False) is True
@@ -275,6 +349,8 @@ class LlamaRunner:
             audit_locked=self._audit_lock.acquire(blocking=False)
             if not audit_locked:raise Unavailable('Concurrent native audit request')
         self._audit_window=None;self._audit_unavailable=None;self._audit_completed=False
+        self._prompt_admission=None
+        self._native_completion_http_200=False
         # Measure cold load, prefill and streaming, including failed/cancelled calls.
         started=time.monotonic();done=threading.Event();samples=[];peaks={'rss_bytes':None,'pss_bytes':None};count=0;self.last_metrics={};self.phase='load';self.phase_started=started;self.stage_times={};status='FINAL'
         def sample():
@@ -303,6 +379,17 @@ class LlamaRunner:
             values=[v for v in [self.last_metrics.get('sampled_peak_rss_bytes'),peaks['rss_bytes']] if v is not None]
             self.last_metrics['sampled_peak_rss_bytes']=max(values) if values else None
             self.last_metrics.setdefault('generated_tokens',0);self.last_metrics.setdefault('ttft_s',None)
+            if self._prompt_admission is not None:self.last_metrics['prompt_admission']=self._prompt_admission
+            if self.role == 'C3_LANGUAGE' and type(self._prompt_admission) is dict:
+                witnessed=self._prompt_admission.get('offer_template_witness')
+                if type(witnessed) is dict:
+                    self.last_metrics['native_offer_prompt_receipt']={
+                        **witnessed,
+                        'native_completion_http_200':self._native_completion_http_200,
+                        'native_template_submitted':bool(
+                            self._native_completion_http_200
+                            and witnessed.get('status')=='RENDERED_WITH_QUOTES'),
+                        'native_attention_or_semantic_use_proven':False}
             # A synchronous check may beat the watchdog. Do not stop its watcher
             # and leave the old native request running after declaring idle.
             if audit_locked:
@@ -336,10 +423,9 @@ class LlamaRunner:
         started=time.monotonic();self.load(cancel,deadline);self.stage_times['load_s']=time.monotonic()-started
         self.phase='template';self.phase_started=time.monotonic();cap=max_tokens or self.cfg["answer_tokens"];prompt,n,truncated=self._prompt(messages,cancel,deadline,cap)
         self.stage_times['template_s']=time.monotonic()-self.phase_started;self.phase='prefill';self.phase_started=time.monotonic()
-        payload={"prompt":prompt,"n_predict":cap,"stream":True,"temperature":self.cfg["temperature"],"top_k":50,"repeat_penalty":1.05,"seed":seed,"cache_prompt":True,"id_slot":0,"return_tokens":True}
-        if self.role=='C3_LANGUAGE' and not schema and self.cfg.get('c3_sampling','anti_echo')=='anti_echo':
-            from .guards import C3_DECODER
-            payload.update(C3_DECODER)  # WP-V3: v4 §65 start values against query echo
+        payload={"prompt":prompt,"n_predict":cap,"stream":True,
+                 **native_sampling_policy(self.role,self.cfg,schema),
+                 "seed":seed,"cache_prompt":True,"id_slot":0,"return_tokens":True}
         if schema:payload["json_schema"]=schema
         lp_pairs=[] if schema and self.cfg.get('offer_logprobs',True) else None
         if lp_pairs is not None:payload['n_probs']=1  # WP-KAL2: token confidence for focal.offer_uncertainty
@@ -368,10 +454,11 @@ class LlamaRunner:
                     kill_process(self.proc)
                     with contextlib.suppress(Exception):conn.close()
                     return
-        watcher=threading.Thread(target=watchdog,daemon=True);watcher.start();first=time.monotonic() if first_step and first_step.get('content') else None;tokens=first_tokens;timings={};peak=None
+        watcher=threading.Thread(target=watchdog,daemon=True);watcher.start();first=time.monotonic() if first_step and first_step.get('content') else None;tokens=first_tokens;timings={};peak=None;native_stop=False
         try:
             conn.request("POST","/completion",wire_json(payload).encode(),{"Content-Type":"application/json","Authorization":"Bearer "+self.key});response=conn.getresponse()
             if response.status!=200:raise RuntimeError(f"Inferenz HTTP {response.status}: {response.read(200).decode(errors='replace')}")
+            self._native_completion_http_200=True
             while True:
                 check(cancel,deadline);line=response.readline()
                 if not line:break
@@ -388,10 +475,14 @@ class LlamaRunner:
                 if tokens%16==0:
                     rss=process_memory(self.proc.pid).get('rss_bytes')
                     if rss is not None:peak=rss if peak is None else max(peak,rss)
-                if data.get("stop"):
+                if data.get("stop") is True:
+                    native_stop=True
                     if self._audit_enabled:self._audit_completed=True
                     break
             check(cancel,deadline)
+            # A closed socket is not proof of a completed native generation.
+            if not native_stop:
+                raise Unavailable('Native stream ended without completion marker')
         except (OSError,http.client.HTTPException):
             check(cancel,deadline);self.unload();raise Unavailable("Native Inferenz unterbrochen")
         finally:
@@ -403,14 +494,32 @@ class LlamaRunner:
                 from .focal import token_confidence
                 self.last_metrics['token_confidence']=token_confidence(lp_pairs,confidence_field)  # AG12 solver: field 'answer'
     def tap(self,text,cancel,deadline,max_tokens=64):
-        """Pinned LFM2 result_norm, after final RMSNorm, before output projection.
+        """Pinned role/model-specific final-state tap; read-only, never live KV injection.
 
-        A separate read-only prefill, not a tap of another runner's live KV.
-        Native token IDs and unnormalized vectors are returned without pooling.
+        RunnerPool binds the model-specific tap ID and dimension. Direct B2
+        fallback uses the canonical two-body Qwen tap; shared-body controls
+        must pass their explicit LFM2 binding from RunnerPool.
         """
         if self.purpose!='tap':raise Unavailable('Separaten Tap-Modus anfordern')
+        defaults={
+            'B1_DETAIL':('lfm2.result_norm.final.v1',2048),
+            'B2_GIST':('qwen35.result_norm.final.v1',1024),
+            'C3_LANGUAGE':('lfm2.result_norm.final.v1',1024),
+        }
+        allowed={
+            'B1_DETAIL':{('lfm2.result_norm.final.v1',2048)},
+            'B2_GIST':{('qwen35.result_norm.final.v1',1024),('lfm2.result_norm.final.v1',2048)},
+            'C3_LANGUAGE':{('lfm2.result_norm.final.v1',1024)},
+        }
+        if self.role not in defaults:raise Unavailable('Kein validierter Tap für Rolle '+str(self.role))
+        default_id,default_dim=defaults[self.role]
+        tap_id=getattr(self,'tap_id',None)
+        dimension=getattr(self,'tap_dim',None)
+        if tap_id is None:tap_id=default_id
+        if dimension is None:dimension=default_dim
+        if (tap_id,dimension) not in allowed[self.role]:
+            raise Unavailable('Tap-Modellidentität/Dimension stimmt nicht mit der Rollenbindung überein')
         ceiling=512 if self.role=='C3_LANGUAGE' else 64
-        dimension=getattr(self,'tap_dim',None) or (1024 if self.role=='C3_LANGUAGE' else 2048)
         if not 1<=max_tokens<=ceiling:raise ValueError('Tap-Budget 1..'+str(ceiling)+' native Tokens')
         started=time.monotonic();done=threading.Event()
         def watchdog():
@@ -430,9 +539,9 @@ class LlamaRunner:
             if any(sum(x*x for x in v)<=1e-20 for v in vectors):raise Unavailable('Native Tap lieferte Null-Vektor')
             self.last_metrics={'role':self.role,'operation':'PREFILL_TAP','duration_s':time.monotonic()-started,'prompt_tokens':len(tokens),'embedding_dim':dimension,
                                'memory':process_memory(self.proc.pid),'CAN_LATENT_TAP':True,'CAN_LATENT_INJECT':False,'CAN_TRAIN_BODY':False,
-                               'tap_id':'lfm2.result_norm.final.v1','pooling':'none','normalization':'native_final_RMSNorm_only','runner_revision':'b10964',
+                               'tap_id':tap_id,'pooling':'none','normalization':'native_final_RMSNorm_only','runner_revision':'b10964',
                                'physical_batch_tokens':512 if self.role=='C3_LANGUAGE' else 128,'whole_sequence_prefill':True}
-            return {'token_ids':tokens,'vectors':vectors,'metrics':dict(self.last_metrics)}
+            return {'tap_id':tap_id,'token_ids':tokens,'vectors':vectors,'metrics':dict(self.last_metrics)}
         except BaseException:
             self.unload();check(cancel,deadline);raise
         finally:done.set();monitor.join(.2)
@@ -516,6 +625,19 @@ class CausalStreamRunner:
                 ids=self.template._json('POST','/tokenize',{'content':prompt,'add_special':True},deadline)['tokens']
                 if not isinstance(ids,list) or not 1<=len(ids)<=512:
                     raise Limits('Same-causal prompt exceeds512 native tokens; shorten context or use server decode mode')
+                from .native_offer_prompt_receipt import inspect as inspect_native_offer_prompt
+                from .prompts import text as prompt_text
+                try:
+                    offer_witness=inspect_native_offer_prompt(
+                        messages,prompt,prompt_text(self.cfg,'hypotheses'))
+                except Exception as exc:
+                    offer_witness={'status':'RECEIPT_UNAVAILABLE','reason':type(exc).__name__,
+                        'offers':[],'native_semantic_use_proven':False}
+                self.last_metrics['native_offer_prompt_receipt']={
+                    **offer_witness,'native_completion_http_200':False,
+                    'native_template_submitted':False,'native_prompt_prefill_verified':False,
+                    'native_stream_completed':False,
+                    'native_attention_or_semantic_use_proven':False}
                 context={'messages':messages,'prompt':prompt,'token_ids':ids,'history_trimmed':False}
             finally:
                 self.last_metrics['template_release']=self.template.unload();self.template=None
@@ -529,6 +651,27 @@ class CausalStreamRunner:
             prefill_started=time.monotonic()
             with self.session as active:
                 observed=active.pause()
+                offer_receipt=self.last_metrics.get('native_offer_prompt_receipt')
+                native_binding=observed.get('native_context_binding') if type(observed) is dict else None
+                prefill_verified=bool(
+                    type(offer_receipt) is dict
+                    and offer_receipt.get('status')=='RENDERED_WITH_QUOTES'
+                    and type(native_binding) is dict
+                    and native_binding.get('scope')=='EXACT_SAME_CAUSAL_PREFILL'
+                    and native_binding.get('live_generation_kv_tap') is True
+                    and native_binding.get('context_source_sha256')==getattr(active,'context_sha',None)
+                    and type(native_binding.get('pid')) is int and native_binding.get('pid')>0
+                    and type(native_binding.get('handle_id')) is str
+                    and len(native_binding.get('handle_id'))==64
+                    and all(ch in '0123456789abcdef' for ch in native_binding.get('handle_id'))
+                    and type(native_binding.get('features_sha256')) is str
+                    and len(native_binding.get('features_sha256'))==64
+                    and all(ch in '0123456789abcdef' for ch in native_binding.get('features_sha256'))
+                    and observed.get('native_prompt_token_ids')==ids
+                    and observed.get('prompt_sha256')==digest(prompt))
+                if type(offer_receipt) is dict:
+                    offer_receipt.update(native_prompt_prefill_verified=prefill_verified,
+                        native_template_submitted=prefill_verified)
                 atomic_write(out/'observed.json',dumps(observed))
                 self.last_metrics['observed_sha256']=digest(dumps(observed))
                 self.last_metrics.update(prompt_tokens=len(ids),history_trimmed=False,
@@ -551,6 +694,9 @@ class CausalStreamRunner:
                             yield event['text']
                     elif event['event']=='COMPLETE':complete=event
             if complete is None:raise Unavailable('Same-causal stream ended without verified completion')
+            offer_receipt=self.last_metrics.get('native_offer_prompt_receipt')
+            if type(offer_receipt) is dict:
+                offer_receipt['native_stream_completed']=True
             raw=complete['raw_result']
             self.last_metrics.update(native_token_ids=complete['native_token_ids'],
                 stop_reason=raw['stop_reason'],resume_prefill_calls=raw['resume_prefill_calls'],

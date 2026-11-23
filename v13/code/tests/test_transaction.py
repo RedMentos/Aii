@@ -9,6 +9,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock, patch
 from v13.runtime import Runtime
 from v13.operator import Operator
+from v13.broker import Broker
 from v13 import transaction as K
 from v13.agi.tools import ToolRegistry,ToolSpec
 
@@ -116,7 +117,72 @@ class OutputCommitTests(Base):
         cid=K.correction(self.r.store,self.r.session,ans['event_id'],ans['id'],'Correction: x','LATE_OFFER')
         self.assertEqual(self.r.store.one("SELECT text FROM messages WHERE id=?",(ans['id'],))['text'],'fine')
         self.assertEqual(json.loads(self.r.store.one("SELECT metadata FROM messages WHERE id=?",(cid,))['metadata'])['correction_of'],ans['id'])
-        self.assertFalse(K.commit_output(self.r.store,ans['id'],ans['event_id']))
+        self.assertTrue(K.commit_output(self.r.store,ans['id'],ans['event_id']))
+    def test_commit_output_persists_receipt_and_is_idempotent(self):
+        event=self.r.store.event(self.r.session,'hello')
+        mid=self.r.store.message(self.r.session,event['event_id'],'assistant')
+        meta={}
+        self.assertTrue(K.commit_output(self.r.store,mid,event['event_id'],meta))
+        row=self.r.store.one("SELECT status,metadata FROM messages WHERE id=?",(mid,))
+        receipt=json.loads(row['metadata'])
+        self.assertEqual(row['status'],'OUTPUT_COMMITTED')
+        self.assertTrue(receipt['output_committed'])
+        self.assertIsInstance(receipt['output_committed_monotonic_ns'],int)
+        self.assertTrue(K.has_output_commit(self.r.store,mid,event['event_id']))
+        self.assertTrue(K.commit_output(self.r.store,mid,event['event_id'],meta))
+        self.r.store.append_message(mid,'Hi.')
+        self.r.store.finish_message(mid,'FINAL',meta)
+        self.assertTrue(K.commit_output(self.r.store,mid,event['event_id'],meta))
+        self.assertTrue(K.has_output_commit(self.r.store,mid,event['event_id']))
+
+    def test_commit_output_rejects_wrong_identity_and_uncommitted_terminal(self):
+        event=self.r.store.event(self.r.session,'first')
+        other=self.r.store.event(self.r.session,'second')
+        mid=self.r.store.message(self.r.session,event['event_id'],'assistant')
+        with self.assertRaises(K.OutputCommitError):
+            K.commit_output(self.r.store,mid,other['event_id'])
+        self.assertEqual(self.r.store.one("SELECT status FROM messages WHERE id=?",(mid,))['status'],'DRAFT')
+        teacher=self.r.store.message(self.r.session,event['event_id'],'teacher')
+        with self.assertRaises(K.OutputCommitError):
+            K.commit_output(self.r.store,teacher,event['event_id'])
+        terminal=self.r.store.message(self.r.session,event['event_id'],'assistant')
+        self.r.store.finish_message(terminal,'FINAL',{})
+        self.assertFalse(K.has_output_commit(self.r.store,terminal,event['event_id']))
+        with self.assertRaises(K.OutputCommitError):
+            K.commit_output(self.r.store,terminal,event['event_id'])
+
+    def test_broker_blocks_uncommitted_final_before_c6_or_late_output(self):
+        event=self.r.store.event(self.r.session,'hi')
+        mid=self.r.store.message(self.r.session,event['event_id'],'assistant')
+        self.r.store.finish_message(mid,'FINAL',{})
+        broker=Broker(SimpleNamespace(store=self.r.store,session=self.r.session,cfg={}))
+        broker._check=Mock(return_value={'ok':True,'violations':[]})
+        result=broker.finalize(event,mid,{},'FINAL','Hi.',direct=True)
+        self.assertFalse(result['egress_ok'])
+        self.assertIn('OUTPUT_NOT_COMMITTED',result['conflicts'])
+        broker._check.assert_not_called()
+        self.assertEqual(self.r.store.rows("SELECT * FROM packets WHERE kind='EgressCheck'"),[])
+        self.assertEqual(self.r.store.rows("SELECT * FROM messages WHERE role='broker'"),[])
+        row=self.r.store.rows("SELECT payload FROM packets WHERE kind='OutputBrokerDecision' ORDER BY rowid DESC LIMIT 1")[0]
+        decision=json.loads(row['payload'])
+        self.assertFalse(decision['committed'])
+        self.assertIn('OUTPUT_NOT_COMMITTED',decision['conflicts'])
+
+    def test_broker_uses_persisted_commit_receipt_for_c7(self):
+        event=self.r.store.event(self.r.session,'hi')
+        mid=self.r.store.message(self.r.session,event['event_id'],'assistant')
+        meta={'output_authority':'APPROVED_FIXED_RULE'}
+        K.commit_output(self.r.store,mid,event['event_id'],meta)
+        self.r.store.append_message(mid,'Hi.')
+        self.r.store.finish_message(mid,'FINAL',meta)
+        broker=Broker(SimpleNamespace(store=self.r.store,session=self.r.session,cfg={}))
+        broker._check=Mock(return_value={'ok':True,'violations':[]})
+        result=broker.finalize(event,mid,meta,'FINAL','Hi.',direct=True)
+        self.assertTrue(result['egress_ok'])
+        broker._check.assert_called_once()
+        row=self.r.store.rows("SELECT payload FROM packets WHERE kind='OutputBrokerDecision' ORDER BY rowid DESC LIMIT 1")[0]
+        self.assertTrue(json.loads(row['payload'])['committed'])
+
     def test_operator(self):
         op=Operator(self.r);self.assertIn('counts',op.run(':tx'));self.assertIn('factors',op.run(':tx provisional'))
         reg=ToolRegistry(self.r.store);self.r.growth=SimpleNamespace(tools=reg);reg.enable('sandbox_note')

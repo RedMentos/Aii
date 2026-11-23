@@ -12,8 +12,10 @@ from pathlib import Path
 import shutil
 import tempfile
 
-BUILDER = 'scripts/integrated_world_training_resume_candidate_20261111.py'
-BUILDER_SHA = '82e2fd27712d17a489ce5fd2f75d749f3f0e08dcc9d7fcc8852bbe6f738e8e18'
+BUILDER = 'scripts/termux_runtime_recovery_candidate_20261121.py'
+BUILDER_SHA = 'a6af1c476c2bec51692e5c00f8995c7d592239f5b78b989fcf799edb6c9f75c9'
+ARITHMETIC_OVERLAY = 'scripts/integrated_arithmetic_guard_candidate_20261121.py'
+ARITHMETIC_OVERLAY_GIT_BLOB = '88c179a71387c5caba7bbd645f868a7cccf39d30'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 
@@ -59,12 +61,17 @@ def stage(code_dir: Path, destination: Path) -> dict:
     destination.parent.mkdir(parents=True, exist_ok=True)
     staging = Path(tempfile.mkdtemp(prefix='.v13-integrated-', dir=destination.parent))
     try:
-        if (code_dir / 'v13').is_symlink() or (code_dir / 'specs').is_symlink():
+        if any((code_dir / name).is_symlink() for name in ('v13', 'specs', 'scripts')):
             raise ValueError('staging source directory cannot be a symlink')
         shutil.copytree(code_dir / 'v13', staging / 'v13', symlinks=True,
                         ignore=shutil.ignore_patterns(*IGNORED))
         if (code_dir / 'specs').is_dir():
             shutil.copytree(code_dir / 'specs', staging / 'specs', symlinks=True,
+                            ignore=shutil.ignore_patterns(*IGNORED))
+        # Runtime commands import scripts.ask_verified_budget and native
+        # helper modules. A runnable staged copy must retain those paths.
+        if (code_dir / 'scripts').is_dir():
+            shutil.copytree(code_dir / 'scripts', staging / 'scripts', symlinks=True,
                             ignore=shutil.ignore_patterns(*IGNORED))
         if any(path.is_symlink() for path in staging.rglob('*')):
             raise ValueError('staging source contains a symlink')
@@ -72,12 +79,44 @@ def stage(code_dir: Path, destination: Path) -> dict:
             target = staging / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(payload)
+        arithmetic_overlay_path = code_dir / ARITHMETIC_OVERLAY
+        if arithmetic_overlay_path.is_symlink() or not arithmetic_overlay_path.is_file():
+            raise ValueError('arithmetic guard overlay missing or unsafe')
+        arithmetic_overlay_raw = arithmetic_overlay_path.read_bytes()
+        arithmetic_overlay_blob = hashlib.sha1(
+            b'blob ' + str(len(arithmetic_overlay_raw)).encode('ascii') + b'\0' + arithmetic_overlay_raw
+        ).hexdigest()
+        if arithmetic_overlay_blob != ARITHMETIC_OVERLAY_GIT_BLOB:
+            raise ValueError('arithmetic guard overlay source changed')
+        arithmetic_overlay_spec = importlib.util.spec_from_file_location(
+            'v14_checked_arithmetic_guard', arithmetic_overlay_path)
+        if arithmetic_overlay_spec is None or arithmetic_overlay_spec.loader is None:
+            raise RuntimeError('arithmetic guard overlay is not loadable')
+        arithmetic_overlay_module = importlib.util.module_from_spec(arithmetic_overlay_spec)
+        arithmetic_overlay_spec.loader.exec_module(arithmetic_overlay_module)
+        arithmetic_files = arithmetic_overlay_module.apply_staged_arithmetic(code_dir, staging)
+        if not isinstance(arithmetic_files, dict) or not arithmetic_files:
+            raise ValueError('arithmetic guard overlay produced no staged files')
+        for relative, payload in arithmetic_files.items():
+            target = staging / relative
+            if target.is_symlink() or not target.is_file() or not isinstance(payload, bytes):
+                raise ValueError('unsafe arithmetic guard output')
+            target.write_bytes(payload)
+        replaced_files = sorted(set(replacements) | set(arithmetic_files))
+        arithmetic_overlay_manifest = {
+            'name': ARITHMETIC_OVERLAY,
+            'git_blob_sha1': ARITHMETIC_OVERLAY_GIT_BLOB,
+            'status': 'SHADOW_REVIEW_ONLY',
+            'source_pins': arithmetic_overlay_module.SOURCE_PINS,
+            'replaced_files': sorted(arithmetic_files),
+        }
         manifest = {
             'status': 'SHADOW_REVIEW_ONLY',
             'source': str(code_dir),
             'builder': BUILDER,
             'builder_sha256': BUILDER_SHA,
-            'replaced_files': sorted(replacements),
+            'replaced_files': replaced_files,
+            'arithmetic_overlay': arithmetic_overlay_manifest,
             'files_sha256': {str(path.relative_to(staging)): hashlib.sha256(path.read_bytes()).hexdigest()
                              for path in sorted(staging.rglob('*')) if path.is_file()},
             'limitations': ['not a production Runtime promotion', 'no Android evidence',

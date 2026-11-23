@@ -24,11 +24,8 @@ WAKES=('none','detail','gist','both')
 BOOT={'default':.25,'conflict_gain':.60,'uncertainty_gain':.55,'novelty_gain':.40,'salience_gain':.35,
       'escalate_uncertainty':.45,'escalate_conflict':.40,'escalate_floor':.50,'verify_risk':.65,
       'one_body_need':.35,'min_body_seconds':2.,'max_cycles_age0':3}
-# Age (§17.5) bounds *autonomous* escalation via age.budgets()['autonomous_effort_max'].
-# BOOT mapping to effort ceilings: Age-0 'low' keeps the proven scaffold-driven
-# B1/B2 wake (STEP2) but blocks autonomous DEEP_FOCAL. A user-forced mode is not
-# autonomous; it is still bound by Age rights (deliberation, tools, focal depth).
-AUTONOMOUS_CEILING={'disabled':.19,'low':.79,'adaptive':.79,'high':.95,'max':1.}
+# Age gates developmental/tool/learning rights only. User effort and ResourceGuard
+# independently determine physical compute; Age never supplies a token/time ceiling.
 RESOURCE_MODE=rmodes.LEGACY_MODE  # §97.2: one table (PRESSURE = ORANGE, CRITICAL = RED)
 BANDS=((.2,'DIRECT_C_NATIVE'),(.5,'C_NATIVE_ONE_BODY'),(.8,'FOCAL_TARGETED'),(1.01,'DEEP_FOCAL'))
 STATE_KEY='REASONING_EFFORT_MODE'
@@ -92,12 +89,18 @@ def plan_for(effort,sig,p=BOOT):
             'verify':bool(b!='DIRECT_C_NATIVE' and (sig['epistemic_risk']>p['verify_risk'] and effort>=.5 or b=='DEEP_FOCAL')),'tool_steps':1 if b=='DEEP_FOCAL' else 0}
 
 def age_limits(control,resource_state='NORMAL'):
-    """Read Age rights/budgets from v13.age (WP-C); this module invents none."""
-    mode=rmodes.as_mode(resource_state);b=control.budgets('system',mode)
-    return {'stage':control.ceiling('system'),'autonomous_effort_max':b['autonomous_effort_max'],'focal_depth':int(b['focal_depth']),
-            'deliberation':control.may('deliberation_modes',resource_mode=mode),'tools':control.may('simple_tool_choice',resource_mode=mode),
-            'long_loops':control.may('long_loops',resource_mode=mode),'resource_mode':mode}  # WP-T2: each right at its capability's ceiling
-AGE0={'stage':0,'autonomous_effort_max':'low','focal_depth':1,'deliberation':False,'tools':False,'long_loops':False,'resource_mode':'UNKNOWN'}
+    """Read rights from Age; never derive runtime compute budgets from developmental Age."""
+    mode=rmodes.as_mode(resource_state)
+    real={'stage':control.system_stage(),
+          'autonomous_effort_max':'max',
+          'focal_depth':BOOT['max_cycles_age0'],
+          'deliberation':control.may('deliberation_modes',resource_mode=mode),
+          'tools':control.may('simple_tool_choice',resource_mode=mode),
+          'long_loops':control.may('long_loops',resource_mode=mode),
+          'resource_mode':mode}
+    from .lab_age import simulated_effort
+    return simulated_effort(control,real,resource_mode=mode)
+AGE0={'stage':0,'autonomous_effort_max':'max','focal_depth':BOOT['max_cycles_age0'],'deliberation':False,'tools':False,'long_loops':False,'resource_mode':'UNKNOWN'}
 
 def constrain(plan,*,direct=False,observers=True,resource_state='NORMAL',resource_mode=None,observer_window_s=None,cfg=None,age=None,p=BOOT):
     """Hard limits that no mode, override or learned readout may exceed."""
@@ -116,24 +119,28 @@ def constrain(plan,*,direct=False,observers=True,resource_state='NORMAL',resourc
         elif fits<2 and plan['wake']=='both':ceiling='one';why.append('DEADLINE_ONE_BODY')
     if plan['max_reentry']>cfg.get('max_reentry',1):plan['max_reentry']=cfg.get('max_reentry',1);why.append('CFG_MAX_REENTRY')
     if plan['focal_slots']>cfg.get('focal_slots',8):plan['focal_slots']=cfg['focal_slots'];why.append('CFG_FOCAL_SLOTS')
-    depth=min(age['focal_depth'],p['max_cycles_age0']) if age['stage']==0 else age['focal_depth']
-    if plan['focal_cycles']>depth:plan['focal_cycles']=depth;why.append('AGE_FOCAL_DEPTH')
+    # plan_for supplies the bounded BOOT maximum; ResourceGuard below may reduce it.
+    # Developmental Age does not cap physical reasoning cycles.
     if plan['tool_steps'] and not age['tools']:plan['tool_steps']=0;why.append('AGE_NO_TOOLS')
     if plan['verify'] and not age['deliberation']:plan['verify']=False;why.append('AGE_NO_DELIBERATION_MODES')
     capped=cap_wake(plan['wake'],ceiling,plan.get('one_body','detail'))
     if capped!=plan['wake']:plan['wake']=capped
     if plan['wake']!='both':plan['max_reentry']=0
     if ceiling=='none':plan.update(verify=False,observer_scale=0.)
-    plan['wake_ceiling']=ceiling;plan['constraints']=why;plan['age_stage']=age['stage'];return plan
+    if age.get('lab_compute_active'):
+        why.append('LAB_COMPUTE_ONLY_NO_NEW_RIGHTS')
+    plan['wake_ceiling']=ceiling;plan['constraints']=why
+    plan['age_stage']=age['stage']  # earned age; never the synthetic stage
+    plan['lab_stage']=age.get('lab_stage',0)
+    plan['lab_mode']=age.get('lab_mode','off')
+    return plan
 
 def decide(mode,sig,**limits):
     if mode not in MODES:raise ValueError('effort mode: '+'|'.join(MODES))
     effort=adaptive_effort(sig) if mode=='adaptive' else FIXED[mode];requested=effort;age=limits.get('age') or AGE0
-    if mode=='adaptive' and effort>AUTONOMOUS_CEILING[age['autonomous_effort_max']]:effort=AUTONOMOUS_CEILING[age['autonomous_effort_max']]
     plan=plan_for(effort,sig)
     if mode in ONE_BODY_MODES:plan.update(wake=mode,one_body=mode,max_reentry=0)
     plan=constrain(plan,**limits);plan['mode']=mode;plan['requested_effort']=requested
-    if effort<requested:plan['constraints'].insert(0,'AGE_AUTONOMOUS_EFFORT_MAX_'+age['autonomous_effort_max'].upper())
     plan['learned_wake_allowed']=mode=='adaptive';return plan
 
 def resolve_wake(plan,learned=None):
@@ -166,7 +173,8 @@ def record(store,e,plan,sig,wake,wake_source):
     p=packet('EffortDecision','C4_FOCAL',e['event_id'],e['brain_generation_id'],[e['source_ref']],mode=plan['mode'],effort=float(plan['effort']),
              wake=wake,wake_source=wake_source,plan=body,signals=sig,constraints=list(plan['constraints']),parameter_status='BOOT_HEURISTIC_NOT_LEARNED')
     store.add_packet('EffortDecision',p)
-    store.log('reasoning_effort',e['event_id'],{'mode':plan['mode'],'effort':plan['effort'],'band':plan['band'],'wake':wake,'wake_source':wake_source,'constraints':plan['constraints']})
+    store.log('reasoning_effort',e['event_id'],{'mode':plan['mode'],'effort':plan['effort'],'band':plan['band'],'wake':wake,'wake_source':wake_source,'constraints':plan['constraints'],
+                                                'official_age_stage':plan['age_stage'],'lab_age_stage':plan.get('lab_stage',0)})
     return p
 
 def summary(store,limit=200):

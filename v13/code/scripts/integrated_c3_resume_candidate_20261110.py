@@ -3,7 +3,7 @@ import hashlib
 import importlib.util
 from pathlib import Path
 
-BASE_BUILDER_SHA = 'e38f7ba57a5f8fdb33c3eab269d434c2213b744a6f6d14122e88f08f733af7f4'
+BASE_BUILDER_SHA = '70adca144879efdb9f6c8803ea43b0041ce81b33431c5e8dc3eb209237c3c525'
 HELPER_SHA = 'efe4c3c96d3dafc11045f0f831ea0e97b949b5169a031429ff6c23692158de58'
 LORA_SHA = '6383f957060116d3750f5c266cc83bac414fc9d6136eac0c4cd4317fbbb9f3f4'
 INPUT_OLD = b'''        from peft import LoraConfig,get_peft_model

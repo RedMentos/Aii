@@ -530,7 +530,7 @@ class FocalLoop:
 
 
 class ActionGate:
-    """C5 (§6.4, §11.1, §85.5): candidate competition + permission gate + one intent stream.
+    """C5 (§6.4, §11.1, §85.5): candidate competition + permission gate + one external intent stream.
 
     BOOT utilities reproduce the former route->role table; focal support adds at most
     GAIN.action*0.25 so it can only reorder candidates whose prior utilities are within that margin.
@@ -565,6 +565,7 @@ class ActionGate:
             elif c['action_type']=='CLARIFY':why='WAIT_VS_ACT_BIAS_BOOT'  # §85.5 ask is available, not executed at BOOT
             elif direct and c['action_id']!='SOURCE_COPY':why='EXACT_OR_FIXED_OUTPUT'
             elif resource_state=='PRESSURE' and c['action_id'] in BODY:why='RESOURCE_PRESSURE'
+            elif c['action_id'] in BODY and c['action_type']=='TEXT_REPORT':why='BODY_INTERNAL_OFFER_ONLY'  # Canon §28: B1/B2 contribute via Offers/coalition, never speak as independent agents
             if why:c['suppressed']=why;suppressed.append(c)
             c['score']=round(c['expected_utility']-.25*c['expected_cost']+g_act*.25*c['focal_support'],4)
         learning=None

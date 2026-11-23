@@ -1,6 +1,7 @@
 """Isolated staging tests; actual V13 end-to-end suite is separate."""
 import importlib.util
 import hashlib
+import re
 from pathlib import Path
 import tempfile
 import unittest
@@ -16,6 +17,8 @@ class StageTest(unittest.TestCase):
     def setUp(self):
         original_pin = module.BUILDER_SHA
         self.addCleanup(setattr, module, 'BUILDER_SHA', original_pin)
+        original_overlay_pin = module.ARITHMETIC_OVERLAY_GIT_BLOB
+        self.addCleanup(setattr, module, 'ARITHMETIC_OVERLAY_GIT_BLOB', original_overlay_pin)
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
@@ -23,6 +26,16 @@ class StageTest(unittest.TestCase):
         (self.code / 'scripts').mkdir(parents=True)
         (self.code / 'v13').mkdir()
         (self.code / 'v13/runtime.py').write_text('ORIGINAL')
+        overlay = (
+            "SOURCE_PINS = {}\n"
+            "def apply_staged_arithmetic(code_dir, staged_root):\n"
+            "    return {'v13/runtime.py': b'INTEGRATED'}\n"
+        ).encode('utf-8')
+        overlay_path = self.code / module.ARITHMETIC_OVERLAY
+        overlay_path.write_bytes(overlay)
+        module.ARITHMETIC_OVERLAY_GIT_BLOB = hashlib.sha1(
+            b'blob ' + str(len(overlay)).encode('ascii') + b'\0' + overlay
+        ).hexdigest()
         (self.code / 'specs').mkdir()
         (self.code / 'specs/test.json').write_text('{}')
 
@@ -41,6 +54,16 @@ class StageTest(unittest.TestCase):
         self.assertTrue((out / 'specs/test.json').exists())
         with self.assertRaises(FileExistsError):
             module.stage(self.code, out)
+
+    def test_nested_builder_hash_pins_match_real_bytes(self):
+        code = Path(__file__).resolve().parents[1]
+        recovery = code / module.BUILDER
+        stage_bytes = MODULE_PATH.read_bytes()
+        self.assertEqual(module.BUILDER_SHA, hashlib.sha256(recovery.read_bytes()).hexdigest())
+        deploy_source = (code / 'v13/runtime_deploy.py').read_text()
+        match = re.search(r"""STAGER_SHA256 = ["']([a-f0-9]{64})["']""", deploy_source)
+        self.assertIsNotNone(match)
+        self.assertEqual(match.group(1), hashlib.sha256(stage_bytes).hexdigest())
 
     def test_pin_failure_never_publishes_candidate(self):
         self.builder("    raise ValueError('pin mismatch')\n")
@@ -77,7 +100,8 @@ class StageTest(unittest.TestCase):
             (self.code / 'v13' / name).write_bytes(b'synthetic-private-artifact')
         dest = self.root / 'candidate'
         result = module.stage(self.code, dest)
-        self.assertEqual(set(result['files_sha256']), {'v13/runtime.py', 'specs/test.json'})
+        self.assertEqual(set(result['files_sha256']), {
+            'v13/runtime.py', 'specs/test.json', module.BUILDER, module.ARITHMETIC_OVERLAY})
         self.assertFalse((dest / 'v13/brain.sqlite3').exists())
 
     def test_symlink_is_not_followed_or_published(self):

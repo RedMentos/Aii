@@ -1,0 +1,40 @@
+name: V13 controller record-only guard
+on:
+  push:
+    branches: ['work/v13-record-only-controller-20261116']
+  pull_request:
+    paths:
+      - 'v13/code/scripts/record_only_controller_guard_20261116.py'
+      - 'v13/code/tests/test_record_only_controller_guard_20261116.py'
+      - '.github/workflows/v13-record-only-controller-20261116.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Determine composed input hashes
+        working-directory: v13/code
+        run: |
+          python - <<'PY'
+          import hashlib, importlib.util
+          from pathlib import Path
+          path = Path('scripts/termux_runtime_recovery_candidate_20261112.py')
+          spec = importlib.util.spec_from_file_location('stage_hashes', path)
+          mod = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(mod)
+          for flag in (True, False):
+              sources = mod.build_sources(Path('.'), include_postcommit=flag)
+              print('postcommit',flag)
+              for name in ('v13/runtime.py', 'v13/actionlearn.py', 'v13/inputs.py'):
+                  data=sources.get(name, Path(name).read_bytes())
+                  print(name,hashlib.sha256(data).hexdigest())
+          PY

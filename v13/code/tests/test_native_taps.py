@@ -1,11 +1,16 @@
 """Shape/provenance failure paths; actual vectors are checked by integration_taps."""
 from pathlib import Path
+import os
 import tempfile
+import threading
 import time
 import unittest
+from types import SimpleNamespace
+from unittest.mock import patch
 from v13.common import Unavailable,atomic_write,file_hash,dumps
 from v13.runtime import Runtime
 from v13.contracts import packet
+from v13.runners import LlamaRunner
 
 class TapBinding(unittest.TestCase):
     def setUp(self):self.tmp=tempfile.TemporaryDirectory();self.r=Runtime(Path(self.tmp.name))
@@ -24,5 +29,50 @@ class TapBinding(unittest.TestCase):
         atomic_write(path,'tampered')
         with self.assertRaises(ValueError):r.cognition.read_tap(p)
         self.assertTrue(any('Tap-Artefakt' in x for x in r.store.integrity(True)))
+
+class NativeTapIdentity(unittest.TestCase):
+    def _tap(self,role,expected_id,dimension,bound=None):
+        with tempfile.TemporaryDirectory() as folder:
+            home=Path(folder)
+            runner=LlamaRunner(home,role,home/'unused.gguf',{},purpose='tap')
+            runner.proc=SimpleNamespace(pid=os.getpid(),poll=lambda:None)
+            runner.load=lambda cancel,deadline:None
+            if bound is not None:
+                runner.tap_id,runner.tap_dim=bound
+            def request(method,path,payload,deadline,timeout_cap=3.):
+                if path=='/tokenize':return {'tokens':[101,202]}
+                if path=='/embeddings':
+                    return [{'embedding':[[.25]*dimension,[.5]*dimension]}]
+                raise AssertionError(path)
+            runner._json=request
+            with patch('v13.runners.process_memory',return_value={'rss_bytes':0}):
+                result=runner.tap('synthetic source',threading.Event(),time.monotonic()+10)
+            self.assertEqual(result['tap_id'],expected_id)
+            self.assertEqual(result['metrics']['tap_id'],expected_id)
+            self.assertEqual(result['metrics']['embedding_dim'],dimension)
+            self.assertEqual(result['token_ids'],[101,202])
+            self.assertFalse(result['metrics']['CAN_LATENT_INJECT'])
+            self.assertFalse(result['metrics']['CAN_TRAIN_BODY'])
+
+    def test_direct_b1_and_c3_keep_lfm2_tap_identity(self):
+        self._tap('B1_DETAIL','lfm2.result_norm.final.v1',2048)
+        self._tap('C3_LANGUAGE','lfm2.result_norm.final.v1',1024)
+
+    def test_direct_b2_defaults_to_two_body_qwen_1024d(self):
+        self._tap('B2_GIST','qwen35.result_norm.final.v1',1024)
+
+    def test_pool_bound_b2_shared_body_uses_lfm2_2048d(self):
+        from v13.runners import TAP_SPECS
+        self._tap('B2_GIST','lfm2.result_norm.final.v1',2048,TAP_SPECS['body'])
+
+    def test_cross_role_tap_binding_fails_before_native_request(self):
+        with tempfile.TemporaryDirectory() as folder:
+            home=Path(folder)
+            runner=LlamaRunner(home,'B1_DETAIL',home/'unused.gguf',{},purpose='tap')
+            runner.tap_id='qwen35.result_norm.final.v1'
+            runner.tap_dim=1024
+            with self.assertRaises(Unavailable):
+                runner.tap('synthetic source',threading.Event(),time.monotonic()+10)
+
 
 if __name__=='__main__':unittest.main()

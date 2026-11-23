@@ -196,10 +196,6 @@ class SleepCycle:
         if self.age is None:return False
         try:return self.age.may(right,resource_mode=self._mode(resource_state))
         except Exception:return False
-    def _budget(self,resource_state):
-        if self.age is None:return None
-        try:return self.age.budgets('system',self._mode(resource_state))
-        except Exception:return None
     def _mode(self,resource_state):
         """§97.2 mode: the live guard's finer mode while its state matches (YELLOW is invisible in legacy states)."""
         from .resource_modes import LEGACY_MODE,RANK,mode_of
@@ -538,9 +534,8 @@ class SleepCycle:
         st,v=self.queue.load()
         try:
             self.queue.sync(st,policy)
-            budget=self._budget(state) if origin!='USER' else None
+            # Age gates learning phases; replay volume is policy + ResourceGuard, never Age.
             n=batch if batch is not None else (policy['wake_batch'] if mode=='wake' else policy['batch'])
-            if budget is not None:n=min(n,max(1,budget['replay_items']))  # Age envelope caps autonomous replay
             from .resource_modes import scaled
             report['resource_mode']=self._mode(state);n=scaled(n,report['resource_mode'],'replay_scale') or n  # §97.2 YELLOW halves replay (ORANGE/RED skip Sleep A below)
             report['replay_budget']=n
@@ -588,7 +583,9 @@ class SleepCycle:
 class SleepRuntime:
     """Coordinator glue: idle/timer/resource wakes → background sleep jobs. Never blocks a user turn."""
     def __init__(self,runtime,clock=time.time,monotonic=time.monotonic):
-        from .scheduler import EventScheduler
+        from .scheduler import EventScheduler, ACTIONS
+        # Trusted, fixed G13 extension; not arbitrary user/model commands.
+        ACTIONS.update({'lab_check','jepa_update'})
         from .plasticity import Plasticity
         self.r=runtime;self.clock=clock;self.monotonic=monotonic;self.age=None
         try:
@@ -596,10 +593,163 @@ class SleepRuntime:
             self.age=controller(runtime)
         except Exception:self.age=None  # conservative: no self-initiative, no autonomous dream
         self.scheduler=EventScheduler(runtime.store,runtime.cfg,clock,self.age)
+        self.lab_active=False
         self.cycle=SleepCycle(runtime.store,runtime.cfg,runtime.memory,getattr(runtime,'consolidation',None),self.age,runtime.home,clock,monotonic,Plasticity(runtime.store))
         self.cycle.runtime=runtime  # WP-T11 homeostasis reads the learned heads through their runtime controllers
         self.scheduler.recover();self.last_tick=-1e18;self.last_resource=None
         runtime.store.set_meta('sleep_boot_wall',clock())  # idle clock restarts with the process
+    def schedule_world_jepa(self,event_id=None):
+        """Queue an observed T8 event for bounded idle JEPA learning/readout."""
+        from .world_jepa_runtime import permission_state
+        observed="'FINAL','FAILED','ERROR','DEADLINE','REJECTED'"
+        if event_id is None:
+            row=self.r.store.one(
+                "SELECT event_id,status FROM actions WHERE outcome IS NOT NULL "
+                "AND status IN ("+observed+") ORDER BY created DESC,id DESC LIMIT 1")
+        else:
+            if type(event_id) is not str or not event_id:
+                raise ValueError('event_id')
+            row=self.r.store.one(
+                "SELECT event_id,status FROM actions WHERE event_id=? AND outcome IS NOT NULL "
+                "AND status IN ("+observed+") ORDER BY created DESC,id DESC LIMIT 1",(event_id,))
+        if not row:
+            return None
+        event_id=row['event_id']
+        cursor,_=self.r.store.state('v14.world_jepa.sleep_cursor',{'last_event_id':None})
+        if type(cursor) is not dict:
+            cursor={}
+        legacy=cursor.get('last_event_id')
+        last_learning=cursor.get('last_learning_event_id',legacy)
+        last_planner=cursor.get('last_planner_event_id',legacy)
+        learning_error=cursor.get('last_learning_error_event_id')
+        planner_error=cursor.get('last_planner_error_event_id')
+        gates=permission_state(self.r.store)
+        state,_=self.r.store.state('v14.world_jepa.store_consumer',None)
+        active=(type(state) is dict and type(state.get('active')) is dict)
+        learning_allowed=(gates['learning_enabled'] is True
+                          and gates['optimizer_permission'] is True)
+        need_learning=(learning_allowed and last_learning!=event_id
+                       and learning_error!=event_id)
+        need_planner=(active and last_planner!=event_id
+                      and planner_error!=event_id)
+        if not (need_learning or need_planner):
+            return None
+        from .scheduler import ACTIONS
+        ACTIONS.add('jepa_update')
+        return self.scheduler.post(
+            'IDLE',origin='SYSTEM',action='jepa_update',
+            payload={'event_id':event_id},
+            dedup='v14-world-jepa',ttl=86400)
+    def _run_world_jepa(self,event_id,limit=64):
+        """Run one source-verified JEPA page; user turns and resource pressure preempt it."""
+        if type(event_id) is not str or not event_id:
+            raise ValueError('event_id')
+        result={'status':'NO_COMMITTED_OUTCOME','event_id':event_id,
+                'decision_authority':'NONE','dispatch':False,
+                'native_body_consumed':False,'native_body_weights_changed':False,
+                'runtime_hook_wired':True}
+        checks={'count':0}
+        def cancel_check():
+            event=getattr(self.r,'cancel_event',None)
+            if event is not None:
+                try:
+                    if event.is_set():
+                        return True
+                except Exception:
+                    return True
+            checks['count']+=1
+            if checks['count']%16==0:
+                return self.resource_state() in {'PRESSURE','CRITICAL'}
+            return False
+        try:
+            if cancel_check():
+                return result|{'status':'CANCELLED'}
+            action=self.r.store.one(
+                "SELECT id,status,outcome FROM actions WHERE event_id=? AND outcome IS NOT NULL "
+                "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED') "
+                "ORDER BY created DESC,id DESC LIMIT 1",(event_id,))
+            if not action:
+                return result
+            action_status=action['status']
+            from .world_jepa_runtime import consume_after_commit
+            from .world_jepa_planner import consume_world_planner_shadow
+            learning=consume_after_commit(
+                self.r.store,self.r.home,limit=limit,cancel_check=cancel_check)
+            if learning.get('status')=='CANCELLED' or cancel_check():
+                result.update(status='CANCELLED',action_status=action_status,learning=learning)
+                self.r.store.log('v14_world_jepa_postcommit_cancelled',event_id,
+                                 {'action_status':action_status,'decision_authority':'NONE'})
+                return result
+            planner=consume_world_planner_shadow(self.r.store,event_id,home=self.r.home)
+            result.update(status='POSTCOMMIT_PROCESSED',action_status=action_status,
+                          learning=learning,planner=planner)
+            if learning.get('status')=='ERROR':
+                result['status']='ERROR'
+            elif planner.get('status') in {'SOURCE_OR_RECEIPT_REJECTED','NO_COMMITTED_OUTCOME'}:
+                result['status']='PARTIAL'
+            metrics=learning.get('metrics') if type(learning) is dict else None
+            metrics=metrics if type(metrics) is dict else {}
+            learning_status=learning.get('status')
+            if learning_status=='UPDATED_EXPERIMENTAL_WORLD_JEPA':
+                telemetry_status='PASS'
+            elif learning_status in {'UTILITY_GATE_REJECTED','RETENTION_GATE_REJECTED'}:
+                telemetry_status='REJECTED'
+            elif learning_status in {'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION'}:
+                telemetry_status='UNAVAILABLE'
+            elif learning_status=='CANCELLED':
+                telemetry_status='CANCELLED'
+            elif learning_status=='ERROR':
+                telemetry_status='ERROR'
+            else:
+                telemetry_status='PENDING'
+            self.r.store.log('v14_world_jepa_postcommit',event_id,{
+                # Store.telemetry_metrics is an explicit allowlist. Use its
+                # established scalar names so these diagnostics survive the
+                # privacy filter instead of being silently discarded.
+                'status':telemetry_status,
+                'component':'world_predictor',
+                'mode':'shadow',
+                'sha256':planner.get('checkpoint_sha256') or learning.get('checkpoint_sha256'),
+                'optimizer_steps':metrics.get('fit_steps_after',0),
+                'target_changed':float(metrics.get('ema_target_delta_norm',0.0))>0.0,
+                'loss_before':metrics.get('holdout_loss_before'),
+                'loss_after':metrics.get('holdout_loss_after'),
+                'count':metrics.get('verified_receipts',learning.get('verified_receipts',0)),
+                'decision':'none',
+                'native_body_parameters_modified':False,
+            })
+            if cancel_check():
+                result['status']='CANCELLED'
+                return result
+            cursor_key='v14.world_jepa.sleep_cursor'
+            cursor,version=self.r.store.state(cursor_key,{'last_event_id':None})
+            if type(cursor) is not dict:
+                cursor={}
+            legacy=cursor.get('last_event_id')
+            cursor.setdefault('last_learning_event_id',legacy)
+            cursor.setdefault('last_planner_event_id',legacy)
+            learning_status=learning.get('status')
+            if learning_status=='ERROR':
+                cursor['last_learning_error_event_id']=event_id
+            elif learning_status not in {'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION','CANCELLED'} and learning.get('has_more') is not True:
+                cursor['last_learning_event_id']=event_id
+                cursor.pop('last_learning_error_event_id',None)
+            planner_status=planner.get('status')
+            if planner_status in {'ERROR','UNAVAILABLE'}:
+                cursor['last_planner_error_event_id']=event_id
+            else:
+                cursor['last_planner_event_id']=event_id
+                cursor.pop('last_planner_error_event_id',None)
+            if (cursor.get('last_learning_event_id')==event_id
+                    or cursor.get('last_planner_event_id')==event_id):
+                cursor['last_event_id']=event_id
+            self.r.store.set_state(cursor_key,cursor,expected=version)
+            return result
+        except Exception as exc:
+            try:self.r.store.log('v14_world_jepa_postcommit_error',event_id,
+                                 {'error':type(exc).__name__,'decision_authority':'NONE'})
+            except Exception:pass
+            return result|{'status':'ERROR','error':type(exc).__name__}
     def resource_state(self):
         try:return self.r.guard.update(self.r.resources())
         except Exception:return 'CRITICAL'  # unknown resources: do not start background work
@@ -613,6 +763,9 @@ class SleepRuntime:
         self.last_tick=self.monotonic()
         if not self.r.idle():return None
         state=self.resource_state()
+        try:self.schedule_world_jepa()
+        except Exception as exc:
+            self.r.store.log('v14_world_jepa_schedule_error',None,{'error':type(exc).__name__})
         if state!=self.last_resource:
             if self.last_resource is not None:self.scheduler.post('RESOURCE_CHANGE',payload={'from':self.last_resource,'to':state})
             self.last_resource=state
@@ -631,6 +784,13 @@ class SleepRuntime:
                     from .authority import medium_due
                     if medium_due(self.r.store,self.clock()):self.scheduler.post('IDLE',action='learn_medium',dedup='learn-medium')
                 except Exception as exc:self.r.store.log('job_error',None,{'kind':'learn_medium_post','error':type(exc).__name__})
+        # Test and warm the actual native organs via G13 when the phone is
+        # idle, below thermal/RAM limits and allowed by the user's schedule.
+        try:
+            from .lab_native_cycle import maybe_schedule
+            maybe_schedule(self,state)
+        except Exception as exc:
+            self.r.store.log('job_error',None,{'kind':'native_lab_schedule','error':type(exc).__name__})
         e=self.scheduler.next(idle=True,resource_state=state,quiet=in_quiet_hours(policy,self.clock()))
         if not e:return None
         if e['action'] in (None,'notice'):
@@ -642,6 +802,38 @@ class SleepRuntime:
         if not queued:self.scheduler.complete(e['id'],'RETRY',{'reason':'BUSY'})
         self.r.wake.set();return e
     def job(self,e):
+        if e['action']=='jepa_update':
+            payload=e.get('payload') or {}
+            event_id=payload.get('event_id') if type(payload) is dict else None
+            try:
+                out=self._run_world_jepa(event_id,limit=64)
+            except BaseException as exc:
+                self.scheduler.complete(e['id'],'FAILED',{'error':type(exc).__name__})
+                raise
+            learning=out.get('learning') if type(out) is dict else None
+            planner=out.get('planner') if type(out) is dict else None
+            result={'status':out.get('status') if type(out) is dict else 'ERROR',
+                    'learning_status':learning.get('status') if type(learning) is dict else None,
+                    'planner_status':planner.get('status') if type(planner) is dict else None}
+            completion=('CANCELLED' if result['status']=='CANCELLED'
+                        else ('FAILED' if result['status']=='ERROR' else 'DONE'))
+            self.scheduler.complete(e['id'],completion,result)
+            if (result['status']!='CANCELLED' and type(learning) is dict
+                    and learning.get('has_more') is True):
+                continuation=bool(self.schedule_world_jepa(event_id))
+                result['continuation_scheduled']=continuation
+                if type(out) is dict:out['continuation_scheduled']=continuation
+            return out
+        if e['action']=='lab_check':
+            from .lab_native_cycle import run
+            try:out=run(self.r)
+            except BaseException as exc:
+                self.scheduler.complete(e['id'],'FAILED',{'error':type(exc).__name__})
+                raise
+            # User preemption is a normal one-shot completion. The next idle
+            # window may schedule a new sample; do not replay cancelled speech.
+            self.scheduler.complete(e['id'],'DONE',{'status':out.get('status')})
+            return out
         if str(e['action']).startswith('growth_'):return self._growth(e)
         if str(e['action']).startswith('learn_'):return self._learn(e)
         mode={'sleep_full':'full','wake_replay':'wake','sleep_a':'a','sleep_b':'b','sleep_c':'c'}[e['action']]
@@ -690,7 +882,12 @@ class SleepRuntime:
 def operator_command(r,cmd,args):
     """:sleep [status|digest|run full|a|b|c|wake|in <Minuten> [Modus]|policy [Name Wert]] / :scheduler"""
     sl=r.sleep
-    if cmd=='scheduler':return dumps(sl.scheduler.report())
+    if cmd=='scheduler':
+        if args and args[0]=='lab':
+            from .lab_native_cycle import operator_command as lab_command
+            return dumps(lab_command(r,args[1:]))
+        if args:raise ValueError(':scheduler [lab status|on|off|now|every N|reset]')
+        return dumps(sl.scheduler.report())
     if not args or args==['status']:return dumps(sl.cycle.status())
     if args[0]=='run' and len(args)<=2:
         mode=args[1] if len(args)==2 else 'full';sl.request(mode);return 'Sleep '+mode+' eingeplant; startet sobald nichts anderes läuft.'
