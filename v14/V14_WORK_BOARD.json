@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T12:44:40Z",
+  "updated_at": "2026-11-23T17:16:41.602Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -77,11 +77,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
-      "proof_environment": "CI synthetic + Android ARM64 cross-compile only; no Redmi native receiver proof",
-      "next_step": "Core: add a dedicated local :callosum native-probe handler bound to trusted last-source tap and exact installed model manifests, with bounded deadline/cancellation and a separate local one-shot approval. Add real operator-dispatch end-to-end and no-local-approval negative tests. Only after exact CI and installed release may a separate user decision authorize one probe; production B3 remains OFF until held-out utility/parity/zero/shuffle/OOD controls pass.",
+      "proof_environment": "LOCAL_LINUX_ISOLATED overlay PASS; exact Python 3.13/3.14 CI pending; no full local repository run; REDMI_UNVERIFIED",
+      "next_step": "Poll exact PR #2451 Python 3.13/3.14 staged-runtime CI and privacy scan; fix failures, independently review the staged overlay and local approval boundary, then ask Boss to integrate. After an authenticated installation receipt, a separate explicit user decision may authorize one local diagnostic probe. Keep production B3 OFF until latent-vs-exact-vs-none, parity, zero, shuffle, OOD and held-out receiver utility are measured.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T11:28:06.923Z",
-      "proof": "Core #2323 remains diagnostic-only and production B3 OFF/SYMBOLIC. PR #2332's remote owner-read allowlist checks are not a runnable native probe: independent exact-source readback at candidate 198a490e confirms operator.py dispatches to callosum.operator_command, which still rejects native-probe; no local source-bound tap/model consumer or distinct local one-shot approval exists. Boss and QA recorded the blocker on #2332. No CHAT_OPERATOR or probe was sent.",
+      "last_checkpoint": "2026-11-23T17:16:41.602Z",
+      "proof": "Draft PR #2451 at head 8d4c0678cfad1f0fce995c9b7df22d1f21d8da77 adds a source-bound, local-TTY one-shot native probe approval helper and a post-composition staged operator overlay. Canonical operator.py remains pinned and unchanged; the stage builder applies the overlay only after recovery/native-receiver/arithmetic composition, and runtime_deploy.py is rebound to the exact stage-builder SHA-256. The diagnostic path has no production B3 route, training authority, model/weight change or remote-chat entry. LOCAL_LINUX_ISOLATED overlay logic PASS; full local project suite BLOCKED/NOT_RUN; exact CI PENDING; REDMI_UNVERIFIED. PR #2449's direct operator.py edit remains blocked/superseded.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -97,6 +97,22 @@
         },
         "device": "REDMI_UNVERIFIED; private receipt #505 predates merge c2e7 and reports installed c03ff0a",
         "next_action": "Poll exact #2325 CI, fix measured failures, coordinate QA #2324 rebase, then continue Android companion operator/CLI integration"
+      },
+      "core_run2_checkpoint": {
+        "date": "2026-11-23",
+        "owner": "Core & Harness",
+        "branch": "core/v14-native-probe-staged-overlay-20261123-run2",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "code_commit": "8d4c0678cfad1f0fce995c9b7df22d1f21d8da77",
+        "pull_request": 2451,
+        "status": "DRAFT_CI_PENDING",
+        "tests": {
+          "local_linux_isolated": "PASS: staged-only patch, compile, source immutability, staged tamper rejection, duplicate-anchor rejection",
+          "full_repository_local": "BLOCKED/NOT_RUN: no mounted Aii checkout; git ls-remote failed DNS",
+          "exact_head_ci": "PENDING: no exact-head workflow result observed at checkpoint"
+        },
+        "device": "REDMI_UNVERIFIED; no device probe, Termux command or update request",
+        "next_action": "Poll exact #2451 CI, fix measured failures, obtain independent review and Boss integration; only then consider a separately authorized one-shot Redmi probe"
       }
     },
     {
@@ -345,10 +361,10 @@
       "owner": "Core & Harness + Boss",
       "priority": "P0",
       "status": "IN_PROGRESS_PARTIAL",
-      "last_checkpoint": "2026-11-22T11:28:06.923Z",
-      "proof_environment": "CI candidate only; no native tap/gradient proof",
-      "proof": "Core #2323 remains diagnostic-only and production B3 OFF/SYMBOLIC. PR #2332's remote owner-read allowlist checks are not a runnable native probe: independent exact-source readback at candidate 198a490e confirms operator.py dispatches to callosum.operator_command, which still rejects native-probe; no local source-bound tap/model consumer or distinct local one-shot approval exists. Boss and QA recorded the blocker on #2332. No CHAT_OPERATOR or probe was sent.",
-      "next_step": "Core: add a dedicated local :callosum native-probe handler bound to trusted last-source tap and exact installed model manifests, with bounded deadline/cancellation and a separate local one-shot approval. Add real operator-dispatch end-to-end and no-local-approval negative tests. Only after exact CI and installed release may a separate user decision authorize one probe; production B3 remains OFF until held-out utility/parity/zero/shuffle/OOD controls pass.",
+      "last_checkpoint": "2026-11-23T17:16:41.602Z",
+      "proof_environment": "LOCAL_LINUX_ISOLATED overlay PASS; exact Python 3.13/3.14 CI pending; no full local repository run; REDMI_UNVERIFIED",
+      "proof": "Draft PR #2451 at head 8d4c0678cfad1f0fce995c9b7df22d1f21d8da77 adds a source-bound, local-TTY one-shot native probe approval helper and a post-composition staged operator overlay. Canonical operator.py remains pinned and unchanged; the stage builder applies the overlay only after recovery/native-receiver/arithmetic composition, and runtime_deploy.py is rebound to the exact stage-builder SHA-256. The diagnostic path has no production B3 route, training authority, model/weight change or remote-chat entry. LOCAL_LINUX_ISOLATED overlay logic PASS; full local project suite BLOCKED/NOT_RUN; exact CI PENDING; REDMI_UNVERIFIED. PR #2449's direct operator.py edit remains blocked/superseded.",
+      "next_step": "Poll exact PR #2451 Python 3.13/3.14 staged-runtime CI and privacy scan; fix failures, independently review the staged overlay and local approval boundary, then ask Boss to integrate. After an authenticated installation receipt, a separate explicit user decision may authorize one local diagnostic probe. Keep production B3 OFF until latent-vs-exact-vs-none, parity, zero, shuffle, OOD and held-out receiver utility are measured.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -364,6 +380,23 @@
         },
         "device": "REDMI_UNVERIFIED; private receipt #505 predates merge c2e7 and reports installed c03ff0a",
         "next_action": "Poll exact #2325 CI, fix measured failures, coordinate QA #2324 rebase, then continue Android companion operator/CLI integration"
+      },
+      "user_action_required": false,
+      "core_run2_checkpoint": {
+        "date": "2026-11-23",
+        "owner": "Core & Harness",
+        "branch": "core/v14-native-probe-staged-overlay-20261123-run2",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "code_commit": "8d4c0678cfad1f0fce995c9b7df22d1f21d8da77",
+        "pull_request": 2451,
+        "status": "DRAFT_CI_PENDING",
+        "tests": {
+          "local_linux_isolated": "PASS: staged-only patch, compile, source immutability, staged tamper rejection, duplicate-anchor rejection",
+          "full_repository_local": "BLOCKED/NOT_RUN: no mounted Aii checkout; git ls-remote failed DNS",
+          "exact_head_ci": "PENDING: no exact-head workflow result observed at checkpoint"
+        },
+        "device": "REDMI_UNVERIFIED; no device probe, Termux command or update request",
+        "next_action": "Poll exact #2451 CI, fix measured failures, obtain independent review and Boss integration; only then consider a separately authorized one-shot Redmi probe"
       }
     },
     {
