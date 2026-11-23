@@ -314,9 +314,13 @@ def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last
         "training_authority": 0,
         "native_receiver_authority": 0,
     }
-    runtime.cognition.native_receive = lambda sender, receiver, e, ref, deadline: (
-        calls.append((sender, receiver, e["event_id"], ref, deadline)) or packet
-    )
+    def native_receive(sender, receiver, e, ref, deadline):
+        assert runtime.current == "probe"
+        assert runtime.paused is True
+        calls.append((sender, receiver, e["event_id"], ref, deadline))
+        return packet
+
+    runtime.cognition.native_receive = native_receive
     runtime.pool.unload = lambda: calls.append("unload")
     operator = Operator(runtime)
     try:
@@ -335,7 +339,9 @@ def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last
         assert result["local_approval_consumed"] is True
         assert result["approval_id"] == armed["approval_id"]
         probe_index = next(i for i, value in enumerate(calls) if isinstance(value, tuple))
-        assert calls[:probe_index].count("idle") >= 2
+        # The local arm checks idle before creating the lease; consume now
+        # validates the exclusive lease instead of calling require_idle again.
+        assert calls[:probe_index].count("idle") == 1
         assert calls[probe_index][:4] == (
             "B2_GIST", "C3_LANGUAGE", event["event_id"], event["source_ref"]
         )
