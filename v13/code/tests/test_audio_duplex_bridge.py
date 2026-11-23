@@ -102,6 +102,8 @@ def test_decision_modes_keep_auto_non_interrupting_and_require_voice_onset():
     )
     assert decide_audio_overlap("VOICED", True, "off") is None
     assert decide_audio_overlap("SILENCE", True, "interrupt") is None
+    assert decide_audio_overlap("UNVOICED_NOISE", True, "interrupt") is None
+    assert decide_audio_overlap("IMPULSIVE", True, "interrupt") is None
     assert decide_audio_overlap("VOICED", False, "interrupt") is None
     with pytest.raises(ValueError):
         decide_audio_overlap("VOICED", True, "invalid")
@@ -123,6 +125,7 @@ def test_provisional_raw_ear_onset_interrupts_only_in_explicit_interrupt_mode(tm
             assert result["a4"]["temporal_voice"]["voice_onset"] is True
             assert result["duplex"]["decision"] == "INTERRUPT"
             assert result["duplex"]["relation"] == "AUDIO_BARGE_IN"
+            assert result["duplex"]["bridge_revision"] == "V14_RAW_EAR_AUDIO_DUPLEX_BRIDGE_V2"
             assert result["learning_authority"] is False
             assert result["action_authority"] is False
         wait_idle(runtime)
