@@ -113,3 +113,13 @@ The current Core source-lifecycle builder at the release base still pins vision.
 - QA should run the exact frame-ingress workflow on this new head and then the full staged/migration/privacy/revocation matrix after Core's pin composition is repaired.
 - Perception next: run source/session-disjoint global-vs-local-vs-flicker/scroll/app-transition ablations, then connect the signed provider callback and prove same-turn A5→A4→C3 only after Core/QA integration.
 - Boss owns the shared board and V14_USER_NEXT_ACTION.md; this handoff records the facts for that update. User action: none.
+
+
+## Exact-head CI readback — 18384cd (2026-11-23 15:43 UTC)
+
+- Frame-ingress workflow run 45207964978: Python 3.13 **39 passed** (1.13 s) and Python 3.14 **39 passed** (1.09 s). This includes the new global/local attention controls and existing A5/A4/PerceptPacket/provider-contract regressions.
+- Public privacy scan run 45207965607: **CLEAN** for base fb563d771..HEAD.
+- Source-lineage/forget run 45207965817: Python 3.13 **29 passed** (3.09 s) and Python 3.14 **29 passed** (2.12 s).
+- Staged-runtime run 45207966638: **FAIL**, 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests. The repeated exception is unsupported lifecycle source: vision.py from source_lifecycle_lock_integration_candidate.py:172. The two migration checks consequently report PARTIAL rather than UPDATED.
+- Integrated-regression run 45207966638: **FAIL**, one staged-composition test; same exact unsupported lifecycle source: vision.py root cause. No separate semantic failure was exposed.
+- No Perception-owned guard/pin was weakened. The exact code-level source hash mismatch and Core ownership remain as stated above. This is focused CI success plus an integrated blocker, not merge/release acceptance.
