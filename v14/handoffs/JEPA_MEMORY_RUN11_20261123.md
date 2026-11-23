@@ -70,3 +70,16 @@ The direct source-forget fix above is not yet full derived-source unlearning. Cu
 **Required cross-agent contract:** Core/Runtime must construct and attach the complete, bounded source-ref set actually admitted to the selected action before the ActionSelection commit; JEPA must validate every ref against Store source/hash/span and persist the complete set into each temporal training row/checkpoint; base WorldJEPA and Memory source-forget must query every member; missing, revoked or over-bound provenance must fail closed for learning. Do not infer context dependencies from text after the fact.
 
 **Next test:** source A enters B's recalled/observer context; B's ActionSelection and T8 ActionOutcome must carry A and B refs; train a checkpoint; forget A; verify B-derived windows/checkpoints are invalidated or rebuilt, while an unrelated C cohort remains. Then repeat a later update and verify no A-derived trajectory re-enters. This requires Core producer ownership and JEPA/Memory consumer coordination; no Core-owned runtime/focal/Store file was modified in this PR.
+
+
+## Latest branch/CI readback — 2026-11-23 09:24 Europe/Berlin
+
+- Current branch head after the append-only next-action update: `6c340649bc0e2faab6be4c31a5aefcf1a684eed8`.
+- Latest handoff content commit: `33ee40070ee94336b47c5ca7d93507336272d1a1`.
+- Latest research-ledger content commit: `69abc77f19086e7a58a00cb7963fb4937b6b2c95`.
+- Latest next-action append commit: `6c340649bc0e2faab6be4c31a5aefcf1a684eed8`.
+- Exact latest-head temporal workflow `45138234854`: **PASS**; Python 3.13 and 3.14 each report 25 temporal tests + 17 postcommit tests, with compile passing.
+- Exact latest-head runtime deployment integrity `45138234472`: **PASS**; Python 3.11 and 3.14.
+- Exact latest-head optimizer-resume/source-forget `45138234337`: **FAIL** at the same QA-owned stale `memory.py` pin.
+- Exact latest-head staged/integrated workflow `45138234308`: **FAIL** at the same pin; dependent migration/staging reports PARTIAL.
+- QA was re-notified on #2402, comment `7095452171`. The PR remains DRAFT / NOT_RELEASED.
