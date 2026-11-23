@@ -207,7 +207,6 @@ def load_sherpa_teacher_runtime(
         joiner=paths["joiner"],
         num_threads=num_threads,
         sample_rate=SAMPLE_RATE,
-        enable_endpoint_detection=False,
         decoding_method="greedy_search",
         provider="cpu",
     )
@@ -500,11 +499,14 @@ def enrich_audio_result_with_sherpa_teacher(
             or not _SHA256.fullmatch(manifest["model_sha256"])):
         raise ValueError("teacher runtime model manifest is invalid")
     recognizer = teacher_runtime.recognizer
-    for method in ("create_stream", "is_ready", "decode_stream", "get_result_all"):
+    for method in ("create_stream", "is_ready", "decode_stream", "get_result"):
         if not callable(getattr(recognizer, method, None)):
             raise TypeError("sherpa-onnx recognizer is missing a required streaming method")
     stream = recognizer.create_stream()
     stream.accept_waveform(SAMPLE_RATE, samples)
+    stream.accept_waveform(
+        SAMPLE_RATE, np.zeros(int(0.5 * SAMPLE_RATE), dtype=np.float32),
+    )
     stream.input_finished()
     for _ in range(MAX_DECODE_STEPS):
         if not recognizer.is_ready(stream):
@@ -512,7 +514,7 @@ def enrich_audio_result_with_sherpa_teacher(
         recognizer.decode_stream(stream)
     else:
         raise RuntimeError("sherpa-onnx decode exceeded the bounded step limit")
-    result = recognizer.get_result_all(stream)
+    result = recognizer.get_result(stream)
     if getattr(result, "is_final", True) is not True:
         raise ValueError("sherpa-onnx result is not final for the finalized PCM window")
     tokens = getattr(result, "tokens", None)
