@@ -51,7 +51,7 @@ class DirectUCIArrayTests(unittest.TestCase):
                 time_text = bad_second
             voltage = f"{230 + i / 100:.2f}".replace(".", ",")
             lines.append(f"{stamp.strftime('%d/%m/%Y')};{time_text};{power};{voltage}")
-        path.write_text("\\n".join(lines) + "\\n", encoding="utf-8")
+        path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     def test_two_pass_array_loader_matches_reference_parsed_data_hash(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -86,8 +86,8 @@ class DirectUCIArrayTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "uci.txt"
             path.write_text(
-                "Date;Time;Global_active_power;Voltage\\n"
-                "01/01/2020;00:00:00;1,0\\n",
+                "Date;Time;Global_active_power;Voltage\n"
+                "01/01/2020;00:00:00;1,0\n",
                 encoding="utf-8",
             )
             config = DataConfig(
