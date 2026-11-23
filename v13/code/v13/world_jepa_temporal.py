@@ -35,7 +35,8 @@ from .world_jepa_learning_intent import (
     validate_weight_delta_receipt,
 )
 from .world_jepa_runtime import permission_state
-from .world_jepa_store_authority import verify_committed_temporal_page, verify_rows
+from .world_jepa_store_authority import (verify_committed_temporal_page, verify_rows,
+                                         committed_history_references_source)
 
 
 STATE_KEY = "v14.world_jepa.temporal_consumer"
@@ -2183,6 +2184,10 @@ def _record_references_source(store, record, source_id, pending_action_ids=()):
     cursor = record.get("scan_cursor")
     if type(cursor) is int and cursor > 0:
         pending = set(pending_action_ids)
+        if committed_history_references_source(
+                store, source_id, cursor, include_censored=True,
+                pending_action_ids=pending, max_rows=MAX_ROWS):
+            return True
         # The Store state caps pending rows at MAX_ROWS. Reading one more than
         # that bound guarantees that an eligible scanned row outside the
         # pending set is found without a large SQLite NOT IN parameter list.
