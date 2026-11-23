@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Process;
-import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -57,7 +56,7 @@ public final class CompanionLifecycleInstrumentedTest {
         }
         File file = new File(activity.getFilesDir(), marker);
         try (FileOutputStream stream = new FileOutputStream(file, false)) {
-            String identity = Process.myPid() + "|" + SystemClock.elapsedRealtimeNanos();
+            String identity = Process.myPid() + "|" + Process.getStartElapsedRealtime();
             stream.write(identity.getBytes(StandardCharsets.US_ASCII));
             stream.getFD().sync();
         } catch (IOException error) {
