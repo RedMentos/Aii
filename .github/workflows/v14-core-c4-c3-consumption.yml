@@ -51,6 +51,8 @@ on:
       - 'v13/code/v13/brain_panel.py'
       - 'v13/code/v13/native_offer_prompt_receipt.py'
       - 'v13/code/v13/runners.py'
+      - 'v13/code/v13/native_prompt_admission.py'
+      - 'v13/code/tests/test_native_prompt_admission.py'
       - 'v13/code/tests/test_v14_causal_stream_offer_receipt.py'
       - 'v14/V14_USER_NEXT_ACTION.md'
       - 'v13/code/tests/test_termux_runtime_recovery_stage.py'
