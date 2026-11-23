@@ -26,10 +26,11 @@ class StageTest(unittest.TestCase):
         (self.code / 'scripts').mkdir(parents=True)
         (self.code / 'v13').mkdir()
         (self.code / 'v13/runtime.py').write_text('ORIGINAL')
+        (self.code / 'v13/fast_greeting.py').write_bytes(b'FAST_GREETING')
         overlay = (
             "SOURCE_PINS = {}\n"
             "def apply_staged_arithmetic(code_dir, staged_root):\n"
-            "    return {'v13/runtime.py': b'INTEGRATED'}\n"
+            "    return {'v13/runtime.py': (staged_root / 'v13/runtime.py').read_bytes() + b'\\\\nARITHMETIC'}\n"
         ).encode('utf-8')
         overlay_path = self.code / module.ARITHMETIC_OVERLAY
         overlay_path.write_bytes(overlay)
@@ -40,7 +41,14 @@ class StageTest(unittest.TestCase):
         (self.code / 'specs/test.json').write_text('{}')
 
     def builder(self, body):
-        source = 'def build_sources(code_dir):\n' + body
+        body = body.replace('return ', 'result = ', 1) if 'return ' in body else body
+        source = (
+            'def build_sources(code_dir):\n' + body
+            + "    result.setdefault('v13/runtime.py', b'ORIGINAL')\n"
+            + "    result['v13/runtime.py'] += b'\\\\nEXACT_GREETING_ACK'\n"
+            + "    result.setdefault('v13/fast_greeting.py', b'FAST_GREETING')\n"
+            + '    return result\n'
+        )
         (self.code / module.BUILDER).write_text(source)
         module.BUILDER_SHA = hashlib.sha256(source.encode()).hexdigest()
 
@@ -48,7 +56,10 @@ class StageTest(unittest.TestCase):
         self.builder("    return {'v13/runtime.py': b'INTEGRATED'}\n")
         out = self.root / 'candidate'
         result = module.stage(self.code, out)
-        self.assertEqual((out / 'v13/runtime.py').read_text(), 'INTEGRATED')
+        staged_runtime = (out / 'v13/runtime.py').read_bytes()
+        self.assertTrue(staged_runtime.startswith(b'INTEGRATED'))
+        self.assertIn(b'EXACT_GREETING_ACK', staged_runtime)
+        self.assertIn(b'ARITHMETIC', staged_runtime)
         self.assertEqual((self.code / 'v13/runtime.py').read_text(), 'ORIGINAL')
         self.assertEqual(result['status'], 'SHADOW_REVIEW_ONLY')
         self.assertTrue((out / 'specs/test.json').exists())
@@ -101,7 +112,7 @@ class StageTest(unittest.TestCase):
         dest = self.root / 'candidate'
         result = module.stage(self.code, dest)
         self.assertEqual(set(result['files_sha256']), {
-            'v13/runtime.py', 'specs/test.json', module.BUILDER, module.ARITHMETIC_OVERLAY})
+            'v13/runtime.py', 'v13/fast_greeting.py', 'specs/test.json', module.BUILDER, module.ARITHMETIC_OVERLAY})
         self.assertFalse((dest / 'v13/brain.sqlite3').exists())
 
     def test_symlink_is_not_followed_or_published(self):
