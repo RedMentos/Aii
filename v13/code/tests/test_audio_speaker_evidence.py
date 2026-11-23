@@ -1123,3 +1123,52 @@ def test_audio_voice_cues_module_imports_without_optional_teacher_file(tmp_path)
         cwd=tmp_path, env=env, capture_output=True, text=True, timeout=20,
     )
     assert result.returncode == 0, result.stderr
+
+
+
+def test_impulsive_non_speech_reaches_a4_novelty_without_speaker_or_interrupt(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    generation = event["brain_generation_id"]
+    captured = {}
+
+    class CapturingAttention:
+        def modulate(self, event_id, sal):
+            captured["sal"] = dict(sal)
+            return {"sal": dict(sal)}
+
+    monkeypatch.setattr(
+        audio_voice_module.attctl,
+        "controller",
+        lambda current_runtime: CapturingAttention(),
+    )
+    try:
+        # One isolated full-scale impulse is non-speech activity, not a speaker
+        # reference. It should remain visible to A4 as novelty without causing
+        # a speaker decision or a false interrupt.
+        samples = [0] * 16000
+        samples[8000] = 32767
+        pcm = struct.pack("<" + "h" * len(samples), *samples)
+        pcm_sha256 = hashlib.sha256(pcm).hexdigest()
+        embeddings = speaker_batch(
+            SOURCE, generation, 100, 1100, lambda _: (0.0, 1.0, 0.0),
+            current_chunk_sha256=pcm_sha256,
+        )
+        result = consume_pcm16_voice_window(
+            runtime, pcm, sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=generation,
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL", speaker_embeddings=embeddings,
+        )
+
+        assert result["a4"]["voice_activity_hint"] == "IMPULSIVE"
+        assert result["speaker_change_evidence"]["status"] == "SUPPRESSED_NON_VOICED"
+        assert result["speaker_change_evidence"]["accepted_frame_count"] == 0
+        assert result["speaker_change_evidence"]["history_frame_count"] == 0
+        assert result["a4"]["speaker_change_decision"] == "DEFER"
+        assert captured["sal"]["novelty"] >= 0.35 * result["a4"]["voice_cues"]["activity_score"]
+        assert captured["sal"]["external_interrupt"] < 0.1
+        assert "activity=IMPULSIVE" in result["c3_admission"].selected[0].summary
+        assert '"vector"' not in json.dumps(result["packet"])
+    finally:
+        runtime.store.close()
