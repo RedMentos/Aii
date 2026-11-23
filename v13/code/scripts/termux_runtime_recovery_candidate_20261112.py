@@ -173,12 +173,12 @@ def build_sources(code_dir, *, include_postcommit=True):
         if path.is_symlink() or not path.is_file():
             raise ValueError('Postcommit observer builder missing or unsafe')
         raw_candidate = path.read_bytes()
-        if hashlib.sha256(raw_candidate).hexdigest() != '951cd430604ba4933b7f5701f56c68f69ac36b5019d4050fd24883581e405a10':
+        if hashlib.sha256(raw_candidate).hexdigest() != 'ae9a9a2f7b98795ac1aa9c64bb15a2b649c8adaea9b4062cc11d38ca3392f5c5':
             raise ValueError('Postcommit observer builder source changed')
         namespace = {'__name__': 'v13_checked_postcommit', '__file__': str(path)}
         exec(compile(raw_candidate, str(path), 'exec'), namespace)
         runtime = result['v13/runtime.py']
-        if hashlib.sha256(runtime).hexdigest() != '85a2f94e642a787173fcc973270516a39bef4cb2145c3a19a638cb71975f9235':
+        if hashlib.sha256(runtime).hexdigest() != 'b5d17df38c119d124d679233c4026d237a86162e31f1320b7178ed7b592497dc':
             raise ValueError('Integrated observer Runtime source changed: ' + hashlib.sha256(runtime).hexdigest())
         runtime = namespace['apply_source'](runtime)
         # LateWatch runs during C3 streaming and must obey the same resolved
