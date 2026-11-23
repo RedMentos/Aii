@@ -1403,4 +1403,17 @@ def source_forget_guard(store, source_id):
             temporal_report = {}
         else:
             temporal_report = invalidate_source_under_guard(store, source_id)
-        yield dict(base_report) | temporal_report
+        report = dict(base_report) | temporal_report
+        yield report
+        # Memory._forget_source emits its general source-deletion receipt inside
+        # this context. Append the JEPA-specific outcome after that body returns,
+        # so the latest forget telemetry contains the checkpoint/retention proof.
+        if temporal_report:
+            store.log("forget", None, {
+                "component": "world_predictor",
+                "count": temporal_report.get("temporal_checkpoints_invalidated", 0),
+                "retained_cases_saved": temporal_report.get("temporal_rows_requeued", 0),
+                "source_id": source_id,
+                "status": "PASS",
+                "mode": "shadow",
+            })
