@@ -103,6 +103,20 @@ For each bootstrap replicate, resample the same contiguous temporal blocks for e
 
 Report candidate, accepted and rejected windows and rejection fraction for each split, plus monthly breakdowns. This is required to reveal seasonal undercoverage after strict NaN rejection and the 7-day lag requirement.
 
+## BASE architecture
+
+`base.py` provides the first shared-weight JEPA base model:
+
+- One token encoder architecture is used for both context and future-target views. Context tokens come from X, S and calendar; target tokens come from the future observed channels.
+- Token projection and learned pooling are linear in token count. It deliberately avoids quadratic self-attention across the 10,080-minute maximum input window.
+- The target encoder is an EMA-updated copy of the context encoder, with gradients disabled; it is not a permanently frozen teacher.
+- The predictor is explicitly (G(F^T(z))): one F block is reused T times and G is applied once. T=1 is exactly G(F(z)).
+- DirectMAE uses the same context encoder family and recurrent predictor, but predicts raw future values with an MAE readout.
+- FrozenRepresentationProbe freezes the learned JEPA context encoder and trains only a capacity-declared MAE readout.
+- A VICReg-style variance/covariance regularizer is exposed separately for anti-collapse diagnostics and the explicit VICReg control.
+
+The BASE tests check output shapes, stop-gradient behavior, EMA updates, shared-weight recurrence, gradient flow through every recurrence application, and direct-MAE/probe output dimensions. These are structural tests, not evidence that the forecasting objective works.
+
 ## Not yet implemented
 
-BASE and PROBE model adapters, the validation pilot, preregistration authoring/locking, model training, MAE-vs-JEPA result comparisons, and any UCI real-data run. No gate has passed.
+Training orchestration, the complete baseline suite, probe fitting/selection, the validation pilot, preregistration authoring/locking, MAE-vs-JEPA result comparisons, and any UCI real-data run. No gate has passed.
