@@ -967,3 +967,26 @@ def test_optional_teacher_module_absence_preserves_acoustic_path_and_blocks_tran
             denied_runtime.store.close()
     finally:
         runtime.store.close()
+
+
+def test_audio_voice_cues_module_imports_without_optional_teacher_file(tmp_path):
+    import os
+    import shutil
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    source_package = Path(audio_voice_module.__file__).parent
+    staged_package = tmp_path / "v13"
+    shutil.copytree(
+        source_package, staged_package,
+        ignore=shutil.ignore_patterns("__pycache__", "audio_teacher_ear.py"),
+    )
+    assert not (staged_package / "audio_teacher_ear.py").exists()
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(tmp_path) + os.pathsep + env.get("PYTHONPATH", "")
+    result = subprocess.run(
+        [sys.executable, "-c", "import v13.audio_voice_cues"],
+        cwd=tmp_path, env=env, capture_output=True, text=True, timeout=20,
+    )
+    assert result.returncode == 0, result.stderr
