@@ -12,7 +12,7 @@
 
 ## Evidence
 
-- LOCAL_LINUX isolated harness: exact bridge module `py_compile` PASS; 5/5 tests PASS using local stubs for the existing `duplex` and `AudioConsentLease` interfaces. This is not a full Aii checkout test.
+- LOCAL_LINUX isolated harness: exact bridge module and integration-test `py_compile` PASS; 6/6 isolated harness tests PASS using the exact bridge and duplex module plus a local AudioConsentLease/Store stub for the existing `duplex` and `AudioConsentLease` interfaces. This is not a full Aii checkout test.
 - Full Aii Runtime integration test is committed in `v13/code/tests/test_audio_duplex_bridge.py`; exact Python 3.13/3.14 GitHub Actions result is pending after push.
 - Full local Aii suite: BLOCKED / NOT_RUN because no checkout is mounted in this runner; GitHub DNS is unavailable.
 - Android AudioRecord/provider, MediaProjection, native ASR, microphone permission, and Redmi behavior: REDMI_UNVERIFIED. No device command, CHAT_SEND, update request, permission/model/weight change or data mutation was performed.
