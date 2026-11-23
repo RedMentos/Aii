@@ -1,3 +1,11 @@
+## Research evidence overlay — 2026-11-23T01:14:50.933Z
+
+- **R-102 Orion / on-device OCL:** full-text methods, evaluation and limitations reviewed. URGE reallocates batch/replay/optimizer memory under a hard cap; evidence is Jetson AGX Orin 32 GB and emulated 8 GB, not Android. No Orion code found; Avalanche itself is MIT. No Android or Redmi acceptance.
+- **R-103 duplex streaming ASR:** full arXiv HTML reviewed. A separate user-ASR head can run alongside agent text while sharing hidden states; the reported 9B + 600M model is too large for the Redmi target, and code is not yet released. This supports RAW EAR/transcript/agent-text separation, not transcript-only perception.
+- Neither result changes the active architecture or enables model downloads. R-102/R-103 are research candidates only; no code/weights imported and no device measurements performed.
+
+---
+
 ## Audio import-isolation evidence overlay — 2026-11-23T01:11:52.477Z
 
 PR #2369 current branch head `6dcf1fddd7b68d3cfe9526b764d086090fa054f9` adds a repository-level subprocess test that copies the actual `v13` package without `audio_teacher_ear.py` and imports `v13.audio_voice_cues`. Exact test commit `3f99bdcc6c133f44a897d59e5ef2a9292176f917`; test blob `a45c711ce7aac12beb5f9c567096c0e406962a08`; GitHub readback verified. LOCAL_LINUX minimal subprocess-pattern check PASS; full copied-package test NOT_RUN locally because no Aii checkout is mounted; exact-head CI queued/pending. This strengthens the import-time regression but does not prove Core staged integration, AudioRecord or Redmi operation.
