@@ -84,3 +84,23 @@ Local execution:
 4. Keep retrieval and body readouts SHADOW; optimizer promotion and native model-weight changes remain OFF.
 
 **User action:** none required.
+
+
+## Run 14 superseding correction — 2026-11-23
+
+This section supersedes the Run 13 note that described all-cycle forgetting as conservative over-invalidation while the T8 receipt contained only the final cycle. Boss review correctly identified that mismatch between causal holdout provenance and deletion rollback.
+
+- The new candidate unions the bounded source refs from every pre-action C4 FocalCycle for the same event/generation into the immutable T8 receipt. Source-disjoint train/holdout partitioning and source-forget now use the same recorded trajectory influence set.
+- The final cycle is validated against its FocalItem union. The real producer persists FocalItems only for the final active coalition; earlier cycles have only their FocalCycle provenance. An earlier cycle at the 16-ref producer cap is therefore ambiguous and rejected, rather than silently omitting possible sources.
+- The cycle sequence must be contiguous (1..N), the per-cycle cap is 16, and the total unique source-ref union is bounded at 64. Prediction-stage and post-action FocalCycle packets are excluded.
+- New regressions: (1) source A in cycle 1 and source B in cycle 2 both enter the T8 row; (2) a 16-ref earlier cycle without per-item receipts is rejected; (3) after replay-row eviction, forgetting a post-action-only FocalCycle source leaves the checkpoint active; (4) forgetting the earlier-cycle source invalidates the checkpoint.
+- Test fixtures now mirror production: only the final cycle persists FocalItem packets; earlier cycles persist only FocalCycle provenance.
+
+Code commits on candidate branch:
+- authority union: 435565bcd3231837c05d197327c33d990992daa6
+- source-forget scope alignment: e72c5b46c0557e772883a893934da6beb2fd5c73
+- multi-cycle / post-action tests: 25de9601f7a93c5ffa4952a7f5558b93a5742072
+
+Verification: full repository compile/pytest is BLOCKED / NOT_RUN because no Aii checkout is mounted locally and GitHub DNS is unavailable. The isolated SQLite source-forget predicate check from Run 13 is not a substitute for these new repository tests. Exact-head Python 3.13/3.14 JEPA, staged/integrated, migration and privacy checks must run on the replacement PR before review. No local numeric weight update, no GGUF mutation, no Android deployment, and no Redmi-native test is claimed.
+
+This candidate is based on the Run 13 C4→T8 branch but is intended to replace the earlier one-cycle-only candidate after exact-head CI. The earlier #2436 PR remains open until the replacement PR is created and reviewed; no merge/force-push has occurred.
