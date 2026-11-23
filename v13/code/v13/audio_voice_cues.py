@@ -744,6 +744,12 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         teacher_ear = None
         teacher_ear_status = "NOT_SUPPLIED"
         if teacher_result is not None:
+            # Preserve the teacher-specific consent checks even if the optional
+            # validator package is absent; absence must never weaken permission.
+            if lease_active is not True:
+                raise PermissionError("current audio consent lease is required for teacher output")
+            if teacher_opt_in is not True or teacher_transcript_consent is not True:
+                raise PermissionError("local teacher use and transcript use require separate opt-ins")
             teacher_validator = _load_teacher_ear_validator()
             if teacher_validator is None:
                 # The teacher is an optional add-on. Keep the acoustic path alive,
