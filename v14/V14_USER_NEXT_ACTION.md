@@ -1875,10 +1875,10 @@ This remains a SHADOW float receiver adapter consumed by the existing bodyview r
 
 ### Verification
 
-- Latest exact code-head Actions run [#45273031215](https://github.com/RedMentos/Aii/actions/runs/45272190117): `startup_failure`, **0 jobs**. Combined status: 0 contexts / pending. PR-head docs-only run [#45273528879](https://github.com/RedMentos/Aii/actions/runs/45273528879) also ended startup_failure with 0 jobs; no CI test ran.
+- Latest exact code-head Actions run [#45273031215](https://github.com/RedMentos/Aii/actions/runs/45272190117): `startup_failure`, **0 jobs**. Combined status: 0 contexts / pending. PR-head docs-only run [#45273658996](https://github.com/RedMentos/Aii/actions/runs/45273658996) also ended startup_failure with 0 jobs; no CI test ran.
 - Local Aii project tests: **NOT_RUN / BLOCKED**. Container has Python 3.13.5, NumPy 2.3.5 and pytest 9.0.2, but no Aii checkout and GitHub DNS resolution fails.
 - Synthetic Python numeric control: **PASS** for unchanged retention, encoder drift, compensated receiver, degraded receiver rejection and source-overlap detection. This is not the project test suite.
-- PR #2454 remains DRAFT / mergeable=false, 84 ahead / 47 behind current Boss #2443 head `cdf6b64067ac426ba32194100d3764f6e74c105f`; merge base `6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4`. Do not rebase until the combined Boss exact-head matrix is green. Core #2457 must then rebase onto the verified JEPA head.
+- PR #2454 remains DRAFT / mergeable=false, 87 ahead / 47 behind current Boss #2443 head `cdf6b64067ac426ba32194100d3764f6e74c105f`; merge base `6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4`. Do not rebase until the combined Boss exact-head matrix is green. Core #2457 must then rebase onto the verified JEPA head.
 
 ### Redmi and user action
 
