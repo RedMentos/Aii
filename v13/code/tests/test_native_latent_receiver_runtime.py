@@ -45,10 +45,6 @@ def receipt(model_sha, sender_sha):
         "repeat_cosine": 1.0,
         "native_input_consumed": True,
         "input_effect_detected": True,
-        "production_route": False,
-        "semantic_use_proven": False,
-        "training_authority": 0,
-        "native_receiver_authority": 0,
         "status": "NATIVE_INPUT_EFFECT",
     }
 
@@ -407,6 +403,10 @@ def test_brain_panel_fails_closed_when_receiver_has_no_linked_sender_tap(tmp_pat
         fields.update({
             "source_ref": event["source_ref"],
             "sender_tap_packet_id": "missing-tap-packet",
+            "production_route": False,
+            "semantic_use_proven": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
         })
         receiver = packet(
             "LatentReceiverPacket", "B3_NATIVE_RECEIVER_PROBE",
