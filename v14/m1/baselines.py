@@ -331,7 +331,7 @@ class RawWindowProbeBaseline:
         if self.trainable_parameters > self.max_parameters:
             raise ValueError(
                 f"Raw-Window-Probe requires {self.trainable_parameters} parameters; "
-                f"budget is {self.max_parameters}"
+                f"parameter budget is {self.max_parameters}"
             )
 
         self._fit_scaler(dataset, batch_size)
