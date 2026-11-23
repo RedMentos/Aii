@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T21:57:29Z",
-  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6. Boss candidate code-bearing checkpoint a5e536a96f6dc2a3a515d37b08393f7136e9efff on boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean; documentation-only descendants follow (last PR metadata readback 5166643ac74fbca318511c0918dea06e98a11ff9). QA #2459 and #2460 fast-forward integrated. Candidate PR #2443 remains DRAFT / NOT_RELEASED; full combined exact-head CI incomplete. JEPA #2454 second-update regression checkpoint: 32505a33061283522b3bde5597a74a93b12d399b; draft only, no exact-head CI or device proof.",
+  "updated_at": "2026-11-23T23:40:32.953Z",
+  "source_of_truth": "Release-development gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6; Boss candidate #2443 branch head cdf6b64067ac426ba32194100d3764f6e74c105f remains DRAFT with exact combined CI startup failures. JEPA #2454 head 9747fcf047ae9249d56681c65fd44463316597d2 includes the action-rowid source-forget cursor fix; exact Actions run 45290566774 startup_failure with zero jobs, LOCAL_LINUX isolated SQL/AST checks PASS, full project suite BLOCKED, REDMI_UNVERIFIED.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "The Boss branch is a candidate only, NOT_RELEASED/NOT_INSTALLED. CI must pass on its exact final head before any release action. Do not restart the explicitly stopped phone runtime or issue a duplicate update request. Keep synthetic, CI, local Linux and real Redmi evidence separate.",
   "tickets": [
@@ -108,10 +108,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "SYNTHETIC_NUMERIC_CONTROL_PASS; EXACT_HEAD_CI_NOT_OBSERVED; LOCAL_LINUX_PROJECT_SUITE_BLOCKED; REDMI_UNVERIFIED",
-      "next_step": "Wait for the complete exact-head Boss #2443 combined matrix; current Boss branch head is cdf6b64067ac426ba32194100d3764f6e74c105f (code-bearing checkpoint a5e536a96f6dc2a3a515d37b08393f7136e9efff) and its combined CI is still incomplete/startup-failed. Do not rebase #2454 until that parent is green. Then rebase JEPA onto the exact current Boss head, recompute the JEPA resume/recovery/stage pins with Core, run Python 3.13/3.14 temporal + postcommit + optimizer-resume + source-forget + staged + integrated suites, and verify the new second-update B1/B2 retention receipts plus restart/rollback. Keep receiver adapters SHADOW and native body weights unchanged.",
+      "proof_environment": "LOCAL_LINUX_ISOLATED_SQL_AND_AST_PASS; EXACT_HEAD_ACTIONS_STARTUP_FAILURE_ZERO_JOBS; FULL_LOCAL_PROJECT_SUITE_BLOCKED; REDMI_UNVERIFIED",
+      "next_step": "JEPA: after Boss #2443 has a freshly green exact combined matrix, rebase #2454 onto that exact head without force-push, resolve overlapping Memory/Sleep/bodyview files by three-way review, recompute nested source pins, and run temporal + postcommit + optimizer-resume + source-forget + staged + integrated on Python 3.13/3.14. The source-forget cursor defect is fixed on #2454 head 9747fcf; keep receiver adapters SHADOW and native body weights unchanged.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T21:57:29Z",
+      "last_checkpoint": "2026-11-23T23:40:32.953Z",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -163,25 +163,21 @@
         "ci": "PR_HEAD_STAGED_249_10SKIP_47_INTEGRATED_424_3SKIP_58_PY313_314_64_EACH; MERGED_PUSH_30_OF_30_SUCCESS",
         "scope": "production Runtime/SleepRuntime Store-backed WorldJEPA numeric consumer with persistent Adam/inverse/RNG optimizer state, gated legacy optimizer bootstrap, per-role held-out-vs-mean/zero/shuffled Planner receiver gate, Android no-clobber renameat2 checkpoint publication"
       },
-      "proof": "#2447 exact head 8be6498 has temporal/combined-online/incremental/privacy/deployment workflows passing but four composition/consumer failures; numeric readouts remain SHADOW and are not native LLM weight updates. No Redmi learning receipt. New JEPA PR #2454 head 32505a33061283522b3bde5597a74a93b12d399b adds a Store-level second-update assertion: both B1/B2 receipts must measure retention on the identical first-update source-disjoint cohort, keep it out of optimizer training, show numeric gradient/parameter deltas, and reload the committed checkpoint. This is a regression assertion only; it has not yet executed. Exact-head workflow/status lookup returned no runs/contexts. No LOCAL_LINUX Aii project suite and no Redmi test. Code-bearing regression commit is 32505a33061283522b3bde5597a74a93b12d399b; branch head d040c7bbe8dd7157b8a77655deca604bc29da48c was a docs-only descendant at the latest compare.",
+      "proof": "JEPA commit 540a5881a17f28a472d0c52f5097634bd19308b2 changes temporal source-forget history scan from events.rowid to actions.rowid, matching verify_committed_temporal_page's persisted scan_cursor. Regression commit 9747fcf047ae9249d56681c65fd44463316597d2 creates actionless event rows before two C4-only context actions and asserts the pre-cursor source is found while the post-cursor source is excluded. LOCAL_LINUX CPython 3.13.5: exact added test function AST parse PASS; isolated SQLite predicate reproduction PASS. GitHub Actions run 45290566774 ended startup_failure with 0 jobs; no project test pass. No Aii checkout; full compile/pytest BLOCKED. Redmi remains STOPPED_BY_USER / REDMI_UNVERIFIED; no device action.",
       "latest_temporal_pr": {
         "pr": 2454,
         "branch": "jepa-memory/v14-temporal-boss-2443-rebase-20261123-run14",
-        "head_sha": "32505a33061283522b3bde5597a74a93b12d399b",
+        "head_sha": "9747fcf047ae9249d56681c65fd44463316597d2",
+        "code_fix_commit": "540a5881a17f28a472d0c52f5097634bd19308b2",
+        "test_commit": "9747fcf047ae9249d56681c65fd44463316597d2",
         "base_branch": "boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean",
         "base_sha": "6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4",
         "current_boss_head": "cdf6b64067ac426ba32194100d3764f6e74c105f",
-        "merge_base": "6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4",
-        "ahead_of_boss": 111,
-        "behind_boss": 47,
+        "compare_to_boss": "127 ahead / 47 behind; diverged",
         "state": "DRAFT_NOT_RELEASED_MERGEABLE_FALSE",
-        "latest_change": "Second-update Store integration assertions for fixed B1/B2 receiver cohort, source-disjoint training exclusion, v3 WeightDeltaReceipt MEASURED_PASS, nonzero gradient/delta and checkpoint warm-read after restart.",
-        "exact_head_ci": "NO_WORKFLOW_RUN_OR_COMBINED_STATUS_RETURNED_AT_READBACK",
-        "local_linux": "BLOCKED_NO_AII_CHECKOUT_AND_GITHUB_DNS_FAILURE",
-        "redmi": "REDMI_UNVERIFIED",
-        "code_head_sha": "32505a33061283522b3bde5597a74a93b12d399b",
-        "branch_head_before_final_doc_sync": "d040c7bbe8dd7157b8a77655deca604bc29da48c",
-        "note": "The 32505a33 code-bearing test commit has docs-only descendants; branch head at this readback was d040c7bbe8dd7157b8a77655deca604bc29da48c."
+        "exact_head_ci": "STARTUP_FAILURE_RUN_45290566774_ZERO_JOBS",
+        "local_linux": "ISOLATED_SQL_PASS_AST_PARSE_PASS_FULL_AII_SUITE_BLOCKED",
+        "redmi": "REDMI_UNVERIFIED"
       }
     },
     {
@@ -328,10 +324,10 @@
       "scope": "Fast episodic memory, replay selection, semantic consolidation, dream/counterfactual samples, slow EMA, cleanup and provenance",
       "acceptance": "Source-linked replay survives restart; observed events remain distinct from generated dream samples; consolidation has measured retention/ablation and rollback; synthetic dream data never gains truth or tool authority.",
       "proof_environment": "Sleep postcommit worker code exists, but no accepted replay/dream consolidation or stable JEPA per-session retention. #2247 fails its current staged/optimizer/retention matrix; promotion remains OFF.",
-      "next_step": "Keep replay/JEPA shadow. Candidate source-forget protects source lineage and checkpoint state, but it is not gradient unlearning or Dream consolidation. Add positive multi-checkpoint rollback/restart and retain-only relearning evidence before claiming durable weight forgetting.",
+      "next_step": "Keep JEPA/replay SHADOW. The source-forget scan cursor now uses the same actions.rowid domain as the T8 scan, with a regression for actionless-event divergence. After the parent rebase, execute positive/missing/corrupt rollback, restart, A→B→A replay-on/off and retention tests on exact Python 3.13/3.14 heads; do not call this gradient unlearning or Dream acceptance.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T20:58:33.465Z",
-      "proof": "#2429 is wired to Memory._forget_source and Store-backed WorldJEPA checkpoint consumer; b20e9 push CI 37/37. No native body-weight update, cross-organ gradient, Dream acceptance or Android learning proof."
+      "last_checkpoint": "2026-11-23T23:40:32.953Z",
+      "proof": "PR #2454 head 9747fcf fixes a temporal source-forget history-scan cursor mismatch that could miss an old action when event.rowid exceeded actions.rowid. Local isolated SQLite predicate reproduction PASS and Python 3.13.5 AST parse PASS; exact Actions run 45290566774 startup_failure / 0 jobs, so repo regression is not yet executed. Replay/rollback remain experimental Store/checkpoint paths; no native body-weight forgetting, Dream consolidation or Redmi proof."
     },
     {
       "id": "V14-012",
@@ -345,8 +341,8 @@
       "proof_environment": "Context OS source pointers remain partial; Memorilla #1983 remains additive SHADOW with no production overflow consumer or role-specific reader/writer learning. No archive/forget/revocation replacement is accepted.",
       "next_step": "Core/JEPA: make the production ActionSelection producer attach all source refs for admitted Memory, observer and Enlightened-Space context. Then connect query-sensitive episodic recall to Context OS with source/session exclusions and forget/revoke/restart tests. Memorilla stays additive and SHADOW.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T20:58:33.465Z",
-      "proof": "#2429 adds multi-SourceRef validation and checkpoint provenance; multi-source context is tested with injected packets. Production focal.py still records only event source. Memorilla #1983 has no production overflow consumer."
+      "last_checkpoint": "2026-11-23T23:40:32.953Z",
+      "proof": "Temporal JEPA now carries sealed ActionSelection + C4 FocalCycle/FocalItem SourceRefs into windows; #2454 additionally fixes the source-forget cursor to actions.rowid and adds a C4-only pre-/post-cursor regression. Production C5 still needs to emit all admitted Memory/observer/Enlightened SourceRefs directly; Memorilla remains additive SHADOW with no production overflow consumer."
     },
     {
       "id": "V14-013",
