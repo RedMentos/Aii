@@ -231,11 +231,72 @@ def sandbox_note_tool(home):
     return write,'WRITE_LOCAL',True,'simple_tool_choice','Notiz im Sandbox-Ordner schreiben (rücknehmbar)',{'name':'str','text':'str'},undo,preview
 
 # -- IH-H12 output commit point ---------------------------------------------------------------------------------
+class OutputCommitError(ValueError):
+    """The requested message is not at a valid, source-bound output commit state."""
+
+
+def has_output_commit(store,mid,event_id):
+    """Read-only proof that this exact assistant message crossed IH-H12 and retained its commit receipt."""
+    row=store.one("SELECT event_id,role,status,metadata FROM messages WHERE id=?",(mid,))
+    if not row or row['event_id']!=event_id or row['role']!='assistant':
+        return False
+    if row['status'] not in {'OUTPUT_COMMITTED','STREAMING','FINAL','CANCELLED','DEADLINE','ERROR','INTERRUPTED'}:
+        return False
+    try:receipt=json.loads(row['metadata'] or '{}')
+    except (TypeError,ValueError):return False
+    return receipt.get('output_committed') is True and type(receipt.get('output_committed_monotonic_ns')) is int
+
+
 def commit_output(store,mid,event_id,meta=None):
-    """DRAFT -> OUTPUT_COMMITTED right before the first visible byte reaches the user. Idempotent."""
-    with store.tx() as c:moved=c.execute("UPDATE messages SET status='OUTPUT_COMMITTED' WHERE id=? AND status='DRAFT'",(mid,)).rowcount==1
-    if moved and meta is not None:meta['output_committed_monotonic_ns']=time.monotonic_ns();meta['output_committed']=True
-    return moved
+    """Atomically persist DRAFT -> OUTPUT_COMMITTED and its receipt; repeated calls are idempotent.
+
+    OUTPUT_COMMITTED/STREAMING are themselves durable evidence of the earlier commit point, so
+    legacy rows in those states can acquire the receipt on retry. A terminal row is idempotent
+    only when its persisted receipt is already present. Missing rows, wrong events/roles and
+    terminal rows without a receipt fail closed instead of allowing later FINAL/C7 egress.
+    """
+    with store.tx() as c:
+        row=c.execute("SELECT event_id,role,status,metadata FROM messages WHERE id=?",(mid,)).fetchone()
+        if row is None:
+            raise OutputCommitError("Output message does not exist")
+        if row['event_id']!=event_id or row['role']!='assistant':
+            raise OutputCommitError("Output commit event/role mismatch")
+        try:receipt=json.loads(row['metadata'] or '{}')
+        except (TypeError,ValueError) as exc:
+            raise OutputCommitError("Output commit metadata is invalid") from exc
+        state=row['status']
+        if state=='DRAFT':
+            committed_ns=time.monotonic_ns()
+            receipt['output_committed']=True
+            receipt['output_committed_monotonic_ns']=committed_ns
+            moved=c.execute(
+                "UPDATE messages SET status='OUTPUT_COMMITTED',metadata=? WHERE id=? AND event_id=? AND role='assistant' AND status='DRAFT'",
+                (dumps(receipt),mid,event_id),
+            ).rowcount
+            if moved!=1:
+                raise OutputCommitError("Output commit transition lost its compare-and-set")
+        elif state in {'OUTPUT_COMMITTED','STREAMING'}:
+            committed_ns=receipt.get('output_committed_monotonic_ns')
+            if type(committed_ns) is not int:
+                committed_ns=time.monotonic_ns()
+            receipt['output_committed']=True
+            receipt['output_committed_monotonic_ns']=committed_ns
+            updated=c.execute(
+                "UPDATE messages SET metadata=? WHERE id=? AND event_id=? AND role='assistant' AND status=?",
+                (dumps(receipt),mid,event_id,state),
+            ).rowcount
+            if updated!=1:
+                raise OutputCommitError("Output commit receipt update lost its compare-and-set")
+        elif state in {'FINAL','CANCELLED','DEADLINE','ERROR','INTERRUPTED'}:
+            committed_ns=receipt.get('output_committed_monotonic_ns')
+            if receipt.get('output_committed') is not True or type(committed_ns) is not int:
+                raise OutputCommitError("Terminal message has no durable output commit receipt")
+        else:
+            raise OutputCommitError("Message is not eligible for output commit: "+str(state))
+    if meta is not None:
+        meta['output_committed_monotonic_ns']=committed_ns
+        meta['output_committed']=True
+    return True
 
 def correction(store,session,event_id,mid,text,reason,refs=None):
     """Late evidence after the commit point: a separate, visible correction; the committed transcript stays as it was."""
