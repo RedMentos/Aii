@@ -6,6 +6,8 @@ on:
       - core/v14-android-companion-native-20261121
       - qa/v14-companion-single-use-approval-20261121
       - qa/v14-companion-os-permission-contract-20261122
+      - qa/v14-companion-trigger-final-base-20261123-run1
+      - qa/v14-companion-stop-durability-20261123-run1
     paths:
       - "android-companion/**"
       - ".github/workflows/v14-android-companion.yml"
@@ -14,6 +16,7 @@ on:
       - gpt6/v14-core-companion-outcome-20261121
       - core/v14-android-companion-native-20261121
       - qa/v14-companion-single-use-approval-20261121
+      - qa/v14-companion-final-qa-20261122
     paths:
       - "android-companion/**"
       - ".github/workflows/v14-android-companion.yml"
@@ -26,6 +29,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Test emulator UI recovery helpers
+        run: python3 android-companion/scripts/test_process_restart_ui.py
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -39,3 +44,48 @@ jobs:
       - name: Build and test isolated companion
         run: |
           gradle --no-daemon -p android-companion :app:assembleDebug :app:testDebugUnitTest
+
+  android-companion-process-restart:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      # GitHub-hosted runners may lack KVM; current emulator exits unless TCG is explicitly allowed.
+      ANDROID_I_WANT_MY_TCG: "yes"
+      ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: "60"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: "platform-tools platforms;android-35 build-tools;35.0.0 emulator system-images;android-33;default;x86_64"
+      - name: Assemble companion APK
+        run: gradle --no-daemon -p android-companion :app:assembleDebug
+      - name: Start ADB server before emulator launch
+        run: |
+          adb start-server
+          adb devices -l
+      - name: Record available emulator acceleration
+        run: |
+          if [ -x "$ANDROID_HOME/emulator/emulator" ]; then
+            "$ANDROID_HOME/emulator/emulator" -accel-check || true
+          else
+            echo "Android emulator binary is not installed at $ANDROID_HOME/emulator/emulator"
+          fi
+      - name: Exercise stop and process-death restart on Android emulator
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2, Apache-2.0
+        with:
+          emulator-options: -no-window -gpu lavapipe -no-snapshot -noaudio -no-boot-anim -accel auto -cores 2 -memory 3072 -partition-size 512
+          api-level: 33
+          target: default
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          emulator-boot-timeout: 900
+          script: |
+            bash -n android-companion/scripts/wait_for_emulator.sh && bash android-companion/scripts/wait_for_emulator.sh && gradle --no-daemon -p android-companion :app:installDebug && python3 android-companion/scripts/test_process_restart.py

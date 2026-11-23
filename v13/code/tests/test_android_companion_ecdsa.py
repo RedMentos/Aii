@@ -47,6 +47,14 @@ FAILED_RECEIPT = {
     "body": FAILED_BODY, "key_id": KEY_ID,
     "signature": "MEYCIQCP5EHhE3jytExvf7pDOuTWiJ68O/EnaVUYEGfgUxI7wgIhALxgnBWYC60h84Zkk/ez/IGotFur/iLq9egH1zTS17n+",
 }
+UNKNOWN_BODY = {
+    **BODY, "nonce": "5" * 32, "status": "OUTCOME_UNKNOWN", "local_consent": True,
+}
+UNKNOWN_RECEIPT = {
+    "body": UNKNOWN_BODY, "key_id": KEY_ID,
+    "signature": "MEQCIBPKs5qyAcPpLiJkD9fTWkWv2BFfkx16ItaMJuz34DpvAiBZuWaR9L8gPtSGPUAR782DiT8IRO5PJPoQxTHGy6ZtrA==",
+}
+
 ENVELOPE = {
     "action_id": BODY["action_id"],
     "capability": BODY["capability"],
@@ -83,6 +91,18 @@ def test_signed_user_denial_and_dispatch_failure_remain_non_authoritative(tmp_pa
     assert failed["local_approval_evidence"] == "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
     assert denied["t8_authoritative"] is False
     assert failed["t8_authoritative"] is False
+    value.close()
+
+
+def test_signed_unknown_outcome_is_approved_but_not_claimed_as_dispatched(tmp_path):
+    value = verifier(tmp_path / "unknown.sqlite")
+    unknown = value.verify(ENVELOPE, UNKNOWN_RECEIPT, consume_nonce=False)
+    assert unknown["status"] == "COMPANION_OUTCOME_UNKNOWN"
+    assert unknown["receipt_status"] == "OUTCOME_UNKNOWN"
+    assert unknown["companion_local_consent_claim"] is True
+    assert unknown["local_approval_evidence"] == "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
+    assert unknown["observed"] is False
+    assert unknown["t8_authoritative"] is False
     value.close()
 
 
@@ -194,6 +214,35 @@ def test_keystore_receipt_persists_source_bound_non_authoritative_outcome(tmp_pa
     store.close()
     broker.close()
     receipt_verifier.close()
+
+
+def test_keystore_unknown_outcome_persists_without_learning_authority(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "2" * (size * 2))
+    home = tmp_path / "runtime"
+    (home / "data" / "db").mkdir(parents=True)
+    (home / "data" / "blobs").mkdir(parents=True)
+    store = Store(home)
+    session = store.new_session()
+    event = store.event(session, "open the approved app")
+    broker = android_control.AndroidControlBroker(tmp_path / "unknown-broker.sqlite", clock=lambda: 1000.0)
+    receipt_verifier = verifier(tmp_path / "unknown-receipts.sqlite")
+    broker.start()
+    proposal = broker.propose("launch_app", {"package": "com.example.app"}, ttl=30,
+        event_id=event["event_id"], source_ref=event["source_ref"])
+    assert proposal.action_id == BODY["action_id"] and proposal.digest == BODY["digest"]
+    broker.approve(proposal.action_id, confirmed_by_local_ui=True)
+    broker.dispatch_approved(proposal.action_id)
+    outcome, packet = accept_and_persist_companion_receipt(
+        store, broker, receipt_verifier, proposal.action_id, UNKNOWN_RECEIPT)
+    assert outcome.status == "COMPANION_OUTCOME_UNKNOWN"
+    assert outcome.details["receipt_status"] == "OUTCOME_UNKNOWN"
+    assert outcome.details["companion_local_consent_claim"] is True
+    assert outcome.details["local_approval_evidence"] == "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
+    assert outcome.observed is False and outcome.details["t8_authoritative"] is False
+    assert outcome.details["world_learning_eligible"] is False
+    stored = store.one("SELECT payload FROM packets WHERE id=?", (packet["packet_id"],))
+    assert json.loads(stored["payload"])["actual"]["receipt_status"] == "OUTCOME_UNKNOWN"
+    store.close(); broker.close(); receipt_verifier.close()
 
 
 def test_store_failure_keeps_signed_receipt_retryable_until_durable_commit(tmp_path, monkeypatch):

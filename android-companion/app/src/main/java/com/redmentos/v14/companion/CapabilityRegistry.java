@@ -1,7 +1,11 @@
 package com.redmentos.v14.companion;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -18,6 +22,10 @@ import java.util.List;
  * not observe foreground state and never grants model or learning authority.
  */
 final class CapabilityRegistry {
+    interface CertificateDigestReader {
+        String read(Context context, String packageName) throws Exception;
+    }
+
     private CapabilityRegistry() {}
 
     static final class Capability {
@@ -86,12 +94,45 @@ final class CapabilityRegistry {
                 false, osPermissionRequired, false, false);
     }
 
+    static boolean isCurrentTermuxTrusted(Context context) {
+        return isCurrentTermuxTrusted(context, CompanionProvider::packageCertificateDigest);
+    }
+
+    static boolean isCurrentTermuxTrusted(Context context, CertificateDigestReader reader) {
+        if (context == null || reader == null) return false;
+        return PairingPersistence.withTrustedPairing(() -> {
+            try {
+                SharedPreferences prefs =
+                        context.getSharedPreferences(CompanionProvider.PREFS, Context.MODE_PRIVATE);
+                String packageName = prefs.getString("paired_package", "");
+                String storedDigest = prefs.getString("paired_cert_sha256", "");
+                if (!"com.termux".equals(packageName) || !isSha256(storedDigest)) return false;
+
+                // A stored preference is only a claim. Verify the signer of the
+                // currently installed package before advertising caller trust.
+                String installedDigest = reader.read(context, packageName);
+                if (!isSha256(installedDigest)) return false;
+                return MessageDigest.isEqual(
+                        storedDigest.getBytes(StandardCharsets.US_ASCII),
+                        installedDigest.getBytes(StandardCharsets.US_ASCII));
+            } catch (Exception unavailable) {
+                // Missing/unreadable/re-signed Termux must fail closed in status.
+                return false;
+            }
+        });
+    }
+
+    private static boolean isSha256(String value) {
+        return value != null && value.matches("[0-9a-f]{64}");
+    }
+
     static JSONObject snapshot(Context context) throws Exception {
-        android.content.SharedPreferences prefs =
-                context.getSharedPreferences(CompanionProvider.PREFS, Context.MODE_PRIVATE);
+        return snapshot(context, CompanionProvider::packageCertificateDigest);
+    }
+
+    static JSONObject snapshot(Context context, CertificateDigestReader reader) throws Exception {
         boolean enabled = CompanionProvider.isEnabled(context);
-        boolean paired = "com.termux".equals(prefs.getString("paired_package", ""))
-                && !prefs.getString("paired_cert_sha256", "").isEmpty();
+        boolean paired = isCurrentTermuxTrusted(context, reader);
 
         JSONArray items = new JSONArray();
         for (Capability capability : entries(paired, enabled)) {

@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
+import android.service.notification.StatusBarNotification;
 import android.util.Base64;
 
 import org.json.JSONObject;
@@ -25,7 +26,9 @@ import org.json.JSONObject;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public final class CompanionProvider extends ContentProvider {
     static final String PREFS = "v14-companion";
@@ -41,6 +44,8 @@ public final class CompanionProvider extends ContentProvider {
         db = new CompanionDb(context);
         signer = new ReceiptSigner();
         ensureChannel(context);
+        recoverClaimedActions(context, db, signer, System.currentTimeMillis());
+        reconcileApprovalNotifications(context, db, System.currentTimeMillis());
         return true;
     }
 
@@ -74,6 +79,70 @@ public final class CompanionProvider extends ContentProvider {
 
     interface EnabledWriter {
         boolean commit(Context context, boolean enabled);
+    }
+
+    interface ReceiptIssuer {
+        String issue(CompanionDb.Action action, String status, boolean localConsent,
+                     long nowMillis) throws Exception;
+    }
+
+    private static ReceiptIssuer signerReceiptIssuer(ReceiptSigner signer) {
+        return (action, status, localConsent, nowMillis) ->
+                ReceiptFactory.create(action, signer, status, localConsent, nowMillis).toString();
+    }
+
+    static boolean recoverClaimedAction(Context context, CompanionDb db, ReceiptSigner signer,
+                                        String actionId, long nowMillis) {
+        return recoverClaimedAction(context, db, actionId, nowMillis, signerReceiptIssuer(signer));
+    }
+
+    static boolean recoverClaimedAction(Context context, CompanionDb db, String actionId,
+                                        long nowMillis, ReceiptIssuer issuer) {
+        synchronized (ACTION_GATE_LOCK) {
+            try {
+                CompanionDb.Action action = db.get(actionId);
+                if (action == null) return false;
+                if (action.receiptJson != null) {
+                    if (context != null) cancelApprovalNotification(context, actionId);
+                    return true;
+                }
+                final String terminalStatus;
+                final String expectedStatus;
+                final boolean localConsent;
+                if ("EXECUTING".equals(action.status)) {
+                    expectedStatus = "EXECUTING"; terminalStatus = "OUTCOME_UNKNOWN"; localConsent = true;
+                } else if ("DENYING".equals(action.status)) {
+                    expectedStatus = "DENYING"; terminalStatus = "USER_DENIED"; localConsent = false;
+                } else return false;
+                String receipt = issuer.issue(action, terminalStatus, localConsent, nowMillis);
+                if (receipt == null || receipt.isEmpty()) return false;
+                db.finishClaimed(actionId, expectedStatus, terminalStatus, receipt);
+                CompanionDb.Action completed = db.get(actionId);
+                if (completed == null || completed.receiptJson == null) return false;
+                if (context != null) cancelApprovalNotification(context, actionId);
+                return true;
+            } catch (Exception ignored) {
+                // Retry only receipt finalization; never repeat the external action.
+                return false;
+            }
+        }
+    }
+
+    static int recoverClaimedActions(Context context, CompanionDb db, ReceiptSigner signer,
+                                     long nowMillis) {
+        return recoverClaimedActions(context, db, nowMillis, signerReceiptIssuer(signer));
+    }
+
+    static int recoverClaimedActions(Context context, CompanionDb db, long nowMillis,
+                                     ReceiptIssuer issuer) {
+        final List<CompanionDb.Action> claimed;
+        try { claimed = db.claimedWithoutReceipt(); }
+        catch (RuntimeException ignored) { return 0; }
+        int recovered = 0;
+        for (CompanionDb.Action action : claimed) {
+            if (recoverClaimedAction(context, db, action.actionId, nowMillis, issuer)) recovered++;
+        }
+        return recovered;
     }
 
     static boolean resetProcessStateForProviderStartup(Context context) {
@@ -148,6 +217,12 @@ public final class CompanionProvider extends ContentProvider {
         }
     }
 
+    static final class DispatchNotAttemptedException extends RuntimeException {
+        DispatchNotAttemptedException() {
+            super("dispatch was not attempted");
+        }
+    }
+
     static String claimAndDispatch(Context context, CompanionDb db, String actionId,
                                    MillisClock clock, Runnable dispatch) {
         synchronized (ACTION_GATE_LOCK) {
@@ -161,10 +236,22 @@ public final class CompanionProvider extends ContentProvider {
             try {
                 dispatch.run();
                 return "DISPATCHED";
-            } catch (RuntimeException ignored) {
+            } catch (DispatchNotAttemptedException knownNoDispatch) {
                 return "FAILED_TO_DISPATCH";
+            } catch (RuntimeException uncertainDispatch) {
+                // startActivity may have crossed the framework boundary before
+                // surfacing an exception. Never report a definite failure here.
+                return "OUTCOME_UNKNOWN";
             }
         }
+    }
+
+    static String receiptStatusForDispatchResult(String dispatchResult) {
+        if ("DISPATCHED".equals(dispatchResult)) return "DISPATCHED_UNVERIFIED";
+        if ("FAILED_TO_DISPATCH".equals(dispatchResult)) return "FAILED_TO_DISPATCH";
+        // Any unexpected post-claim result is conservative: the external
+        // framework boundary may already have been crossed.
+        return "OUTCOME_UNKNOWN";
     }
 
     static boolean isImplementedCapability(String capability) {
@@ -228,6 +315,7 @@ public final class CompanionProvider extends ContentProvider {
 
     private JSONObject outcome(String actionId) throws Exception {
         if (!isHex(actionId, 32)) return error("INVALID_ACTION_ID");
+        recoverClaimedAction(getContext(), db, signer, actionId, System.currentTimeMillis());
         CompanionDb.Action action = db.get(actionId);
         JSONObject out = new JSONObject();
         if (action == null) {
@@ -279,7 +367,82 @@ public final class CompanionProvider extends ContentProvider {
         }
     }
 
+    // Process death can occur after the terminal receipt is durable but before
+    // NotificationManager.cancel(). Reconcile only this app's approval channel,
+    // and hold the same gate used by submit/dispatch so a newly published live
+    // request cannot be mistaken for a stale notification.
+    static int reconcileApprovalNotifications(Context context, CompanionDb db, long nowMillis) {
+        if (context == null || db == null) return 0;
+        NotificationManager manager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (manager == null) return 0;
+        synchronized (ACTION_GATE_LOCK) {
+            final List<CompanionDb.Action> pending;
+            try {
+                pending = pendingActions(context, db, nowMillis);
+            } catch (RuntimeException unavailable) {
+                // A failed Store read must never be interpreted as proof that
+                // every visible approval is stale.
+                return 0;
+            }
+            Set<String> liveActionIds = new HashSet<>();
+            for (CompanionDb.Action action : pending) {
+                if (action != null && action.actionId != null
+                        && action.actionId.matches("[0-9a-f]{32}")) {
+                    liveActionIds.add(action.actionId);
+                }
+            }
+            // A claimed action without a durable receipt is not pending anymore,
+            // but its approval notification is still the user's only retry/review
+            // surface if Keystore signing or receipt persistence failed. Never
+            // clean it up until the terminal receipt is durable.
+            final List<CompanionDb.Action> claimed;
+            try {
+                claimed = db.claimedWithoutReceipt();
+            } catch (RuntimeException unavailable) {
+                // Unknown Store state is not evidence that a notification is stale.
+                return 0;
+            }
+            for (CompanionDb.Action action : claimed) {
+                if (action != null && action.actionId != null
+                        && action.actionId.matches("[0-9a-f]{32}")) {
+                    liveActionIds.add(action.actionId);
+                }
+            }
+            final StatusBarNotification[] active;
+            try {
+                active = manager.getActiveNotifications();
+            } catch (RuntimeException unavailable) {
+                return 0;
+            }
+            if (active == null) return 0;
+            int cancelled = 0;
+            for (StatusBarNotification notification : active) {
+                if (notification == null || notification.getNotification() == null
+                        || !CHANNEL.equals(notification.getNotification().getChannelId())) {
+                    continue;
+                }
+                String actionId = notification.getTag();
+                if (actionId == null || !actionId.matches("[0-9a-f]{32}")
+                        || liveActionIds.contains(actionId)) {
+                    continue;
+                }
+                try {
+                    manager.cancel(actionId, notification.getId());
+                    cancelled++;
+                } catch (RuntimeException ignored) {
+                    // Leave the row/receipt untouched; a later startup or
+                    // pending() call can retry notification-only cleanup.
+                }
+            }
+            return cancelled;
+        }
+    }
+
     private JSONObject pending(Context context) throws Exception {
+        long nowMillis = System.currentTimeMillis();
+        recoverClaimedActions(context, db, signer, nowMillis);
+        reconcileApprovalNotifications(context, db, nowMillis);
         org.json.JSONArray values = new org.json.JSONArray();
         for (CompanionDb.Action action : pendingActions(context, db, System.currentTimeMillis())) {
             JSONObject item = new JSONObject();
@@ -295,22 +458,40 @@ public final class CompanionProvider extends ContentProvider {
     }
 
     private boolean isPairedCaller(Context context) {
-        // ContentProvider exposes the exact IPC caller package on supported
-        // Android versions. Bind it to Binder's UID package set as well as the
-        // pinned signing certificate; never infer caller identity from UID alone.
+        // Read the persisted identity and verify the Binder caller under the
+        // same process-local trust lock used by pairing writes/rollback. A
+        // concurrent failed write cannot expose an unverified in-memory pair.
         String callingPackage = getCallingPackage();
         String[] packages = context.getPackageManager().getPackagesForUid(Binder.getCallingUid());
-        SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        String pairedPackage = prefs.getString("paired_package", "");
-        String pairedDigest = prefs.getString("paired_cert_sha256", "");
-        if (!isExactPairedCaller(callingPackage, packages, pairedPackage) || pairedDigest.isEmpty()) {
-            return false;
-        }
-        try {
-            return pairedDigest.equals(packageCertificateDigest(context, callingPackage));
-        } catch (Exception ignored) {
-            return false;
-        }
+        return PairingPersistence.withTrustedPairing(() -> {
+            SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+            String pairedPackage = prefs.getString("paired_package", "");
+            String pairedDigest = prefs.getString("paired_cert_sha256", "");
+            String actualDigest;
+            try {
+                actualDigest = packageCertificateDigest(context, callingPackage);
+            } catch (Exception ignored) {
+                return false;
+            }
+            return pairedIdentityMatches(callingPackage, packages, pairedPackage,
+                    pairedDigest, actualDigest);
+        });
+    }
+
+    static boolean isPairedCallerIdentityAllowed(String callingPackage, String[] packages,
+                                                  String pairedPackage, String pairedDigest,
+                                                  String actualDigest) {
+        return PairingPersistence.withTrustedPairing(() ->
+                pairedIdentityMatches(callingPackage, packages, pairedPackage,
+                        pairedDigest, actualDigest));
+    }
+
+    private static boolean pairedIdentityMatches(String callingPackage, String[] packages,
+                                                  String pairedPackage, String pairedDigest,
+                                                  String actualDigest) {
+        return isExactPairedCaller(callingPackage, packages, pairedPackage)
+                && pairedDigest != null && !pairedDigest.isEmpty()
+                && actualDigest != null && pairedDigest.equals(actualDigest);
     }
 
     static boolean isExactPairedCaller(String callingPackage, String[] packages, String pairedPackage) {

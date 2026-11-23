@@ -3,14 +3,12 @@ package com.redmentos.v14.companion;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import org.json.JSONObject;
 
-import java.security.SecureRandom;
 
 public final class ConsentActivity extends Activity {
     private CompanionDb db;
@@ -24,7 +22,22 @@ public final class ConsentActivity extends Activity {
         signer = new ReceiptSigner();
         String actionId = getIntent().getStringExtra("action_id");
         action = actionId == null ? null : db.get(actionId);
-        if (action == null || !"PENDING_USER_APPROVAL".equals(action.status)) {
+        if (action == null) {
+            CompanionProvider.cancelApprovalNotification(this, actionId);
+            Toast.makeText(this, "Action is no longer available", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+        if ("EXECUTING".equals(action.status) || "DENYING".equals(action.status)) {
+            CompanionProvider.recoverClaimedAction(this, db, signer, action.actionId, System.currentTimeMillis());
+            CompanionDb.Action recovered = db.get(action.actionId);
+            Toast.makeText(this, recovered != null && recovered.receiptJson != null
+                    ? "Previous action receipt recovered: " + recovered.status
+                    : "Receipt recovery pending. The action will not be retried.", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+        if (!"PENDING_USER_APPROVAL".equals(action.status)) {
             CompanionProvider.cancelApprovalNotification(this, actionId);
             Toast.makeText(this, "Action is no longer pending", Toast.LENGTH_LONG).show();
             finish();
@@ -69,100 +82,76 @@ public final class ConsentActivity extends Activity {
     }
 
     private void deny() {
-        long nowMillis = System.currentTimeMillis();
-        if (!db.claimForDenial(action.actionId, nowMillis)) {
-            db.expire(action.actionId, nowMillis);
-            CompanionProvider.cancelApprovalNotification(this, action.actionId);
-            Toast.makeText(this, "Action was cancelled, expired or already decided", Toast.LENGTH_LONG).show();
-            finish();
-            return;
+        synchronized (CompanionProvider.ACTION_GATE_LOCK) {
+            long nowMillis = System.currentTimeMillis();
+            if (!db.claimForDenial(action.actionId, nowMillis)) {
+                db.expire(action.actionId, nowMillis);
+                CompanionProvider.cancelApprovalNotification(this, action.actionId);
+                Toast.makeText(this, "Action was cancelled, expired or already decided", Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
+            finishWithReceipt("USER_DENIED", false, "DENYING");
         }
-        finishWithReceipt("USER_DENIED", false, "DENYING");
     }
 
     private void launch() {
-        Intent launch = null;
-        try {
-            launch = getPackageManager().getLaunchIntentForPackage(action.packageName);
-        } catch (RuntimeException ignored) {
-            // The action is still claimed once; a failed lookup becomes a signed failure receipt.
+        synchronized (CompanionProvider.ACTION_GATE_LOCK) {
+            Intent launch = null;
+            try { launch = getPackageManager().getLaunchIntentForPackage(action.packageName); }
+            catch (RuntimeException ignored) {
+                // The one-shot claim is preserved; no retry occurs after an uncertain dispatch.
+            }
+            final Intent launchIntent = launch;
+            if (launchIntent != null) launchIntent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            final String dispatchResult;
+            try {
+                dispatchResult = CompanionProvider.claimAndDispatch(this, db, action.actionId,
+                        System::currentTimeMillis, () -> {
+                            if (launchIntent == null) {
+                                throw new CompanionProvider.DispatchNotAttemptedException();
+                            }
+                            startActivity(launchIntent);
+                        });
+            } catch (RuntimeException e) {
+                Toast.makeText(this, "Action claim unavailable: " + e.getClass().getSimpleName(),
+                        Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
+            if ("COMPANION_STOPPED".equals(dispatchResult)) {
+                Toast.makeText(this, "Companion is stopped", Toast.LENGTH_LONG).show(); finish(); return;
+            }
+            if ("NOT_CLAIMED".equals(dispatchResult)) {
+                Toast.makeText(this, "Action was cancelled, expired or already claimed", Toast.LENGTH_LONG).show();
+                finish(); return;
+            }
+            finishWithReceipt(
+                    CompanionProvider.receiptStatusForDispatchResult(dispatchResult), true, "EXECUTING");
         }
-        final Intent launchIntent = launch;
-        if (launchIntent != null) launchIntent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-
-        final String dispatchResult;
-        try {
-            dispatchResult = CompanionProvider.claimAndDispatch(
-                    this, db, action.actionId, System::currentTimeMillis, () -> {
-                        if (launchIntent == null) throw new IllegalStateException("No launch intent");
-                        startActivity(launchIntent);
-                    });
-        } catch (RuntimeException e) {
-            Toast.makeText(this, "Action claim unavailable: " + e.getClass().getSimpleName(),
-                    Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-
-        if ("COMPANION_STOPPED".equals(dispatchResult)) {
-            Toast.makeText(this, "Companion is stopped", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-        if ("NOT_CLAIMED".equals(dispatchResult)) {
-            Toast.makeText(this, "Action was cancelled, expired or already claimed",
-                    Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-        finishWithReceipt("DISPATCHED".equals(dispatchResult)
-                ? "DISPATCHED_UNVERIFIED" : "FAILED_TO_DISPATCH", true, "EXECUTING");
-    }
-
-    private void finishWithReceipt(String status, boolean localConsent) {
-        finishWithReceipt(status, localConsent, "PENDING_USER_APPROVAL");
     }
 
     private void finishWithReceipt(String status, boolean localConsent, String expectedStatus) {
-        try {
-            JSONObject key = signer.publicKeyInfo();
-            JSONObject body = new JSONObject();
-            body.put("schema", "v14.android-companion-receipt/1");
-            body.put("nonce", randomHex(16));
-            body.put("action_id", action.actionId);
-            body.put("capability", "launch_app");
-            body.put("digest", request.getString("digest"));
-            long nowSeconds = System.currentTimeMillis() / 1000L;
-            body.put("issued_at", nowSeconds);
-            body.put("expires_at", receiptExpiresAt(nowSeconds));
-            body.put("status", status);
-            body.put("local_consent", localConsent);
-            body.put("observed", false);
-            body.put("os_permission_status", "NOT_REQUIRED_FOR_LAUNCH_APP");
-            body.put("key_storage_status", key.getString("key_storage_status"));
-            body.put("key_id", key.getString("key_id"));
-            JSONObject receipt = signer.sign(body);
-            db.finish(action.actionId, expectedStatus, status, receipt.toString());
-            Toast.makeText(this, status, Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            Toast.makeText(this, "Receipt signing failed: " + e.getClass().getSimpleName(), Toast.LENGTH_LONG).show();
-        } finally {
-            // The decision claim is terminal even if signing/Store finalization
-            // fails; do not leave a notification advertising a pending action.
-            CompanionProvider.cancelApprovalNotification(this, action.actionId);
-            finish();
+        synchronized (CompanionProvider.ACTION_GATE_LOCK) {
+            boolean persisted = false;
+            try {
+                CompanionDb.Action claimed = db.get(action.actionId);
+                JSONObject receipt = ReceiptFactory.create(claimed, signer, status, localConsent,
+                        System.currentTimeMillis());
+                db.finish(action.actionId, expectedStatus, status, receipt.toString());
+                persisted = true;
+                Toast.makeText(this, status, Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                Toast.makeText(this, "Receipt finalization pending: " + e.getClass().getSimpleName(),
+                        Toast.LENGTH_LONG).show();
+            } finally {
+                if (persisted) CompanionProvider.cancelApprovalNotification(this, action.actionId);
+                finish();
+            }
         }
     }
 
     static long receiptExpiresAt(long issuedAtSeconds) {
-        // The request expiry gates the one-shot decision claim. Once claimed
-        // while live, the signed outcome gets its own short verification window.
-        return issuedAtSeconds + 60L;
-    }
-
-    private String randomHex(int bytes) {
-        byte[] value = new byte[bytes];
-        new SecureRandom().nextBytes(value);
-        return Canonical.hex(value);
+        return ReceiptFactory.receiptExpiresAt(issuedAtSeconds);
     }
 }
