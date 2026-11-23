@@ -51,3 +51,17 @@ Poll exact-head CI for 5bc940e. If green, request independent Boss/QA review; th
 ### Next executable step
 
 Finish exact-head consumer 3.14 and integrated-regression CI. If all checks pass, hand PR #2448 to independent Boss/QA review. After merge, Core/QA must connect this caller-supplied PCM bridge to the signed companion provider and an actual audible-playback acknowledgement path; preserve default capture OFF and verify permission, revocation, zeroization, lifecycle, restart and rollback before any Android microphone test.
+
+
+## Run 27 — concurrent distinct-receipt target-turn regression (2026-11-23)
+
+- Added repository regression `test_concurrent_distinct_audio_receipts_claim_one_active_turn_once` to `v13/code/tests/test_audio_duplex_bridge.py`. Two independent consent-bound PCM events are prepared, then dispatched from separate threads through the actual `on_audio_input` consumer with a barrier immediately before dispatch. The acceptance condition is exactly one authoritative INTERRUPT, one pending handoff for the original active turn, one interrupted relation and one counter increment; the other event must not replace it.
+- Code/test commit: `00046c426a0dc7d9671b13174245118ce63b7005`; test blob readback: `e90e0f9576456e50ccfb95531127ca2af2f9929d`. GitHub commit diff and branch readback confirm the test is present.
+- LOCAL_LINUX CPython 3.13.5: the exact added test-function snippet passed `py_compile` and AST structure inspection. This is syntax-only; the full repository test was NOT_RUN because no Aii checkout is mounted and `git ls-remote` fails DNS for github.com. Prior isolated Store/CAS/lock harness evidence (2/2 plus concurrent two-writer CAS) remains a separate earlier check, not a pass for this new Runtime regression.
+- Exact-head Actions run `45281394024` ended `startup_failure` with zero jobs. This is an infrastructure/startup result, not a code-test failure and not a PASS. The new exact regression remains unexecuted by CI at this checkpoint.
+- No Redmi/Termux, microphone, AudioRecord, audible playback or native model test. The candidate remains DRAFT / NOT_RELEASED. The latest sanitized device state still says STOPPED_BY_USER; no restart, chat send, UPDATE_REQUEST, shell or permission action was performed.
+- Research: R-118 remains the latest relevant full-text review (FD-VAD); its large English-only model/runtime stack is not a suitable Redmi replacement. No model, weights, code dependency or data were downloaded or swapped.
+
+### Next executable step
+
+Resolve the Actions startup failure or obtain a real exact-head run, then execute `python -m pytest -q v13/code/tests/test_audio_duplex_bridge.py` plus staged/integrated consumers on one exact SHA. Keep the PR draft until those results and independent Boss/QA review are available. Core/QA still owns the later signed Android AudioRecord provider and audible-playback path; capture remains OFF.
