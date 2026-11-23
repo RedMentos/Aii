@@ -10,3 +10,13 @@
 - LOCAL_LINUX full repository suite remains BLOCKED: no checkout mounted and git ls-remote fails DNS. No local Runtime integration result is claimed. Exact CI must run on this code head.
 - Redmi: REDMI_UNVERIFIED for this candidate. Last authenticated receipt says installed base fb563d771fe2d493c4ec25abe94280981d24ef5c, runtime STOPPED_BY_USER. No restart, CHAT_SEND, UPDATE_REQUEST, microphone capture or permission/model/weight/data change.
 - NOT_RELEASED. Boss/QA review and staged/integrated source-pin checks required. Next: exact-head CI, then review Store CAS/Runtime.lock ordering and merge composition with Core/QA; only later test through an explicitly authorized AudioRecord provider.
+
+
+## Exact code checkpoint and local isolated verification
+
+- Latest code-bearing commit: fea6002c4fa7def9f1dd83f51a8320fc526e4f17. The next handoff commit changes only this note.
+- Exact bridge module readback blob: 6035c5f2988ca05ec6641892cb133be7cd274a00.
+- Exact tests readback blob: 05515d0f9303cc773ed9ed6b090f487cd7eac3f6. The V3 revision assertion is aligned with BRIDGE_REVISION.
+- LOCAL_LINUX isolated harness: py_compile of the exact bridge module PASS; 3/3 tests PASS using the exact bridge code with minimal Store/lease/duplex stubs: forged temporal evidence rejected before cancel; replay rejected in interrupt, auto/CONTINUE and off modes across a later active turn; packet compare-and-swap refuses to overwrite a changed persisted packet. This is not the full repository Runtime integration suite.
+- Exact-head GitHub Actions for code head fea6002 are pending/queued at last poll; no CI PASS is claimed. The full local Aii checkout remains unavailable due the missing mount and github.com DNS failure.
+- QA's two inline review threads remain open for reviewer recheck; no self-resolution or merge was performed.
