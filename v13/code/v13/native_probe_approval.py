@@ -477,20 +477,29 @@ def _native_receive_interruptibly(runtime, sender, receiver, event, source_ref, 
     worker = threading.Thread(target=invoke, name="v14-native-probe", daemon=True)
     worker.start()
     interrupted = False
+    late_interrupt = False
     while worker.is_alive():
         try:
             worker.join(0.1)
         except KeyboardInterrupt:
-            runtime.cancel_event.set()
-            interrupted = True
-            # The native receiver checks this event while waiting on its child
-            # process. Keep the exclusive Runtime lease until that child exits.
+            if worker.is_alive():
+                runtime.cancel_event.set()
+                interrupted = True
+                # The native receiver checks this event while waiting on its child
+                # process. Keep the exclusive Runtime lease until that child exits.
+            else:
+                late_interrupt = True
     if interrupted:
         raise InterruptedError("Native probe cancelled by local operator")
     error = outcome.get("error")
     if error is not None:
         raise error
-    return outcome.get("packet")
+    packet = outcome.get("packet")
+    if not isinstance(packet, dict):
+        raise RuntimeError("Native receiver returned no result packet")
+    # A Ctrl+C arriving after the worker completed must not misreport a
+    # completed, persisted probe as cancelled.
+    return packet
 
 
 def operator_command(runtime, args):
