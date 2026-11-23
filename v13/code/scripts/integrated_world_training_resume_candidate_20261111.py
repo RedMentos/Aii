@@ -9,8 +9,8 @@ import hashlib
 import importlib.util
 from pathlib import Path
 
-BASE_SHA = '78c3d819cd4f535d4cc838d3c53edd66b035fb82f690f32b848299c7af5a633c'
-WORLD_SHA = '06afa58b5f75f6f6e4d72c5ea333b628752d2a6987a95e3c23becb1e4854121f'
+BASE_SHA = '5cfb2c85ab84126ecdbe91590ef9d1fba529bd59df61a00ee65b14900d4bff40'
+WORLD_SHA = '1436b6bcf850218addf12638452cad61a01545ea127061375bd3961d631623d2'
 CHECKPOINT_SHA = '560653e1a59b48991163a61b01135e2ab6e6d89c85fdeec4a8a40198f9bacf97'
 STATE_SHA = '94a785e72c279965a20fabd81eb6e78c9ca1c14b8bee66e83e693755da8a768d'
 # These are the old pins embedded in the base Runtime guard, not current inputs.
