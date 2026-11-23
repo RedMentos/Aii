@@ -16,6 +16,7 @@ import time
 import threading
 from pathlib import Path
 import uuid
+import weakref
 
 import numpy as np
 
@@ -57,6 +58,12 @@ UNKNOWN = {"OUTCOME_UNKNOWN"}
 TERMINAL = {"FINAL", "FAILED", "ERROR", "DEADLINE", "REJECTED"} | CENSORED | UNKNOWN
 SHA256 = set("0123456789abcdef")
 MAX_ACTION_SOURCE_REFS = 64
+
+# Every live temporal consumer may hold a warm model object for an active
+# checkpoint. Source-forget must invalidate all such process-local copies,
+# not only a guessed Store attribute or the most recently created Runtime.
+_TEMPORAL_CONSUMERS = weakref.WeakSet()
+_TEMPORAL_CONSUMERS_LOCK = threading.RLock()
 _SOURCE_REF_KEYS = {"source_id", "sha256", "char_start", "char_end", "modality"}
 
 
@@ -953,6 +960,8 @@ class TemporalWorldJEPAStoreConsumer:
         if not self.lock_home.is_dir() or self.lock_home.is_symlink():
             raise ValueError("unsafe WorldJEPA lock directory")
         self.lock_path = self.lock_home / "consumer.lock"
+        with _TEMPORAL_CONSUMERS_LOCK:
+            _TEMPORAL_CONSUMERS.add(self)
 
     @contextmanager
     def _locked(self, exclusive=True, blocking=True):
@@ -2359,16 +2368,17 @@ def invalidate_source_under_guard(store, source_id):
 
     # The state no longer references these checkpoints. The shared JEPA
     # flock prevents readers from observing the transition mid-cleanup.
-    cached = getattr(store, "_v14_world_jepa_temporal_consumer", None)
-    if cached is not None:
-        target_sha = (
-            next_state["active"]["checkpoint_sha256"]
-            if next_state["active"] is not None else None
-        )
-        if (target_sha is None
-                or getattr(cached, "_ephemeral_checkpoint_sha", None) != target_sha):
-            cached._ephemeral_model = None
-            cached._ephemeral_checkpoint_sha = None
+    target_sha = (
+        next_state["active"]["checkpoint_sha256"]
+        if next_state["active"] is not None else None
+    )
+    with _TEMPORAL_CONSUMERS_LOCK:
+        for cached in tuple(_TEMPORAL_CONSUMERS):
+            if (cached.store is store
+                    and (target_sha is None
+                         or getattr(cached, "_ephemeral_checkpoint_sha", None) != target_sha)):
+                cached._ephemeral_model = None
+                cached._ephemeral_checkpoint_sha = None
 
     for path in affected_paths.values():
         path.unlink(missing_ok=True)
