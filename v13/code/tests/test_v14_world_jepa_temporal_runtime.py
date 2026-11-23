@@ -1615,12 +1615,22 @@ def test_memory_forget_composes_temporal_guard_clears_warm_cache_and_replays(tmp
         assert retrained["metrics"]["parameter_delta_norm"] > 0
         assert retrained["metrics"]["ema_target_delta_norm"] > 0
         current, _ = store.state(STATE_KEY, None)
+        record = current["active"]
         assert source_id in current["revoked_source_ids"]
-        assert source_id in current["active"]["revoked_source_ids"]
-        assert not _record_references_source(store, current["active"], source_id)
+        assert source_id in record["revoked_source_ids"]
         assert all(
             source_id not in {ref["source_id"] for ref in item.get("source_refs", [])}
-            for item in current["active"]["experience_rows"]
-        )
+            for item in record["experience_rows"]
+        ), "revoked source leaked into replay rows"
+        assert all(
+            source_id not in set(item.get("lineage_source_ids", item.get("source_ids", [])))
+            for item in record["retention_holdouts"]
+        ), "revoked source leaked into retention holdouts"
+        assert all(
+            source_id not in set(intent.get("source_ids", []))
+            and source_id not in set(intent.get("validation_source_ids", []))
+            for intent in record.get("learning_intents", {}).values()
+        ), "revoked source leaked into LearningIntent provenance"
+        assert not _record_references_source(store, record, source_id)
     finally:
         store.close()
