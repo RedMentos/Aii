@@ -1,3 +1,15 @@
+# Core & Harness execution checkpoint — 2026-11-23 22:18 UTC
+
+- Candidate branch: `core/v14-native-probe-jepa-stack-20261123-run3`, head at code checkpoint `d636196247f65b7d9cce4e7d817212e1d5ca9330`, stacked on JEPA #2454 head `9a89b30fc360c0257dc6765e58e3871a6f2df1c6`.
+- V14-003 / Callosum native receiver lifecycle: the final staged Runtime now waits for the tracked native probe worker and exclusive lease before unloading pools or closing Store. Timeout raises and leaves Store/models open. Positive cancellation and negative non-cooperative-worker tests are included.
+- Stage/deployer chain was re-pinned to exact readback bytes; all nested recovery wrapper pins checked. No safety gate or source pin was weakened.
+- LOCAL_LINUX isolated CPython 3.13.5 helper reproduction PASS; full project pytest BLOCKED_NO_CHECKOUT_NO_GITHUB_DNS. GitHub Actions run `45278456774` is `startup_failure` with zero jobs, so CI is NOT PASS.
+- PR creation is blocked by GitHub API 403 requiring a verified account email. The stale #2457 branch is 112 commits behind and is superseded; it remains unmerged and was not force-pushed.
+- Redmi remains STOPPED_BY_USER / REDMI_UNVERIFIED. No remote device action was performed.
+- Next acceptance: verify account email to allow draft PR creation; then exact-head Python 3.13/3.14 staged/overlay/deployer/migration/privacy tests and independent review. Do not activate the probe in production or claim Android proof.
+
+---
+
 ## M1 DATA audit-first and direct-array checkpoint — 2026-11-23 12:44 UTC
 
 - `ArrayDataset.from_uci()` validates/counts the source on pass one, fills a float32 matrix and computes the exact parsed-data fingerprint on pass two, and rejects file changes between passes. It does not allocate Python `MinuteRow` objects for the real cohort.
