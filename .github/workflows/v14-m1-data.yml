@@ -34,4 +34,4 @@ jobs:
       - name: Install NumPy for bounded-memory array tests
         run: python -m pip install 'numpy>=1.24,<3'
       - name: Run M1 DATA and bounded-memory array tests
-        run: python -m unittest v14.m1.test_data v14.m1.test_array_data -v
+        run: python -m unittest v14.m1.test_data v14.m1.test_array_data v14.m1.test_baselines -v
