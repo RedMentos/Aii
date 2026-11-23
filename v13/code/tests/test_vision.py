@@ -354,13 +354,15 @@ class Vision(unittest.TestCase):
         ingest_done = threading.Event()
         forget_result = {}
         ingest_result = {}
-        original_unlink = vision.unlink_source_blob
+        from v13 import source_lifecycle_candidate as lifecycle
+        original_cleanup = lifecycle._cleanup_pending_fd
 
-        def delayed_unlink(home, key):
-            unlink_entered.set()
-            if not release_unlink.wait(15):
-                raise TimeoutError('test did not release source blob cleanup')
-            return original_unlink(home, key)
+        def delayed_cleanup(dir_fd, key=None):
+            if key == sha:
+                unlink_entered.set()
+                if not release_unlink.wait(15):
+                    raise TimeoutError('test did not release source blob cleanup')
+            return original_cleanup(dir_fd, key)
 
         def forget_worker():
             try:
@@ -377,7 +379,7 @@ class Vision(unittest.TestCase):
             finally:
                 ingest_done.set()
 
-        with patch.object(vision, 'unlink_source_blob', delayed_unlink):
+        with patch.object(lifecycle, '_cleanup_pending_fd', delayed_cleanup):
             forget_thread = threading.Thread(target=forget_worker)
             forget_thread.start()
             self.assertTrue(unlink_entered.wait(10), 'forget did not reach blob cleanup')

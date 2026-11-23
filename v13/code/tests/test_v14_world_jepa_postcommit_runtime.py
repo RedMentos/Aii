@@ -760,7 +760,6 @@ def test_memory_forget_serializes_same_hash_source_publication(tmp_path):
     from pathlib import Path
     from unittest.mock import patch
     from v13.memory import Memory
-    from v13 import source_lifecycle_candidate as lifecycle
 
     (tmp_path / "data" / "db").mkdir(parents=True)
     (tmp_path / "data" / "blobs").mkdir(parents=True)
@@ -782,7 +781,7 @@ def test_memory_forget_serializes_same_hash_source_publication(tmp_path):
     published = {}
 
     original_mutex = store.mutex
-    original_cleanup_pending = lifecycle._cleanup_pending_fd
+    original_unlink = Path.unlink
     original_source = store.source
     original_exists = Path.exists
 
@@ -806,13 +805,13 @@ def test_memory_forget_serializes_same_hash_source_publication(tmp_path):
         def __getattr__(self, name):
             return getattr(original_mutex, name)
 
-    def pause_after_refcount_cleanup(dir_fd, key):
+    def pause_before_blob_unlink(path, *args, **kwargs):
         if (threading.current_thread().name == "forgetter"
-                and key == original_ref["sha256"]):
+                and path == blob):
             refcount_checked.set()
             if not allow_forget.wait(10):
-                raise TimeoutError("test did not release source-forget cleanup check")
-        return original_cleanup_pending(dir_fd, key)
+                raise TimeoutError("test did not release source-forget unlink")
+        return original_unlink(path, *args, **kwargs)
 
     def observe_blob_check(path, *args, **kwargs):
         if path == blob and threading.current_thread().name == "generic-source-producer":
@@ -840,7 +839,7 @@ def test_memory_forget_serializes_same_hash_source_publication(tmp_path):
     forgetter = threading.Thread(target=forget, name="forgetter")
     producer = threading.Thread(target=publish, name="generic-source-producer")
     try:
-        with patch.object(lifecycle, "_cleanup_pending_fd", pause_after_refcount_cleanup), patch.object(Path, "exists", observe_blob_check):
+        with patch.object(Path, "unlink", pause_before_blob_unlink), patch.object(Path, "exists", observe_blob_check):
             forgetter.start()
             assert refcount_checked.wait(10), f"forget did not reach final blob refcount check; errors={errors!r}"
             producer.start()
