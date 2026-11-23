@@ -665,25 +665,31 @@ class SleepRuntime:
             if cancel_check():
                 return result|{'status':'CANCELLED'}
             action=self.r.store.one(
-                "SELECT id,status,outcome FROM actions WHERE event_id=? AND outcome IS NOT NULL "
-                "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED') "
+                "SELECT id,rowid AS scan_seq,status,outcome FROM actions WHERE event_id=? AND outcome IS NOT NULL "
+                "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED','CANCELLED','ABORTED','INTERRUPTED') "
                 "ORDER BY created DESC,id DESC LIMIT 1",(event_id,))
             if not action:
                 return result
             action_status=action['status']
             from .world_jepa_runtime import consume_after_commit
+            from .world_jepa_temporal import consume_temporal_after_commit
             from .world_jepa_planner import consume_world_planner_shadow
             learning=consume_after_commit(
                 self.r.store,self.r.home,limit=limit,cancel_check=cancel_check)
-            if learning.get('status')=='CANCELLED' or cancel_check():
-                result.update(status='CANCELLED',action_status=action_status,learning=learning)
+            temporal=consume_temporal_after_commit(
+                self.r.store,self.r.home,limit=min(64,limit),cancel_check=cancel_check,
+                runtime=self.r)
+            if (learning.get('status')=='CANCELLED'
+                    or temporal.get('status')=='CANCELLED' or cancel_check()):
+                result.update(status='CANCELLED',action_status=action_status,
+                              learning=learning,temporal=temporal)
                 self.r.store.log('v14_world_jepa_postcommit_cancelled',event_id,
                                  {'action_status':action_status,'decision_authority':'NONE'})
                 return result
             planner=consume_world_planner_shadow(self.r.store,event_id,home=self.r.home)
             result.update(status='POSTCOMMIT_PROCESSED',action_status=action_status,
-                          learning=learning,planner=planner)
-            if learning.get('status')=='ERROR':
+                          learning=learning,temporal=temporal,planner=planner)
+            if learning.get('status')=='ERROR' or temporal.get('status')=='ERROR':
                 result['status']='ERROR'
             elif planner.get('status') in {'SOURCE_OR_RECEIPT_REJECTED','NO_COMMITTED_OUTCOME'}:
                 result['status']='PARTIAL'
@@ -702,6 +708,29 @@ class SleepRuntime:
                 telemetry_status='ERROR'
             else:
                 telemetry_status='PENDING'
+            temporal_metrics=temporal.get('metrics') if type(temporal) is dict else None
+            temporal_metrics=temporal_metrics if type(temporal_metrics) is dict else {}
+            temporal_status=temporal.get('status')
+            temporal_telemetry_status=(
+                'PASS' if temporal_status=='UPDATED_EXPERIMENTAL_TEMPORAL_JEPA' else
+                'REJECTED' if temporal_status in {'UTILITY_GATE_REJECTED','RETENTION_GATE_REJECTED','MODULATOR_VETO','MODULATOR_VERIFY_FIRST'} else
+                'UNAVAILABLE' if temporal_status in {'OFF','PENDING_OPTIMIZER_PERMISSION','WAITING_FOR_MORE_T8_DATA','NO_NEW_TRANSITIONS','MODULATOR_NO_CREDIT','NEUROMOD_UNAVAILABLE'} else
+                'CANCELLED' if temporal_status=='CANCELLED' else
+                'ERROR' if temporal_status=='ERROR' else 'PENDING')
+            self.r.store.log('v14_world_jepa_temporal_postcommit',event_id,{
+                'status':temporal_telemetry_status,
+                'component':'world_predictor',
+                # The event kind identifies the temporal path; use Store's allowlisted SHADOW mode.
+                'mode':'shadow',
+                'sha256':temporal.get('checkpoint_sha256'),
+                'optimizer_steps':temporal_metrics.get('optimizer_steps',0),
+                'target_changed':float(temporal_metrics.get('ema_target_delta_norm',0.0))>0.0,
+                'loss_before':temporal_metrics.get('holdout_mse_before'),
+                'loss_after':temporal_metrics.get('holdout_mse_after'),
+                'count':temporal.get('verified_receipts',0),
+                'decision':'none',
+                'native_body_parameters_modified':False,
+            })
             self.r.store.log('v14_world_jepa_postcommit',event_id,{
                 # Store.telemetry_metrics is an explicit allowlist. Use its
                 # established scalar names so these diagnostics survive the
@@ -729,9 +758,56 @@ class SleepRuntime:
             cursor.setdefault('last_learning_event_id',legacy)
             cursor.setdefault('last_planner_event_id',legacy)
             learning_status=learning.get('status')
-            if learning_status=='ERROR':
+            temporal_status=temporal.get('status')
+            target_scan_seq=action['scan_seq']
+            learning_scan_cursor=learning.get('scan_cursor')
+            temporal_scan_cursor=temporal.get('scan_cursor')
+            learning_scan_reached=(type(target_scan_seq) is int
+                                   and type(learning_scan_cursor) is int
+                                   and learning_scan_cursor>=target_scan_seq)
+            temporal_scan_reached=(type(target_scan_seq) is int
+                                   and type(temporal_scan_cursor) is int
+                                   and temporal_scan_cursor>=target_scan_seq)
+            learning_scan_required=learning_status not in {
+                'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION','CANCELLED'
+            }
+            temporal_scan_required=temporal_status not in {
+                'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION','CANCELLED'
+            }
+            scan_complete=((not learning_scan_required or learning_scan_reached)
+                           and (not temporal_scan_required or temporal_scan_reached))
+            learning_has_more=learning.get('has_more') is True
+            temporal_has_more=temporal.get('has_more') is True
+            scan_pending=(
+                (learning_scan_required and not learning_scan_reached and not learning_has_more)
+                or (temporal_scan_required and not temporal_scan_reached and not temporal_has_more)
+            )
+            result.update(
+                target_scan_seq=target_scan_seq,
+                learning_scan_cursor=learning_scan_cursor,
+                temporal_scan_cursor=temporal_scan_cursor,
+                learning_scan_reached_target=learning_scan_reached,
+                temporal_scan_reached_target=temporal_scan_reached,
+                scan_complete=scan_complete,
+                scan_pending=scan_pending,
+            )
+            if scan_pending:
+                result.update(status='ERROR',error='T8_SCAN_CURSOR_BEHIND_TARGET')
+                self.r.store.log('v14_world_jepa_scan_incomplete',event_id,{
+                    'target_scan_seq':target_scan_seq,
+                    'learning_scan_cursor':learning_scan_cursor,
+                    'temporal_scan_cursor':temporal_scan_cursor,
+                    'learning_status':learning_status,
+                    'temporal_status':temporal_status,
+                    'decision':'none',
+                })
+            if learning_status=='ERROR' or temporal_status=='ERROR' or scan_pending:
                 cursor['last_learning_error_event_id']=event_id
-            elif learning_status not in {'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION','CANCELLED'} and learning.get('has_more') is not True:
+            elif (learning_status not in {'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION','CANCELLED'}
+                  and temporal_status not in {'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION','CANCELLED'}
+                  and scan_complete
+                  and not learning_has_more
+                  and not temporal_has_more):
                 cursor['last_learning_event_id']=event_id
                 cursor.pop('last_learning_error_event_id',None)
             planner_status=planner.get('status')
@@ -811,18 +887,34 @@ class SleepRuntime:
                 self.scheduler.complete(e['id'],'FAILED',{'error':type(exc).__name__})
                 raise
             learning=out.get('learning') if type(out) is dict else None
+            temporal=out.get('temporal') if type(out) is dict else None
             planner=out.get('planner') if type(out) is dict else None
             result={'status':out.get('status') if type(out) is dict else 'ERROR',
                     'learning_status':learning.get('status') if type(learning) is dict else None,
+                    'temporal_status':temporal.get('status') if type(temporal) is dict else None,
                     'planner_status':planner.get('status') if type(planner) is dict else None}
+            more_learning=(type(learning) is dict and learning.get('has_more') is True)
+            more_temporal=(type(temporal) is dict and temporal.get('has_more') is True)
+            result['learning_has_more']=more_learning
+            result['temporal_has_more']=more_temporal
+            result['continuation_reason']=(
+                'BASE_AND_TEMPORAL' if more_learning and more_temporal
+                else ('BASE_PAGE' if more_learning else ('TEMPORAL_PAGE' if more_temporal else None))
+            )
             completion=('CANCELLED' if result['status']=='CANCELLED'
                         else ('FAILED' if result['status']=='ERROR' else 'DONE'))
             self.scheduler.complete(e['id'],completion,result)
-            if (result['status']!='CANCELLED' and type(learning) is dict
-                    and learning.get('has_more') is True):
+            continuation=False
+            if result['status']!='CANCELLED' and (more_learning or more_temporal):
                 continuation=bool(self.schedule_world_jepa(event_id))
                 result['continuation_scheduled']=continuation
-                if type(out) is dict:out['continuation_scheduled']=continuation
+            # Return the same compact status contract that was persisted with the
+            # scheduler completion.  Previously only continuation flags were
+            # copied to the worker result, so temporal-only continuation callers
+            # could not read temporal_status/learning_status/planner_status.
+            if type(out) is dict:
+                out.update(result)
+                out['continuation_scheduled']=continuation
             return out
         if e['action']=='lab_check':
             from .lab_native_cycle import run
