@@ -1,6 +1,7 @@
 """Synthetic and consumer tests for source-bound speaker-similarity diagnostics."""
 from array import array
 from contextlib import contextmanager
+import hashlib
 import json
 import math
 import random
@@ -11,6 +12,9 @@ import pytest
 
 from v13.audio_speaker_evidence import (
     SCHEMA, SpeakerChangeEvidenceRegistry, SpeakerEvidenceError,
+)
+from v13.audio_teacher_ear import (
+    SCHEMA as TEACHER_EAR_SCHEMA, validate_teacher_ear_result,
 )
 from v13 import audio_voice_cues as audio_voice_module
 from v13.audio_voice_cues import (
@@ -34,6 +38,9 @@ def tone(sample_rate=16000, frequency=140, seconds=1.0, amplitude=6000, phase=0.
     return struct.pack("<" + "h" * len(samples), *samples)
 
 
+CURRENT_CHUNK_SHA256 = hashlib.sha256(tone()).hexdigest()
+
+
 def make_runtime(tmp_path):
     (tmp_path / "data" / "db").mkdir(parents=True)
     store = Store(tmp_path)
@@ -55,10 +62,12 @@ def consent_guard(check):
 
 
 def speaker_batch(source_id, generation_id, start_ms, end_ms, vector_at,
-                  *, revision="fixture-embedding-v1", threshold=0.8):
+                  *, revision="fixture-embedding-v1", threshold=0.8,
+                  current_chunk_sha256=CURRENT_CHUNK_SHA256,
+                  frame_step_ms=80, lookback_frames=10):
     frames = [
         {"end_ms": end, "vector": list(vector_at(end))}
-        for end in range(start_ms + 80, end_ms + 1, 80)
+        for end in range(start_ms + frame_step_ms, end_ms + 1, frame_step_ms)
     ]
     return {
         "schema": SCHEMA,
@@ -67,13 +76,27 @@ def speaker_batch(source_id, generation_id, start_ms, end_ms, vector_at,
         "model_id": "fixture/three-dim-encoder",
         "model_revision": revision,
         "model_sha256": MODEL_SHA,
+        "current_chunk_sha256": current_chunk_sha256,
         "embedding_dim": 3,
-        "frame_step_ms": 80,
-        "lookback_frames": 10,
+        "frame_step_ms": frame_step_ms,
+        "lookback_frames": lookback_frames,
         "confidence_threshold": threshold,
         "calibration_id": "fixture:caller-asserted-unverified" if threshold is not None else None,
         "frames": frames,
     }
+
+
+def test_audio_window_hash_mismatch_is_rejected_before_history_changes():
+    registry = SpeakerChangeEvidenceRegistry()
+    batch = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
+    batch["current_chunk_sha256"] = "b" * 64
+    with pytest.raises(SpeakerEvidenceError, match="current PCM chunk hash"):
+        registry.update(
+            source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
+            activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+            embeddings=batch,
+        )
+    assert len(registry) == 0
 
 
 def test_same_speaker_embedding_remains_unclassified_without_calibration():
@@ -81,14 +104,14 @@ def test_same_speaker_embedding_remains_unclassified_without_calibration():
     warmup = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
     first = registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
-        activity_hint="VOICED", embeddings=warmup,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=warmup,
     )
     assert first["status"] == "WARMUP"
 
     batch = speaker_batch(SOURCE, "gen-a", 1100, 2100, lambda _: (1.0, 0.0, 0.0))
     evidence = registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=2100,
-        activity_hint="VOICED", embeddings=batch,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=batch,
     )
     assert evidence["status"] == "MEASURED"
     reference_end = warmup["frames"][-1]["end_ms"]
@@ -119,7 +142,7 @@ def test_embedding_shift_remains_similarity_only_until_calibrated():
     first = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
     registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
-        activity_hint="VOICED", embeddings=first,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=first,
     )
     second = speaker_batch(
         SOURCE, "gen-a", 1100, 2100,
@@ -127,7 +150,7 @@ def test_embedding_shift_remains_similarity_only_until_calibrated():
     )
     evidence = registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=2100,
-        activity_hint="VOICED", embeddings=second,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=second,
     )
     assert evidence["status"] == "MEASURED"
     # The nearest retained frame can be up to 1.5 frame steps from the
@@ -149,7 +172,7 @@ def test_same_batch_tail_cannot_overwrite_cross_window_change_evidence():
         warmup = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
         registry.update(
             source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
-            activity_hint="VOICED", embeddings=warmup,
+            activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=warmup,
         )
         current = speaker_batch(
             SOURCE, "gen-a", 1100, end_ms,
@@ -157,7 +180,7 @@ def test_same_batch_tail_cannot_overwrite_cross_window_change_evidence():
         )
         return registry.update(
             source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=end_ms,
-            activity_hint="VOICED", embeddings=current,
+            activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=current,
         )
 
     # The longer batch adds many later frames from the new speaker. Those
@@ -175,17 +198,65 @@ def test_same_batch_tail_cannot_overwrite_cross_window_change_evidence():
     assert long["candidate_kind"] is None
 
 
+
+@pytest.mark.parametrize("lookback_frames", [10, 20])
+def test_one_and_two_second_reference_timestamps_are_batch_length_invariant(lookback_frames):
+    frame_step_ms = 100
+    warmup_end_ms = 2100
+    common_frame_end_ms = 3100
+
+    def run(current_end_ms):
+        registry = SpeakerChangeEvidenceRegistry()
+        warmup = speaker_batch(
+            SOURCE, "gen-time", 100, warmup_end_ms,
+            lambda _: (1.0, 0.0, 0.0),
+            frame_step_ms=frame_step_ms, lookback_frames=lookback_frames,
+        )
+        registry.update(
+            source_id=SOURCE, generation_id="gen-time",
+            start_ms=100, end_ms=warmup_end_ms,
+            activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+            embeddings=warmup,
+        )
+        current = speaker_batch(
+            SOURCE, "gen-time", warmup_end_ms, current_end_ms,
+            lambda _: (0.0, 1.0, 0.0),
+            frame_step_ms=frame_step_ms, lookback_frames=lookback_frames,
+        )
+        evidence = registry.update(
+            source_id=SOURCE, generation_id="gen-time",
+            start_ms=warmup_end_ms, end_ms=current_end_ms,
+            activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256,
+            embeddings=current,
+        )
+        return next(
+            frame for frame in evidence["frame_evidence"]
+            if frame["frame_end_ms"] == common_frame_end_ms
+        )
+
+    one_second_batch = run(common_frame_end_ms)
+    two_second_batch = run(4100)
+    expected_target_ms = common_frame_end_ms - lookback_frames * frame_step_ms
+    assert expected_target_ms == (2100 if lookback_frames == 10 else 1100)
+    for frame in (one_second_batch, two_second_batch):
+        assert frame["lookback_target_ms"] == expected_target_ms
+        assert frame["reference_frame_end_ms"] == expected_target_ms
+        assert frame["reference_age_ms"] == lookback_frames * frame_step_ms
+        assert frame["cosine_similarity"] == 0.0
+        assert frame["change_score"] == 0.5
+    assert one_second_batch == two_second_batch
+
 def test_low_similarity_without_voiced_activity_is_not_speaker_change():
     registry = SpeakerChangeEvidenceRegistry()
     first = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
     registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
-        activity_hint="VOICED", embeddings=first,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=first,
     )
     second = speaker_batch(SOURCE, "gen-a", 1100, 2100, lambda _: (0.0, 1.0, 0.0))
     evidence = registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=2100,
-        activity_hint="UNVOICED_NOISE", embeddings=second,
+        activity_hint="UNVOICED_NOISE", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=second,
     )
     assert evidence["confidence_gate_passed"] is None
     assert evidence["speaker_change_candidate"] is None
@@ -199,12 +270,12 @@ def test_missing_threshold_emits_score_without_a_decision():
     first = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0), threshold=None)
     registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
-        activity_hint="VOICED", embeddings=first,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=first,
     )
     second = speaker_batch(SOURCE, "gen-a", 1100, 2100, lambda _: (0.0, 1.0, 0.0), threshold=None)
     evidence = registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=2100,
-        activity_hint="VOICED", embeddings=second,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=second,
     )
     assert evidence["change_score"] == 0.5
     assert evidence["speaker_change_candidate"] is None
@@ -219,13 +290,13 @@ def test_model_revision_change_resets_history_before_comparison():
     first = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
     registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
-        activity_hint="VOICED", embeddings=first,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=first,
     )
     second = speaker_batch(SOURCE, "gen-a", 1100, 1340, lambda _: (0.0, 1.0, 0.0),
                           revision="fixture-embedding-v2")
     evidence = registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=1340,
-        activity_hint="VOICED", embeddings=second,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=second,
     )
     assert evidence["reset_reason"] == "MODEL_OR_CALIBRATION_CHANGED"
     assert evidence["status"] == "WARMUP"
@@ -246,7 +317,7 @@ def test_invalid_embedding_packets_are_rejected(mutate):
     with pytest.raises(SpeakerEvidenceError):
         registry.update(
             source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
-            activity_hint="VOICED", embeddings=batch,
+            activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=batch,
         )
 
 
@@ -517,12 +588,14 @@ def test_a4_and_c3_receive_explicit_defer_instead_of_false_stability_on_silence(
         assert supported["packet"]["segments"][0]["acoustic"]["speaker_change_decision"] == "DEFER"
         assert supported["speaker_change_evidence"]["decision"] == "DEFER"
 
+        silent_pcm = b"\x00\x00" * 16000
         changed = speaker_batch(
             SOURCE, event["brain_generation_id"], 2100, 3100,
             lambda _: (0.0, 1.0, 0.0),
+            current_chunk_sha256=hashlib.sha256(silent_pcm).hexdigest(),
         )
         silent = consume_pcm16_voice_window(
-            runtime, b"\x00\x00" * 16000, sample_rate=16000, start_ms=2100,
+            runtime, silent_pcm, sample_rate=16000, start_ms=2100,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE, consent_receipt=RECEIPT,
             consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
@@ -546,7 +619,7 @@ def test_registry_stores_compact_float32_vectors_in_memory():
     batch = speaker_batch(SOURCE, "gen-compact", 100, 1100, lambda _: (1.0, 0.0, 0.0))
     registry.update(
         source_id=SOURCE, generation_id="gen-compact", start_ms=100, end_ms=1100,
-        activity_hint="VOICED", embeddings=batch,
+        activity_hint="VOICED", current_chunk_sha256=CURRENT_CHUNK_SHA256, embeddings=batch,
     )
     stored = registry._states[(SOURCE, "gen-compact")].frames[0][1]
     assert isinstance(stored, array)
@@ -716,3 +789,253 @@ def test_provisional_audio_is_persisted_but_not_admitted_until_final(tmp_path):
         assert final["action_authority"] is False
     finally:
         runtime.store.close()
+
+
+def _teacher_ear_result(generation_id, *, finality="FINAL", **overrides):
+    value = {
+        "schema": TEACHER_EAR_SCHEMA,
+        "source_id": SOURCE,
+        "generation_id": generation_id,
+        "source_sha256": CURRENT_CHUNK_SHA256,
+        "model_id": "fixture/local-asr",
+        "model_revision": "fixture-r1",
+        "model_sha256": "b" * 64,
+        "language": "en",
+        "start_ms": 100,
+        "end_ms": 1100,
+        "finality": finality,
+        "network_used": False,
+        "raw_audio_persisted": False,
+        "words": [
+            {"text": "hello", "start_ms": 120, "end_ms": 280},
+            {"text": "world", "start_ms": 320, "end_ms": 500},
+        ],
+    }
+    value.update(overrides)
+    return value
+
+
+def _validate_teacher_fixture(value, *, finality="FINAL", **flags):
+    options = {
+        "source_id": SOURCE,
+        "generation_id": value["generation_id"],
+        "source_sha256": CURRENT_CHUNK_SHA256,
+        "start_ms": 100,
+        "end_ms": 1100,
+        "finality": finality,
+        "consent_active": True,
+        "teacher_opt_in": True,
+        "transcript_consent": True,
+    }
+    options.update(flags)
+    return validate_teacher_ear_result(value, **options)
+
+
+def test_teacher_ear_result_is_source_bound_bounded_and_ephemeral():
+    evidence = _validate_teacher_fixture(_teacher_ear_result("gen-teacher"))
+    assert evidence["status"] == "CALLER_SUPPLIED_UNVERIFIED"
+    assert evidence["authority"] == "TEACHER_HYPOTHESIS"
+    assert evidence["truth_authority"] == 0
+    assert evidence["persistence"] == "EPHEMERAL_ONLY"
+    assert evidence["word_count"] == 2
+    assert "120-280" in evidence["summary"] and "hello" in evidence["summary"]
+    assert len(evidence["summary"]) <= 512
+    assert evidence["teacher_source_id"].startswith("audio_teacher_")
+
+
+def test_teacher_ear_requires_both_opt_ins_and_exact_pcm_source():
+    value = _teacher_ear_result("gen-teacher")
+    with pytest.raises(PermissionError, match="separate opt-ins"):
+        _validate_teacher_fixture(value, transcript_consent=False)
+    with pytest.raises(PermissionError, match="consent lease"):
+        _validate_teacher_fixture(value, consent_active=False)
+    stale = _teacher_ear_result("gen-teacher", source_sha256="c" * 64)
+    with pytest.raises(PermissionError, match="exact current PCM"):
+        _validate_teacher_fixture(stale)
+
+
+def test_teacher_ear_rejects_network_raw_persistence_and_bad_word_times():
+    with pytest.raises(PermissionError, match="local"):
+        _validate_teacher_fixture(_teacher_ear_result("gen-teacher", network_used=True))
+    with pytest.raises(PermissionError, match="local"):
+        _validate_teacher_fixture(_teacher_ear_result("gen-teacher", raw_audio_persisted=True))
+    bad_time = _teacher_ear_result(
+        "gen-teacher",
+        words=[{"text": "late", "start_ms": 1090, "end_ms": 1110}],
+    )
+    with pytest.raises(ValueError, match="timestamps"):
+        _validate_teacher_fixture(bad_time)
+
+
+def test_teacher_ear_hypothesis_reaches_c3_without_entering_persisted_raw_packet(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL",
+            teacher_result=_teacher_ear_result(event["brain_generation_id"]),
+            teacher_opt_in=True, teacher_transcript_consent=True,
+        )
+        assert result["teacher_ear"]["authority"] == "TEACHER_HYPOTHESIS"
+        assert result["a4"]["teacher_ear_status"] == "CALLER_SUPPLIED_UNVERIFIED"
+        assert any("teacher_hypothesis" in item.summary and "hello" in item.summary
+                   for item in result["c3_admission"].selected)
+        stored = runtime.store.one(
+            "SELECT payload FROM packets WHERE id=? AND kind='PerceptPacket'",
+            (result["packet"]["packet_id"],),
+        )
+        assert stored is not None
+        payload = json.loads(stored["payload"])
+        assert payload["segments"][0]["asr_transcript"] is None
+        assert "hello" not in json.dumps(payload, sort_keys=True)
+    finally:
+        runtime.store.close()
+
+
+def test_teacher_ear_provisional_hypothesis_is_not_admitted_to_c3(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="PROVISIONAL",
+            teacher_result=_teacher_ear_result(
+                event["brain_generation_id"], finality="PROVISIONAL",
+            ),
+            teacher_opt_in=True, teacher_transcript_consent=True,
+        )
+        assert result["teacher_ear"]["finality"] == "PROVISIONAL"
+        assert result["c3_admission"].selected == ()
+    finally:
+        runtime.store.close()
+
+
+def test_teacher_ear_denial_happens_before_packet_persistence(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    try:
+        with pytest.raises(PermissionError, match="separate opt-ins"):
+            consume_pcm16_voice_window(
+                runtime, tone(), sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE, consent_receipt=RECEIPT,
+                consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+                finality="FINAL",
+                teacher_result=_teacher_ear_result(event["brain_generation_id"]),
+                teacher_opt_in=True, teacher_transcript_consent=False,
+            )
+        stored = runtime.store.one(
+            "SELECT id FROM packets WHERE kind='PerceptPacket'",
+            (),
+        )
+        assert stored is None
+    finally:
+        runtime.store.close()
+
+
+def test_teacher_ear_summary_truncates_without_unbounded_prompt_growth():
+    words = [
+        {"text": "longphrase" * 10, "start_ms": 100 + i, "end_ms": 101 + i}
+        for i in range(64)
+    ]
+    evidence = _validate_teacher_fixture(_teacher_ear_result("gen-teacher", words=words))
+    assert evidence["summary_truncated"] is True
+    assert len(evidence["summary"]) <= 512
+
+
+def test_teacher_ear_rejects_finality_mismatch_before_c3():
+    provisional = _teacher_ear_result("gen-teacher", finality="PROVISIONAL")
+    with pytest.raises(ValueError, match="finality differs"):
+        _validate_teacher_fixture(provisional, finality="FINAL")
+
+
+def test_optional_teacher_module_absence_preserves_acoustic_path_and_blocks_transcript(
+    monkeypatch, tmp_path,
+):
+    import builtins
+
+    runtime, event = make_runtime(tmp_path)
+    real_import = builtins.__import__
+
+    def without_optional_teacher(name, globals=None, locals=None, fromlist=(), level=0):
+        if level == 1 and name == "audio_teacher_ear":
+            raise ModuleNotFoundError(
+                "optional Teacher Ear module is absent", name="v13.audio_teacher_ear",
+            )
+        return real_import(name, globals, locals, fromlist, level)
+
+    monkeypatch.setattr(builtins, "__import__", without_optional_teacher)
+    try:
+        assert audio_voice_module._load_teacher_ear_validator() is None
+        result = consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL",
+            teacher_result=_teacher_ear_result(event["brain_generation_id"]),
+            teacher_opt_in=True, teacher_transcript_consent=True,
+        )
+        assert result["status"] == "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION"
+        assert result["teacher_ear"] is None
+        assert result["teacher_ear_status"] == "UNAVAILABLE_MODULE"
+        assert result["a4"]["teacher_ear_status"] == "UNAVAILABLE_MODULE"
+        assert all("teacher_hypothesis" not in item.summary
+                   for item in result["c3_admission"].selected)
+        stored = runtime.store.one(
+            "SELECT payload FROM packets WHERE id=? AND kind='PerceptPacket'",
+            (result["packet"]["packet_id"],),
+        )
+        assert stored is not None
+        payload = json.loads(stored["payload"])
+        assert payload["segments"][0]["asr_transcript"] is None
+        assert "hello" not in json.dumps(payload, sort_keys=True)
+
+        denied_runtime, denied_event = make_runtime(tmp_path / "denied")
+        try:
+            with pytest.raises(PermissionError, match="separate opt-ins"):
+                consume_pcm16_voice_window(
+                    denied_runtime, tone(), sample_rate=16000, start_ms=100,
+                    event_id=denied_event["event_id"],
+                    generation_id=denied_event["brain_generation_id"],
+                    source_id=SOURCE, consent_receipt=RECEIPT,
+                    consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+                    finality="FINAL",
+                    teacher_result=_teacher_ear_result(denied_event["brain_generation_id"]),
+                    teacher_opt_in=True, teacher_transcript_consent=False,
+                )
+            denied_packet = denied_runtime.store.one(
+                "SELECT id FROM packets WHERE kind='PerceptPacket'", (),
+            )
+            assert denied_packet is None
+        finally:
+            denied_runtime.store.close()
+    finally:
+        runtime.store.close()
+
+
+def test_audio_voice_cues_module_imports_without_optional_teacher_file(tmp_path):
+    import os
+    import shutil
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    source_package = Path(audio_voice_module.__file__).parent
+    staged_package = tmp_path / "v13"
+    shutil.copytree(
+        source_package, staged_package,
+        ignore=shutil.ignore_patterns("__pycache__", "audio_teacher_ear.py"),
+    )
+    assert not (staged_package / "audio_teacher_ear.py").exists()
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(tmp_path) + os.pathsep + env.get("PYTHONPATH", "")
+    result = subprocess.run(
+        [sys.executable, "-c", "import v13.audio_voice_cues"],
+        cwd=tmp_path, env=env, capture_output=True, text=True, timeout=20,
+    )
+    assert result.returncode == 0, result.stderr

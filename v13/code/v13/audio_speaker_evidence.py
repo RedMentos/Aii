@@ -4,6 +4,8 @@ Caller-supplied thresholds are unverified and cannot produce speaker decisions.
 A separately validated, model-bound calibration artifact is required first.
 This is not speaker recognition or a full diarizer. Embeddings stay in RAM;
 persisted packets contain similarity evidence and provenance, never vectors.
+Every batch is checked against the exact current PCM chunk hash at the consumer;
+that check does not attest the caller-supplied encoder or its recurrent state.
 """
 from __future__ import annotations
 
@@ -13,7 +15,7 @@ import math
 import re
 import threading
 
-SCHEMA = "v14.raw-ear-speaker-embeddings/1"
+SCHEMA = "v14.raw-ear-speaker-embeddings/2"
 METHOD = "COSINE_LOOKBACK_DIAGNOSTIC_V1"
 _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 _ACTIVITY = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}
@@ -41,16 +43,22 @@ def _unit_vector(vector, dimension):
     return array("f", (value / norm for value in values))
 
 
-def _validate_batch(value, source_id, generation_id, start_ms, end_ms):
+def _validate_batch(value, source_id, generation_id, start_ms, end_ms, current_chunk_sha256):
     required = {
         "schema", "source_id", "generation_id", "model_id", "model_revision",
-        "model_sha256", "embedding_dim", "frame_step_ms", "lookback_frames",
+        "model_sha256", "current_chunk_sha256", "embedding_dim", "frame_step_ms", "lookback_frames",
         "confidence_threshold", "calibration_id", "frames",
     }
     if type(value) is not dict or set(value) != required or value.get("schema") != SCHEMA:
         raise SpeakerEvidenceError("speaker embedding schema mismatch")
     if value.get("source_id") != source_id or value.get("generation_id") != generation_id:
         raise SpeakerEvidenceError("speaker embedding source/generation mismatch")
+    supplied_chunk_sha256 = value.get("current_chunk_sha256")
+    if (type(current_chunk_sha256) is not str or not _SHA256.fullmatch(current_chunk_sha256)
+            or type(supplied_chunk_sha256) is not str
+            or not _SHA256.fullmatch(supplied_chunk_sha256)
+            or supplied_chunk_sha256 != current_chunk_sha256):
+        raise SpeakerEvidenceError("speaker embedding current PCM chunk hash mismatch")
     for key in ("model_id", "model_revision"):
         item = value.get(key)
         if type(item) is not str or not item.strip() or len(item) > 128:
@@ -98,6 +106,7 @@ def _validate_batch(value, source_id, generation_id, start_ms, end_ms):
         "model_id": value["model_id"],
         "model_revision": value["model_revision"],
         "model_sha256": digest.lower(),
+        "current_chunk_sha256": supplied_chunk_sha256,
         "embedding_dim": dimension,
         "frame_step_ms": step_ms,
         "lookback_frames": lookback,
@@ -132,7 +141,7 @@ class SpeakerChangeEvidenceRegistry:
         self._lock = threading.RLock()
 
     def update(self, *, source_id, generation_id, start_ms, end_ms,
-               activity_hint, embeddings):
+               current_chunk_sha256, activity_hint, embeddings):
         if type(source_id) is not str or not source_id.strip() or len(source_id) > 128:
             raise SpeakerEvidenceError("speaker source id is invalid")
         if type(generation_id) is not str or not generation_id.strip() or len(generation_id) > 128:
@@ -141,7 +150,7 @@ class SpeakerChangeEvidenceRegistry:
             raise SpeakerEvidenceError("speaker window timestamps are invalid")
         if activity_hint not in _ACTIVITY:
             raise SpeakerEvidenceError("speaker activity hint is invalid")
-        batch = _validate_batch(embeddings, source_id, generation_id, start_ms, end_ms)
+        batch = _validate_batch(embeddings, source_id, generation_id, start_ms, end_ms, current_chunk_sha256)
         metadata = {k: batch[k] for k in (
             "model_id", "model_revision", "model_sha256", "embedding_dim",
             "frame_step_ms", "lookback_frames", "lookback_ms",
@@ -204,6 +213,8 @@ class SpeakerChangeEvidenceRegistry:
                     frame_record = {
                         "status": "MEASURED",
                         "frame_end_ms": frame_end,
+                        "lookback_target_ms": target_ms,
+                        "reference_frame_end_ms": reference_end,
                         "reference_age_ms": frame_end - reference_end,
                         "cosine_similarity": round(similarity, 6),
                         "change_score": change_score,
@@ -240,6 +251,8 @@ class SpeakerChangeEvidenceRegistry:
                 latest = {
                     "status": "WARMUP",
                     "frame_end_ms": batch["frames"][-1][0],
+                    "lookback_target_ms": batch["frames"][-1][0] - batch["lookback_ms"],
+                    "reference_frame_end_ms": None,
                     "reference_age_ms": None,
                     "cosine_similarity": None,
                     "change_score": None,
@@ -259,6 +272,8 @@ class SpeakerChangeEvidenceRegistry:
                 "model_id": batch["model_id"],
                 "model_revision": batch["model_revision"],
                 "model_sha256": batch["model_sha256"],
+                "current_chunk_sha256": batch["current_chunk_sha256"],
+                "source_binding_status": "CURRENT_PCM_CHUNK_SHA256_MATCH",
                 "embedding_dim": batch["embedding_dim"],
                 "frame_step_ms": batch["frame_step_ms"],
                 "lookback_frames": batch["lookback_frames"],

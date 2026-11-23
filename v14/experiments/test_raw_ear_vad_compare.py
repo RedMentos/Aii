@@ -22,6 +22,8 @@ from raw_ear_vad_compare import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
+EXPECTED_RAW_EAR_V3_BLOB = "1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288"
+EXPECTED_TEMPORAL_VOICE_BLOB = "098ce2ec6bb0b744166d711a3401b7acf0252de1"
 V3_SOURCE = ROOT / "v13" / "code" / "v13" / "audio_voice_cues.py"
 TEMPORAL_SOURCE = ROOT / "v13" / "code" / "v13" / "audio_temporal_evidence.py"
 
@@ -75,10 +77,11 @@ class RawEarVadCompareTests(unittest.TestCase):
         self.assertEqual(result["processed_duration_ms"], 2000)
         self.assertNotIn("webrtc_baseline", result)
         self.assertEqual(result["source"]["v3_source_git_blob"], blob)
-        expected_v3 = os.getenv("V14_EXPECTED_RAW_EAR_V3_BLOB")
-        expected_temporal = os.getenv("V14_EXPECTED_TEMPORAL_VOICE_BLOB")
-        if expected_v3:
-            self.assertEqual(blob, expected_v3)
+        expected_v3 = os.getenv("V14_EXPECTED_RAW_EAR_V3_BLOB", EXPECTED_RAW_EAR_V3_BLOB)
+        expected_temporal = os.getenv("V14_EXPECTED_TEMPORAL_VOICE_BLOB", EXPECTED_TEMPORAL_VOICE_BLOB)
+        self.assertEqual(expected_v3, EXPECTED_RAW_EAR_V3_BLOB)
+        self.assertEqual(expected_temporal, EXPECTED_TEMPORAL_VOICE_BLOB)
+        self.assertEqual(blob, expected_v3)
         if expected_temporal:
             import hashlib
             temporal_blob = hashlib.sha1(
