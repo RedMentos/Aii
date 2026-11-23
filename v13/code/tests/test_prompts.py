@@ -174,6 +174,38 @@ class ProbeOutputPrivacy(unittest.TestCase):
         self.assertNotIn('revision', metrics['prompt_admission'])
         self.assertNotIn('status', metrics['prompt_admission'])
 
+    def test_probe_summary_ignores_unhashable_metadata_values(self):
+        from v13.verification import public_probe_summary
+
+        summary = public_probe_summary({
+            'proof_kind': 'NATIVE_SMOKE',
+            'status': [],
+            'missing_proofs': [[], {}],
+            'roles': {
+                'C3_LANGUAGE': {
+                    'metrics': {
+                        'status': [],
+                        'role': {},
+                        'last_phase': [],
+                        'error_kind': {},
+                        'stage_durations_s': {'load_s': []},
+                        'prompt_admission': {
+                            'status': {},
+                            'removed_layers': [{}, []],
+                        },
+                    },
+                },
+            },
+        })
+        self.assertEqual(summary['status'], 'UNKNOWN')
+        self.assertEqual(summary['missing_proofs'], [])
+        metrics = summary['roles']['C3_LANGUAGE']['metrics']
+        for key in ('status', 'role', 'last_phase', 'error_kind'):
+            self.assertNotIn(key, metrics)
+        self.assertEqual(metrics['stage_durations_s'], {})
+        self.assertEqual(metrics['prompt_admission']['removed_layers'], [])
+        self.assertNotIn('status', metrics['prompt_admission'])
+
     def test_probe_worker_exception_never_reaches_console_or_telemetry(self):
         import queue
         import threading
