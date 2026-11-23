@@ -759,6 +759,9 @@ def test_temporal_visual_on_off_surface_decays_and_expires():
     brightening = state.update(start_ms=1033, end_ms=1066, tile_luminance=bright)
     assert brightening["on_activity"] > 0.59 and brightening["off_activity"] == 0.0
     assert brightening["temporal_activity_score"] > 0.59
+    assert brightening["global_change_score"] > 0.59
+    assert brightening["local_change_score"] == 0.0
+    assert brightening["attention_novelty"] < brightening["change_score"]
     assert brightening["polarity_delta_by_tile"]["r00"]["on"] > 0.59
     assert brightening["polarity_delta_by_tile"]["r00"]["off"] == 0.0
     quiet = state.update(start_ms=1066, end_ms=1099, tile_luminance=bright)
@@ -769,6 +772,63 @@ def test_temporal_visual_on_off_surface_decays_and_expires():
     darkening = state.update(start_ms=1132, end_ms=1165, tile_luminance=base)
     assert darkening["off_activity"] > 0.59 and darkening["on_activity"] == 0.0
     assert darkening["polarity_delta_by_tile"]["r00"]["off"] > 0.59
+
+
+def test_temporal_visual_attention_separates_global_illumination_from_local_change():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidence
+
+    base = {tile: [0.2] * 16 for tile in TILE_IDS}
+    global_bright = {tile: [0.6] * 16 for tile in TILE_IDS}
+    global_state = TemporalVisualEvidence()
+    global_state.update(start_ms=1000, end_ms=1033, tile_luminance=base)
+    global_result = global_state.update(
+        start_ms=1033, end_ms=1066, tile_luminance=global_bright,
+    )
+
+    local_bright = {tile: [0.2] * 16 for tile in TILE_IDS}
+    local_bright["r00"] = [0.6] * 16
+    local_state = TemporalVisualEvidence()
+    local_state.update(start_ms=1000, end_ms=1033, tile_luminance=base)
+    local_result = local_state.update(
+        start_ms=1033, end_ms=1066, tile_luminance=local_bright,
+    )
+
+    assert global_result["global_luminance_shift"] == pytest.approx(0.4)
+    assert global_result["global_change_score"] == pytest.approx(0.4)
+    assert global_result["local_change_score"] == 0.0
+    assert global_result["local_temporal_activity_score"] == 0.0
+    assert global_result["locally_changed_tile_ids"] == []
+    assert global_result["attention_novelty"] == pytest.approx(0.06)
+
+    assert local_result["global_luminance_shift"] == pytest.approx(0.0)
+    assert local_result["global_change_score"] == 0.0
+    assert local_result["local_tile_delta"]["r00"] == pytest.approx(0.4)
+    assert local_result["locally_changed_tile_ids"] == ["r00"]
+    assert local_result["local_change_score"] > global_result["attention_novelty"]
+    assert local_result["attention_novelty"] == local_result["local_change_score"]
+
+
+def test_temporal_visual_attention_preserves_global_and_local_components_together():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidence
+
+    base = {tile: [0.2] * 16 for tile in TILE_IDS}
+    mixed = {tile: [0.4] * 16 for tile in TILE_IDS}
+    mixed["r00"] = [0.6] * 16
+    state = TemporalVisualEvidence()
+    state.update(start_ms=1000, end_ms=1033, tile_luminance=base)
+    result = state.update(start_ms=1033, end_ms=1066, tile_luminance=mixed)
+
+    assert result["global_luminance_shift"] == pytest.approx(0.2)
+    assert result["local_tile_delta"]["r00"] == pytest.approx(0.2)
+    assert result["local_tile_delta"]["r11"] == pytest.approx(0.0)
+    assert result["global_change_score"] > 0.0
+    assert result["local_change_score"] > 0.0
+    assert result["attention_novelty"] == max(
+        result["local_change_score"],
+        result["local_temporal_activity_score"],
+        pytest.approx(0.15 * result["global_change_score"]),
+    )
+
 
 
 def test_temporal_visual_surface_resets_on_stream_gap():
@@ -879,6 +939,7 @@ def test_temporal_visual_evidence_is_source_session_bound_and_drives_a4(monkeypa
     assert evidence["source_ref"]["sha256"] == second_hash
     assert evidence["capture_session_id"] == obs["capture_session_id"]
     assert evidence["truth_authority"] == 0
+    assert evidence["local_change_score"] > 0.0
     assert evidence["learning_authority"] is False
     assert evidence["action_authority"] is False
     assert evidence["changed_tile_ids"]
