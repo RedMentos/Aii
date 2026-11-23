@@ -231,3 +231,38 @@ class ProcessRestartLogcatTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+
+class ProcessRestartLaunchTests(unittest.TestCase):
+    def test_launch_dismisses_keyguard_and_waits_without_menu_key(self) -> None:
+        from unittest.mock import call, patch
+        import test_process_restart as harness
+
+        with (
+            patch.object(harness, "adb", return_value="") as adb_call,
+            patch.object(harness.time, "sleep") as sleep,
+        ):
+            harness.launch_companion()
+
+        self.assertEqual(
+            adb_call.call_args_list,
+            [
+                call("shell", "wm", "dismiss-keyguard", check=False),
+                call("shell", "am", "start", "-n", harness.COMPONENT, timeout=60),
+            ],
+        )
+        sleep.assert_called_once_with(2.0)
+
+    def test_hierarchy_dump_uses_compressed_snapshot(self) -> None:
+        from unittest.mock import call, patch
+        import test_process_restart as harness
+
+        with patch.object(harness, "adb", side_effect=["OK", "<hierarchy/>"]) as adb_call:
+            self.assertEqual(harness.hierarchy_xml(), "<hierarchy/>")
+
+        self.assertEqual(
+            adb_call.call_args_list[0],
+            call("shell", "uiautomator", "dump", "--compressed",
+                 "/data/local/tmp/v14-window.xml", timeout=20),
+        )
