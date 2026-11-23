@@ -494,7 +494,12 @@ class Runtime:
                     if role_end is not None:native_end=min(native_end,role_end)
                     p=self.cognition.offer(role,e,version,native_end,peers.get(role) if use_peer else None,valid_until=deadline,**({'focus':focus} if focus and 'focus' in inspect.signature(self.cognition.offer).parameters else {}))  # replaced/older offers take no focus
                     other='B2_GIST' if role=='B1_DETAIL' else 'B1_DETAIL';peers[other]=self.cognition.communicate(p,other,**({'fast':channel_head} if channel_head and channel_head.get('learned') else {}));return p
-                sched=obsched.plan(self.cfg.get('observer_schedule',obsched.DEFAULT),roles,eid,self.cfg.get('observer_sample_rate',.5),parallel_ok=rpol['max_observer_bodies']>1 and bool(getattr(getattr(self.pool,'fabric',None),'enabled',False)))  # §22.2.4 deployment knob
+                fabric=getattr(self.pool,'fabric',None)
+                parallel_ok=False
+                if rpol['max_observer_bodies']>1 and fabric is not None:
+                    try:parallel_ok=bool(fabric.can_run_parallel())
+                    except Exception:parallel_ok=False
+                sched=obsched.plan(self.cfg.get('observer_schedule',obsched.DEFAULT),roles,eid,self.cfg.get('observer_sample_rate',.5),parallel_ok=parallel_ok)  # §22.2.4: require measured C3+B1+B2 joint residency
                 meta['observer_schedule']={k:sched[k] for k in ('schedule','pre','parallel','post','reason')}
                 offers+=obsched.run(sched,lambda role,use_peer,role_end=None:ask(role,use_peer=use_peer,role_end=role_end),observer_end,lambda role,exc:self.store.log('offer_rejected',eid,{'role':role,'error':str(exc)[:300]}),cancelled=(Cancelled,),budgeted=not sched['parallel'])
                 def reenter(role,focus=None):
