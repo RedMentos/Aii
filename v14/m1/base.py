@@ -25,6 +25,7 @@ class BaseConfig:
     latent_dim: int = 128
     hidden_dim: int = 256
     predictor_steps: int = 1
+    predictor_kind: str = "shared"
     ema_decay: float = 0.996
 
     def __post_init__(self) -> None:
@@ -32,6 +33,8 @@ class BaseConfig:
             raise ValueError("channel, horizon and model dimensions must be positive")
         if self.predictor_steps not in (1, 2, 4):
             raise ValueError("predictor_steps must be one of the preregistered values 1, 2, 4")
+        if self.predictor_kind not in {"shared", "unshared"}:
+            raise ValueError("predictor_kind must be shared or unshared")
         if not 0.0 <= self.ema_decay < 1.0:
             raise ValueError("ema_decay must be in [0, 1)")
 
@@ -120,24 +123,47 @@ class SharedTokenEncoder(nn.Module):
         return self.output_norm(self._pool(target, self.TYPE_TARGET))
 
 
-class SharedWeightPredictor(nn.Module):
-    """Predictor is G(F^T(z)); F is one shared block reused T times."""
+class PredictorF(nn.Module):
+    """One latent-to-latent block; hidden-to-hidden layer makes width scaling explicit."""
+    def __init__(self, latent_dim: int, hidden_dim: int):
+        super().__init__()
+        self.norm = nn.LayerNorm(latent_dim)
+        self.network = nn.Sequential(
+            nn.Linear(latent_dim, hidden_dim),
+            nn.GELU(),
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.GELU(),
+            nn.Linear(hidden_dim, latent_dim),
+        )
 
+    def forward(self, state: Tensor) -> Tensor:
+        return state + self.network(self.norm(state))
+
+
+class PredictorG(nn.Module):
+    """Final projection G applied once after the recurrent F block(s)."""
+    def __init__(self, latent_dim: int, hidden_dim: int):
+        super().__init__()
+        self.network = nn.Sequential(
+            nn.LayerNorm(latent_dim),
+            nn.Linear(latent_dim, hidden_dim),
+            nn.GELU(),
+            nn.Linear(hidden_dim, latent_dim),
+        )
+
+    def forward(self, state: Tensor) -> Tensor:
+        return self.network(state)
+
+
+class SharedWeightPredictor(nn.Module):
+    """Predictor is G(F^T(z)); one F parameter set is reused T times."""
     def __init__(self, latent_dim: int, hidden_dim: int, steps: int):
         super().__init__()
+        if steps not in (1, 2, 4):
+            raise ValueError("predictor steps must be 1, 2 or 4")
         self.steps = steps
-        self.F = nn.Sequential(
-            nn.LayerNorm(latent_dim),
-            nn.Linear(latent_dim, hidden_dim),
-            nn.GELU(),
-            nn.Linear(hidden_dim, latent_dim),
-        )
-        self.G = nn.Sequential(
-            nn.LayerNorm(latent_dim),
-            nn.Linear(latent_dim, hidden_dim),
-            nn.GELU(),
-            nn.Linear(hidden_dim, latent_dim),
-        )
+        self.F = PredictorF(latent_dim, hidden_dim)
+        self.G = PredictorG(latent_dim, hidden_dim)
 
     def forward(self, context_latent: Tensor, *, steps: int | None = None) -> Tensor:
         count = self.steps if steps is None else steps
@@ -149,6 +175,54 @@ class SharedWeightPredictor(nn.Module):
         return self.G(state)
 
 
+class UnsharedWeightPredictor(nn.Module):
+    """Depth-T control with independent F blocks and the same final G head."""
+    def __init__(self, latent_dim: int, hidden_dim: int, steps: int):
+        super().__init__()
+        if steps not in (1, 2, 4):
+            raise ValueError("predictor steps must be 1, 2 or 4")
+        self.steps = steps
+        self.blocks = nn.ModuleList(
+            PredictorF(latent_dim, hidden_dim) for _ in range(steps)
+        )
+        self.G = PredictorG(latent_dim, hidden_dim)
+
+    def forward(self, context_latent: Tensor) -> Tensor:
+        state = context_latent
+        for block in self.blocks:
+            state = block(state)
+        return self.G(state)
+
+
+def make_predictor(config: BaseConfig) -> nn.Module:
+    predictor_type = SharedWeightPredictor if config.predictor_kind == "shared" else UnsharedWeightPredictor
+    return predictor_type(config.latent_dim, config.hidden_dim, config.predictor_steps)
+
+
+def predictor_parameter_count(predictor: nn.Module) -> int:
+    return sum(parameter.numel() for parameter in predictor.parameters() if parameter.requires_grad)
+
+
+def predictor_macs_per_example(latent_dim: int, hidden_dim: int, steps: int) -> int:
+    """Analytic Linear-layer MAC estimate for this explicit predictor graph."""
+    if min(latent_dim, hidden_dim) < 1 or steps not in (1, 2, 4):
+        raise ValueError("invalid predictor dimensions or recurrence depth")
+    f_macs = 2 * latent_dim * hidden_dim + hidden_dim * hidden_dim
+    g_macs = 2 * latent_dim * hidden_dim
+    return steps * f_macs + g_macs
+
+
+def matched_predictor_width_estimates(hidden_dim: int, steps: int) -> dict[str, int]:
+    """Protocol starting estimates; actual graph parameters/MACs must still be measured."""
+    if hidden_dim < 1 or steps not in (1, 2, 4):
+        raise ValueError("invalid width or recurrence depth")
+    root = math.sqrt(steps)
+    return {
+        "compute_matched_wide_t1": max(1, round(hidden_dim * root)),
+        "parameter_matched_unshared": max(1, round(hidden_dim / root)),
+    }
+
+
 class M1JEPA(nn.Module):
     """Two-view JEPA with EMA target encoder and a shared-weight recurrent predictor."""
 
@@ -158,9 +232,7 @@ class M1JEPA(nn.Module):
         self.context_encoder = SharedTokenEncoder(config.channels, config.latent_dim)
         self.target_encoder = copy.deepcopy(self.context_encoder)
         self.target_encoder.requires_grad_(False)
-        self.predictor = SharedWeightPredictor(
-            config.latent_dim, config.hidden_dim, config.predictor_steps
-        )
+        self.predictor = make_predictor(config)
 
     def forward(self, bundle: InputBundle, future_target: Tensor) -> dict[str, Tensor]:
         context = self.context_encoder.encode_context(bundle)
