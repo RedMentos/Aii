@@ -1,3 +1,15 @@
+# Core & Harness — latest verified checkpoint (2026-11-23 22:50 UTC)
+
+**Primary P0 candidate:** [PR #2458](https://github.com/RedMentos/Aii/pull/2458), DRAFT / NOT_RELEASED, branch `core/v14-fair-b1-b2-preanswer-budget-20261123-run1`, branch head `7f1e865f47d9b9e39a289e03db87795fd16de079`, based on current release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`. The last substantive code/test checkpoint is `61509b1b061b377d5c19f69d861acda6f7b9f07e`; the later branch commit persists the handoff. It provides the fair same-turn B1/B2 pre-answer scheduling candidate, but exact-head Actions is still `startup_failure / no jobs`; the nested Boss Runtime pins and QA A5 Store lifecycle gate remain unresolved.
+
+**Parallel fastpath candidate:** [PR #2445](https://github.com/RedMentos/Aii/pull/2445), DRAFT / NOT_RELEASED, branch `core/v14-fast-greeting-staged-overlay-20261123`, exact head `dee83e03af1afcdd827d60014e29d153ccd438eb`, still based on older `fb563d771fe2d493c4ec25abe94280981d24ef5c`. A review found that the text-only greeting guard rejected only dict-valued `_audio_window` metadata; malformed non-dict values could pass. Code commit `190d920f0f3a2dbe037250a7fa198d60ba9e9bb6` now requires `event.get("_audio_window") is None`; test commit `1187a609f46e41f91a16bb481e816865417fdb1b` adds malformed string/bytes/list/number/boolean negatives. Handoff: `v14/handoffs/CORE_FAST_GREETING_FAIL_CLOSED_20261123_RUN1.md`.
+
+**Evidence boundary:** LOCAL_LINUX / CPython 3.13.5 isolated `py_compile` and matcher/policy/audio-shape assertions PASS for the fastpath guard. This is not full repository pytest. Exact code-head Actions run `45283293852` is `startup_failure` with zero jobs; no CI PASS is claimed. Full Aii checkout/pytest remains BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS is unavailable. Redmi remains STOPPED_BY_USER / REDMI_UNVERIFIED; no device, updater, shell, permission, model, weight or data action was performed.
+
+**Next:** Boss/Integrator must rebind the #2458 nested Runtime/JEPA pins and QA must rerun the A5 Store lifecycle gate. Recompose the #2445 fastpath only after that current integration chain is stable, then run exact Python 3.13/3.14 staged/integrated/migration CI and independent review. No user action is needed; do not restart the stopped phone or issue a duplicate update request.
+
+---
+
 # Core & Harness — latest verified checkpoint (2026-11-23 22:08 UTC)
 
 **Current candidate:** [PR #2458](https://github.com/RedMentos/Aii/pull/2458), DRAFT / NOT_RELEASED, branch `core/v14-fair-b1-b2-preanswer-budget-20261123-run1`, head `61509b1b061b377d5c19f69d861acda6f7b9f07e`, base `8d93236c753f0194224c19edc7411d8d7082b1d6`.
