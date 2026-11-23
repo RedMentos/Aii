@@ -2281,3 +2281,39 @@ Append-only evidence; no historical Canon or master rewrite.
 | Whole Canon | V14 master blob 9748ad5b… unchanged; 1,255-heading inventory retained. | No master or historical appendix edits. | Semantic clause→code→consumer→test→environment→negative-control→rollback mapping incomplete. | INVENTORY_PRESERVED / COVERAGE_INCOMPLETE |
 
 Current release b20e9b1f3dd53af472055adb43da628785494ec4; last phone snapshot 8bf44cb / CI_WAIT; user action none.
+
+
+## Evidence overlay — Boss run 18 (2026-11-23T11:32:12.480Z)
+
+The following is an additive evidence overlay. It does not change the 1,255-heading Canon inventory or promote CI/synthetic results to Android functionality.
+
+| Canon family / capability | CODE | WIRED | TESTED_SYNTHETIC / CI | TESTED_ANDROID | ACTIVE / accepted state |
+|---|---|---|---|---|---|
+| A0–A5 perception/attention | Caller-supplied PCM16 RAW EAR feature path; A5 UI metadata lease SHADOW; A4 source-bound outcomes | Synthetic A5/A4/C3 path; Perception attention/audio candidate not fully composed | #2433 feature-specific tests green; staged/integrated fails on exact `attention.py` controller-guard pin | No microphone, MediaProjection, Accessibility or UI-capture receipt | Partial / SHADOW; no live sensor provider |
+| B1_DETAIL + B2_GIST | Distinct role models and OfferPacket contracts | Synthetic offers→C4→C3 only | #2370 has 20 observed workflow successes, one cancelled and one policy-skipped; branch 193 ahead / 35 behind and unmergeable | #776 still reports TIME_BUDGET 53.2 s / 54.2 s; no delivered native offers proven | No accepted native offer contribution |
+| B3 / Enlightened Space | Symbolic space and diagnostic receiver scaffolding | No production activation-to-activation receiver | Synthetic diagnostic checks only; paired taps/L1 candidates remain draft | Not tested | OFF / SYMBOLIC; no trained latent proof |
+| B4 / C4 coalition | Source-span/focal coalition receipts; #2436 adds FocalCycle SourceRefs | Current candidate extends T8 receipt; not merged | #2436 optimizer-resume fails on Python 3.13 and 3.14 because forget guard omits FocalCycle provenance after row eviction | Not tested | Draft; no accepted source-forget integration for FocalCycle |
+| C1/JEF/C2/C3 | C3 source-preserving prefill, C2 control, durable output/C7 receipt gate | Installed Runtime path; no fresh user turn after dfa3945 | b20e9 37/37 exact push checks; dfa3945 21/21 observed workflow runs | #776 stored FINAL turn 57.739 s / TTFT 41.627 s / prefill 38.945 s / 2 generated tokens; correctness UNKNOWN | Installed code, functional acceptance OPEN |
+| World/Self/Memory/JEPA | Store-backed WorldJEPA checkpoint, source-disjoint T8 and Memory forget rollback/replay | Memory._forget_source→source_forget_guard→checkpoint restore/invalidate/replay | #2429 Python 3.13/3.14, staged/integrated and 37/37 push checks pass | Learning status #777 UNAVAILABLE; no native weight proof | SHADOW; no gradient unlearning or body-weight update |
+| Sleep/Dream/Replay | Bounded Store-backed JEPA replay and checkpoint rollback | Postcommit learner and Memory forget consumer | Synthetic checkpoint/restart/retention gates on #2429 pass | Not tested | No accepted Dream consolidation or native learning |
+| Context OS / Memorilla | Context OS partial; #1983 additive companion SHADOW | No complete production overflow/reader-writer consumer; production focal producer still event-source-only | Partial synthetic context tests; no full source lineage in production | Not tested | Partial / SHADOW |
+| VOICE_AUDIO | Caller PCM16 RAW EAR features only; optional TTS fallback | Synthetic A5/A4/C3 feature route | #2433 staged/integrated currently fails on attention guard pin | No AudioRecord or microphone receipt | Partial features; no ASR, trainable decoder/vocoder or full duplex |
+| ANDROID_BACKGROUND_CONTROL | Companion launch/receipt prototype in stacked drafts | No OS-authenticated executor | Robolectric/contract checks exist on old stacked branches; not current release | Not tested | OFF; no authorized app-launch proof |
+| ANDROID_UI_CONTROL | A5 metadata lease; MediaProjection providers remain stacked drafts | No production screen/tap/type executor | Synthetic metadata/consent tests only | Not tested | OFF |
+| SELF_OPTIMIZATION / cross-organ weight edits | WorldJEPA numeric SHADOW only | No cross-organ gradient or master-weight consumer | No accepted B1/B2/C3 parameter-diff + retention proof | Not tested | Promotion OFF; no self-edit |
+| Multimodal learning | Audio/vision feature extraction scaffolding | No accepted audio/vision gradient consumer | Producer/feature tests only | Not tested | No persistent multimodal learning |
+| Age / lab rights / compute | Official Age and lab-stage controls separated from ResourceGuard | Synthetic runtime consumers | Existing Lab-Age/migration checks remain CI-only | #776: official Age 0; lab request 10/effective 5; physical feature execution false | Official Age 0; X10 test selector is not a compute budget |
+| Updater / install / rollback | CI-gated updater and activation journal | Normal updater path | b20e9 37/37; dfa3945 21/21 observed workflows | #775 confirms exact dfa3945 Runtime/Dashboard UPDATED; rollback/reboot/process-death not tested | Installed; rollback acceptance OPEN |
+| Remote maintenance | Private owner-read and normal update request | Read-only status + updater; no shell | Owner-read contract and exact push CI | #775 installed receipt | READ_ONLY_STATUS / normal update confirmed; PATCH_STAGE/APPLY/RESTORE unverified |
+| Technical OS sandbox / behavior judge | Partial action contracts and draft contextual risk head | No independent OS-enforced execution boundary; Judge is not permission authority | Partial synthetic contract tests only | Not tested | No production OS sandbox/Judge |
+| Two distinct sparse MoE bodies | Not proven | No distinct sparse expert routing | No accepted sparse-MoE/retention ablation | Not tested | Not implemented/accepted |
+| Execution-state forgetting across prompt, summaries, plans and KV | R-108 research only; ticket V14-020 | No artifact graph or active-session/KV replay consumer | No V14 implementation tests; paper results are not V14 tests | Not tested | Research-to-spec only |
+
+**Device boundary:** private PIPELINE_STATUS #775 confirms installed SHA `dfa3945b2bbfdb65d932db74e02f402435494e84`, Runtime/Dashboard UPDATED, auto-update enabled, last_error NONE. DIAGNOSTICS #776 is not a new chat turn and still reports slow stored output, B1/B2 TIME_BUDGET, and zero mapped native processes with unknown child readability. LEARNING_STATUS #777 is UNAVAILABLE. HEALTH #793 reports 1,388 MiB MemAvailable and 990 MiB disk free; HEALTH runtime field UNAVAILABLE while DIAGNOSTICS reports RUNNING. No LOG_PAGE consent. No device action, CHAT_SEND, model/weight change or permission change occurred.
+
+**Whole-Canon boundary:** Master blob `9748ad5ba9a4d4f5c3d004a0577141f6779fcbca` still contains the historical V13 Canon blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7` byte-for-byte. The 1,255-heading inventory is preserved; semantic clause→consumer→test→platform→negative-control→rollback mapping remains incomplete.
+
+
+### HEALTH #793 evidence correction — 2026-11-23T11:33:30.773Z
+
+The earlier run-18 line that called HEALTH #793 pending is superseded: the private owner-read reply arrived. Current snapshot: 1,388 MiB MemAvailable / 5,569 MiB total; 990 MiB free disk / 109,641 MiB total. HEALTH runtime state is UNAVAILABLE while DIAGNOSTICS #776 reports RUNNING. No inference of shutdown is warranted. Remote observation is recent/PUBLISHED, but `console_errors` remains USER_NOT_OPTED_IN; no LOG_PAGE was requested.

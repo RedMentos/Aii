@@ -1728,3 +1728,29 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
 
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+## Boss & Integration run 18 — 2026-11-23T11:30:19.499Z
+
+**No user action required.** The normal updater has already installed exact `dfa3945b2bbfdb65d932db74e02f402435494ec4` on the Redmi. Authenticated private PIPELINE_STATUS #775 reports Runtime UPDATED, Dashboard UPDATED, auto-update enabled and last_error NONE. Existing UPDATE_REQUEST #770 is satisfied; no duplicate request or manual Termux command is needed.
+
+The code-bearing integration beneath this docs checkpoint is `b20e9b1f3dd53af472055adb43da628785494ec4` (source-bound WorldJEPA checkpoint rollback/replay and ActionSelection lineage; exact push CI 37/37). The docs checkpoint dfa3945 has 21/21 observed workflow runs SUCCESS. This is installation evidence, not functional acceptance.
+
+Fresh DIAGNOSTICS #776 did not run a new turn. The last stored turn remains 57.7388 s total / 41.6269 s TTFT / 38.9453 s C3 prefill / 751 prompt tokens / 2 generated tokens; correctness UNKNOWN. B1/B2 remain TIME_BUDGET at 53.2/54.2 s; C2 OK; C3 probe 3.1 s. Instant mapped native process count is 0 with child readability unknown. Official Age 0; Lab stage 10 requested/effective 5; physical feature execution false. LEARNING_STATUS #777 is UNAVAILABLE. No LOG_PAGE because console_errors is not opted in.
+
+Current blocking integration work:
+- #2370 fair B1/B2→C4→C3 candidate: 20 workflow SUCCESS, one CANCELLED and one policy SKIPPED, but 193 ahead / 35 behind, DRAFT and unmergeable. Recompose on current base; do not merge.
+- #2436 JEPA C4/FocalCycle lineage: optimizer-resume fails on Python 3.13 and 3.14 because source-forget scans ActionSelection but not FocalCycle provenance after replay-row eviction. Boss posted exact root cause in #7099618398; JEPA must repair the consumer, not weaken tests.
+- #2433 Perception: feature-specific checks pass, but staged/integrated fails on the immutable `attention.py` source pin; Core must rebind guard/recovery/stage/deployer bottom-up. Boss comment #7099532765.
+- #2430 exact greeting fastpath: narrow rule is acceptable only for standalone greetings; staged/integrated fails on stale `runtime.py` pins and branch is 23 commits behind. Boss comment #7099632050.
+
+Whole-Canon boundary: Master blob `9748ad5b...` still includes the historical V13 Canon source blob `218464b1...` byte-for-byte; 1,255-heading inventory preserved. Semantic coverage is incomplete. Local full Aii tests remain BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS resolution failed. No local project tests or native Android tests were performed.
+
+New R-108 research: execution-state forgetting should cover ContextPlan/prompt, summaries, pending tool plans and KV/session cache—not only the WorldJEPA checkpoint. This is a preprint-only candidate with no code/license import; deterministic replay, reproducible observations and no un-restorable side effects are required. Ticket V14-020 tracks it separately from existing JEPA checkpoint forgetting.
+
+**Next:** Core recompose the fair multi-organ slice and complete production context SourceRefs; JEPA fix FocalCycle-aware forget invalidation/replay; Perception/Core repair exact attention/runtime pins; QA keep rollback and Android control proofs separate; Boss integrate only exact-current-base green candidates. No model, weight, permission or device-data change was made.
+
+
+### Fresh HEALTH receipt — 2026-11-23T11:33:30.773Z
+
+HEALTH #793: MemAvailable 1,388 MiB / 5,569 MiB; free disk 990 MiB / 109,641 MiB. HEALTH reports runtime UNAVAILABLE while DIAGNOSTICS #776 reports RUNNING; treat this as differing telemetry surfaces, not a shutdown. Remote observation is recent/PUBLISHED, but console_errors remains USER_NOT_OPTED_IN, so no LOG_PAGE. No user action or device mutation is required.
