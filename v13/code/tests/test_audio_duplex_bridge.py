@@ -1,6 +1,8 @@
+import hashlib
 import json
 import math
 import struct
+import sys
 import threading
 import time
 from contextlib import contextmanager
@@ -23,6 +25,12 @@ from v13.audio_duplex_bridge import (
 )
 from v13.audio_voice_cues import audio_consent_lease, consume_pcm16_voice_window
 from v13.audio_temporal_evidence import TemporalVoiceEvidence
+from v13.audio_teacher_ear import (
+    DEFAULT_MODEL_FILES,
+    enrich_audio_result_with_sherpa_teacher,
+    hash_sherpa_model_files,
+    load_sherpa_teacher_runtime,
+)
 from v13.common import Cancelled
 from v13.runtime import Runtime
 
@@ -549,5 +557,215 @@ def test_persisted_audio_receipt_is_rejected_after_runtime_process_epoch_changes
 
         wait_idle(runtime)
         assert answer(runtime, first)["status"] == "FINAL"
+    finally:
+        runtime.close()
+
+
+class FakeSherpaStream:
+    def __init__(self):
+        self.samples = None
+        self.sample_rate = None
+        self.finished = False
+        self.decode_steps = 0
+
+    def accept_waveform(self, sample_rate, samples):
+        self.sample_rate = sample_rate
+        self.samples = samples
+
+    def input_finished(self):
+        self.finished = True
+
+
+class FakeSherpaRecognizer:
+    def __init__(self, *, timestamps=None):
+        self.timestamps = timestamps
+        self.calls = 0
+        self.streams = []
+
+    def create_stream(self):
+        stream = FakeSherpaStream()
+        self.streams.append(stream)
+        return stream
+
+    def is_ready(self, stream):
+        return stream.finished and stream.decode_steps < 1
+
+    def decode_stream(self, stream):
+        self.calls += 1
+        stream.decode_steps += 1
+
+    def get_result_all(self, stream):
+        return SimpleNamespace(
+            tokens=[" HELLO", " WORLD"],
+            timestamps=self.timestamps,
+            is_final=True,
+        )
+
+
+def make_sherpa_teacher(tmp_path, monkeypatch, *, timestamps=(0.1, 0.5)):
+    model_root = tmp_path / "sherpa-teacher"
+    model_root.mkdir()
+    for key, relative in DEFAULT_MODEL_FILES.items():
+        (model_root / relative).write_bytes(("fixture-" + key).encode("ascii"))
+    recognizer = FakeSherpaRecognizer(timestamps=timestamps)
+
+    class FakeOnlineRecognizer:
+        @staticmethod
+        def from_transducer(**kwargs):
+            assert kwargs["num_threads"] == 1
+            assert kwargs["provider"] == "cpu"
+            assert kwargs["sample_rate"] == 16000
+            return recognizer
+
+    monkeypatch.setitem(
+        sys.modules,
+        "sherpa_onnx",
+        SimpleNamespace(OnlineRecognizer=FakeOnlineRecognizer, __version__="2.0.3"),
+    )
+    teacher = load_sherpa_teacher_runtime(
+        model_root,
+        teacher_opt_in=True,
+        transcript_consent=True,
+        num_threads=1,
+    )
+    return teacher, recognizer, model_root
+
+
+def test_sherpa_teacher_enters_c3_ephemerally_without_persisting_transcript(tmp_path, monkeypatch):
+    runtime, _started = make_runtime(tmp_path, "auto")
+    teacher, recognizer, _model_root = make_sherpa_teacher(tmp_path, monkeypatch)
+    try:
+        first = runtime.submit("Tell me a long story about the history of Sweden")
+        _audio_event, generation, pcm, kwargs = make_audio(runtime)
+        kwargs["finality"] = "FINAL"
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+        ) as lease:
+            result = consume_pcm16_voice_window_with_duplex(
+                runtime, pcm, consent_lease=lease,
+                teacher_runtime=teacher, teacher_opt_in=True,
+                transcript_consent=True, **kwargs,
+            )
+            assert result["teacher_ear"]["authority"] == "TEACHER_HYPOTHESIS"
+            assert result["teacher_ear"]["persistence"] == "EPHEMERAL_ONLY"
+            assert result["teacher_ear"]["network_used"] is False
+            assert result["teacher_ear"]["raw_audio_persisted"] is False
+            assert result["teacher_ear"]["timing_method"] == "TOKEN_STARTS_NEXT_WORD_END_INFERRED"
+            selected = result["c3_admission"].selected
+            teacher_percepts = [item for item in selected if item.source_id.startswith("audio_teacher_")]
+            assert len(teacher_percepts) == 1
+            assert "HELLO" in teacher_percepts[0].summary
+            assert recognizer.calls == 1
+            assert recognizer.streams[0].sample_rate == 16000
+            assert recognizer.streams[0].finished is True
+
+            persisted = runtime.store.one(
+                "SELECT payload FROM packets WHERE id=? AND kind='PerceptPacket'",
+                (result["packet"]["packet_id"],),
+            )
+            persisted_packet = json.loads(persisted["payload"])
+            assert persisted_packet["segments"][0]["asr_transcript"] is None
+            assert "HELLO" not in json.dumps(persisted_packet)
+            assert "WORLD" not in json.dumps(persisted_packet)
+        wait_idle(runtime)
+        assert answer(runtime, first)["status"] == "FINAL"
+    finally:
+        runtime.close()
+
+
+def test_sherpa_teacher_requires_both_opt_ins_before_loading(tmp_path, monkeypatch):
+    with pytest.raises(PermissionError, match="separate opt-ins"):
+        load_sherpa_teacher_runtime(
+            tmp_path, teacher_opt_in=False, transcript_consent=True,
+        )
+    assert "sherpa_onnx" not in sys.modules
+
+
+def test_sherpa_teacher_manifest_hash_rejects_symlinked_model_component(tmp_path):
+    model_root = tmp_path / "model"
+    model_root.mkdir()
+    for key, relative in DEFAULT_MODEL_FILES.items():
+        (model_root / relative).write_bytes(("fixture-" + key).encode("ascii"))
+    outside = tmp_path / "outside.onnx"
+    outside.write_bytes(b"outside")
+    link = model_root / "encoder-link.onnx"
+    try:
+        link.symlink_to(outside)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlinks are unavailable on this test platform")
+    files = dict(DEFAULT_MODEL_FILES)
+    files["encoder"] = "encoder-link.onnx"
+    with pytest.raises(ValueError, match="unsafe"):
+        hash_sherpa_model_files(model_root, files)
+
+
+def test_sherpa_teacher_defers_provisional_audio_and_opt_out_without_inference(tmp_path, monkeypatch):
+    runtime, _started = make_runtime(tmp_path, "auto")
+    teacher, recognizer, _model_root = make_sherpa_teacher(tmp_path, monkeypatch)
+    try:
+        first = runtime.submit("Tell me a long story about the history of Norway")
+        _audio_event, generation, pcm, kwargs = make_audio(runtime)
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+        ) as lease:
+            result = consume_pcm16_voice_window_with_duplex(
+                runtime, pcm, consent_lease=lease,
+                teacher_runtime=teacher, teacher_opt_in=True,
+                transcript_consent=True, **kwargs,
+            )
+            assert result["teacher_ear"]["status"] == "DEFERRED_PROVISIONAL"
+            assert recognizer.calls == 0
+        wait_idle(runtime)
+        assert answer(runtime, first)["status"] == "FINAL"
+    finally:
+        runtime.close()
+
+
+def test_sherpa_teacher_rejects_missing_token_timestamps_without_losing_raw_ear(tmp_path, monkeypatch):
+    runtime, _started = make_runtime(tmp_path, "auto")
+    teacher, recognizer, _model_root = make_sherpa_teacher(tmp_path, monkeypatch, timestamps=None)
+    try:
+        first = runtime.submit("Tell me a long story about the history of Denmark")
+        _audio_event, generation, pcm, kwargs = make_audio(runtime)
+        kwargs["finality"] = "FINAL"
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+        ) as lease:
+            result = consume_pcm16_voice_window_with_duplex(
+                runtime, pcm, consent_lease=lease,
+                teacher_runtime=teacher, teacher_opt_in=True,
+                transcript_consent=True, **kwargs,
+            )
+            assert result["teacher_ear"]["status"] == "UNAVAILABLE"
+            assert result["teacher_ear"]["reason"] == "ValueError"
+            assert recognizer.calls == 1
+            assert result["c3_admission"].selected
+        wait_idle(runtime)
+        assert answer(runtime, first)["status"] == "FINAL"
+    finally:
+        runtime.close()
+
+
+def test_sherpa_teacher_rejects_pcm_hash_mismatch_before_decoder(tmp_path, monkeypatch):
+    runtime, _started = make_runtime(tmp_path, "auto")
+    teacher, recognizer, _model_root = make_sherpa_teacher(tmp_path, monkeypatch)
+    try:
+        _first = runtime.submit("Tell me a long story about the history of Belgium")
+        _audio_event, generation, pcm, kwargs = make_audio(runtime)
+        kwargs["finality"] = "FINAL"
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+        ) as lease:
+            audio_result = consume_pcm16_voice_window(
+                runtime, pcm, consent_lease=lease, **kwargs,
+            )
+            with pytest.raises(PermissionError, match="source-bound PerceptPacket"):
+                enrich_audio_result_with_sherpa_teacher(
+                    runtime, audio_result, tone(frequency=220),
+                    teacher_runtime=teacher, consent_lease=lease,
+                    teacher_opt_in=True, transcript_consent=True,
+                )
+            assert recognizer.calls == 0
+        wait_idle(runtime)
     finally:
         runtime.close()
