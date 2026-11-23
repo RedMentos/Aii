@@ -10,6 +10,7 @@ import hashlib
 import json
 import math
 import os
+import stat
 import struct
 import subprocess
 import time
@@ -19,6 +20,8 @@ SCHEMA = "v14.native-latent-receiver/2"
 POSITION_MODE = "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL"
 MAX_POSITION = 131072
 PINNED_LLAMA_REVISION = "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4"
+# SHA-256 of the reviewed Android ARM64 artifact built by run 45094188446 at 0a470ada.
+PINNED_ANDROID_ARM64_BINARY_SHA256 = "b82aba4da4aac24bef1012fbbcf89735016f7cf5297766adfbb5ffa7f8daf704"
 SENDER_ROLES = frozenset({"B1_DETAIL", "B2_GIST"})
 RECEIVER_ROLES = frozenset({"B1_DETAIL", "B2_GIST", "C3_LANGUAGE"})
 MAX_ROWS = 64
@@ -35,15 +38,157 @@ class NativeReceiverError(ValueError):
     pass
 
 
-def _sha256_file(path: Path) -> str:
+def _fd_identity(info):
+    return (
+        info.st_dev, info.st_ino, info.st_size,
+        info.st_mtime_ns, info.st_ctime_ns,
+    )
+
+
+def _sha256_fd(fd: int) -> str:
+    """Hash an already-open regular file without reopening its mutable pathname."""
     digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        while True:
-            block = stream.read(8 * 1024 * 1024)
-            if not block:
-                break
-            digest.update(block)
+    offset = 0
+    while True:
+        block = os.pread(fd, 8 * 1024 * 1024, offset)
+        if not block:
+            break
+        digest.update(block)
+        offset += len(block)
     return digest.hexdigest()
+
+
+def _open_model_descriptor(model: Path, models_root: Path, expected_digest: str):
+    """Open the exact installed model beneath models_root and pin its inode for the child.
+
+    Every path component is opened relative to a held directory descriptor with
+    O_NOFOLLOW. The final regular-file descriptor is inherited by the native
+    child and addressed as /proc/self/fd/N, so a pathname replacement after
+    verification cannot redirect llama_model_load_from_file().
+    """
+    if os.name != "posix" or not Path("/proc/self/fd").is_dir():
+        raise NativeReceiverUnavailable("descriptor-pinned model loading requires POSIX /proc/self/fd")
+    nofollow = getattr(os, "O_NOFOLLOW", 0)
+    directory = getattr(os, "O_DIRECTORY", 0)
+    nonblock = getattr(os, "O_NONBLOCK", 0)
+    if not nofollow or not directory or not nonblock or os.open not in getattr(os, "supports_dir_fd", set()):
+        raise NativeReceiverUnavailable("descriptor-pinned model loading requires no-follow dirfd support")
+    try:
+        relative = model.relative_to(models_root)
+    except ValueError as exc:
+        raise NativeReceiverError("receiver model escaped the installed models root") from exc
+    if not relative.parts or any(part in ("", ".", "..") for part in relative.parts):
+        raise NativeReceiverError("receiver model relative path is unsafe")
+
+    directory_flags = os.O_RDONLY | directory | nofollow | getattr(os, "O_CLOEXEC", 0)
+    file_flags = os.O_RDONLY | nofollow | nonblock | getattr(os, "O_CLOEXEC", 0)
+    try:
+        root_fd = os.open(models_root, directory_flags)
+    except OSError as exc:
+        raise NativeReceiverError("receiver models root cannot be opened without following links") from exc
+    parent_fd = root_fd
+    fd = None
+    try:
+        for component in relative.parts[:-1]:
+            next_fd = os.open(component, directory_flags, dir_fd=parent_fd)
+            if parent_fd != root_fd:
+                os.close(parent_fd)
+            parent_fd = next_fd
+        fd = os.open(relative.parts[-1], file_flags, dir_fd=parent_fd)
+    except OSError as exc:
+        if fd is not None:
+            os.close(fd)
+        raise NativeReceiverError("receiver model path changed or contains a linked/non-directory component") from exc
+    finally:
+        if parent_fd != root_fd:
+            os.close(parent_fd)
+        os.close(root_fd)
+
+    try:
+        before = os.fstat(fd)
+        if not stat.S_ISREG(before.st_mode) or before.st_size < 1:
+            raise NativeReceiverError("receiver model descriptor is not a non-empty regular file")
+        actual = _sha256_fd(fd)
+        after = os.fstat(fd)
+        if _fd_identity(before) != _fd_identity(after):
+            raise NativeReceiverError("receiver model changed while its descriptor was hashed")
+        if actual != expected_digest:
+            raise NativeReceiverError("receiver model hash differs from installed manifest")
+        return fd, _fd_identity(after)
+    except Exception:
+        os.close(fd)
+        raise
+
+
+def _verify_model_descriptor(fd: int, expected_digest: str, expected_identity):
+    before = os.fstat(fd)
+    if not stat.S_ISREG(before.st_mode) or _fd_identity(before) != expected_identity:
+        raise NativeReceiverError("receiver model descriptor identity changed during native probe")
+    actual = _sha256_fd(fd)
+    after = os.fstat(fd)
+    if _fd_identity(after) != expected_identity or actual != expected_digest:
+        raise NativeReceiverError("receiver model bytes changed during native probe")
+
+
+
+
+
+def _open_binary_descriptor(binary: Path, bin_root: Path, expected_digest: str | None):
+    """Open and hash the reviewed receiver executable beneath a held bin directory."""
+    if os.name != "posix" or not Path("/proc/self/fd").is_dir():
+        raise NativeReceiverUnavailable("descriptor-pinned executable loading requires POSIX /proc/self/fd")
+    nofollow = getattr(os, "O_NOFOLLOW", 0)
+    directory = getattr(os, "O_DIRECTORY", 0)
+    nonblock = getattr(os, "O_NONBLOCK", 0)
+    if not nofollow or not directory or not nonblock or os.open not in getattr(os, "supports_dir_fd", set()):
+        raise NativeReceiverUnavailable("descriptor-pinned executable loading requires no-follow dirfd support")
+    try:
+        relative = binary.relative_to(bin_root)
+    except ValueError as exc:
+        raise NativeReceiverError("native receiver executable escaped its bin root") from exc
+    if len(relative.parts) != 1 or relative.name in ("", ".", ".."):
+        raise NativeReceiverError("native receiver executable path is unsafe")
+
+    directory_flags = os.O_RDONLY | directory | nofollow | getattr(os, "O_CLOEXEC", 0)
+    file_flags = os.O_RDONLY | nofollow | nonblock | getattr(os, "O_CLOEXEC", 0)
+    try:
+        root_fd = os.open(bin_root, directory_flags)
+    except OSError as exc:
+        raise NativeReceiverUnavailable("native receiver bin directory cannot be opened without following links") from exc
+    try:
+        try:
+            fd = os.open(relative.name, file_flags, dir_fd=root_fd)
+        except OSError as exc:
+            raise NativeReceiverUnavailable("native receiver executable is missing or linked/non-regular") from exc
+    finally:
+        os.close(root_fd)
+
+    try:
+        before = os.fstat(fd)
+        if not stat.S_ISREG(before.st_mode) or before.st_size < 1 or not (before.st_mode & 0o111):
+            raise NativeReceiverUnavailable("native receiver executable is not a non-empty executable regular file")
+        actual = _sha256_fd(fd)
+        after = os.fstat(fd)
+        identity = _fd_identity(after)
+        if _fd_identity(before) != identity:
+            raise NativeReceiverError("native receiver executable changed while its descriptor was hashed")
+        if expected_digest is not None and actual != expected_digest:
+            raise NativeReceiverUnavailable("native receiver executable hash differs from the reviewed Android ARM64 artifact")
+        return fd, identity, actual
+    except Exception:
+        os.close(fd)
+        raise
+
+
+def _verify_binary_descriptor(fd: int, expected_digest: str, expected_identity):
+    before = os.fstat(fd)
+    if (not stat.S_ISREG(before.st_mode) or not (before.st_mode & 0o111)
+            or _fd_identity(before) != expected_identity):
+        raise NativeReceiverError("native receiver executable descriptor identity changed during probe")
+    actual = _sha256_fd(fd)
+    after = os.fstat(fd)
+    if _fd_identity(after) != expected_identity or actual != expected_digest:
+        raise NativeReceiverError("native receiver executable bytes changed during probe")
 
 
 def _finite_number(value) -> bool:
@@ -190,8 +335,15 @@ def _json_output(raw: bytes, stage: str) -> dict:
     return value
 
 
-def _run_cancelable(command, payload, deadline, cancel_event):
-    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+def _run_cancelable(command, payload, deadline, cancel_event, *, pass_fds=()):
+    kwargs = {}
+    if pass_fds:
+        if os.name != "posix":
+            raise NativeReceiverUnavailable("native model descriptor inheritance requires POSIX")
+        kwargs["pass_fds"] = tuple(pass_fds)
+    process = subprocess.Popen(
+        command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs
+    )
     first = True
     while True:
         if cancel_event is not None and cancel_event.is_set():
@@ -243,50 +395,71 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
     positions = _validate_positions(position_ids, rows, position_mode)
 
     root = Path(home).resolve()
+    models_dir = root / "models"
+    if models_dir.is_symlink():
+        raise NativeReceiverError("receiver models root symlink refused")
+    models_root = models_dir.resolve(strict=True)
+    if not models_root.is_relative_to(root):
+        raise NativeReceiverError("receiver models root escaped home")
     model = Path(model_path)
     if model.is_symlink():
         raise NativeReceiverError("receiver model symlink refused")
     model = model.resolve(strict=True)
-    models_root = (root / "models").resolve()
     if not model.is_relative_to(models_root) or not model.is_file():
         raise NativeReceiverError("receiver model must be an installed file under home/models")
-    if _sha256_file(model) != expected_model_sha256:
-        raise NativeReceiverError("receiver model hash differs from installed manifest")
 
     injected_binary = binary_path is not None
-    binary = Path(binary_path) if injected_binary else root / "bin" / "native_latent_receiver"
-    if binary.is_symlink() or not binary.is_file() or not os.access(binary, os.X_OK):
-        raise NativeReceiverUnavailable("pinned native_latent_receiver executable is not installed")
-    binary = binary.resolve(strict=True)
-    if not injected_binary and not binary.is_relative_to((root / "bin").resolve()):
-        raise NativeReceiverError("native receiver executable escaped home/bin")
+    if injected_binary:
+        binary = Path(binary_path)
+        bin_root = binary.parent.resolve(strict=True)
+        binary = bin_root / binary.name
+        expected_binary_digest = None  # Test-only injected executables are still descriptor-pinned.
+    else:
+        bin_root = root / "bin"
+        binary = bin_root / "native_latent_receiver"
+        expected_binary_digest = PINNED_ANDROID_ARM64_BINARY_SHA256
 
-    remaining = float(deadline) - time.monotonic()
-    if not math.isfinite(remaining) or remaining <= 0:
-        raise TimeoutError("native receiver probe deadline expired")
-    if cancel_event is not None and cancel_event.is_set():
-        raise InterruptedError("native receiver probe cancelled")
-    try:
-        version = subprocess.run(
-            [str(binary), "--version"], stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-            timeout=min(5.0, remaining), check=False,
-        )
-    except subprocess.TimeoutExpired as exc:
-        raise TimeoutError("native receiver version check timed out") from exc
-    if version.returncode != 0:
-        raise NativeReceiverUnavailable("native receiver version check failed")
-    version_data = _json_output(version.stdout, "version")
-
-    remaining = float(deadline) - time.monotonic()
-    if not math.isfinite(remaining) or remaining <= 0:
-        raise TimeoutError("native receiver probe deadline expired")
-    returncode, stdout, stderr = _run_cancelable(
-        [str(binary), "--model", str(model), "--rows", str(rows),
-         "--input-dim", str(input_dim), "--positions", ",".join(str(x) for x in positions),
-         "--threads", str(max(1, min(int(threads), 2)))],
-        payload, deadline, cancel_event,
+    binary_fd, binary_identity, binary_digest = _open_binary_descriptor(
+        binary, bin_root, expected_binary_digest
     )
+    binary_exec = f"/proc/self/fd/{binary_fd}"
+    try:
+        remaining = float(deadline) - time.monotonic()
+        if not math.isfinite(remaining) or remaining <= 0:
+            raise TimeoutError("native receiver probe deadline expired")
+        if cancel_event is not None and cancel_event.is_set():
+            raise InterruptedError("native receiver probe cancelled")
+        try:
+            version = subprocess.run(
+                [binary_exec, "--version"], stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                timeout=min(5.0, remaining), check=False,
+                pass_fds=(binary_fd,),
+            )
+        except subprocess.TimeoutExpired as exc:
+            raise TimeoutError("native receiver version check timed out") from exc
+        _verify_binary_descriptor(binary_fd, binary_digest, binary_identity)
+        if version.returncode != 0:
+            raise NativeReceiverUnavailable("native receiver version check failed")
+        version_data = _json_output(version.stdout, "version")
+
+        remaining = float(deadline) - time.monotonic()
+        if not math.isfinite(remaining) or remaining <= 0:
+            raise TimeoutError("native receiver probe deadline expired")
+        model_fd, model_identity = _open_model_descriptor(model, models_root, expected_model_sha256)
+        try:
+            returncode, stdout, stderr = _run_cancelable(
+                [binary_exec, "--model", f"/proc/self/fd/{model_fd}", "--rows", str(rows),
+                 "--input-dim", str(input_dim), "--positions", ",".join(str(x) for x in positions),
+                 "--threads", str(max(1, min(int(threads), 2)))],
+                payload, deadline, cancel_event, pass_fds=(binary_fd, model_fd),
+            )
+            _verify_binary_descriptor(binary_fd, binary_digest, binary_identity)
+            _verify_model_descriptor(model_fd, expected_model_sha256, model_identity)
+        finally:
+            os.close(model_fd)
+    finally:
+        os.close(binary_fd)
     if returncode != 0:
         raise NativeReceiverError("native receiver model probe failed")
     raw = _json_output(stdout, "probe")
@@ -340,9 +513,6 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
         status = "NATIVE_INPUT_EFFECT" if effect else "NATIVE_DECODE_NO_EFFECT"
     else:
         raise NativeReceiverError("unknown native receiver status")
-
-    if _sha256_file(model) != expected_model_sha256:
-        raise NativeReceiverError("receiver model changed during native probe")
 
     return {
         "sender_role": sender_role,
