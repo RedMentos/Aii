@@ -4,6 +4,20 @@
 **Aktive Architektur:** [V14 Master](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md) §§21–23; [Arbeitsplan](V14_LIVE_WORKPLAN.md).  
 **Vorsicht:** Ein Paper-Abstract ist kein reproduzierter Experimentalbefund; eine nachgeprüfte URL ist keine vollständig gelesene Arbeit. Jeder Eintrag erhält eine *genaue* Evidenzstufe.
 
+## R-107 — Future-Aware Recall for predictive episodic memory (cross-lane link, 2026-11-23)
+
+**Primary source / review record:** Beomsu Kim et al., *Learning What to Recall: Adaptive Multi-Cue Episodic Memory for World Models*, arXiv:2609.34677 (submitted 2026-09-28), https://arxiv.org/abs/2609.34677 . The full paper-method/limitations and OSS/license review are recorded in JEPA research PR [#2413](https://github.com/RedMentos/Aii/pull/2413); this entry is a cross-reference so the active ledger points to the current research candidate. The preprint is not treated as peer-reviewed or independently reproduced.
+
+**Mechanism:** Future-Aware Recall uses realized future outcomes only during training to estimate candidate-memory predictive utility, combines that utility with query-conditioned retrieval scores, and trains a future-blind retriever with a stop-gradient KL target. The reported evaluations are controlled LoopNav, SoundSpaces and AI2-THOR settings. They are paper results, not V14 results. The method does not solve memory writing, compression, forgetting or higher-order memory interactions.
+
+**Reuse / license boundary:** The public `sony/far` implementation at revision `cab815ac2375f6bf38b846ff5a76216de9edbf02` is CC BY-NC 4.0 and has a CUDA/PyTorch/diffusion/video dependency stack; its reported demo resource envelope is unsuitable for the Redmi Android target. No code, checkpoint, dataset or dependency was copied or downloaded.
+
+**V14 experiment hypothesis:** After the current source-verified temporal JEPA/episodic-recall receiver is stable, train a compact query-conditioned cue-utility head over provenance-safe numeric signals already available from T8/World/Memory: temporal-latent distance, episode spacing/age, action-transition compatibility, outcome-profile compatibility and event/modality type. A later committed T8 outcome may supply training-only predictive credit; inference must never see that future outcome. Compare the current latent-distance retriever against recency, random, shuffled-future-credit, single-cue and learned multi-cue variants at matched candidate and compute budgets. Preserve session/source-disjoint holdouts, query-history exclusion, forget/revocation, restart, retention and rollback. No implementation or reproduction is claimed in this entry.
+
+**Status:** FULLTEXT_REVIEWED (cross-linked to #2413) / CANDIDATE_PROPOSED / NOT_REPRODUCED / NO_CODE_OR_WEIGHT_REUSE. Revisit after PR #2418's exact CI and QA source-forget composition; do not let this candidate displace the whole-system memory/learning backlog.
+
+---
+
 ## Benutzung
 
 Bei jedem Forschungsdurchlauf diese Datei zuerst lesen, Kandidaten identifizieren, nach Primärquelle/Duplikaten prüfen, die wesentlichen Tabellen/Limitations/Implementation lesen, Status und nächstes Testexperiment aktualisieren. Danach die relevante V14-Architektur- oder Codeänderung vorschlagen/ausführen und Nachweise zurückverlinken. Stimmige neue Erkenntnisse dürfen den V14-Plan **verbessern/adaptieren**; ein dokumentiertes Ziel des vollständigen V13 wird dabei nie kommentarlos gestrichen. Die Pipeline umfasst auch neue Modelle und Releases, mechanistisch verwandte Arbeiten und negative Studien – nicht nur Paper-Titel.
