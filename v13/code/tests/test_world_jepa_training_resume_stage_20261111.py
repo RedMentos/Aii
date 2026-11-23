@@ -17,7 +17,7 @@ def test_prepostcommit_runtime_hash_and_replacement_four_diagnostic():
     spec.loader.exec_module(builder)
     result = builder.build_sources(CODE, include_postcommit=False)
     runtime = result['v13/runtime.py']
-    assert hashlib.sha256(runtime).hexdigest() == 'b5d17df38c119d124d679233c4026d237a86162e31f1320b7178ed7b592497dc'
+    assert hashlib.sha256(runtime).hexdigest() == '650f78dc277cc06d23f9c0776bae7168b2bb7878e778a2fb01b5203aba86c4e4'
 
     post_path = CODE / 'scripts/postcommit_observer_candidate_20261116.py'
     post_spec = importlib.util.spec_from_file_location('postcommit_diagnostic', post_path)
