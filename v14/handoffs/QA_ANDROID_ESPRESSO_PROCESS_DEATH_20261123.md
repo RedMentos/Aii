@@ -235,3 +235,45 @@ Primary API reference: https://developer.android.com/reference/android/view/View
 Read the exact `1130f646` helper/build and emulator jobs. If they pass, report only Android-emulator view-handler + process-death evidence, then request independent Boss/Core review. If they fail, preserve the actual failure and continue fixing the harness without promoting a programmatic click to physical touch or a GitHub emulator to Redmi proof.
 
 **User action: none.**
+
+
+---
+
+## Run 6 follow-up — executed coordinate control + emulator proof boundary
+
+### Harness review correction
+
+The host driver allowlists only two AndroidTest methods. The first coordinate predicate test was initially a separate `@Test` method, so it would have compiled but not been invoked. The positive and clipped-center negative assertions are now called directly at the start of the allowlisted `testVisibleStopButtonPersistsOff` method.
+
+- Current code/test commit: `a269d6e540cec826580931f0ae8f719d4789c59d`.
+- Exact branch head at this checkpoint: `a269d6e540cec826580931f0ae8f719d4789c59d`.
+- The instrumented class again has exactly two `@Test` methods, matching the host driver's two-method allowlist.
+- The helper uses only root-view coordinates from `getGlobalVisibleRect(Rect, Point)`; no screen-coordinate call remains.
+
+### Earlier emulator result — superseded code, valid for its own scope
+
+The previous exact emulator run `45166934616` on code head `b06e853246f86bee7032c51b039d806ec8d23636` completed SUCCESS. Its log reports:
+
+`PASS: Espresso visibly enabled/stopped the companion; target process identity changed across provider restart; persisted OFF survived. PID/start 2245@611460 -> 2708@700027; first death boundary=activity-teardown`
+
+This establishes the prior code's emulator view-handler + new-process/provider-start behavior. It does not test the later root-coordinate correction or its executed negative control. The run did not need a host force-stop after the first ActivityScenario because the process had already terminated naturally; the host still verified absence before the second launch.
+
+### Current exact-head CI
+
+- Run `45169439876` offline-bridge-security: **SUCCESS**.
+- Run `45169448825` PR workflow: host helper suites passed (**28 UI-helper tests + 20 instrumentation-driver tests**), but its Gradle setup step failed before compilation because provisioning Gradle 8.9 returned HTTP **403**. This is an infrastructure/download failure, not a test assertion failure.
+- The same PR run's emulator process-restart job `137674839449` was still IN_PROGRESS; it had not yet produced a result for code head `a269d6e`.
+- Push Android workflow `45169439845` remained IN_PROGRESS at first readback; both helper/build and emulator jobs were pending/running.
+- The earlier `1130f646` run's coordinate assertions were not sufficient because the standalone method was not in the allowlist. Do not use it as proof for the current negative control.
+
+### Environment and device boundary
+
+- Local full Aii checkout/Android SDK/Gradle/adb remain unavailable; raw GitHub DNS lookup fails in this worker. No local Android compile or full repository test is claimed.
+- The successful emulator run above is GitHub-hosted Android 13 emulator evidence only.
+- Physical Redmi companion remains REDMI_UNVERIFIED. No APK install, pairing, capability grant, UI action, chat, update request, model/weight change or user-data mutation occurred.
+
+### Next action
+
+Read the current `a269d6e` push and PR emulator jobs. Treat HTTP 403 as infrastructure until a rerun or parallel exact-head job distinguishes it from a source failure. Once the executed coordinate control and emulator lifecycle are green on the same code head, request independent Boss/Core review. Keep physical touch, Accessibility, companion background execution and Redmi lifecycle separate.
+
+**User action: none.**
