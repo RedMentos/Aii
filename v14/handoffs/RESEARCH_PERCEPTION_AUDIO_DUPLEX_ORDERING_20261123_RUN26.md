@@ -13,12 +13,18 @@ Boss review identified two races in the previous bridge:
 1. Distinct valid audio packets could target the same still-active turn. The replay guard keyed only by audio event/packet/receipt, while duplex.record overwrote pending and interrupted by target.
 2. The bridge set cancel_event before persisting the handoff. A worker could finish and the next turn could attempt duplex.handoff before the pending relation was durable.
 
-## Planned implementation
+## Implementation
 
-- duplex.record will use Store compare-and-swap and first-writer-wins for each interrupted target turn.
-- A per-Runtime re-entrant handoff lock will serialize audio publication/rollback with the next-turn handoff reader.
-- The bridge will perform Store I/O outside Runtime.lock, commit the handoff first, then signal cancellation.
-- If the target turn changes during the Store write, the exact unconsumed relation will be rolled back before the handoff reader proceeds.
+- duplex.record now uses Store compare-and-swap and first-writer-wins for each interrupted target turn. A second event cannot replace the first pending / interrupted relation.
+- A per-Runtime re-entrant handoff lock serializes audio publication/rollback with the next-turn handoff reader. The bridge performs Store I/O outside Runtime.lock, commits the handoff first, then signals cancellation.
+- If the target turn changed during the Store write, the exact unconsumed relation is rolled back before the handoff reader can proceed.
+- duplex.handoff consumes its pending row with CAS. Telemetry failure after a durable state commit does not make the caller believe the commit failed.
+
+## Canon / runtime consumer
+
+- Canon: A-plane A4 temporal voice/prosody, A5 PerceptPacket source/consent, §4A.4 full-duplex timeline, §4A.5 non-STT-only voice path, STEP 9/11.
+- Consumer: existing Runtime turn and Store/SQLite state; the patch does not create a microphone source or a new Runtime turn from PCM.
+- Existing exact-source, temporal receipt, one-use audio receipt, process-epoch and consent-lease gates remain.
 
 ## Verification boundary
 
