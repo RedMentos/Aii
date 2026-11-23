@@ -12,7 +12,7 @@ import pytest
 from v13 import contracts, world_jepa, world_model
 from v13.store import Store
 from v13.world_jepa_store_authority import verify_committed_transition_page, verify_committed_transitions
-from v13.world_jepa_consumer import WorldJEPAStoreConsumer, _source_disjoint_split
+from v13.world_jepa_consumer import WorldJEPAStoreConsumer, _receipt_row, _source_disjoint_split
 from v13.world_jepa_runtime import (DEFAULT_PERMISSIONS, PERMISSION_KEY, consume_after_commit, receiver_readout, memory_recall)
 
 
@@ -24,7 +24,7 @@ def _make_store(home):
     return store, session
 
 
-def _add_transitions(store, session, start, count, status_overrides=None, source_text_factory=None):
+def _add_transitions(store, session, start, count, status_overrides=None, source_text_factory=None, context_source_refs_factory=None):
     status_overrides = status_overrides or {}
     action_ids = []
     actions = tuple(world_model.ACTIONS)
@@ -39,12 +39,15 @@ def _add_transitions(store, session, start, count, status_overrides=None, source
 
         # Selection must be persisted before dispatch: world_model.transitions()
         # admits only the committed selection that existed at action.created.
+        selection_source_refs = [event["source_ref"]]
+        if context_source_refs_factory is not None:
+            selection_source_refs.extend(context_source_refs_factory(index) or [])
         selection = contracts.packet(
             "ActionSelection",
             "C2_CONTROL",
             event_id,
             generation,
-            [event["source_ref"]],
+            selection_source_refs,
             selected={
                 "action_id": "TEXT_REPORT",
                 "action_type": "TEXT_REPORT",
@@ -357,6 +360,63 @@ def test_source_disjoint_holdout_groups_all_actions_from_one_source():
     corrupt[-1]["source_sha256"] = hashlib.sha256(b"changed-source").hexdigest()
     with pytest.raises(ValueError, match="source identity changed digest"):
         _source_disjoint_split(corrupt)
+
+
+def test_source_disjoint_holdout_groups_shared_context_lineage():
+    rows = []
+    routes = ("simple", "detail", "gist", "both")
+    for source_index in range(32):
+        source_id = f"context-source-{source_index:02d}"
+        source_sha = hashlib.sha256(source_id.encode()).hexdigest()
+        for action_index, route in enumerate(routes):
+            action_id = f"context-action-{source_index:02d}-{action_index}"
+            rows.append({
+                "action_id": action_id, "source_id": source_id, "source_sha256": source_sha,
+                "fingerprint": hashlib.sha256((action_id + "-fp").encode()).hexdigest(),
+                "outcome_sha256": hashlib.sha256((action_id + "-outcome").encode()).hexdigest(),
+                "created": float(source_index * 4 + action_index),
+                "s": [source_index / 32.0, action_index / 4.0, 0.25, 0.75],
+                "a": route, "y": [0.1 + source_index / 100.0, float(action_index % 2), 0.2 + action_index / 10.0],
+            })
+    source_ids = sorted({row["source_id"] for row in rows})
+    def digest_partition(source_id):
+        digest = hashlib.sha256(source_id.encode("utf-8")).digest()
+        return int.from_bytes(digest[:8], "big") % 2
+    source_a, source_b = next(
+        (left, right) for left in source_ids for right in source_ids
+        if left < right and digest_partition(left) != digest_partition(right)
+    )
+    shared_context = {
+        "source_id": "shared-recalled-context",
+        "sha256": hashlib.sha256(b"shared recalled context").hexdigest(),
+        "char_start": 0, "char_end": 23, "modality": "text",
+    }
+    for row in rows:
+        primary = {
+            "source_id": row["source_id"], "sha256": row["source_sha256"],
+            "char_start": 0, "char_end": 8, "modality": "text",
+        }
+        row["source_refs"] = [primary]
+        if row["source_id"] in {source_a, source_b}:
+            row["source_refs"].append(shared_context)
+
+    split = _source_disjoint_split(rows)
+    by_id = {row["action_id"]: row for row in rows}
+    train_ids, holdout_ids = set(split["train_action_ids"]), set(split["holdout_action_ids"])
+    train_pairs = {
+        (ref["source_id"], ref["sha256"])
+        for action_id in train_ids for ref in by_id[action_id]["source_refs"]
+    }
+    holdout_pairs = {
+        (ref["source_id"], ref["sha256"])
+        for action_id in holdout_ids for ref in by_id[action_id]["source_refs"]
+    }
+    assert train_pairs.isdisjoint(holdout_pairs)
+    fold_a = "train" if any(by_id[action_id]["source_id"] == source_a for action_id in train_ids) else "holdout"
+    fold_b = "train" if any(by_id[action_id]["source_id"] == source_b for action_id in train_ids) else "holdout"
+    assert fold_a == fold_b
+    assert split["manifest"]["source_disjoint"] is True
+    assert split["manifest"]["source_sha256_disjoint"] is True
 
 
 def test_censored_outcomes_are_never_learned_or_added_to_processed_ids(tmp_path):
@@ -730,6 +790,86 @@ def _memory_forget_source(store, source_id):
     return memory._forget_source(source_id, None)
 
 
+def test_verified_t8_receipt_persists_all_action_selection_context_refs(tmp_path):
+    store, session = _make_store(tmp_path / "brain-context-lineage")
+    try:
+        context_ref = store.source("a recalled memory source", "MEMORY")
+        _add_transitions(
+            store, session, 0, 1,
+            context_source_refs_factory=lambda _index: [context_ref],
+        )
+        receipts, rejected = verify_committed_transitions(store, limit=16)
+        assert rejected == 0 and len(receipts) == 1
+        assert context_ref in receipts[0].source_refs
+        row = _receipt_row(receipts[0])
+        assert context_ref in row["source_refs"]
+
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=8
+        )
+        consumer = WorldJEPAStoreConsumer(
+            store, tmp_path / "private-context-lineage", learning_enabled=True
+        )
+        pending = consumer.update(limit=16, steps=8, optimizer_permission=True)
+        assert pending["status"] == "INSUFFICIENT_SOURCE_DISJOINT_T8_COHORT"
+        state, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert len(state["pending_rows"]) == 1
+        assert context_ref in state["pending_rows"][0]["source_refs"]
+    finally:
+        store.close()
+
+
+def test_verified_t8_rejects_revoked_action_selection_context_source(tmp_path):
+    store, session = _make_store(tmp_path / "brain-revoked-context")
+    try:
+        context_ref = store.source("revoked recalled memory", "MEMORY")
+        _add_transitions(
+            store, session, 0, 1,
+            context_source_refs_factory=lambda _index: [context_ref],
+        )
+        with store.tx() as connection:
+            connection.execute(
+                "UPDATE sources SET deleted=1 WHERE id=?", (context_ref["source_id"],)
+            )
+        receipts, rejected = verify_committed_transitions(store, limit=16)
+        assert receipts == [] and rejected == 1
+    finally:
+        store.close()
+
+
+def test_memory_forget_discards_untrained_pending_context_source(tmp_path):
+    home = tmp_path / "brain-forget-pending-context"
+    store, session = _make_store(home)
+    try:
+        context_ref = store.source("pending recalled memory", "MEMORY")
+        _add_transitions(
+            store, session, 0, 1,
+            context_source_refs_factory=lambda _index: [context_ref],
+        )
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=8
+        )
+        consumer = WorldJEPAStoreConsumer(
+            store, tmp_path / "private-pending-context", learning_enabled=True
+        )
+        result = consumer.update(limit=16, steps=8, optimizer_permission=True)
+        assert result["status"] == "INSUFFICIENT_SOURCE_DISJOINT_T8_COHORT"
+        state, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert len(state["pending_rows"]) == 1
+        assert context_ref in state["pending_rows"][0]["source_refs"]
+
+        _memory_forget_source(store, context_ref["source_id"])
+
+        state, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert state["pending_rows"] == []
+        source = store.one(
+            "SELECT deleted FROM sources WHERE id=?", (context_ref["source_id"],)
+        )
+        assert source is not None and source["deleted"] == 1
+    finally:
+        store.close()
+
+
 def test_memory_forget_refuses_source_used_by_active_world_jepa(tmp_path):
     home = tmp_path / "brain-forget-active"
     store, session = _make_store(home)
@@ -753,6 +893,45 @@ def test_memory_forget_refuses_source_used_by_active_world_jepa(tmp_path):
         assert after is not None and after["deleted"] == 0
         current, _ = store.state("v14.world_jepa.store_consumer", None)
         assert current["active"]["checkpoint_sha256"] == active["checkpoint_sha256"]
+    finally:
+        store.close()
+
+
+def test_memory_forget_detects_context_source_after_replay_row_eviction(tmp_path):
+    home = tmp_path / "brain-forget-evicted-context"
+    store, session = _make_store(home)
+    try:
+        context_ref = store.source("context used by an old action", "MEMORY")
+        ids = _add_transitions(
+            store, session, 0, 256,
+            context_source_refs_factory=lambda index: [context_ref] if index == 0 else [],
+        )
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=120
+        )
+        result = consume_after_commit(store, home, limit=256)
+        assert result["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+
+        state, version = store.state("v14.world_jepa.store_consumer", None)
+        active = dict(state["active"])
+        target = next(row for row in active["experience_rows"] if row["action_id"] == ids[0])
+        assert context_ref in target["source_refs"]
+        active["experience_rows"] = [
+            row for row in active["experience_rows"] if row["action_id"] != ids[0]
+        ]
+        active["train_ids"] = [item for item in active["train_ids"] if item != ids[0]]
+        active["holdout_ids"] = [item for item in active["holdout_ids"] if item != ids[0]]
+        state = dict(state)
+        state["active"] = active
+        store.set_state("v14.world_jepa.store_consumer", state, expected=version)
+
+        with pytest.raises(ValueError, match="ActionSelection context"):
+            _memory_forget_source(store, context_ref["source_id"])
+
+        after = store.one(
+            "SELECT deleted FROM sources WHERE id=?", (context_ref["source_id"],)
+        )
+        assert after is not None and after["deleted"] == 0
     finally:
         store.close()
 
