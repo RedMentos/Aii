@@ -10,6 +10,7 @@ on:
       - "v13/code/v13/memory.py"
       - "v13/code/tests/test_v14_world_jepa_runtime_port.py"
       - "v13/code/v13/world_jepa_receiver_matrix.py"
+      - "v13/code/v13/bodyview.py"
       - "v13/code/v13/world_jepa_planner.py"
       - "v13/code/tests/test_world_jepa_training_resume_stage_20261111.py"
       - "v13/code/tests/world_jepa_training_resume_disposable_cases_20261111.py"
@@ -39,3 +40,5 @@ jobs:
         run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_world_jepa_training_resume_stage_20261111.py
       - name: Run source-forget guard regressions
         run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_v14_world_jepa_runtime_port.py -k "memory_forget or source_forget_guard"
+      - name: Run B1/B2 WorldJEPA body-receiver regressions
+        run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_v14_world_jepa_runtime_port.py -k "bodyview_jepa_receiver"
