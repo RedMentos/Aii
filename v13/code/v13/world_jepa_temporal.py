@@ -12,6 +12,8 @@ import json
 import math
 import os
 import re
+import time
+import threading
 from pathlib import Path
 import uuid
 
@@ -21,12 +23,19 @@ from v13 import world_jepa, world_jepa_shadow_checkpoint, world_model
 from .common import dumps, now
 from .contracts import packet
 from .world_jepa_consumer import (
-    _fit_role_receivers,
     receiver_utility_gate,
     ROLE_TARGETS,
 )
+from .world_jepa_learning_intent import (
+    TARGET_ROLES as LEARNING_INTENT_TARGET_ROLES,
+    create_learning_intents,
+    fit_role_receivers_with_intents,
+    finalize_weight_delta_receipts,
+    validate_learning_intent,
+    validate_weight_delta_receipt,
+)
 from .world_jepa_runtime import permission_state
-from .world_jepa_store_authority import verify_committed_temporal_page
+from .world_jepa_store_authority import verify_committed_temporal_page, verify_rows
 
 
 STATE_KEY = "v14.world_jepa.temporal_consumer"
@@ -40,6 +49,9 @@ MAX_SESSION_EVENTS = 256
 MIN_WINDOWS = 16
 MIN_PARTITION = 8
 HISTORY_LENGTHS = (2, 3)
+MAX_RECALL_CANDIDATES = 256
+MAX_RECALL_VERIFY_PER_ACTION = 3
+OBSERVED_RECALL_STATUSES = {"FINAL", "FAILED", "ERROR", "DEADLINE", "REJECTED"}
 CENSORED = {"CANCELLED", "ABORTED", "INTERRUPTED"}
 UNKNOWN = {"OUTCOME_UNKNOWN"}
 TERMINAL = {"FINAL", "FAILED", "ERROR", "DEADLINE", "REJECTED"} | CENSORED | UNKNOWN
@@ -590,8 +602,14 @@ def _record_valid(record):
         "receiver_heads", "receiver_metrics", "action_support", "retention_holdouts",
         "metrics", "scan_cursor", "fit_steps",
     }
-    if type(record) is not dict or set(record) != required:
+    optional = {"learning_intents", "weight_delta_receipts"}
+    if type(record) is not dict:
         raise ValueError("invalid temporal checkpoint record")
+    record_keys = set(record)
+    if not required <= record_keys or record_keys - required not in (set(), optional):
+        raise ValueError("invalid temporal checkpoint record")
+    if bool(record_keys & optional) and not optional <= record_keys:
+        raise ValueError("incomplete temporal learning-intent record")
     name = record["checkpoint"]
     if type(name) is not str or re.fullmatch(r"jepa-[0-9a-f]{32}\.npz", name) is None:
         raise ValueError("invalid temporal checkpoint name")
@@ -657,6 +675,33 @@ def _record_valid(record):
         _sha(holdout["target_sha256"])
     if type(record["metrics"]) is not dict:
         raise ValueError("temporal metrics")
+    if optional <= record_keys:
+        intents = record["learning_intents"]
+        receipts = record["weight_delta_receipts"]
+        if (
+            type(intents) is not dict or set(intents) != set(LEARNING_INTENT_TARGET_ROLES)
+            or type(receipts) is not dict or set(receipts) != set(LEARNING_INTENT_TARGET_ROLES)
+        ):
+            raise ValueError("temporal learning-intent map")
+        for role in LEARNING_INTENT_TARGET_ROLES:
+            intent = intents[role]
+            receipt = receipts[role]
+            validate_learning_intent(intent)
+            validate_weight_delta_receipt(receipt)
+            if (
+                intent["target_organ"] != role
+                or receipt["target_organ"] != role
+                or receipt["intent_id"] != intent["intent_id"]
+                or receipt["receipt_id"] != intent.get("weight_delta_receipt_id")
+                or receipt["checkpoint_sha256"] != record["checkpoint_sha256"]
+                or intent.get("checkpoint_sha256") != record["checkpoint_sha256"]
+                or receipt["source_provenance_sha256"] != intent["provenance_sha256"]
+                or receipt["new_parameter_sha256"] != intent.get("new_parameter_sha256")
+                or receipt["parameter_delta_norm"] != intent.get("parameter_delta_norm")
+                or receipt["target_adapter_parameters_changed"] != intent["target_adapter_parameters_changed"]
+                or receipt["receiver_utility_pass"] != intent.get("receiver_utility_pass")
+            ):
+                raise ValueError("temporal learning-intent receipt mismatch")
     return True
 
 
@@ -694,6 +739,8 @@ class TemporalWorldJEPAStoreConsumer:
         self.store = store
         self.seed = seed
         self.ensemble = ensemble
+        self._ephemeral_model = None
+        self._ephemeral_checkpoint_sha = None
         self.home = Path(store.home) / "world_jepa_temporal"
         if self.home.exists() and self.home.is_symlink():
             raise ValueError("temporal checkpoint directory symlink")
@@ -740,6 +787,42 @@ class TemporalWorldJEPAStoreConsumer:
         return world_jepa_shadow_checkpoint.load(
             path, record["source_sha256"], record["checkpoint_sha256"]
         )
+
+    def warm_active_checkpoint(self, *, nonblocking=True):
+        """Warm the exact active checkpoint from an idle/background path.
+
+        Foreground B1/B2 reads use warm_only=True and never synchronously load
+        a cold checkpoint. The shared flock prevents a concurrent update or
+        source-forget operation from replacing the checkpoint during loading.
+        """
+        if type(nonblocking) is not bool:
+            raise ValueError("invalid warm-cache lock mode")
+        try:
+            with self._locked(False, blocking=not nonblocking):
+                state, _ = self._read_state()
+                active = state["active"]
+                if active is None:
+                    self._ephemeral_model = None
+                    self._ephemeral_checkpoint_sha = None
+                    return {"status": "NO_CHECKPOINT", "decision_authority": "NONE"}
+                checkpoint_sha = active["checkpoint_sha256"]
+                if (self._ephemeral_model is not None
+                        and self._ephemeral_checkpoint_sha == checkpoint_sha):
+                    return {
+                        "status": "ALREADY_WARM",
+                        "checkpoint_sha256": checkpoint_sha,
+                        "decision_authority": "NONE",
+                    }
+                model = self._load_model(active)
+                self._ephemeral_model = model
+                self._ephemeral_checkpoint_sha = checkpoint_sha
+                return {
+                    "status": "WARMED",
+                    "checkpoint_sha256": checkpoint_sha,
+                    "decision_authority": "NONE",
+                }
+        except BlockingIOError:
+            return {"status": "LOCK_BUSY", "decision_authority": "NONE"}
 
     def _prune(self, state):
         keep = {
@@ -1048,16 +1131,19 @@ class TemporalWorldJEPAStoreConsumer:
                     "collapse": collapse, "scan_cursor": cursor, "has_more": has_more,
                     "checkpoint_committed": False, "native_body_weights_changed": False,
                 }
-            receiver_heads, receiver_metrics = _fit_role_receivers(
-                model, train_arrays, holdout_arrays, train, holdout
+            learning_intents = create_learning_intents(
+                train, holdout, active, gates, modulation
+            )
+            (
+                receiver_heads, receiver_metrics, receiver_gates,
+                learning_intents, receiver_delta_meta,
+            ) = fit_role_receivers_with_intents(
+                learning_intents, model, train_arrays, holdout_arrays,
+                train, holdout, active, modulation,
             )
             action_support = {}
             for window in train:
                 action_support[window["a"]] = action_support.get(window["a"], 0) + 1
-            receiver_gates = {
-                role: receiver_utility_gate(receiver_metrics, role)
-                for role in ROLE_TARGETS
-            }
             old_holdouts = list(active["retention_holdouts"]) if active else []
             retention_holdouts = (old_holdouts + [_pack_holdout(holdout, model)])[-3:]
             source_sha = _source_sha(all_rows)
@@ -1106,6 +1192,10 @@ class TemporalWorldJEPAStoreConsumer:
             })
             receiver_heads = _json_safe(receiver_heads)
             receiver_metrics = _json_safe(receiver_metrics)
+            learning_intents, weight_delta_receipts = finalize_weight_delta_receipts(
+                learning_intents, receiver_delta_meta, receiver_metrics,
+                receiver_gates, checkpoint["sha256"], metrics,
+            )
             record = {
                 "checkpoint": checkpoint_name,
                 "checkpoint_sha256": checkpoint["sha256"],
@@ -1117,6 +1207,8 @@ class TemporalWorldJEPAStoreConsumer:
                 "holdout_window_ids": [window["window_id"] for window in holdout],
                 "receiver_heads": receiver_heads,
                 "receiver_metrics": receiver_metrics,
+                "learning_intents": learning_intents,
+                "weight_delta_receipts": weight_delta_receipts,
                 "action_support": action_support,
                 "retention_holdouts": retention_holdouts,
                 "metrics": metrics,
@@ -1157,6 +1249,16 @@ class TemporalWorldJEPAStoreConsumer:
                 "optimizer_state_persisted": checkpoint["optimizer_state_persisted"],
                 "native_body_consumed": False,
                 "native_body_weights_changed": False,
+                "target_adapter_parameters_changed": {
+                    role: receipt["target_adapter_parameters_changed"]
+                    for role, receipt in weight_delta_receipts.items()
+                },
+                "learning_intent_ids": {
+                    role: intent["intent_id"] for role, intent in learning_intents.items()
+                },
+                "weight_delta_receipt_ids": {
+                    role: receipt["receipt_id"] for role, receipt in weight_delta_receipts.items()
+                },
                 "decision_authority": "NONE",
             }
 
@@ -1185,6 +1287,297 @@ class TemporalWorldJEPAStoreConsumer:
                 "status": "ROLLED_BACK",
                 "checkpoint_sha256": previous["checkpoint_sha256"],
                 "pending_rows": len(pending),
+                "native_body_weights_changed": False,
+            }
+
+    def episodic_recall(self, session_id, history_length=2, limit=4,
+                        nonblocking=False, budget_s=0.05, warm_only=False):
+        """Retrieve source-verified train-split T8 episodes in the learned temporal space.
+
+        Only the current query history and verified numeric outcomes are used.
+        Holdout windows never enter the recall index; candidate SourceRefs are
+        revalidated before they are returned. The result is prompt-level SHADOW
+        context, not a native-memory write or action authority.
+        """
+        if (type(session_id) is not str or not session_id
+                or history_length not in HISTORY_LENGTHS
+                or type(limit) is not int or not 1 <= limit <= len(world_model.ACTIONS)
+                or type(nonblocking) is not bool or type(warm_only) is not bool
+                or type(budget_s) not in (int, float) or isinstance(budget_s, bool)
+                or not math.isfinite(float(budget_s))
+                or not 0.005 <= float(budget_s) <= 0.25):
+            raise ValueError("invalid temporal episodic recall request")
+        deadline = time.monotonic() + float(budget_s)
+
+        def expired():
+            return time.monotonic() >= deadline
+
+        with self._locked(False, blocking=not nonblocking):
+            state, _ = self._read_state()
+            active = state["active"]
+            if active is None:
+                return {"status": "NO_CHECKPOINT", "items": [],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+            history, positions, history_error = _ordered_session_history(
+                self.store, active["experience_rows"], session_id
+            )
+            if history_error:
+                return {"status": history_error, "items": [],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+            if len(history) < history_length:
+                return {"status": "INSUFFICIENT_HISTORY", "items": [],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+            history_rows = history[-history_length:]
+            if len({row["generation_id"] for row in history_rows}) != 1:
+                return {"status": "GENERATION_GAP", "items": [],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+            if any(
+                positions.get(right["event_id"], -99) != positions.get(left["event_id"], -100) + 1
+                for left, right in zip(history_rows, history_rows[1:])
+            ):
+                return {"status": "NONCONTIGUOUS_HISTORY", "items": [],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+
+            verified_history, rejected_history = verify_rows(self.store, history_rows)
+            if rejected_history or len(verified_history) != len(history_rows):
+                return {
+                    "status": "HISTORY_PROVENANCE_REJECTED", "items": [],
+                    "rejected_history_rows": rejected_history,
+                    "decision_authority": "NONE", "native_memory_consumed": False,
+                }
+            if expired():
+                return {"status": "BUDGET_EXCEEDED", "items": [],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+
+            latest = history_rows[-1]
+            mean_outcome = np.mean(
+                np.asarray([row["y"] for row in history_rows], dtype=np.float64), axis=0
+            )
+            query_x = (
+                list(latest["s"]) + mean_outcome.tolist()
+                + [float(any(row["censored"] for row in history_rows[:-1])),
+                   float(latest["censored"]),
+                   float(history_length) / float(max(HISTORY_LENGTHS))]
+            )
+            model = self._ephemeral_model
+            if (model is None
+                    or self._ephemeral_checkpoint_sha != active["checkpoint_sha256"]):
+                if warm_only:
+                    return {
+                        "status": "MODEL_NOT_WARM", "items": [],
+                        "checkpoint_sha256": active["checkpoint_sha256"],
+                        "decision_authority": "NONE", "native_memory_consumed": False,
+                    }
+                model = self._load_model(active)
+                self._ephemeral_model = model
+                self._ephemeral_checkpoint_sha = active["checkpoint_sha256"]
+            query_latent = np.asarray(
+                model.latent(np.asarray([query_x], dtype=np.float64), target=False),
+                dtype=np.float64,
+            )
+            if (query_latent.ndim != 2 or query_latent.shape[0] != 1
+                    or not np.isfinite(query_latent).all()):
+                raise ValueError("invalid temporal episodic query latent")
+            if expired():
+                return {"status": "BUDGET_EXCEEDED", "items": [],
+                        "checkpoint_sha256": active["checkpoint_sha256"],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+
+            train_window_ids = set(active["train_window_ids"])
+            if not train_window_ids:
+                return {"status": "NO_TRAIN_WINDOWS", "items": [],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+            row_by_id = {row["action_id"]: row for row in active["experience_rows"]}
+            try:
+                windows = build_temporal_windows(
+                    self.store, active["experience_rows"], cancel_check=expired
+                )
+            except InterruptedError:
+                return {"status": "BUDGET_EXCEEDED", "items": [],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+            if expired():
+                return {"status": "BUDGET_EXCEEDED", "items": [],
+                        "decision_authority": "NONE", "native_memory_consumed": False}
+
+            query_action_ids = [receipt.action_id for receipt in verified_history]
+            query_source_hashes = [receipt.source_ref["sha256"] for receipt in verified_history]
+            query_action_set = set(query_action_ids)
+            query_source_set = set(query_source_hashes)
+            train_windows = []
+            for window in windows:
+                if window["window_id"] not in train_window_ids:
+                    continue
+                if len(window["action_ids"]) != history_length + 1:
+                    continue
+                if query_action_set.intersection(window["action_ids"]):
+                    continue
+                if query_source_set.intersection(window["source_sha256s"]):
+                    continue
+                target = row_by_id.get(window["action_ids"][-1])
+                if target is None or target["status"] not in OBSERVED_RECALL_STATUSES:
+                    continue
+                train_windows.append((window, target))
+            train_windows.sort(
+                key=lambda pair: (pair[1]["created"], pair[1]["action_id"])
+            )
+            train_window_count_before_cap = len(train_windows)
+            if len(train_windows) > MAX_RECALL_CANDIDATES:
+                sample_indices = np.linspace(
+                    0, len(train_windows) - 1, num=MAX_RECALL_CANDIDATES, dtype=np.int64
+                )
+                train_windows = [train_windows[int(index)] for index in sample_indices]
+            if not train_windows:
+                return {
+                    "status": "NO_DISJOINT_TRAIN_EPISODES", "items": [],
+                    "candidate_window_count": len(windows),
+                    "train_window_count": 0,
+                    "query_history_action_ids": query_action_ids,
+                    "query_history_source_sha256s": query_source_hashes,
+                    "decision_authority": "NONE", "native_memory_consumed": False,
+                }
+
+            # Bound work between candidate batches; a foreground caller can
+            # abandon the optional recall without processing all 256 windows.
+            candidate_latent_parts = []
+            for start in range(0, len(train_windows), 32):
+                if expired():
+                    return {"status": "BUDGET_EXCEEDED", "items": [],
+                            "checkpoint_sha256": active["checkpoint_sha256"],
+                            "decision_authority": "NONE",
+                            "native_memory_consumed": False}
+                chunk = train_windows[start:start + 32]
+                candidate_x = np.asarray(
+                    [window["X"] for window, _target in chunk], dtype=np.float64
+                )
+                chunk_latents = np.asarray(
+                    model.latent(candidate_x, target=False), dtype=np.float64
+                )
+                if (chunk_latents.ndim != 2
+                        or chunk_latents.shape[0] != len(chunk)
+                        or chunk_latents.shape[1] != query_latent.shape[1]
+                        or not np.isfinite(chunk_latents).all()):
+                    raise ValueError("invalid temporal episodic candidate latents")
+                candidate_latent_parts.append(chunk_latents)
+                if expired():
+                    return {"status": "BUDGET_EXCEEDED", "items": [],
+                            "checkpoint_sha256": active["checkpoint_sha256"],
+                            "decision_authority": "NONE",
+                            "native_memory_consumed": False}
+            candidate_latents = np.concatenate(candidate_latent_parts, axis=0)
+            distances = np.linalg.norm(candidate_latents - query_latent[0], axis=1)
+            if not np.isfinite(distances).all():
+                raise ValueError("nonfinite temporal episodic distances")
+
+            verified_cache = {}
+            rejected_cache = set()
+            items = []
+            rejected_windows = 0
+            for action in world_model.ACTIONS[:limit]:
+                matches = [
+                    (float(distances[index]), index)
+                    for index, (window, _target) in enumerate(train_windows)
+                    if window["a"] == action
+                ]
+                matches.sort(
+                    key=lambda item: (
+                        item[0],
+                        -train_windows[item[1]][1]["created"],
+                        train_windows[item[1]][1]["action_id"],
+                    )
+                )
+                for distance, index in matches[:MAX_RECALL_VERIFY_PER_ACTION]:
+                    if expired():
+                        break
+                    window, target = train_windows[index]
+                    receipts = []
+                    missing = []
+                    for action_id in window["action_ids"]:
+                        receipt = verified_cache.get(action_id)
+                        if receipt is None and action_id not in rejected_cache:
+                            missing.append(action_id)
+                        else:
+                            receipts.append(receipt)
+                    if missing:
+                        verified, rejected = verify_rows(
+                            self.store, [row_by_id[action_id] for action_id in missing]
+                        )
+                        verified_ids = {receipt.action_id for receipt in verified}
+                        rejected_cache.update(
+                            action_id for action_id in missing if action_id not in verified_ids
+                        )
+                        rejected_windows += int(rejected > 0)
+                        for receipt in verified:
+                            verified_cache[receipt.action_id] = receipt
+                        receipts = [verified_cache.get(action_id) for action_id in window["action_ids"]]
+                    if any(receipt is None for receipt in receipts):
+                        continue
+                    if ([receipt.source_ref["source_id"] for receipt in receipts]
+                            != window["source_ids"]
+                            or [receipt.source_ref["sha256"] for receipt in receipts]
+                            != window["source_sha256s"]):
+                        rejected_windows += 1
+                        continue
+                    target_receipt = receipts[-1]
+                    if (target_receipt.action_id != target["action_id"]
+                            or target_receipt.status not in OBSERVED_RECALL_STATUSES):
+                        rejected_windows += 1
+                        continue
+                    y = target["y"]
+                    duration_s = math.expm1(min(20.0, float(y[0])))
+                    output_chars = math.expm1(min(20.0, float(y[2]) * 8.0))
+                    items.append({
+                        "action": action,
+                        "distance": distance,
+                        "window_id": window["window_id"],
+                        "action_id": target["action_id"],
+                        "event_id": target_receipt.event_id,
+                        "generation_id": target_receipt.generation_id,
+                        "target_status": target_receipt.status,
+                        "source_ref": target_receipt.source_ref,
+                        "source_sha256": target_receipt.source_ref["sha256"],
+                        "window_action_ids": list(window["action_ids"]),
+                        "window_source_sha256s": list(window["source_sha256s"]),
+                        "window_source_refs": [receipt.source_ref for receipt in receipts],
+                        "observed_outcome": {
+                            "duration_s": round(min(86400.0, max(0.0, duration_s)), 2),
+                            "success": target_receipt.status == "FINAL",
+                            "output_characters": int(round(min(1000000.0, max(0.0, output_chars)))),
+                        },
+                    })
+                    break
+                if expired():
+                    break
+
+            budget_exhausted = expired()
+            status = (
+                "EPISODIC_RECALL_PARTIAL" if budget_exhausted and items
+                else "BUDGET_EXCEEDED" if budget_exhausted
+                else "EPISODIC_RECALL_SHADOW" if items
+                else "NO_VERIFIED_TRAIN_EPISODES"
+            )
+            return {
+                "status": status,
+                "items": items,
+                "checkpoint_sha256": active["checkpoint_sha256"],
+                "training_source_sha256": active["source_sha256"],
+                "history_length": history_length,
+                "query_history_action_ids": query_action_ids,
+                "query_history_source_sha256s": query_source_hashes,
+                "candidate_window_count": len(windows),
+                "train_window_count_before_cap": train_window_count_before_cap,
+                "train_window_count": len(train_windows),
+                "candidate_cap": MAX_RECALL_CANDIDATES,
+                "candidate_sampling": "TEMPORALLY_STRATIFIED_TRAIN_ONLY",
+                "verified_item_count": len(items),
+                "rejected_windows": rejected_windows,
+                "train_split_only": True,
+                "heldout_used": False,
+                "source_disjoint_from_query": True,
+                "text_disclosed": False,
+                "budget_exhausted": budget_exhausted,
+                "decision_authority": "NONE",
+                "native_memory_consumed": False,
+                "native_body_consumed": False,
                 "native_body_weights_changed": False,
             }
 
@@ -1260,6 +1653,8 @@ class TemporalWorldJEPAStoreConsumer:
                     "predicted_success_probability": float(np.clip(prediction[1], 0.0, 1.0)),
                     "predicted_output_characters": max(0.0, math.expm1(min(20.0, float(prediction[2]) * 8.0))),
                 }
+            intent = active.get("learning_intents", {}).get(role)
+            receipt = active.get("weight_delta_receipts", {}).get(role)
             return {
                 "status": "SHADOW_READOUT_ONLY",
                 "role": role, "prediction": output,
@@ -1271,16 +1666,20 @@ class TemporalWorldJEPAStoreConsumer:
                 "history_source_sha256s": [row["source_sha256"] for row in history_rows],
                 "support_samples": support,
                 "receiver_utility": utility,
+                "learning_intent_id": intent.get("intent_id") if intent else None,
+                "weight_delta_receipt_id": receipt.get("receipt_id") if receipt else None,
+                "target_adapter_revision": intent.get("target_model_revision") if intent else None,
                 "decision_authority": "NONE",
                 "native_body_consumed": False,
                 "native_body_weights_changed": False,
             }
 
 
-    def receiver_matrix(self, session_id, actions, history_length=2, nonblocking=False):
+    def receiver_matrix(self, session_id, actions, history_length=2, nonblocking=False,
+                        warm_only=False):
         """Batch temporal B1/B2/SELF readouts for the foreground bodyview contract."""
         if (type(session_id) is not str or not session_id
-                or history_length not in HISTORY_LENGTHS
+                or history_length not in HISTORY_LENGTHS or type(warm_only) is not bool
                 or type(actions) not in (list, tuple) or not actions
                 or len(actions) > len(world_model.ACTIONS)
                 or any(type(action) is not str or action not in world_model.ACTIONS
@@ -1292,7 +1691,19 @@ class TemporalWorldJEPAStoreConsumer:
             active = state["active"]
             if active is None:
                 return {"status": "NO_CHECKPOINT", "matrix": {},
-                        "decision_authority": "NONE", "native_body_consumed": False}
+                        "decision_authority": "NONE", "native_body_consumed": False,
+                        "native_body_weights_changed": False}
+            model = self._ephemeral_model
+            if (model is None
+                    or self._ephemeral_checkpoint_sha != active["checkpoint_sha256"]):
+                model = None
+                if warm_only:
+                    return {
+                        "status": "MODEL_NOT_WARM", "matrix": {},
+                        "checkpoint_sha256": active["checkpoint_sha256"],
+                        "decision_authority": "NONE", "native_body_consumed": False,
+                        "native_body_weights_changed": False,
+                    }
             history, positions, history_error = _ordered_session_history(
                 self.store, active["experience_rows"], session_id
             )
@@ -1319,7 +1730,10 @@ class TemporalWorldJEPAStoreConsumer:
                 + [float(any(row["censored"] for row in history_rows[:-1])),
                    float(latest["censored"]), float(history_length) / float(max(HISTORY_LENGTHS))]
             )
-            model = self._load_model(active)
+            if model is None:
+                model = self._load_model(active)
+                self._ephemeral_model = model
+                self._ephemeral_checkpoint_sha = active["checkpoint_sha256"]
             X = np.repeat(np.asarray([x], dtype=np.float64), len(actions), axis=0)
             A = np.asarray([world_model.onehot(action) for action in actions], dtype=np.float64)
             latent, spread = model.predict(X, A)
@@ -1328,12 +1742,24 @@ class TemporalWorldJEPAStoreConsumer:
                 raise ValueError("nonfinite temporal receiver matrix")
             history_action_ids = [row["action_id"] for row in history_rows]
             history_source_sha256s = [row["source_sha256"] for row in history_rows]
+            active_intents = active.get("learning_intents", {})
+            active_receipts = active.get("weight_delta_receipts", {})
+            learning_intent_ids = {
+                role: active_intents[role]["intent_id"]
+                for role in LEARNING_INTENT_TARGET_ROLES if role in active_intents
+            }
+            weight_delta_receipt_ids = {
+                role: active_receipts[role]["receipt_id"]
+                for role in LEARNING_INTENT_TARGET_ROLES if role in active_receipts
+            }
             matrix = {}
             for index, action in enumerate(actions):
                 support = int(active["action_support"].get(action, 0))
                 matrix[action] = {}
                 for role in ROLE_TARGETS:
                     utility = receiver_utility_gate(active["receiver_metrics"], role)
+                    intent = active_intents.get(role)
+                    receipt = active_receipts.get(role)
                     common = {
                         "role": role,
                         "support_samples": support,
@@ -1345,6 +1771,9 @@ class TemporalWorldJEPAStoreConsumer:
                         "history_action_ids": history_action_ids,
                         "history_source_sha256s": history_source_sha256s,
                         "receiver_utility": utility,
+                        "learning_intent_id": intent.get("intent_id") if intent else None,
+                        "weight_delta_receipt_id": receipt.get("receipt_id") if receipt else None,
+                        "target_adapter_revision": intent.get("target_model_revision") if intent else None,
                         "decision_authority": "NONE",
                         "native_body_consumed": False,
                         "native_body_weights_changed": False,
@@ -1410,29 +1839,61 @@ class TemporalWorldJEPAStoreConsumer:
                 "history_source_sha256s": history_source_sha256s,
                 "checkpoint_sha256": active["checkpoint_sha256"],
                 "source_sha256": active["source_sha256"],
+                "learning_intent_ids": learning_intent_ids,
+                "weight_delta_receipt_ids": weight_delta_receipt_ids,
                 "decision_authority": "NONE",
                 "native_body_consumed": False,
                 "native_body_weights_changed": False,
             }
 
 
+_RUNTIME_CONSUMER_LOCK = threading.RLock()
+
+
+def runtime_consumer(runtime):
+    """Return one Runtime-scoped temporal consumer shared by idle and body paths."""
+    store = getattr(runtime, "store", None)
+    if store is None:
+        raise ValueError("Runtime store is required for temporal JEPA")
+    with _RUNTIME_CONSUMER_LOCK:
+        learner = getattr(runtime, "_temporal_world_jepa_consumer", None)
+        if learner is None or getattr(learner, "store", None) is not store:
+            learner = TemporalWorldJEPAStoreConsumer(store)
+            setattr(runtime, "_temporal_world_jepa_consumer", learner)
+        return learner
+
+
 def consume_temporal_after_commit(store, home=None, *, limit=PAGE_SIZE, max_pages=MAX_PAGES,
-                                  steps=None, cancel_check=None):
-    """Runtime adapter: same local learning/optimizer gates as the base WorldJEPA."""
+                                  steps=None, cancel_check=None, consumer=None, runtime=None):
+    """Runtime adapter: warm read-only cache even when learning gates are closed."""
     gates = permission_state(store)
+    learner = consumer
+    if learner is None and runtime is not None:
+        learner = runtime_consumer(runtime)
     if not gates["learning_enabled"]:
+        cache = learner.warm_active_checkpoint(nonblocking=True) if learner else {}
         return {"status": "OFF", "checkpoint_committed": False,
-                "native_body_weights_changed": False}
+                "native_body_weights_changed": False,
+                "receiver_cache_status": cache.get("status", "NOT_REQUESTED")}
     if not gates["optimizer_permission"]:
+        cache = learner.warm_active_checkpoint(nonblocking=True) if learner else {}
         return {"status": "PENDING_OPTIMIZER_PERMISSION", "checkpoint_committed": False,
-                "native_body_weights_changed": False}
-    learner = TemporalWorldJEPAStoreConsumer(store)
-    return learner.update(
+                "native_body_weights_changed": False,
+                "receiver_cache_status": cache.get("status", "NOT_REQUESTED")}
+    if learner is None:
+        learner = TemporalWorldJEPAStoreConsumer(store)
+    if getattr(learner, "store", None) is not store:
+        raise ValueError("temporal consumer belongs to a different Store")
+    result = learner.update(
         limit=limit, max_pages=max_pages,
         steps=min(gates["steps"], 40) if steps is None else steps,
         optimizer_permission=True, replay_mode=gates["replay_mode"],
         cancel_check=cancel_check,
     )
+    if result.get("status") not in {"CANCELLED", "ERROR"}:
+        cache = learner.warm_active_checkpoint(nonblocking=True)
+        result["receiver_cache_status"] = cache.get("status", "UNKNOWN")
+    return result
 
 
 @contextmanager
