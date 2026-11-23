@@ -168,6 +168,24 @@ try:
 finally:
     r.close()
 
+# Restart proves the source-only greeting used the normal durable turn lifecycle.
+r = Runtime(Path(sys.argv[1]))
+try:
+    assert r.store.pending_turns(1) == []
+    accepted = r.store.one('SELECT state FROM accepted_turns WHERE event_id=?', (event_id,))
+    assert accepted and accepted['state'] == 'DONE'
+    restored = r.store.one(
+        "SELECT metadata FROM messages WHERE event_id=? AND text='Hallo.' AND status='FINAL'",
+        (event_id,),
+    )
+    assert restored
+    restored_meta = json.loads(restored['metadata'])
+    assert restored_meta['fastpath']['kind'] == 'EXACT_GREETING_ACK'
+    assert r.turn_event is None
+    assert r.store.integrity(True) == []
+finally:
+    r.close()
+
 
 # A real approved user rule outranks the built-in matcher.
 r = Runtime(Path(sys.argv[2]))
@@ -193,12 +211,15 @@ try:
     assert row and row['text'] == 'User rule wins.'
     meta = json.loads(row['metadata'])
     assert 'fastpath' not in meta
-    assert meta['output_policy']['rule_id'] == rid
+    assert meta['output_policy']['rule_id'] != 'BUILTIN_GREETING_ACK_V1'
+    assert meta.get('output_policy_owner') != 'SYSTEM_BUILTIN'
+    assert r.store.read_source(meta['output_policy']['answer_ref']) == 'User rule wins.'
     policy = json.loads(r.store.one(
         "SELECT payload FROM packets WHERE event_id=? AND kind='OutputPolicyDecision'",
         (event_id,),
     )['payload'])
-    assert policy['rule_id'] == rid
+    assert policy['rule_id'] == meta['output_policy']['rule_id']
+    assert policy['answer_ref'] == meta['output_policy']['answer_ref']
     assert all(spy.call_count == 0 for spy in spies)
     assert r.store.integrity(True) == []
 finally:
