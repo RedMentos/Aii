@@ -78,10 +78,10 @@
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
       "proof_environment": "CI synthetic + Android ARM64 cross-compile only; no Redmi native receiver proof",
-      "next_step": "Core: add a dedicated local :callosum native-probe handler bound to trusted last-source tap and exact installed model manifests, with bounded deadline/cancellation and a separate local one-shot approval. Add real operator-dispatch end-to-end and no-local-approval negative tests. Only after exact CI and installed release may a separate user decision authorize one probe; production B3 remains OFF until held-out utility/parity/zero/shuffle/OOD controls pass.",
+      "next_step": "Core has rebased the native-probe Runtime-close barrier onto current JEPA head 9a89b30 (branch core/v14-native-probe-jepa-stack-20261123-run3, head d636196). Exact nested builder/stager/overlay/module pins were verified. Local CPython 3.13.5 helper reproduction PASS; full pytest BLOCKED_NO_CHECKOUT_NO_GITHUB_DNS; Actions run 45278456774 STARTUP_FAILURE_NO_JOBS. PR creation is blocked by GitHub 403 because the account has no verified email; do not bypass. After email verification, open draft PR stacked on #2454 and run exact-head 3.13/3.14 staged/overlay/deployer/migration/privacy checks. Redmi remains STOPPED_BY_USER / REDMI_UNVERIFIED.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T11:28:06.923Z",
-      "proof": "Core #2323 remains diagnostic-only and production B3 OFF/SYMBOLIC. PR #2332's remote owner-read allowlist checks are not a runnable native probe: independent exact-source readback at candidate 198a490e confirms operator.py dispatches to callosum.operator_command, which still rejects native-probe; no local source-bound tap/model consumer or distinct local one-shot approval exists. Boss and QA recorded the blocker on #2332. No CHAT_OPERATOR or probe was sent.",
+      "last_checkpoint": "2026-11-23T22:18:47Z",
+      "proof": "Core branch d636196 adds tracked native probe worker+lease completion, bounded Runtime.close wait before pool/Store teardown, fail-closed timeout, and positive/negative concurrency tests. Stage builder SHA256 852f0c061abd98a325eb033262921a871226ab91a26acfe949dfb1cea9559501 matches runtime_deploy STAGER_SHA256; recovery builder SHA256 f87b63bbbb89f28718d627897d4e5495838f6e1ea2884ccd68239003e749a6b5 matches BUILDER_SHA; native overlay/module/operator Git blob pins match exact readback. Local helper reproduction PASS, not full project pytest. No CI pass; no Redmi proof.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -97,6 +97,31 @@
         },
         "device": "REDMI_UNVERIFIED; private receipt #505 predates merge c2e7 and reports installed c03ff0a",
         "next_action": "Poll exact #2325 CI, fix measured failures, coordinate QA #2324 rebase, then continue Android companion operator/CLI integration"
+      },
+      "core_run18_checkpoint": {
+        "date": "2026-11-23",
+        "owner": "Core & Harness",
+        "branch": "core/v14-native-probe-jepa-stack-20261123-run3",
+        "base_branch": "jepa-memory/v14-temporal-boss-2443-rebase-20261123-run14",
+        "base_sha": "9a89b30fc360c0257dc6765e58e3871a6f2df1c6",
+        "head_sha": "d636196247f65b7d9cce4e7d817212e1d5ca9330",
+        "pr_creation": "BLOCKED_GITHUB_403_UNVERIFIED_EMAIL",
+        "tests": {
+          "local_linux_isolated": "PASS: CPython 3.13.5 cooperative cancellation/lease release and bounded non-cooperative timeout reproduction",
+          "full_repository_local": "BLOCKED_NO_CHECKOUT_NO_GITHUB_DNS",
+          "github_actions": "STARTUP_FAILURE_NO_JOBS run 45278456774"
+        },
+        "pins": {
+          "recovery_builder_sha256": "f87b63bbbb89f28718d627897d4e5495838f6e1ea2884ccd68239003e749a6b5",
+          "stage_builder_sha256": "852f0c061abd98a325eb033262921a871226ab91a26acfe949dfb1cea9559501",
+          "deployer_stager_pin_matches": true,
+          "native_probe_overlay_blob_matches": true,
+          "approval_module_blob_matches": true,
+          "operator_blob_matches": true,
+          "recovery_nested_pins_match": true
+        },
+        "device": "REDMI_STOPPED_BY_USER; REDMI_UNVERIFIED; no action",
+        "next_action": "Verify GitHub account email; then create draft PR and obtain exact-head 3.13/3.14 staged/runtime lifecycle review."
       }
     },
     {
