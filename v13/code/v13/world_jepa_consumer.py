@@ -59,6 +59,57 @@ def _sha(value):
     return value
 
 
+def _source_refs_for_row(row):
+    """Return canonical complete refs; old persisted rows fall back to their event source."""
+    source_id, source_sha = row.get("source_id"), row.get("source_sha256")
+    if type(source_id) is not str or not source_id or len(source_id) > 256:
+        raise ValueError("invalid source identity")
+    _sha(source_sha)
+    raw = row.get("source_refs")
+    if raw is None:
+        return [{"source_id": source_id, "sha256": source_sha}]
+    if type(raw) is not list or not 1 <= len(raw) <= 64:
+        raise ValueError("invalid source ref set")
+    required = {"source_id", "sha256", "char_start", "char_end", "modality"}
+    refs, seen, source_hashes = [], set(), {}
+    for item in raw:
+        if type(item) is not dict or set(item) != required:
+            raise ValueError("invalid source ref")
+        sid, digest = item.get("source_id"), item.get("sha256")
+        start, end, modality = item.get("char_start"), item.get("char_end"), item.get("modality")
+        if (type(sid) is not str or not sid or len(sid) > 256
+                or type(start) is not int or type(end) is not int or not 0 <= start <= end
+                or type(modality) is not str or not modality or len(modality) > 64):
+            raise ValueError("invalid source ref identity")
+        _sha(digest)
+        key = (sid, digest, start, end, modality)
+        if key in seen:
+            raise ValueError("duplicate source ref")
+        prior = source_hashes.get(sid)
+        if prior is not None and prior != digest:
+            raise ValueError("source identity changed digest")
+        source_hashes[sid] = digest
+        seen.add(key)
+        refs.append({
+            "source_id": sid, "sha256": digest, "char_start": start,
+            "char_end": end, "modality": modality,
+        })
+    if (source_id, source_sha) not in {(item["source_id"], item["sha256"]) for item in refs}:
+        raise ValueError("primary event source omitted from source refs")
+    refs.sort(key=lambda item: (
+        item["source_id"], item["sha256"], item["char_start"],
+        item["char_end"], item["modality"],
+    ))
+    return refs
+
+
+def _source_pairs(row):
+    return sorted({
+        (item["source_id"], item["sha256"])
+        for item in _source_refs_for_row(row)
+    })
+
+
 def _receipt_row(receipt):
     if type(receipt.action_id) is not str or not receipt.action_id or len(receipt.action_id) > 128:
         raise ValueError("invalid verified action id")
@@ -68,13 +119,18 @@ def _receipt_row(receipt):
     if route not in world_model.ACTIONS:
         raise ValueError("unknown verified action route")
     source_id = proof.get("source_id")
+    source_sha = _sha(proof.get("source_sha256"))
     if type(source_id) is not str or not source_id or len(source_id) > 256:
         raise ValueError("invalid verified source id")
     return {
         "action_id": receipt.action_id,
         "source_id": source_id,
         "fingerprint": _sha(receipt.fingerprint),
-        "source_sha256": _sha(proof.get("source_sha256")),
+        "source_sha256": source_sha,
+        "source_refs": _source_refs_for_row({
+            "source_id": source_id, "source_sha256": source_sha,
+            "source_refs": proof.get("source_refs"),
+        }),
         "outcome_sha256": _sha(proof.get("outcome_sha256")),
         "created": float(receipt.created),
         "s": _vector(raw.get("s"), 4),
@@ -105,7 +161,7 @@ def _arrays(rows):
 
 
 def _source_disjoint_split(rows):
-    """Deterministic holdout split by source identity, never by action ID."""
+    """Deterministic holdout split over connected components of complete source lineage."""
     if type(rows) not in (list, tuple) or not 16 <= len(rows) <= MAX_ROWS:
         raise ValueError("invalid source-disjoint cohort size")
     canonical, seen_actions, source_hashes = [], set(), {}
@@ -118,31 +174,74 @@ def _source_disjoint_split(rows):
                 or action_id in seen_actions or type(source_id) is not str
                 or not source_id or len(source_id) > 256 or route not in world_model.ACTIONS):
             raise ValueError("invalid source-disjoint identity")
-        prior_sha = source_hashes.get(source_id)
-        if prior_sha is not None and prior_sha != source_sha:
-            raise ValueError("source identity changed digest")
-        source_hashes[source_id] = source_sha
+        refs = _source_refs_for_row(item)
+        pairs = {(ref["source_id"], ref["sha256"]) for ref in refs}
+        if (source_id, source_sha) not in pairs:
+            raise ValueError("primary source missing from source set")
+        for sid, digest in pairs:
+            prior_sha = source_hashes.get(sid)
+            if prior_sha is not None and prior_sha != digest:
+                raise ValueError("source identity changed digest")
+            source_hashes[sid] = digest
         seen_actions.add(action_id)
         canonical.append({
             "action_id": action_id, "source_id": source_id,
-            "source_sha256": source_sha, "fingerprint": _sha(item.get("fingerprint")),
+            "source_sha256": source_sha, "source_refs": refs,
+            "fingerprint": _sha(item.get("fingerprint")),
             "outcome_sha256": _sha(item.get("outcome_sha256")),
             "created": float(item["created"]), "s": _vector(item.get("s"), 4),
             "a": route, "y": _vector(item.get("y"), 3),
         })
     canonical.sort(key=lambda item: item["action_id"])
-    # Group by the content digest as well as source_id. Two different event/source
-    # IDs can point to byte-identical source content; those must never straddle
-    # train and holdout. The earlier source_id-only split leaked this case.
-    def partition(source_sha256):
-        digest = bytes.fromhex(source_sha256)
-        return int.from_bytes(digest[:8], "big") % 2
-    train = [row for row in canonical if partition(row["source_sha256"]) == 0]
-    holdout = [row for row in canonical if partition(row["source_sha256"]) == 1]
-    train_sources = {row["source_id"] for row in train}
-    holdout_sources = {row["source_id"] for row in holdout}
-    train_source_hashes = {row["source_sha256"] for row in train}
-    holdout_source_hashes = {row["source_sha256"] for row in holdout}
+
+    # Any shared source ID or content digest joins rows into one indivisible
+    # component. This closes leakage through recalled/observer context refs,
+    # not just the event's primary user source.
+    parent = list(range(len(canonical)))
+
+    def find(index):
+        while parent[index] != index:
+            parent[index] = parent[parent[index]]
+            index = parent[index]
+        return index
+
+    def union(left, right):
+        a_root, b_root = find(left), find(right)
+        if a_root != b_root:
+            parent[max(a_root, b_root)] = min(a_root, b_root)
+
+    owners = {}
+    row_pairs = []
+    for index, row in enumerate(canonical):
+        pairs = _source_pairs(row)
+        row_pairs.append(pairs)
+        for sid, digest in pairs:
+            for token in ("id:" + sid, "sha:" + digest):
+                prior = owners.get(token)
+                if prior is None:
+                    owners[token] = index
+                else:
+                    union(index, prior)
+
+    components = {}
+    for index, pairs in enumerate(row_pairs):
+        components.setdefault(find(index), []).append(index)
+    bucket_by_root = {}
+    for root, indices in components.items():
+        digests = sorted({digest for index in indices for _sid, digest in row_pairs[index]})
+        # Preserve the historical source-digest partition for single-source
+        # cohorts; multi-source components get a stable combined digest.
+        component_digest = digests[0] if len(digests) == 1 else hashlib.sha256(
+            "|".join(digests).encode("ascii")
+        ).hexdigest()
+        bucket_by_root[root] = int.from_bytes(bytes.fromhex(component_digest)[:8], "big") % 2
+
+    train = [row for index, row in enumerate(canonical) if bucket_by_root[find(index)] == 0]
+    holdout = [row for index, row in enumerate(canonical) if bucket_by_root[find(index)] == 1]
+    train_sources = {sid for row in train for sid, _digest in _source_pairs(row)}
+    holdout_sources = {sid for row in holdout for sid, _digest in _source_pairs(row)}
+    train_source_hashes = {digest for row in train for _sid, digest in _source_pairs(row)}
+    holdout_source_hashes = {digest for row in holdout for _sid, digest in _source_pairs(row)}
     if train_sources & holdout_sources:
         raise ValueError("source leakage across holdout")
     if train_source_hashes & holdout_source_hashes:
@@ -152,10 +251,12 @@ def _source_disjoint_split(rows):
     if (len({row["a"] for row in train}) < 2 or len({row["a"] for row in holdout}) < 2
             or not {row["a"] for row in holdout}.issubset({row["a"] for row in train})):
         raise ValueError("insufficient source-disjoint action support")
+
     def content_digest(row):
         raw = json.dumps({"s": row["s"], "a": row["a"], "y": row["y"]},
                          sort_keys=True, separators=(",", ":"), allow_nan=False)
         return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
     if ({content_digest(row) for row in train} & {content_digest(row) for row in holdout}):
         raise ValueError("identical content crossed source holdout")
     train_ids = tuple(row["action_id"] for row in train)
@@ -379,10 +480,12 @@ class WorldJEPAStoreConsumer:
             raise ValueError("replay memory budget")
         row_ids = []
         for row in rows:
-            if type(row) is not dict or set(row) != {
+            base_row_keys = {
                 "action_id", "source_id", "fingerprint", "source_sha256", "outcome_sha256",
                 "created", "s", "a", "y",
-            }:
+            }
+            if type(row) is not dict or set(row) not in (
+                    base_row_keys, base_row_keys | {"source_refs"}):
                 raise ValueError("invalid replay memory row")
             if (type(row["source_id"]) is not str or not row["source_id"]
                     or len(row["source_id"]) > 256
@@ -411,16 +514,25 @@ class WorldJEPAStoreConsumer:
         row_by_id = {row["action_id"]: row for row in rows}
         source_hashes = {}
         for row in rows:
-            prior = source_hashes.get(row["source_id"])
-            if prior is not None and prior != row["source_sha256"]:
-                raise ValueError("persisted source digest changed")
-            source_hashes[row["source_id"]] = row["source_sha256"]
-        train_sources = {row_by_id[action_id]["source_id"] for action_id in train_ids}
-        holdout_sources = {row_by_id[action_id]["source_id"] for action_id in holdout_ids}
+            for sid, digest in _source_pairs(row):
+                prior = source_hashes.get(sid)
+                if prior is not None and prior != digest:
+                    raise ValueError("persisted source digest changed")
+                source_hashes[sid] = digest
+        train_sources = {
+            sid for action_id in train_ids for sid, _digest in _source_pairs(row_by_id[action_id])
+        }
+        holdout_sources = {
+            sid for action_id in holdout_ids for sid, _digest in _source_pairs(row_by_id[action_id])
+        }
         if train_sources & holdout_sources:
             raise ValueError("persisted source holdout overlap")
-        train_source_hashes = {row_by_id[action_id]["source_sha256"] for action_id in train_ids}
-        holdout_source_hashes = {row_by_id[action_id]["source_sha256"] for action_id in holdout_ids}
+        train_source_hashes = {
+            digest for action_id in train_ids for _sid, digest in _source_pairs(row_by_id[action_id])
+        }
+        holdout_source_hashes = {
+            digest for action_id in holdout_ids for _sid, digest in _source_pairs(row_by_id[action_id])
+        }
         if train_source_hashes & holdout_source_hashes:
             raise ValueError("persisted source digest holdout overlap")
         def persisted_content(action_id):
@@ -465,7 +577,7 @@ class WorldJEPAStoreConsumer:
             "created", "s", "a", "y",
         }
         for row in rows:
-            if type(row) is not dict or set(row) != required:
+            if type(row) is not dict or set(row) not in (required, required | {"source_refs"}):
                 raise ValueError("invalid pending T8 row")
             action_id, source_id = row["action_id"], row["source_id"]
             if (type(action_id) is not str or not action_id or len(action_id) > 128
@@ -479,10 +591,11 @@ class WorldJEPAStoreConsumer:
             _sha(row["outcome_sha256"])
             _vector(row["s"], 4)
             _vector(row["y"], 3)
-            prior = source_hashes.get(source_id)
-            if prior is not None and prior != source_sha:
-                raise ValueError("pending source digest changed")
-            source_hashes[source_id] = source_sha
+            for sid, digest in _source_pairs(row):
+                prior = source_hashes.get(sid)
+                if prior is not None and prior != digest:
+                    raise ValueError("pending source digest changed")
+                source_hashes[sid] = digest
             seen.add(action_id)
 
     def _read_state(self):
@@ -1084,7 +1197,7 @@ def source_forget_guard(store, source_id):
         pending_rows = state["pending_rows"]
         pending_for_source = [
             row["action_id"] for row in pending_rows
-            if row["source_id"] == source_id
+            if source_id in {sid for sid, _digest in _source_pairs(row)}
         ]
 
         for label, record in (
@@ -1094,7 +1207,7 @@ def source_forget_guard(store, source_id):
             if record is None:
                 continue
             if any(
-                row["source_id"] == source_id
+                source_id in {sid for sid, _digest in _source_pairs(row)}
                 for row in record["experience_rows"]
             ):
                 raise ValueError(
@@ -1124,11 +1237,35 @@ def source_forget_guard(store, source_id):
                     + label + " checkpoint (including evicted replay rows); "
                     "safe unlearning is not implemented"
                 )
+            selection_query = (
+                "SELECT 1 FROM actions a "
+                "JOIN events e ON e.id=a.event_id "
+                "JOIN packets p ON p.kind='ActionSelection' AND p.event_id=a.event_id "
+                "AND p.generation_id=e.generation_id "
+                "WHERE a.rowid<=? AND a.outcome IS NOT NULL AND a.expected LIKE ? "
+                "AND a.status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED') "
+                "AND p.created<=a.created "
+                "AND COALESCE(json_extract(p.payload,'$.stage'),'COMMIT')!='PREDICTION' "
+                "AND EXISTS (SELECT 1 FROM json_each(p.payload,'$.provenance') AS source_ref "
+                "WHERE json_extract(source_ref.value,'$.source_id')=?)"
+            )
+            selection_params = [cursor, '%"forecast"%', source_id]
+            if pending_for_source:
+                placeholders = ",".join("?" for _ in pending_for_source)
+                selection_query += " AND a.id NOT IN (" + placeholders + ")"
+                selection_params.extend(pending_for_source)
+            selection_query += " LIMIT 1"
+            if store.rows(selection_query, tuple(selection_params)):
+                raise ValueError(
+                    "Source may have trained a WorldJEPA "
+                    + label + " checkpoint through ActionSelection context "
+                    "(including evicted replay rows); safe unlearning is not implemented"
+                )
 
         if pending_for_source:
             next_state = dict(state)
             next_state["pending_rows"] = [
-                row for row in pending_rows if row["source_id"] != source_id
+                row for row in pending_rows if row["action_id"] not in pending_for_source
             ]
             try:
                 store.set_state(STATE_KEY, next_state, expected=version)
