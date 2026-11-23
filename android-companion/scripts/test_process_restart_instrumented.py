@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Drive Espresso UI checks around an externally forced Android process death.
 
-The host wakes/unlocks the disposable emulator, launches the visible activity,
-and verifies WindowManager focus plus ActivityTaskManager resume before
-starting Espresso. It then verifies a real visible Stop action, kills the app
-from outside the process, and checks that a fresh provider startup is OFF.
+The host wakes/unlocks the disposable emulator but leaves ActivityScenario as
+the sole MainActivity launcher. Espresso then verifies the visible Stop action;
+the host kills the app from outside the process and checks that fresh provider
+startup is OFF.
 """
 from __future__ import annotations
 
@@ -88,68 +88,27 @@ def wait_for_process(*, present: bool, timeout: float = 45.0) -> str:
     )
 
 
-def wait_for_activity_focus(
-    timeout: float = 30.0, *, start_output: str = "", pid: str = "",
-) -> None:
-    """Require the companion to be both resumed and the focused window."""
-    deadline = time.monotonic() + timeout
-    last_focus: list[str] = []
-    last_resumed: list[str] = []
-    last_package_lines: list[str] = []
-    while time.monotonic() < deadline:
-        # The summary dumpsys window output includes mCurrentFocus; the
-        # windows subcommand can omit that summary on some API-33 images.
-        windows = adb("shell", "dumpsys", "window", timeout=20.0)
-        activities = adb("shell", "dumpsys", "activity", "activities", timeout=20.0)
-        last_focus = [
-            line.strip() for line in windows.splitlines()
-            if "mCurrentFocus" in line or "mFocusedApp" in line
-        ]
-        last_resumed = [
-            line.strip() for line in activities.splitlines()
-            if "mResumedActivity" in line or "topResumedActivity" in line
-        ]
-        last_package_lines = [
-            line.strip() for line in (windows + "\n" + activities).splitlines()
-            if PACKAGE in line
-        ][:8]
-        focus_ok = any(PACKAGE in line for line in last_focus)
-        resumed_ok = any(PACKAGE in line for line in last_resumed)
-        if focus_ok and resumed_ok:
-            return
-        time.sleep(0.5)
+def prepare_emulator_for_instrumentation() -> None:
+    """Wake/unlock the disposable emulator without pre-launching MainActivity.
 
-    raise AssertionError(
-        "companion MainActivity did not obtain window focus; pidof=" + pid
-        + "; am_start=" + repr(start_output[-1200:])
-        + "; focus=" + repr(last_focus[:3])
-        + "; resumed=" + repr(last_resumed[:3])
-        + "; package_lines=" + repr(last_package_lines)
-        + "; logcat=" + diagnostic_logcat()
-    )
-
-
-def prepare_foreground_activity() -> None:
-    """Wake and foreground the app on the disposable CI emulator only."""
+    ActivityScenario is the single owner of the test Activity launch. Starting
+    MainActivity from the host first created a second launch path and left the
+    Espresso root without window focus on the API-33 emulator.
+    """
     adb("shell", "input", "keyevent", "KEYCODE_WAKEUP")
     adb("shell", "wm", "dismiss-keyguard")
-    # Match the established companion launcher path: no HOME key (which
-    # exercises System UI unnecessarily) and no -W wait-for-draw ambiguity.
-    start_output = adb("shell", "am", "start", "-n", COMPONENT, timeout=45.0)
-    time.sleep(2.0)
     pid = process_id()
-    if not pid:
+    if pid:
         raise AssertionError(
-            "am start did not create companion process; am_start="
-            + repr(start_output[-1200:]) + "; logcat=" + diagnostic_logcat()
+            "companion process must be stopped before ActivityScenario launch; pidof="
+            + pid
         )
-    wait_for_activity_focus(start_output=start_output, pid=pid)
 
 
 def run_instrumentation(method: str, timeout: float = 180.0) -> str:
     if method not in ALLOWED_METHODS:
         raise ValueError("instrumentation method is not allowlisted")
-    prepare_foreground_activity()
+    prepare_emulator_for_instrumentation()
     target = TEST_CLASS + "#" + method
     output = adb(
         "shell", "am", "instrument", "-w", "-r",
