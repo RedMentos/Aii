@@ -349,9 +349,9 @@ def build_dataset(
 
 def write_manifest(manifest: Mapping[str, object], path: str | Path) -> str:
     """Write canonical JSON and return SHA-256 of the exact bytes."""
-    payload = json.dumps(manifest, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    payload = json.dumps(manifest, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8") + b"\n"
     digest = hashlib.sha256(payload).hexdigest()
-    Path(path).write_bytes(payload + b"\n")
+    Path(path).write_bytes(payload)
     return digest
 
 
