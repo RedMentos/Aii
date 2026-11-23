@@ -167,3 +167,33 @@ This supersedes the previous unresolved-trigger note above.
 - This is the first observed exact-head PR-triggered Android workflow for #2415. Queued is not PASS; read the complete job results before changing the acceptance status.
 - The earlier #2417 run `45124910049` demonstrates that the emulator test can execute on a separate branch; it remains FAIL because System UI did not recover after two safe Wait actions.
 - Current branch head at this checkpoint: `c254c717c897b4502bc83fbf4166c130721206c2`. Exact local test execution remains NOT_RUN; physical Redmi remains REDMI_UNVERIFIED.
+
+
+## QA run 12 — post-restart transport classification and fresh owner-read (2026-11-23 07:33 UTC)
+
+### QA code and exact CI
+
+- Base QA branch: `qa/v14-companion-stop-durability-20261123-run1`, advanced by commit `12bf044646c054fc4f878b1001b10568152adf40` to include its own branch in the workflow `pull_request.branches` filter. This makes a PR targeting the QA branch actually eligible to trigger the Android workflow.
+- Follow-up: PR #2421, branch `qa/v14-companion-stop-durability-followup-20261123-run3`, exact code/test commit `e34102fe87bf24c996fec118c9e9560faaa2b258`. It adds a second post-force-stop/relaunch UI wrapper; transport/UI failure only emits `PARTIAL_PASS` after verifying the earlier visible Stop marker and persisted OFF, otherwise `DURABLE_STOP_PROOF_FAILED`. It always re-raises the original UI failure. The first Stop wait also now classifies RuntimeError.
+- Tests cover five exception classes (AssertionError, TimeoutExpired, CalledProcessError, FileNotFoundError, RuntimeError), plus missing-marker and enabled=true negative controls. LOCAL_LINUX_ISOLATED reproduction: PASS.
+- Exact PR workflow run `45131391006`: Android companion helper/build job `137547472493` **SUCCESS**; log shows 23 Python helper tests, then Gradle `assembleDebug` + `testDebugUnitTest` BUILD SUCCESSFUL. Emulator process-restart job `137547472794` was still IN_PROGRESS at this checkpoint; no emulator acceptance claimed.
+- Base PR #2415 workflow run `45130945436`: Gradle/Robolectric job SUCCESS; emulator process-restart job `137546050275` still IN_PROGRESS.
+- Superseded PR #2419 head `d282e477` had an exact helper-job failure because the new fixture wrote a literal backslash-n instead of a newline in the Stop marker. The corrected fixture is in `e34102fe`; PR #2419 was closed as superseded by #2421. The failed run remains part of the evidence.
+- Earlier exact run `45128234393` failed Gradle on Maven Central HTTP 429 and failed the emulator at the initial STOPPED observation after two safe System-UI Wait actions, before any Stop tap. It cannot prove durable Stop behavior. No Close-app selection and no increase to the wait budget.
+
+### Fresh private Redmi owner-read — read-only, no new turn
+
+- Private issue #717 PIPELINE_STATUS (07:12 UTC), #716 DIAGNOSTICS and #715 HEALTH (06:45 UTC): installed release remains `aed1d2b826290c95c70356b5d8b864b5ef382be4`; updater auto-enabled; Runtime/Dashboard UP_TO_DATE; last_error NONE.
+- Last stored turn remains 57.74 s total. B1_DETAIL/B2_GIST remain TIME_BUDGET at 53.2/54.2 s; C3 3.1 s. Correctness/useful offers are not established.
+- Instant native-residency sample: 0 mapped native processes with UNKNOWN_NO_GROUP_CHILDREN; this is not a free-RAM or sustained-residency measurement. HEALTH reports 1,245 MiB MemAvailable and 1,289 MiB disk free, but its Runtime field is UNAVAILABLE while DIAGNOSTICS reports RUNNING; preserve that disagreement.
+- No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, shell action, model/weight swap, permission change or user-data mutation was performed.
+
+### Cross-lane acceptance boundary
+
+- Boss PR #2370 exact head `9e71991acab51c6aa9afc588614953714839cb18` has green Python 3.13/3.14 composed Runtime, staged/integrated regression, audio/arithmetic and Android arm64 cross-compile jobs. Its C4/C3 path uses a real Runtime/SQLite and source-bound OfferPackets but synthetic native generators; this is WIRED_SYNTHETIC / CI_GREEN, not native model or Redmi proof. QA posted the 2 s/body versus 53 s/body acceptance caveat on #2370.
+- Development release remains `aed1d2b`; #2370/#2415/#2421 are drafts, not release commits. Physical Redmi companion, MediaProjection, Accessibility/UI control, native B1/B2 offer consumption and correct responsive C3 output remain REDMI_UNVERIFIED / P0 OPEN.
+
+### Next action
+
+- Read exact completion of emulator job `137547472794` and base job `137546050275`. If System UI ANR persists, retain the visible UI failure and only report a durable partial result if the actual Stop tap, persisted OFF marker, PID disappearance and post-restart OFF are all observed. Do not select Close app or relax the test.
+- Update #1984 and this handoff with final emulator result. No user action is needed.
