@@ -39,3 +39,17 @@ QA found that `_stored_receipt_outcome()` trusted mutable derived status fields 
 ## Next step
 
 Run exact-head Python 3.13/3.14 Core and staged Runtime CI, fix any failures, then request independent QA/Boss review. Merge only after the parent companion process-restart acceptance is green. No user action is required.
+
+
+## Run 2 — exact parent-PR integration and verification readback (2026-11-23)
+
+- The security correction is now included directly in existing Core PR #2450, avoiding a second stacked PR. The branch was fast-forwarded from the verified parent head `d09fe4034742679c22f196141abd71204cc74c21`; current PR branch head after follow-up timestamp hardening is `5534b24d55a7efb68283d4b5cb94ea94fa58e5ec`.
+- Follow-up hardening rejects non-finite float timestamps without converting arbitrary-size integers to float. The positive crash-recovery test now restarts at local clock 5000 while the signed receipt's validity window is around 1000; it must still recover using the stored, signed-window-bound verification timestamp.
+- Exact source readback: signed envelope persistence and signature revalidation are present in `android_outcomes.py` and `android_companion_runtime.py`; both adversarial status-forgery directions are present in `test_android_companion_runtime.py`. The current workflow file was restored byte-identically to the previously green branch version (blob `1331781aafd53b42521c1e8f9ae1a0f54299abba`).
+- LOCAL_LINUX synthetic cryptographic reproduction: PASS on CPython 3.13.5 / cryptography 46.0.0. The exact test helper's deterministic P-256 signing construction was reproduced; both signed-status/forged-derived-status directions were rejected, and verification at stored time 1000 passed while current-time verification at 5000 failed as expected. This is a focused cryptographic invariant probe, NOT the project pytest suite or exact production module execution.
+- LOCAL_LINUX project suite: BLOCKED / NOT_RUN — no repository checkout is mounted and `git ls-remote` cannot resolve GitHub.
+- GitHub Actions: prior exact-head runs `45264814820` (pull_request) and `45264803102` (push) ended `startup_failure` with zero jobs. After restoring the workflow file, the new code head `5534b24` has no associated run yet. The older green #2450 runs `45220123902` and `45220124028` are for parent head `d09fe403` and do not verify this fix. No CI PASS is claimed.
+- Creating a separate PR and posting a PR comment both returned GitHub HTTP 403: the connected GitHub account has no verified email address. The correction remains committed on existing PR #2450, so no new PR is required for the current integration path.
+- Redmi remains `REDMI_UNVERIFIED`; the last known owner-authenticated receipt was STOPPED_BY_USER. No device command, restart, chat send, update request, permission change, model/weight swap or data mutation was performed.
+
+**Next:** resolve why GitHub Actions creates `startup_failure`/zero-job runs for the updated branch, then obtain exact Python 3.13/3.14 CI and independent QA review. Keep #2450 NOT_RELEASED until its parent Android process-restart/System-UI ANR gate is green. Boss should mirror this Core handoff into the shared `V14_USER_NEXT_ACTION.md`/board; Core does not overwrite the concurrently owned shared board.
