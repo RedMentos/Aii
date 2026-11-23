@@ -1,3 +1,17 @@
+## Latest verified status — Perception run 10 (2026-11-23T00:38:13Z)
+
+**No user action is required.** Do not run a manual Termux command, send a chat, change permissions, request an update, download a model, or swap weights for these draft candidates.
+
+- **Redmi / deployment:** private V13OBS issue #115 was read at 2026-11-23T00:36:32Z. Its latest pipeline receipt still reports installed release aed1d2b826290c95c70356b5d8b864b5ef382be4, auto-update enabled, Runtime/Dashboard UP_TO_DATE, last_error=NONE; last updater check 00:22:04Z. This confirms the installed release only; no new candidate is deployed.
+- **Latest stored turn:** still FINAL, 57.7388 s total. B1_DETAIL and B2_GIST remain TIME_BUDGET at 53.2/54.2 s; C2 is OK; C3 is 3.1 s. Native probe returned 0 mapped processes. This is not a new model-quality result, free-RAM measurement or sustained-residency proof. Official Age remains 0; Lab selector is stage 10 / effective implemented stage 5, physical feature execution unverified, learning commit authority requires separate SHADOW.
+- **Perception code candidate:** PR #2395, exact head 26ccaf0825d4ebf02aedcdae781a9164b04f53d5, DRAFT / NOT_RELEASED. It adds source/hash lineage to A3 global and tile ridge projectors and conservatively invalidates affected or legacy-unknown weights on forget. Local isolated helper tests 7/7 PASS; exact-head focused Python 3.13/3.14 CI 2/2 PASS; offline bridge security PASS. Exact-head staged-runtime and integrated-regression FAIL because the JEPA/QA source-lifecycle composer still pins the old vision.py and its overlay replaces vision.forget(). The new helper also needs to be included in the staged source-copy pin list. Owners were notified on #2372 and #2391; PR #2395 remains draft until the combined path passes.
+- **Research:** R-101 records a full-read ridge-head exact-unlearning preprint and a local synthetic sufficient-statistics equivalence probe. It is a follow-up optimization idea, not implemented runtime behavior.
+- **Full local Aii suite:** BLOCKED — no repository checkout is mounted and GitHub DNS resolution fails in this worker. The helper suite is the only local test claimed. No Termux/Redmi test was run.
+
+**Next internal step:** JEPA must carry the source-lineage invalidation into its overlaid vision_forget path; QA must pin/copy both vision.py and vision_source_lineage.py. Then rerun exact staged-runtime and integrated regression before considering merge. The separate RAW EYE→A5→real C3 consumer path remains open. **Keine Aktion nötig.**
+
+---
+
 ## Latest verified status — 2026-11-23T00:05:08.222Z
 
 **No user action is required.** Do not run a manual Termux command, send a chat, change permissions, download/swap a model, or request an update for the current candidate.
