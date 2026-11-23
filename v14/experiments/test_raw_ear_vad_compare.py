@@ -22,7 +22,7 @@ from raw_ear_vad_compare import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
-EXPECTED_RAW_EAR_V3_BLOB = "81ae3e453c9ef378b072dfc9d243098427e24baa"
+EXPECTED_RAW_EAR_V3_BLOB = "5dbb0fd5e17eb9bcb190d7a3743bdd1ef1ecbb9d"
 EXPECTED_TEMPORAL_VOICE_BLOB = "098ce2ec6bb0b744166d711a3401b7acf0252de1"
 V3_SOURCE = ROOT / "v13" / "code" / "v13" / "audio_voice_cues.py"
 TEMPORAL_SOURCE = ROOT / "v13" / "code" / "v13" / "audio_temporal_evidence.py"
