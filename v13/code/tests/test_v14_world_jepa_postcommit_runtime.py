@@ -854,6 +854,7 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
                 })])
 
         runtime.pool.get = lambda role: CaptureReceiverRunner(role)
+        _, temporal_recall_state_version = runtime.store.state("v14.world_jepa.temporal_consumer", None)
         try:
             receiver_specs = (
                 ("B1_DETAIL", 2, "DURATION+OUTPUT_CHARS"),
@@ -933,6 +934,8 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
                         assert type(runtime.store.read_source(source_ref)) is str
                 assert len(delivered["evidence_refs"]) == 1
                 assert runtime.store.read_source(delivered["evidence_refs"][0]) == "verified action history"
+            _, temporal_recall_state_version_after = runtime.store.state("v14.world_jepa.temporal_consumer", None)
+            assert temporal_recall_state_version_after == temporal_recall_state_version
         finally:
             runtime.pool.get = original_pool_get
     finally:
@@ -1117,5 +1120,23 @@ def test_planner_withholds_each_role_when_its_own_negative_control_fails(tmp_pat
             restored = consume_world_planner_shadow(store, event_ids[-1], home=home)
             assert restored["status"] == "SHADOW_PLANNER_READY"
             assert read_world_planner_shadow(store, event_ids[-1])["status"] == "SHADOW_PLANNER_READY"
+    finally:
+        store.close()
+
+
+def test_temporal_episodic_recall_fails_closed_without_checkpoint(tmp_path):
+    home = tmp_path / "temporal-episodic-no-checkpoint"
+    store, session = _make_store(home)
+    try:
+        from v13.world_jepa_temporal import TemporalWorldJEPAStoreConsumer
+
+        learner = TemporalWorldJEPAStoreConsumer(store)
+        result = learner.episodic_recall(
+            session, history_length=2, limit=len(world_model.ACTIONS), nonblocking=True,
+        )
+        assert result["status"] == "NO_CHECKPOINT"
+        assert result["items"] == []
+        assert result["decision_authority"] == "NONE"
+        assert result["native_memory_consumed"] is False
     finally:
         store.close()
