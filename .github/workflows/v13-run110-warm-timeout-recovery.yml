@@ -1,0 +1,56 @@
+name: V13 Run110 warm native runner recovery
+
+on:
+  push:
+    branches:
+      - core/v14-native-warm-timeout-recovery-20261123-run1
+    paths:
+      - .github/workflows/v13-run110-warm-timeout-recovery.yml
+      - v13/code/v13/runners.py
+      - v13/code/tests/test_runner_timeout_warm_recovery.py
+      - v13/code/tests/test_sparse_runner_lifecycle.py
+  pull_request:
+    paths:
+      - .github/workflows/v13-run110-warm-timeout-recovery.yml
+      - v13/code/v13/runners.py
+      - v13/code/tests/test_runner_timeout_warm_recovery.py
+      - v13/code/tests/test_sparse_runner_lifecycle.py
+
+permissions:
+  contents: read
+
+jobs:
+  warm-recovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    env:
+      V13_NO_AUTOSTART: "1"
+      NO_MODEL_DOWNLOADS: "1"
+      DO_NOT_TRACK: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install test-only dependency
+        run: python -m pip install --disable-pip-version-check --no-input pytest
+      - name: Compile exact runner source
+        run: python -m py_compile v13/code/v13/runners.py
+      - name: Run warm recovery and existing sparse runner lifecycle tests
+        working-directory: v13/code
+        env:
+          PYTHONPATH: .
+        run: python -m pytest -q tests/test_runner_timeout_warm_recovery.py tests/test_sparse_runner_lifecycle.py
+      - name: Check whitespace and public repository privacy
+        run: |
+          git diff --check 8d93236c753f0194224c19edc7411d8d7082b1d6 HEAD
+          python v13/code/scripts/public_repo_privacy_scan.py --base 8d93236c753f0194224c19edc7411d8d7082b1d6 --head HEAD --no-worktree
