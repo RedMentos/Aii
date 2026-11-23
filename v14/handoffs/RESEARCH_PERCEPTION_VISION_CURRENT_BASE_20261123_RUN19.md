@@ -132,3 +132,12 @@ On the available LOCAL_LINUX container (x86_64, Python 3.13.5), the exact helper
 - 10,000 complete decompose → pool → novelty calls: **0.0806 ms/call** mean wall-clock on this host.
 - One-call tracemalloc: **15,008 bytes peak**, 5,936 bytes current at sample time.
 - This is a small-host CPU/memory probe only. It does not include Pillow/frame decode, the temporal registry, A4, native model inference or Android scheduling. Do not project the number to ARM/Redmi.
+
+
+## Latest sanitized private device receipt — V13OBS #115 (2026-11-23 15:44 UTC)
+
+- Private owner-read updated 15:44:16 UTC; pipeline reports auto-update enabled, UP_TO_DATE, last_error NONE, installed/update commit fb563d771fe2d493c4ec25abe94280981d24ef5c. This is the installed base, not this Perception PR.
+- App service/dashboard are reported running, but the user-controlled AI runtime state is STOPPED_BY_USER, model process STOPPED, autostart false, and native residency UNAVAILABLE. No restart or remote command was sent.
+- Across the five reported turns, C3 emitted 7 tokens in the quickest observed turn (1.87 s prefill-to-first-token); later turns emitted only 2–3 tokens with 33–37 s prefill-to-first-token. B1_DETAIL and B2_GIST each had two native attempts, two failures and zero valid offers. The receipt does not prove semantic use of B1/B2 offers or native latent exchange.
+- These are sanitized aggregate diagnostics only; no console excerpt, user text, device path/ID, model file, weight, database or raw log was copied.
+- Updater UP_TO_DATE does not establish useful chat behavior or install the current PR. REDMI runtime remains STOPPED_BY_USER; Perception branch NOT_DEPLOYED. Do not send UPDATE_REQUEST or ask for a manual command while the device is stopped and no new release exists.
