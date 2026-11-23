@@ -1,0 +1,62 @@
+# Perception — current-base A3 source lifecycle + MediaProjection RAW EYE ingress (2026-11-23)
+
+## Scope and base
+
+- Target branch: `gpt6/v13-private-remote-bridge-20261111`
+- Verified base SHA at branch creation: `dfa3945b2bbfdb65d932db74e02f402435494e84`
+- Perception branch: `research-perception/v14-vision-lifecycle-current-20261123-run18`
+- This is a current-base re-composition of the Perception-owned files from the older stacked #2404 candidate. It is 9 commits ahead / 0 behind the verified release-development branch at the time of readback.
+- No Core-owned controller guard, recovery/stage/deployer pins, Android companion provider, OS permission, installed model, model weights, user data or release setting was changed.
+
+## Runtime functions added/reconnected
+
+1. **A3 source lineage and compare-and-swap state publication**
+   - A3 global and tile projector records now retain exact contributing image source IDs and SHA-256 hashes.
+   - A Store-bound versioned snapshot rejects stale writes, preventing a concurrent describe/train/teacher-switch snapshot from overwriting a completed source-forget or ingest.
+   - Source forget validates the exact live SourceRef, tombstones the source and invalidates every projector with matching or unknown/legacy lineage. A projector with proven disjoint lineage may remain.
+   - Image ingest and last-reference blob cleanup serialize through the Store write transaction. Projector/blob unlink uses descriptor-relative directory opens with O_NOFOLLOW and strict path/name allowlists.
+   - Failed or ambiguous source bindings fail closed. This is source-level provenance/invalidation, not proof of neural weight-level unlearning.
+
+2. **A5 MediaProjection frame → RAW EYE → A4/A5 consumer**
+   - Adds `vision_ui_frame_ingress.consume_projected_frame`, the one-shot provider verifier factory, `consume_projected_frame_from_provider`, and a scoped source-revocation helper.
+   - Requires the exact active UIObservationLease plus a provider-issued one-shot verifier bound to source, capture session, receipt and frame digest/length. Arbitrary callbacks, replay and cross-lease reuse are rejected.
+   - Bounds mutable JPEG/PNG input to 8 MiB / 4 MP, derives content-free numeric RAW EYE summaries, uses the existing A3 tile projector read-only when its hash, encoder and live training-source lineage validate, then runs A4 and bounded A5 admission.
+   - Provisional frames are not admitted to C3. Raw screenshots and derived packets are not persisted. The caller-owned compressed buffer is overwritten on success and failure. Action, learning and truth authority remain false/zero.
+   - The API surface matches the Core provider candidate #2408: its `UIFrameGrant.consume` imports `_issue_provider_frame_verifier` and `consume_projected_frame`; both are present here. The provider/Perception pair is not yet merged or installed.
+
+## Exact files
+
+- `v13/code/v13/vision.py`
+- `v13/code/v13/vision_source_lineage.py`
+- `v13/code/v13/vision_ui_frame_ingress.py`
+- `v13/code/tests/test_vision.py`
+- `v13/code/tests/test_vision_source_lineage.py`
+- `v13/code/tests/test_vision_ui_frame_ingress.py`
+- `v13/code/tests/test_vision_ui_frame_provider_entrypoint.py`
+- `.github/workflows/v14-vision-source-lineage.yml`
+- `.github/workflows/v14-vision-ui-frame-ingress.yml`
+
+## Verification
+
+- **LOCAL_LINUX / CPython 3.13.5:** copied the exact committed `vision_source_lineage.py` and `test_vision_source_lineage.py` into an isolated temporary package; `pytest -q` = **7 passed**. This covers lineage binding, malformed/unknown lineage, selective invalidation, caption-lineage mismatch, safe unlink, symlink-parent rejection and traversal rejection.
+- **LOCAL_LINUX / full Aii checkout:** BLOCKED / NOT_RUN. This worker has no mounted repository checkout and GitHub DNS/network access is unavailable; therefore the full exact-repository vision and ingress suites were not run locally.
+- **CI:** workflows are included and will exercise Python 3.13 and 3.14 with exact source/test files. At handoff time, no run result has yet been read back for the final branch head; do not claim CI green until the exact-head jobs finish.
+- **ANDROID / REDMI:** REDMI_UNVERIFIED. No connected handset, Android MediaProjection capture, AudioRecord, Termux runtime, or native performance test was performed.
+- **Release/deployment:** NOT_RELEASED. GitHub push is not deployment. No update request or manual Termux command was sent.
+
+## Risks and remaining acceptance
+
+- The A3 projector remains a closed-form ridge/SHADOW artifact, not a gradient-trained JEPA body weight. Source invalidation is not neural weight unlearning.
+- RAW EYE features are handcrafted and the tile-projector margin is an uncalibrated student estimate, not OCR/object truth or confidence.
+- A real Android companion must verify its signed receipt and hold the same OS-backed UI lease through downstream C3 consumption. Python capability objects are not an OS security boundary.
+- Core/QA must integrate the provider and this Perception consumer on one current-base head, verify revocation/zeroization through the complete same-turn Runtime→A5→C3 path, then perform authorized Android instrumentation. No screenshot, derived packet, action authority or learning authority is enabled by this PR.
+- The old #2404 branch is stale/diverged (24 ahead / 35 behind the current release base); this branch is the current-base Perception-only re-composition. Do not merge the old stack blindly.
+
+## Next owner actions
+
+1. Perception: read exact-head Python 3.13/3.14 workflows and repair any failures without weakening source/consent pins.
+2. Core: rebase its MediaProjection provider onto this current-base Perception API and add one same-turn `UIFrameGrant.consume → RAW EYE → A4/A5` integration test.
+3. QA: inspect privacy/revocation/zeroization and Android API-level lifecycle; keep Redmi status unverified until real hardware evidence exists.
+4. Boss/Integrator: update the shared work board and Next Action only after independent review; keep the historical Canon unchanged.
+
+**Status:** CODE_PRESENT / WIRED_SYNTHETIC_CANDIDATE / LOCAL_HELPER_TEST_PASS / CI_PENDING / REDMI_UNVERIFIED / NOT_RELEASED.
