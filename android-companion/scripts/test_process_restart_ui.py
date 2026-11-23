@@ -5,6 +5,8 @@ from __future__ import annotations
 import unittest
 import xml.etree.ElementTree as ET
 
+import test_process_restart as harness
+
 from process_restart_ui import button_center, transient_overlay_action
 
 
@@ -192,6 +194,7 @@ class ProcessRestartFinalSnapshotRecoveryTests(unittest.TestCase):
         with (
             patch.object(harness, "hierarchy_xml", return_value=overlay_xml),
             patch.object(harness, "adb", return_value="") as adb_call,
+            patch.object(harness, "process_id", return_value=""),
             patch.object(harness.time, "monotonic", side_effect=clock),
         ):
             with self.assertRaisesRegex(AssertionError, "UI did not show expected state"):
