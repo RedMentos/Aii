@@ -365,7 +365,7 @@ def test_temporal_world_jepa_updates_ema_checkpoint_and_b1_b2_shadow_receivers(t
             assert intent["target_model_revision"] == "v14-temporal-receiver-adapter-v1"
             assert intent["target_parameter_scope"] == role + ".temporal_receiver_head.weights+bias"
             assert intent["objective_revision"] == "v14-temporal-receiver-outcome-mse-v1"
-            assert intent["optimizer_revision"] == "RIDGE_CLOSED_FORM_V1"
+            assert intent["optimizer_revision"] == "ADAM_MSE_V1"
             assert intent["source_ids"] and intent["t8_transition_ids"]
             assert set(intent["train_cohort_ids"]).isdisjoint(intent["validation_cohort_ids"])
             assert set(intent["source_sha256s"]).isdisjoint(intent["validation_source_sha256s"])
@@ -373,7 +373,12 @@ def test_temporal_world_jepa_updates_ema_checkpoint_and_b1_b2_shadow_receivers(t
             assert intent["consent_snapshot"]["optimizer_permission"] is True
             assert intent["eligibility_trace"]["path_id"] == "world_predictor"
             assert intent["neuromodulation"]["status"] == "READY"
-            assert intent["gradient_budget"]["method"] == "CLOSED_FORM_RIDGE"
+            assert intent["gradient_budget"]["method"] == "BOUNDED_ADAM_MSE"
+            assert intent["gradient_budget"]["gradient_norm"] > 0
+            assert intent["gradient_budget"]["steps_executed"] > 0
+            assert intent["gradient_budget"]["steps_executed"] <= intent["gradient_budget"]["max_steps"]
+            assert intent["gradient_budget"]["gradient_clip_count"] >= 0
+            assert metrics[role.lower() + "_gradient_steps"] == intent["gradient_budget"]["steps_executed"]
             assert intent["approval_id"] is None
             assert intent["age_capability"] == "SHADOW_ONLY_NO_NATIVE_BODY_RIGHT"
             assert intent["authority"] == "NONE"
@@ -391,7 +396,11 @@ def test_temporal_world_jepa_updates_ema_checkpoint_and_b1_b2_shadow_receivers(t
             assert receipt["holdout_mse_after"] == pytest.approx(intent["holdout_mse_after"])
             assert receipt["world_retention_pass"] is True
             assert receipt["target_adapter_retention"] == "NOT_MEASURED"
-            assert receipt["gradient_measured"] is False
+            assert receipt["schema"] == "v14.weight_delta_receipt.v2"
+            assert receipt["gradient_measured"] is True
+            assert receipt["gradient_norm"] > 0
+            assert receipt["gradient_steps"] == intent["gradient_budget"]["steps_executed"]
+            assert receipt["gradient_clip_count"] == intent["gradient_budget"]["gradient_clip_count"]
             assert receipt["native_body_weights_changed"] is False
             assert receipt["target_adapter_parameters_changed"] is True
 
@@ -1634,3 +1643,37 @@ def test_memory_forget_composes_temporal_guard_clears_warm_cache_and_replays(tmp
         assert not _record_references_source(store, record, source_id)
     finally:
         store.close()
+
+
+def test_b1_b2_receiver_adam_measures_gradient_clips_and_respects_zero_learning_rate():
+    from v13.world_jepa_learning_intent import _adam_head
+
+    rng = np.random.default_rng(917)
+    features = rng.normal(0.0, 5.0, size=(64, 8))
+    target_weights = rng.normal(0.0, 0.08, size=(8, 2))
+    targets = features @ target_weights + np.asarray([0.3, 0.7])
+    initial_weights = np.zeros((8, 2), dtype=np.float64)
+    initial_bias = np.zeros(2, dtype=np.float64)
+
+    trained_weights, trained_bias, trained = _adam_head(
+        features, targets, initial_weights, initial_bias,
+        steps=48, learning_rate=0.01, max_gradient_norm=0.2,
+        anchor_strength=0.01,
+    )
+    assert trained["gradient_norm"] > 0.2
+    assert trained["gradient_clip_count"] > 0
+    assert trained["steps_executed"] == 48
+    assert trained["train_mse_after"] < trained["train_mse_before"]
+    assert np.linalg.norm(trained_weights - initial_weights) > 0
+    assert np.linalg.norm(trained_bias - initial_bias) > 0
+
+    no_op_weights, no_op_bias, no_op = _adam_head(
+        features, targets, initial_weights, initial_bias,
+        steps=8, learning_rate=0.0, max_gradient_norm=0.2,
+        anchor_strength=0.01,
+    )
+    assert no_op["gradient_norm"] > 0
+    assert no_op["steps_executed"] == 8
+    assert np.array_equal(no_op_weights, initial_weights)
+    assert np.array_equal(no_op_bias, initial_bias)
+    assert no_op["train_mse_after"] == pytest.approx(no_op["train_mse_before"])
