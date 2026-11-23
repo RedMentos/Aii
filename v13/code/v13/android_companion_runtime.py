@@ -69,6 +69,18 @@ class AndroidCompanionController:
             raise ControlDenied("companion key changed; explicit re-pairing required")
         return trust, point, info
 
+    def frame_provider(self):
+        """Build a one-shot frame reader only from the locally pinned companion key."""
+        trust, public_key, _ = self._pinned_key()
+        from .android_companion_ui_frames import (
+            AndroidCompanionFrameProvider,
+            ECDSAUIFrameReceiptVerifier,
+        )
+        verifier = ECDSAUIFrameReceiptVerifier(
+            self.verifier_path, public_key, trust["key_id"], clock=self.clock
+        )
+        return AndroidCompanionFrameProvider(self.transport, verifier)
+
     def status(self):
         trust = None
         try:
