@@ -1197,3 +1197,28 @@ def test_silero_recurrent_state_resets_when_consent_receipt_changes(tmp_path):
         assert renewed["a4"]["action_authority"] is False
     finally:
         runtime.store.close()
+
+
+
+@pytest.mark.parametrize("bad_receipt", [None, "", "x" * 257])
+def test_invalid_audio_consent_receipt_fails_before_vad_or_store_side_effects(tmp_path, bad_receipt):
+    runtime, event = make_runtime(tmp_path)
+    session = _FakeSileroSession()
+    vad = SileroVADStream(
+        session, model_sha256="d" * 64, model_revision="synthetic-invalid-receipt",
+    )
+    try:
+        with pytest.raises(PermissionError, match="bounded local audio consent receipt"):
+            consume_pcm16_voice_window(
+                runtime, tone(140), sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=bad_receipt,
+                consent_check=lambda source, receipt: True,
+                consent_guard=_guard_for(lambda source, receipt: True),
+                vad_stream=vad, finality="FINAL",
+            )
+        assert session.calls == []
+        assert packet_count(runtime.store, event["event_id"]) == 0
+        assert attention_count(runtime.store, event["event_id"]) == 0
+    finally:
+        runtime.store.close()
