@@ -22,7 +22,8 @@ import numpy as np
 from v13 import world_jepa
 from v13 import world_jepa_shadow_checkpoint
 from v13 import world_model
-from .world_jepa_store_authority import verify_committed_transition_page
+from .world_jepa_store_authority import (verify_committed_transition_page,
+                                         committed_history_references_source)
 
 
 REVISION = "v14-world-jepa-store-consumer-v3"
@@ -1200,7 +1201,7 @@ def source_forget_guard(store, source_id):
             row["action_id"] for row in pending_rows
             if source_id in {sid for sid, _digest in _source_pairs(row)}
         ]
-        pending_ids = set(pending_for_source)
+        pending_ids = {row["action_id"] for row in pending_rows}
 
         def checkpoint_is_tainted(record):
             if record is None:
@@ -1213,6 +1214,13 @@ def source_forget_guard(store, source_id):
             cursor = record["scan_cursor"]
             if cursor <= 0:
                 return False
+            # Re-verify the same complete T8 prefix used by learning. This
+            # includes selected B1/B2 QueryPacket/peer/Enlightened provenance,
+            # final C3 context metadata and nested temporal BODY_STATE refs.
+            if committed_history_references_source(
+                    store, source_id, cursor, include_censored=False,
+                    pending_action_ids=pending_ids, max_rows=MAX_ROWS):
+                return True
             # Query a bounded set and filter pending IDs in Python. Avoid a
             # variable-length SQL NOT IN list, which can exceed SQLite limits.
             scanned = store.rows(
