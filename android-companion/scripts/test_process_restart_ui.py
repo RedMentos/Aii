@@ -330,16 +330,25 @@ class ProcessRestartDurabilityTests(unittest.TestCase):
             self.assertFalse(marker.exists())
 
     def test_ui_failure_runs_durable_probe_but_remains_a_failure(self) -> None:
+        import subprocess
         from unittest.mock import patch
         import test_process_restart as harness
 
-        with (
-            patch.object(harness, "wait_for_text", side_effect=AssertionError("System UI blocked")),
-            patch.object(harness, "verify_durable_off_after_process_death") as durable,
-        ):
-            with self.assertRaisesRegex(AssertionError, "System UI blocked"):
-                harness.wait_for_stopped_ui_or_prove_durable()
-        durable.assert_called_once_with()
+        failures = (
+            AssertionError("System UI blocked"),
+            subprocess.TimeoutExpired(["adb", "shell", "uiautomator", "dump"], 20),
+            subprocess.CalledProcessError(1, ["adb", "shell", "uiautomator", "dump"]),
+            FileNotFoundError("adb"),
+        )
+        for failure in failures:
+            with self.subTest(failure=type(failure).__name__):
+                with (
+                    patch.object(harness, "wait_for_text", side_effect=failure),
+                    patch.object(harness, "verify_durable_off_after_process_death") as durable,
+                ):
+                    with self.assertRaises(type(failure)):
+                        harness.wait_for_stopped_ui_or_prove_durable()
+                durable.assert_called_once_with()
 
 
 if __name__ == "__main__":
