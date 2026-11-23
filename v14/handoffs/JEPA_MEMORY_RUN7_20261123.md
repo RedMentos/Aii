@@ -1,69 +1,67 @@
-# JEPA & Memory — Run 7 (2026-11-23)
+# JEPA & Memory handoff — 2026-11-23
 
-## Status
+## Branch / PR state
 
-- Work branch: \`jepa-memory/v14-temporal-episodic-recall-20261123-run7\`
-- Parent integration branch: \`qa/v14-jepa-source-lifecycle-rebase-20261123-run16\`
-- Parent PR: [#2402](https://github.com/RedMentos/Aii/pull/2402), whose verified head at branch creation was \`de4143790bc9ff7e3dc32c40fbc2a4fe9d09dd64\`
-- This is a stacked JEPA/Memory change. It does not merge or deploy the parent branch.
-- New feature status: implemented in this branch; exact CI result pending.
-- Local execution: BLOCKED. The current container has no Aii checkout; \`git ls-remote https://github.com/RedMentos/Aii.git HEAD\` failed with DNS resolution error. Python is present, but this is not a local compile/test of repository sources.
-- Redmi: \`REDMI_UNVERIFIED\`; no authorized live device receipt was obtained in this run.
-- Release/deployment: \`NOT_RELEASED\`. No updater request, model swap, data migration, or device action was performed.
+- PR: https://github.com/RedMentos/Aii/pull/2405 (DRAFT, stacked; NOT_RELEASED)
+- Branch: `jepa-memory/v14-temporal-episodic-recall-20261123-run7`
+- Code/test checkpoint: `80ed58ff0b1e8351cbe8f68887ef7db6f6abba20`
+- PR base branch: `qa/v14-jepa-source-lifecycle-rebase-20261123-run16`
+- The base branch currently points to `c5d847ca36567ea265610b235941bf251f1425fa`, while this PR was opened against older base `de4143790bc9ff7e3dc32c40fbc2a4fe9d09dd64`. GitHub compare reports 22 commits behind and the PR is non-mergeable. QA/Boss must recompose the exact changes onto the current QA head; do not merge this stale stack directly.
 
-## Implemented slice
+## Concrete code change
 
-The existing temporal JEPA learner already persisted verified T8 experience rows, trained an encoder/predictor with EMA, retained disjoint holdouts, and exposed gated numeric B1/B2 readouts. Its learned latent was not yet being used as an episodic memory retriever by the body consumers.
+1. `v13/code/v13/world_jepa_temporal.py`
+   - Added one Runtime-scoped temporal consumer shared by idle postcommit and bodyview.
+   - Added `warm_active_checkpoint`; idle processing warms the active read-only checkpoint, including when learning permission is off.
+   - Added `warm_only` to receiver matrix and episodic recall. A cold checkpoint returns `MODEL_NOT_WARM`; foreground B1/B2 never calls the cold loader.
+   - Episodic candidate embeddings are processed in batches of 32 with cooperative deadline checks between batches.
+2. `v13/code/v13/sleep.py`
+   - Postcommit temporal update uses the Runtime-scoped consumer, so the same checkpoint cache is available to B1/B2 after idle warm-up.
+3. `v13/code/v13/bodyview.py`
+   - B1/B2 bodyview reads only a warm checkpoint.
+   - Prompt-visible contract includes `native_body_consumed=false`, `native_body_weights_changed=false`, and `decision_authority=NONE`.
+   - Removed optional unsupported-action detail from the prompt (it remains in the audit) and shortened the note to `prediction_only` to preserve the 700-character budget.
+4. Tests
+   - Restored strict prompt-visible weight-boundary assertion.
+   - Added a cold-loader negative control and a `Cognition.offer` test with a deliberately slow loader; the cold foreground path must not call it.
+   - Added a cooperative episodic-recall budget check using a deliberately slow latent call; it must stop after at most the query plus one candidate batch.
 
-This branch adds a read-only episodic recall path:
+## Existing learner evidence retained in this branch
 
-1. \`TemporalWorldJEPAStoreConsumer.episodic_recall()\` reconstructs the current 2/3-transition query from the same session history used by the B1/B2 receiver.
-2. It verifies the query history against current T8/ActionOutcome/CorollaryCopy/SourceRef records.
-3. It rebuilds candidate windows and admits **only** \`active.train_window_ids\`; holdout windows are excluded. Candidate windows sharing query action IDs or source digests are excluded.
-4. It samples at most 256 training windows deterministically across the temporal span, embeds them with the already-trained temporal JEPA encoder, and ranks by latent distance. The encoder loaded for the receiver matrix is reused ephemerally, avoiding a second checkpoint load.
-5. Before returning an episode, every transition in that candidate window is reverified and its complete SourceRef is read back. Only observed terminal outcomes are recalled; censored/unknown outcomes are not presented as completed results.
-6. The prompt receives at most the two closest compact rows: action, latent distance, observed duration, success flag, output-character count, and an 8-character source-digest prefix. No prior raw source text is exposed.
-7. The full window action IDs, source digests and SourceRefs are kept in the BodyState audit, which is itself source-backed and present in QueryPacket provenance.
-8. Recall is nonblocking, bounded by a 50 ms foreground budget, read-only, and has no action authority or weight-update authority. Prompt-budget trimming drops this optional episodic context before dropping the primary temporal receiver context.
+The synthetic SQLite/T8 test suite already asserts:
+- `parameter_delta_norm > 0` and `ema_target_delta_norm > 0`;
+- source-disjoint train/holdout windows and separate sessions;
+- shuffled-target and shuffled-action negative controls;
+- persisted optimizer state and exact checkpoint SHA after restart;
+- rollback to the prior checkpoint and retry of pending rows;
+- replay-on/off matched-step ablation and A→B→C→A retention cohorts;
+- source-forget protection while active or rollback checkpoints retain the source.
 
-This is a **learned-latent nearest-episode SHADOW readout**, not a completed Future-Aware Recall retriever, not a native cross-organ latent bridge, and not evidence of GGUF/base-weight updates.
+This is **numeric predictor/EMA learning in the local synthetic Store harness**, not GGUF base-weight training, not native B1/B2 weight updates, and not proof of Android learning.
 
-## Changed paths
+## Test evidence / environment
 
-- \`v13/code/v13/world_jepa_temporal.py\`
-  - Added train-split-only, source-verified \`episodic_recall()\`.
-  - Added deterministic temporally stratified candidate cap, query/candidate source-disjointness, per-window provenance revalidation, read-only audit and time budget.
-  - Reuses the current receiver's ephemeral model instance when the checkpoint SHA matches.
-- \`v13/code/v13/bodyview.py\`
-  - Adds compact episodic recall to the existing B1/B2 temporal body context.
-  - Stores full provenance in the BodyState audit; no source text is copied into the prompt.
-  - Preserves the 700-character body-state budget and trims optional recall first.
-- \`v13/code/tests/test_v14_world_jepa_postcommit_runtime.py\`
-  - Adds synthetic Runtime/SQLite B1 and B2 prompt-consumer checks.
-  - Verifies train-only selection, query/source disjointness, SourceRef readback, no raw text disclosure, no temporal state-version mutation, and a no-checkpoint negative control.
-- \`.github/workflows/v14-temporal-world-jepa.yml\`
-  - Adds \`bodyview.py\` and the postcommit integration test to compile and pull-request path filters.
+- Exact code checkpoint `80ed58ff0b1e8351cbe8f68887ef7db6f6abba20`: GitHub Actions runs `45108720991` (Python 3.13 + 3.14 temporal JEPA) and `45108721030` (offline bridge/security) were queued at the last check. No PASS claim until both complete.
+- Earlier CI iterations exposed and fixed a duplicate episodic cold load, the missing prompt-visible weight-change field, and prompt-budget overflow. The final exact-head run is intended to verify the complete fix plus slow-loader and budget negatives.
+- Local exact-source checkout/tests are BLOCKED: `git ls-remote` could not resolve GitHub and the archive endpoint was inaccessible. GitHub Actions is the available exact-source environment this run.
+- Current parent QA PR #2402 at `c5d847ca36567ea265610b235941bf251f1425fa` has five failing jobs; their logs show the same missing prompt-visible `native_body_weights_changed=false` assertion. This branch contains the fix, but the parent branch does not yet.
 
-## Test and evidence status
+## Product boundary / Redmi
 
-- Parent QA branch #2402: its latest comment at the time of inspection records 20/20 checks green. This is CI evidence for the parent head only, not for this branch.
-- This branch: CI pending until the new PR/workflow run completes.
-- Local Linux exact-source compile/tests: BLOCKED by missing checkout and DNS failure. Do not relabel CI as local.
-- Termux/Redmi runtime, native model inference, native B1/B2 generation, native gradient/weight changes, Android updater and device rollback: NOT TESTED in this run.
+- The delivered B1/B2 path is still **source-grounded SHADOW prompt readout**. It is not native latent injection or cross-organ model-weight learning.
+- No model, weight, permission, user data, or device state was changed. No release SHA was produced: `NOT_RELEASED`.
+- New code is `REDMI_UNVERIFIED / NOT_DEPLOYED`.
+- The shared V14 handoff's last recorded private Redmi receipts (#690–693) show installed release `aed1d2`, auto-update reported enabled, but also a 57.74 s turn, 41.63 s TTFT, and zero valid B1/B2 offers. Those are historical recorded observations, not a fresh device check in this run.
 
-## Research note — Future-Aware Recall
+## Research note
 
-Kim et al., “Learning What to Recall: Adaptive Multi-Cue Episodic Memory for World Models,” arXiv:2609.34677 (submitted 2026-09-28), is directly relevant. It trains retrieval using predictive utility from the realized future, then keeps inference future-blind; cue-specific scores are fused by a query-dependent gate. It also shows that recency, geometric overlap and visual similarity can each be misleading when the world changes. The paper explicitly leaves writing, compression, forgetting and higher-order interactions among multiple recalled memories open, and its experiments are controlled simulation rather than Android deployment.
+Sony's Future-Aware Retrieval work suggests a useful next research direction: train cue-specific retrieval utility from future outcomes, but keep inference retrieval future-blind. The public `sony/far` implementation is CC BY-NC 4.0 and GPU-heavy; no code, weights, or dataset were copied. A small V14 cue-utility head should be trained from delayed T8 outcomes and compared against recency, latent-distance, random, and shuffled controls with disjoint retention holdouts.
 
-Official implementation: \`sony/far\`, revision/readback for this run; its LICENSE is CC BY-NC 4.0. Its declared stack includes PyTorch 2.7+, torchvision, diffusers and many research dependencies; the README's quickstart reports about 14 GB GPU memory on an H100. No FAR code, checkpoints, datasets or weights were copied into Aii. The non-commercial license and heavyweight diffusion/GPU stack make direct product/Redmi reuse inappropriate without a separate rights and feasibility decision.
+## Next executable steps
 
-V14 adaptation: this branch takes only the architectural direction that episodic recall should be judged by predictive usefulness rather than recency alone. It does **not** yet train a retriever from delayed future utility. The next research/implementation step is a small source-bound cue scorer trained from delayed T8 outcomes, with a future-blind inference contract and disjoint holdout comparison against (a) recency, (b) normalized raw-state distance, (c) current JEPA-latent distance, and (d) shuffled/random retrieval. It must retain source lineage, checkpoint/restart/rollback and report utility/retention before it can move beyond SHADOW.
+1. Wait for exact-head Actions and fix any remaining failure.
+2. QA/Boss to recompose the exact JEPA files/tests onto the current #2402 head while preserving newer source-lifecycle work, then rerun the integrated chain.
+3. Coordinate a typed numeric receiver/adapter contract with Core. Keep native latent transfer and B1/B2 weight learning OPEN until an actual consumer and numeric weight evidence exist.
+4. After an approved release, use only the verified normal updater and obtain a fresh private device receipt. Do not issue a new Termux command or model swap unless the updater is unavailable/defective and a manual step is truly necessary.
 
-## Next concrete action
-
-1. Run the exact 3.13/3.14 GitHub workflow for this branch and repair any compile, integration or source-provenance failure.
-2. Re-read the newest QA/JEPA heads before rebasing; keep the branch stacked only while #2402 remains the current source-lifecycle integration base.
-3. Ask the Boss/Integrator to update \`V14_WORK_BOARD.json\`, \`V14_LIVE_WORKPLAN.md\`, \`V14_CANON_COVERAGE_INDEX.md\` and \`V14_USER_NEXT_ACTION.md\` with this branch's verified SHA/PR/CI status. Those shared files remain Boss-owned.
-4. After independent review, integrate through the normal release pipeline; a GitHub push is not a Redmi deployment.
-
-**User action:** keine Aktion nötig. No model, weight, permission, updater or device setting was changed.
+**User action: none.**
