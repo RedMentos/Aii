@@ -53,21 +53,36 @@ def main(argv=None):
             report=doctor(r,a.full);print(json.dumps(report,ensure_ascii=False,indent=2));return 2 if report['data_integrity_errors'] else 0
         if a.command=='download':r.models.install(a.model);return 0
         if a.command=='probe':
-            from .verification import probe, public_probe_summary
-            if a.mode=='sustained':
-                from .proofs import probe_sustained
-                result=probe_sustained(r,a.cycles)
-            elif a.mode=='jef-modes':
-                from .proofs import probe_jef_modes
-                result=probe_jef_modes(r)
-            elif a.mode=='body-state':
-                from .proofs import probe_body_state
-                result=probe_body_state(r)
-            elif a.mode=='step12':
-                from .proofs import probe_step12
-                result=probe_step12(r)
-            else:result=public_probe_summary(probe(r))
-            print(json.dumps(result,ensure_ascii=False,indent=2));return 0 if result['status'] in {'SMOKE_PASS','JEF_MODES_PASS','VERTICAL_CHECKS_PASS','BODY_STATE_CHECKS_PASS','BOUNDED_STABILITY_PASS'} else 2
+            try:
+                from .verification import probe, public_probe_summary
+                if a.mode=='sustained':
+                    from .proofs import probe_sustained
+                    result=probe_sustained(r,a.cycles)
+                elif a.mode=='jef-modes':
+                    from .proofs import probe_jef_modes
+                    result=probe_jef_modes(r)
+                elif a.mode=='body-state':
+                    from .proofs import probe_body_state
+                    result=probe_body_state(r)
+                elif a.mode=='step12':
+                    from .proofs import probe_step12
+                    result=probe_step12(r)
+                else:result=public_probe_summary(probe(r))
+                print(json.dumps(result,ensure_ascii=False,indent=2))
+                return 0 if result['status'] in {'SMOKE_PASS','JEF_MODES_PASS','VERTICAL_CHECKS_PASS','BODY_STATE_CHECKS_PASS','BOUNDED_STABILITY_PASS'} else 2
+            except Exception:
+                print(json.dumps({
+                    'schema':'v13.public-native-probe/1',
+                    'proof_kind':'NATIVE_SMOKE',
+                    'status':'SMOKE_ERROR',
+                    'phone_measured':False,
+                    'full_runner_proof':False,
+                    'model_revisions':{},
+                    'effective_config':{},
+                    'roles':{},
+                    'missing_proofs':['PROBE_EXECUTION_ERROR'],
+                },ensure_ascii=False,indent=2))
+                return 2
         if a.command=='ask':
             if a.no_observers:r.cfg['observer_mode']='off'
             eid=r.submit(a.text);printed=0;row=None
