@@ -96,6 +96,39 @@ class InstrumentationDriverTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "pidof failed"):
                 harness.process_id()
 
+    def test_process_id_rejects_exit_one_with_transport_error(self):
+        completed = harness.subprocess.CompletedProcess(
+            args=["adb", "shell", "pidof", harness.PACKAGE],
+            returncode=1,
+            stdout="",
+            stderr="error: device offline",
+        )
+        with patch.object(harness.subprocess, "run", return_value=completed):
+            with self.assertRaisesRegex(RuntimeError, "ambiguous result"):
+                harness.process_id()
+
+    def test_process_id_rejects_exit_one_with_unexpected_stdout(self):
+        completed = harness.subprocess.CompletedProcess(
+            args=["adb", "shell", "pidof", harness.PACKAGE],
+            returncode=1,
+            stdout="not-a-pid",
+            stderr="",
+        )
+        with patch.object(harness.subprocess, "run", return_value=completed):
+            with self.assertRaisesRegex(RuntimeError, "ambiguous result"):
+                harness.process_id()
+
+    def test_process_id_rejects_success_without_a_pid(self):
+        completed = harness.subprocess.CompletedProcess(
+            args=["adb", "shell", "pidof", harness.PACKAGE],
+            returncode=0,
+            stdout="",
+            stderr="",
+        )
+        with patch.object(harness.subprocess, "run", return_value=completed):
+            with self.assertRaisesRegex(RuntimeError, "ambiguous result"):
+                harness.process_id()
+
     def test_wait_for_process_polls_until_requested_state(self):
         with (
             patch.object(harness, "process_id", side_effect=["", "4321"]),
