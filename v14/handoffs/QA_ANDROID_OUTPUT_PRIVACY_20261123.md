@@ -1,3 +1,26 @@
+
+## QA & Android — fresh Redmi and output-boundary checkpoint (2026-11-23 15:47 UTC)
+
+**Installed phone state:** private owner-read receipt #819 confirms the Redmi is on exact release-development SHA `fb563d771fe2d493c4ec25abe94280981d24ef5c`, matching the current release branch. Auto-update is enabled; Runtime and Dashboard are `UP_TO_DATE`; `last_error=NONE`. This is installation metadata only.
+
+**Runtime is explicitly stopped by the user:** DIAGNOSTICS #820 reports `STOPPED_BY_USER`, model process `STOPPED`, `autostart=false`, service/dashboard processes still running. No restart or `CHAT_SEND` was attempted. The latest stored turn is not a new acceptance test: 6.295 s total, 2.046 s TTFT, 358 admitted prompt tokens, 7 generated tokens. B1/B2 still report `TIME_BUDGET` at 53.2/54.2 s; C2 is OK, C3 probe 3.1 s, native probe `SMOKE_PARTIAL`; native residency is unavailable because no verified model supervisor exists. The 20-turn acceptance matrix remains BLOCKED by the user's Stop state. No user action is required now; do not send an update request or manual Termux command.
+
+**Output privacy implementation:** PR [#2446](https://github.com/RedMentos/Aii/pull/2446), candidate head `8b6b9e716886b1dbf3fccd8ade82d3cacb16ad3a`, now goes beyond the prompt-only mitigation:
+- `verification.public_probe_summary()` creates an allowlisted console report. Raw C3 `actual_output`, B1/B2 `structured_offer.actual`, and C2 `actual_control` are not returned to the console.
+- The interactive `:probe` worker and one-shot `v13 probe` CLI use that summary. Full raw evidence remains in the existing local `exports/native-probe.json` artifact; it is not uploaded.
+- `test_prompts.py` adds adversarial synthetic coverage with sentinel C3/B1/B2/C2 payloads, verifying that none appear in serialized console output while numeric metrics and verified-quote counts remain visible.
+- Existing English/German C3 non-disclosure instruction and exact native offer-receipt prefixes are preserved.
+- Exact PR CI at this head is not yet fully confirmed: JEPA receipt-integrity run 45210326339 SUCCESS; combined online-JEPA and JEPA transactional-update runs 45210326439 / 45210326276 QUEUED at last read; safe-additive validation was SKIPPED. The exact staged-context result has not yet been observed. Do not mark the PR green.
+- Full LOCAL_LINUX repository tests BLOCKED: no checkout is mounted and `git clone` fails because this environment cannot resolve `github.com`. No Redmi output test was run.
+
+**Important boundary:** the new redaction closes the explicit native `:probe` console path, not every possible generative leak. The prompt instruction remains probabilistic; normal C3 output and the explicit raw `:tap` diagnostic still require separate review/native adversarial testing. No raw private transcript was copied into this repository.
+
+**Current release-branch CI:** exact `fb563d771fe2d493c4ec25abe94280981d24ef5c` has 20/21 observed PR-triggered workflows SUCCESS; the only failure is the experimental V14 M1 DATA workflow (Python 3.13 and 3.14, 36 tests: malformed fixture newlines prevent intended parsing; strict-NaN affected-origin interval also incorrect). QA fix PR [#2444](https://github.com/RedMentos/Aii/pull/2444), head `88e2115af9e1acf3bfba01ce3cd07a1ebf45a14b`, has exact M1 CI SUCCESS with 43 tests on Python 3.13 and 3.14 plus offline-bridge security PASS. It remains a separate open candidate, not merged or trained on real UCI data.
+
+**Next:** finish exact-head CI for #2446; keep the phone stopped. When the user explicitly re-enables the AI runtime, perform the 20-turn source-bound matrix, then separately validate lifecycle/rollback. No model, weight, permission, Age or user-data changes.
+
+---
+
 # QA & Android — internal organ output boundary
 
 Date: 2026-11-23  
