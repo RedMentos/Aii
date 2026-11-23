@@ -153,6 +153,7 @@ class SherpaOnlineTeacher:
         self._np = numpy_module
         self._lock = threading.RLock()
         self._verified = None
+        self._active_streams = 0
 
     def _load(self):
         if self._recognizer is not None:
@@ -200,6 +201,44 @@ class SherpaOnlineTeacher:
             ) is True
         except Exception:
             return False
+
+
+    def open_stream(
+        self, *, runtime, source_id: str, generation_id: str,
+        consent_receipt_ref: str, consent_lease, temporal_state=None,
+        vad_stream=None, teacher_asr_opt_in: bool = False,
+    ):
+        """Open one bounded contiguous stream; caller closes it on revoke/teardown."""
+        if teacher_asr_opt_in is not True:
+            raise PermissionError("separate Teacher Ear ASR opt-in is required")
+        if type(source_id) is not str or not source_id.strip() or len(source_id) > 128:
+            raise TeacherEarError("source_id is invalid")
+        if type(generation_id) is not str or not generation_id.strip() or len(generation_id) > 128:
+            raise TeacherEarError("generation_id is invalid")
+        if type(consent_receipt_ref) is not str or not consent_receipt_ref.strip() or len(consent_receipt_ref) > 256:
+            raise PermissionError("audio consent receipt is required")
+        if not self._lease_matches(
+            consent_lease, runtime, source_id, generation_id, consent_receipt_ref,
+            temporal_state, vad_stream,
+        ):
+            raise PermissionError("live source-bound AudioConsentLease required")
+        with self._lock:
+            if self._active_streams:
+                raise TeacherEarError("one active streaming Teacher Ear session per recognizer")
+            recognizer = self._load()
+            stream = recognizer.create_stream()
+            session = SherpaOnlineTeacherStream(
+                self, recognizer, stream, runtime=runtime, source_id=source_id,
+                generation_id=generation_id, consent_receipt_ref=consent_receipt_ref,
+                temporal_state=temporal_state, vad_stream=vad_stream,
+            )
+            self._active_streams += 1
+            return session
+
+    def _release_stream(self):
+        with self._lock:
+            if self._active_streams > 0:
+                self._active_streams -= 1
 
     def transcribe_pcm16(
         self,
@@ -269,6 +308,7 @@ class SherpaOnlineTeacher:
             raise PermissionError("AudioConsentLease expired or changed during Teacher Ear inference")
         return {
             "method": "SHERPA_ONNX_ONLINE_TRANSDUCER",
+            "processing_mode": "INDEPENDENT_WINDOW",
             "status": "MEASURED" if hypothesis else "EMPTY",
             "model_id": self.manifest.model_id,
             "model_revision": self.manifest.model_revision,
@@ -293,3 +333,215 @@ class SherpaOnlineTeacher:
             "learning_authority": False,
             "action_authority": False,
         }
+
+
+
+class SherpaOnlineTeacherStream:
+    """One source/consent-bound sherpa stream across contiguous timed PCM windows.
+
+    Partial hypotheses are deltas; cumulative text and a rolling source hash
+    remain available only in the returned, separately persistable Teacher Ear
+    record. close() discards the native stream without finalizing it.
+    """
+
+    def __init__(
+        self, teacher, recognizer, stream, *, runtime, source_id,
+        generation_id, consent_receipt_ref, temporal_state=None, vad_stream=None,
+    ):
+        self._teacher = teacher
+        self._recognizer = recognizer
+        self._stream = stream
+        self._runtime = runtime
+        self._source_id = source_id
+        self._generation_id = generation_id
+        self._receipt = consent_receipt_ref
+        self._temporal_state = temporal_state
+        self._vad_stream = vad_stream
+        self._thread_id = threading.get_ident()
+        self._lock = threading.RLock()
+        self._closed = False
+        self._sample_rate = None
+        self._first_start_ms = None
+        self._next_start_ms = None
+        self._total_ms = 0
+        self._chunk_count = 0
+        self._rolling_digest = hashlib.sha256(b"").digest()
+        self._stream_id = None
+        self._last_hypothesis = ""
+
+    @property
+    def closed(self):
+        return self._closed is True
+
+    def __enter__(self):
+        if self.closed:
+            raise TeacherEarError("Teacher Ear stream is closed")
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self.close()
+
+    def __reduce__(self):
+        raise TypeError("Teacher Ear stream sessions are ephemeral")
+
+    def __copy__(self):
+        raise TypeError("Teacher Ear stream sessions cannot be copied")
+
+    def __deepcopy__(self, memo):
+        raise TypeError("Teacher Ear stream sessions cannot be copied")
+
+    def close(self):
+        with self._lock:
+            if self._closed:
+                return
+            self._closed = True
+            self._stream = None
+            self._recognizer = None
+            self._teacher._release_stream()
+
+    def transcribe_pcm16(
+        self, pcm16, *, sample_rate: int, start_ms: int, end_ms: int,
+        runtime, source_id: str, generation_id: str,
+        consent_receipt_ref: str, consent_lease, temporal_state=None,
+        vad_stream=None, finality: str = "PROVISIONAL",
+        teacher_asr_opt_in: bool = False,
+    ) -> dict:
+        with self._lock:
+            try:
+                if self.closed:
+                    raise TeacherEarError("Teacher Ear stream is closed")
+                if teacher_asr_opt_in is not True:
+                    raise PermissionError("separate Teacher Ear ASR opt-in is required")
+                if threading.get_ident() != self._thread_id:
+                    raise PermissionError("Teacher Ear stream must stay on its owner thread")
+                if (runtime is not self._runtime or source_id != self._source_id
+                        or generation_id != self._generation_id
+                        or consent_receipt_ref != self._receipt
+                        or temporal_state is not self._temporal_state
+                        or vad_stream is not self._vad_stream):
+                    raise PermissionError("Teacher Ear stream source or consent scope changed")
+                if type(start_ms) is not int or type(end_ms) is not int or start_ms < 0 or end_ms <= start_ms or end_ms - start_ms > _MAX_WINDOW_MS:
+                    raise TeacherEarError("audio interval must be a positive window of at most 1000 ms")
+                if type(sample_rate) is not int or not 8000 <= sample_rate <= 48000:
+                    raise TeacherEarError("sample_rate must be in [8000, 48000]")
+                if finality not in {"FINAL", "PROVISIONAL"}:
+                    raise TeacherEarError("finality must be FINAL or PROVISIONAL")
+                if type(pcm16) not in (bytes, bytearray) or not pcm16 or len(pcm16) % 2 or len(pcm16) > _MAX_PCM_BYTES:
+                    raise TeacherEarError("PCM16 must be a non-empty bounded mono byte buffer")
+                measured_ms = (len(pcm16) // 2) * 1000.0 / sample_rate
+                if abs(measured_ms - (end_ms - start_ms)) > 2.0:
+                    raise TeacherEarError("PCM16 duration does not match its source interval")
+                if not self._teacher._lease_matches(
+                    consent_lease, runtime, source_id, generation_id,
+                    consent_receipt_ref, temporal_state, vad_stream,
+                ):
+                    raise PermissionError("live source-bound AudioConsentLease required")
+                if self._sample_rate is not None and sample_rate != self._sample_rate:
+                    raise TeacherEarError("sample rate cannot change inside a Teacher Ear stream")
+                if self._next_start_ms is not None and start_ms != self._next_start_ms:
+                    raise TeacherEarError("Teacher Ear stream windows must be contiguous")
+                if self._total_ms + (end_ms - start_ms) > 120_000 or self._chunk_count >= 2400:
+                    raise TeacherEarError("Teacher Ear stream exceeded its bounded duration or chunk count")
+
+                stream = self._stream
+                recognizer = self._recognizer
+                if stream is None or recognizer is None:
+                    raise TeacherEarError("Teacher Ear stream is unavailable")
+                chunk_sha256 = hashlib.sha256(bytes(pcm16)).hexdigest()
+                with self._teacher._lock:
+                    waveform = self._teacher._np.frombuffer(
+                        bytes(pcm16), dtype="<i2",
+                    ).astype(self._teacher._np.float32)
+                    waveform /= 32768.0
+                    stream.accept_waveform(sample_rate, waveform)
+                    if finality == "FINAL":
+                        stream.accept_waveform(
+                            sample_rate,
+                            self._teacher._np.zeros(
+                                int(sample_rate * 0.5), dtype=self._teacher._np.float32,
+                            ),
+                        )
+                        finish = getattr(stream, "input_finished", None)
+                        if not callable(finish):
+                            raise TeacherEarError("sherpa stream lacks input_finished()")
+                        finish()
+                    decode_steps = 0
+                    while recognizer.is_ready(stream):
+                        recognizer.decode_stream(stream)
+                        decode_steps += 1
+                        if decode_steps > 4096:
+                            raise TeacherEarError("recognizer exceeded bounded decode steps")
+                    cumulative = _clean_hypothesis(recognizer.get_result(stream))
+
+                if not self._teacher._lease_matches(
+                    consent_lease, runtime, source_id, generation_id,
+                    consent_receipt_ref, temporal_state, vad_stream,
+                ):
+                    raise PermissionError("AudioConsentLease expired or changed during Teacher Ear inference")
+
+                if self._first_start_ms is None:
+                    self._first_start_ms = start_ms
+                    self._sample_rate = sample_rate
+                    self._stream_id = hashlib.sha256(
+                        f"{source_id}\\0{generation_id}\\0{consent_receipt_ref}\\0{start_ms}".encode("utf-8")
+                    ).hexdigest()
+                if cumulative.startswith(self._last_hypothesis):
+                    delta = cumulative[len(self._last_hypothesis):].strip()
+                    revision = False
+                else:
+                    delta = ""
+                    revision = cumulative != self._last_hypothesis
+                self._last_hypothesis = cumulative
+                self._chunk_count += 1
+                self._total_ms += end_ms - start_ms
+                self._next_start_ms = end_ms
+                self._rolling_digest = hashlib.sha256(
+                    self._rolling_digest + bytes.fromhex(chunk_sha256)
+                    + start_ms.to_bytes(8, "big") + end_ms.to_bytes(8, "big")
+                ).digest()
+                result = {
+                    "method": "SHERPA_ONNX_ONLINE_TRANSDUCER",
+                    "processing_mode": "CONTIGUOUS_STREAM",
+                    "status": "MEASURED" if cumulative else "EMPTY",
+                    "model_id": self._teacher.manifest.model_id,
+                    "model_revision": self._teacher.manifest.model_revision,
+                    "language": self._teacher.manifest.language,
+                    "license_id": self._teacher.manifest.license_id,
+                    "source_ref": {
+                        "source_id": source_id,
+                        "source_sha256": chunk_sha256,
+                        "generation_id": generation_id,
+                        "consent_receipt_ref": consent_receipt_ref,
+                    },
+                    "stream_ref": {
+                        "stream_id": self._stream_id,
+                        "source_id": source_id,
+                        "generation_id": generation_id,
+                        "consent_receipt_ref": consent_receipt_ref,
+                        "start_ms": self._first_start_ms,
+                        "end_ms": end_ms,
+                        "chunk_index": self._chunk_count,
+                        "chunk_count": self._chunk_count,
+                        "rolling_sha256": self._rolling_digest.hex(),
+                    },
+                    "model_file_sha256": dict(self._teacher.manifest.file_sha256),
+                    "cumulative_hypothesis": cumulative,
+                    "segments": ([{
+                        "start_ms": start_ms,
+                        "end_ms": end_ms,
+                        "timestamp_granularity": "WINDOW",
+                        "finality": finality,
+                        "text": delta,
+                        "revision": revision,
+                        "hypothesis_not_truth": True,
+                    }] if cumulative else []),
+                    "truth_authority": 0,
+                    "learning_authority": False,
+                    "action_authority": False,
+                }
+                if finality == "FINAL":
+                    self.close()
+                return result
+            except Exception:
+                self.close()
+                raise
