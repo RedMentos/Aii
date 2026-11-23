@@ -1170,6 +1170,67 @@ def test_temporal_A_B_C_A_replay_ablation_uses_matched_steps_and_retains_old_coh
         state_b, _ = store.state(STATE_KEY, None)
         assert state_b["active"]["retention_holdouts"][0] == anchor_a
 
+        # The second Store-backed update must now produce a measured B1/B2
+        # receiver-retention receipt on the exact first-update cohort. This is
+        # the integration proof missing from the earlier helper-only test.
+        receiver_cohort_a = state_a["active"]["receiver_retention_holdouts"][0]
+        assert state_b["active"]["receiver_retention_holdouts"] == [receiver_cohort_a]
+        receiver_retention = cohort_b_replay["metrics"]["receiver_retention"]
+        assert receiver_retention["status"] == "MEASURED_PASS", receiver_retention
+        assert receiver_retention["source_disjoint"] is True
+        assert receiver_retention["cohort_sha256"] == receiver_cohort_a["cohort_sha256"]
+        assert cohort_b_replay["metrics"]["receiver_retention_gate_accepted"] is True
+
+        # Verify that the fixed old receiver cohort is not silently replayed
+        # into this update's optimizer training set.
+        windows_by_id = {
+            window["window_id"]: window
+            for window in build_temporal_windows(
+                store, state_b["active"]["experience_rows"]
+            )
+        }
+        training_windows = [
+            windows_by_id[window_id]
+            for window_id in state_b["active"]["train_window_ids"]
+        ]
+        retained_source_ids = set(receiver_cohort_a["lineage_source_ids"])
+        retained_source_hashes = set(receiver_cohort_a["lineage_source_sha256s"])
+        retained_action_ids = set(receiver_cohort_a["action_ids"])
+        assert all(
+            not (
+                set(window.get("lineage_source_ids", window["source_ids"]) & retained_source_ids
+                or set(window.get("lineage_source_sha256s", window["source_sha256s"]) & retained_source_hashes
+                or set(window["action_ids"]) & retained_action_ids
+            )
+            for window in training_windows
+        )
+
+        for role in ("B1_DETAIL", "B2_GIST"):
+            first_receipt = state_a["active"]["weight_delta_receipts"][role]
+            second_receipt = state_b["active"]["weight_delta_receipts"][role]
+            retention = second_receipt["target_adapter_retention_metrics"]
+            assert second_receipt["schema"] == "v14.weight_delta_receipt.v3"
+            assert second_receipt["target_adapter_retention"] == "MEASURED_PASS"
+            assert retention["status"] == "MEASURED_PASS"
+            assert retention["cohort_sha256"] == receiver_cohort_a["cohort_sha256"]
+            assert retention["source_disjoint"] is True
+            assert retention["retention_pass"] is True
+            assert retention["negative_controls_pass"] is True
+            assert second_receipt["old_parameter_sha256"] == first_receipt["new_parameter_sha256"]
+            assert second_receipt["parameter_delta_norm"] > 0
+            assert second_receipt["gradient_measured"] is True
+            assert second_receipt["gradient_norm"] > 0
+            assert second_receipt["native_body_weights_changed"] is False
+
+        # A fresh consumer must load the committed second checkpoint and retain
+        # both role receipts after the Store/runtime restart boundary.
+        restarted_b = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        warmed_b = restarted_b.warm_active_checkpoint(nonblocking=False)
+        assert warmed_b["status"] == "WARMED", warmed_b
+        assert warmed_b["checkpoint_sha256"] == cohort_b_replay["checkpoint_sha256"]
+        restored_b, _ = store.state(STATE_KEY, None)
+        assert restored_b["active"]["weight_delta_receipts"] == state_b["active"]["weight_delta_receipts"]
+
         # Fork the same A checkpoint and same B receipts into a matched no-replay
         # attempt. Rollback preserves B as pending, so no new T8 event is needed.
         assert learner.rollback()["status"] == "ROLLED_BACK"
