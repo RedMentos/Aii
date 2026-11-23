@@ -16,6 +16,8 @@ BUILDER = 'scripts/termux_runtime_recovery_candidate_20261121.py'
 BUILDER_SHA = 'a6af1c476c2bec51692e5c00f8995c7d592239f5b78b989fcf799edb6c9f75c9'
 ARITHMETIC_OVERLAY = 'scripts/integrated_arithmetic_guard_candidate_20261121.py'
 ARITHMETIC_OVERLAY_GIT_BLOB = '88c179a71387c5caba7bbd645f868a7cccf39d30'
+NATIVE_PROBE_APPROVAL_OVERLAY = 'scripts/integrated_native_probe_approval_candidate_20261122.py'
+NATIVE_PROBE_APPROVAL_OVERLAY_GIT_BLOB = '17bb65c7a19b6aea73c336ce04e891545edb6cd2'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 
@@ -123,6 +125,25 @@ def stage(code_dir: Path, destination: Path) -> dict:
                             'no automatic learning permission'],
         }
         (staging / 'INTEGRATION_STAGE.json').write_text(json.dumps(manifest, indent=2) + '\n')
+        approval_overlay_path = code_dir / NATIVE_PROBE_APPROVAL_OVERLAY
+        if approval_overlay_path.is_symlink() or not approval_overlay_path.is_file():
+            raise ValueError('native probe approval overlay missing or unsafe')
+        approval_overlay_raw = approval_overlay_path.read_bytes()
+        approval_overlay_blob = hashlib.sha1(
+            b'blob ' + str(len(approval_overlay_raw)).encode('ascii') + b'\0' + approval_overlay_raw
+        ).hexdigest()
+        if approval_overlay_blob != NATIVE_PROBE_APPROVAL_OVERLAY_GIT_BLOB:
+            raise ValueError('native probe approval overlay source changed')
+        approval_overlay_spec = importlib.util.spec_from_file_location(
+            'v14_native_probe_approval_overlay', approval_overlay_path)
+        if approval_overlay_spec is None or approval_overlay_spec.loader is None:
+            raise RuntimeError('native probe approval overlay is not loadable')
+        approval_overlay_module = importlib.util.module_from_spec(approval_overlay_spec)
+        approval_overlay_spec.loader.exec_module(approval_overlay_module)
+        manifest = approval_overlay_module.apply_staged(code_dir, staging)
+        if (manifest.get('native_probe_approval_overlay', {}).get('status') != 'SHADOW_REVIEW_ONLY'
+                or manifest.get('native_probe_approval_overlay', {}).get('remote_operator_allowed') is not False):
+            raise ValueError('native probe approval overlay did not preserve the local-only gate')
         _publish(staging, destination)
         return manifest
     except BaseException:
