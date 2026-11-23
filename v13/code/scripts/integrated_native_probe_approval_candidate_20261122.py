@@ -138,6 +138,8 @@ def apply_sources(code_dir: Path, sources: dict) -> dict:
     cognition = result.get("v13/cognition.py")
     callosum = result.get("v13/callosum.py")
     operator = result.get("v13/operator.py")
+    if operator is None:
+        operator = _safe_file(code_dir, "v13/operator.py", "staged Operator source").read_bytes()
     if not all(isinstance(raw, bytes) for raw in (cognition, callosum, operator)):
         raise ValueError("native probe approval requires the staged Cognition, Callosum and Operator sources")
     if b"approval_token" in cognition or b"arm-probe" in callosum or b"arm-probe" in operator:
@@ -166,6 +168,10 @@ def apply_sources(code_dir: Path, sources: dict) -> dict:
         b"        register_packet_contract()\n"
         b"        from .native_probe_approval import require_consumed\n"
         b"        approval_record=require_consumed(self.r,sender_role,receiver_role,e,source_ref,approval_token)\n"
+        b"        now=time.monotonic()\n"
+        b"        if (isinstance(deadline,bool) or not isinstance(deadline,(int,float)) or not math.isfinite(deadline)\n"
+        b"                or deadline<=now or deadline-now>120.0):\n"
+        b"            raise ValueError(\"Native receiver deadline must be within 120 seconds\")\n"
         + identity_helper,
         "Cognition local approval consumer",
     )
