@@ -41,3 +41,9 @@
 - Next JEPA experiment: A→B→A dynamics/outcome shift with source-disjoint old/new cohorts, replay-on/off and matched-update controls.
 
 **User action: NONE. Preserve STOPPED_BY_USER.**
+
+
+## Coordination write limitation
+- Creating private owner-read relay issues was rejected by GitHub with HTTP 422 (verified email required); posting PR comments to #2454/#2457 was rejected with HTTP 403 for the same reason.
+- No relay issue or comment was created. Status remains `NO_LIVE_RECEIPT` / `NO_COMMENT_PERMISSION`.
+- `V14_WORK_BOARD.json` was not modified because the shared board is Boss-owned; run-18 evidence is in `V14_USER_NEXT_ACTION.md` and this handoff.
