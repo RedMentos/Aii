@@ -167,6 +167,7 @@ def _world_jepa_body_readout(r, e, text, role):
             "horizon": "NEXT_ACTION",
             "target": ("B1_DURATION_OUTPUT_SIZE" if role == "B1_DETAIL"
                        else "B2_P_FINAL_NOT_ANSWER_CORRECTNESS"),
+            "support": "TRAIN>=8",
             "checkpoint": checkpoint_sha[:12],
             "note": "prediction only; not fact/source/permission",
             "rows": prediction_rows,
