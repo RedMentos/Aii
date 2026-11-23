@@ -1858,3 +1858,34 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 
 
 **Remaining receiver-retention gap (do not overclaim):** the experimental WorldJEPA predictor has its fixed-EMA retention gate, and B1/B2 use bounded Adam with parameter hashes/delta norms, gradient measurements, source-disjoint current holdouts and shuffled/zero-latent controls. However, `finalize_weight_delta_receipts()` still writes `target_adapter_retention: NOT_MEASURED`. The next JEPA code task after rebase is to persist the prior receiver holdout outcomes, evaluate old/new B1/B2 adapters on the identical source-disjoint retained cohort, add shuffled/no-history negatives and record the measured result in the receipt. Until then the receiver loop is partial/SHADOW, not fully retained.
+
+
+## JEPA & Memory — run 16, 2026-11-23
+
+**Candidate head:** `1cfac4a1518a959a2022b81e796e3dfc0b6b2cf0`, draft PR [#2454](https://github.com/RedMentos/Aii/pull/2454). Handoff: [JEPA_MEMORY_RUN16_RECEIVER_RETENTION_20261123.md](https://github.com/RedMentos/Aii/blob/1cfac4a1518a959a2022b81e796e3dfc0b6b2cf0/v14/handoffs/JEPA_MEMORY_RUN16_RECEIVER_RETENTION_20261123.md).
+
+### New code candidate
+
+- Persist one fixed B1/B2 receiver holdout cohort with raw input/action/outcome arrays, window/action IDs, direct/transitive SourceRef IDs and hashes, creation checkpoint SHA and cohort digest.
+- Exclude that cohort from later training by source ID/hash and transition ID. Compare the prior encoder+receiver pair and the updated encoder+receiver pair on the identical old cohort.
+- Add per-role retention receipts (schema v3) with old/new MSE, mean/zero/shuffled controls and source-disjoint evidence. A non-disjoint cohort fails closed; a measured regression prevents checkpoint commit. First-update `NOT_MEASURED / NO_PRIOR_CHECKPOINT` is expected and stores the cohort for a later update.
+- Include receiver-cohort provenance in source-forget discovery, including after replay-row eviction. Add tests for persistence, encoder drift/compensation, degraded heads, overlap, tamper, source-forget and receipt validation.
+
+This remains a SHADOW float receiver adapter consumed by the existing bodyview readout. It is not a native B1/B2 GGUF/base-weight update, a trained cross-organ latent path or a Redmi proof.
+
+### Verification
+
+- Latest exact-head Actions run [#45272190117](https://github.com/RedMentos/Aii/actions/runs/45272190117): `startup_failure`, **0 jobs**. Combined status: 0 contexts / pending. No CI test ran.
+- Local Aii project tests: **NOT_RUN / BLOCKED**. Container has Python 3.13.5, NumPy 2.3.5 and pytest 9.0.2, but no Aii checkout and GitHub DNS resolution fails.
+- Synthetic Python numeric control: **PASS** for unchanged retention, encoder drift, compensated receiver, degraded receiver rejection and source-overlap detection. This is not the project test suite.
+- PR #2454 remains DRAFT / mergeable=false, 59 ahead / 47 behind current Boss #2443 head `cdf6b64067ac426ba32194100d3764f6e74c105f`; merge base `6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4`. Do not rebase until the combined Boss exact-head matrix is green. Core #2457 must then rebase onto the verified JEPA head.
+
+### Redmi and user action
+
+Private V13OBS #115 last updated 2026-11-23 19:52:16Z: installed `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled, pipeline/runtime/dashboard UP_TO_DATE, but AI is `STOPPED_BY_USER`, autostart false and model process stopped. The stored diagnostic turn was 6.295 s / 2.046 s TTFT / 358 prompt tokens / 7 generated; B1/B2 each had two failed native attempts and zero valid offers. Correctness remains UNKNOWN.
+
+A fresh private owner-read could not be created (GitHub HTTP 422: linked account has no verified email), so current device state is `NO_LIVE_RECEIPT` beyond issue #115. No LOG_PAGE, CHAT_SEND, shell, UPDATE_REQUEST, restart, model/weight swap or permission change was attempted. **User action: none required.** Optional GitHub email verification would restore private issue-creation/PR-metadata writes; it does not require or authorize any phone action.
+
+### Next internal action
+
+Wait for a complete green Boss #2443 exact-head matrix; then rebase #2454 onto that exact head without force-push, rebase Core #2457 after it, and run Python 3.13/3.14 temporal/postcommit, optimizer-resume, source-forget, restart/rollback, staged and integrated suites. Keep adapters SHADOW and preserve the phone's stopped state.
