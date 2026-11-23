@@ -169,11 +169,9 @@ def _world_jepa_body_readout(r, e, text, role):
                        else "B2_P_FINAL_NOT_ANSWER_CORRECTNESS"),
             "checkpoint": checkpoint_sha[:12],
             "rows": prediction_rows,
-            "support": "TRAIN>=8",
             "native_body_consumed": False,
             "native_body_weights_changed": False,
             "decision_authority": "NONE",
-            "note": "prediction only; not fact/source/permission",
         }
         if unsupported_actions:
             context["unsupported_actions"] = unsupported_actions
@@ -226,13 +224,23 @@ def body_state(r,e,role,text):
     if prompt_chars()>STATE_CHARS:
         view['world']['recent']=[]
     if prompt_chars()>STATE_CHARS and world_jepa_context is not None:
-        # Prefer the accepted next-action prior over optional skill detail, while
-        # preserving the existing 700-character foreground budget.
-        skills=view.get('skills')
-        if isinstance(skills,list) and len(skills)>1:
-            view['skills']=skills[:1]
-        if prompt_chars()>STATE_CHARS and isinstance(view.get('skills'),list):
-            view['skills']=[]
+        # Preserve the primary temporal prediction and its explicit authority
+        # boundary. Trim optional context before omitting the receiver readout.
+        view['skills']=[]
+        world_jepa_context.pop('unsupported_actions',None)
+        for key in ('unfinished_actions','system_stage','learning'):
+            if prompt_chars()>STATE_CHARS:
+                view['self'].pop(key,None)
+        if prompt_chars()>STATE_CHARS:
+            view['world'].pop('observed_actions',None)
+        if prompt_chars()>STATE_CHARS:
+            view['self'].pop('external_tools',None)
+        if prompt_chars()>STATE_CHARS:
+            view['world'].pop('scope',None)
+        if prompt_chars()>STATE_CHARS:
+            view['self']={}
+        if prompt_chars()>STATE_CHARS:
+            view['world']={'mode':view['world'].get('mode')}
         if prompt_chars()>STATE_CHARS:
             view.pop('world_jepa',None)
             world_jepa_audit=None
