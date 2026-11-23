@@ -1,3 +1,23 @@
+## Research & Perception execution checkpoint — 2026-11-23T00:38:13Z
+
+### Implemented A3 source-forget candidate
+- PR #2395, branch research-perception/v14-vision-source-forget-20261123-run10, exact head 26ccaf0825d4ebf02aedcdae781a9164b04f53d5 (DRAFT / NOT_RELEASED). The previous V13 A3 global and tile ridge projectors retained trained weights after image-source forget. Both now record exact training source IDs + SHA-256. Forget clears affected/legacy-unknown projector state before deleting the source, removes only expected artifacts with descriptor-relative no-follow traversal, preserves a projector proven source-disjoint, and reports explicit retraining required. No model inference/download or live-learning authority is added.
+- LOCAL_LINUX isolated helper tests: 7/7 PASS, CPython 3.13.5 / pytest 9.0.2. Exact-head GitHub focused workflow: 2/2 PASS (Python 3.13 and 3.14); offline bridge security PASS.
+- Exact-head staged-runtime and integrated-regression: FAIL. The staged JEPA source-lifecycle overlay replaces vision.forget() with its own vision_forget, which currently removes the global caption index but leaves projector weights and does not handle tile_projector. QA's source-lock composer also pins the old vision.py SHA256 and copies only its explicit PINS list; it must add vision_source_lineage.py and rebind the new vision.py hash. The prior staged run had 231 passed / 10 skipped / 19 failed / 2 errors, with the first hard failure unsupported lifecycle source: vision.py; the current exact head repeats the same pin blocker. Cross-owner details were posted to JEPA #2372 and QA #2391. No foreign-owned branch was modified.
+- Full local Aii tests: BLOCKED (no checkout; GitHub DNS fails). Local helper tests only; no full Aii integration, no native inference, no Redmi/Termux evidence.
+
+### Private device / release boundary
+- Private V13OBS #115 readback updated 2026-11-23T00:36:32Z: installed release remains aed1d2b826290c95c70356b5d8b864b5ef382be4; auto-update enabled, Runtime/Dashboard UP_TO_DATE, last_error NONE. Last stored turn remains 57.7388 s; B1/B2 TIME_BUDGET at 53.2/54.2 s; C2 OK, C3 3.1 s; native mapped-process sample 0. No new deployment or candidate installation.
+- Official Age 0; lab selector stage 10/effective implemented stage 5; physical feature execution false; learning commit authority requires separate SHADOW. No model/weight/permission/device mutation.
+
+### Research result R-101
+- Full-read preprint arXiv:2603.12977 (2026-03-13) describes exact add/delete updates for ridge heads using additive sufficient statistics. Local synthetic test adapted the current standardized Projector.fit with per-source n, sum-X, XᵀX, sum-Y and XᵀY: 600 delete/add-back comparisons, max relative parameter error 6.72e-10, max normalized-output error 1.39e-15. Local CPU microbenchmark: d=37/c=256, 128 sources, 2,048 samples; 10.87 MiB fp64 stats total, 1.28 ms mean stats solve vs 2.54 ms full refit over 100 warmed repetitions. Synthetic only, not image quality or Android.
+
+### Next executable step
+- Wait for JEPA #2372 to port the source-forget semantics into its overlaid vision_forget and QA #2391 to add/pin the helper + new vision.py bytes. Then rerun the exact staged and integrated workflows. Only after that continue the independent MediaProjection→RAW EYE→A3/A4→A5→real C3 path. No user action required.
+
+---
+
 ## Research & Perception execution checkpoint — 2026-11-23 (2026-11-23T00:19:34.393Z)
 
 ### Actual code / PR work
