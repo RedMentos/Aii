@@ -1,5 +1,23 @@
 # QA — native receiver descriptor handoff through staged Runtime
 
+**Latest exact-head checkpoint — 2026-11-23 05:03 UTC**
+
+- Branch: `qa/v14-native-receiver-fd-pin-chain-20261123-run1`
+- Current code/test head: `d7bb4ad0f050a0e97fc7a6f3666360341112d18f`
+- Exact-head CI: **7/7 associated workflows SUCCESS**.
+  - Native receiver descriptor binding: Python 3.13 and 3.14 PASS.
+  - Native staged Runtime: Python 3.13 and 3.14 PASS; pinned llama.cpp Linux build PASS; Android `arm64-v8a` cross-compile PASS.
+  - Staged Runtime + integrated regression: PASS (staged 260 passed / 10 skipped / 47 subtests; integrated 424 passed / 3 skipped / 58 subtests).
+  - Runtime deploy integrity, owner-read Python 3.14 staged startup/SQLite source refs, Lab-Age E2E, two-checkout migration and offline bridge checks: PASS.
+- The first merged-tree run on `7238eb8` exposed one test-only mismatch in both Python versions: the PR merge tree inherited a double-escaped Git object separator from its base branch. That made the test calculate `4e14ffa5…` while the exact receiver-builder Git blob is `0541038d…`. The source pin itself was correct. The PR branch now spells the separator as the explicit one-byte `b"\\x00"`, forcing the merged tree to use the correct Git blob header. Exact-head Python 3.13/3.14 now each report **12 passed**.
+- Evidence remains CI / Linux native build / Android cross-compile only. No GGUF model inference, semantic task-utility result, trained cross-model latent coupling, Redmi runtime, or Android device action is claimed.
+- PR #2409 remains DRAFT / NOT_RELEASED and stacked on QA model-probe base `f64e9943998bba1ec69dcbe342fd865d1a64f990`, which is 34 commits ahead of the installed release ancestor `aed1d2b826290c95c70356b5d8b864b5ef382be4`. Boss/Core must reconcile and rebase the combined receiver stack before any release consideration.
+- B3 production remains OFF; no model, weights, permissions, updater settings, or user data were changed. Redmi remains REDMI_UNVERIFIED.
+
+**Next:** hand the exact-green QA stack to Boss/Core for current-release-base reconciliation, preserving #2377 model-path identity checks and #2400 descriptor-bound model/binary handoff. Rerun exact CI after rebase; then request no phone update unless the full release gate and explicit deployment path are verified.
+
+---
+
 Date: 2026-11-23
 
 ## Branch and dependency
