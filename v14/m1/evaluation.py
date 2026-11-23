@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from typing import Mapping
 
 import numpy as np
-import torch
 from .array_data import ArrayDataset, InputBundle
 
 
@@ -141,7 +140,6 @@ def paired_block_bootstrap(
 
 
 
-@torch.no_grad()
 def collect_model_errors(
     model: torch.nn.Module,
     dataset: ArrayDataset,
@@ -155,6 +153,7 @@ def collect_model_errors(
     The test split remains protected: asking for split='test' delegates to
     ArrayDataset.iter_batches and therefore requires its preregistration gate.
     """
+    import torch
     target_device = torch.device(device)
     model.to(target_device)
     model.eval()
@@ -170,7 +169,8 @@ def collect_model_errors(
             calendar=torch.as_tensor(batch.inputs.calendar, device=target_device, dtype=torch.float32),
         )
         target = torch.as_tensor(batch.target, device=target_device, dtype=torch.float32)
-        prediction = model(bundle)
+        with torch.no_grad():
+            prediction = model(bundle)
         if prediction.shape != target.shape or prediction.shape[1] < 60:
             raise ValueError("model output must match [batch, horizon>=60, channels] target shape")
         if not torch.isfinite(prediction).all():
