@@ -576,7 +576,14 @@ class A5UIRuntimeAdapter:
         return tuple(packets)
 
     def revoke(self, source_id):
-        return revoke_ui_observation(self.runtime, source_id)
+        try:
+            return revoke_ui_observation(self.runtime, source_id)
+        finally:
+            # Direct Core callers use this adapter rather than the scoped
+            # Perception helper. Clear frame-difference state on every revoke,
+            # including Store cleanup failures and the no-Store fast path.
+            from .vision_temporal_attention import reset_runtime_ui_temporal_attention
+            reset_runtime_ui_temporal_attention(self.runtime, source_id)
 
     def close(self):
         """Clear local UI state after provider revocation and Runtime worker exit.

@@ -9,8 +9,6 @@ on:
       - "v13/code/v13/vision_temporal_attention.py"
       - "v13/code/tests/test_vision_temporal_attention.py"
       - "v13/code/tests/test_vision_ui_frame_ingress.py"
-      - "v13/code/v13/vision_temporal_attention.py"
-      - "v13/code/tests/test_vision_temporal_attention.py"
       - "v13/code/tests/test_vision_ui_frame_provider_entrypoint.py"
       - "v13/code/v13/a5_ui_admission_bridge.py"
       - "v13/code/v13/vision.py"
@@ -24,6 +22,9 @@ on:
   pull_request:
     paths:
       - "v13/code/v13/vision_ui_frame_ingress.py"
+      - "v13/code/v13/vision_temporal_attention.py"
+      - "v13/code/tests/test_vision_temporal_attention.py"
+      - "v14/handoffs/RESEARCH_PERCEPTION_TEMPORAL_LEASE_CLEANUP_20261123.md"
       - "v13/code/tests/test_vision_ui_frame_ingress.py"
       - "v13/code/tests/test_vision_ui_frame_provider_entrypoint.py"
       - "v13/code/v13/a5_ui_admission_bridge.py"

@@ -1,8 +1,14 @@
+import gc
 import hashlib
 from concurrent.futures import ThreadPoolExecutor
+from types import SimpleNamespace
+import weakref
 
 import numpy as np
 import pytest
+
+import v13.a5_ui_admission_bridge as a5_bridge
+from v13.a5_ui_admission_bridge import A5UIRuntimeAdapter
 
 from v13.vision_temporal_attention import (
     REGION_IDS, TemporalUIAttentionError, TemporalUIAttentionRegistry,
@@ -118,3 +124,55 @@ def test_authority_is_never_escalated():
     assert result["truth_authority"] == 0
     assert result["learning_authority"] is False
     assert result["action_authority"] is False
+
+
+
+def test_registry_retains_exact_lease_until_source_reset_and_releases_it():
+    class Lease:
+        pass
+
+    registry = TemporalUIAttentionRegistry()
+    lease = Lease()
+    lease_ref = weakref.ref(lease)
+    update(registry, lease)
+    del lease
+    gc.collect()
+    assert lease_ref() is not None
+    assert registry.reset(source_id="screen") == 1
+    gc.collect()
+    assert lease_ref() is None
+
+
+def test_a5_adapter_revoke_clears_temporal_state_without_store():
+    runtime = SimpleNamespace(
+        _a5_ui_context_cache={},
+        _a5_ui_unsubscribe={},
+        store=None,
+    )
+    registry = TemporalUIAttentionRegistry()
+    runtime._v14_ui_temporal_attention = registry
+    update(registry, object())
+
+    result = A5UIRuntimeAdapter(runtime).revoke("screen")
+
+    assert result["source_tombstoned"] is False
+    assert registry.stream_count() == 0
+
+
+def test_a5_adapter_revoke_clears_temporal_state_when_store_cleanup_raises(monkeypatch):
+    runtime = SimpleNamespace(
+        _a5_ui_context_cache={},
+        _a5_ui_unsubscribe={},
+        store=object(),
+    )
+    registry = TemporalUIAttentionRegistry()
+    runtime._v14_ui_temporal_attention = registry
+    update(registry, object())
+
+    def fail_revoke(*_args):
+        raise RuntimeError("synthetic Store cleanup failure")
+
+    monkeypatch.setattr(a5_bridge, "revoke_ui_observation", fail_revoke)
+    with pytest.raises(RuntimeError, match="synthetic Store cleanup failure"):
+        A5UIRuntimeAdapter(runtime).revoke("screen")
+    assert registry.stream_count() == 0

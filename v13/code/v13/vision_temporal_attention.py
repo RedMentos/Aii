@@ -116,6 +116,10 @@ class TemporalUIAttentionRegistry:
         zeros = {region_id: 0.0 for region_id in REGION_IDS}
         with self._lock:
             previous = self._states.get(key)
+            # Keep the lease object alive in the bounded entry below. A bare
+            # id() can be recycled after GC and must never join two grants.
+            if previous is not None and previous.get("lease") is not consent_lease:
+                previous = None
             status = "WARMUP"
             per_region = zeros
             if previous is not None:
@@ -136,6 +140,7 @@ class TemporalUIAttentionRegistry:
                     }
             self._states.pop(key, None)
             self._states[key] = {
+                "lease": consent_lease,
                 "end_ms": end_ms,
                 "frame_sha256": frame_sha256,
                 "features": current,
