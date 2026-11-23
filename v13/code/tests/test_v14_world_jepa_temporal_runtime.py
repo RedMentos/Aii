@@ -902,9 +902,14 @@ def test_temporal_rollback_restores_previous_checkpoint_and_retries_pending_rows
         second_record = second_state["active"]
         assert second_record["checkpoint_sha256"] != first_sha
         assert second_record["fit_steps"] > first_record["fit_steps"]
+        second_sha = second_record["checkpoint_sha256"]
+        assert learner.warm_active_checkpoint(nonblocking=False)["status"] == "WARMED"
+        assert learner._ephemeral_checkpoint_sha == second_sha
 
         rollback = learner.rollback()
         assert rollback["status"] == "ROLLED_BACK", rollback
+        assert learner._ephemeral_checkpoint_sha == first_sha
+        assert learner.warm_active_checkpoint(nonblocking=False)["status"] == "ALREADY_WARM"
         restored, _ = store.state(STATE_KEY, None)
         assert restored["active"]["checkpoint_sha256"] == first_sha
         assert restored["active"]["fit_steps"] == first_record["fit_steps"]
@@ -1234,6 +1239,53 @@ def test_temporal_A_B_C_A_replay_ablation_uses_matched_steps_and_retains_old_coh
             assert cohort_a2["checkpoint_committed"] is False
             assert final_state["active"]["checkpoint_sha256"] == state_c["active"]["checkpoint_sha256"]
             assert final_state["pending_rows"]
+    finally:
+        store.close()
+
+
+@pytest.mark.parametrize("damage", ("missing", "corrupt"))
+def test_temporal_rollback_refuses_unloadable_previous_checkpoint_without_mutating_state(tmp_path, damage):
+    home = tmp_path / ("temporal-rollback-guard-" + damage)
+    store = _make_store(home)
+    try:
+        _make_dataset(store, "rollback-guard-A-" + damage, 32)
+        _permissions(store, steps=80)
+        learner = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        first = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert first["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", first
+        first_state, _ = store.state(STATE_KEY, None)
+        first_record = first_state["active"]
+        first_path = learner.home / first_record["checkpoint"]
+
+        _make_dataset(store, "rollback-guard-B-" + damage, 32, start_index=32)
+        second = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert second["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", second
+        second_state, _ = store.state(STATE_KEY, None)
+        second_record = second_state["active"]
+        second_path = learner.home / second_record["checkpoint"]
+        assert second_record["checkpoint_sha256"] != first_record["checkpoint_sha256"]
+
+        if damage == "missing":
+            first_path.unlink()
+        else:
+            first_path.write_bytes(first_path.read_bytes() + b"corrupt-checkpoint")
+
+        before_state, before_version = store.state(STATE_KEY, None)
+        with pytest.raises(ValueError):
+            learner.rollback()
+        after_state, after_version = store.state(STATE_KEY, None)
+
+        assert after_state == before_state
+        assert after_version == before_version
+        assert after_state["active"]["checkpoint_sha256"] == second_record["checkpoint_sha256"]
+        assert after_state["previous"]["checkpoint_sha256"] == first_record["checkpoint_sha256"]
+        assert second_path.is_file(), "failed rollback must not prune the valid active checkpoint"
     finally:
         store.close()
 
