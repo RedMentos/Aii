@@ -1690,3 +1690,20 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 3. Continue whole-Canon QA; do not use the green release CI or updater receipt as evidence that the slow/incorrect native chat path is fixed.
 
 **Redmi status:** installed c4eb82 / updater up-to-date; native quality and Android companion acceptance remain UNVERIFIED. **User action: none.**
+
+
+---
+
+## Boss & Integration — current whole-system handoff (2026-11-23T04:03:19.912Z)
+
+**No user action is required. Do not run Termux, send an UPDATE_REQUEST, CHAT_SEND or LOG_PAGE, or download/swap a model.**
+
+- **Release:** `gpt6/v13-private-remote-bridge-20261111` is exactly `aed1d2b826290c95c70356b5d8b864b5ef382be4`. Its 21 observed exact-commit GitHub workflow runs are all SUCCESS. Private PIPELINE_STATUS #694 confirms that same SHA installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE, and last_error NONE.
+- **Candidate:** Boss PR [#2370](https://github.com/RedMentos/Aii/pull/2370) is DRAFT at `9267fda23b282060369428c28fc6e1864664b0e4`, based on the release SHA. The raw Runtime SHA-256 and Git blob pins, arithmetic/RAW-EAR consumers, Termux12→Termux21→stage→runtime-deployer chain, and direct Termux12 source pins were fetched back and matched. This is source-contract readback, not execution.
+- **Candidate CI:** 17 entries observed: 14 QUEUED, 1 PENDING, 1 CANCELLED, 1 SKIPPED. No completed exact-head test is available. The candidate is NOT_RELEASED.
+- **Redmi:** private #695 repeats a stored FINAL turn of 57.739 s, TTFT 41.627 s, C3 prefill 38.945 s, 751 prompt tokens and 2 generated tokens; correctness is UNKNOWN. B1/B2 are TIME_BUDGET at 53.2/54.2 s; C3 probe 3.1 s; native probe SMOKE_PARTIAL. Instant native-residency sample reports 0 mapped processes / 0 MiB PSS/RSS; that is not free RAM or sustained residency. HEALTH #696 reports 1,402 MiB MemAvailable and 1,300 MiB disk free, but Runtime is UNAVAILABLE there while DIAGNOSTICS reports RUNNING. Preserve this discrepancy.
+- **Rights:** official Age 0; lab stage requested 10/effective implemented 5; physical feature execution false; learning commit authority requires separate SHADOW.
+- **Other lanes:** #2400 descriptor-bound receiver, #2377 manifest/file-identity guard, #2406 companion registry/receipt recovery, #2375 projected-frame/A3 student and #2408 MediaProjection composition remain separate open candidates. None establishes trained B3, an Android screenshot path, APK/device acceptance, or a production permission.
+- **Local tests:** full local Aii suite BLOCKED because no repository checkout is mounted and GitHub DNS resolution fails in this execution environment.
+
+**Next internal action:** poll exact #2370 head `9267fda23b282060369428c28fc6e1864664b0e4`; inspect logs for that SHA only; repair demonstrated failures and keep the PR draft until all exact tests pass. Then review and compose the cross-agent PRs on the same base. Do not request a device update until exact candidate CI and release review are green.

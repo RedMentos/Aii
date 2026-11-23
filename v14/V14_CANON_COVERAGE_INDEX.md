@@ -2244,3 +2244,28 @@ Focused B3 paired-capture run 45040617156 remains PASS (52 tests, compile, CLI s
 - Runtime deployment 45040617193: plain UI recovery builder changed under Python 3.11 and 3.14.
 
 JEPA transactional update, combined online JEPA, JEPA receipt integrity, role-specific tap provenance, privacy scan and offline bridge checks passed; same-turn B1/B2/C4/C3 was still in progress and audio/arithmetic/native latent receiver queued. These are shared integrated builder/recovery composition failures, not the focused B3 capture/trainer test. Keep #2346 DRAFT / NOT_RELEASED.
+
+
+---
+
+## Run 17 evidence overlay — 2026-11-23T04:03:19.912Z
+
+The historical inventory remains **1,255 headings**; this overlay updates evidence status only and does not mark any requirement complete.
+
+| Requirement family | Current evidence | Acceptance boundary | Classification |
+|---|---|---|---|
+| Release/install | Release aed1d2b826290c95c70356b5d8b864b5ef382be4: 21/21 exact workflow runs SUCCESS; private #694 confirms installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE | Functional quality, 20-turn acceptance, rollback and device-native organs remain open | INSTALLED_RELEASE / FUNCTIONAL_ACCEPTANCE_OPEN |
+| Boss integration/source chain | PR #2370 head 9267fda23b282060369428c28fc6e1864664b0e4; raw Runtime, arithmetic/RAW EAR, Termux12→Termux21→stage→deployer and direct source pins read back consistently | 17 exact-head workflow entries still queued/pending/cancelled/skipped; no completed test | SOURCE_CONTRACT_READBACK / CI_PENDING / NOT_RELEASED |
+| B1_DETAIL + B2_GIST | Distinct models and synthetic offer/C4 path remain in candidate | Redmi B1/B2 TIME_BUDGET 53.2/54.2 s; no useful native offers or same-turn accepted contribution | CODE_PRESENT / DEVICE_FAIL_OBSERVED / NOT_ACCEPTED |
+| C3/JEF/output | C3 Runtime returns FINAL on stored turn | 2 tokens after 41.627 s TTFT and 38.945 s prefill; correctness unknown | DEVICE_OBSERVATION / NOT_ACCEPTED |
+| B3 / Enlightened Space | Symbolic space and diagnostic receiver; descriptor/path-integrity candidates #2400/#2377 | No trained cross-family adapter, paired activation utility, OOD/retention or production route | DIAGNOSTIC_ONLY / PRODUCTION_OFF |
+| World/Self/Memory/JEPA/Sleep | Numeric learners, EMA, replay and checkpoint candidates remain SHADOW | No accepted master-weight delta, cross-organ gradient, source-forget atomicity, retention or Redmi learning proof | WIRED_SYNTHETIC / SHADOW_ONLY |
+| Voice/audio | Caller-provided PCM RAW EAR/FIR feature path and research-only VAD comparator | No Android AudioRecord, ASR, trainable decoder/vocoder, full duplex or speech learning | PARTIAL_FEATURE_ONLY / NOT_ANDROID_VERIFIED |
+| Android UI | A5 metadata lease and projected-frame/A3 student candidate #2375; provider composition #2406/#2408 | No real MediaProjection frame, Accessibility action, tap/type or Redmi UI proof | CODE_CANDIDATE / NOT_ANDROID_VERIFIED |
+| Android background/companion | Pairing/registry/receipt-recovery candidate #2406 | No APK/device install or authorized app-launch executor | CODE_CANDIDATE / OFF |
+| Age/resources | Official Age 0; lab selector 10 / effective stage 5; separate ResourceGuard | Physical stage-6..10 execution not verified | CONFIG_PRESENT / NO_PHYSICAL_EXECUTION |
+| Self-optimization | WorldJEPA and adapter learning candidates only | No accepted permanent B1/B2/C3 update, cross-organ gradient or structural self-edit | SHADOW_ONLY / NO_WEIGHT_PROOF |
+| Recovery/rollback | Transactional launcher/marker and runtime rollback code | No Redmi process-death, reboot or rollback receipt | CODE_PRESENT / DEVICE_ACCEPTANCE_OPEN |
+| Whole Canon | Historical master and 1,255-heading inventory preserved | Clause→implementation→consumer→test→environment→rollback map incomplete | PRESERVED / SEMANTIC_COVERAGE_OPEN |
+
+**Device evidence:** private #695 repeats the stored turn; no new CHAT_SEND was performed. HEALTH #696 says Runtime UNAVAILABLE while DIAGNOSTICS says RUNNING. Instant native-residency 0-process snapshot is not free RAM or sustained residency. No model/weight/permission/device mutation occurred.
