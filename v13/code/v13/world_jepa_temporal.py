@@ -2243,7 +2243,7 @@ def _record_references_source(store, record, source_id, pending_action_ids=()):
         if type(rows) is not list or len(rows) > MAX_ROWS:
             return True
         for raw in rows:
-            row = _mapping(raw, "temporal source-forget action row")
+            row = _mapping(raw)
             if row.get("action_id") in pending:
                 continue
             if row.get("source_id") == source_id:
