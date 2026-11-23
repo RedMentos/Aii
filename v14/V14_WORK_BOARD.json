@@ -386,18 +386,58 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "LOCAL_LINUX isolated + CI; no Android timing",
-      "next_step": "Repair #2433 without relaxing source pins: assert canonical ModulatorPacket path_id, rebind record-only controller guard and dependent recovery/stage/deployer pins to exact attention.py bytes, then rerun Python 3.13/3.14, staged/integrated, migration and consent-revocation. No AudioRecord or Android capture claim.",
+      "proof_environment": "LOCAL_LINUX exact module compile + direct registry harness; CI startup_failure/no jobs; REDMI_UNVERIFIED",
+      "next_step": "Core/QA: review schema-v3 source/consent pins and restore a runnable exact-head CI job. Research & Perception: add the remaining 1-s/2-s invariance regression, then port the separate #2433 transactional A4 outcome/N10 path onto the current base without overwriting the newer RAW EAR/teacher/duplex consumers. Keep speaker thresholds uncalibrated and Android REDMI_UNVERIFIED.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:07:22.216Z",
+      "last_checkpoint": "2026-11-23T22:00:28Z",
       "latest_candidate_pr": {
-        "pr": 2275,
-        "head_sha": "b19ff77cc769e670a46b6467798fba94a6d19046",
-        "base_sha": "34eb645357d65bdd5ac69b9fb2c834d043086dac",
-        "ci": "FAIL_RAW_EAR_44958073016_STAGED_44958072992",
-        "tested_code_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c"
+        "pr": 2448,
+        "head_sha": "29220eefe9281a8a5dbe7aa0588c89a83fd2b730",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "ci": "STARTUP_FAILURE_NO_JOBS_45277411451",
+        "tested_code_sha": "29220eefe9281a8a5dbe7aa0588c89a83fd2b730"
       },
-      "proof": "#2433 head a2662b9 has three failures: path vs path_id assertions on Python 3.13/3.14 and stale record_only_controller_guard attention.py pin. Exact attention.py blob 0c1831f5a0b7aef990e15e3e2842dc445776153a. DRAFT / NOT_RELEASED; no Android microphone evidence."
+      "proof": "PR #2448 current head 29220eefe9281a8a5dbe7aa0588c89a83fd2b730 adds schema v3 exact current PCM SHA-256 and active lease consent receipt binding. Only VOICED embeddings enter bounded speaker history; non-voiced windows are suppressed while A4 novelty remains available. Exact module compile/direct checks PASS for lease receipt, PCM match/mismatch, suppression, history retention, consent reset and reset API. Full repository pytest not run; exact-head Actions startup_failure has no jobs. No Android microphone proof. Stale #2433 still contains the separate transactional A4 outcome/N10 path; not ported here.",
+      "run28_checkpoint": {
+        "branch": "research-perception/v14-audio-duplex-bridge-20261123-run21",
+        "pr": 2448,
+        "head_sha": "29220eefe9281a8a5dbe7aa0588c89a83fd2b730",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "code_paths": [
+          "v13/code/v13/audio_speaker_evidence.py",
+          "v13/code/v13/audio_voice_cues.py",
+          "v13/code/tests/test_audio_speaker_evidence.py"
+        ],
+        "tests": [
+          {
+            "name": "exact updated module compile",
+            "environment": "LOCAL_LINUX",
+            "result": "PASS"
+          },
+          {
+            "name": "direct registry invariants: active lease, PCM hash, non-voiced suppression, history, consent epoch, reset",
+            "environment": "LOCAL_LINUX",
+            "result": "PASS"
+          },
+          {
+            "name": "full repository pytest",
+            "environment": "LOCAL_LINUX",
+            "result": "BLOCKED",
+            "reason": "No local checkout/runtime"
+          },
+          {
+            "name": "GitHub Actions exact-head",
+            "environment": "CI",
+            "result": "BLOCKED",
+            "reason": "startup_failure; zero jobs"
+          }
+        ],
+        "e2e_scope": "Synthetic PCM16 impulse -> A5 RAW EAR -> A4 novelty/speaker evidence -> C3 admission summary; not a real microphone turn",
+        "device": "REDMI_UNVERIFIED",
+        "release": "NOT_RELEASED",
+        "updater": "NOT_EXERCISED; no deployment attempted",
+        "next_action": "Core/QA CI and source-pin review; Perception 1-s/2-s invariance, then current-base A4 outcome/N10 integration"
+      }
     },
     {
       "id": "V14-019",
