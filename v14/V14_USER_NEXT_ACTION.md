@@ -1,3 +1,15 @@
+# Core & Harness — Android companion SQLite-recovery checkpoint (2026-11-23 22:56 UTC)
+
+**Candidate:** [PR #2406](https://github.com/RedMentos/Aii/pull/2406), DRAFT / NOT_RELEASED, branch `core/v14-capability-registry-mediaprojection-20261123`, exact code/test head `dc848768c6797b60c329d5d7485545b579d232f8`; handoff commit `3aa31af4aac90caefd85f7ca3c41bac9419fb0a0`. Added a Robolectric regression that injects SQLite receipt-write failure for both `EXECUTING → OUTCOME_UNKNOWN` and `DENYING → USER_DENIED`, verifies claims/notifications remain recoverable, then simulates restart, receipt-only finalization and idempotency without redispatch.
+
+**Evidence:** LOCAL_LINUX / CPython 3.13.5 SQLite trigger semantics PASS; Android Java/Robolectric test NOT_RUN locally (JDK 21 exists, but Android SDK/Gradle/full checkout are absent). Prior head `429f62a` had Gradle/unit-test job PASS; its separate emulator process-restart job failed on System UI non-responsiveness and `com.android.phone` ANR. New exact-head run `45284177523` is `startup_failure` with zero jobs and cannot be retried; the new test is UNVERIFIED by CI. Redmi remains STOPPED_BY_USER / REDMI_UNVERIFIED; no APK, pairing, action, update request or permission change occurred.
+
+Handoff: `v14/handoffs/CORE_COMPANION_SQLITE_RECEIPT_RECOVERY_TEST_20261123_RUN1.md`.
+
+**Next:** obtain an executable exact-head Android companion run for `dc848768`, verify the new Robolectric case, and separately stabilize the emulator process-restart job without masking the System UI/phone ANR. QA review remains required before APK/device acceptance. No user action is needed.
+
+---
+
 # Core & Harness — latest verified checkpoint (2026-11-23 22:50 UTC)
 
 **Primary P0 candidate:** [PR #2458](https://github.com/RedMentos/Aii/pull/2458), DRAFT / NOT_RELEASED, branch `core/v14-fair-b1-b2-preanswer-budget-20261123-run1`, branch head `7f1e865f47d9b9e39a289e03db87795fd16de079`, based on current release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`. The last substantive code/test checkpoint is `61509b1b061b377d5c19f69d861acda6f7b9f07e`; the later branch commit persists the handoff. It provides the fair same-turn B1/B2 pre-answer scheduling candidate, but exact-head Actions is still `startup_failure / no jobs`; the nested Boss Runtime pins and QA A5 Store lifecycle gate remain unresolved.
