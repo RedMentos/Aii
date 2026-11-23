@@ -372,7 +372,7 @@ class ProcessRestartPostRestartDurabilityTests(unittest.TestCase):
         for failure in failures:
             with self.subTest(failure=type(failure).__name__), TemporaryDirectory() as directory:
                 marker = Path(directory) / "stop-proof"
-                marker.write_text("STOP_ACTION_PERSISTED_OFF\\n", encoding="utf-8")
+                marker.write_text("STOP_ACTION_PERSISTED_OFF\n", encoding="utf-8")
                 output = io.StringIO()
                 with (
                     patch.object(harness, "STOP_PROOF_MARKER", marker),
@@ -397,7 +397,7 @@ class ProcessRestartPostRestartDurabilityTests(unittest.TestCase):
             with self.subTest(marker_exists=marker_exists, enabled=enabled), TemporaryDirectory() as directory:
                 marker = Path(directory) / "stop-proof"
                 if marker_exists:
-                    marker.write_text("STOP_ACTION_PERSISTED_OFF\\n", encoding="utf-8")
+                    marker.write_text("STOP_ACTION_PERSISTED_OFF\n", encoding="utf-8")
                 output = io.StringIO()
                 with (
                     patch.object(harness, "STOP_PROOF_MARKER", marker),
