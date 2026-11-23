@@ -148,49 +148,98 @@ class InstrumentationDriverTests(unittest.TestCase):
             self.assertEqual(harness.wait_for_process(present=True, timeout=1.0), "4321")
         sleep.assert_called_once_with(0.25)
 
-    def test_main_forces_stop_between_two_real_instrumentation_phases(self):
+    def test_read_target_process_accepts_only_allowlisted_marker(self):
+        with patch.object(harness, "adb", return_value="1234|987654321"):
+            self.assertEqual(
+                harness.read_target_process("qa-process-first.pid"),
+                ("1234", 987654321),
+            )
+
+    def test_read_target_process_rejects_untrusted_marker(self):
+        with patch.object(harness, "adb") as adb_call:
+            with self.assertRaisesRegex(ValueError, "not allowlisted"):
+                harness.read_target_process("../outside.pid")
+        adb_call.assert_not_called()
+
+    def test_read_target_process_rejects_malformed_identity(self):
+        with patch.object(harness, "adb", return_value="not-a-pid"):
+            with self.assertRaisesRegex(AssertionError, "malformed"):
+                harness.read_target_process("qa-process-restart.pid")
+
+    def test_main_accepts_natural_activity_teardown_and_proves_new_pid(self):
         with (
             patch.object(harness, "adb", return_value="") as adb_call,
-            patch.object(harness, "wait_for_process",
-                         side_effect=["", "111", "", "222"]) as wait_call,
+            patch.object(harness, "wait_for_process", side_effect=["", "", ""]) as wait_call,
+            patch.object(harness, "process_id", side_effect=["", ""]) as process_call,
+            patch.object(harness, "read_target_process",
+                         side_effect=[("111", 1000), ("222", 2000)]) as identity_call,
             patch.object(harness, "run_instrumentation") as instrument_call,
         ):
             harness.main()
 
-        self.assertEqual(
-            adb_call.call_args_list,
-            [
-                call("shell", "am", "force-stop", harness.PACKAGE),
-                call("shell", "am", "force-stop", harness.PACKAGE),
-            ],
-        )
-        self.assertEqual(
-            wait_call.call_args_list,
-            [
-                call(present=False),
-                call(present=True),
-                call(present=False),
-                call(present=True),
-            ],
-        )
-        self.assertEqual(
-            instrument_call.call_args_list,
-            [
-                call(harness.INITIAL_METHOD),
-                call(harness.RESTART_METHOD),
-            ],
-        )
+        self.assertEqual(adb_call.call_args_list, [
+            call("shell", "am", "force-stop", harness.PACKAGE),
+            call("shell", "run-as", harness.PACKAGE, "rm", "-f",
+                 "files/qa-process-first.pid", "files/qa-process-restart.pid"),
+        ])
+        self.assertEqual(wait_call.call_args_list, [
+            call(present=False), call(present=False), call(present=False)
+        ])
+        self.assertEqual(process_call.call_count, 2)
+        self.assertEqual(identity_call.call_args_list, [
+            call("qa-process-first.pid"), call("qa-process-restart.pid")
+        ])
+        self.assertEqual(instrument_call.call_args_list, [
+            call(harness.INITIAL_METHOD), call(harness.RESTART_METHOD)
+        ])
 
-    def test_restart_instrumentation_is_not_run_if_process_does_not_die(self):
+    def test_main_forces_stop_when_activity_process_remains_resident(self):
+        with (
+            patch.object(harness, "adb", return_value="") as adb_call,
+            patch.object(harness, "wait_for_process", side_effect=["", "", ""]) as wait_call,
+            patch.object(harness, "process_id", side_effect=["111", "222"]),
+            patch.object(harness, "read_target_process",
+                         side_effect=[("111", 1000), ("222", 2000)]),
+            patch.object(harness, "run_instrumentation") as instrument_call,
+        ):
+            harness.main()
+
+        self.assertEqual(adb_call.call_args_list, [
+            call("shell", "am", "force-stop", harness.PACKAGE),
+            call("shell", "run-as", harness.PACKAGE, "rm", "-f",
+                 "files/qa-process-first.pid", "files/qa-process-restart.pid"),
+            call("shell", "am", "force-stop", harness.PACKAGE),
+            call("shell", "am", "force-stop", harness.PACKAGE),
+        ])
+        self.assertEqual(wait_call.call_count, 3)
+        self.assertEqual(instrument_call.call_args_list, [
+            call(harness.INITIAL_METHOD), call(harness.RESTART_METHOD)
+        ])
+
+    def test_restart_instrumentation_is_not_run_if_process_survives_force_stop(self):
         with (
             patch.object(harness, "adb", return_value=""),
             patch.object(harness, "wait_for_process",
-                         side_effect=["", "111", AssertionError("PID remained")]),
+                         side_effect=["", AssertionError("PID remained")]),
+            patch.object(harness, "process_id", return_value="111"),
+            patch.object(harness, "read_target_process", return_value=("111", 1000)),
             patch.object(harness, "run_instrumentation") as instrument_call,
         ):
             with self.assertRaisesRegex(AssertionError, "PID remained"):
                 harness.main()
         instrument_call.assert_called_once_with(harness.INITIAL_METHOD)
+
+    def test_main_rejects_nonadvancing_process_start_time(self):
+        with (
+            patch.object(harness, "adb", return_value=""),
+            patch.object(harness, "wait_for_process", side_effect=["", "", ""]),
+            patch.object(harness, "process_id", side_effect=["", ""]),
+            patch.object(harness, "read_target_process",
+                         side_effect=[("111", 2000), ("222", 1000)]),
+            patch.object(harness, "run_instrumentation"),
+        ):
+            with self.assertRaisesRegex(AssertionError, "later target process"):
+                harness.main()
 
 
 if __name__ == "__main__":

@@ -137,29 +137,67 @@ def run_instrumentation(method: str, timeout: float = 180.0) -> str:
     return output
 
 
+TARGET_PROCESS_MARKERS = {
+    "qa-process-first.pid",
+    "qa-process-restart.pid",
+}
+
+
+def read_target_process(marker: str) -> tuple[str, int]:
+    """Read a PID/start-time marker written on the target Activity main thread."""
+    if marker not in TARGET_PROCESS_MARKERS:
+        raise ValueError("target process marker is not allowlisted")
+    value = adb("shell", "run-as", PACKAGE, "cat", "files/" + marker)
+    match = re.fullmatch(r"(\d+)\|(\d+)", value)
+    if not match:
+        raise AssertionError("target process marker is missing or malformed: " + marker)
+    return match.group(1), int(match.group(2))
+
+
 def main() -> None:
     # Start from a known stopped process. ActivityScenario owns the only
     # MainActivity launch inside each instrumentation invocation.
     adb("shell", "am", "force-stop", PACKAGE)
     wait_for_process(present=False)
-    run_instrumentation(INITIAL_METHOD)
-    first_pid = wait_for_process(present=True)
+    adb(
+        "shell", "run-as", PACKAGE, "rm", "-f",
+        "files/qa-process-first.pid", "files/qa-process-restart.pid",
+    )
 
-    # This is the actual process-death boundary, outside the target app and
-    # outside the instrumentation runner.
-    adb("shell", "am", "force-stop", PACKAGE)
+    run_instrumentation(INITIAL_METHOD)
+    first_pid, first_started = read_target_process("qa-process-first.pid")
+
+    # ActivityScenario closes MainActivity when instrumentation returns. On
+    # Android the target process may exit naturally at that point; if it is
+    # still resident, force-stop it. Either way, prove absence before restart.
+    first_live = process_id()
+    if first_live:
+        adb("shell", "am", "force-stop", PACKAGE)
     wait_for_process(present=False)
 
-    # Starting MainActivity starts a new process. Provider onCreate() must
-    # reset the process grant and persisted flag to OFF before the second test.
+    # A fresh ActivityScenario now invokes provider startup in a new process.
+    # The test records the target PID/start-time and asserts persisted OFF.
     run_instrumentation(RESTART_METHOD)
-    restarted_pid = wait_for_process(present=True)
+    restarted_pid, restarted_started = read_target_process("qa-process-restart.pid")
+    if restarted_started <= first_started:
+        raise AssertionError(
+            "provider restart did not create a later target process: "
+            + first_pid + "@" + str(first_started) + " -> "
+            + restarted_pid + "@" + str(restarted_started)
+        )
 
+    restarted_live = process_id()
+    if restarted_live:
+        adb("shell", "am", "force-stop", PACKAGE)
+    wait_for_process(present=False)
+
+    death_mode = "activity-teardown" if not first_live else "host-force-stop"
     print(
-        "PASS: Espresso visibly enabled/stopped the companion; host observed "
-        "PID disappearance after force-stop; fresh provider/activity startup "
-        "returned STOPPED with enabled=false. PID "
-        + first_pid + " -> " + restarted_pid
+        "PASS: Espresso visibly enabled/stopped the companion; target process "
+        "identity changed across provider restart; persisted OFF survived. "
+        "PID/start " + first_pid + "@" + str(first_started) + " -> "
+        + restarted_pid + "@" + str(restarted_started)
+        + "; first death boundary=" + death_mode
     )
 
 

@@ -4,8 +4,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Process;
+import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -16,6 +19,11 @@ import android.widget.TextView;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.platform.app.InstrumentationRegistry;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +48,21 @@ public final class CompanionLifecycleInstrumentedTest {
 
     private Context targetContext() {
         return InstrumentationRegistry.getInstrumentation().getTargetContext();
+    }
+
+    private static void recordTargetProcess(Activity activity, String marker) {
+        if (!"qa-process-first.pid".equals(marker)
+                && !"qa-process-restart.pid".equals(marker)) {
+            throw new AssertionError("target process marker is not allowlisted");
+        }
+        File file = new File(activity.getFilesDir(), marker);
+        try (FileOutputStream stream = new FileOutputStream(file, false)) {
+            String identity = Process.myPid() + "|" + SystemClock.elapsedRealtimeNanos();
+            stream.write(identity.getBytes(StandardCharsets.US_ASCII));
+            stream.getFD().sync();
+        } catch (IOException error) {
+            throw new AssertionError("failed to persist target process identity", error);
+        }
     }
 
     private static boolean centerIsVisible(View view, Rect visible) {
@@ -160,6 +183,8 @@ public final class CompanionLifecycleInstrumentedTest {
     public void testVisibleStopButtonPersistsOff() {
         try (ActivityScenario<MainActivity> scenario =
                      ActivityScenario.launch(MainActivity.class)) {
+            scenario.onActivity(activity ->
+                    recordTargetProcess(activity, "qa-process-first.pid"));
             assertVisibleState(scenario, STOPPED);
             assertFalse("a fresh process must start stopped", persistedEnabled());
 
@@ -179,6 +204,8 @@ public final class CompanionLifecycleInstrumentedTest {
     public void testProviderStartupAfterProcessDeathRemainsStopped() {
         try (ActivityScenario<MainActivity> scenario =
                      ActivityScenario.launch(MainActivity.class)) {
+            scenario.onActivity(activity ->
+                    recordTargetProcess(activity, "qa-process-restart.pid"));
             assertVisibleState(scenario, STOPPED);
             assertFalse("provider startup after process death must revoke the grant",
                     persistedEnabled());
