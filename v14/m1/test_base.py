@@ -13,6 +13,8 @@ from v14.m1.base import (
     M1JEPA,
     SharedWeightPredictor,
     UnsharedWeightPredictor,
+    VICRegControl,
+    vicreg_loss,
     predictor_parameter_count,
     predictor_macs_per_example,
     matched_predictor_width_estimates,
@@ -141,6 +143,16 @@ class BaseArchitectureTests(unittest.TestCase):
         self.assertEqual(tuple(y_direct.shape), (4, 3, 2))
         self.assertEqual(tuple(y_probe.shape), (4, 3, 2))
         self.assertTrue(all(p.grad is None for p in probe.encoder.parameters()))
+
+    def test_vicreg_control_has_two_view_objective_and_gradients(self):
+        model = VICRegControl(self.cfg)
+        first, second = model(bundle(), bundle())
+        self.assertEqual(tuple(first.shape), (4, 16))
+        self.assertEqual(tuple(second.shape), (4, 16))
+        loss = vicreg_loss(first, second)
+        self.assertTrue(torch.isfinite(loss))
+        loss.backward()
+        self.assertTrue(any(p.grad is not None for p in model.encoder.parameters()))
 
     def test_variance_covariance_regularizer_is_finite(self):
         z = torch.randn(16, 32, requires_grad=True)
