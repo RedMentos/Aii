@@ -106,3 +106,12 @@ Run start/end timestamps and elapsed execution time: UNKNOWN (not measured by th
 - Latest sanitized owner-authenticated Redmi diagnostics #826 report `STOPPED_BY_USER`, AI autostart false, model process stopped, and native residency unavailable. The last stored arithmetic answer was still wrong; B1/B2 remain TIME_BUDGET. No restart, CHAT_SEND, UPDATE_REQUEST, shell, permission, model, weight or user-data action was performed.
 - Next: obtain an executable exact-head CI run; have Boss rebind the Runtime source-pin chain and QA confirm the Store/A5 pin now passes; then review the integrated consumer path. Redmi remains REDMI_UNVERIFIED for this candidate.
 - User action: none. Do not start the phone while its Stop state remains active.
+
+
+## Run 4 — shared status readback and exact branch state (2026-11-23)
+
+- Shared V14-001 board update committed at `3b0cc969a8bc4333aa4f2b0b6582c6399848a131`; append-only user handoff update committed at `d56ca42d1bc04e26826321b62a67ef0aa84da50b`. These are on this review branch, not merged into the shared release branch.
+- Exact PR #2458 state after readback: DRAFT, head `d56ca42d1bc04e26826321b62a67ef0aa84da50b`, base `8d93236c753f0194224c19edc7411d8d7082b1d6`, 19 ahead / 0 behind. PR body metadata still describes the older 7688c head; the GitHub PR-body/comment writes returned 403 because the linked GitHub account has no verified email. Draft conversion succeeded. No PR comment was posted.
+- Exact-head Actions run `45262081294` ended `startup_failure` with no jobs. This is not a test result; no CI PASS is claimed.
+- The read-only `flow_audit.py`, `flow_audit_dashboard.py`, dashboard endpoint and button already exist on last verified release candidate `b20e9b1f3dd53af472055adb43da628785494ec4` (same module/dashboard blobs as current development HEAD `8d93236`). It reports persisted Store/Runner metadata and consumed IDs, but cannot prove native attention or semantic influence. No live audit was run because the latest device receipt is STOPPED_BY_USER.
+- Current Runtime SHA-256 remains `720342eb75a9cf3e38e43fa046dd38f6d37817c427d743f89b086da3d666eba3`. Boss/Integrator pin rebind and QA A5 verification remain external dependencies. Current device state is unchanged; no user/device action.
