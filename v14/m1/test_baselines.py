@@ -71,7 +71,7 @@ class BaselineTests(unittest.TestCase):
             for i in range(1000)
         ]
         config = DataConfig(
-            input_length=5, horizon=2, max_candidate_input_length=5,
+            input_length=5, horizon=2, max_candidate_input_length=5, primary_channel="a",
             seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
         )
         dataset = ArrayDataset(rows, ("a", "b"), config)
@@ -90,7 +90,7 @@ class BaselineTests(unittest.TestCase):
             for i in range(2000)
         ]
         config = DataConfig(
-            input_length=5, horizon=60, max_candidate_input_length=5,
+            input_length=5, horizon=60, max_candidate_input_length=5, primary_channel="a",
             seasonal_lags=(60, 120), train_fraction=0.70, validation_fraction=0.15,
         )
         dataset = ArrayDataset(rows, ("a", "b"), config)
@@ -109,7 +109,7 @@ class BaselineTests(unittest.TestCase):
             for i in range(1000)
         ]
         config = DataConfig(
-            input_length=5, horizon=2, max_candidate_input_length=5,
+            input_length=5, horizon=2, max_candidate_input_length=5, primary_channel="a",
             seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
         )
         dataset = ArrayDataset(rows, ("a", "b"), config)
