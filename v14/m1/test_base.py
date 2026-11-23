@@ -12,6 +12,10 @@ from v14.m1.base import (
     FrozenRepresentationProbe,
     M1JEPA,
     SharedWeightPredictor,
+    UnsharedWeightPredictor,
+    predictor_parameter_count,
+    predictor_macs_per_example,
+    matched_predictor_width_estimates,
     variance_covariance_regularizer,
 )
 
@@ -65,7 +69,38 @@ class BaseArchitectureTests(unittest.TestCase):
         predictor(z).square().mean().backward()
         self.assertEqual(predictor.steps, 4)
         self.assertTrue(all(p.grad is not None for p in predictor.F.parameters()))
-        self.assertEqual(len(list(predictor.F.parameters())), 6)
+        self.assertEqual(len(list(predictor.F.parameters())), 8)
+
+    def test_unshared_depth_control_has_independent_blocks(self):
+        shared = SharedWeightPredictor(16, 32, 4)
+        unshared = UnsharedWeightPredictor(16, 32, 4)
+        self.assertGreater(predictor_parameter_count(unshared), predictor_parameter_count(shared))
+        self.assertEqual(len(unshared.blocks), 4)
+        self.assertNotEqual(
+            id(next(unshared.blocks[0].parameters())),
+            id(next(unshared.blocks[1].parameters())),
+        )
+        z = torch.randn(5, 16)
+        self.assertEqual(tuple(unshared(z).shape), (5, 16))
+        self.assertEqual(
+            predictor_macs_per_example(16, 32, 4),
+            predictor_macs_per_example(16, 32, 4),
+        )
+        widths = matched_predictor_width_estimates(256, 4)
+        self.assertEqual(widths["compute_matched_wide_t1"], 512)
+        self.assertEqual(widths["parameter_matched_unshared"], 128)
+
+    def test_jepa_and_direct_control_accept_unshared_predictor(self):
+        cfg = BaseConfig(
+            channels=2, horizon=3, latent_dim=16, hidden_dim=32,
+            predictor_steps=4, predictor_kind="unshared",
+        )
+        jepa = M1JEPA(cfg)
+        direct = DirectMAE(cfg)
+        self.assertIsInstance(jepa.predictor, UnsharedWeightPredictor)
+        self.assertIsInstance(direct.predictor, UnsharedWeightPredictor)
+        self.assertEqual(tuple(jepa(bundle(), torch.randn(4, 3, 2))["prediction"].shape), (4, 16))
+        self.assertEqual(tuple(direct(bundle()).shape), (4, 3, 2))
 
     def test_direct_mae_and_frozen_probe_output_shape(self):
         model = M1JEPA(self.cfg)
