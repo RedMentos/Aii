@@ -1518,3 +1518,29 @@ Cross-agent dependencies:
 Role-specific next work: Boss finish #2370 exact CI and whole-candidate review; Core rebase #2379 and complete the MediaProjection/A5/C3 consumer; QA rebase #2391 after JEPA and fix process-death/restart; JEPA repair the training-resume pin and preserve the postcommit worker test; Research/Perception fix A3 source-forget composition and complete AudioRecord/MediaProjection consumer tests. Whole-Canon clause→code→consumer→test→platform→rollback traceability remains active; no organ is dropped.
 
 **User action: none.** No Termux command, update request, model/weight swap, permission change or device action.
+
+
+## Research & Perception integration checkpoint — 2026-11-23T01:06:11.299Z
+
+### RAW EAR optional Teacher Ear compatibility
+- PR #2369 code/test commit `245b2ef20c975f3446ab5df3ae2007d08a3332cf`, branch head after handoff `6e1050146fe7cbb9b57579404bfd700a494d0dce`, DRAFT / NOT_RELEASED.
+- `audio_voice_cues.py` now lazily imports `audio_teacher_ear.validate_teacher_ear_result` only when `teacher_result` is supplied. An absent optional module yields `UNAVAILABLE_MODULE`, leaves acoustic RAW EAR A5/A4/C3 alive, and never admits teacher text or writes it into the persistent acoustic packet.
+- The current AudioConsentLease and both separate teacher/transcript opt-ins are checked before fallback; nested dependency import failures propagate. Missing code cannot weaken consent.
+- Exact source blobs: audio source `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`; regression test `1b3f3c5d461ff09158b757cc6dca1c4fd397de5a`. GitHub readback verified. LOCAL_LINUX CPython 3.13.5 isolated helper/permission tests **5/5 PASS**. Exact branch CI is queued/pending; full local Aii suite BLOCKED because no checkout is mounted and GitHub DNS fails. Core #2370 still pins `b18e4501…`; comment #7088808348 asks Core to rebind its owned source pin and downstream pins. Teacher Ear may stay OFF with its module omitted.
+- No AudioRecord, Android microphone, ASR inference, model download or device action occurred.
+
+### A3 source-forget overlay integration
+- Perception #2395 remains DRAFT / NOT_RELEASED; its source-lineage helper and focused tests are 7/7 LOCAL_LINUX and 2/2 exact-head CI PASS, but staged/integrated is still blocked.
+- JEPA PR #2397 is stacked on #2395 at exact head `f63a5877774f58b6928b4e8dd7125651e9d8173d`. It now carries source-forget semantics through the overlaid `source_lifecycle_candidate.vision_forget`: invalidates both global and tile projectors on exact/unknown lineage, persists retryable cleanup before unlink, and preserves shared live blobs. Dedicated overlay CI **2/2 PASS** on Python 3.13/3.14.
+- The same #2397 exact-head staged/integrated workflow still FAILS at the QA-owned immutable source gate: `unsupported lifecycle source: vision.py` (staged 19 failed / 231 passed / 10 skipped / 2 errors; integrated 1 failed). QA #2391 is based on JEPA #2372, not #2397, and still pins the old vision.py.
+- Exact Perception source pins handed to QA in comment #7088869631: `vision.py` SHA-256 `d4a5e3e0b3faf27489e6ea8c1476876910d2708033ab9ae4267b665dd8f180dd`; `vision_source_lineage.py` SHA-256 `bb63636c9ae84d345fe1f4e37254de3be87c26990cb320ca058859fd0b51b72f`. QA must rebase/compose on #2397, add the helper to PINS and copy list, and rebind vision.py before full staged/integrated retest. Perception did not modify foreign-owned files.
+
+### Research and whole-system context
+- R-101 is peer-reviewed ECML PKDD 2026 Research Track, Springer LNCS/LNAI 16946, pp. 114–131, DOI `10.1007/978-3-032-37673-2_7`; the exact-unlearning guarantee remains limited to the standardized ridge head, not the feature backbone. R-100 remains wheel metadata only; no Termux/Bionic proof or model license/performance result.
+- P0 #1904 and whole-Canon #1984 remain open. The latest private V13OBS #115 read at 2026-11-23T00:52:16Z still shows installed release `aed1d2b826290c95c70356b5d8b864b5ef382be4`, auto-update ON and Runtime/Dashboard UP_TO_DATE, but last stored turn remains 57.7388 s / 41.6269 s TTFT / 38.9453 s C3 prefill / 2 tokens, B1/B2 TIME_BUDGET. A separate later turn in the same receipt has 709 prompt tokens and 34.959 s C3 prefill, with semantic use not proven. This is not a new run or model-quality success.
+- No Redmi-native feature, latent exchange, weight learning, microphone, MediaProjection, or UI control was proven. No update request, model/weight change, permission change or device mutation occurred.
+
+### Next executable step
+- Poll exact-head #2369 CI. Keep it DRAFT until Core rebinds its source pin and staged audio integration passes.
+- QA #2391 must consume JEPA #2397 and the exact Perception hashes above; rerun staged-runtime + integrated regression and all privacy/migration/owner-read checks. Keep #2395/#2397 DRAFT until this complete chain is green.
+- Continue the separate UI path only on a shared exact ancestor: #2356 + #2375 + #2379, with real Android frame receipt still required. No user action is currently needed.
