@@ -57,8 +57,10 @@ def _make_store(home):
     return store, session
 
 
-def _add_transitions(store, session, start, count, status_overrides=None):
+def _add_transitions(store, session, start, count, status_overrides=None,
+                     status_by_route=None):
     status_overrides = status_overrides or {}
+    status_by_route = status_by_route or {}
     event_ids = []
     actions = tuple(world_model.ACTIONS)
     for index in range(start, start + count):
@@ -84,9 +86,13 @@ def _add_transitions(store, session, start, count, status_overrides=None):
             forecast={"input_chars": len(text), "resource_state": "NORMAL"},
         )
         action_index = index % len(actions)
+        status = (
+            status_overrides[index] if index in status_overrides
+            else status_by_route.get(route, "FAILED" if index % 5 == 0 else "FINAL")
+        )
         store.finish_action(
             action_id,
-            status_overrides.get(index, "FAILED" if index % 5 == 0 else "FINAL"),
+            status,
             {
                 "action_duration_s": 0.15 + action_index * 0.65 + (index % 13) * 0.02,
                 "characters": 9 + action_index * 24 + (index % 23) * 0.75,
@@ -96,13 +102,60 @@ def _add_transitions(store, session, start, count, status_overrides=None):
     return event_ids
 
 
-def _add_temporal_cohort(store, label, start, session_count):
+def _add_temporal_cohort(store, label, start, session_count, status_by_route=None):
     """Build independent four-event sessions for strict temporal holdouts."""
     event_ids = []
     for offset in range(session_count):
         session = store.new_session(f"{label}-{offset:03d}")
-        event_ids.extend(_add_transitions(store, session, start + offset * 4, 4))
+        event_ids.extend(_add_transitions(
+            store, session, start + offset * 4, 4, status_by_route=status_by_route
+        ))
     return event_ids
+
+
+def test_body_state_surfaces_temporal_omission_reason_without_authority(tmp_path, monkeypatch):
+    from v13 import bodyview
+
+    home = tmp_path / "brain-temporal-omission-status"
+    store, session = _make_store(home)
+    try:
+        event = store.event(session, "A temporal receiver is unavailable.")
+        audit = {
+            "schema": "V14_TEMPORAL_WORLDJEPA_BODY_RECEIVER_AUDIT/1",
+            "status": "OMITTED",
+            "reason": "RECEIVER_UTILITY_REJECTED",
+            "role": "B2_GIST",
+            "action": "simple",
+            "action_status": "RECEIVER_UTILITY_REJECTED",
+            "utility_reason": "HELDOUT_DID_NOT_BEAT_ALL_CONTROLS",
+            "decision_authority": "NONE",
+        }
+        monkeypatch.setattr(
+            bodyview, "_temporal_world_jepa_body_readout",
+            lambda *_args: (None, audit),
+        )
+        result = bodyview.body_state(
+            SimpleNamespace(store=store, session=session),
+            event, "B2_GIST", "Estimate the next action outcome.",
+        )
+        view = result["view"]
+        expected = {
+            "status": "OMITTED",
+            "reason": "RECEIVER_UTILITY_REJECTED",
+            "role": "B2_GIST",
+            "decision_authority": "NONE",
+            "action": "simple",
+            "action_status": "RECEIVER_UTILITY_REJECTED",
+            "utility_reason": "HELDOUT_DID_NOT_BEAT_ALL_CONTROLS",
+        }
+        assert view.get("world_jepa_temporal_status") == expected
+        assert "world_jepa_temporal" not in view
+        assert view["authority"] == "STATE_NOT_FACT"
+        assert view["role"] == "B2_GIST"
+        persisted = json.loads(store.read_source(result["source_ref"]))
+        assert persisted["world_jepa_temporal_status"] == expected
+    finally:
+        store.close()
 
 
 def _sleep(store, home):
@@ -623,7 +676,19 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         # Add source-disjoint sessions covering every action route. These supply
         # balanced training/holdout support and the negative controls; the actual
         # Runtime outcomes remain in the same persisted learning cohort.
-        _add_temporal_cohort(runtime.store, "synthetic-postcommit", 0, 48)
+        # B2 predicts P(FINAL) conditioned on the action route. The previous
+        # index%5 fixture accidentally gave only a weak, periodic label signal
+        # against the four-route cycle. This balanced route-conditioned cohort
+        # makes the intended synthetic receiver task learnable without sharing
+        # any source/session between train and holdout.
+        b2_status_by_route = {
+            action: ("FINAL" if index % 2 else "FAILED")
+            for index, action in enumerate(world_model.ACTIONS)
+        }
+        _add_temporal_cohort(
+            runtime.store, "synthetic-postcommit", 0, 48,
+            status_by_route=b2_status_by_route,
+        )
         latest = runtime.store.one(
             "SELECT event_id FROM actions WHERE outcome IS NOT NULL "
             "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED') "
