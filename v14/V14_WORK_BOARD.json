@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T23:44:56.033Z",
+  "updated_at": "2026-11-23T23:49:32.675Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -1443,12 +1443,14 @@
     "android_receipt_status": "DRAFT_EXACT_HEAD_CI_STARTUP_FAILURE_NEW_SQLITE_TEST_UNVERIFIED",
     "local_linux": "LOCAL_SYNTHETIC Python plan/slice prototype PASS; no repository checkout; exact project pytest NOT_RUN.",
     "full_repository_local": "BLOCKED_NO_CHECKOUT_NO_GITHUB_DNS; project compile/integration NOT_RUN; Android SDK/Gradle unavailable.",
-    "exact_head_ci": "PR2458 exact head e27c035 run 45291011985 STARTUP_FAILURE_ZERO_JOBS; push run 45291005230 STARTUP_FAILURE_ZERO_JOBS; no CI PASS.",
+    "exact_head_ci": "Code/test checkpoint e27c035 PR run 45291011985 and push run 45291005230 STARTUP_FAILURE_ZERO_JOBS; documentation-tip eec847 PR run 45291476473 and push run 45291479005 STARTUP_FAILURE_ZERO_JOBS; no CI PASS.",
     "previous_android_ci": "PR2406 prior head 429f62a Gradle/unit-test job PASS; emulator process-restart job FAIL due System UI non-responsive / com.android.phone ANR",
     "redmi": "STOPPED_BY_USER / REDMI_UNVERIFIED; no relay read, APK, update, chat, shell, model/weight or permission action.",
     "next_action": "Boss/Integrator rebinds nested Runtime/JEPA/staged-consumer pins and reviews #2458; QA obtains executable exact-head Python 3.13/3.14 staged and integrated CI. After integration, next Core task is measured per-role prefill admission using only matching authenticated DEVICE_RECEIPT profiles. No model swap or user device action.",
     "user_action_required": false,
     "primary_runtime_handoff": "v14/handoffs/CORE_B1_B2_C4_FOCAL_RESERVE_20261124_RUN1.md",
-    "primary_runtime_behavior": "Recovery-only split: C3 reserve retained; initial B1/B2 fair slices end 1.0 s before C4/Focal deadline; focal re-entry is explicitly exempt from the initial-body cap; Store telemetry records focal reserve."
+    "primary_runtime_behavior": "Recovery-only split: C3 reserve retained; initial B1/B2 fair slices end 1.0 s before C4/Focal deadline; focal re-entry is explicitly exempt from the initial-body cap; Store telemetry records focal reserve.",
+    "primary_runtime_branch_tip_at_last_readback": "eec84757077d4fc23df5e6079692254cd7080d5f",
+    "primary_runtime_docs_checkpoint": "eec84757077d4fc23df5e6079692254cd7080d5f"
   }
 }
