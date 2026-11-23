@@ -621,8 +621,10 @@ class SleepRuntime:
         legacy=cursor.get('last_event_id')
         last_learning=cursor.get('last_learning_event_id',legacy)
         last_planner=cursor.get('last_planner_event_id',legacy)
+        last_receiver_warm=cursor.get('last_receiver_warm_event_id')
         learning_error=cursor.get('last_learning_error_event_id')
         planner_error=cursor.get('last_planner_error_event_id')
+        receiver_warm_error=cursor.get('last_receiver_warm_error_event_id')
         gates=permission_state(self.r.store)
         state,_=self.r.store.state('v14.world_jepa.store_consumer',None)
         active=(type(state) is dict and type(state.get('active')) is dict)
@@ -632,7 +634,11 @@ class SleepRuntime:
                        and learning_error!=event_id)
         need_planner=(active and last_planner!=event_id
                       and planner_error!=event_id)
-        if not (need_learning or need_planner):
+        # A prior planner completion is not proof that the foreground B1/B2
+        # read cache was primed. Retry a BUSY/resource-skipped warm independently.
+        need_receiver_warm=(active and last_receiver_warm!=event_id
+                            and receiver_warm_error!=event_id)
+        if not (need_learning or need_planner or need_receiver_warm):
             return None
         from .scheduler import ACTIONS
         ACTIONS.add('jepa_update')
@@ -721,6 +727,17 @@ class SleepRuntime:
             if cancel_check():
                 result['status']='CANCELLED'
                 return result
+            resource_state=self.resource_state()
+            if resource_state in {'PRESSURE','CRITICAL'}:
+                receiver_cache={'status':'SKIPPED_RESOURCE',
+                                'decision_authority':'NONE',
+                                'native_body_consumed':False,
+                                'native_body_weights_changed':False}
+            else:
+                from .world_jepa_receiver_matrix import warm_receiver_cache
+                receiver_cache=warm_receiver_cache(
+                    self.r.store,self.r.home,nonblocking=True)
+            result['receiver_cache']=receiver_cache
             cursor_key='v14.world_jepa.sleep_cursor'
             cursor,version=self.r.store.state(cursor_key,{'last_event_id':None})
             if type(cursor) is not dict:
@@ -728,6 +745,9 @@ class SleepRuntime:
             legacy=cursor.get('last_event_id')
             cursor.setdefault('last_learning_event_id',legacy)
             cursor.setdefault('last_planner_event_id',legacy)
+            # Do not inherit the legacy last_event_id: old cursors predate the
+            # separate receiver-warm acknowledgement and must warm once.
+            cursor.setdefault('last_receiver_warm_event_id',None)
             learning_status=learning.get('status')
             if learning_status=='ERROR':
                 cursor['last_learning_error_event_id']=event_id
@@ -740,8 +760,18 @@ class SleepRuntime:
             else:
                 cursor['last_planner_event_id']=event_id
                 cursor.pop('last_planner_error_event_id',None)
+            warm_status=(receiver_cache.get('status')
+                         if type(receiver_cache) is dict else None)
+            if warm_status=='WARMED':
+                cursor['last_receiver_warm_event_id']=event_id
+                cursor.pop('last_receiver_warm_error_event_id',None)
+            elif warm_status in {'BUSY','SKIPPED_RESOURCE'}:
+                cursor.pop('last_receiver_warm_error_event_id',None)
+            else:
+                cursor['last_receiver_warm_error_event_id']=event_id
             if (cursor.get('last_learning_event_id')==event_id
-                    or cursor.get('last_planner_event_id')==event_id):
+                    or cursor.get('last_planner_event_id')==event_id
+                    or cursor.get('last_receiver_warm_event_id')==event_id):
                 cursor['last_event_id']=event_id
             self.r.store.set_state(cursor_key,cursor,expected=version)
             return result

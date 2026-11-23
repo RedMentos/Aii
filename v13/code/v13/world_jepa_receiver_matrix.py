@@ -86,6 +86,66 @@ def _readout_output(role, prediction):
     }
 
 
+def warm_receiver_cache(store, home=None, *, nonblocking=True):
+    """Warm the exact active readout checkpoint from an idle/postcommit worker.
+
+    This is read-only: it does not train, change weights, grant authority, or
+    perform a cold load on a foreground B1/B2 request. The shared Store-scoped
+    consumer is the same instance later used by receiver_matrix().
+    """
+    if type(nonblocking) is not bool:
+        raise ValueError("receiver cache lock flag must be bool")
+    root = Path(home if home is not None else store.home) / "world_jepa"
+    learner = getattr(store, "_v14_world_jepa_consumer", None)
+    if (not isinstance(learner, WorldJEPAStoreConsumer)
+            or Path(getattr(learner, "home", root)) != root):
+        learner = WorldJEPAStoreConsumer(
+            store, root, learning_enabled=False, recover_pending=False
+        )
+        setattr(store, "_v14_world_jepa_consumer", learner)
+    try:
+        with learner._locked(False, blocking=not nonblocking):
+            stored, _ = learner._read_state()
+            active = stored.get("active") if type(stored) is dict else None
+            if active is None:
+                learner._clear_model_cache()
+                return {
+                    "status": "NO_CHECKPOINT",
+                    "decision_authority": "NONE",
+                    "native_body_consumed": False,
+                    "native_body_weights_changed": False,
+                }
+            learner._load_model(active, allow_cold=True, cache=True)
+            return {
+                "status": "WARMED",
+                "checkpoint_sha256": active["checkpoint_sha256"],
+                "source_sha256": active["source_sha256"],
+                "decision_authority": "NONE",
+                "native_body_consumed": False,
+                "native_body_weights_changed": False,
+            }
+    except BlockingIOError:
+        return {
+            "status": "BUSY",
+            "decision_authority": "NONE",
+            "native_body_consumed": False,
+            "native_body_weights_changed": False,
+        }
+    except (ValueError, TypeError, KeyError, OSError, OverflowError,
+            ArithmeticError, AttributeError) as exc:
+        try:
+            learner._clear_model_cache()
+        except Exception:
+            pass
+        return {
+            "status": "UNAVAILABLE",
+            "error": type(exc).__name__,
+            "decision_authority": "NONE",
+            "native_body_consumed": False,
+            "native_body_weights_changed": False,
+        }
+
+
 def receiver_matrix(store, state, actions, home=None, *, nonblocking=False, warm_only=False):
     """Read role heads for candidate actions with exactly one checkpoint load."""
     if type(nonblocking) is not bool or type(warm_only) is not bool:

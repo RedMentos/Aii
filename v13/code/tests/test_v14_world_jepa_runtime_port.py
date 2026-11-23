@@ -1019,6 +1019,30 @@ def _body_receiver_runtime(store, home, session, runner):
 
 
 
+def _run_world_jepa_postcommit(store, home, monkeypatch):
+    from threading import Event
+    from types import SimpleNamespace
+    from v13 import world_jepa_planner
+    from v13.sleep import SleepRuntime
+
+    # Keep this test focused on the real idle cache-warm hook, not planner quality.
+    monkeypatch.setattr(
+        world_jepa_planner, "consume_world_planner_shadow",
+        lambda *_args, **_kwargs: {"status": "OK"},
+    )
+    action = store.one(
+        "SELECT event_id FROM actions ORDER BY created DESC,id DESC LIMIT 1"
+    )
+    assert action and action.get("event_id")
+    runtime = SimpleNamespace(
+        store=store, home=home, cancel_event=Event()
+    )
+    worker = SimpleNamespace(r=runtime, resource_state=lambda: "NORMAL")
+    return SleepRuntime._run_world_jepa(
+        worker, action["event_id"], limit=256
+    )
+
+
 def _body_receiver_diagnostics(runtime, event, text, role):
     import json
     import time
@@ -1072,7 +1096,9 @@ def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path, monkey
         _set_runtime_permissions(
             store, learning_enabled=True, optimizer_permission=True, steps=120
         )
-        trained = consume_after_commit(store, home, limit=256)
+        postcommit = _run_world_jepa_postcommit(store, home, monkeypatch)
+        assert postcommit["receiver_cache"]["status"] == "WARMED", postcommit
+        trained = postcommit["learning"]
         assert trained["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         assert trained["metrics"]["parameter_delta_norm"] > 0
         assert trained["metrics"]["ema_target_delta_norm"] > 0
@@ -1185,7 +1211,9 @@ def test_bodyview_jepa_receiver_fails_closed_without_checkpoint_and_when_lock_bu
         _set_runtime_permissions(
             store, learning_enabled=True, optimizer_permission=True, steps=120
         )
-        trained = consume_after_commit(store, home, limit=256)
+        postcommit = _run_world_jepa_postcommit(store, home, monkeypatch)
+        assert postcommit["receiver_cache"]["status"] == "WARMED", postcommit
+        trained = postcommit["learning"]
         assert trained["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
 
         # Negative control: one action with only two train-split rows must not

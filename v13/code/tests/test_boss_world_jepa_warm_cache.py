@@ -152,3 +152,101 @@ def test_body_prompt_has_explicit_no_weight_change_and_rejects_tampered_rows(
     assert bodyview._world_jepa_body_readout(
         runtime, event, "bounded source query", role
     ) == (None, None)
+
+def test_idle_warm_primes_exact_store_checkpoint_without_training_or_authority(
+    monkeypatch, tmp_path
+):
+    store = SimpleNamespace(home=tmp_path)
+    checkpoint = tmp_path / "checkpoint.npz"
+    checkpoint.write_bytes(b"verified-fixture")
+    active = {"source_sha256": "b" * 64, "checkpoint_sha256": "a" * 64}
+    monkeypatch.setattr(
+        world_jepa_consumer.WorldJEPAStoreConsumer,
+        "_read_state",
+        lambda self: ({"active": active}, 1),
+    )
+    monkeypatch.setattr(
+        world_jepa_consumer.WorldJEPAStoreConsumer,
+        "_checkpoint_path",
+        lambda self, record: checkpoint,
+    )
+    loads = []
+
+    def load(path, source_sha256, checkpoint_sha256):
+        model = object()
+        loads.append((source_sha256, checkpoint_sha256, model))
+        return model
+
+    monkeypatch.setattr(
+        world_jepa_consumer.world_jepa_shadow_checkpoint, "load", load
+    )
+    warmed = world_jepa_receiver_matrix.warm_receiver_cache(
+        store, tmp_path, nonblocking=True
+    )
+    assert warmed["status"] == "WARMED"
+    assert warmed["decision_authority"] == "NONE"
+    assert warmed["native_body_consumed"] is False
+    assert warmed["native_body_weights_changed"] is False
+    consumer = store._v14_world_jepa_consumer
+    assert consumer._load_model(
+        active, allow_cold=False, cache=True
+    ) is loads[0][2]
+    assert len(loads) == 1
+
+    # A changed source/checkpoint identity must replace, never reuse, the cache.
+    changed = active | {"checkpoint_sha256": "c" * 64}
+    monkeypatch.setattr(
+        world_jepa_consumer.WorldJEPAStoreConsumer,
+        "_read_state",
+        lambda self: ({"active": changed}, 2),
+    )
+    warmed_again = world_jepa_receiver_matrix.warm_receiver_cache(
+        store, tmp_path, nonblocking=True
+    )
+    assert warmed_again["status"] == "WARMED"
+    assert consumer._load_model(
+        changed, allow_cold=False, cache=True
+    ) is loads[1][2]
+    assert len(loads) == 2
+
+
+def test_sleep_scheduler_retries_idle_receiver_warm_after_planner_completion(tmp_path):
+    from v13.sleep import SleepRuntime
+
+    class _Store:
+        def __init__(self):
+            self.cursor = {
+                "last_learning_event_id": "evt-1",
+                "last_planner_event_id": "evt-1",
+            }
+
+        def one(self, *_args, **_kwargs):
+            return {"event_id": "evt-1", "status": "FINAL"}
+
+        def state(self, key, default=None):
+            if key == "v14.world_jepa.sleep_cursor":
+                return self.cursor, 1
+            if key == "v14.world_jepa.store_consumer":
+                return {"active": {"checkpoint_sha256": "a" * 64}}, 1
+            return default, 0
+
+    class _Scheduler:
+        def __init__(self):
+            self.calls = []
+
+        def post(self, *args, **kwargs):
+            self.calls.append((args, kwargs))
+            return "queued"
+
+    store = _Store()
+    scheduler = _Scheduler()
+    worker = SimpleNamespace(
+        r=SimpleNamespace(store=store, home=tmp_path),
+        scheduler=scheduler,
+    )
+    assert SleepRuntime.schedule_world_jepa(worker) == "queued"
+    assert len(scheduler.calls) == 1
+
+    store.cursor["last_receiver_warm_event_id"] = "evt-1"
+    assert SleepRuntime.schedule_world_jepa(worker) is None
+    assert len(scheduler.calls) == 1
