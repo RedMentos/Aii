@@ -69,14 +69,14 @@ _patch_worker_learning = _overlay_module._patch_worker_learning
 
 def _run_worker_variant(worker_body):
     source = (
-        "class Runtime:\\n"
-        "    def _worker(self, payload):\\n"
+        "class Runtime:\n"
+        "    def _worker(self, payload):\n"
         + worker_body
-        + "    def _turn(self, payload):\\n"
-        "        self.turns += 1\\n"
-        "        return self.result\\n"
-        "    def online_world_update(self, limit=64):\\n"
-        "        self.updates += 1\\n"
+        + "    def _turn(self, payload):\n"
+        "        self.turns += 1\n"
+        "        return self.result\n"
+        "    def online_world_update(self, limit=64):\n"
+        "        self.updates += 1\n"
     ).encode("utf-8")
     patched = _patch_worker_learning(source)
     namespace = {}
@@ -96,34 +96,34 @@ def _run_worker_variant(worker_body):
 
 def test_worker_guard_handles_unassigned_turn_result_and_keeps_normal_learning():
     _run_worker_variant(
-        "        if True:\\n"
-        "            self._turn(payload)\\n"
-        "            try:self.online_world_update(limit=64)\\n"
-        "            except Exception as exc:\\n"
-        "                raise RuntimeError(type(exc).__name__)\\n"
+        "        if True:\n"
+        "            self._turn(payload)\n"
+        "            try:self.online_world_update(limit=64)\n"
+        "            except Exception as exc:\n"
+        "                raise RuntimeError(type(exc).__name__)\n"
     )
 
 
 def test_worker_guard_handles_existing_turn_result_capture_and_comments():
     _run_worker_variant(
-        "        if True:\\n"
-        "            turn_result = self._turn(payload)\\n"
-        "            # Existing composed-runtime comments remain intact.\\n"
-        "            try:\\n"
-        "                self.online_world_update(limit=64)\\n"
-        "            except Exception as exc:\\n"
-        "                raise RuntimeError(type(exc).__name__)\\n"
+        "        if True:\n"
+        "            turn_result = self._turn(payload)\n"
+        "            # Existing composed-runtime comments remain intact.\n"
+        "            try:\n"
+        "                self.online_world_update(limit=64)\n"
+        "            except Exception as exc:\n"
+        "                raise RuntimeError(type(exc).__name__)\n"
     )
 
 
 def test_worker_guard_rejects_ambiguous_duplicate_turn_calls():
     source = (
-        "class Runtime:\\n"
-        "    def _worker(self, payload):\\n"
-        "        self._turn(payload)\\n"
-        "        self._turn(payload)\\n"
-        "        try:self.online_world_update(limit=64)\\n"
-        "        except Exception:pass\\n"
+        "class Runtime:\n"
+        "    def _worker(self, payload):\n"
+        "        self._turn(payload)\n"
+        "        self._turn(payload)\n"
+        "        try:self.online_world_update(limit=64)\n"
+        "        except Exception:pass\n"
     ).encode("utf-8")
     with pytest.raises(ValueError, match="expected one _turn"):
         _patch_worker_learning(source)
