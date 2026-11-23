@@ -2281,3 +2281,35 @@ Append-only evidence; no historical Canon or master rewrite.
 | Whole Canon | V14 master blob 9748ad5b… unchanged; 1,255-heading inventory retained. | No master or historical appendix edits. | Semantic clause→code→consumer→test→environment→negative-control→rollback mapping incomplete. | INVENTORY_PRESERVED / COVERAGE_INCOMPLETE |
 
 Current release b20e9b1f3dd53af472055adb43da628785494ec4; last phone snapshot 8bf44cb / CI_WAIT; user action none.
+
+
+---
+
+## Evidence overlay — Boss integration run 13 (2026-11-23; candidate only)
+
+This overlay adds the run-13 source/test links without replacing the 1,255-heading historical inventory or marking any entire organ complete.
+
+| Canon family / path | Current code evidence | Test/evidence state | Remaining acceptance |
+|---|---|---|---|
+| A3 source lineage / source revocation | Candidate branch e33a531 includes the reviewed source-lifecycle builder and the Memory/World composer pin chain; source hashes are rebound to the exact vision and Store bytes. | Focused source-lineage/forget workflow passed on the #2442 source snapshot (run 45209404821). The combined Boss exact-head matrix is queued; no local full suite. | Combined exact-head pass, source/session-disjoint learning proof, real consumer restart/rollback, and Redmi evidence. |
+| A5 RAW EYE / UI frame ingress | #2442 snapshot adds bounded UI frame admission, one-shot lease checks, source lineage and ephemeral temporal luminance evidence. | Focused MediaProjection frame-ingress workflow passed on #2442 head (run 45209404608); privacy scan passed (45209404609). Boss combined head e33a531 is still queued. | Core must wire the provider revoke callback into the actual Android companion provider; no live MediaProjection or Redmi capture. |
+| A4 attention / source outcomes | #2441 snapshot adds durable exactly-once source-bound outcome receipts and transactional N10 modulation; Runtime's existing final-output consumer invokes the source-outcome path. | Focused A4 workflow passed on #2441 head (run 45204147159). Its staged/integrated workflow failed on the stale attention source pin; Boss rebound the pin and downstream recovery/stage/deployer chain. Combined exact-head tests are queued. | Combined CI, source-ref coverage for every admitted context, retention/restart, and real receiver utility. No production promotion. |
+| RAW EAR / speaker evidence | #2441 snapshot admits caller-supplied embeddings only for VOICED speaker-reference history and keeps non-voiced cues separate. | Focused RAW EAR VAD comparison, prosody-to-attention and consent-revocation workflows passed on #2441 head (45204146917, 45204147166, 45204147190). Combined Boss tests queued. | No Android AudioRecord provider, no live microphone capture, no native speaker inference or identity assignment. |
+| Teacher Ear / ASR boundary | Optional caller-supplied timed teacher result validator with separate local-teacher and transcript opt-ins; no automatic model load. | Focused adapter/privacy tests exist in #2441; combined CI queued. | No actual ASR inference, no transcript persistence/ground-truth authority, no Redmi measurement. |
+| FASTDIAR | Diagnostic adapter validates supplied 192-D embeddings and checkpoint identity; it does not execute FASTDIAR inference. | Focused adapter workflow passed on #2441 head (45204147196); combined Boss workflow queued. | No model inference, clustering or speaker identity. Checkpoint license remains unspecified. |
+| Memory source-forget / Store blob lifecycle | #2443 candidate serializes forget against source publication and reader acquisition under Store mutex; checkpoint restore/invalidation remains source-bound. | Initial #2443 staged checks exposed stale local-error and vision pins. Boss rebound them and the full downstream builder chain. Exact combined source-forget/staged/migration CI on e33a531 is queued. | Must pass exact-head tests, including concurrent publish/forget/read, restart and migration. This is Store/SQLite lineage protection, not gradient unlearning. |
+| Voice / audio output | No new AudioRecord, trainable speech decoder/vocoder, full-duplex or barge-in implementation. | RAW EAR caller-PCM tests only. | Android permissioned capture, speech decoder learning, playback, timing and native device tests remain OPEN. |
+| Android UI/background agency | A5 frame ingress is observation only. | Synthetic ingress tests only. | Permissioned app launch, API-first actions, approved tap/type/navigation, cancellation, audit and native Android lifecycle remain OPEN. |
+| B1/B2 → C4 → C3 | No fair same-turn offer-delivery improvement was introduced by this run. | Current authenticated device receipt still reports B1/B2 TIME_BUDGET at 53.2/54.2 s; correctness UNKNOWN. AI runtime is STOPPED_BY_USER. | Recompose the fair scheduler on the current release base and prove useful source-bound offers are delivered and consumed by C4/C3. |
+| B3 / Enlightened Space | No trained cross-organ latent receiver was added. | Existing symbolic/diagnostic state only; production B3 remains OFF. | Native activation-to-activation receiver, trained projection, held-out utility/parity/zero/shuffle/OOD controls and explicit local approval. |
+| JEPA / numeric body learning / self-optimization | Source-forget protects provenance/checkpoint state; it does not update model weights. | No before/after body parameter diff, cross-organ gradient or retention proof. | Real optimizer consumer, numeric diffs, held-out utility, retention, restart, rollback and explicit learning rights. |
+| Context OS / Memorilla | No new overflow companion or query-sensitive memory consumer in this run. | Existing paths remain partial/SHADOW. | Actual producer/reader/writer integration and source-bound context learning remain OPEN. |
+| M1 forecasting | Separate PR #2444 DATA parser candidate is not part of the Boss code branch. | Exact M1 DATA workflow and private-bridge push passed on #2444 head 88e2115 (runs 45194960203 and 45194947276). No local UCI cohort, model training or weight update. | Common InputBundle BASE adapters, preregistered JEPA/direct-MAE PROBE, test-split lock and M1a/b/c controls. |
+
+### Platform and release boundary
+
+- Boss candidate code checkpoint: `e33a53119378ab3c7d4ff1788945538f1a971d20`; open draft PR #2443. Its exact-head CI is queued, not passed.
+- LOCAL_LINUX full repository suite: BLOCKED / NOT_RUN; no mounted Aii checkout.
+- Authenticated Redmi installed SHA: `fb563d771fe2d493c4ec25abe94280981d24ef5c`. Auto-update is enabled; Runtime/Dashboard are UP_TO_DATE. AI runtime is STOPPED_BY_USER, autostart false, model process STOPPED. Candidate e33a531 is NOT_RELEASED / NOT_INSTALLED.
+- The separate #2446 console-output privacy fix is DRAFT and exact-head CI queued; it is not included in this candidate.
+- No Android capture, native learning, body-weight update, B3 activation, model swap or device restart was performed.
