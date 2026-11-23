@@ -192,6 +192,18 @@ class LiveHookTests(Base):
         self.assertGreater(modulated['caution'],0)
         self.assertEqual(modulated['truth_authority'],0)
 
+    def test_positive_reward_error_adds_salience_without_negative_caution(self):
+        previous=self.ev('positive outcome event')
+        self.n.signal(previous,reward_error=.4,surprise=.4)
+        next_event=self.ev('follow-up after positive outcome')
+        recent=self.a.recent_modulators(next_event,self.r.session)
+        self.assertAlmostEqual(recent['reward_error'],.4,6)
+        self.assertAlmostEqual(recent['surprise'],.4,6)
+        modulated=self.a.modulate(next_event,modulators=recent)
+        self.assertGreater(modulated['salience'],0)
+        self.assertEqual(modulated['caution'],0)
+        self.assertEqual(modulated['truth_authority'],0)
+
     def test_source_outcome_rejects_tampered_source_text(self):
         text='Invoice 4471 says not 30 but 45 EUR.'
         ev=self.r.store.event(self.r.session,text);e=ev['event_id'];src=ev['source_ref']
