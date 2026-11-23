@@ -239,9 +239,394 @@ def _focal_cycle_source_refs(store, event_id, generation_id, before_packet_rowid
                 union.append(ref)
     return union
 
-def _selection_source_refs(store, event_id, generation_id, event_source_ref):
+
+
+def _merge_context_source_refs(store, raw_refs, refs, seen, source_hashes, *, expand_body_state=True):
+    if raw_refs is None:
+        return
+    if isinstance(raw_refs, dict):
+        raw_refs = [raw_refs]
+    if type(raw_refs) is not list or len(raw_refs) > MAX_ACTION_SOURCE_REFS:
+        raise ValueError("context source ref list")
+    for raw_ref in raw_refs:
+        ref = _validated_source_ref(store, raw_ref)
+        key = (ref["source_id"], ref["sha256"], ref["char_start"],
+               ref["char_end"], ref["modality"])
+        prior = source_hashes.get(ref["source_id"])
+        if prior is not None and prior != ref["sha256"]:
+            raise ValueError("context source digest changed")
+        source_hashes[ref["source_id"]] = ref["sha256"]
+        if key not in seen:
+            if len(refs) >= MAX_ACTION_SOURCE_REFS:
+                raise ValueError("merged context source ref bound")
+            seen.add(key)
+            refs.append(ref)
+        if expand_body_state:
+            _merge_body_state_nested_refs(
+                store, ref, refs, seen, source_hashes
+            )
+
+
+def _merge_body_state_nested_refs(store, ref, refs, seen, source_hashes):
+    source_row = store.one(
+        "SELECT kind FROM sources WHERE id=?", (ref["source_id"],)
+    )
+    if not source_row:
+        raise ValueError("body-state source row missing")
+    source_row = _mapping(source_row, "body-state source row")
+    if source_row.get("kind") != "BODY_STATE":
+        return
+    raw = store.read_source(ref)
+    try:
+        body = _object(raw, "body-state source")
+    except (ValueError, TypeError, json.JSONDecodeError) as exc:
+        raise ValueError("body-state source JSON") from exc
+    audit = body.get("temporal_world_jepa_audit")
+    if audit is None:
+        return
+    if type(audit) is not dict:
+        raise ValueError("body-state temporal audit")
+    # The compact prompt carries only hashes/IDs for the prediction history.
+    # Rehydrate full, live SourceRefs from Store rows so deletion and holdout
+    # logic see the same lineage that produced the receiver readout.
+    for key in ("history_lineage_source_ids", "query_lineage_source_ids"):
+        source_ids = audit.get(key, [])
+        if type(source_ids) is not list or len(source_ids) > MAX_ACTION_SOURCE_REFS:
+            raise ValueError("body-state lineage IDs")
+        for source_id in source_ids:
+            if type(source_id) is not str or not source_id or len(source_id) > 256:
+                raise ValueError("body-state lineage source identity")
+            row = store.one(
+                "SELECT hash,chars,deleted FROM sources WHERE id=?", (source_id,)
+            )
+            if not row:
+                raise ValueError("body-state lineage source missing")
+            row = _mapping(row, "body-state lineage source")
+            if row.get("deleted") or type(row.get("hash")) is not str:
+                raise ValueError("body-state lineage source revoked")
+            chars = row.get("chars")
+            if type(chars) is not int or chars < 0:
+                raise ValueError("body-state lineage source length")
+            nested = {
+                "source_id": source_id, "sha256": row["hash"],
+                "char_start": 0, "char_end": chars, "modality": "text",
+            }
+            _merge_context_source_refs(
+                store, [nested], refs, seen, source_hashes,
+                expand_body_state=False,
+            )
+    recall = audit.get("episodic_recall")
+    if recall is not None:
+        if type(recall) is not dict:
+            raise ValueError("body-state episodic audit")
+        query_ids = recall.get("query_lineage_source_ids", [])
+        if type(query_ids) is not list or len(query_ids) > MAX_ACTION_SOURCE_REFS:
+            raise ValueError("body-state episodic query lineage")
+        for source_id in query_ids:
+            if type(source_id) is not str or not source_id or len(source_id) > 256:
+                raise ValueError("body-state episodic source identity")
+            row = store.one(
+                "SELECT hash,chars,deleted FROM sources WHERE id=?", (source_id,)
+            )
+            if not row:
+                raise ValueError("body-state episodic source missing")
+            row = _mapping(row, "body-state episodic source")
+            if row.get("deleted") or type(row.get("hash")) is not str:
+                raise ValueError("body-state episodic source revoked")
+            chars = row.get("chars")
+            if type(chars) is not int or chars < 0:
+                raise ValueError("body-state episodic source length")
+            nested = {
+                "source_id": source_id, "sha256": row["hash"],
+                "char_start": 0, "char_end": chars, "modality": "text",
+            }
+            _merge_context_source_refs(
+                store, [nested], refs, seen, source_hashes,
+                expand_body_state=False,
+            )
+        items = recall.get("items", [])
+        if type(items) is not list or len(items) > 8:
+            raise ValueError("body-state episodic item bound")
+        for item in items:
+            if type(item) is not dict:
+                raise ValueError("body-state episodic item")
+            _merge_context_source_refs(
+                store, item.get("source_ref"), refs, seen, source_hashes
+            )
+            _merge_context_source_refs(
+                store, item.get("window_source_refs"), refs, seen, source_hashes
+            )
+
+
+def _context_packet(store, packet_id, expected_kinds, event_id, generation_id,
+                    *, before_rowid=None):
+    if type(packet_id) is not str or not packet_id or len(packet_id) > 256:
+        raise ValueError("context packet identity")
     rows = store.rows(
-        """SELECT rowid AS packet_rowid,payload FROM packets
+        """SELECT rowid AS packet_rowid,id,kind,event_id,generation_id,payload
+           FROM packets WHERE id=? LIMIT 2""",
+        (packet_id,),
+    )
+    if type(rows) is not list or len(rows) != 1:
+        raise ValueError("context packet cardinality")
+    row = _mapping(rows[0], "context packet row")
+    if (row.get("id") != packet_id or row.get("kind") not in expected_kinds
+            or row.get("event_id") != event_id
+            or row.get("generation_id") != generation_id):
+        raise ValueError("context packet binding")
+    packet_rowid = row.get("packet_rowid")
+    if type(packet_rowid) is not int or packet_rowid < 1:
+        raise ValueError("context packet row boundary")
+    if before_rowid is not None and packet_rowid >= before_rowid:
+        raise ValueError("context packet is not pre-selection")
+    payload = _object(row.get("payload"), "context packet payload")
+    if (payload.get("packet_id") != packet_id
+            or payload.get("event_id") != event_id
+            or payload.get("brain_generation_id") != generation_id):
+        raise ValueError("context packet payload binding")
+    return packet_rowid, payload
+
+
+def _collect_context_broadcast(store, packet_id, event_id, generation_id,
+                               before_rowid, refs, seen, source_hashes, visited):
+    if packet_id in visited:
+        return
+    visited.add(packet_id)
+    if len(visited) > 32:
+        raise ValueError("context packet traversal bound")
+    _rowid, payload = _context_packet(
+        store, packet_id, {"JEFBroadcastPacket"}, event_id, generation_id,
+        before_rowid=before_rowid,
+    )
+    _merge_context_source_refs(
+        store, payload.get("provenance"), refs, seen, source_hashes
+    )
+    _merge_context_source_refs(
+        store, payload.get("source_refs"), refs, seen, source_hashes
+    )
+
+
+def _collect_context_message(store, packet_id, event_id, generation_id,
+                             before_rowid, refs, seen, source_hashes,
+                             visited_messages, visited_offers, visited_queries,
+                             visited_packets, depth):
+    if depth > 4:
+        raise ValueError("peer offer provenance depth")
+    if packet_id in visited_messages:
+        return
+    visited_messages.add(packet_id)
+    if len(visited_packets) >= 32:
+        raise ValueError("context packet traversal bound")
+    visited_packets.add(packet_id)
+    _rowid, payload = _context_packet(
+        store, packet_id, {"MessagePacket"}, event_id, generation_id,
+        before_rowid=before_rowid,
+    )
+    _merge_context_source_refs(
+        store, payload.get("provenance"), refs, seen, source_hashes
+    )
+    _merge_context_source_refs(
+        store, payload.get("source_refs"), refs, seen, source_hashes
+    )
+    parent_offer_id = payload.get("parent_offer_packet_id")
+    if parent_offer_id:
+        _collect_context_offer(
+            store, parent_offer_id, event_id, generation_id, before_rowid,
+            refs, seen, source_hashes, visited_offers, visited_queries,
+            visited_messages, visited_packets, depth + 1,
+        )
+
+
+def _collect_context_query(store, packet_id, event_id, generation_id,
+                           before_rowid, refs, seen, source_hashes,
+                           visited_offers, visited_queries, visited_messages,
+                           visited_packets, depth, expected_role=None):
+    if depth > 4:
+        raise ValueError("query provenance depth")
+    if packet_id in visited_queries:
+        return
+    visited_queries.add(packet_id)
+    if len(visited_packets) >= 32:
+        raise ValueError("context packet traversal bound")
+    visited_packets.add(packet_id)
+    _rowid, payload = _context_packet(
+        store, packet_id, {"QueryPacket"}, event_id, generation_id,
+        before_rowid=before_rowid,
+    )
+    target_role = payload.get("target_role")
+    if expected_role is not None and target_role != expected_role:
+        raise ValueError("OfferPacket/QueryPacket role mismatch")
+    for key in ("provenance", "source_refs", "context_source_refs",
+                "enlightened_source_refs", "bv_refs"):
+        _merge_context_source_refs(
+            store, payload.get(key), refs, seen, source_hashes
+        )
+    bodyview = payload.get("bodyview")
+    if bodyview is not None:
+        if type(bodyview) is not dict:
+            raise ValueError("QueryPacket bodyview")
+        for key in ("body_state_ref", "source_ref"):
+            _merge_context_source_refs(
+                store, bodyview.get(key), refs, seen, source_hashes
+            )
+        for key in ("source_refs", "provenance"):
+            _merge_context_source_refs(
+                store, bodyview.get(key), refs, seen, source_hashes
+            )
+    broadcast_id = payload.get("broadcast_packet_id")
+    if broadcast_id:
+        _collect_context_broadcast(
+            store, broadcast_id, event_id, generation_id, before_rowid,
+            refs, seen, source_hashes, visited_packets,
+        )
+    peer_id = payload.get("peer_message_packet_id")
+    if peer_id:
+        _collect_context_message(
+            store, peer_id, event_id, generation_id, before_rowid,
+            refs, seen, source_hashes, visited_messages, visited_offers,
+            visited_queries, visited_packets, depth + 1,
+        )
+    context_offer_ids = payload.get("context_offer_ids", [])
+    if type(context_offer_ids) is not list or len(context_offer_ids) > 16:
+        raise ValueError("QueryPacket context offer bound")
+    for offer_id in context_offer_ids:
+        _collect_context_offer(
+            store, offer_id, event_id, generation_id, before_rowid,
+            refs, seen, source_hashes, visited_offers, visited_queries,
+            visited_messages, visited_packets, depth + 1,
+        )
+
+
+def _collect_context_offer(store, packet_id, event_id, generation_id,
+                           before_rowid, refs, seen, source_hashes,
+                           visited_offers, visited_queries, visited_messages,
+                           visited_packets, depth=0):
+    if depth > 4:
+        raise ValueError("offer provenance depth")
+    if packet_id in visited_offers:
+        return
+    visited_offers.add(packet_id)
+    if len(visited_packets) >= 32:
+        raise ValueError("context packet traversal bound")
+    visited_packets.add(packet_id)
+    _rowid, payload = _context_packet(
+        store, packet_id, {"OfferPacket"}, event_id, generation_id,
+        before_rowid=before_rowid,
+    )
+    for key in ("provenance", "evidence_refs", "context_source_refs",
+                "enlightened_source_refs"):
+        _merge_context_source_refs(
+            store, payload.get(key), refs, seen, source_hashes
+        )
+    query_id = payload.get("query_packet_id")
+    if type(query_id) is not str or not query_id:
+        raise ValueError("OfferPacket query link")
+    _collect_context_query(
+        store, query_id, event_id, generation_id, before_rowid,
+        refs, seen, source_hashes, visited_offers, visited_queries,
+        visited_messages, visited_packets, depth + 1,
+        expected_role=payload.get("role"),
+    )
+
+
+def _assistant_context_source_refs(store, event_id, generation_id,
+                                   selection_packet_id, selection_rowid,
+                                   event_source_ref):
+    rows = store.rows(
+        """SELECT id,status,metadata FROM messages
+           WHERE event_id=? AND role='assistant'
+           ORDER BY id DESC LIMIT 4""",
+        (event_id,),
+    )
+    if type(rows) is not list:
+        raise ValueError("assistant context message scan")
+    matches = []
+    for raw in rows:
+        message = _mapping(raw, "assistant context message")
+        metadata = _object(message.get("metadata"), "assistant context metadata")
+        if metadata.get("action_selection") == selection_packet_id:
+            matches.append((message, metadata))
+    if not matches:
+        return [], "LEGACY_PARTIAL"
+    if len(matches) != 1:
+        raise ValueError("assistant context message cardinality")
+    message, metadata = matches[0]
+    if message.get("status") not in {
+        "FINAL", "CANCELLED", "DEADLINE", "ERROR", "INTERRUPTED"
+    }:
+        raise ValueError("assistant context message not terminal")
+    raw_context_refs = metadata.get("context_source_refs")
+    raw_offer_ids = metadata.get("selected_offer_ids")
+    if (type(raw_context_refs) is not list
+            or not 1 <= len(raw_context_refs) <= MAX_ACTION_SOURCE_REFS
+            or type(raw_offer_ids) is not list or len(raw_offer_ids) > 16
+            or any(type(item) is not str or not item or len(item) > 256
+                   for item in raw_offer_ids)
+            or len(set(raw_offer_ids)) != len(raw_offer_ids)):
+        raise ValueError("assistant context receipt shape")
+    refs, seen, source_hashes = [], set(), {}
+    _merge_context_source_refs(
+        store, raw_context_refs, refs, seen, source_hashes
+    )
+    visited_offers, visited_queries = set(), set()
+    visited_messages, visited_packets = set(), set()
+    for offer_id in raw_offer_ids:
+        _collect_context_offer(
+            store, offer_id, event_id, generation_id, selection_rowid,
+            refs, seen, source_hashes, visited_offers, visited_queries,
+            visited_messages, visited_packets,
+        )
+    # ContextPlan is emitted after C5 selection but before the final C3 prompt.
+    # It binds the exact selected/compacted history blocks; its source list is
+    # merged when present. A future C3ContextPlan packet is accepted by the
+    # same receipt path without changing the verifier contract.
+    for key in ("context_plan", "c3_context_plan"):
+        plan = metadata.get(key)
+        if plan is None:
+            continue
+        if type(plan) is not dict:
+            raise ValueError("ContextPlan receipt shape")
+        plan_id = plan.get("packet_id")
+        if not plan_id:
+            continue
+        _rowid, payload = _context_packet(
+            store, plan_id, {"ContextPlan", "C3ContextPlan"},
+            event_id, generation_id,
+        )
+        _merge_context_source_refs(
+            store, payload.get("provenance"), refs, seen, source_hashes
+        )
+        _merge_context_source_refs(
+            store, payload.get("source_refs"), refs, seen, source_hashes
+        )
+        _merge_context_source_refs(
+            store, plan.get("source_refs"), refs, seen, source_hashes
+        )
+    future_id = metadata.get("c3_context_plan_packet_id")
+    if future_id:
+        _rowid, payload = _context_packet(
+            store, future_id, {"C3ContextPlan"}, event_id, generation_id
+        )
+        if payload.get("action_selection_packet_id") != selection_packet_id:
+            raise ValueError("C3ContextPlan selection binding")
+        _merge_context_source_refs(
+            store, payload.get("source_refs") or payload.get("provenance"),
+            refs, seen, source_hashes,
+        )
+    if event_source_ref not in refs:
+        raise ValueError("assistant context receipt omitted event source")
+    refs.sort(key=lambda item: (
+        item["source_id"], item["sha256"], item["char_start"],
+        item["char_end"], item["modality"],
+    ))
+    return refs, "RUNTIME_SOURCE_COMPLETE"
+
+
+def _selection_source_refs(store, event_id, generation_id, event_source_ref,
+                           *, with_status=False):
+
+    rows = store.rows(
+        """SELECT rowid AS packet_rowid,id,payload FROM packets
            WHERE kind='ActionSelection' AND event_id=? AND generation_id=?
            ORDER BY rowid DESC LIMIT 17""",
         (event_id, generation_id),
@@ -259,11 +644,13 @@ def _selection_source_refs(store, event_id, generation_id, event_source_ref):
         if stage not in (None, "PREDICTION", "COMMIT"):
             raise ValueError("ActionSelection source stage")
         if stage != "PREDICTION":
-            committed.append((selection, packet_row.get("packet_rowid")))
+            committed.append((selection, packet_row.get("packet_rowid"), packet_row.get("id")))
     if len(committed) != 1:
         raise ValueError("ActionSelection source cardinality")
-    selection, selection_rowid = committed[0]
-    if type(selection_rowid) is not int or selection_rowid < 1:
+    selection, selection_rowid, selection_packet_id = committed[0]
+    if (type(selection_rowid) is not int or selection_rowid < 1
+            or type(selection_packet_id) is not str
+            or selection.get("packet_id") != selection_packet_id):
         raise ValueError("ActionSelection packet boundary")
     raw_refs = selection.get("provenance")
     if type(raw_refs) is not list or not 1 <= len(raw_refs) <= MAX_ACTION_SOURCE_REFS:
@@ -303,15 +690,32 @@ def _selection_source_refs(store, event_id, generation_id, event_source_ref):
             seen.add(key)
             refs.append(ref)
 
+    context_refs, context_status = _assistant_context_source_refs(
+        store, event_id, generation_id, selection_packet_id,
+        selection_rowid, event_source_ref,
+    )
+    for ref in context_refs:
+        key = (ref["source_id"], ref["sha256"], ref["char_start"],
+               ref["char_end"], ref["modality"])
+        prior = source_hashes.get(ref["source_id"])
+        if prior is not None and prior != ref["sha256"]:
+            raise ValueError("assistant context source digest conflicts with action lineage")
+        source_hashes[ref["source_id"]] = ref["sha256"]
+        if key not in seen:
+            if len(refs) >= MAX_ACTION_SOURCE_REFS:
+                raise ValueError("merged action source ref bound")
+            seen.add(key)
+            refs.append(ref)
     refs.sort(key=lambda item: (
         item["source_id"], item["sha256"], item["char_start"],
         item["char_end"], item["modality"],
     ))
-    return tuple(
+    packed = tuple(
         (item["source_id"], item["sha256"], item["char_start"],
          item["char_end"], item["modality"])
         for item in refs
     )
+    return (packed, context_status) if with_status else packed
 
 @dataclass(frozen=True)
 class Provenance:
@@ -329,6 +733,7 @@ class Provenance:
     outcome_created: float
     status: str
     actual: dict
+    context_lineage_status: str
 
 
 class VerifiedT8Transition:
@@ -405,6 +810,10 @@ class VerifiedT8Transition:
         ]
 
     @property
+    def context_lineage_status(self):
+        return self._proof.context_lineage_status
+
+    @property
     def evidence_ref(self):
         return "T8:" + self._proof.action_id + ":" + self._proof.outcome_sha256
 
@@ -417,6 +826,7 @@ class VerifiedT8Transition:
         return {"event_id": self._proof.event_id, "generation_id": self._proof.generation_id,
                 "source_id": self._proof.source_id, "source_sha256": self._proof.source_sha256,
                 "source_refs": self.source_refs,
+                "context_lineage_status": self._proof.context_lineage_status,
                 "outcome_sha256": self._proof.outcome_sha256}
 
 
@@ -480,8 +890,9 @@ def _verify_one(store, row):
     # can still be event-only, so also verify the final C4 FocalCycle against its
     # FocalItem members and merge that coalition lineage. Truncation or revocation
     # fails closed rather than certifying an incomplete JEPA training row.
-    selected_source_refs = _selection_source_refs(
-        store, meta["event_id"], meta["generation_id"], source_ref
+    selected_source_refs, context_lineage_status = _selection_source_refs(
+        store, meta["event_id"], meta["generation_id"], source_ref,
+        with_status=True,
     )
     # Scan the complete event history up to a hard bound. A small LIMIT could
     # hide an older duplicate and incorrectly certify the remaining packet as
@@ -512,8 +923,11 @@ def _verify_one(store, row):
         raise ValueError("transition status mismatch")
     proof = Provenance(action_id, meta["event_id"], meta["generation_id"], source_id, source_sha,
                        source_start, source_end, source_modality, selected_source_refs,
-                       _hash(outcome_packet), float(created), float(outcome_created), status, actual)
-    return VerifiedT8Transition(_SEAL, row, proof)
+                       _hash(outcome_packet), float(created), float(outcome_created), status,
+                       actual, context_lineage_status)
+    verified_row = dict(row)
+    verified_row["context_lineage_status"] = context_lineage_status
+    return VerifiedT8Transition(_SEAL, verified_row, proof)
 
 
 def verify_rows(store, rows):
@@ -604,6 +1018,59 @@ def _transition_from_action_row(store, raw_row):
               math.log1p(float(characters)) / 8.0],
         "latent": latent,
     }
+
+
+
+def committed_history_references_source(store, source_id, through_seq, *,
+                                         include_censored=False,
+                                         pending_action_ids=(), max_rows=2048):
+    """Fail-closed source scan over the exact verified T8 prefix used by a checkpoint.
+
+    This reuses the same ActionSelection/C4/Offer/Query/peer/ContextPlan and
+    BODY_STATE nested lineage as normal learning. A legacy row without the
+    persisted assistant context receipt cannot prove that a source was unused.
+    """
+    if (type(source_id) is not str or not source_id or len(source_id) > 256
+            or type(through_seq) is not int or through_seq < 0
+            or type(max_rows) is not int or not 1 <= max_rows <= 10000):
+        return True
+    if through_seq == 0:
+        return False
+    try:
+        pending = set(pending_action_ids)
+        if any(type(item) is not str or not item for item in pending):
+            return True
+        statuses = (
+            "'FINAL','FAILED','ERROR','DEADLINE','REJECTED',"
+            "'CANCELLED','ABORTED','OUTCOME_UNKNOWN','INTERRUPTED'"
+            if include_censored else
+            "'FINAL','FAILED','ERROR','DEADLINE','REJECTED'"
+        )
+        rows = store.rows(
+            """SELECT a.rowid AS scan_seq,a.id,a.event_id,a.status,a.expected,
+                      a.outcome,a.created,e.generation_id
+               FROM actions a JOIN events e ON e.id=a.event_id
+               WHERE a.rowid<=? AND a.outcome IS NOT NULL AND a.expected LIKE ?
+                 AND a.status IN (""" + statuses + """)
+               ORDER BY a.rowid ASC LIMIT ?""",
+            (through_seq, '%"forecast"%', max_rows + 1),
+        )
+        if type(rows) is not list or len(rows) > max_rows:
+            return True
+        for raw in rows:
+            action_row = _mapping(raw, "source-forget action row")
+            if action_row.get("id") in pending:
+                continue
+            transition = _transition_from_action_row(store, action_row)
+            receipt = _verify_one(store, transition)
+            if receipt.context_lineage_status != "RUNTIME_SOURCE_COMPLETE":
+                return True
+            if any(item.get("source_id") == source_id for item in receipt.source_refs):
+                return True
+        return False
+    except Exception:
+        # Revoked/malformed/ambiguous lineage is never proof of non-use.
+        return True
 
 
 def verify_committed_transition_page(store, *, after_seq=0, limit=world_model.MAX_ROWS):
