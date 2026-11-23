@@ -8,11 +8,11 @@ PINS = {
     'store.py': '40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb',
     'common.py': '0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a',
     'memory.py': '33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701',
-    'vision.py': '8d40beb1a70a77fdf2f758e2b5673dfd1abf09953b6b8cebee1019ce75fbe3a1',
-    'vision_source_lineage.py': '58e588becd46052f59d67316bc4622b994635606b0bc07814ebd07e950de7d8e',
+    'vision.py': 'd4a5e3e0b3faf27489e6ea8c1476876910d2708033ab9ae4267b665dd8f180dd',
+    'vision_source_lineage.py': 'bb63636c9ae84d345fe1f4e37254de3be87c26990cb320ca058859fd0b51b72f',
     'archive_reader_guard_candidate.py': '84c06a9f5c0b6054f836615023822ff577984d3efe9ddfb07cae569ec124f438',
     'archive_stream_range_candidate.py': 'd2d021adcc844c1f321312cbfa60a4affb0a6b7fddc09e41a234cdf83f1eec98',
-    'source_lifecycle_candidate.py': '4f7932b858c3cffa05eea038b064d462f4d345d64f67bd6484c599f80a622e93',
+    'source_lifecycle_candidate.py': 'b87c072f528df7ba88724943508947579d035ac9d6ae8b54d27f540cf9dff387',
 }
 GUARD_SCRIPT_SHA = '69a20b1c9e10882f80086c0620e8f87575c4559e7113ed19fd53002330be8747'
 OLD_ARCHIVE_INTEGRATED_SHA = '3f421423ce890b90033470e15150b1ba9830642e6b5e92e61b654801602e90b4'
