@@ -10,7 +10,7 @@ import test_process_restart_instrumented as harness
 
 class InstrumentationDriverTests(unittest.TestCase):
     def test_instrumentation_unlocks_emulator_without_prelaunching_target(self):
-        output = "INSTRUMENTATION_RESULT: stream=\\n\\nOK (1 test)\\nINSTRUMENTATION_CODE: -1"
+        output = "INSTRUMENTATION_RESULT: stream=\n\nOK (1 test)\nINSTRUMENTATION_CODE: -1"
         with (
             patch.object(harness, "prepare_emulator_for_instrumentation") as prepare,
             patch.object(harness, "adb", return_value=output) as adb_call,
