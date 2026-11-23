@@ -562,7 +562,7 @@ def test_temporal_rollback_restores_previous_checkpoint_and_retries_pending_rows
         # Close and reopen SQLite itself, not merely the learner object. The
         # source-bound intents and delta receipts must survive the real DB restart.
         store.close()
-        store = _make_store(home)
+        store = Store(home)
         reopened, _ = store.state(STATE_KEY, None)
         assert reopened["active"]["checkpoint_sha256"] == first_sha
         assert {
