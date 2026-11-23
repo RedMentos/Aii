@@ -1332,9 +1332,9 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 
 ## JEPA & Memory — release-base temporal port (2026-11-23, Run 13)
 
-- PR #2447: `jepa-memory/v14-temporal-world-jepa-release-20261123-run13`, base `fb563d771fe2d493c4ec25abe94280981d24ef5c`, head `3767e9916fad125dd36d745f869f48db566e9632`.
+- PR #2447: `jepa-memory/v14-temporal-world-jepa-release-20261123-run13`, base `fb563d771fe2d493c4ec25abe94280981d24ef5c`, head `581de80f164ab19ab559c946ce49a7af52be06ba` (code commit `3767e9916fad125dd36d745f869f48db566e9632`).
 - Adds persistent temporal T8 ActionOutcome -> trainable WorldJEPA/EMA -> source/session-disjoint episodic recall -> B1/B2 numeric SHADOW receiver; SleepRuntime postcommit scheduling, optimizer/checkpoint persistence, replay, restart and rollback.
 - Existing Memory API source-forget now invokes temporal checkpoint invalidation through the shared JEPA guard and clears a changed warm model cache. A Memory._forget_source -> invalidation -> remaining-T8 replay regression is included.
-- Exact-head CI: PENDING at last poll. Full local checkout blocked by GitHub DNS; no local full-suite PASS. REDMI_UNVERIFIED / NOT_RELEASED.
+- Exact-head CI: queued — run 45210392877 (Temporal WorldJEPA T8) and 45210392798 (JEPA training-resume/source-forget); no conclusion yet. Full local checkout blocked by GitHub DNS; no local full-suite PASS. REDMI_UNVERIFIED / NOT_RELEASED.
 - Excluded from this PR: #2443 Store-RLock/blob-unlink concurrency fix, staged builder pin recomposition, and Core's complete ActionSelection context SourceRefs. The receiver remains SHADOW; no native body weights, GGUF weights or cross-organ latent transfer are claimed.
 - Handoff: `v14/handoffs/JEPA_MEMORY_RUN13_RELEASE_PORT_20261123.md`.
