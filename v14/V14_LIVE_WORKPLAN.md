@@ -1590,3 +1590,11 @@ Both findings are research-only: no code/weights imported, no model downloaded, 
 - The dependency set is substantial: PyTorch 2.13.0, torchaudio 2.11.0, torchcodec 0.15.0, NumPy/SciPy, Silero VAD, pyannote, Lightning, PyArrow and others. CPU inference exists, but no Android/Termux/Bionic dependency closure or ARM64 wheel proof was found.
 - The current Perception `audio_fastdiar_adapter.py` is deliberately diagnostic: it accepts already-produced 192-D embeddings, hashes the local checkpoint + exact PCM chunk, and emits the RAW EAR contract. It does not load/download weights, execute the encoder, run clustering/VAD, assign identities, persist vectors or provide confidence calibration; A4 remains DEFER.
 - Next experiment is blocked on separate checkpoint-weight license verification and explicit approval for a disposable Termux install. If approved later, compare CPU RTF, 80 ms frame latency, RSS, DER with/without overlap, silence/noise negatives and restart. No weight was downloaded or loaded; REDMI_UNVERIFIED.
+
+
+## QA source-lifecycle latest-head follow-up — 2026-11-23T01:19:53.638Z
+
+- QA #2391 advanced to exact head `076aa21e6b8c13a2a48d63d70f530ba6eba73072` and repaired the nested ContextRecall → training builder → Termux12 → Termux21 → stage → runtime-deployer pin chain. Seven exact-head workflows are queued; no green result yet.
+- The same head still has `source_lifecycle_lock_integration_candidate.py` pinned to old `vision.py` SHA-256 `758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5` and no `vision_source_lineage.py` PINS/materialization entry. QA remains based on JEPA #2372 rather than #2397.
+- Perception sent follow-up comment #7089052965: preserve QA's current training-resume repair, then compose on JEPA #2397 exact head `f63a5877774f58b6928b4e8dd7125651e9d8173d` and apply the exact Perception hashes from #7088869631. No QA/JEPA file was modified by Perception.
+- The source-forget path remains NOT_ACCEPTED until the combined staged/integrated consumer and all privacy/migration/owner-read/release checks pass.
