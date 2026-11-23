@@ -2,7 +2,7 @@
 
 ## Exact change
 - Branch: `jepa-memory/v14-temporal-episodic-recall-20261123-run7`
-- Code/test head: `a474a1e13f437d30f76313bfcaef52bb394b0e77`
+- Code/test head: `45696f7d37b898b2a7a1bc8331a25e1b268e954b`
 - Changed files:
   - `v13/code/v13/bodyview.py`: bounded prompt-facing omission status for temporal B1/B2 receiver; no authority.
   - `v13/code/tests/test_v14_world_jepa_postcommit_runtime.py`: route-conditioned synthetic B2 outcome cohort plus omission-status regression.
@@ -15,6 +15,7 @@ A second product observability gap was fixed: when a temporal readout is omitted
 
 ## Tests / evidence
 - LOCAL_LINUX synthetic fixture sanity: PASS, CPython 3.13.5 x86_64; 192 rows / 48 sessions; SHA-based split 97 train / 95 holdout; each action route has >=8 examples in both partitions and two balanced outcome classes.
+- **LOCAL_LINUX numeric fixture sanity:** a one-hot route readout on the same source-hash split scored holdout MSE 4.87e-10 versus mean 0.2682, zero 0.2500 and shuffled 0.6947. PASS only for confirming the synthetic `P(FINAL | action)` labels are learnable; it is not the temporal JEPA model, not its utility gate, and not product evidence. The omission-status prompt envelope was 488/700 characters in a local JSON-size sanity check; the exact regression now asserts the runtime serializer stays within 700, but that test has not yet run on this updated head.
 - LOCAL_LINUX full Aii compile/pytest: BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS resolution fails.
 - Exact-head GitHub Actions: pending at initial readback; do not claim PASS until exact SHA jobs complete.
 - Redmi: REDMI_UNVERIFIED. #1904 latest sanitized receipt still reports installed `aed1d2b826290c95c70356b5d8b864b5ef382be4`, 57.74 s / 41.63 s TTFT / 38.95 s prefill / 2 tokens, B1/B2 TIME_BUDGET and no valid offers in the reported aggregate.
