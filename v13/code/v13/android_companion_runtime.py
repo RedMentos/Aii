@@ -24,7 +24,7 @@ from .common import atomic_write, dumps
 
 _HELP = (
     ":android status|capabilities|pair|trust <key-id> --confirm|"
-    "launch <package> --confirm|poll <action-id>|cancel <action-id>|pending|history [1..50]|stop"
+    "launch <package> --confirm|poll <action-id>|cancel <action-id>|pending|history [1..50]|frame-status|stop"
 )
 
 
@@ -39,6 +39,7 @@ class AndroidCompanionController:
         self.broker = AndroidControlBroker(self.db_dir / "android_control.sqlite", clock=self.clock)
         self.trust_path = self.db_dir / "android_companion_trust.json"
         self.verifier_path = self.db_dir / "android_companion_receipts.sqlite"
+        self.ui_frame_verifier_path = self.db_dir / "android_companion_ui_frame_receipts.sqlite"
 
     def _provider_key(self):
         info = self.transport.public_key()
@@ -87,6 +88,21 @@ class AndroidCompanionController:
             "android_device_verified": False,
             "redmi_status": "REDMI_UNVERIFIED",
         })
+
+    def frame_status(self):
+        """Read verified one-shot frame metadata without consuming bytes or nonce."""
+        trust, public_key, _ = self._pinned_key()
+        from .android_companion_ui_frames import (
+            AndroidCompanionFrameProvider, ECDSAUIFrameReceiptVerifier,
+        )
+        verifier = ECDSAUIFrameReceiptVerifier(
+            self.ui_frame_verifier_path, public_key, trust["key_id"], clock=self.clock,
+        )
+        provider = AndroidCompanionFrameProvider(self.transport, verifier)
+        try:
+            return dumps(provider.status())
+        finally:
+            provider.close()
 
     def _capability_registry(self):
         return CapabilityRegistry.parse(self.transport.capabilities())
@@ -589,6 +605,8 @@ def operator_command(runtime, args):
         return controller.cancel(args[1])
     if command == "pending" and len(args) == 1:
         return controller.pending()
+    if command == "frame-status" and len(args) == 1:
+        return controller.frame_status()
     if command == "history" and len(args) in (1, 2):
         try:
             limit = int(args[1]) if len(args) == 2 else 20
