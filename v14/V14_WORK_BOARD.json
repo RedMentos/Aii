@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T00:25:30.238Z",
-  "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; exact SHA readback 30/30 observed check-runs SUCCESS. Authenticated private PIPELINE_STATUS #619 confirms the same SHA installed, auto-update enabled, runtime/dashboard UP_TO_DATE and last_error NONE. DIAGNOSTICS #620 still shows a slow 2-token stored turn and B1/B2 TIME_BUDGET. Current candidates remain DRAFT / CI pending; functional and whole-Canon acceptance remain open.",
+  "updated_at": "2026-11-23T00:38:13Z",
+  "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; private V13OBS #115 readback at 2026-11-23T00:36:32Z confirms same SHA installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE and last_error NONE. Latest stored turn remains slow with B1/B2 TIME_BUDGET. PR #2395 exact head 26ccaf has focused CI 2/2 PASS but staged/integrated FAIL on JEPA/QA source-lifecycle pin/overlay; all candidates remain DRAFT / NOT_RELEASED.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -199,19 +199,19 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "CI / SYNTHETIC frame and local projector fixtures; no Android MediaProjection or Redmi capture",
-      "next_step": "Perception #2375 exact head e21a85 has 4 executed workflows SUCCESS + 1 expected safe-additive SKIPPED on synthetic frames; the A5 packet reaches the lease-gated UI context cache and returns a 320-char A5 envelope, but normal Runtime→C3 dispatch is still separate. Core #2379 must be rebased on a combined QA+Perception base, then consume the bounded envelope through C3 under the same live lease. #2369 fixed its own stale comparator pin; exact-head comparator/staged jobs are still queued/in progress. Audio integration also requires Core to include/pin Perception audio_teacher_ear.py (currently absent on Core branch) and either propagate strict optional teacher flags or keep Teacher Ear OFF.",
+      "proof_environment": "LOCAL_LINUX isolated helper + synthetic NumPy sufficient-statistics probe; GitHub focused CI 2/2 PASS; staged/integrated CI FAIL on cross-agent source-lifecycle pin/overlay; REDMI_UNVERIFIED.",
+      "next_step": "JEPA #2372 must port A3 source-lineage invalidation into its overlaid vision_forget (both global and tile projectors, legacy unknown lineage); QA #2391 must pin/copy vision.py and vision_source_lineage.py. Re-run exact staged/integrated tests. Then continue separate MediaProjection→RAW EYE→A3/A4→A5→real C3 consumer path.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T00:16:05.798Z",
+      "last_checkpoint": "2026-11-23T00:38:13Z",
       "latest_candidate_pr": {
-        "pr": 2375,
-        "head_sha": "e21a85a329ea25a2208fcfa64edc216884b55bf1",
+        "pr": 2395,
+        "head_sha": "26ccaf0825d4ebf02aedcdae781a9164b04f53d5",
         "base": "gpt6/v13-private-remote-bridge-20261111@aed1d2b826290c95c70356b5d8b864b5ef382be4",
-        "state": "OPEN_DRAFT",
-        "ci": "4_SUCCESS_1_EXPECTED_SKIPPED_SYNTHETIC",
-        "scope": "one-shot frame producer adapter; not Android capture or C3 consumption"
+        "state": "OPEN_DRAFT_BLOCKED_CROSS_LANE",
+        "ci": "FOCUSED_2_PASS_PY313_PY314; OFFLINE_SECURITY_PASS; STAGED_RUNTIME_FAIL; INTEGRATED_FAIL_SOURCE_LIFECYCLE_PIN",
+        "scope": "A3 global/tile ridge projector source lineage and conservative forget invalidation; no Android or C3 proof"
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. #2375 e21a85: 4/4 executed workflows SUCCESS + 1 expected safe-additive SKIPPED; synthetic frame → RAW EYE/A4/A5 cache only. A3 test fits a tiny synthetic hashed-label projector; no gradient/JEPA/retention claim. #2379 still has separate Runtime→C3 work. Latest Core head 291675d5 still lacks audio_teacher_ear.py and retains the old audio source pin."
+      "proof": "PR #2395 exact head 26ccaf: both A3 ridge projectors record training source_id + SHA-256; forget invalidates affected/legacy-unknown weights before source deletion and uses symlink-safe artifact/blob unlink. Local helper tests 7/7 PASS; exact GitHub focused Python 3.13/3.14 2/2 PASS. The staged JEPA overlay currently replaces vision.forget with a path that only strips global captions and leaves projector weights/tile_projector; QA composer pins old vision.py and omits new helper from PINS, so staged/integrated fail. R-101 local synthetic exact-statistics probe: 600 delete/add-back comparisons, max relative parameter error 6.72e-10 and normalized-output error 1.39e-15; future design only. Private V13OBS #115 at 00:36:32Z confirms release aed1d2 installed/up-to-date, but no candidate deployment; last stored turn 57.7388 s and B1/B2 TIME_BUDGET 53.2/54.2 s."
     },
     {
       "id": "V14-007",
