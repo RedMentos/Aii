@@ -665,7 +665,7 @@ class SleepRuntime:
             if cancel_check():
                 return result|{'status':'CANCELLED'}
             action=self.r.store.one(
-                "SELECT id,status,outcome FROM actions WHERE event_id=? AND outcome IS NOT NULL "
+                "SELECT id,rowid AS scan_seq,status,outcome FROM actions WHERE event_id=? AND outcome IS NOT NULL "
                 "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED','CANCELLED','ABORTED','INTERRUPTED') "
                 "ORDER BY created DESC,id DESC LIMIT 1",(event_id,))
             if not action:
@@ -757,12 +757,55 @@ class SleepRuntime:
             cursor.setdefault('last_planner_event_id',legacy)
             learning_status=learning.get('status')
             temporal_status=temporal.get('status')
-            if learning_status=='ERROR' or temporal_status=='ERROR':
+            target_scan_seq=action['scan_seq']
+            learning_scan_cursor=learning.get('scan_cursor')
+            temporal_scan_cursor=temporal.get('scan_cursor')
+            learning_scan_reached=(type(target_scan_seq) is int
+                                   and type(learning_scan_cursor) is int
+                                   and learning_scan_cursor>=target_scan_seq)
+            temporal_scan_reached=(type(target_scan_seq) is int
+                                   and type(temporal_scan_cursor) is int
+                                   and temporal_scan_cursor>=target_scan_seq)
+            learning_scan_required=learning_status not in {
+                'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION','CANCELLED'
+            }
+            temporal_scan_required=temporal_status not in {
+                'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION','CANCELLED'
+            }
+            scan_complete=((not learning_scan_required or learning_scan_reached)
+                           and (not temporal_scan_required or temporal_scan_reached))
+            learning_has_more=learning.get('has_more') is True
+            temporal_has_more=temporal.get('has_more') is True
+            scan_pending=(
+                (learning_scan_required and not learning_scan_reached and not learning_has_more)
+                or (temporal_scan_required and not temporal_scan_reached and not temporal_has_more)
+            )
+            result.update(
+                target_scan_seq=target_scan_seq,
+                learning_scan_cursor=learning_scan_cursor,
+                temporal_scan_cursor=temporal_scan_cursor,
+                learning_scan_reached_target=learning_scan_reached,
+                temporal_scan_reached_target=temporal_scan_reached,
+                scan_complete=scan_complete,
+                scan_pending=scan_pending,
+            )
+            if scan_pending:
+                result.update(status='ERROR',error='T8_SCAN_CURSOR_BEHIND_TARGET')
+                self.r.store.log('v14_world_jepa_scan_incomplete',event_id,{
+                    'target_scan_seq':target_scan_seq,
+                    'learning_scan_cursor':learning_scan_cursor,
+                    'temporal_scan_cursor':temporal_scan_cursor,
+                    'learning_status':learning_status,
+                    'temporal_status':temporal_status,
+                    'decision':'none',
+                })
+            if learning_status=='ERROR' or temporal_status=='ERROR' or scan_pending:
                 cursor['last_learning_error_event_id']=event_id
             elif (learning_status not in {'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION','CANCELLED'}
-                  and temporal_status not in {'OFF','PENDING_OPTIMIZER_PERMISSION','CANCELLED'}
-                  and learning.get('has_more') is not True
-                  and temporal.get('has_more') is not True):
+                  and temporal_status not in {'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION','CANCELLED'}
+                  and scan_complete
+                  and not learning_has_more
+                  and not temporal_has_more):
                 cursor['last_learning_event_id']=event_id
                 cursor.pop('last_learning_error_event_id',None)
             planner_status=planner.get('status')
