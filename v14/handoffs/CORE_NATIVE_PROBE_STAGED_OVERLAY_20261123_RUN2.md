@@ -36,3 +36,30 @@ This is a diagnostic operator path only. It does **not** activate production B3,
 3. After Boss integration and a separate authenticated installation receipt, ask for a distinct one-shot probe decision only if a fresh Redmi diagnostic is still justified. Keep production B3 OFF until latent-vs-SOURCE_EXACT-vs-NO_MESSAGE, shuffled/zero/OOD controls and held-out receiver utility are actually measured.
 
 **User action: none at this checkpoint.**
+
+
+## Run 3 — exact-head fixture repair and CI verification (2026-11-23T18:23:01.047Z)
+
+### Change
+
+The first exact staged Runtime run on the previous code head exposed three failures in `StageTest`: the temporary source fixture lacked the required native-probe overlay, pinned canonical operator and approval module. The stage builder correctly failed closed. The test fixture now copies the exact repository operator, approval module and real overlay into the temporary source tree. It also verifies that only the staged operator is changed, that the manifest records `SHADOW_REVIEW_ONLY`, and that the inventory contains the added pinned files. Production missing-overlay/source-pin checks were not weakened.
+
+- **Code-tested commit:** `ea7535e8ad83f16cdbf7f5df626b96123ad309f6`.
+- **PR:** [#2451](https://github.com/RedMentos/Aii/pull/2451), still DRAFT / NOT_RELEASED.
+
+### Exact test evidence
+
+- Native receiver workflow #45236111168: Python 3.13 and 3.14 each **12 passed**; Linux pinned API PASS; Android ARM64 cross-compile PASS. The first Python 3.13 attempt failed only during a transient pip package download (connection reset); the targeted rerun passed.
+- Staged/integrated workflow #45236111273: staged Runtime **255 passed, 10 skipped, 47 subtests**; integrated regression **424 passed, 3 skipped, 58 subtests**.
+- Audio/arithmetic workflow #45236111290: Python 3.13 and 3.14 each **52 passed, 26 subtests**.
+- Same-turn B1/B2→C4→C3 consumer workflow #45236111088: Python 3.13 and 3.14 PASS.
+- Runtime deploy integrity #45236110955, Lab-Age #45236111027, private owner-read bootstrap #45236111099, two-checkout migration #45236111102 and release-event integration queue #45236111121: SUCCESS. Safe-additive candidate check was SKIPPED by policy.
+
+### Honest limits and next work
+
+- Full local Aii checkout/tests: **BLOCKED / NOT_RUN**; no checkout is mounted and GitHub DNS fails from the local container.
+- Redmi: **REDMI_UNVERIFIED**. No device probe, install, update request, Termux command, model/weight/permission/data mutation.
+- The native probe is diagnostic-only. It does not prove a trained cross-organ projector, receiver utility or production B3. Normal B1/B2 same-turn offer quality and correct C3 output remain unverified on Redmi.
+- Independent Boss/QA review is pending. Next: review/integrate #2451, then recompose the stale fair B1/B2 pre-answer scheduler on current release HEAD while preserving both bodies, C3 reserve and source-bound C4/C3 consumption.
+
+**User action: none.**
