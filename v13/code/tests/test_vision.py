@@ -392,10 +392,6 @@ class Vision(unittest.TestCase):
         self.assertIsNone(vision.load(self.store)['projector'])
         self.assertNotIn(rec['ref']['source_id'], vision.load(self.store)['images'])
 
-if __name__ == '__main__':
-    unittest.main()
-
-
     def test_forget_rebuilds_a3_weights_equal_to_fresh_retained_data_fit(self):
         t = FakeTeacher()
         enc = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
@@ -460,3 +456,7 @@ if __name__ == '__main__':
         self.assertIn('projector', result['rebuild_fallbacks'])
         self.assertIsNone(vision.load(self.store)['projector'])
         self.assertTrue(result['projector_files_deleted']['projector'])
+
+
+if __name__ == '__main__':
+    unittest.main()
