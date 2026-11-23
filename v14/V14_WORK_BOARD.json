@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T12:44:40Z",
+  "updated_at": "2026-11-23T23:20:53.699Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -294,11 +294,31 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Fixed Context OS header and bounded context; exact episodic memory; semantic/world graph with temporal validity and source revocation; additive overflow/missing-context companion with source pointers and query-sensitive connections; role-specific readers/writers",
       "acceptance": "Actual runtime consumers retrieve source-grounded memories; overflow companion runs only when context is missing/overflowed and never replaces the canonical memory or user-visible history; restart, forget/revoke, privacy, query-relevance and resource-cost tests pass.",
-      "proof_environment": "Context OS source pointers remain partial; Memorilla #1983 remains additive SHADOW with no production overflow consumer or role-specific reader/writer learning. No archive/forget/revocation replacement is accepted.",
-      "next_step": "Core/JEPA: make the production ActionSelection producer attach all source refs for admitted Memory, observer and Enlightened-Space context. Then connect query-sensitive episodic recall to Context OS with source/session exclusions and forget/revoke/restart tests. Memorilla stays additive and SHADOW.",
+      "proof_environment": "LOCAL_LINUX_SYNTHETIC_MINISTORE PASS; full repository/CI NOT_RUN; REDMI_UNVERIFIED.",
+      "next_step": "Obtain an authorized PR from core/v14-actionselection-source-lineage-20261124; run exact Python 3.11/3.13/3.14 Actions and fix failures; then coordinate JEPA/Boss source-pin rebind and run source-forget/T8 consumer, staged and integrated tests. Keep Memorilla additive SHADOW and Redmi unverified.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:07:22.216Z",
-      "proof": "#2429 adds multi-SourceRef validation and checkpoint provenance; multi-source context is tested with injected packets. Production focal.py still records only event source. Memorilla #1983 has no production overflow consumer."
+      "last_checkpoint": "2026-11-23T23:20:53.699Z",
+      "proof": "Core branch core/v14-actionselection-source-lineage-20261124 adds C5 ActionSelection provenance for admitted coalition, Memory, observer, Context OS, Enlightened Space, OfferPacket and QueryPacket/BodyView refs. Positive producer-to-world_jepa_store_authority consumer readback, SQLite restart/privacy, and invalid-digest/no-commit tests added. LOCAL_LINUX synthetic MiniStore probe PASS. Full Aii checkout/pytest BLOCKED by GitHub DNS; exact-head Actions had no visible run; no CI pass. PR creation rejected HTTP 403 because connected GitHub account email is unverified. No Redmi/device, model, weight, permission or data change.",
+      "core_run20_checkpoint": {
+        "date": "2026-11-24",
+        "owner": "Core & Harness",
+        "branch": "core/v14-actionselection-source-lineage-20261124",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "code_commit": "024e2facf315904ef8aba22adeb74e582c6669b5",
+        "test_commit": "3f378f27e6bb7f822a152765cc2005af50e96cf9",
+        "workflow_commit": "69b9a28175799b6ce70fd7ff483f12552d9889ae",
+        "pre_board_head": "3ac116693ac477b5520973adc6b25b2fc89e2cb9",
+        "pr_status": "NOT_CREATED_GITHUB_403_EMAIL_UNVERIFIED",
+        "tests": {
+          "local_linux_synthetic_ministore": "PASS: source union, QueryPacket binding, invalid-digest rejection, SQLite restart/readback",
+          "full_repository_local": "BLOCKED: no local Aii checkout; git ls-remote DNS failure",
+          "exact_head_ci": "NOT_RUN: no workflow run visible at last readback",
+          "android_redmi": "REDMI_UNVERIFIED; no device receipt or action"
+        },
+        "deployment": "NOT_VERIFIED; GitHub push is not deployment",
+        "user_action_required": false,
+        "next_action": "Create authorized PR, run exact 3.11/3.13/3.14 workflow, then source-forget/T8 consumer integration after JEPA/Boss pin rebind."
+      }
     },
     {
       "id": "V14-013",
