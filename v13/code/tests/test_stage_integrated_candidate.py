@@ -6,6 +6,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
+import shutil
 
 MODULE_PATH = Path(__file__).resolve().parents[1] / 'scripts/stage_integrated_candidate.py'
 spec = importlib.util.spec_from_file_location('stage_candidate', MODULE_PATH)
@@ -19,6 +20,8 @@ class StageTest(unittest.TestCase):
         self.addCleanup(setattr, module, 'BUILDER_SHA', original_pin)
         original_overlay_pin = module.ARITHMETIC_OVERLAY_GIT_BLOB
         self.addCleanup(setattr, module, 'ARITHMETIC_OVERLAY_GIT_BLOB', original_overlay_pin)
+        original_probe_pin = module.NATIVE_PROBE_OVERLAY_GIT_BLOB
+        self.addCleanup(setattr, module, 'NATIVE_PROBE_OVERLAY_GIT_BLOB', original_probe_pin)
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
@@ -26,10 +29,22 @@ class StageTest(unittest.TestCase):
         (self.code / 'scripts').mkdir(parents=True)
         (self.code / 'v13').mkdir()
         (self.code / 'v13/runtime.py').write_text('ORIGINAL')
+        source_code = Path(__file__).resolve().parents[1]
+        shutil.copy2(source_code / 'v13/operator.py', self.code / 'v13/operator.py')
+        shutil.copy2(source_code / 'v13/native_probe_approval.py', self.code / 'v13/native_probe_approval.py')
+        shutil.copy2(source_code / module.NATIVE_PROBE_OVERLAY, self.code / module.NATIVE_PROBE_OVERLAY)
+        runtime_stub = (
+            b"class Runtime:\n"
+            b"    def close(self):\n"
+            b"        self.worker.join(6)\n"
+            b"        if self.worker.is_alive():\n"
+            b"            pass\n"
+        )
+        self.runtime_stub = runtime_stub
         overlay = (
             "SOURCE_PINS = {}\n"
             "def apply_staged_arithmetic(code_dir, staged_root):\n"
-            "    return {'v13/runtime.py': b'INTEGRATED'}\n"
+            "    return {'v13/runtime.py': " + repr(runtime_stub) + "}\n"
         ).encode('utf-8')
         overlay_path = self.code / module.ARITHMETIC_OVERLAY
         overlay_path.write_bytes(overlay)
@@ -45,11 +60,14 @@ class StageTest(unittest.TestCase):
         module.BUILDER_SHA = hashlib.sha256(source.encode()).hexdigest()
 
     def test_stages_replacement_without_mutating_source(self):
-        self.builder("    return {'v13/runtime.py': b'INTEGRATED'}\n")
+        self.builder("    return {'v13/runtime.py': " + repr(self.runtime_stub) + "}\n")
         out = self.root / 'candidate'
         result = module.stage(self.code, out)
-        self.assertEqual((out / 'v13/runtime.py').read_text(), 'INTEGRATED')
+        staged_runtime = (out / 'v13/runtime.py').read_bytes()
+        self.assertIn(b'wait_for_runtime_probe_shutdown', staged_runtime)
         self.assertEqual((self.code / 'v13/runtime.py').read_text(), 'ORIGINAL')
+        self.assertEqual(result['native_probe_overlay']['status'], 'SHADOW_REVIEW_ONLY')
+        self.assertEqual(result['native_probe_overlay']['replaced_files'], ['v13/operator.py', 'v13/runtime.py'])
         self.assertEqual(result['status'], 'SHADOW_REVIEW_ONLY')
         self.assertTrue((out / 'specs/test.json').exists())
         with self.assertRaises(FileExistsError):
@@ -101,7 +119,8 @@ class StageTest(unittest.TestCase):
         dest = self.root / 'candidate'
         result = module.stage(self.code, dest)
         self.assertEqual(set(result['files_sha256']), {
-            'v13/runtime.py', 'specs/test.json', module.BUILDER, module.ARITHMETIC_OVERLAY})
+            'v13/runtime.py', 'v13/operator.py', 'v13/native_probe_approval.py',
+            'specs/test.json', module.BUILDER, module.ARITHMETIC_OVERLAY, module.NATIVE_PROBE_OVERLAY})
         self.assertFalse((dest / 'v13/brain.sqlite3').exists())
 
     def test_symlink_is_not_followed_or_published(self):
