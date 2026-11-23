@@ -1,3 +1,14 @@
+## New research note — 2026-11-23T01:15:00.650Z
+
+No user action required. Two full-text research reviews were added to the ledger:
+
+- **Orion (arXiv:2605.26473v2, 2026-11-02):** adaptive allocation of batch/replay/optimizer memory under a hard cap; evidence only on Jetson AGX Orin 32 GB and emulated 8 GB, not Android. No Orion code found. The useful next V14 experiment is a measured per-organ resource governor after RSS, latency and retention/plasticity telemetry exists; no library or model install is proposed.
+- **Streaming user transcription for full-duplex S2S (arXiv:2609.15759v1, 2026-09-14):** separate user-ASR and agent-text heads can share hidden states, preserving parallel outputs. Their 9B+600M model and English training scale are not Redmi candidates; code is promised but not released. The architecture supports keeping transcript output separate from raw acoustic/prosody input, not replacing RAW EAR.
+
+Both are research-only; no code/weights imported, no model downloaded, and no Android test. R-102/R-103 contain full limits and sources.
+
+---
+
 ## Latest Perception code checkpoint — 2026-11-23T01:11:33.901Z
 
 **Keine Aktion nötig.** No manual Termux command, update request, model/weight swap or permission change.
