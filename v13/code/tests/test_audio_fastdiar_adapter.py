@@ -58,13 +58,14 @@ def make_checkpoint(tmp_path, payload=b"synthetic FASTDIAR checkpoint fixture"):
 
 def make_batch(rows, *, start_ms, end_ms, first_end_ms, checkpoint_root,
                checkpoint_path, generation_id="gen-a", model_revision=MODEL_REVISION,
-               current_chunk_sha256=None):
+               consent_receipt_ref=RECEIPT, current_chunk_sha256=None):
     if current_chunk_sha256 is None:
         current_chunk_sha256 = hashlib.sha256(tone()).hexdigest()
     return build_fastdiar_diagnostic_batch(
         matrix(rows),
         source_id=SOURCE,
         generation_id=generation_id,
+        consent_receipt_ref=consent_receipt_ref,
         current_chunk_sha256=current_chunk_sha256,
         model_revision=model_revision,
         checkpoint_path=checkpoint_path,
@@ -113,7 +114,7 @@ def test_adapter_emits_exact_raw_ear_schema_and_fastdiar_geometry(tmp_path):
     )
     assert set(batch) == {
         "schema", "source_id", "generation_id", "model_id", "model_revision",
-        "model_sha256", "current_chunk_sha256", "embedding_dim", "frame_step_ms",
+        "model_sha256", "consent_receipt_ref", "current_chunk_sha256", "embedding_dim", "frame_step_ms",
         "lookback_frames", "confidence_threshold", "calibration_id", "frames",
     }
     assert batch["schema"] == SCHEMA
@@ -121,6 +122,7 @@ def test_adapter_emits_exact_raw_ear_schema_and_fastdiar_geometry(tmp_path):
     assert batch["model_revision"] == MODEL_REVISION
     assert batch["model_sha256"] == expected_sha
     assert batch["current_chunk_sha256"] == hashlib.sha256(tone()).hexdigest()
+    assert batch["consent_receipt_ref"] == RECEIPT
     assert batch["embedding_dim"] == EMBEDDING_DIM == 192
     assert batch["frame_step_ms"] == FRAME_STEP_MS == 80
     assert batch["lookback_frames"] == LOOKBACK_FRAMES == 10
@@ -137,6 +139,7 @@ def test_actual_numpy_float16_matrix_is_accepted(tmp_path):
     rows = numpy.asarray([vector_a() for _ in range(12)], dtype=numpy.float16)
     batch = build_fastdiar_diagnostic_batch(
         rows, source_id=SOURCE, generation_id="gen-a",
+        consent_receipt_ref=RECEIPT,
         current_chunk_sha256=hashlib.sha256(tone()).hexdigest(),
         model_revision=MODEL_REVISION,
         checkpoint_path=checkpoint, checkpoint_root=root,
@@ -151,6 +154,7 @@ def test_adapter_rejects_noncanonical_current_chunk_sha256(tmp_path):
     with pytest.raises(ValueError, match="lowercase SHA-256"):
         build_fastdiar_diagnostic_batch(
             matrix([vector_a()]), source_id=SOURCE, generation_id="gen-a",
+            consent_receipt_ref=RECEIPT,
             current_chunk_sha256="A" * 64, model_revision=MODEL_REVISION,
             checkpoint_path=checkpoint, checkpoint_root=root,
             window_start_ms=100, window_end_ms=300, first_frame_end_ms=180,
