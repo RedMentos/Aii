@@ -128,7 +128,7 @@ class Vision(unittest.TestCase):
             rec = vision.ingest(self.store, png(c, box=(box[0]+i % 2, box[1], box[2], box[3])))
             for reg in ('g', 'hl', 'hr'): vision.describe(self.rt, rec, reg, t)
         pj = vision.train(self.rt, enc); self.assertEqual(pj['n'], 18); self.assertTrue(any(k.endswith(':hl') for k in pj['captions']))
-        self.assertEqual(pj['metrics']['split'], 'SOURCE_DISJOINT'); self.assertEqual(pj['metrics']['source_groups'], 3)
+        self.assertEqual(pj['metrics']['split'], 'SOURCE_DISJOINT'); self.assertEqual(pj['metrics']['source_groups'], 6)  # three colours × two separately ingested image sources
         new = vision.ingest(self.store, png((20, 20, 220), box=(40, 10, 62, 38)))
         best = vision.locate(self.rt, new, 'a blue box', enc)['regions'][0]
         self.assertEqual(best['source_ref']['modality'], 'image'); self.assertGreaterEqual(best['source_ref']['box'][0], 32)  # right half
