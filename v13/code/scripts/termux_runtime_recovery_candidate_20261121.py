@@ -17,7 +17,7 @@ C4_RECEIPT_SHA256 = "0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a2202
 NATIVE_RECEIVER_BUILDER = "scripts/integrated_native_latent_receiver_candidate_20261122.py"
 NATIVE_RECEIVER_BLOB_SHA1 = "b6e335d83633a6ef92fb26ab291532b821a0f941"
 GREETING_BUILDER = "scripts/integrated_greeting_fastpath_candidate_20261123.py"
-GREETING_BUILDER_BLOB_SHA1 = "b010272ab87adba493cc4937faec52f2eebed4bb"
+GREETING_BUILDER_BLOB_SHA1 = "1f02e82fffda08dba94fd79e8caa9569c1c41961"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
