@@ -63,3 +63,6 @@ Additional LOCAL_LINUX sanity: invalid receipt values `None`, empty string and 2
 
 
 Coordination limitation: attempts to post the PR/whole-Canon comments and update PR metadata were denied by GitHub with HTTP 403 because the connected account requires at least one verified email address. No comment or PR-body update is claimed. This branch handoff and R-119 are persisted/read back; the shared work board and `V14_USER_NEXT_ACTION.md` remain Boss-owned and were not modified in this run.
+
+
+Cross-modal parity check: the current Boss integration branch's `vision_temporal_evidence.py` already keys RAW EYE state by `(capture_session_id, generation_id, consent_receipt_ref)` and evicts prior state when a capture session is reused under a new receipt. The RAW EAR change brings audio temporal/speaker/VAD state under the same consent-epoch invariant; no vision code was changed in this run.
