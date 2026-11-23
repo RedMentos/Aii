@@ -55,7 +55,8 @@ def consent_guard(check):
 
 
 def speaker_batch(source_id, generation_id, start_ms, end_ms, vector_at,
-                  *, revision="fixture-embedding-v1", threshold=0.8):
+                  *, revision="fixture-embedding-v1", threshold=0.8,
+                  consent_receipt_ref=RECEIPT):
     frames = [
         {"end_ms": end, "vector": list(vector_at(end))}
         for end in range(start_ms + 80, end_ms + 1, 80)
@@ -64,6 +65,7 @@ def speaker_batch(source_id, generation_id, start_ms, end_ms, vector_at,
         "schema": SCHEMA,
         "source_id": source_id,
         "generation_id": generation_id,
+        "consent_receipt_ref": consent_receipt_ref,
         "model_id": "fixture/three-dim-encoder",
         "model_revision": revision,
         "model_sha256": MODEL_SHA,
@@ -716,3 +718,46 @@ def test_provisional_audio_is_persisted_but_not_admitted_until_final(tmp_path):
         assert final["action_authority"] is False
     finally:
         runtime.store.close()
+
+
+
+def test_speaker_history_does_not_cross_consent_receipt_epochs():
+    registry = SpeakerChangeEvidenceRegistry()
+    first = speaker_batch(
+        SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0),
+        consent_receipt_ref="fixture:receipt-a",
+    )
+    warmup = registry.update(
+        source_id=SOURCE, generation_id="gen-a",
+        consent_receipt_ref="fixture:receipt-a",
+        start_ms=100, end_ms=1100, activity_hint="VOICED", embeddings=first,
+    )
+    assert warmup["status"] == "WARMUP"
+
+    renewed = speaker_batch(
+        SOURCE, "gen-a", 1100, 2100, lambda _: (0.0, 1.0, 0.0),
+        consent_receipt_ref="fixture:receipt-b",
+    )
+    evidence = registry.update(
+        source_id=SOURCE, generation_id="gen-a",
+        consent_receipt_ref="fixture:receipt-b",
+        start_ms=1100, end_ms=2100, activity_hint="VOICED", embeddings=renewed,
+    )
+    assert evidence["status"] == "WARMUP"
+    assert evidence["reset_reason"] == "CONSENT_RECEIPT_CHANGED"
+    assert evidence["cosine_similarity"] is None
+    assert len(registry) == 1
+
+
+def test_speaker_embedding_batch_with_another_consent_receipt_is_rejected():
+    registry = SpeakerChangeEvidenceRegistry()
+    forged = speaker_batch(
+        SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0),
+        consent_receipt_ref="fixture:other-receipt",
+    )
+    with pytest.raises(SpeakerEvidenceError, match="consent receipt mismatch"):
+        registry.update(
+            source_id=SOURCE, generation_id="gen-a",
+            consent_receipt_ref=RECEIPT,
+            start_ms=100, end_ms=1100, activity_hint="VOICED", embeddings=forged,
+        )
