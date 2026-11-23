@@ -43,7 +43,7 @@ def build_sources(code_dir, *, include_postcommit=True):
                       '1bc838137d8c20e558b5d843b88c9fd058c545a5ad3b5ebc0b5ec9667c45134d')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
-                              '6d0707cddac9480415767e6c9ecf99c7f3d16e666e79296fed5d866c8ac6928b')
+                              '7bd350bd8c628b070d1e387e6cc561352eb55d400cb628dbab779aa2983afc6b')
     result = arithmetic_outcome.apply_sources(code_dir, result)
 
     # Snapshot every generated consumer pin before the later Store telemetry
