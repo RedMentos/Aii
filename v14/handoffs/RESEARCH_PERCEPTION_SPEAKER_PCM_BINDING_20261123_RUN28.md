@@ -35,7 +35,7 @@ Scope: V14-018 RAW EAR speaker evidence, A5 → A4 → C3
 - LOCAL_LINUX: new repository regression block parsed with ast.parse().
 - BLOCKED: full repository pytest was not run because no local checkout/runtime was available in this run.
 - CI: last visible PR workflow run 45277411451 ended startup_failure with zero jobs. This is CI BLOCKED, not a code-test PASS or FAIL. Current documentation-only head a23366f4 has no workflow run attached.
-- TERMUX/REDMI: REDMI_UNVERIFIED. No connected handset or private owner receipt was available; no AudioRecord, microphone, RSS, TTFT, Android control, or updater proof.
+- TERMUX/REDMI: Existing sanitized owner receipts in #1904 (#825/#826) confirm base SHA 8d93236c753f0194224c19edc7411d8d7082b1d6 installed and auto-update enabled, but AI runtime is STOPPED_BY_USER, autostart false and model process stopped. No new CHAT_SEND, UPDATE_REQUEST, restart or LOG_PAGE was performed. PR #2448 is not merged/installed; this RAW EAR feature remains REDMI_UNVERIFIED. No AudioRecord, microphone, RSS, TTFT or Android control proof.
 
 ## Synthetic E2E scope
 Synthetic PCM16 impulse fixture exercises:
