@@ -2434,3 +2434,30 @@ Boss candidate #2370 head bae7d031: 1 SUCCESS / 14 QUEUED / 1 IN_PROGRESS / 7 CA
 | Remote maintenance / updater / rollback | Authenticated read-only owner relay and CI-gated updater | Release SHA 45/45; #641/#642 read receipts | aed1d2 installed; patch apply, process-death and rollback not verified |
 
 **Release boundary:** release `aed1d2b826290c95c70356b5d8b864b5ef382be4` remains installed and CI-green. Candidate #2370 `de50fd4708490fb6db19cf24c22fef22baf23eca` remains DRAFT / NOT_GREEN. No UPDATE_REQUEST was sent. No user action is required.
+
+## Current Boss evidence overlay — 2026-11-23T00:59:43Z
+
+This overlay supplements the historical 1,255-heading inventory; it does not mark the Canon complete.
+
+| Canon family | Code / wiring state | Latest test evidence | Android / active state |
+|---|---|---|---|
+| A0–A5 perception, attention, salience | Partial raw audio/vision feature adapters; A5/RAW EYE provider not connected to a proven C3 consumer | #2375 synthetic frames only; #2379 provider stack diverged; #2369 Perception-owned audio checks green but Core staged/import path fails | No accepted AudioRecord or MediaProjection capture; PARTIAL/SHADOW |
+| B1_DETAIL / B2_GIST | Distinct role models and source-bound OfferPacket candidate; arithmetic/observer budget composition under #2370 | #2370 exact head d149bd5e0a2f8394e44e0ed60a208638b9f4b3b9: 7/7 immutable source links read back; 15 CI queued, no new-head pass | B1/B2 TIME_BUDGET 53.2/54.2 s; zero valid offers; NOT_ACCEPTED |
+| B3 / Enlightened Space | Symbolic exchange and native receiver candidate; no trained cross-organ latent semantics | Receiver checks remain synthetic; no source-disjoint semantic holdout proof | OFF; no native latent transfer proof |
+| B4/B5 / C4 coalition | Staged source-span coalition candidate | Synthetic only; no accepted same-turn body contribution | NOT_ACCEPTED |
+| C1/JEF/C2/C3 | Runtime and C3 output path exist; response quality/latency remain defective | Latest stored turn 57.74 s, 2 tokens; correctness unknown | NOT_ACCEPTED |
+| World/Self/Memory/Context OS/Memorilla | Partial stores/retrieval and temporal learner candidate | JEPA #2396 staged/resume failures; no full overflow consumer or persistent cross-organ feedback | PARTIAL / SHADOW |
+| JEPA/EMA/eligibility/modulation/plasticity | Temporal/postcommit worker code candidate; no accepted cross-organ gradient path | #2396 three workflow failures at stale training-resume pin; T8 in progress; no master parameter-diff/retention proof | SHADOW only; no accepted weight updates |
+| Sleep/Dream/Replay | Cancellable postcommit worker candidate | Postcommit test now in T8 workflow; staged startup and optimizer resume still fail | NOT_ACCEPTED |
+| Audio / voice | RAW EAR feature adapter partial; Teacher Ear research candidate | #2369 seven Perception-owned checks green; Core import/staged failure remains | No AudioRecord provider, decoder or vocoder; Teacher Ear OFF |
+| Vision / RAW EYE / A3 source forget | A3 source-lineage helper and projector invalidation candidate | #2395 focused 2/2 PASS; staged/integrated FAIL on old vision.py pin/forget anchor | No Android capture; source forget NOT_WIRED |
+| Android background/UI control | Capability registry contract; launch_app only is ready | #2394 2/2 synthetic checks pass; QA #2356 process-restart emulator failure persists | No OS executor or process-death acceptance; other capabilities OFF |
+| Tools / permissions / goal agency | Typed contracts and partial companion action intent | Synthetic contract tests only | No OS-authenticated action loop |
+| Age rights / X10 lab / resources | Official Age 0 separated from test selector | Lab selector ACTIVE, requested 10/effective 5 | Official 0; physical feature execution false; shadow authority required |
+| Self-optimization / cross-organ edits | No accepted B1/B2/C3 master update or cross-organ gradients | No gradient, parameter-diff, retention or rollback acceptance | GATES OFF |
+| Sparse MoE B1/B2 | Two role models only | No sparse expert router or load-balancing test | NOT_IMPLEMENTED |
+| OS sandbox / adaptive Judge / egress | Partial contracts and trainable-head draft | Synthetic only; no independent OS enforcement | NOT_ACCEPTED |
+| Remote maintenance / updater / rollback | Read-only owner relay and CI-gated updater | PIPELINE_STATUS #664 confirms release aed1d2b826290c95c70356b5d8b864b5ef382be4 installed/up-to-date; exact release workflows 21/21 green | Read-only status verified; patch stage/local apply/restore not proven |
+
+Research note: R-100 is a runtime-wheel compatibility candidate only; no wheel or model is installed. R-101 is a peer-reviewed ECML-PKDD 2026 ridge-head unlearning paper; its frozen-backbone limitation remains decisive. Synthetic sufficient-statistics equivalence does not prove real image accuracy, Android performance or neural-backbone unlearning.
+
