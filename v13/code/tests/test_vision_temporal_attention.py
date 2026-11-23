@@ -176,3 +176,38 @@ def test_a5_adapter_revoke_clears_temporal_state_when_store_cleanup_raises(monke
     with pytest.raises(RuntimeError, match="synthetic Store cleanup failure"):
         A5UIRuntimeAdapter(runtime).revoke("screen")
     assert registry.stream_count() == 0
+
+
+def test_a5_adapter_close_clears_orphaned_temporal_state_without_subscription():
+    runtime = SimpleNamespace(
+        _a5_ui_context_cache={},
+        _a5_ui_unsubscribe={},
+        store=None,
+        turn_event=None,
+        cancel_event=None,
+        current=None,
+    )
+    registry = TemporalUIAttentionRegistry()
+    runtime._v14_ui_temporal_attention = registry
+    update(registry, object())
+
+    assert A5UIRuntimeAdapter(runtime).close() == ()
+    assert registry.stream_count() == 0
+
+
+def test_a5_adapter_close_does_not_clear_state_before_active_turn_exits():
+    runtime = SimpleNamespace(
+        _a5_ui_context_cache={},
+        _a5_ui_unsubscribe={},
+        store=None,
+        turn_event={"brain_generation_id": "gen"},
+        cancel_event=SimpleNamespace(set=lambda: None),
+        current="turn",
+    )
+    registry = TemporalUIAttentionRegistry()
+    runtime._v14_ui_temporal_attention = registry
+    update(registry, object())
+
+    with pytest.raises(RuntimeError, match="Runtime turn exit"):
+        A5UIRuntimeAdapter(runtime).close()
+    assert registry.stream_count() == 1

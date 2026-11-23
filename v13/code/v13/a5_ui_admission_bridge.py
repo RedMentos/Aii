@@ -602,4 +602,10 @@ class A5UIRuntimeAdapter:
             if callable(setter):
                 setter()
             raise RuntimeError("A5 UI close requires provider revocation and Runtime turn exit")
-        return tuple(self.revoke(source_id) for source_id in list(self.runtime._a5_ui_unsubscribe))
+        try:
+            return tuple(self.revoke(source_id) for source_id in list(self.runtime._a5_ui_unsubscribe))
+        finally:
+            # Clear orphaned descriptors too, even if no subscription entry
+            # remains or one source's Store cleanup raises.
+            from .vision_temporal_attention import reset_runtime_ui_temporal_attention
+            reset_runtime_ui_temporal_attention(self.runtime)
