@@ -171,31 +171,50 @@ def settle(runtime,e,meta,status):
     return meta.get('duplex')
 
 def handoff(runtime,event_id):
-    """Consume a durable handoff once, serialized with audio publication."""
+    """Consume a durable handoff only after its context/source is prepared.
+
+    A missing previous event/message, malformed packet or source-write failure
+    must not silently consume the only pending handoff. The pending row remains
+    retryable until every fallible read and source publication has succeeded.
+    """
     with audio_handoff_lock(runtime):
         s=runtime.store
-        for _ in range(_CAS_RETRIES):
-            st,version=_read_state(s)
-            h=st['pending'].get(event_id)
-            if not h:return None
-            st['pending'].pop(event_id,None)
-            try:
-                s.set_state(KEY,st,expected=version)
-                break
-            except ValueError:
-                continue
-        else:
-            raise RuntimeError('duplex handoff CAS contention')
+        state,_version=_read_state(s)
+        h=state['pending'].get(event_id)
+        if not h:return None
+
+        # Prepare before the CAS consume. In particular, do not pop pending
+        # before querying the previous turn or publishing its partial-output
+        # SourceRef: either operation can fail independently.
         prev=s.one('SELECT source_id,packet FROM events WHERE id=?',(h['from_event'],))
         q=s.one("SELECT text FROM messages WHERE event_id=? AND role='user' ORDER BY id LIMIT 1",(h['from_event'],))
         a=s.one("SELECT text,status FROM messages WHERE event_id=? AND role='assistant' ORDER BY id DESC LIMIT 1",(h['from_event'],))
         if not prev or not q:return None
+
+        packet=json.loads(prev['packet'])
+        source_ref=packet.get('source_ref')
+        if type(source_ref) is not dict:
+            raise ValueError('duplex handoff source reference is invalid')
         partial=(a['text'] if a else '')[:PARTIAL_CHARS]
         body={'relation':h['relation'],'interrupted_question':q['text'][:PARTIAL_CHARS],'partial_answer':partial,
               'partial_answer_status':(a['status'] if a else 'NONE'),'note':'The previous answer was cut off by the user; it is provisional, not a fact.'}
-        refs=[json.loads(prev['packet'])['source_ref']]
+        refs=[source_ref]
         if partial:refs.append(s.source(partial,'PROVISIONAL_INTERRUPTED_OUTPUT'))
-        return {'body':body,'source_refs':refs}
+
+        # Re-read after preparation so unrelated Store writes cannot make a
+        # stale version consume a changed/replaced handoff. CAS retries reuse
+        # the already-created SourceRef rather than publishing duplicates.
+        for _ in range(_CAS_RETRIES):
+            st,version=_read_state(s)
+            if st['pending'].get(event_id)!=h:return None
+            st['pending'].pop(event_id,None)
+            try:
+                s.set_state(KEY,st,expected=version)
+                return {'body':body,'source_refs':refs}
+            except ValueError:
+                continue
+        raise RuntimeError('duplex handoff CAS contention')
+
 
 def status(runtime):
     st=_load(runtime.store)
