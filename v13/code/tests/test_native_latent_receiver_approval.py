@@ -11,6 +11,11 @@ from v13.models import model_key
 from v13.operator import Operator
 from v13.runtime import Runtime
 from v13 import native_probe_approval as approval
+
+
+@pytest.fixture(autouse=True)
+def _interactive_tty_for_approval_tests(monkeypatch):
+    monkeypatch.setattr(approval.os, "isatty", lambda fd: fd == 0)
 import v13.callosum as callosum
 
 
@@ -625,5 +630,17 @@ def test_native_probe_rejects_wrong_exclusive_lease_token_and_keeps_approval(tmp
         record, _ = runtime.store.state(approval.KEY, None)
         assert record["status"] == "PENDING"
         assert runtime.current is None
+    finally:
+        runtime.close()
+
+
+def test_arm_rejects_non_interactive_stdin(tmp_path, monkeypatch):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    monkeypatch.setattr(approval.os, "isatty", lambda fd: False)
+    try:
+        with pytest.raises(PermissionError, match="interactive local TTY"):
+            approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record is None
     finally:
         runtime.close()
