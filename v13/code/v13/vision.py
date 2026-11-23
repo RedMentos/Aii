@@ -29,7 +29,7 @@ import time
 import zlib
 from pathlib import Path
 from .common import Unavailable,atomic_write,digest,dumps,uid,now
-from .vision_source_lineage import source_lineage, invalidate_projectors, unlink_projector_artifact, unlink_source_blob
+from .vision_source_lineage import source_lineage, invalidate_projectors, unlink_projector_artifact
 from .vision_validation import source_disjoint_crossval as _source_disjoint_crossval
 
 KEY='WP_N15_VISION';REVISION='wp-n15-vision-v1';AUTHORITY='REFERENCE_NOT_FACT';STUDENT='STUDENT_ESTIMATE'
@@ -588,18 +588,19 @@ def forget(store,rec):
 
     # Check references and unlink while holding the same Store write lock used
     # by ingest. A concurrent re-ingest can only run before or after this block.
-    with store.tx() as conn:
-        shared = conn.execute(
-            "SELECT id FROM sources WHERE hash=? AND kind='IMAGE' AND deleted=0 LIMIT 1",
-            (sha,),
-        ).fetchone()
-        blob_retained_shared = bool(shared)
-        blob_deleted = False
-        if not shared:
-            blob_deleted = unlink_source_blob(store.home, sha)
-
     cleanup_failed = []
-    if not shared and not blob_deleted:
+    try:
+        # Share the global source-reference check with text Memory. Remove both
+        # plain and archived blobs only when no live source of any modality
+        # still references this hash; publication and final cleanup share Store.tx.
+        from .source_lifecycle_candidate import cleanup_unreferenced
+        cleanup_status = cleanup_unreferenced(store, sid)
+    except OSError:
+        cleanup_status = 'FAILED'
+        cleanup_failed.append('image_blob')
+    blob_retained_shared = cleanup_status == 'PRESERVED_LIVE'
+    blob_deleted = cleanup_status == 'REMOVED'
+    if cleanup_status not in ('REMOVED', 'PRESERVED_LIVE', 'FAILED'):
         cleanup_failed.append('image_blob')
     projector_files_deleted = {}
     for key, record in invalidated:

@@ -15,7 +15,7 @@ from .common import digest,dumps
 from . import world_semantic_evidence_candidate as semantic
 
 
-PINS={'neuromod.py':'abd6379bd8843b2e763fea315ea78dfbb5142ee03d4b71eae3b33a48c018c86d',
+PINS={'neuromod.py':'e01f541874f401bf2996603d79e0cf24463aa16ed5c3902534f37678c1c72ce0',
       'learning_worker.py':'b6ca098612016f138240c19ad847e8f7fc850a125cfb8b0c10a7ca9fbaf85c2a',
       'learning.py':'6776dd82eb2604f7fb2c17a9773911df73fbf4f672d7c533ed15135987cfa53c',
       'world_semantic_evidence_candidate.py':'354306bb763fda116728bd13e8502d81ed8e6a790c4387d98e0920960a87b8a5'}

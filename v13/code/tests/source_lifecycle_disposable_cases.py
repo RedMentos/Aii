@@ -87,7 +87,7 @@ def test_active_image_prevents_shared_source_from_being_archived(runtime, monkey
     text = 'P3\n16 16\n255\n' + '0 0 0\n' * (16 * 16)
     source = runtime.store.source(text, 'USER')
     verified, release, archive_started, archive_done = (threading.Event() for _ in range(4))
-    original = lifecycle.verify_or_create_blob
+    original = vision._verify_or_create_blob
     errors, records, results = [], [], []
     def pause_image(path, data, key):
         result = original(path, data, key)
@@ -103,7 +103,7 @@ def test_active_image_prevents_shared_source_from_being_archived(runtime, monkey
         try: results.append(archive.archive_blob(runtime.store, source['sha256'], future))
         except BaseException as exc: errors.append(exc)
         finally: archive_done.set()
-    monkeypatch.setattr(lifecycle, 'verify_or_create_blob', pause_image)
+    monkeypatch.setattr(vision, '_verify_or_create_blob', pause_image)
     image_thread = threading.Thread(target=ingest)
     archive_thread = threading.Thread(target=archive_source)
     image_thread.start()
@@ -129,6 +129,17 @@ def test_final_image_forget_removes_both_plain_and_shared_text_archive(runtime):
     assert path.exists() and path.with_name(path.name + '.z').exists()
     vision.forget(runtime.store, rec)
     assert not path.exists() and not path.with_name(path.name + '.z').exists()
+
+
+def test_live_text_source_preserves_shared_blob_after_image_forget(runtime):
+    text = 'P3\\n16 16\\n255\\n' + '0 0 0\\n' * (16 * 16)
+    source = runtime.store.source(text, 'USER')
+    rec = vision.ingest(runtime.store, text.encode())
+    result = vision.forget(runtime.store, rec)
+    path = runtime.home / 'data/blobs' / source['sha256']
+    assert result['blob_retained_shared'] and not result['blob_deleted']
+    assert path.is_file()
+    assert runtime.store.read_source(source) == text
 
 
 def test_concurrent_duplicate_image_ingest_has_one_registered_live_source(runtime, monkeypatch):

@@ -760,6 +760,7 @@ def test_memory_forget_serializes_same_hash_source_publication(tmp_path):
     from pathlib import Path
     from unittest.mock import patch
     from v13.memory import Memory
+    from v13 import source_lifecycle_candidate as lifecycle
 
     (tmp_path / "data" / "db").mkdir(parents=True)
     (tmp_path / "data" / "blobs").mkdir(parents=True)
@@ -781,7 +782,7 @@ def test_memory_forget_serializes_same_hash_source_publication(tmp_path):
     published = {}
 
     original_mutex = store.mutex
-    original_one = store.one
+    original_cleanup_pending = lifecycle._cleanup_pending_fd
     original_source = store.source
     original_exists = Path.exists
 
@@ -805,15 +806,13 @@ def test_memory_forget_serializes_same_hash_source_publication(tmp_path):
         def __getattr__(self, name):
             return getattr(original_mutex, name)
 
-    def pause_after_refcount(sql, args=()):
-        result = original_one(sql, args)
+    def pause_after_refcount_cleanup(dir_fd, key):
         if (threading.current_thread().name == "forgetter"
-                and sql.strip().lower().startswith(
-                    "select id from sources where hash=? and deleted=0")):
+                and key == original_ref["sha256"]):
             refcount_checked.set()
-            if not allow_forget.wait(5):
-                raise TimeoutError("test did not release source-forget refcount check")
-        return result
+            if not allow_forget.wait(10):
+                raise TimeoutError("test did not release source-forget cleanup check")
+        return original_cleanup_pending(dir_fd, key)
 
     def observe_blob_check(path, *args, **kwargs):
         if path == blob and threading.current_thread().name == "generic-source-producer":
@@ -838,13 +837,12 @@ def test_memory_forget_serializes_same_hash_source_publication(tmp_path):
             producer_done.set()
 
     store.mutex = TrackingRLock()
-    store.one = pause_after_refcount
-    forgetter = threading.Thread(target=forget, name="forgetter")
+        forgetter = threading.Thread(target=forget, name="forgetter")
     producer = threading.Thread(target=publish, name="generic-source-producer")
     try:
-        with patch.object(Path, "exists", observe_blob_check):
+        with patch.object(lifecycle, "_cleanup_pending_fd", pause_after_refcount_cleanup), patch.object(Path, "exists", observe_blob_check):
             forgetter.start()
-            assert refcount_checked.wait(5), "forget did not reach its final blob refcount check"
+            assert refcount_checked.wait(10), f"forget did not reach final blob refcount check; errors={errors!r}"
             producer.start()
             assert producer_started.wait(5), "generic source producer did not start"
             assert producer_lock_attempted.wait(5), "producer did not request the Store lock"
@@ -871,6 +869,5 @@ def test_memory_forget_serializes_same_hash_source_publication(tmp_path):
             forgetter.join(5)
         if producer.is_alive():
             producer.join(5)
-        store.one = original_one
-        store.mutex = original_mutex
+                store.mutex = original_mutex
         store.close()
