@@ -945,5 +945,25 @@ def test_optional_teacher_module_absence_preserves_acoustic_path_and_blocks_tran
         payload = json.loads(stored["payload"])
         assert payload["segments"][0]["asr_transcript"] is None
         assert "hello" not in json.dumps(payload, sort_keys=True)
+
+        denied_runtime, denied_event = make_runtime(tmp_path / "denied")
+        try:
+            with pytest.raises(PermissionError, match="separate opt-ins"):
+                consume_pcm16_voice_window(
+                    denied_runtime, tone(), sample_rate=16000, start_ms=100,
+                    event_id=denied_event["event_id"],
+                    generation_id=denied_event["brain_generation_id"],
+                    source_id=SOURCE, consent_receipt=RECEIPT,
+                    consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+                    finality="FINAL",
+                    teacher_result=_teacher_ear_result(denied_event["brain_generation_id"]),
+                    teacher_opt_in=True, teacher_transcript_consent=False,
+                )
+            denied_packet = denied_runtime.store.one(
+                "SELECT id FROM packets WHERE kind='PerceptPacket'", (),
+            )
+            assert denied_packet is None
+        finally:
+            denied_runtime.store.close()
     finally:
         runtime.store.close()
