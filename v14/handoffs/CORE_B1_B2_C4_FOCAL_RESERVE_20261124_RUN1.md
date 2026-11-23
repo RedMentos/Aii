@@ -4,7 +4,8 @@
 **Owner:** Core & Harness  
 **Candidate:** [PR #2458](https://github.com/RedMentos/Aii/pull/2458)  
 **Branch:** `core/v14-fair-b1-b2-preanswer-budget-20261123-run1`  
-**Exact branch HEAD:** `e27c035bd6ba4679919a36dff0dda04bc77cb09e`  
+**Code/test checkpoint:** `e27c035bd6ba4679919a36dff0dda04bc77cb09e`  
+**Branch tip at first handoff readback:** `eec84757077d4fc23df5e6079692254cd7080d5f` (handoff/board/next-action commits only after the code/test checkpoint)  
 **Base:** `gpt6/v13-private-remote-bridge-20261111` at `8d93236c753f0194224c19edc7411d8d7082b1d6`  
 **Status:** DRAFT / NOT_RELEASED
 
@@ -26,7 +27,7 @@ This preserves both B1/B2 roles, C4, the C3 reserve, official Age, installed mod
 
 - **LOCAL_SYNTHETIC — PASS:** Python prototype checked the 30 s recovery split (26 s C3 / 3 s initial bodies / 1 s C4), per-role deadline capping, expired-slice deferral and fair sequential allocation.
 - **Repository pytest — NOT_RUN:** this execution environment has no Aii checkout and GitHub DNS/clone access failed. The project tests were added/updated but were not executed locally.
-- **Exact-head GitHub Actions — BLOCKED / startup_failure, zero jobs:** PR run [45291011985](https://github.com/RedMentos/Aii/actions/runs/45291011985) and push run [45291005230](https://github.com/RedMentos/Aii/actions/runs/45291005230). This is not a test PASS and does not establish a code regression either.
+- **Exact-head GitHub Actions — BLOCKED / startup_failure, zero jobs:** Code/test-head PR run [45291011985](https://github.com/RedMentos/Aii/actions/runs/45291011985) and push run [45291005230](https://github.com/RedMentos/Aii/actions/runs/45291005230); the subsequent documentation-tip PR/push runs [45291476473](https://github.com/RedMentos/Aii/actions/runs/45291476473) and [45291479005](https://github.com/RedMentos/Aii/actions/runs/45291479005) also ended `startup_failure` with zero jobs. This is not a test PASS and does not establish a code regression either.
 - **Redmi / Termux — REDMI_UNVERIFIED:** device was STOPPED_BY_USER. No relay query, APK install, update request, chat send, shell, model/weight change or permission change occurred.
 
 ## User-visible effect
