@@ -350,19 +350,42 @@ class Vision(unittest.TestCase):
         sha = original['ref']['sha256']
         unlink_entered = threading.Event()
         release_unlink = threading.Event()
-        ingest_started = threading.Event()
+        ingest_tx_attempted = threading.Event()
+        ingest_tx_acquired = threading.Event()
         ingest_done = threading.Event()
         forget_result = {}
         ingest_result = {}
         from v13 import source_lifecycle_candidate as lifecycle
-        original_cleanup = lifecycle._cleanup_pending_fd
+        original_unlink = lifecycle.os.unlink
+        original_tx = self.store.tx
 
-        def delayed_cleanup(dir_fd, key=None):
-            if key == sha:
+        class TrackingTx:
+            def __init__(self, manager):
+                self.manager = manager
+
+            def __enter__(self):
+                if threading.current_thread().name == 'vision-reingest':
+                    ingest_tx_attempted.set()
+                conn = self.manager.__enter__()
+                if threading.current_thread().name == 'vision-reingest':
+                    ingest_tx_acquired.set()
+                return conn
+
+            def __exit__(self, exc_type, exc_value, traceback):
+                return self.manager.__exit__(exc_type, exc_value, traceback)
+
+        def tracked_tx():
+            manager = original_tx()
+            if threading.current_thread().name == 'vision-reingest':
+                return TrackingTx(manager)
+            return manager
+
+        def delayed_unlink(name, *args, **kwargs):
+            if name == sha and kwargs.get('dir_fd') is not None:
                 unlink_entered.set()
                 if not release_unlink.wait(15):
                     raise TimeoutError('test did not release source blob cleanup')
-            return original_cleanup(dir_fd, key)
+            return original_unlink(name, *args, **kwargs)
 
         def forget_worker():
             try:
@@ -371,7 +394,6 @@ class Vision(unittest.TestCase):
                 forget_result['error'] = exc
 
         def ingest_worker():
-            ingest_started.set()
             try:
                 ingest_result['record'] = vision.ingest(self.store, data)
             except BaseException as exc:
@@ -379,21 +401,28 @@ class Vision(unittest.TestCase):
             finally:
                 ingest_done.set()
 
-        with patch.object(lifecycle, '_cleanup_pending_fd', delayed_cleanup):
-            forget_thread = threading.Thread(target=forget_worker)
+        with patch.object(lifecycle.os, 'unlink', delayed_unlink), patch.object(self.store, 'tx', tracked_tx):
+            forget_thread = threading.Thread(target=forget_worker, name='vision-forget')
             forget_thread.start()
-            self.assertTrue(unlink_entered.wait(10), 'forget did not reach blob cleanup')
-            ingest_thread = threading.Thread(target=ingest_worker)
+            self.assertTrue(unlink_entered.wait(10), 'forget did not reach canonical blob cleanup')
+            ingest_thread = threading.Thread(target=ingest_worker, name='vision-reingest')
             ingest_thread.start()
-            self.assertTrue(ingest_started.wait(2))
-            time.sleep(0.05)
-            self.assertFalse(ingest_done.is_set(), 'ingest crossed the active cleanup lock')
+            self.assertTrue(ingest_tx_attempted.wait(10), 'ingest did not reach its Store transaction')
+            self.assertFalse(
+                ingest_tx_acquired.wait(0.05),
+                'ingest acquired Store transaction while canonical cleanup held it',
+            )
             release_unlink.set()
+            self.assertTrue(
+                ingest_tx_acquired.wait(5),
+                'ingest did not acquire Store transaction after cleanup released it',
+            )
             forget_thread.join(15)
             ingest_thread.join(15)
 
         self.assertFalse(forget_thread.is_alive())
         self.assertFalse(ingest_thread.is_alive())
+        self.assertTrue(ingest_done.is_set())
         self.assertNotIn('error', forget_result, str(forget_result.get('error')))
         self.assertNotIn('error', ingest_result, str(ingest_result.get('error')))
         self.assertTrue(forget_result['result']['blob_deleted'])
@@ -407,7 +436,6 @@ class Vision(unittest.TestCase):
         blob = self.home / 'data/blobs' / sha
         self.assertTrue(blob.is_file())
         self.assertEqual(vision.digest(blob.read_bytes()), sha)
-
 
     def test_forget_fails_closed_on_malformed_projector_state(self):
         rec = vision.ingest(self.store, png((220, 20, 20)))
