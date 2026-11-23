@@ -2362,7 +2362,7 @@ No result in this late poll changes the Redmi boundary: private #840/#841/#842 s
 
 ### Run-15 JEPA / Memory candidate overlay — 2026-11-23
 
-- Draft PR #2454 code commit `05ec1f4527860960677bda93d7736ad0c1a289a1` adds prior-checkpoint validation before rollback publication, same-Store warm-cache invalidation/reload, and missing/corrupt fallback controls. This is an experimental temporal predictor/checkpoint integrity improvement only.
+- Draft PR #2454 code/test commit `f56e7067e6f2df5900231324dd5b2d55ea277477` adds prior-checkpoint validation before rollback publication, same-Store warm-cache invalidation/reload, and missing/corrupt fallback controls. This is an experimental temporal predictor/checkpoint integrity improvement only.
 - Exact Aii tests are NOT_RUN locally; PR #2454 has no exact-head workflow run or combined status and is 10 ahead / 47 behind current Boss #2443 head `cdf6b64067ac426ba32194100d3764f6e74c105f`. Keep NOT_ACCEPTED / NOT_RELEASED until rebase and full exact-head test matrix.
 - No accepted B1/B2/C3 GGUF/base-weight update, native gradient path, trained cross-organ latent transfer, or Redmi learning proof. B1/B2 receiver adapters remain SHADOW. The installed Redmi release remains `8d93236`, AI STOPPED_BY_USER; no candidate installed.
 - R-115 proposes separating invariant retention from revision latency for changing world facts. It is a conceptual evaluation hypothesis only; no retention gate or threshold has been changed.
