@@ -1,3 +1,16 @@
+# Core & Harness — latest verified checkpoint (2026-11-23 22:08 UTC)
+
+**Current candidate:** [PR #2458](https://github.com/RedMentos/Aii/pull/2458), DRAFT / NOT_RELEASED, branch `core/v14-fair-b1-b2-preanswer-budget-20261123-run1`, head `61509b1b061b377d5c19f69d861acda6f7b9f07e`, base `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+
+- New test commit changes `v13/code/tests/test_observer_schedule.py`: the Runtime integration fixture now has a deterministic 10-second pre-answer window and 40-second C3 reserve; a controlled 1.5-second regression proves a subminimum first-role slice is deferred while the peer receives the full available slice.
+- Handoff: `v14/handoffs/CORE_B1_B2_FAIR_PREANSWER_BUDGET_20261123_RUN2.md`.
+- LOCAL_LINUX / CPython 3.13.5 isolated helper probe: PASS (compile + budget/scheduler calculations). Full Aii pytest: BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS fails.
+- Exact-head Actions run `45276837088`: `startup_failure`, no jobs; no CI PASS. The previous Boss review's nested Runtime/source-pin and A5 Store-pin failures remain open; this change does not relax them.
+- Redmi: latest evidence says STOPPED_BY_USER, autostart false, native residency unavailable. REDMI_UNVERIFIED. No restart, chat, update request, shell, permission, model, weight or data action.
+- **Next:** Boss rebinds immutable JEPA/integrated-online-world and post-commit Runtime pins; QA reruns A5 Store lifecycle; then exact Python 3.13/3.14 staged, integrated and migration CI plus independent review. No user action is needed.
+
+---
+
 # Core & Harness — fair B1/B2 recovery checkpoint (2026-11-23 20:34 UTC)
 
 **Current candidate:** [PR #2458](https://github.com/RedMentos/Aii/pull/2458), DRAFT / NOT_RELEASED, branch `core/v14-fair-b1-b2-preanswer-budget-20261123-run1`, head `8878c5e1b35dee8845d3f2e81a7dcb43d9668771`, 17 commits ahead / 0 behind base `8d93236c753f0194224c19edc7411d8d7082b1d6`.
