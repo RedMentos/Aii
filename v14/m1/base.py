@@ -229,6 +229,8 @@ def m1b_predictor_control_configs(config: BaseConfig) -> dict[str, BaseConfig]:
     if config.predictor_steps not in (2, 4):
         raise ValueError("M1b predictor controls require T=2 or T=4")
     d, h, steps = config.latent_dim, config.hidden_dim, config.predictor_steps
+    rough = matched_predictor_width_estimates(h, steps)
+
     def shared_params(width: int) -> int:
         return width * width + 4 * d * width + 3 * width + 6 * d
 
@@ -241,12 +243,18 @@ def m1b_predictor_control_configs(config: BaseConfig) -> dict[str, BaseConfig]:
         )
 
     target_params = shared_params(h)
-    param_search = range(1, max(h * 2, d * 2) + 1)
+    param_radius = max(8, rough["parameter_matched_unshared"] // 3)
+    param_low = max(1, rough["parameter_matched_unshared"] - param_radius)
+    param_high = min(max(h * 2, d * 2), rough["parameter_matched_unshared"] + param_radius)
+    param_search = range(param_low, param_high + 1)
     parameter_width = min(
         param_search, key=lambda width: abs(unshared_params(width) - target_params)
     )
     target_macs = predictor_macs_per_example(d, h, steps)
-    wide_search = range(1, max(2, round(h * math.sqrt(steps) * 2)) + 1)
+    wide_radius = max(8, rough["compute_matched_wide_t1"] // 3)
+    wide_low = max(1, rough["compute_matched_wide_t1"] - wide_radius)
+    wide_high = max(2, rough["compute_matched_wide_t1"] + wide_radius)
+    wide_search = range(wide_low, wide_high + 1)
     wide_width = min(
         wide_search,
         key=lambda width: abs(predictor_macs_per_example(d, width, 1) - target_macs),
