@@ -441,6 +441,28 @@ class ProcessRestartDurabilityTests(unittest.TestCase):
                 durable.assert_called_once_with()
 
 
+    def test_durable_restart_can_preserve_marker_until_restarted_ui_confirmation(self) -> None:
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        with TemporaryDirectory() as directory:
+            marker = Path(directory) / "stop-proof"
+            marker.write_text("STOP_ACTION_PERSISTED_OFF\\n", encoding="utf-8")
+            with (
+                patch.object(harness, "STOP_PROOF_MARKER", marker),
+                patch.object(harness, "persisted_enabled", side_effect=["false", "false"]),
+                patch.object(harness, "process_id", return_value="1234"),
+                patch.object(harness, "adb", return_value=""),
+                patch.object(harness, "wait_for_process", side_effect=["", "5678"]),
+                patch.object(harness, "launch_companion"),
+            ):
+                result = harness.verify_durable_off_after_process_death(clear_marker=False)
+            self.assertEqual(result, ("1234", "5678"))
+            self.assertTrue(marker.exists())
+
+
 class ProcessRestartPostRestartDurabilityTests(unittest.TestCase):
     def test_post_restart_ui_failures_report_partial_only_after_marker_and_off(self) -> None:
         import contextlib
