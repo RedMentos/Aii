@@ -103,3 +103,14 @@ Code/test head verified: `f9384604b6a58f06d8663003817175a91d1facf6` (the followi
 Fresh private V13OBS owner-read at 2026-11-23 10:25:09 UTC reports installed SHA `8bf44cb50e855a6dba0c91f64f60d8daddcbdc9c`, auto-update enabled, pipeline `UPDATED`, Runtime/Dashboard `UPDATED`, last error `NONE`. This is the base release, not PR #2433. Service/model process is RUNNING with 8 managed sessions, but no sustained PSS/RSS proof. Last stored turn remains FINAL at 57.739 s total / 41.627 s TTFT / 38.945 s prefill, 751 prompt tokens / 2 generated tokens; correctness UNKNOWN. B1/B2 remain TIME_BUDGET at 53.2/54.2 s with zero valid offers in the latest five-turn aggregate. No new CHAT_SEND or UPDATE_REQUEST was issued; no LOG_PAGE, shell, model/weight/permission change or data mutation.
 
 Current PR branch after the device/next-action handoff append: `fdd6d0e34f2bb209a7c5447d57581dadf20c0b7f` plus this handoff commit. PR #2433 remains DRAFT / NOT_RELEASED. Next owner action is Core source-pin rebinding, not a Perception hash bypass; Boss updates the shared board. No user action is required.
+
+
+
+## Documentation checkpoint after final CI — 2026-11-23
+
+- Latest branch head after this handoff update: `b6a0cf9dd15c8924aaf1def6237af04d0d4ad8f3`.
+- Code/test head remains `f9384604b6a58f06d8663003817175a91d1facf6`; only V14 documentation/handoff files changed after it.
+- The exact Perception adapter consumer passed 92/92 on Python 3.13.18 and 92/92 on Python 3.14.10. The new impulse regression is included in both runs. RAW EAR fastpath, prosody-to-attention, WebRTC/libfvad comparison, consent revocation, privacy and offline-bridge security also passed.
+- The only failing code-level matrix is the cross-lane staged chain: Core's exact audio composer source pin is stale. It rejects `audio_voice_cues.py` blob `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288` against expected `b18e450162b062b09368a12b1ca18924ed8c5025`; this cascades through staged Runtime, integrated regression and recovery consumer on Python 3.13/3.14. This failure is recorded in #2370; no Perception file or hash gate was weakened.
+- Private device receipt (10:25:09 UTC): installed base `8bf44cb50e855a6dba0c91f64f60d8daddcbdc9c`, updater enabled, Runtime/Dashboard UPDATED, last_error NONE. Last stored turn remains 57.739 s / 41.627 s TTFT / 2 generated tokens; B1/B2 TIME_BUDGET and 0 valid offers. This does not prove this PR installed or correct.
+- The PR remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED. No user action is required. Core/Integrator owns source-pin repair; QA owns combined staged acceptance; Perception owns the unchanged RAW EAR/A4 code and test.
