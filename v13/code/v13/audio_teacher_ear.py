@@ -24,6 +24,7 @@ SCHEMA = "v14.a.teacher-ear/2"
 MODEL_ID = "sherpa-onnx-streaming-zipformer-en-20M-2023-02-17"
 MODEL_REVISION = "d42f2d9f7ca24806fb667456a18a9f1b60f70d16"
 MODEL_LICENSE = "Apache-2.0"
+SHERPA_ONNX_VERSION = "2.0.3"
 SAMPLE_RATE = 16000
 MAX_PCM_BYTES = SAMPLE_RATE * 2
 MAX_MODEL_FILE_BYTES = 1 << 30
@@ -199,6 +200,12 @@ def load_sherpa_teacher_runtime(
         import sherpa_onnx
     except ImportError as exc:
         raise RuntimeError("optional sherpa-onnx Python runtime is not installed") from exc
+    runtime_version = str(getattr(sherpa_onnx, "__version__", "UNKNOWN"))
+    if runtime_version != SHERPA_ONNX_VERSION:
+        raise RuntimeError(
+            f"teacher adapter requires sherpa-onnx {SHERPA_ONNX_VERSION}; "
+            f"found {runtime_version}"
+        )
     paths = {key: str(root / files[key]) for key in files}
     recognizer = sherpa_onnx.OnlineRecognizer.from_transducer(
         tokens=paths["tokens"],
@@ -219,7 +226,7 @@ def load_sherpa_teacher_runtime(
         model_files=files,
         manifest=manifest_after,
         sample_rate=SAMPLE_RATE,
-        runtime_version=str(getattr(sherpa_onnx, "__version__", "UNKNOWN")),
+        runtime_version=runtime_version,
         _token=_SHERPA_RUNTIME_TOKEN,
     )
 
@@ -556,6 +563,8 @@ def enrich_audio_result_with_sherpa_teacher(
         teacher_opt_in=teacher_opt_in,
         transcript_consent=transcript_consent,
     )
+    hypothesis["runtime_version"] = teacher_runtime.runtime_version
+    hypothesis["runtime_provenance_status"] = "PYPI_WHEEL_WITHOUT_PROVENANCE"
     base = audio_result.get("c3_admission")
     if not isinstance(base, Admission):
         raise ValueError("existing RAW EAR C3 admission is missing")
@@ -585,6 +594,7 @@ __all__ = [
     "MODEL_ID",
     "MODEL_REVISION",
     "MODEL_LICENSE",
+    "SHERPA_ONNX_VERSION",
     "SAMPLE_RATE",
     "DEFAULT_MODEL_FILES",
     "SherpaTeacherRuntime",
