@@ -89,6 +89,7 @@ def registry_update(registry, **kwargs):
     if type(embeddings) is not dict:
         raise AssertionError("speaker test requires an embedding batch")
     kwargs.setdefault("current_chunk_sha256", embeddings.get("current_chunk_sha256"))
+    kwargs.setdefault("consent_receipt_ref", embeddings.get("consent_receipt_ref"))
     return registry.update(**kwargs)
 
 
@@ -927,3 +928,14 @@ def test_impulsive_non_speech_reaches_a4_novelty_without_speaker_or_interrupt(tm
         assert '"vector"' not in json.dumps(result["packet"], sort_keys=True)
     finally:
         runtime.store.close()
+
+
+def test_registry_requires_active_consent_receipt_not_batch_self_assertion():
+    registry = SpeakerChangeEvidenceRegistry()
+    batch = speaker_batch(SOURCE, "gen-no-lease", 100, 1100, lambda _: (1.0, 0.0, 0.0))
+    with pytest.raises(SpeakerEvidenceError, match="consent receipt is required from the active lease"):
+        registry.update(
+            source_id=SOURCE, generation_id="gen-no-lease",
+            start_ms=100, end_ms=1100, current_chunk_sha256=batch["current_chunk_sha256"],
+            activity_hint="VOICED", embeddings=batch,
+        )
