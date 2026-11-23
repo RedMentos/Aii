@@ -126,6 +126,27 @@ public final class MediaProjectionCaptureGateTest {
         assertTrue(CompanionProvider.setEnabled(context, false));
     }
 
+    @Test public void malformedReceiptPropagatesCheckedFailureWithoutPublishingFrame() throws Exception {
+        assertTrue(CompanionProvider.setEnabled(context, true));
+        CaptureSessionGate gate = claimedFrame();
+        byte[] frame = new byte[]{11, 12, 13};
+
+        try {
+            CompanionProvider.publishScreenFrameIfAuthorized(
+                    context, gate, frame, new JSONObject(), 101L,
+                    (ctx, pkg) -> FINGERPRINT);
+            fail("missing receipt body must be rejected");
+        } catch (org.json.JSONException expected) {
+            assertTrue(expected.getMessage() == null
+                    || expected.getMessage().toLowerCase().contains("body"));
+        }
+
+        assertEquals("NO_FRAME", ProjectionFrameStore.status(102L).getString("status"));
+        assertFalse(gate.isComplete());
+        assertTrue(CompanionProvider.completeScreenFrameSession(gate, true));
+        assertTrue(Arrays.equals(new byte[]{11, 12, 13}, frame));
+    }
+
     @Test public void currentTermuxSignerIsRecheckedAtPublication() throws Exception {
         assertTrue(CompanionProvider.setEnabled(context, true));
         CaptureSessionGate gate = claimedFrame();
