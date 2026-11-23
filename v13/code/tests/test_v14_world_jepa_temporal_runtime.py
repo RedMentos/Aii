@@ -1141,6 +1141,8 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_mea
         assert "not fact/permission" in detail["note"]
         assert "prediction" in gist["note"]
         assert "not fact/permission" in gist["note"]
+        assert all(len(row) == 4 for row in detail["rows"])
+        assert all(len(row) == 3 for row in gist["rows"])
 
         query_rows = store.rows(
             "SELECT payload FROM packets WHERE kind='QueryPacket' AND event_id=? ORDER BY created",
@@ -1172,6 +1174,8 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_mea
             assert audit["native_body_consumed"] is False
             assert audit["native_body_weights_changed"] is False
             assert audit["decision_authority"] == "NONE"
+            assert audit["supported_action_samples"]
+            assert all(value >= 8 for value in audit["supported_action_samples"].values())
 
         # A writer holding the temporal JEPA lock must not stall the foreground
         # B1 offer; the optional readout is omitted and the normal body state remains.
