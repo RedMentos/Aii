@@ -8,7 +8,9 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -48,6 +50,34 @@ public final class CompanionLifecycleInstrumentedTest {
         assertTrue(description + " has no visible display rectangle",
                 view.getGlobalVisibleRect(visible));
         assertTrue(description + " is fully clipped", visible.width() > 0 && visible.height() > 0);
+    }
+
+    private static void scrollIntoDisplayIfNeeded(View view, String description) {
+        Rect visible = new Rect();
+        if (view.getGlobalVisibleRect(visible) && visible.width() > 0 && visible.height() > 0) {
+            return;
+        }
+
+        ScrollView scroll = null;
+        ViewParent parent = view.getParent();
+        while (parent instanceof View) {
+            if (parent instanceof ScrollView) {
+                scroll = (ScrollView) parent;
+                break;
+            }
+            parent = ((View) parent).getParent();
+        }
+        assertNotNull(description + " is outside the viewport and has no ScrollView ancestor", scroll);
+        assertTrue(description + " has not been laid out", view.isLaidOut());
+        assertTrue("ScrollView has not been laid out", scroll.isLaidOut());
+        Rect descendant = new Rect(0, 0, view.getWidth(), view.getHeight());
+        scroll.offsetDescendantRectToMyCoords(view, descendant);
+        int targetY = Math.max(0, descendant.bottom - scroll.getHeight());
+        scroll.scrollTo(scroll.getScrollX(), targetY);
+        assertTrue(description + " remained outside the viewport after scrolling",
+                view.getGlobalVisibleRect(visible));
+        assertTrue(description + " is still fully clipped after scrolling",
+                visible.width() > 0 && visible.height() > 0);
     }
 
     private static TextView findText(View view, String expected) {
@@ -95,6 +125,8 @@ public final class CompanionLifecycleInstrumentedTest {
         scenario.onActivity(activity -> {
             Button toggle = findButton(
                     activity.getWindow().getDecorView(), TOGGLE);
+            assertNotNull("Enable / Stop companion button is missing", toggle);
+            scrollIntoDisplayIfNeeded(toggle, "Enable / Stop companion button");
             assertOnDisplay(toggle, "Enable / Stop companion button");
             assertTrue("Enable / Stop companion button is disabled", toggle.isEnabled());
             assertTrue("actual companion toggle listener did not run", toggle.performClick());
