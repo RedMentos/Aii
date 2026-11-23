@@ -44,6 +44,17 @@ class TrainingLoopTests(unittest.TestCase):
         self.assertGreater(report.best_epoch, 0)
         self.assertFalse(torch.equal(before, after))
 
+    def test_unshared_recurrent_jepa_trains_from_scratch(self):
+        config = BaseConfig(
+            channels=2, horizon=2, latent_dim=16, hidden_dim=32,
+            predictor_steps=2, predictor_kind="unshared",
+        )
+        model = M1JEPA(config)
+        report = fit_jepa(model, self.dataset, self.fit_cfg)
+        self.assertGreater(report.optimizer_steps, 0)
+        self.assertEqual(report.validation_metric, "latent_prediction_L1")
+        self.assertEqual(len(model.predictor.blocks), 2)
+
     def test_direct_mae_training_uses_validation_selection(self):
         model = DirectMAE(self.base_cfg)
         report = fit_direct_mae(model, self.dataset, self.fit_cfg)
