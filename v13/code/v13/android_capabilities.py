@@ -43,6 +43,7 @@ _ITEM_FIELDS = frozenset({
     "learning_authority",
 })
 _READY = "READY_WITH_PER_ACTION_CONSENT"
+_READY_SESSION_OS = "READY_WITH_PER_SESSION_OS_CONSENT"
 _OFF_STOP = "OFF_STOP_SWITCH"
 _OFF_UNPAIRED = "OFF_TERMUX_NOT_PAIRED"
 _OFF_NOT_IMPLEMENTED = "OFF_NOT_IMPLEMENTED"
@@ -109,6 +110,7 @@ class CapabilityRegistry:
             status = item["status"]
             if type(status) is not str or status not in {
                 _READY,
+                _READY_SESSION_OS,
                 _OFF_STOP,
                 _OFF_UNPAIRED,
                 _OFF_NOT_IMPLEMENTED,
@@ -158,7 +160,25 @@ class CapabilityRegistry:
         ):
             raise CapabilityRegistryError("launch_app contract mismatch")
 
+        screen_capture = by_id["screen_capture"]
+        expected_capture_status = (
+            _OFF_UNPAIRED
+            if not raw["termux_paired"]
+            else (_READY_SESSION_OS if raw["enabled"] else _OFF_STOP)
+        )
+        if (
+            screen_capture.status != expected_capture_status
+            or screen_capture.provider != "MEDIA_PROJECTION_ONE_SHOT"
+            or screen_capture.per_action_consent is not True
+            or screen_capture.android_os_permission_required is not True
+            or screen_capture.result_observed is not True
+            or screen_capture.learning_authority is not False
+        ):
+            raise CapabilityRegistryError("screen_capture contract mismatch")
+
         for cap_id in CAPABILITY_IDS[1:]:
+            if cap_id == "screen_capture":
+                continue
             capability = by_id[cap_id]
             expected_os_permission = cap_id == "audio_capture"
             if (
@@ -188,9 +208,14 @@ class CapabilityRegistry:
 
     def require_ready(self, name: str) -> Capability:
         capability = self.capability(name)
+        expected_status = {
+            "launch_app": _READY,
+            "screen_capture": _READY_SESSION_OS,
+        }.get(name)
         if (
             capability is None
-            or capability.status != _READY
+            or expected_status is None
+            or capability.status != expected_status
             or not self.enabled
             or not self.termux_paired
         ):
@@ -199,10 +224,18 @@ class CapabilityRegistry:
             )
         if name == "launch_app" and (
             capability.per_action_consent is not True
+            or capability.android_os_permission_required is not False
             or capability.result_observed is not False
             or capability.learning_authority is not False
         ):
             raise CapabilityRegistryError("launch_app authority contract mismatch")
+        if name == "screen_capture" and (
+            capability.per_action_consent is not True
+            or capability.android_os_permission_required is not True
+            or capability.result_observed is not True
+            or capability.learning_authority is not False
+        ):
+            raise CapabilityRegistryError("screen_capture authority contract mismatch")
         return capability
 
     def to_dict(self) -> dict:
