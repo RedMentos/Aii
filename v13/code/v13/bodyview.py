@@ -363,6 +363,14 @@ def body_state(r,e,role,text):
         # Count the exact final prompt envelope, not just the inner view.
         return len(dumps(view|{'authority':'STATE_NOT_FACT','role':role}))
     if prompt_chars()>STATE_CHARS:view['world']['recent']=[]
+    if prompt_chars()>STATE_CHARS and temporal_context is not None:
+        skills=view.get('skills')
+        if isinstance(skills,list) and len(skills)>1:view['skills']=skills[:1]
+        if prompt_chars()>STATE_CHARS and isinstance(view.get('skills'),list):view['skills']=[]
+    if (prompt_chars()>STATE_CHARS and temporal_context is not None
+            and isinstance(temporal_context.get("episodic"),list)
+            and len(temporal_context["episodic"])>1):
+        temporal_context["episodic"]=temporal_context["episodic"][:1]
     if (prompt_chars()>STATE_CHARS and temporal_context is not None
             and "episodic" in temporal_context):
         temporal_context.pop("episodic",None)
@@ -373,12 +381,8 @@ def body_state(r,e,role,text):
                 recall_audit["status"]="OMITTED_PROMPT_BUDGET"
                 recall_audit["items"]=[]
     if prompt_chars()>STATE_CHARS and temporal_context is not None:
-        skills=view.get('skills')
-        if isinstance(skills,list) and len(skills)>1:view['skills']=skills[:1]
-        if prompt_chars()>STATE_CHARS and isinstance(view.get('skills'),list):view['skills']=[]
-        if prompt_chars()>STATE_CHARS:
-            view.pop('world_jepa_temporal',None)
-            temporal_audit=None
+        view.pop('world_jepa_temporal',None)
+        temporal_audit=None
     if prompt_chars()>STATE_CHARS and isinstance(view.get('skills'),list):
         view['skills']=[]
     s=dumps(view)
