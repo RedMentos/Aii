@@ -257,7 +257,7 @@ def record_stop_persisted_off() -> None:
     state = persisted_enabled()
     if state != "false":
         raise AssertionError("visible Stop action did not persist OFF")
-    STOP_PROOF_MARKER.write_text("STOP_ACTION_PERSISTED_OFF\\n", encoding="utf-8")
+    STOP_PROOF_MARKER.write_text("STOP_ACTION_PERSISTED_OFF\n", encoding="utf-8")
     print("PASS: visible Stop action persisted OFF before UI confirmation")
 
 
