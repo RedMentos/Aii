@@ -350,8 +350,15 @@ def test_temporal_world_jepa_updates_ema_checkpoint_and_b1_b2_shadow_receivers(t
         # to the B1/B2 float receiver adapters and records exact parameter diffs.
         from v13.world_jepa_learning_intent import (
             validate_learning_intent, validate_weight_delta_receipt,
+            validate_receiver_retention_holdout,
         )
         active_record = state["active"]
+        assert len(active_record["receiver_retention_holdouts"]) == 1
+        receiver_cohort = active_record["receiver_retention_holdouts"][0]
+        assert validate_receiver_retention_holdout(receiver_cohort) is True
+        assert receiver_cohort["created_checkpoint_sha256"] == first["checkpoint_sha256"]
+        assert active_record["metrics"]["receiver_retention"]["status"] == "NOT_MEASURED"
+        assert active_record["metrics"]["receiver_retention_gate_accepted"] is True
         intents = active_record["learning_intents"]
         receipts = active_record["weight_delta_receipts"]
         assert set(intents) == {"B1_DETAIL", "B2_GIST"}
