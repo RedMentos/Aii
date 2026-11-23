@@ -2,6 +2,7 @@ import base64
 import copy
 import hashlib
 import json
+import sqlite3
 
 import pytest
 
@@ -64,6 +65,68 @@ def _sign_test_body(body):
     payload = der_integer(r) + der_integer(s)
     signature = bytes([0x30, len(payload)]) + payload
     return base64.b64encode(signature).decode("ascii")
+def _ui_frame_receipt(frame):
+    nonce = "a" * 32
+    body = {
+        "schema": "v14.android-ui-frame-receipt/1",
+        "nonce": nonce,
+        "frame_token": "b" * 32,
+        "source_id": "ui-" + nonce,
+        "capture_session_id": "mp-" + nonce,
+        "consent_receipt_ref": "mp-" + nonce,
+        "capture_method": "MEDIA_PROJECTION",
+        "capture_scope": "FULL_DISPLAY",
+        "api_level": 33,
+        "clock": "ELAPSED_REALTIME",
+        "event_kind": "SCREEN_FRAME_AVAILABLE",
+        "start_ms": 100,
+        "end_ms": 120,
+        "finality": "FINAL",
+        "action_authority": False,
+        "learning_authority": False,
+        "raw_capture_persisted": False,
+        "frame_sha256": hashlib.sha256(frame).hexdigest(),
+        "frame_bytes": len(frame),
+        "frame_width": 2,
+        "frame_height": 2,
+        "frame_format": "image/jpeg",
+        "issued_at": 999,
+        "expires_at": 1030,
+        "key_storage_status": "ANDROID_KEYSTORE_SOFTWARE_BACKED",
+        "key_id": KEY_ID,
+    }
+    return {
+        "body": body,
+        "key_id": KEY_ID,
+        "signature": _sign_test_body(body),
+    }
+
+
+class FakeFrameTransport(FakeTransport):
+    def __init__(self, frame, receipt):
+        super().__init__(
+            enabled=True, paired=True,
+            capability_override=capability_snapshot(screen_capture_ready=True),
+        )
+        self.frame = frame
+        self.frame_receipt = receipt
+        self.frame_read_calls = 0
+
+    def screen_frame_status(self):
+        return {
+            "status": "FRAME_READY",
+            "receipt": self.frame_receipt,
+            "frame_uri": "content://com.redmentos.v14.companion/ui-frame/" + "b" * 32,
+            "expires_in_ms": 15000,
+        }
+
+    def read_frame(self, uri, *, max_bytes):
+        self.frame_read_calls += 1
+        assert uri.endswith("b" * 32)
+        assert len(self.frame) <= max_bytes
+        return self.frame
+
+
 DENIAL_BODY = {**BODY, "nonce": "3" * 32, "status": "USER_DENIED", "local_consent": False}
 DENIAL_RECEIPT = {
     "body": DENIAL_BODY,
@@ -185,6 +248,41 @@ def make_runtime(tmp_path):
     (home / "data" / "db").mkdir(parents=True)
     (home / "data" / "blobs").mkdir(parents=True)
     return RuntimeStub(home)
+
+
+def test_frame_status_is_signed_read_only_and_does_not_consume_frame_or_nonce(tmp_path):
+    frame = b"jpeg"
+    transport = FakeFrameTransport(frame, _ui_frame_receipt(frame))
+    runtime = make_runtime(tmp_path)
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1001)
+    controller.trust(KEY_ID, True)
+    runtime._android_companion_controller = controller
+
+    result = json.loads(Operator(runtime).run(":android frame-status"))
+
+    assert result["status"] == "FRAME_READY"
+    assert result["frame_sha256_prefix"] == hashlib.sha256(frame).hexdigest()[:12]
+    assert result["expires_in_ms"] == 15000
+    assert result["action_authority"] is False
+    assert result["learning_authority"] is False
+    assert result["raw_capture_persisted"] is False
+    assert transport.frame_read_calls == 0
+    with sqlite3.connect(controller.ui_frame_verifier_path) as db:
+        assert db.execute("SELECT COUNT(*) FROM used_ui_frame_receipts").fetchone()[0] == 0
+
+    controller.broker.close()
+    runtime.store.close()
+
+
+def test_frame_status_requires_explicit_pinned_companion_key(tmp_path):
+    runtime = make_runtime(tmp_path)
+    transport = FakeFrameTransport(b"jpeg", _ui_frame_receipt(b"jpeg"))
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1001)
+    with pytest.raises(android_control.ControlDenied, match="not pinned"):
+        controller.frame_status()
+    assert transport.frame_read_calls == 0
+    controller.broker.close()
+    runtime.store.close()
 
 
 def test_capability_registry_accepts_only_the_current_native_inventory(tmp_path):
