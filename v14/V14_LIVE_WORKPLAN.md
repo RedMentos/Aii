@@ -1478,11 +1478,11 @@ The temporal predictor's fixed-EMA retention gate is measured, and B1/B2 adapter
 
 ### Test and platform state
 
-- Exact-head Actions run #45273784285: `startup_failure`, 0 jobs; no CI test executed.
+- Exact-head Actions run #45273984275: `startup_failure`, 0 jobs; no CI test executed.
 - Full local project suite: NOT_RUN; no Aii checkout and GitHub DNS unavailable. Python 3.13.5 / NumPy 2.3.5 / pytest 9.0.2 are installed in the container, but cannot substitute for the repository.
 - Synthetic Python numeric control: PASS for same-cohort retention, encoder drift, compensation, degraded-head rejection and overlap detection.
 - Termux/Redmi: REDMI_UNVERIFIED. Private V13OBS #115 (19:52:16Z) still reports installed 8d93236, auto-update enabled, runtime STOPPED_BY_USER, two failed native attempts per B1/B2 and zero valid offers. Fresh private owner-read creation failed HTTP 422 due unverified GitHub email; no device action was taken.
 
 ### Integration ordering
 
-PR #2454 remains DRAFT and is 91 ahead / 47 behind current Boss #2443 head cdf6b640; merge base remains 6e9bad8. Do not rebase until the combined Boss exact-head CI is green. Then rebase #2454 onto that exact head, review source-authority/forget composition, rebase Core #2457 (currently 10 ahead / 87 behind the current JEPA head) onto the verified JEPA head, and run the Python 3.13/3.14 temporal, postcommit, optimizer-resume, source-forget, restart/rollback, staged and integrated suites. No force-push. Keep B1/B2 SHADOW and no phone release.
+PR #2454 remains DRAFT and is 95 ahead / 47 behind current Boss #2443 head cdf6b640; merge base remains 6e9bad8. Do not rebase until the combined Boss exact-head CI is green. Then rebase #2454 onto that exact head, review source-authority/forget composition, rebase Core #2457 (currently 10 ahead / 91 behind the current JEPA head) onto the verified JEPA head, and run the Python 3.13/3.14 temporal, postcommit, optimizer-resume, source-forget, restart/rollback, staged and integrated suites. No force-push. Keep B1/B2 SHADOW and no phone release.
