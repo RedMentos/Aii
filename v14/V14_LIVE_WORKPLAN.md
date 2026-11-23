@@ -1,3 +1,25 @@
+## JEPA/Memory — temporal source-forget fix and current integration boundary (2026-11-23)
+
+- Code commit [296b538](https://github.com/RedMentos/Aii/commit/296b538ee2b076d3e550cc1ff1845d1428aa0de6) fixes the one-argument `_mapping(row)` helper call in the temporal source-forget prefix audit. This removes the observed TypeError in four source-forget regressions.
+- LOCAL_LINUX CPython 3.13.5 isolated helper check (dict + sqlite3.Row) and AST parse: PASS. Full Aii checkout/compile/pytest: NOT_RUN; no checkout is mounted and GitHub DNS resolution fails.
+- CI on code commit 296b538: combined online JEPA 45229045914 PASS; incremental WorldJEPA 45229045123 PASS; temporal T8 45229045753 QUEUED; optimizer-resume 45229045045 FAIL on the Boss/QA-owned nested recovery-builder pin; staged/integrated 45229045070 FAIL on the same pin; Core consumer 45229044814 Python 3.13 FAIL on the same pin while 3.14 was still in progress. Privacy, deployment and private owner-read checks remain queued. Do not promote queued or pin-blocked checks to PASS.
+- Boss/QA was notified on #2443. Its source-forget concurrency test also patches the obsolete `source_lifecycle_candidate._cleanup_pending_fd` hook, whereas the current Memory implementation performs the refcount check and direct unlink inside Store RLock; synchronize the test at the actual refcount/unlink point. JEPA did not change Boss-owned builders or weaken any pins.
+- Current release-development tip: `8d93236c753f0194224c19edc7411d8d7082b1d6`; #2447 remains DRAFT / NOT_RELEASED on older `fb563d7` ancestry. No Redmi deployment, model/weight change or permission change. Redmi remains REDMI_UNVERIFIED.
+- Next: complete temporal exact-head CI; finish Boss recovery-pin + lock-test composition; then rebase/stack this JEPA lane on the current green integration chain and rerun staged, Core receiver, holdout, negative-control, restart and rollback tests.
+
+---
+
+## JEPA temporal port — exact compile failure repaired, composed gates still pending (2026-11-23)
+
+- The release-base temporal learner remains on draft PR #2447. Code fix commit: 7a45b7f53b2e19514af1aa3b7035a616d3904af9; documentation-only checkpoint at start of this update: 918141a3ef686e5b3391189f2966b78f4f6e2591. Base: fb563d771fe2d493c4ec25abe94280981d24ef5c.
+- The exact Python 3.14 merge-ref compile failure was a malformed import in world_jepa_temporal.py:41; code commit 7a45b7f fixes it and GitHub readback confirms the corrected import bytes.
+- Previous optimizer-resume CI independently exposed a stale nested recovery-builder pin (b05a5f4c… expected versus the current resume-script SHA 55ab761e…). This belongs to Boss/QA's recovery composition; the handoff was posted on PR #2443. No pin was relaxed or overwritten.
+- New exact-head temporal, optimizer-resume, staged/integrated, Core receiver and combined JEPA runs (45217321223, 45217321225, 45217321237, 45217321042, 45217320951) were queued at last poll. The previous temporal run failed before tests, so no test PASS is claimed for the new head yet.
+- LOCAL_LINUX CPython 3.13.5: corrected import snippet parse PASS only. Full checkout/compile/pytest BLOCKED by absent checkout and GitHub DNS failure. Redmi/Termux learning and deployment remain REDMI_UNVERIFIED / NOT_DEPLOYED.
+- Keep the runtime consumer and B1/B2/SELF receivers SHADOW/OFF until exact CI, source-forget/blob lifecycle, producer SourceRefs and measured retention/utility gates are independently green.
+
+---
+
 ## M1 DATA audit-first and direct-array checkpoint — 2026-11-23 12:44 UTC
 
 - `ArrayDataset.from_uci()` validates/counts the source on pass one, fills a float32 matrix and computes the exact parsed-data fingerprint on pass two, and rejects file changes between passes. It does not allocate Python `MinuteRow` objects for the real cohort.
@@ -1328,3 +1350,13 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - Research ledger now carries R-084 and R-090–R-107 append-only. R-096 engram gate is synthetic and has no old-task retention win; not sparse MoE. R-107 FAR is a preprint and sony/far is CC BY-NC 4.0 with CUDA 12.8 / 14 GB GPU environment; conceptual only, no code/weights reused.
 - Next: wait for later PIPELINE_STATUS; recompose fair B1/B2→C4→C3; wire production ActionSelection context SourceRefs; rebase temporal/episodic JEPA; continue voice, Android agency, B3, sparse MoE, self-optimization and all Canon families.
 - **User action required: NONE.** Auto-updater enabled; no manual command or duplicate UPDATE_REQUEST.
+
+
+## JEPA & Memory — release-base temporal port (2026-11-23, Run 13)
+
+- PR #2447: `jepa-memory/v14-temporal-world-jepa-release-20261123-run13`, base `fb563d771fe2d493c4ec25abe94280981d24ef5c`, head `e7c4cba13670eca11fa592df8b76d390009928b8` (runtime code commit `3767e9916fad125dd36d745f869f48db566e9632`; code-identical test head `581de80f164ab19ab559c946ce49a7af52be06ba`).
+- Adds persistent temporal T8 ActionOutcome -> trainable WorldJEPA/EMA -> source/session-disjoint episodic recall -> B1/B2 numeric SHADOW receiver; SleepRuntime postcommit scheduling, optimizer/checkpoint persistence, replay, restart and rollback.
+- Existing Memory API source-forget now invokes temporal checkpoint invalidation through the shared JEPA guard and clears a changed warm model cache. A Memory._forget_source -> invalidation -> remaining-T8 replay regression is included.
+- Code-identical head CI queued — run 45210392877 (Temporal WorldJEPA T8) and 45210392798 (JEPA training-resume/source-forget); current head adds workflow/documentation triggers only; no conclusion yet. Full local checkout blocked by GitHub DNS; no local full-suite PASS. REDMI_UNVERIFIED / NOT_RELEASED.
+- Excluded from this PR: #2443 Store-RLock/blob-unlink concurrency fix, staged builder pin recomposition, and Core's complete ActionSelection context SourceRefs. The receiver remains SHADOW; no native body weights, GGUF weights or cross-organ latent transfer are claimed.
+- Handoff: `v14/handoffs/JEPA_MEMORY_RUN13_RELEASE_PORT_20261123.md`.

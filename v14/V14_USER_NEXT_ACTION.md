@@ -1,3 +1,50 @@
+# JEPA & Memory — latest verified checkpoint (2026-11-23; run timing UNKNOWN)
+
+- **Code:** [commit 296b538](https://github.com/RedMentos/Aii/commit/296b538ee2b076d3e550cc1ff1845d1428aa0de6) on draft [PR #2447](https://github.com/RedMentos/Aii/pull/2447) fixes the temporal source-forget Store-row mapper call: `_mapping(raw, label)` was invalid because the helper accepts one argument. The old call caused four temporal source-forget tests to fail with TypeError. Readback confirmed the one-argument call.
+- **LOCAL_LINUX:** CPython 3.13.5 isolated helper contract PASS for dict and sqlite3.Row; AST parse PASS. Full Aii checkout/compile/pytest NOT_RUN: no repository checkout is mounted and `git ls-remote` cannot resolve github.com.
+- **CI on code commit 296b538:** combined online JEPA workflow 45229045914 PASS; incremental WorldJEPA workflow 45229045123 PASS. Temporal T8 workflow 45229045753 remains QUEUED. Optimizer-resume 45229045045 and staged/integrated 45229045070 fail on the Boss/QA-owned nested recovery-builder pin (expected `b05a5f4c...`, while this PR's resume builder has different bytes); Core consumer Python 3.13 has the same pin failure. Boss was notified on PR #2443; JEPA did not modify or weaken their pins. Other queued/in-progress checks are not counted as passes.
+- **Actual path:** T8 ActionOutcome → persisted numeric temporal predictor/EMA/optimizer/checkpoint → source/session-disjoint replay/holdout and rollback → gated B1/B2 numeric receiver in bodyview → serialized into the real `Cognition.offer` prompt. The receiver test captures the actual prompt path, but the runner is synthetic and the readout remains SHADOW; no native B1/B2 GGUF weight change or learned cross-organ latent coupling is proven.
+- **Known integration gap:** the production ActionSelection producer still needs to attach all admitted Memory/observer/Enlightened SourceRefs; JEPA must reject incomplete lineage rather than infer it. The release-base composition also still needs the Boss recovery-pin chain and source-forget lock regression synchronized.
+- **Research:** R-115 records the ICLR 2026 Cascading Eligibility Traces paper. Its delayed, peaked state-space eligibility kernel is a future additive comparison to the current exponential trace; the public implementation has no root LICENSE and old/heavy dependencies, so no code or dependency was imported.
+- **Release/device:** NOT_RELEASED / REDMI_UNVERIFIED / NOT_DEPLOYED. Current release-development tip is `8d93236c753f0194224c19edc7411d8d7082b1d6`; PR #2447 remains draft. No model/weight, permission, phone data or updater state was changed.
+- **Next:** obtain temporal T8 exact-head results; coordinate the nested builder and source-forget test instrumentation with Boss/QA #2443; then rebase the JEPA candidate on the current integration chain and rerun the complete staged, Core receiver, holdout, negative-control, restart and rollback suite.
+
+**User action: none.** Do not run a manual Termux command or request a device update for this unaccepted candidate.
+
+---
+
+## Latest verified JEPA/Memory checkpoint — 2026-11-23 (post-syntax-fix)
+
+- Release-development base: fb563d771fe2d493c4ec25abe94280981d24ef5c.
+- JEPA/Memory PR: [#2447](https://github.com/RedMentos/Aii/pull/2447), branch jepa-memory/v14-temporal-world-jepa-release-20261123-run13, current code head 7a45b7f53b2e19514af1aa3b7035a616d3904af9, DRAFT / NOT_RELEASED.
+- **Real code fix:** v13/code/v13/world_jepa_temporal.py had a malformed multi-line import at line 41 (verify_rows was outside the parentheses). Commit [7a45b7f](https://github.com/RedMentos/Aii/commit/7a45b7f53b2e19514af1aa3b7035a616d3904af9) moves verify_rows inside the parenthesized import. Readback blob: fe08b4d248498e4c4760d4695a0eb13a9e5d52e4.
+- **Exact failure before fix:** merge-ref 2696ebd19b5a8b95ae85b98841cbf49f00965feb, workflow [45216140828](https://github.com/RedMentos/Aii/actions/runs/45216140828), Python 3.14 stopped at py_compile with that SyntaxError; temporal tests were skipped. The fix is now on the PR branch.
+- **Second independent blocker:** optimizer-resume run [45216141611](https://github.com/RedMentos/Aii/actions/runs/45216141611) failed because the nested recovery builder expected SHA-256 b05a5f4c6533f82f8c5092d9392e6a824f5c86d6857b06df04125fac2eaeed4d for integrated_world_training_resume_candidate_20261111.py, while the current resume candidate records 55ab761e4bd4a08f9c6cbdc9d47e63a8b9ec55d8f5c7cbe1a0f1d7b2c6a3f9e8. Boss was notified on #2443; JEPA did not edit the Boss/QA-owned recovery builders or weaken any pin.
+- **After-fix exact-head CI:** temporal T8 run [45217321223](https://github.com/RedMentos/Aii/actions/runs/45217321223), optimizer-resume [45217321225](https://github.com/RedMentos/Aii/actions/runs/45217321225), staged/integrated [45217321237](https://github.com/RedMentos/Aii/actions/runs/45217321237), Core receiver [45217321042](https://github.com/RedMentos/Aii/actions/runs/45217321042), and combined online JEPA [45217320951](https://github.com/RedMentos/Aii/actions/runs/45217320951) were QUEUED at last poll. No PASS is claimed.
+- **LOCAL_LINUX:** CPython 3.13.5. The corrected import block alone parsed successfully. Full Aii checkout, full-file compile and pytest remain BLOCKED / NOT_RUN because no checkout is mounted and git ls-remote failed with GitHub DNS resolution. This is not a project-suite pass.
+- **Runtime scope present but still unaccepted:** SleepRuntime post-commit T8 consumer, persistent temporal predictor/EMA/Adam/checkpoint, source/session-disjoint holdouts, replay/rollback, and B1/B2/SELF SHADOW receivers. Tests include A→B→C→A retention, positive rollback/restart, negative controls and Memory forget→cache invalidation→verified replay; exact-head CI must pass before these are accepted. No native GGUF/body-weight update or trained cross-organ latent transfer is claimed.
+- **REDMI_UNVERIFIED / NOT_DEPLOYED:** no live device receipt for this PR. Auto-update was previously reported enabled, but GitHub push is not installation proof. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, model/weight/permission change or phone mutation was performed.
+- **Next:** poll the five exact-head workflows; repair JEPA-owned failures, then let Boss/QA finish the recovery pin and Store-RLock/blob-unlink composition in #2443. Core still must attach every admitted Memory/observer/Enlightened-Space SourceRef to production ActionSelection. Keep optimizer promotion and receivers SHADOW/OFF.
+- **User action: NONE.** No manual Termux command or device approval is required for this code/CI work.
+
+---
+
+## Latest verified JEPA/Memory checkpoint — 2026-11-23
+
+Run started 16:31:56 Europe/Berlin; completion time UNKNOWN.
+
+- Current release-development HEAD verified: `fb563d771fe2d493c4ec25abe94280981d24ef5c`.
+- JEPA temporal T8 / EMA / replay / B1-B2 SHADOW runtime port: [PR #2447](https://github.com/RedMentos/Aii/pull/2447), current branch current branch head `e7c4cba13670eca11fa592df8b76d390009928b8` (runtime code commit `3767e9916fad125dd36d745f869f48db566e9632`), draft; code-identical CI queued on `581de80f164ab19ab559c946ce49a7af52be06ba`.
+- The existing Memory source-forget entry point now composes temporal checkpoint invalidation and clears a changed warm cache. A new regression exercises forget plus replay through `Memory._forget_source`.
+- Full local checkout/tests BLOCKED by GitHub DNS failure in this runner. No local full-suite PASS claimed. No Android receipt or Redmi test: REDMI_UNVERIFIED.
+- Still open: Boss/QA staged-builder rebind and #2443 Store-RLock/blob-unlink race; Core production ActionSelection must attach all admitted context SourceRefs. This PR does not prove native latent transfer, GGUF weight learning or native B1/B2 weight changes.
+- Next: poll exact-head CI for #2447, fix reproduced failures, then coordinate builder and provenance integration. R-107 Future-Aware Recall remains a later SHADOW research candidate.
+- User action: none.
+
+Handoff: `v14/handoffs/JEPA_MEMORY_RUN13_RELEASE_PORT_20261123.md`.
+
+---
+
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.

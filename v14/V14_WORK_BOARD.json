@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T12:44:40Z",
-  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
+  "updated_at": "2026-11-23T16:30:30Z",
+  "source_of_truth": "Release-development base gpt6/v13-private-remote-bridge-20261111 at fb563d771fe2d493c4ec25abe94280981d24ef5c. JEPA/Memory PR #2447 code fix 7a45b7f53b2e19514af1aa3b7035a616d3904af9 repairs the exact Python 3.14 temporal import SyntaxError. Current branch includes docs-only synchronization commits; code tested candidate remains 7a45b7f. Exact-head temporal, optimizer-resume, staged/integrated, Core receiver and combined JEPA workflows remain queued. Prior optimizer-resume run exposed a nested recovery-builder SHA pin mismatch assigned to Boss/QA PR #2443. No full local suite or Redmi deployment proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -108,10 +108,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "CI failure evidence; no accepted native/weight proof",
-      "next_step": "Rebase temporal T8/WorldJEPA/episodic recall onto b20e9 and reuse the merged source-forget guard. Production ActionSelection must attach all admitted Memory/observer/Enlightened context SourceRefs; current focal producer still records only the event source. Keep retrieval SHADOW; require source/session-disjoint holdouts, delayed-outcome negatives, retention, restart, rollback and real receiver utility.",
+      "proof_environment": "LOCAL_LINUX corrected-import snippet PASS only; full checkout/compile/pytest BLOCKED by GitHub DNS; exact-head CI QUEUED; REDMI_UNVERIFIED",
+      "next_step": "Poll exact-head runs 45217321223 (temporal), 45217321225 (optimizer-resume), 45217321237 (staged/integrated), 45217321042 (Core receiver), and 45217320951 (combined JEPA). Fix JEPA-owned failures; Boss/QA must rebind the recovery-builder pin and compose Store-RLock/blob-unlink in #2443; Core must attach every admitted Memory/observer/Enlightened SourceRef to production ActionSelection.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:07:22.216Z",
+      "last_checkpoint": "2026-11-23T16:30:30Z",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -163,7 +163,29 @@
         "ci": "PR_HEAD_STAGED_249_10SKIP_47_INTEGRATED_424_3SKIP_58_PY313_314_64_EACH; MERGED_PUSH_30_OF_30_SUCCESS",
         "scope": "production Runtime/SleepRuntime Store-backed WorldJEPA numeric consumer with persistent Adam/inverse/RNG optimizer state, gated legacy optimizer bootstrap, per-role held-out-vs-mean/zero/shuffled Planner receiver gate, Android no-clobber renameat2 checkpoint publication"
       },
-      "proof": "PR #2429 merged at b20e9b1f3dd53af472055adb43da628785494ec4: ActionSelection SourceRefs validated against Store hashes/spans; source-disjoint T8 grouping; Memory forget restores a clean hash-verified checkpoint or invalidates tainted state and rewinds for source-verified replay. Exact push CI 37/37. This is synthetic checkpoint rollback/replay, not gradient unlearning, native body weights, trained latent transfer or Redmi learning."
+      "proof": "PR #2429 merged at b20e9b1f3dd53af472055adb43da628785494ec4: ActionSelection SourceRefs validated against Store hashes/spans; source-disjoint T8 grouping; Memory forget restores a clean hash-verified checkpoint or invalidates tainted state and rewinds for source-verified replay. Exact push CI 37/37. This is synthetic checkpoint rollback/replay, not gradient unlearning, native body weights, trained latent transfer or Redmi learning. New release-base port PR #2447 at head e7c4cba13670eca11fa592df8b76d390009928b8 adds the persistent temporal T8 JEPA/EMA loop, SleepRuntime postcommit consumer, source-disjoint B1/B2 SHADOW bodyview and Memory API forget/replay composition. Exact-head CI not yet reported; full local checkout blocked by DNS; REDMI_UNVERIFIED. No release or phone install claimed. Exact-head workflows now queued: 45210392877 (Temporal WorldJEPA T8) and 45210392798 (JEPA training-resume/source-forget); no PASS/FAIL result yet. Previous code-identical head 581de80f164ab19ab559c946ce49a7af52be06ba has queued runs 45210392877 (Temporal WorldJEPA T8) and 45210392798 (JEPA training-resume/source-forget); no result yet. Current branch head e7c4cba13670eca11fa592df8b76d390009928b8 adds only workflow/documentation trigger updates. Exact failure at prior merge-ref 2696ebd: Python 3.14 py_compile stopped at world_jepa_temporal.py:41 due to malformed import; fixed in #2447 code commit 7a45b7f53b2e19514af1aa3b7035a616d3904af9 and file readback blob fe08b4d. After-fix exact-head workflows 45217321223/21225/21237/21042/20951 were queued; no PASS claimed. Prior optimizer-resume run 45216141611 exposed nested builder pin mismatch (expected b05a5f4c…, current resume SHA 55ab761e…); Boss notified on #2443, no JEPA edit to recovery-builder files. Local CPython 3.13.5 import-block parse PASS only; full checkout/pytest BLOCKED by DNS. PR remains DRAFT / NOT_RELEASED; REDMI_UNVERIFIED.",
+      "latest_temporal_port_pr": {
+        "pr": 2447,
+        "branch": "jepa-memory/v14-temporal-world-jepa-release-20261123-run13",
+        "base_sha": "fb563d771fe2d493c4ec25abe94280981d24ef5c",
+        "head_sha": "7a45b7f53b2e19514af1aa3b7035a616d3904af9",
+        "state": "DRAFT_CI_PENDING",
+        "scope": "Persistent ActionOutcome/T8 temporal JEPA+EMA/Adam, SleepRuntime postcommit, source/session-disjoint holdouts, replay/rollback, source-forget composition, B1/B2/SELF SHADOW receivers",
+        "tests": {
+          "exact_head_ci": "QUEUED_RUNS_45217321223_TEMPORAL_45217321225_OPTIMIZER_RESUME_45217321237_STAGED_INTEGRATED_45217321042_CORE_RECEIVER_45217320951_COMBINED",
+          "prior_exact_merge_ref": "45216140828_PY314_COMPILE_FAIL_SYNTAX_LINE_41_FIXED_IN_7a45",
+          "prior_optimizer_resume": "45216141611_FAIL_STALE_NESTED_RECOVERY_BUILDER_PIN",
+          "local": "PY313_5_IMPORT_SNIPPET_PARSE_PASS_ONLY_FULL_CHECKOUT_COMPILE_PYTEST_BLOCKED_DNS",
+          "redmi": "REDMI_UNVERIFIED"
+        },
+        "limitations": [
+          "Boss/QA #2443 must rebind nested recovery builder SHA pins and serialize Store source/blob lifecycle",
+          "Core production ActionSelection still must attach all admitted Memory/observer/Enlightened-Space SourceRefs",
+          "B1/B2/SELF receiver and optimizer promotion remain SHADOW/OFF",
+          "No native GGUF/body-weight update, trained cross-organ latent transfer or Redmi learning proof"
+        ],
+        "release_sha": "NOT_RELEASED"
+      }
     },
     {
       "id": "V14-005",
@@ -280,10 +302,10 @@
       "scope": "Fast episodic memory, replay selection, semantic consolidation, dream/counterfactual samples, slow EMA, cleanup and provenance",
       "acceptance": "Source-linked replay survives restart; observed events remain distinct from generated dream samples; consolidation has measured retention/ablation and rollback; synthetic dream data never gains truth or tool authority.",
       "proof_environment": "Sleep postcommit worker code exists, but no accepted replay/dream consolidation or stable JEPA per-session retention. #2247 fails its current staged/optimizer/retention matrix; promotion remains OFF.",
-      "next_step": "Keep sleep/replay SHADOW. Source-forget now restores or invalidates tainted WorldJEPA checkpoints and rewinds to verified replay; this is not dream consolidation or gradient unlearning. Add retain-only relearning and representation-drift probes before any durable weight-forgetting claim; generated dream samples stay non-authoritative.",
+      "next_step": "PR #2447 now includes SleepRuntime postcommit temporal learning, matched A→B→C→A replay/retention and positive rollback/restart tests, plus Memory forget→temporal cache invalidation→verified replay. Poll exact-head CI before accepting those tests; keep sleep/replay SHADOW. This is not Dream consolidation, gradient unlearning or native body-weight learning. Next add retain-only relearning and representation-drift probes.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:07:22.216Z",
-      "proof": "#2429 is wired to Memory._forget_source and Store-backed WorldJEPA checkpoint consumer; b20e9 push CI 37/37. No native body-weight update, cross-organ gradient, Dream acceptance or Android learning proof."
+      "last_checkpoint": "2026-11-23T16:30:30Z",
+      "proof": "#2429 is wired to Memory._forget_source and Store-backed WorldJEPA checkpoint consumer; b20e9 push CI 37/37. No native body-weight update, cross-organ gradient, Dream acceptance or Android learning proof. PR #2447 adds a persistent temporal T8/JEPA/EMA/Adam path, bounded SleepRuntime continuation, B1/B2/SELF SHADOW receiver and A→B→C→A replay/retention plus positive rollback/restart and Memory-forget replay regressions. Exact-head CI is queued after syntax fix; no acceptance, Dream consolidation, gradient unlearning, native body weights or Redmi proof."
     },
     {
       "id": "V14-012",

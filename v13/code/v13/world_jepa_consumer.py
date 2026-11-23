@@ -1176,7 +1176,7 @@ class WorldJEPAStoreConsumer:
 
 
 @contextmanager
-def source_forget_guard(store, source_id):
+def _base_source_forget_guard(store, source_id):
     """Remove a source from retained JEPA state by rollback plus source-verified replay.
 
     A bounded replay buffer is not a complete record of parameter influence.
@@ -1379,3 +1379,57 @@ def source_forget_guard(store, source_id):
                 if next_state["active"] is not None else None
             ),
         }
+
+
+@contextmanager
+def source_forget_guard(store, source_id):
+    """Compose base and temporal checkpoint revocation before source deletion.
+
+    Memory already calls this public guard. Keeping the composition here avoids
+    a second Memory implementation and makes old/no-temporal installs compatible.
+    """
+    with _base_source_forget_guard(store, source_id) as base_report:
+        try:
+            from .world_jepa_temporal import (
+                invalidate_source_under_guard, mark_source_revoked_after_forget,
+            )
+        except ModuleNotFoundError as exc:
+            expected = __package__ + ".world_jepa_temporal"
+            if exc.name != expected:
+                raise
+            temporal_home = Path(store.home) / "world_jepa_temporal"
+            if temporal_home.is_symlink() or temporal_home.exists():
+                raise RuntimeError(
+                    "temporal checkpoints exist but the temporal consumer is unavailable"
+                ) from exc
+            temporal_report = {}
+        else:
+            temporal_report = invalidate_source_under_guard(store, source_id)
+        report = dict(base_report) | temporal_report
+        try:
+            yield report
+        except BaseException:
+            # The checkpoint was invalidated before the Memory transaction.
+            # If deletion committed before a later cleanup/telemetry exception,
+            # still persist its revocation tombstone; otherwise allow safe retry.
+            try:
+                source = store.one("SELECT deleted FROM sources WHERE id=?", (source_id,))
+                deleted = source is None or source["deleted"] == 1
+                if temporal_report and deleted:
+                    mark_source_revoked_after_forget(store, source_id)
+            except Exception:
+                pass
+            raise
+        else:
+            # Memory._forget_source has now committed the source deletion.
+            # Persist the revocation snapshot before releasing the shared JEPA flock.
+            if temporal_report:
+                mark_source_revoked_after_forget(store, source_id)
+                store.log("forget", None, {
+                    "component": "world_predictor",
+                    "count": temporal_report.get("temporal_checkpoints_invalidated", 0),
+                    "n": temporal_report.get("temporal_rows_requeued", 0),
+                    "source_id": source_id,
+                    "status": "PASS",
+                    "mode": "shadow",
+                })
