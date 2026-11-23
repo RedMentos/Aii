@@ -97,6 +97,13 @@ class WindowTests(unittest.TestCase):
         self.assertEqual(len(w.seasonal[0]), 4)  # two lags x two channels
         self.assertTrue(all(w.origin_index + j - lag <= w.origin_index
                             for j in (1, 2) for lag in self.cfg.seasonal_lags))
+        self.assertEqual(w.seasonal[0], (
+            float(w.origin_index - 1), float((w.origin_index - 1) * 2),
+            float(w.origin_index - 3), float((w.origin_index - 3) * 2),
+        ))
+        lo, hi = self.bounds["train"]
+        self.assertTrue(all(lo <= item.origin_index < hi for item in windows))
+        self.assertTrue(all(item.origin_index + self.cfg.horizon < hi for item in windows))
 
     def test_strict_nan_rejects_window_when_any_required_channel_is_missing(self):
         rows = synthetic_rows(1000, {100})
@@ -104,6 +111,19 @@ class WindowTests(unittest.TestCase):
         self.assertGreater(stats.rejected_windows, 0)
         affected = [w for w in windows if abs(w.origin_index - 100) <= 4]
         self.assertFalse(affected)
+
+    def test_missing_seasonal_source_rejects_window(self):
+        # Index 50 is outside the local X/target window around origin 100,
+        # but is required by the lag-50 seasonal channel for that forecast.
+        cfg = DataConfig(
+            input_length=5, horizon=2, max_candidate_input_length=5,
+            seasonal_lags=(50,), train_fraction=0.70, validation_fraction=0.15,
+        )
+        rows = synthetic_rows(1000, {50})
+        bounds = build_chronological_boundaries(len(rows), cfg)
+        windows, stats = make_split(rows, self.channels, cfg, "train", bounds["train"])
+        self.assertGreater(stats.rejected_windows, 0)
+        self.assertNotIn(100, [item.origin_index for item in windows])
 
     def test_rejection_stats_are_per_month_and_reconcile(self):
         rows = synthetic_rows(1000, {100, 101, 400})
