@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Process;
 import android.view.View;
@@ -64,12 +65,25 @@ public final class CompanionLifecycleInstrumentedTest {
         }
     }
 
-    private static boolean centerIsVisible(View view, Rect visible) {
-        int[] location = new int[2];
-        view.getLocationOnScreen(location);
-        int centerX = location[0] + view.getWidth() / 2;
-        int centerY = location[1] + view.getHeight() / 2;
+    /**
+     * getGlobalVisibleRect() returns root-view coordinates. Its Point offset
+     * is the target view origin in that same coordinate space; do not compare
+     * it with getLocationOnScreen(), which uses the physical-screen origin.
+     */
+    private static boolean centerWithinVisibleRootRect(
+            Rect visible, Point viewOriginInRoot, int width, int height) {
+        if (visible == null || viewOriginInRoot == null || width <= 0 || height <= 0) {
+            return false;
+        }
+        int centerX = viewOriginInRoot.x + width / 2;
+        int centerY = viewOriginInRoot.y + height / 2;
         return visible.contains(centerX, centerY);
+    }
+
+    private static boolean centerIsVisible(
+            View view, Rect visible, Point viewOriginInRoot) {
+        return centerWithinVisibleRootRect(
+                visible, viewOriginInRoot, view.getWidth(), view.getHeight());
     }
 
     private static void assertOnDisplay(View view, String description) {
@@ -77,18 +91,20 @@ public final class CompanionLifecycleInstrumentedTest {
         assertTrue(description + " is not attached to the window", view.isAttachedToWindow());
         assertTrue(description + " is not shown", view.isShown());
         Rect visible = new Rect();
+        Point viewOriginInRoot = new Point();
         assertTrue(description + " has no visible display rectangle",
-                view.getGlobalVisibleRect(visible));
+                view.getGlobalVisibleRect(visible, viewOriginInRoot));
         assertTrue(description + " is fully clipped", visible.width() > 0 && visible.height() > 0);
         assertTrue(description + " center is outside the visible display rectangle",
-                centerIsVisible(view, visible));
+                centerIsVisible(view, visible, viewOriginInRoot));
     }
 
     private static void scrollIntoDisplayIfNeeded(View view, String description) {
         Rect visible = new Rect();
-        if (view.getGlobalVisibleRect(visible)
+        Point viewOriginInRoot = new Point();
+        if (view.getGlobalVisibleRect(visible, viewOriginInRoot)
                 && visible.width() > 0 && visible.height() > 0
-                && centerIsVisible(view, visible)) {
+                && centerIsVisible(view, visible, viewOriginInRoot)) {
             return;
         }
 
@@ -111,11 +127,11 @@ public final class CompanionLifecycleInstrumentedTest {
         int targetY = Math.max(0, descendant.centerY() - scroll.getHeight() / 2);
         scroll.scrollTo(scroll.getScrollX(), targetY);
         assertTrue(description + " remained outside the viewport after scrolling",
-                view.getGlobalVisibleRect(visible));
+                view.getGlobalVisibleRect(visible, viewOriginInRoot));
         assertTrue(description + " is still fully clipped after scrolling",
                 visible.width() > 0 && visible.height() > 0);
         assertTrue(description + " center remained outside the visible display rectangle",
-                centerIsVisible(view, visible));
+                centerIsVisible(view, visible, viewOriginInRoot));
     }
 
     private static TextView findText(View view, String expected) {
@@ -176,6 +192,18 @@ public final class CompanionLifecycleInstrumentedTest {
         return targetContext()
                 .getSharedPreferences("v14-companion", Context.MODE_PRIVATE)
                 .getBoolean("enabled", true);
+    }
+
+    @Test
+    public void testCenterVisibilityUsesRootViewCoordinates() {
+        Rect visibleRoot = new Rect(0, 0, 320, 480);
+        Point viewOriginInRoot = new Point(20, 40);
+        assertTrue(centerWithinVisibleRootRect(
+                visibleRoot, viewOriginInRoot, 80, 40));
+
+        Rect clippedBeforeCenter = new Rect(0, 0, 320, 50);
+        assertFalse(centerWithinVisibleRootRect(
+                clippedBeforeCenter, viewOriginInRoot, 80, 40));
     }
 
     @Test
