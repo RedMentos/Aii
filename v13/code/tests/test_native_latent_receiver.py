@@ -358,3 +358,16 @@ def test_native_model_descriptor_rejects_fifo_without_blocking(tmp_path):
     with pytest.raises(NativeReceiverError, match="regular file"):
         native._open_model_descriptor(model.resolve(strict=True), (home / "models").resolve(), digest)
     assert time.monotonic() - started < 1.0
+
+
+def test_native_model_descriptor_rejects_in_place_mutation_after_open(tmp_path):
+    home, model, binary, digest = fixture(tmp_path)
+    fd, identity = native._open_model_descriptor(
+        model.resolve(strict=True), (home / "models").resolve(), digest
+    )
+    try:
+        model.write_bytes(b"in-place replacement bytes")
+        with pytest.raises(NativeReceiverError, match="identity changed|bytes changed"):
+            native._verify_model_descriptor(fd, digest, identity)
+    finally:
+        os.close(fd)
