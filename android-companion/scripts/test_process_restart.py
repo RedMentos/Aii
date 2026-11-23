@@ -137,11 +137,12 @@ def wait_for_text(
         if action == "Wait":
             if waits_used >= wait_budget:
                 budget_label = "two" if wait_budget == 2 else str(wait_budget)
+                wait_unit = "action" if wait_budget == 1 else "actions"
                 diagnostic = foreground_diagnostic()
                 logs = failure_logcat()[:5000]
                 raise AssertionError(
                     "System UI remained unresponsive after " + budget_label
-                    + " safe Wait action(s); refusing to select Close app; "
+                    + " safe Wait " + wait_unit + "; refusing to select Close app; "
                     + diagnostic + "; relevant logcat=" + logs
                 )
             handle_transient_overlay(root)
@@ -194,11 +195,12 @@ def wait_for_text(
             if final_action == "Wait":
                 if waits_used >= wait_budget:
                     budget_label = "two" if wait_budget == 2 else str(wait_budget)
+                    wait_unit = "action" if wait_budget == 1 else "actions"
                     diagnostic = foreground_diagnostic()
                     logs = failure_logcat()[:5000]
                     raise AssertionError(
                         "System UI remained unresponsive after " + budget_label
-                        + " safe Wait action(s); refusing to select Close app; "
+                        + " safe Wait " + wait_unit + "; refusing to select Close app; "
                         + diagnostic + "; relevant logcat=" + logs
                     )
                 handle_transient_overlay(final_root)
