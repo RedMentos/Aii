@@ -1,3 +1,24 @@
+## Current evidence overlay — 2026-11-23T01:09:03.075Z (Perception / JEPA / QA)
+
+This additive overlay updates current evidence only. The historical Canon heading inventory below is unchanged.
+
+| Canon family | Current evidence | Acceptance boundary |
+| --- | --- | --- |
+| A0–A5 / RAW EAR audio | #2369 lazy-loads optional Teacher Ear only when a caller-supplied result exists; absent module gives UNAVAILABLE_MODULE while acoustic A5/A4/C3 stays importable; current lease + separate teacher/transcript opt-ins remain required | LOCAL_LINUX isolated helper/permission 5/5 PASS; exact-head CI queued/pending; Core #2370 still pins old audio source; no AudioRecord/Redmi proof |
+| A3 vision source lineage | #2395 records exact source IDs + SHA-256 for global/tile projectors and invalidates affected or unknown legacy weights on forget | LOCAL_LINUX helper 7/7 and focused CI 2/2 PASS; staged/integrated blocked |
+| JEPA vision-forget overlay | #2397 carries shared lineage invalidation through the actual overlaid vision_forget; retryable cleanup persists before unlink; shared live blobs retained | Dedicated Python 3.13/3.14 CI 2/2 PASS; staged/integrated FAIL at QA-owned stale vision.py pin; DRAFT |
+| QA source-lifecycle composition | #2391 latest branch is based on #2372, not #2397 | NOT_COMPOSED_WITH_CURRENT_JEPA_OVERLAY; must rebase, pin/copy vision_source_lineage.py and rebind vision.py before rerun |
+| MediaProjection → RAW EYE → A5/C3 | #2356/#2375/#2379 remain separate candidates | No common accepted source ancestor, real C3 UI consumer receipt, or Android frame capture |
+| Voice model feasibility | R-100 confirms sherpa-onnx Android CPython 3.14 ARM64 wheel metadata; R-101 confirms peer-reviewed ECML PKDD 2026 ridge-head unlearning paper | No Termux/Bionic wheel install, model download, weight license clearance or Android performance proof |
+
+**Audio source candidate:** #2369 code/test commit `245b2ef20c975f3446ab5df3ae2007d08a3332cf`, branch head `6e1050146fe7cbb9b57579404bfd700a494d0dce`, current source blob `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`; DRAFT / NOT_RELEASED.
+
+**A3/JEPA candidate:** #2395 + #2397; #2397 exact head `f63a5877774f58b6928b4e8dd7125651e9d8173d`; dedicated overlay CI 2/2 PASS, staged/integrated FAIL. QA hashes: vision.py SHA-256 `d4a5e3e0b3faf27489e6ea8c1476876910d2708033ab9ae4267b665dd8f180dd`; vision_source_lineage.py SHA-256 `bb63636c9ae84d345fe1f4e37254de3be87c26990cb320ca058859fd0b51b72f`.
+
+**Device:** private V13OBS #115 read 2026-11-23T00:52:16Z confirms installed release `aed1d2b826290c95c70356b5d8b864b5ef382be4`, auto-update enabled and Runtime/Dashboard UP_TO_DATE; stored turns remain slow and B1/B2 TIME_BUDGET. No candidate is deployed; all new features REDMI_UNVERIFIED.
+
+---
+
 ## Perception run 10 evidence overlay — 2026-11-23
 
 - **A3 source provenance/forget:** PR #2395 exact head 26ccaf0825d4ebf02aedcdae781a9164b04f53d5 records source ID + SHA-256 for global and tile ridge projectors and invalidates affected or legacy-unknown weights on forget. Focused GitHub CI 2/2 PASS and local helper tests 7/7 PASS. This remains a draft candidate, not accepted: the staged JEPA overlay still replaces vision.forget() with a caption-only cleanup path, and the QA composer has stale vision.py/missing helper pins. Staged/integrated CI FAIL; Redmi unverified.
