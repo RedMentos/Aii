@@ -27,7 +27,7 @@ def bundle(batch=4, length=12, horizon=3, channels=2, lags=2):
 class BaseArchitectureTests(unittest.TestCase):
     def setUp(self):
         torch.manual_seed(7)
-        self.cfg = BaseConfig(channels=2, horizon=3, latent_dim=16, hidden_dim=32, attention_heads=4)
+        self.cfg = BaseConfig(channels=2, horizon=3, latent_dim=16, hidden_dim=32)
 
     def test_jepa_shapes_target_is_ema_and_predictor_has_gradient(self):
         model = M1JEPA(self.cfg)
@@ -86,7 +86,7 @@ class BaseArchitectureTests(unittest.TestCase):
 
     def test_invalid_model_config_is_rejected(self):
         with self.assertRaises(ValueError):
-            BaseConfig(channels=2, horizon=3, latent_dim=15, attention_heads=4)
+            BaseConfig(channels=2, horizon=3, latent_dim=15)
 
 
 if __name__ == "__main__":
