@@ -43,7 +43,7 @@ jobs:
             v13/code/v13/world_jepa_temporal.py \
             v13/code/v13/sleep.py \
             v13/code/v13/memory.py \
-            v13/code/tests/test_v14_world_jepa_temporal_runtime.py
+            v13/code/tests/test_v14_world_jepa_temporal_runtime.py \
             v13/code/tests/test_v14_world_jepa_postcommit_runtime.py
       - name: Run temporal T8 / JEPA / source-forget regressions
         env:
