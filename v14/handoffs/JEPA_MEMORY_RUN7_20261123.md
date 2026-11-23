@@ -114,3 +114,11 @@ The first R-107 documentation PR #2411 was closed as duplicate after its base br
 - Exact code/test SHA: 3b5da6cd8c74b42835e4ea7ea17988afa99a888b.
 - The prior b955b58 head confirmed the compact prompt and authority checks but the query filter still counted the cold B1 negative-control BODY_STATE because it carries the same audit schema with status OMITTED. The test now distinguishes temporal receiver queries by audit status READOUT_CREATED and separately requires at least one non-temporal/omitted query, so the cold negative control remains visible without being misclassified as a trained receiver.
 - Exact-head temporal-jepa Python 3.13, temporal-jepa Python 3.14 and offline-bridge-security were IN_PROGRESS at readback (workflow 45111861235 / 45111861096). No PASS is claimed yet. Earlier b955 head: both temporal jobs failed only at the overly broad query filter (20 passed / 1 failed each); offline bridge security passed.
+
+
+## Postcommit exact-head regression correction — current candidate (2026-11-23)
+
+- Exact code/test SHA: 9c61fb8a43c520ed91b794281b40af656fcc5760.
+- On prior head 3b5da6c, both Python 3.13.18 and 3.14.10 passed the full temporal T8/JEPA/source-forget regression step. The subsequent postcommit worker/restart/rollback step ran 15 tests and failed one fixture assertion: the receiver's source text is the complete query string "The verified action history is ready. Estimate the next action duration.", while the assertion incorrectly expected only "verified action history". The quote is still checked in the captured receiver output; the source ref correctly points to the full original query.
+- Fixed the assertion to compare the referenced source bytes with the fixture's exact receiver_text, preserving the provenance check rather than weakening it to substring matching.
+- Exact-head temporal-jepa Python 3.13, Python 3.14 and offline-bridge-security checks for 9c61fb8 are IN_PROGRESS at readback. No PASS claim yet. The postcommit test step must finish green on this exact head before integration.
