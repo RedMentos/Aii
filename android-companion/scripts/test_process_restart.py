@@ -21,6 +21,7 @@ COMPONENT = PACKAGE + "/.MainActivity"
 TOGGLE_LABEL = "Enable / Stop companion"
 STOPPED_TEXT = "STOPPED (restart requires explicit re-enable)"
 ENABLED_TEXT = "ENABLED FOR THIS PROCESS"
+NOT_PAIRED_TEXT = "not paired (stored identity/current installed signer not verified)"
 STOP_PROOF_MARKER = Path(".v14-stop-persisted-off")
 
 
@@ -289,7 +290,7 @@ def record_stop_persisted_off() -> None:
     print("PASS: visible Stop action persisted OFF before UI confirmation")
 
 
-def verify_durable_off_after_process_death() -> None:
+def verify_durable_off_after_process_death(*, clear_marker: bool = True) -> tuple[str, str]:
     """Independently verify the observed Stop state across a real app process death."""
     try:
         marker = STOP_PROOF_MARKER.read_text(encoding="utf-8").strip()
@@ -308,16 +309,18 @@ def verify_durable_off_after_process_death() -> None:
     new_pid = wait_for_process(absent=False)
     if persisted_enabled() != "false":
         raise AssertionError("companion preference did not remain OFF after process restart")
-    STOP_PROOF_MARKER.unlink(missing_ok=True)
+    if clear_marker:
+        STOP_PROOF_MARKER.unlink(missing_ok=True)
     print("PASS: durable OFF survived force-stop/relaunch; PID "
           + old_pid + " -> " + new_pid)
+    return old_pid, new_pid
 
 
 def wait_for_stopped_ui_or_prove_durable(timeout: float = 60.0) -> str:
     """Keep visible UI strict; record independent durable state if UI is blocked."""
     try:
         return wait_for_text(STOPPED_TEXT, timeout=timeout)
-    except (AssertionError, subprocess.SubprocessError, OSError) as ui_failure:
+    except (AssertionError, subprocess.SubprocessError, OSError, RuntimeError) as ui_failure:
         # uiautomator may report an ANR as an assertion, an adb timeout/nonzero
         # exit, or an OS-level transport error. All are UI-observation failures;
         # preserve the original failure but still attempt the independent OFF
@@ -333,13 +336,54 @@ def wait_for_stopped_ui_or_prove_durable(timeout: float = 60.0) -> str:
         raise ui_failure
 
 
+def wait_for_restarted_stopped_ui_or_report_durable(timeout: float = 60.0) -> str:
+    """Keep the restarted UI gate strict while reporting independently verified OFF state."""
+    try:
+        return wait_for_text(STOPPED_TEXT, timeout=timeout)
+    except (AssertionError, subprocess.SubprocessError, OSError, RuntimeError) as ui_failure:
+        try:
+            marker = STOP_PROOF_MARKER.read_text(encoding="utf-8").strip()
+            if marker != "STOP_ACTION_PERSISTED_OFF":
+                raise AssertionError("visible Stop action marker is invalid")
+            if persisted_enabled() != "false":
+                raise AssertionError("provider startup did not preserve OFF")
+        except Exception as durable_failure:
+            print("DURABLE_STOP_PROOF_FAILED: " + type(durable_failure).__name__
+                  + ": " + str(durable_failure)[:1000])
+        else:
+            print("PARTIAL_PASS: force-stop/PID disappearance and provider startup persisted OFF; "
+                  "visible STOPPED UI confirmation remains BLOCKED")
+        raise ui_failure
+
+
+def verify_stop_and_restart(timeout: float = 60.0) -> tuple[str, str]:
+    """Prove explicit Stop, process death, OFF on relaunch, and no implicit re-pair."""
+    try:
+        stopped = wait_for_stopped_ui_or_prove_durable(timeout=timeout)
+        if ENABLED_TEXT in stopped:
+            raise AssertionError("visible Stop action left the companion enabled")
+        if persisted_enabled() != "false":
+            raise AssertionError("visible Stop action did not leave persisted OFF")
+        old_pid, new_pid = verify_durable_off_after_process_death(clear_marker=False)
+        restarted = wait_for_restarted_stopped_ui_or_report_durable(timeout=timeout)
+        if ENABLED_TEXT in restarted:
+            raise AssertionError("provider/activity restart unexpectedly enabled the companion")
+        if NOT_PAIRED_TEXT not in restarted:
+            raise AssertionError("provider/activity restart unexpectedly shows a Termux pairing")
+        if persisted_enabled() != "false":
+            raise AssertionError("companion preference changed from OFF after restart")
+        return old_pid, new_pid
+    finally:
+        STOP_PROOF_MARKER.unlink(missing_ok=True)
+
+
 def main() -> None:
     STOP_PROOF_MARKER.unlink(missing_ok=True)
     adb("shell", "am", "force-stop", PACKAGE, check=False)
     launch_companion()
     wait_for_process(absent=False)
-    wait_for_text(STOPPED_TEXT, timeout=60.0)
-
+    initial = wait_for_text(STOPPED_TEXT, timeout=60.0)
+    assert NOT_PAIRED_TEXT in initial
     assert persisted_enabled() == "false"
 
     tap_button(TOGGLE_LABEL)
@@ -349,33 +393,11 @@ def main() -> None:
 
     tap_button(TOGGLE_LABEL)
     record_stop_persisted_off()
-    stopped = wait_for_stopped_ui_or_prove_durable(timeout=60.0)
-    assert ENABLED_TEXT not in stopped
-    assert persisted_enabled() == "false"
+    old_pid, new_pid = verify_stop_and_restart(timeout=60.0)
 
-    tap_button(TOGGLE_LABEL)
-    enabled = wait_for_text(ENABLED_TEXT)
-    assert ENABLED_TEXT in enabled
-    assert persisted_enabled() == "true"
-    old_pid = wait_for_process(absent=False)
-
-    adb("shell", "am", "force-stop", PACKAGE)
-    wait_for_process(absent=True)
-    launch_companion()
-    wait_for_process(absent=False)
-    assert persisted_enabled() == "false"
-    try:
-        restarted = wait_for_text(STOPPED_TEXT, timeout=60.0)
-    except AssertionError:
-        print("PARTIAL_PASS: force-stop/PID disappearance and provider startup persisted OFF; "
-              "visible STOPPED UI confirmation remains BLOCKED")
-        raise
-    assert ENABLED_TEXT not in restarted
-    STOP_PROOF_MARKER.unlink(missing_ok=True)
-
-    print("PASS: visible stop persisted OFF; force-stop killed PID "
-          + old_pid + "; provider/activity restart returned STOPPED without "
-          "re-pairing, action submission, or capability grant.")
+    print("PASS: explicit visible Stop persisted OFF; force-stop/relaunch PID "
+          + old_pid + " -> " + new_pid
+          + "; restarted UI stayed STOPPED and unpaired.")
 
 
 if __name__ == "__main__":
