@@ -50,7 +50,7 @@ def test_overlay_rejects_staged_operator_drift(tmp_path):
     code_dir, staging = _trees(tmp_path)
     path = staging / "v13/operator.py"
     path.write_bytes(path.read_bytes() + b"\\n# tampered staged operator\\n")
-    with pytest.raises(ValueError, match="staged operator source pin mismatch"):
+    with pytest.raises(ValueError, match="staged operator differs from verified recovery builder output"):
         _apply(code_dir, staging)
 
 
