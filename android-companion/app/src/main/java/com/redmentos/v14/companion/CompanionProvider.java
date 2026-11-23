@@ -113,7 +113,7 @@ public final class CompanionProvider extends ContentProvider {
      */
     static boolean publishScreenFrameIfAuthorized(
             Context context, CaptureSessionGate captureGate, byte[] frame,
-            JSONObject receipt, long nowElapsed) {
+            JSONObject receipt, long nowElapsed) throws Exception {
         return publishScreenFrameIfAuthorized(
                 context, captureGate, frame, receipt, nowElapsed,
                 CompanionProvider::packageCertificateDigest);
@@ -122,7 +122,7 @@ public final class CompanionProvider extends ContentProvider {
     static boolean publishScreenFrameIfAuthorized(
             Context context, CaptureSessionGate captureGate, byte[] frame,
             JSONObject receipt, long nowElapsed,
-            CapabilityRegistry.CertificateDigestReader certificateReader) {
+            CapabilityRegistry.CertificateDigestReader certificateReader) throws Exception {
         synchronized (ACTION_GATE_LOCK) {
             if (context == null || captureGate == null || frame == null || receipt == null
                     || !captureGate.canPublish() || !isEnabledLocked(context)
