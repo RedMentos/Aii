@@ -90,21 +90,55 @@ def _patch_worker_learning(raw: bytes) -> bytes:
     else:
         raise ValueError("unsupported _turn(payload) statement shape")
 
-    update_calls = [
+    all_update_calls = [
         node for node in ast.walk(worker)
         if is_self_call(node, "online_world_update")
-        and any(
-            keyword.arg == "limit"
-            and isinstance(keyword.value, ast.Constant)
-            and keyword.value.value == 64
-            for keyword in node.keywords
-        )
     ]
-    if len(update_calls) != 1:
+    if len(all_update_calls) != 1:
         raise ValueError(
-            f"expected one online_world_update(limit=64) in Runtime._worker; found {len(update_calls)}"
+            f"expected one online_world_update call in Runtime._worker; found {len(all_update_calls)}"
         )
-    update_call = update_calls[0]
+    update_call = all_update_calls[0]
+    if not any(
+        keyword.arg == "limit"
+        and isinstance(keyword.value, ast.Constant)
+        and keyword.value.value == 64
+        for keyword in update_call.keywords
+    ):
+        raise ValueError("online-world dispatch must retain the existing bounded limit=64")
+
+    def branch_path(node):
+        path = set()
+        child = node
+        parent = parents.get(child)
+        while parent is not None and parent is not worker:
+            suite = None
+            if isinstance(parent, ast.If):
+                if child in parent.body:
+                    suite = "body"
+                elif child in parent.orelse:
+                    suite = "orelse"
+            elif isinstance(parent, ast.Try):
+                if child in parent.body:
+                    suite = "try"
+                elif child in parent.handlers:
+                    suite = "handler"
+                elif child in parent.orelse:
+                    suite = "else"
+                elif child in parent.finalbody:
+                    suite = "finally"
+            elif isinstance(parent, (ast.For, ast.AsyncFor, ast.While, ast.With, ast.AsyncWith)):
+                if child in parent.body:
+                    suite = "body"
+                elif child in parent.orelse:
+                    suite = "orelse"
+            if suite is not None:
+                path.add((id(parent), suite))
+            child, parent = parent, parents.get(parent)
+        return path
+
+    if not branch_path(turn_call).issubset(branch_path(update_call)):
+        raise ValueError("online-world dispatch is not dominated by the same _turn(payload) branch")
     if turn_call.lineno > update_call.lineno:
         raise ValueError("turn result must be produced before online-world dispatch")
 
