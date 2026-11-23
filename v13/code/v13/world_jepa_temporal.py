@@ -1766,18 +1766,15 @@ class TemporalWorldJEPAStoreConsumer:
             }
 
 
+_RUNTIME_CONSUMER_LOCK = threading.RLock()
+
+
 def runtime_consumer(runtime):
     """Return one Runtime-scoped temporal consumer shared by idle and body paths."""
     store = getattr(runtime, "store", None)
     if store is None:
         raise ValueError("Runtime store is required for temporal JEPA")
-    lock = getattr(runtime, "_temporal_world_jepa_consumer_lock", None)
-    if lock is None:
-        lock = getattr(runtime, "lock", None)
-    if lock is None:
-        lock = threading.RLock()
-        setattr(runtime, "_temporal_world_jepa_consumer_lock", lock)
-    with lock:
+    with _RUNTIME_CONSUMER_LOCK:
         learner = getattr(runtime, "_temporal_world_jepa_consumer", None)
         if learner is None or getattr(learner, "store", None) is not store:
             learner = TemporalWorldJEPAStoreConsumer(store)
@@ -1787,17 +1784,23 @@ def runtime_consumer(runtime):
 
 def consume_temporal_after_commit(store, home=None, *, limit=PAGE_SIZE, max_pages=MAX_PAGES,
                                   steps=None, cancel_check=None, consumer=None, runtime=None):
-    """Runtime adapter: same local learning/optimizer gates as the base WorldJEPA."""
+    """Runtime adapter: warm read-only cache even when learning gates are closed."""
     gates = permission_state(store)
-    if not gates["learning_enabled"]:
-        return {"status": "OFF", "checkpoint_committed": False,
-                "native_body_weights_changed": False}
-    if not gates["optimizer_permission"]:
-        return {"status": "PENDING_OPTIMIZER_PERMISSION", "checkpoint_committed": False,
-                "native_body_weights_changed": False}
     learner = consumer
+    if learner is None and runtime is not None:
+        learner = runtime_consumer(runtime)
+    if not gates["learning_enabled"]:
+        cache = learner.warm_active_checkpoint(nonblocking=True) if learner else {}
+        return {"status": "OFF", "checkpoint_committed": False,
+                "native_body_weights_changed": False,
+                "receiver_cache_status": cache.get("status", "NOT_REQUESTED")}
+    if not gates["optimizer_permission"]:
+        cache = learner.warm_active_checkpoint(nonblocking=True) if learner else {}
+        return {"status": "PENDING_OPTIMIZER_PERMISSION", "checkpoint_committed": False,
+                "native_body_weights_changed": False,
+                "receiver_cache_status": cache.get("status", "NOT_REQUESTED")}
     if learner is None:
-        learner = runtime_consumer(runtime) if runtime is not None else TemporalWorldJEPAStoreConsumer(store)
+        learner = TemporalWorldJEPAStoreConsumer(store)
     if getattr(learner, "store", None) is not store:
         raise ValueError("temporal consumer belongs to a different Store")
     result = learner.update(
