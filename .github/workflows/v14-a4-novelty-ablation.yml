@@ -1,0 +1,50 @@
+name: V14 A4 novelty-gate synthetic ablation
+
+on:
+  push:
+    branches:
+      - "research-perception/**"
+    paths:
+      - "v14/experiments/a4_novelty_gate_ablation.py"
+      - "v14/experiments/test_a4_novelty_gate_ablation.py"
+      - ".github/workflows/v14-a4-novelty-ablation.yml"
+  pull_request:
+    paths:
+      - "v14/experiments/a4_novelty_gate_ablation.py"
+      - "v14/experiments/test_a4_novelty_gate_ablation.py"
+      - ".github/workflows/v14-a4-novelty-ablation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-ablation:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Compile experiment and tests
+        run: python -m py_compile v14/experiments/a4_novelty_gate_ablation.py v14/experiments/test_a4_novelty_gate_ablation.py
+      - name: Install test runner
+        run: python -m pip install --disable-pip-version-check pytest==9.2.0
+      - name: Run deterministic source-disjoint regression tests
+        run: python -m pytest -q v14/experiments/test_a4_novelty_gate_ablation.py
+      - name: Run fixed-seed holdout ablation
+        run: python v14/experiments/a4_novelty_gate_ablation.py --sessions 12 --output /tmp/v14-a4-report.json
+      - name: Validate report boundary
+        run: |
+          python - <<'PY'
+          import json
+          report = json.load(open("/tmp/v14-a4-report.json", encoding="utf-8"))
+          assert report["evidence"] == "SYNTHETIC_ONLY"
+          assert report["source_disjoint"] is True
+          assert report["synthetic_audio_claim"] is False
+          assert report["runtime_consumer_claim"] is False
+          assert len(report["results"]) == 9
+          PY

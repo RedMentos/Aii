@@ -941,3 +941,37 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
+
+
+## R-082 — Surprise-gated A4 speaker novelty and V14 synthetic mechanism ablation (2026-11-22)
+
+**Primary paper fully read:** Louis Mouchon & Alexis Lainault, *Surprise-Gated Memory for Live Speaker Diarization*, [arXiv:2611.20819v1](https://arxiv.org/abs/2611.20819), PDF [full text](https://arxiv.org/pdf/2611.20819). The arXiv record says submitted 2026-11-16; the PDF title page says September 26, 2026. Independent research preprint, not peer reviewed. Twelve pages; no official implementation/checkpoint repository or weight license linked in the paper.
+
+**Method actually reported:** Echo Dia/DiariZen uses a WavLM-large encoder, Conformer segmentation, ResNet34 speaker embedder and VBx clusterer. Embeddings are projected into the backbone's LDA/PLDA space; novelty is the negative nearest-prototype PLDA score z-scored against the inter-speaker distribution on AMI development data. The known-vs-new detector reaches AUROC 0.866 on that development split. The three-regime gate uses z-score thresholds 0.15 / 0.45; under 0.5 s net speech and overlapped segments are forced to DEFER. Prototypes update by running mean. Every 60 s, full-buffer VBx consolidation re-clusters the entire meeting buffer and resolves deferred segments. Memory is strictly intra-meeting and wiped at session end; no runtime gradient updates occur.
+
+**Reported results and counterevidence:** revisable DER is 18.1 vs 20.8 (no sleep) vs 23.5 (two-minute sliding replay) on AMI-SDM, and 8.0 vs 11.1 vs 18.4 on VoxConverse. The causal-strict track is poor: 58.2 / 47.8 vs naive 22.9 / 9.9, largely because VBx can renumber clusters between consolidations. Removing deferral is nominally slightly better on revisable DER (17.1 / 7.7) but much worse causally (62.8 / 46.1). The authors attribute most residual error to overlap/VAD segmentation, not clustering/memory. Test subsets are only three AMI meetings and five VoxConverse sessions, single-seed, no confidence intervals; condition ordering is more credible than absolute rates. Full-buffer vs sliding ordering does not establish the same mechanism in V14.
+
+**V14 compatibility decision:** do not copy the PLDA thresholds, VBx path, or paper claims into V14. The current speaker registry is cosine-lookback over caller-supplied embeddings, not PLDA, and no verified calibration receipt exists. The FASTDIAR adapter in PR #2361 is only an in-memory caller-supplied embedding adapter; its producer is not attested and its checkpoint-weight license remains unresolved. No FASTDIAR weights or other model dependencies were downloaded. A4 remains DEFER; no speaker identity or learning authority is granted.
+
+**Runnable experiment:** PR [#2368](https://github.com/RedMentos/Aii/pull/2368), `v14/experiments/a4_novelty_gate_ablation.py`. It compares no gate / single threshold / assign-defer-create and all-history / global 24-event sliding / first-exemplar retention. Thresholds are tuned only on source-disjoint synthetic sessions and evaluated on separate synthetic holdout sessions. This is a cosine-prototype mechanism stress test, not PLDA, VBx sleep, FASTDIAR inference, real audio, identity recognition, or a Runtime consumer.
+
+**LOCAL_LINUX evidence:** CPython 3.13.5 x86_64; py_compile PASS; focused pytest 4/4 PASS. Three source-disjoint runs, 12 sessions each, seeds 20261122/20261123/20261124:
+- full-history + triage: change F1 0.5455 ± 0.0000; false-novelty 0; overlap deferral 1.0; total deferral 0.5574 ± 0.0092; coverage 0.4858 ± 0.0101; four clusters.
+- full-history + single threshold: change F1 0.5354 ± 0.0143; false-novelty 0.0004 ± 0.0005; coverage 1.0; four clusters.
+- sliding-window + single threshold: change F1 0.9616 ± 0.0211, but one-shot recall 0.4397 ± 0.0163 and 8.94 ± 0.08 clusters for four synthetic speakers (fragmentation).
+- sliding-window + triage: F1 0.7421 ± 0.0107; overlap deferral 1.0; coverage 0.3946 ± 0.0094; 5.78 ± 0.08 clusters.
+
+**Interpretation:** in this toy setup, a three-way gate prevents overlap updates and reduces false novelty, but sacrifices coverage; a global sliding retention window increases change detection while fragmenting returning speakers. These are properties of the synthetic generator and simple cosine prototypes, not speech-quality results or proof for/against the paper's VBx consolidation. A real experiment requires separately consented labelled embeddings, source-disjoint calibration/holdout, and a model-bound receipt.
+
+**CI boundary:** first exact PR workflow run 45056173516 failed only because pytest was not installed (compile step passed; test step reported `No module named pytest`). The workflow now installs pinned pytest 9.2.0; exact retry run 45056272786 passed on Python 3.13 and 3.14 (2/2), including compile, 4-test regression, holdout ablation and report-boundary validation. Privacy scan 45056272821 also passed. No full local Aii checkout, Android/Termux/Redmi, microphone or device timing test.
+
+**Status:** FULLTEXT_REVIEWED / SYNTHETIC_ABLATION_LOCAL_PASS / PR_DRAFT / NOT_RUNTIME_WIRED / REDMI_UNVERIFIED.
+
+
+**CI closure addendum (2026-11-22):** PR #2368 latest docs head `bb85ddd893d59836bac905dfb7c78342d6c0e996`; exact code/workflow head `41025f3d9bf92870f9675173d4af00638a49c203`. Initial CI failed only because pytest was absent; after pinning pytest 9.2.0, exact retry 45056272786 passed Python 3.13/3.14 2/2. This remains synthetic-only CI and does not promote the A4 runtime gate.
+
+
+**FASTDIAR rebase addendum (2026-11-22):** the reviewed adapter/test blobs were ported unchanged to [PR #2369](https://github.com/RedMentos/Aii/pull/2369), based on current release-development HEAD aed1d2 (0 behind). Exact adapter/consumer workflow 45056897981 passes Python 3.13/3.14 2/2, seven tests each, including the actual RAW EAR A5→A4→C3 consumer. Privacy scan 45056897992 and same-repo integration 45057029362 pass. The staged/integrated workflow 45056898007 is still in progress. This does not attest the embedding producer or clear checkpoint-weight licensing; no inference or weight download. A4 remains DEFER.
+
+
+**FASTDIAR staged-status addendum (2026-11-22):** on PR #2369, exact staged-runtime job in run 45056898007 passed source recall, SQLite turn, revocation, JEPA restart and recovery-shell syntax. The separate integrated-regression job is still in progress after dependency installation; no overall staged/integrated PASS is claimed. Adapter/consumer matrix remains 2/2 PASS on Python 3.13/3.14.

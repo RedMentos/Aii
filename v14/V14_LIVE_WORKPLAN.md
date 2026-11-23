@@ -1235,3 +1235,39 @@ The 679f audio run showed that rebinding only Context-source recall was insuffic
 ### Next integration step
 
 Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, migration, owner-read and deployer workflows. Fix only measured current-head failures. Keep the PR DRAFT and NOT_RELEASED. The #2280 C4 receipt, #2281 Age-rights, #2282 shared-blob race, #2283 rollback, #2285 audio QA and #2275 RAW EAR changes must be rebased and tested on this same base; old-base green results are not accepted. Private PIPELINE_STATUS #453 is still unanswered, so REDMI_UNVERIFIED. User action: none.
+
+
+## Research & Perception — A4 novelty-gate ablation and RAW EYE exact CI — 2026-11-22
+
+- Release-development branch readback: `gpt6/v13-private-remote-bridge-20261111` = `aed1d2b826290c95c70356b5d8b864b5ef382be4`. This is a documentation/handoff-only refresh. The installed code remains `c4eb82deec915f65894c20d6ebbaf0ebf58fa335` per the latest reported owner receipt; the phone is reported UP_TO_DATE, but the separate HEALTH receipt says runtime UNAVAILABLE.
+- P0 #1904 remains open. Latest stored diagnostic snapshot is 57.739 s total / 41.627 s TTFT / 38.945 s prefill / 751 admitted tokens / 2 generated tokens; B1/B2 remain TIME_BUDGET at 53.2/54.2 s. This is a repeated stored snapshot, not a new turn; answer correctness is UNKNOWN.
+- PR #2366 head `f8d05bcf4d23a5ac303e44a4aa130d5383369ed9`: exact Perception run 45054556653 PASS on Python 3.13 and 3.14; staged/integrated run 45054556692 PASS 2/2; same-turn B1/B2/C4/C3 consumer run 45054556663 PASS 2/2; privacy scan 45054556593 and runtime deployment integrity 45054556651 PASS. It remains DRAFT / NOT_RELEASED. Stored-image A5 source-lock candidate is not called by normal Runtime; no camera/MediaProjection or Redmi proof.
+- PR #2361 FASTDIAR diagnostic adapter head `bfac3a87a6f308d6b7583df9d72c81ab53f898aa`: focused workflow 45048321233 PASS on Python 3.13/3.14. Code hashes the actual local checkpoint file and wraps caller-supplied 192-D/80-ms embeddings; the producer is not attested, no calibration is attached, A4 remains DEFER, and no weights were downloaded. The branch is one commit behind release-development HEAD `aed1d2`; GitHub reports mergeable=false. Rebase/reconcile before merge.
+- Full 12-page preprint review: Mouchon & Lainault, *Surprise-Gated Memory for Live Speaker Diarization*, arXiv:2611.20819v1. It uses model-specific PLDA z-scored novelty and full-buffer VBx, not V14's cosine-lookback registry. The reported revisable track benefits from full-buffer consolidation; sliding replay is worse there but can improve causal-strict stability, while cluster renumbering makes the causal track very poor. Three AMI meetings/five VoxConverse sessions, single seed, no confidence intervals. Keep it research-only; no PLDA thresholds or VBx claim transferred.
+- PR #2368 adds a reproducible synthetic cosine-prototype ablation. LOCAL_LINUX CPython 3.13.5: py_compile PASS; `python -m pytest -q` 4/4 PASS; three source-disjoint seeds (12 sessions each) show a clear trade-off: full-history triage F1 0.5455, overlap defer 1.0, coverage 0.4858; sliding-window single-threshold F1 0.9616 but one-shot recall 0.4397 and 8.94 clusters for four synthetic speakers. This is not real audio, PLDA/VBx, FASTDIAR inference, a Runtime consumer or speaker recognition.
+- Exact PR CI initially failed because the new workflow did not install pytest; compile succeeded and the pytest command failed with `No module named pytest`. The workflow now pins `pytest==9.2.0`; exact retry run 45056272786 passed 2/2 on Python 3.13/3.14. This supersedes the in-progress status recorded above.
+- **Next:** Core owns the normal Runtime hook and QA owns integrated source-forget/restart acceptance for #2366. Rebase/reconcile #2361 against aed1d2. For A4 speaker decisions, require separately consented, source-disjoint labelled embeddings and a model-bound calibration receipt; until then keep DEFER. No user/device action.
+
+
+### A4 novelty-gate CI closure — 2026-11-22T18:43:30Z
+
+- PR [#2368](https://github.com/RedMentos/Aii/pull/2368) latest documentation head `ca6b385d1e9ac0461fe922dfcdca3fe796d984a6`; exact experiment/workflow code head `41025f3d9bf92870f9675173d4af00638a49c203`.
+- Initial run 45056173516 failed only because pytest was absent on the hosted runner; the compile step passed. Added pinned `pytest==9.2.0` in the workflow.
+- Exact retry run [45056272786](https://github.com/RedMentos/Aii/actions/runs/45056272786): Python 3.13 and 3.14 **2/2 PASS**. Both jobs completed compile, pinned test-runner install, deterministic source-disjoint regression tests, fixed-seed holdout ablation and report-boundary validation. Privacy scan 45056272821 PASS.
+- PR remains DRAFT / NOT_RELEASED and research-only. The workflow verifies the synthetic experiment only; it does not connect to normal Runtime, run FASTDIAR, validate real speech, or prove Android/Redmi behavior.
+
+
+### FASTDIAR adapter rebase — 2026-11-22T18:47:45Z
+
+- The stale #2361 adapter/test blobs (`5a451689e68742917bd5bc720b6af407b3e193e5`, `07e857cde89be407a65da64fd5cba3360e6e2901`) are now ported byte-identically into [PR #2369](https://github.com/RedMentos/Aii/pull/2369) based on current release-development HEAD `aed1d2b826290c95c70356b5d8b864b5ef382be4` (0 behind, mergeable=true). A dedicated workflow avoids changing the shared RAW EAR workflow.
+- Exact adapter/consumer workflow 45056897981 PASS 2/2 on Python 3.13/3.14; each ran py_compile and the actual A5→A4→C3 consumer regression (7 passed). Privacy scan 45056897992 PASS; same-repo integration 45057029362 PASS.
+- Exact staged/integrated run 45056898007 remains IN_PROGRESS (staged-runtime and integrated-regression). Do not promote it to PASS until both finish.
+- Original #2361 remains stale/mergeable=false on c4eb82 and is marked for supersession after #2369's integrated result. No force-push.
+- The adapter is diagnostic only: caller-supplied embeddings, no attested producer, no inference, no calibration, no weight download, no speaker identity or normal Runtime dispatch. A4 remains DEFER; Redmi unverified.
+
+
+### FASTDIAR exact-base staged status — 2026-11-22T18:49:00Z
+
+- Run 45056898007: `staged-runtime` job PASS, including staged source recall, SQLite turn, revocation and JEPA restart plus recovery shell syntax.
+- The same run's `integrated-regression` job has completed dependency installation and is still exercising the shared staged organ/memory paths. Status remains IN_PROGRESS; no overall run PASS claim.
+- Exact FASTDIAR adapter/consumer matrix 45056897981 remains 2/2 PASS (7 tests each, Python 3.13/3.14); privacy 45056897992 and same-repo integration 45057029362 PASS.

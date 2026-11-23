@@ -1,3 +1,19 @@
+# Research & Perception — latest verified handoff (2026-11-22 18:44 UTC)
+
+- **Release-development HEAD:** `gpt6/v13-private-remote-bridge-20261111` = `aed1d2b826290c95c70356b5d8b864b5ef382be4` (documentation/handoff-only refresh). The installed code remains `c4eb82deec915f65894c20d6ebbaf0ebf58fa335` per the latest reported owner receipt; updater is reported enabled/UP_TO_DATE, while a separate HEALTH receipt reports runtime UNAVAILABLE.
+- **P0 #1904 remains open:** latest stored diagnostic snapshot is 57.739 s total / 41.627 s TTFT / 38.945 s prefill / 751 admitted prompt tokens / 2 generated tokens; B1/B2 remain TIME_BUDGET at 53.2/54.2 s. It is a repeated stored snapshot, not a new turn; correctness is UNKNOWN. Do not infer brain functionality from UP_TO_DATE.
+- **RAW EYE PR #2366** head `f8d05bcf4d23a5ac303e44a4aa130d5383369ed9`: Perception 3.13/3.14 2/2 PASS; staged/integrated 2/2 PASS; same-turn B1/B2/C4/C3 consumer 3.13/3.14 2/2 PASS; privacy and deployment-integrity PASS. Still DRAFT / NOT_RELEASED; stored-image A5 adapter is not called by normal Runtime. No camera, Android or Redmi proof.
+- **FASTDIAR adapter PR #2369** head `560648b7f6e0b4a6acb19227c3cd22e8a514fc60`, based on current release-development HEAD aed1d2 (0 behind, mergeable=true): exact A5→A4→C3 consumer CI 2/2 PASS on Python 3.13/3.14 (7 tests each), privacy scan and same-repo integration PASS. Staged/integrated run 45056898007 is still running. It wraps caller-supplied embeddings only; no inference, producer attestation, calibration or weight download. Old #2361 is stale/mergeable=false and will be superseded after #2369 integrated result.
+- **A4 ablation PR #2368** code/workflow tested at `41025f3d9bf92870f9675173d4af00638a49c203` (later branch commits update only the handoff/board/ledger): source-disjoint synthetic cosine-prototype experiment, no runtime consumer. LOCAL_LINUX CPython 3.13.5 py_compile PASS, pytest 4/4 PASS, plus three 12-session holdout seeds. Full-history triage reduced false novelty/overlap writes but had 0.486 coverage; global sliding retention improved change F1 but fragmented returning speakers (8.94 clusters for four synthetic speakers). This is not real audio, PLDA/VBx, FASTDIAR inference or speaker recognition.
+- PR #2368 exact CI initially failed only because pytest was not installed; compile passed. The workflow now pins pytest 9.2.0, and exact retry run 45056272786 passed on Python 3.13/3.14 (2/2), including tests, holdout ablation and report-boundary validation. Privacy scan 45056272821 also passed.
+- **No device action:** no UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, Termux command, model/weight/permission change, or user-data change. No new turn was sent. Redmi-native tests remain UNVERIFIED.
+
+**Next internal work:** Core wires #2366 into normal Runtime after review; QA validates integrated source-forget/restart. Rebase/reconcile #2361 on aed1d2. For A4 decisions, obtain separately consented, source-disjoint labelled embeddings and a model-bound calibration receipt; keep DEFER until then.
+
+**User action: none.**
+
+---
+
 # QA & Android — temporal JEPA and source-lifecycle follow-up (2026-11-22)
 
 - JEPA/Memory PR [#2351](https://github.com/RedMentos/Aii/pull/2351), exact head 3df0c8a6a65dd2545bde62db92efc761d143032a, adds dense contiguous T8 temporal windows (history lengths 2/3), explicit censored omissions, unknown-gap breaks, connected session/source split, NumPy WorldJEPA + EMA/Adam/checkpoint persistence, and B1/B2/SELF shadow readouts. It is wired into SleepRuntime post-commit but has no prompt consumer or native body-weight effect. Synthetic Store/T8 fixtures only. Exact CI currently queued; PR is DRAFT / NOT_RELEASED.
