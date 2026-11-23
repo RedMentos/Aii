@@ -108,3 +108,16 @@ Read exact-head CI for `0034b2c`. If the emulator still ANRs, preserve the failu
 - No full local Aii checkout, Gradle or Android SDK is available in this worker. No LOCAL_LINUX full-suite or local emulator PASS is claimed.
 - Physical Redmi remains `REDMI_UNVERIFIED`. No phone install, pairing, CHAT_SEND, UPDATE_REQUEST, permission change, model/weight change or user-data mutation occurred.
 - Next: open the stacked draft PR and inspect its exact-head Android unit/emulator plus staged/integrated checks. If the durable fallback passes while System UI remains unresponsive, report only the partial persistence proof and keep visible UI acceptance blocked. Do not increase wait counts or switch renderers again.
+
+## Fresh Redmi owner-read — 2026-11-23 06:15 UTC
+
+Read-only private receipts, no new chat turn or device action:
+
+- Installed release `aed1d2b826290c95c70356b5d8b864b5ef382be4`; updater auto-enabled, Runtime/Dashboard UP_TO_DATE, last_error NONE.
+- Runtime service/model process report RUNNING. HEALTH's Runtime field is UNAVAILABLE, so preserve the status disagreement.
+- Last stored turn remains 57.74 s total / 41.63 s TTFT / 38.95 s C3 prefill / 2 tokens; B1/B2 remain TIME_BUDGET at 53.2/54.2 s; C3 probe 3.1 s.
+- HEALTH: 1,371 MiB MemAvailable / 1,362 MiB disk free. Instant native-residency snapshot: 0 mapped processes, UNKNOWN_NO_GROUP_CHILDREN; not free-RAM or sustained residency proof.
+- LEARNING_STATUS UNAVAILABLE. Official Age 0; lab stage request 10 / effective implemented stage 5; physical feature execution false.
+- No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, shell, permission, model/weight or user-data mutation.
+
+The Boss WorldJEPA cache candidate remains CI-green but not installed; this device receipt does not establish any improvement from that candidate. The Android companion lifecycle and MediaProjection paths remain REDMI_UNVERIFIED.
