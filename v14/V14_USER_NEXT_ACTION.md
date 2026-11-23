@@ -1,3 +1,16 @@
+# Research & Perception — current verified checkpoint (2026-11-23T23:52:27.945Z)
+
+- Open DRAFT PR #2448 on branch research-perception/v14-audio-duplex-bridge-20261123-run21; current feature head before this handoff update: 2d772ca3ce36d54179de35c26d53c18de18ef736. The latest handoff-only branch head is recorded in the PR branch history.
+- New executable fix: duplex.handoff() no longer deletes the only pending handoff before reading the prior event/message, parsing the packet and publishing the partial-answer SourceRef. It prepares first, rechecks the same pending value, then CAS-consumes. Failures leave it retryable.
+- Added regressions for missing event, missing user message, malformed packet and source publication failure followed by a successful retry; existing branch tests also cover first-writer target-turn ownership and commit-before-cancel ordering. The workflow now explicitly compiles and path-filters duplex.py.
+- LOCAL_LINUX isolated fake-Store state-machine reproduction: old ordering lost pending state in 3/3 failure injections; new ordering preserved it in 3/3; a simulated CAS conflict retried with exactly one source publication. This is not the full Aii pytest suite.
+- Exact-head GitHub Actions runs 45291585143 and 45291932247 ended startup_failure with no jobs; retry was rejected (403). Full local Aii checkout/pytest remains BLOCKED because no checkout is mounted and github.com DNS is unavailable.
+- Redmi: latest public #1904 receipt comment 7108089370 reports installed 8d93236, auto-update enabled, runtime STOPPED_BY_USER/autostart false, native residency unavailable. Candidate NOT_DEPLOYED / REDMI_UNVERIFIED. No update request, restart, chat send, microphone permission, model/weight or data change.
+- Next: get a successful exact-head CI run and independent QA/Boss review; then coordinate Core/QA's signed Android audio provider and revocation lifecycle. The current bridge consumes caller-supplied PCM only; microphone capture remains OFF.
+- User action: none. Preserve the phone's stopped state; no manual Termux command is needed.
+
+---
+
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
