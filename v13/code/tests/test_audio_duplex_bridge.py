@@ -133,7 +133,7 @@ def test_provisional_raw_ear_onset_interrupts_only_in_explicit_interrupt_mode(tm
             assert result["a4"]["temporal_receipt_id"] == result["temporal_receipt_id"]
             assert result["duplex"]["decision"] == "INTERRUPT"
             assert result["duplex"]["relation"] == "AUDIO_BARGE_IN"
-            assert result["duplex"]["bridge_revision"] == "V14_RAW_EAR_AUDIO_DUPLEX_BRIDGE_V2"
+            assert result["duplex"]["bridge_revision"] == "V14_RAW_EAR_AUDIO_DUPLEX_BRIDGE_V3"
             assert result["learning_authority"] is False
             assert result["action_authority"] is False
         wait_idle(runtime)
