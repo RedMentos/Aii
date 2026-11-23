@@ -1452,3 +1452,8 @@ The linked `alikayyam/sticky_moe` repository README declares MIT, but the root `
 3. Run the temporal and postcommit suites on Python 3.13 and 3.14, then optimizer-resume, staged/integrated, source-forget, restart, positive rollback and missing/corrupt rollback controls. Capture numeric parameter/checkpoint deltas and holdout/retention utility; no native body-weight claim without a real receiver consumer.
 4. Complete the production ActionSelection multi-SourceRef producer with Core. Keep B1/B2/SELF readouts SHADOW until the real receiver and source-disjoint utility are verified.
 5. Preserve the Redmi STOPPED_BY_USER state. No user action is required for this code-only candidate.
+
+
+### Explicit remaining JEPA receiver-retention gap
+
+The temporal predictor's fixed-EMA retention gate is measured, and B1/B2 adapter fitting records bounded Adam gradients, old/new parameter SHA, parameter delta norm, source-disjoint current holdout metrics and shuffled/zero-latent controls. But `world_jepa_learning_intent.finalize_weight_delta_receipts()` currently sets `target_adapter_retention` to `NOT_MEASURED`. The old adapter's MSE on the *new* holdout is not an old-cohort retention measurement. After the parent/rebase gate, persist prior receiver holdout outcomes and measure old/new B1/B2 heads on the identical retained cohort, with source/transition disjointness and shuffled/no-history negative controls. Do not call the B1/B2 receiver loop complete until the receipt reports a measured retention result.
