@@ -1161,4 +1161,4 @@ PR #2387 was merged into the Boss documentation branch only. R-096–R-099 remai
 
 **V14 implication:** this supports the existing separation between timestamped RAW EAR/acoustic features, optional user-transcript/Teacher Ear output, agent language planning and the speech effector. It does not justify replacing the raw ear with transcript-only input, nor is its 9B/600M system a Redmi model candidate. A later small-model experiment should compare a separate causal ASR head/decoder against a staged fallback while preserving prosody, speaker and non-speech signals, with explicit transcript consent, alignment, barge-in and end-to-end latency metrics. No code/weights imported; no model downloaded.
 
-**Status:** FULL_ARXIV_HTML_REVIEWED / PREPRINT / ARCHITECTURE_RELEVANT / MODEL_TOO_LARGE_FOR_REDM I_TARGET / NO_CODE_OR_WEIGHT_LICENSE / NO_ANDROID_PROOF.
+**Status:** FULL_ARXIV_HTML_REVIEWED / PREPRINT / ARCHITECTURE_RELEVANT / MODEL_TOO_LARGE_FOR_REDMI_TARGET / NO_CODE_OR_WEIGHT_LICENSE / NO_ANDROID_PROOF.
