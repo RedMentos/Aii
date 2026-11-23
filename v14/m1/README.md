@@ -103,6 +103,10 @@ For each bootstrap replicate, resample the same contiguous temporal blocks for e
 
 Report candidate, accepted and rejected windows and rejection fraction for each split, plus monthly breakdowns. This is required to reveal seasonal undercoverage after strict NaN rejection and the 7-day lag requirement.
 
+## Current BASE implementation
+
+The streaming baseline module now contains Persistence, Seasonal Persistence, Train Mean, Train Median, conventional squared-loss RidgeAR (secondary), L1/L2-penalized LADAR, and a **RawWindowProbe**. RawWindowProbe is a linear L1 probe over the complete common X/S/calendar bundle, not a reduced AR-lag subset; it declares a hard trainable-parameter ceiling and fits only on accepted training windows. The synthetic baseline suite exercises these implementations.
+
 ## Not yet implemented
 
-BASE and PROBE model adapters, the validation pilot, preregistration authoring/locking, model training, MAE-vs-JEPA result comparisons, and any UCI real-data run. No gate has passed.
+RawWindowMLP, RandomEncoderProbe, RawGRU, direct-MAE and JEPA model adapters, the full multi-seed training/evaluation orchestration, capacity/tuning-budget audit, validation pilot, preregistration authoring/locking, MAE-vs-JEPA result comparisons, and any UCI real-data run. M1 remains [ENTWURF]; no gate has passed.
