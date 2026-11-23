@@ -1,4 +1,3 @@
-import hashlib
 import json
 import math
 import struct
@@ -632,10 +631,11 @@ def make_sherpa_teacher(tmp_path, monkeypatch, *, timestamps=(0.1, 0.5)):
 
 
 def test_sherpa_teacher_enters_c3_ephemerally_without_persisting_transcript(tmp_path, monkeypatch):
-    runtime, _started = make_runtime(tmp_path, "auto")
+    runtime, started = make_runtime(tmp_path, "auto")
     teacher, recognizer, _model_root = make_sherpa_teacher(tmp_path, monkeypatch)
     try:
         first = runtime.submit("Tell me a long story about the history of Sweden")
+        assert started.wait(10)
         _audio_event, generation, pcm, kwargs = make_audio(runtime)
         kwargs["finality"] = "FINAL"
         with audio_consent_lease(
@@ -674,6 +674,7 @@ def test_sherpa_teacher_enters_c3_ephemerally_without_persisting_transcript(tmp_
 
 
 def test_sherpa_teacher_requires_both_opt_ins_before_loading(tmp_path, monkeypatch):
+    monkeypatch.delitem(sys.modules, "sherpa_onnx", raising=False)
     with pytest.raises(PermissionError, match="separate opt-ins"):
         load_sherpa_teacher_runtime(
             tmp_path, teacher_opt_in=False, transcript_consent=True,
@@ -700,10 +701,11 @@ def test_sherpa_teacher_manifest_hash_rejects_symlinked_model_component(tmp_path
 
 
 def test_sherpa_teacher_defers_provisional_audio_and_opt_out_without_inference(tmp_path, monkeypatch):
-    runtime, _started = make_runtime(tmp_path, "auto")
+    runtime, started = make_runtime(tmp_path, "auto")
     teacher, recognizer, _model_root = make_sherpa_teacher(tmp_path, monkeypatch)
     try:
         first = runtime.submit("Tell me a long story about the history of Norway")
+        assert started.wait(10)
         _audio_event, generation, pcm, kwargs = make_audio(runtime)
         with audio_consent_lease(
             runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
@@ -722,10 +724,11 @@ def test_sherpa_teacher_defers_provisional_audio_and_opt_out_without_inference(t
 
 
 def test_sherpa_teacher_rejects_missing_token_timestamps_without_losing_raw_ear(tmp_path, monkeypatch):
-    runtime, _started = make_runtime(tmp_path, "auto")
+    runtime, started = make_runtime(tmp_path, "auto")
     teacher, recognizer, _model_root = make_sherpa_teacher(tmp_path, monkeypatch, timestamps=None)
     try:
         first = runtime.submit("Tell me a long story about the history of Denmark")
+        assert started.wait(10)
         _audio_event, generation, pcm, kwargs = make_audio(runtime)
         kwargs["finality"] = "FINAL"
         with audio_consent_lease(
