@@ -206,6 +206,19 @@ class UCIParserTests(unittest.TestCase):
         self.assertEqual(rows[0].values, (4.216, 234.840))
         self.assertIsNone(rows[1].values[0])
 
+
+    def test_missing_minute_timestamp_fails_closed(self):
+        payload = (
+            "Date;Time;Global_active_power\\n"
+            "16/12/2006;17:24:00;1,0\\n"
+            "16/12/2006;17:26:00;2,0\\n"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "gap.txt"
+            path.write_text(payload, encoding="utf-8")
+            with self.assertRaises(ValueError):
+                parse_uci(path)
+
     def test_non_monotonic_timestamps_fail_closed(self):
         payload = (
             "Date;Time;Global_active_power\n"
