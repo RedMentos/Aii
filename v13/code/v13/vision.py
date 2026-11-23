@@ -30,6 +30,7 @@ import zlib
 from pathlib import Path
 from .common import Unavailable,atomic_write,digest,dumps,uid,now
 from .vision_source_lineage import source_lineage, invalidate_projectors, unlink_projector_artifact, unlink_source_blob
+from .vision_validation import source_disjoint_crossval as _source_disjoint_crossval
 
 KEY='WP_N15_VISION';REVISION='wp-n15-vision-v1';AUTHORITY='REFERENCE_NOT_FACT';STUDENT='STUDENT_ESTIMATE'
 PROMPT='Describe the image in one sentence: name the main objects, their colours and where they are.'
@@ -230,7 +231,7 @@ def retrieval(Z,Y):
     return {'top1':float((S.argmax(1)==np.arange(n)).mean()) if n else 0.,'chance':1./n if n else 0.,'mean_cosine':float(np.diag(S).mean()) if n else 0.}
 
 def crossval(X,Y,thumbs=None,folds=4,ridge=1.):
-    """K-fold held-out alignment (retrieval among held-out captions) and reconstruction (measurement only)."""
+    """Row-wise K-fold diagnostic only; regions from one image may leak across folds."""
     np=_np();X=np.asarray(X);Y=np.asarray(Y);n=len(X);idx=np.arange(n);top=[];cos=[];rec=[];base=[]
     if n<2*folds:folds=max(2,n//2)
     for k in range(folds):
@@ -240,9 +241,15 @@ def crossval(X,Y,thumbs=None,folds=4,ridge=1.):
         if thumbs is not None:
             T=np.asarray(thumbs);d=Projector(ridge).fit(p(X[tr]),T[tr]);Zte=p(X[te])
             pred=(d._x(Zte)@d.W);rec.append(float(((pred-T[te])**2).mean())*len(te));base.append(float(((T[tr].mean(0)-T[te])**2).mean())*len(te))
-    out={'n':n,'folds':folds,'held_out_top1':sum(top)/n,'chance':folds/n,'held_out_mean_cosine':sum(cos)/n}
+    out={'n':n,'folds':folds,'split':'ROW_WISE_DIAGNOSTIC_ONLY','authority':'DIAGNOSTIC_ONLY','held_out_top1':sum(top)/n,'chance':folds/n,'held_out_mean_cosine':sum(cos)/n}
     if rec:out['reconstruction']={'mse':sum(rec)/n,'mean_image_mse':sum(base)/n,'ratio':(sum(rec)/max(1e-12,sum(base))),'authority':'MEASUREMENT_ONLY'}
     return out
+
+def source_disjoint_crossval(X,Y,groups,labels,thumbs=None,folds=4,ridge=1.):
+    """Source-image-disjoint A3 validation; row-wise crossval is diagnostic only."""
+    return _source_disjoint_crossval(
+        Projector, X, Y, groups, labels, thumbs=thumbs, folds=folds, ridge=ridge
+    )
 
 # ---------------------------------------------------------------- TEACHER EYE
 class Teacher:
@@ -447,7 +454,9 @@ def dataset(store,cfg=DEFAULTS):
 def train(runtime,encoder=None,cfg=DEFAULTS):
     X,caps,T,ids=dataset(runtime.store,cfg)
     if len(X)<cfg['min_train']:raise ValueError('Zu wenig beschriebene Bilder (%d < %d); erst :image describe'%(len(X),cfg['min_train']))
-    name,enc=encoder or text_encoder(runtime,cfg);Y=enc(caps);cv=crossval(X,Y,T,ridge=cfg['ridge'])
+    name,enc=encoder or text_encoder(runtime,cfg);Y=enc(caps)
+    groups=[key.split(':',1)[0] for key in ids]
+    cv=source_disjoint_crossval(X,Y,groups,caps,thumbs=T,ridge=cfg['ridge'])
     st=load(runtime.store);training_sources=source_lineage(st['images'],ids);old=st.get('projector')
     p=Projector(cfg['ridge']).fit(X,Y);path=runtime.home/'data/vision'/('projector-'+uid('vis')[4:]+'.npz');sha=p.save(path)
     st['projector']={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,'metrics':cv,'created':now(),
@@ -459,7 +468,9 @@ def train(runtime,encoder=None,cfg=DEFAULTS):
         raise
     if old and old.get('path')!=st['projector']['path']:
         unlink_projector_artifact(runtime.home, old)
-    runtime.store.log('vision',None,{'action':'train','n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow','value':round(cv['held_out_top1'],4)})
+    log={'action':'train','n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow','validation_status':cv['status'],'validation_split':cv['split'],'utility_status':cv.get('utility_status')}
+    if cv.get('held_out_top1') is not None:log['held_out_top1']=round(cv['held_out_top1'],4);log['chance']=round(cv['chance'],4)
+    runtime.store.log('vision',None,log)
     return st['projector']
 
 def look(runtime,rec,encoder=None,cfg=DEFAULTS,k=3):
@@ -498,10 +509,12 @@ def train_tiles(runtime,encoder=None,cfg=DEFAULTS):
     X,texts,keys=tile_dataset(runtime.store,cfg)
     if len(set(texts)-{BACKGROUND})<2 or len(X)<cfg['min_train']:raise ValueError('Zu wenig beschriebene Bildbereiche für Kacheln; erst :image describe (g, Hälften, Quadranten)')
     name,enc=encoder or text_encoder(runtime,cfg);uniq=sorted(set(texts));E=dict(zip(uniq,enc(uniq)));Y=_np().stack([E[t] for t in texts])
+    groups=[key.split(':',1)[0] for key in keys]
+    cv=source_disjoint_crossval(X,Y,groups,texts,ridge=cfg['ridge'])
     st=load(runtime.store);training_sources=source_lineage(st['images'],keys);old=st.get('tile_projector')
     p=Projector(cfg['ridge']).fit(X,Y);path=runtime.home/'data/vision'/('tiles-'+uid('vis')[4:]+'.npz');sha=p.save(path)
     st['tile_projector']={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,'created':now(),
-                          'salient_tiles':sum(t!=BACKGROUND for t in texts),'training_sources':training_sources,'authority':'LAB_SHADOW_ONLY'}
+                          'salient_tiles':sum(t!=BACKGROUND for t in texts),'metrics':cv,'training_sources':training_sources,'authority':'LAB_SHADOW_ONLY'}
     try:
         save(runtime.store,st)
     except Exception:
@@ -509,7 +522,9 @@ def train_tiles(runtime,encoder=None,cfg=DEFAULTS):
         raise
     if old and old.get('path')!=st['tile_projector']['path']:
         unlink_projector_artifact(runtime.home, old)
-    runtime.store.log('vision',None,{'action':'train_tiles','n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow'})
+    log={'action':'train_tiles','n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow','validation_status':cv['status'],'validation_split':cv['split'],'utility_status':cv.get('utility_status')}
+    if cv.get('held_out_top1') is not None:log['held_out_top1']=round(cv['held_out_top1'],4);log['chance']=round(cv['chance'],4)
+    runtime.store.log('vision',None,log)
     return st['tile_projector']
 
 def tile_scores(p,im,regions,query_vec,background_vec,cfg=DEFAULTS):
@@ -608,7 +623,7 @@ def status(runtime):
     return {'revision':REVISION,'scope':'LAB_SHADOW_ONLY (Age-0-Kern bleibt Text)','images':len(st['images']),
             'described':sum(1 for r in st['images'].values() if r['captions']),'teacher':{'available':ok,'missing':missing,'authority':AUTHORITY,'removed':bool(st.get('teacher_removed'))},
             'projector':{k:pj[k] for k in ('n','encoder','metrics','created')} if pj else None,
-            'tile_projector':{k:tp[k] for k in ('n','salient_tiles','encoder','created')} if tp else None}
+            'tile_projector':({k:tp[k] for k in ('n','salient_tiles','encoder','created')}|{'metrics':tp.get('metrics')}) if tp else None}
 
 def operator_command(runtime,args):
     """:image [status|add <Pfad> [Label]|list|describe [id|last] [g|rIJ|hl|hr|ht|hb|qtl|qtr|qbl|qbr]|train|tiles|look [id|last]|locate <id|last> <Text>|find <id|last> <Text>|teacher on|off|forget <id>]"""
