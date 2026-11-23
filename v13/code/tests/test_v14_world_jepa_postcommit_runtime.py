@@ -285,7 +285,9 @@ def test_sleep_jepa_job_requeues_when_only_temporal_page_has_more_rows(tmp_path)
         result = sleep.job(dispatched)
         assert result["learning"]["has_more"] is False
         assert result["temporal"]["has_more"] is True
+        assert result["learning_status"] == "NO_NEW_TRANSITIONS"
         assert result["temporal_status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA"
+        assert result["planner_status"] == "NO_CHECKPOINT"
         assert result["learning_has_more"] is False
         assert result["temporal_has_more"] is True
         assert result["continuation_reason"] == "TEMPORAL_PAGE"
@@ -599,49 +601,76 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
             "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED') "
             "ORDER BY created DESC,id DESC LIMIT 1"
         )["event_id"]
+        # Install the observer before opening the local lab gates. The real
+        # Runtime worker polls SleepRuntime while idle; enabling first can let
+        # an unobserved update consume the cohort before this test captures it.
+        original_run = runtime.sleep._run_world_jepa
+        captured_runs = {}
+
+        def capture_run(event_id, limit=64):
+            result = original_run(event_id, limit=256)
+            captured_runs.setdefault(event_id, []).append(result)
+            return result
+
+        runtime.sleep._run_world_jepa = capture_run
+        runtime.sleep.last_tick = -1e18
         runtime.store.set_state(PERMISSION_KEY, {
             "learning_enabled": True,
             "optimizer_permission": True,
             "steps": 120,
             "replay_mode": "uniform",
         })
-        original_run = runtime.sleep._run_world_jepa
-        captured_runs = {}
-
-        def capture_run(event_id, limit=64):
-            result = original_run(event_id, limit=256)
-            captured_runs[event_id] = result
-            return result
-
-        runtime.sleep._run_world_jepa = capture_run
-        runtime.sleep.last_tick = -1e18
         runtime.wake.set()
 
         def learned_and_planned():
             state, _ = runtime.store.state("v14.world_jepa.store_consumer", None)
             cursor, _ = runtime.store.state("v14.world_jepa.sleep_cursor", None)
             active = state.get("active") if type(state) is dict else None
+            runs = captured_runs.get(latest, [])
+            learned = any(
+                type(item) is dict
+                and item.get("learning", {}).get("status") == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+                for item in runs
+            )
             return (
-                type(active) is dict
+                learned
+                and type(active) is dict
                 and type(cursor) is dict
                 and cursor.get("last_learning_event_id") == latest
                 and cursor.get("last_planner_event_id") == latest
             )
 
-        assert _wait_until(lambda: latest in captured_runs and learned_and_planned())
+        ready = _wait_until(learned_and_planned)
         state, _ = runtime.store.state("v14.world_jepa.store_consumer", None)
+        cursor, _ = runtime.store.state("v14.world_jepa.sleep_cursor", None)
+        runs = captured_runs.get(latest, [])
+        summaries = [{
+            "status": item.get("learning", {}).get("status"),
+            "verified_receipts": item.get("learning", {}).get("verified_receipts"),
+            "rejected_receipts": item.get("learning", {}).get("rejected_receipts"),
+            "scanned_rows": item.get("learning", {}).get("scanned_rows"),
+            "scan_cursor": item.get("learning", {}).get("scan_cursor"),
+            "has_more": item.get("learning", {}).get("has_more"),
+            "pending_rows": item.get("learning", {}).get("pending_rows"),
+            "planner_status": item.get("planner", {}).get("status"),
+        } for item in runs]
+        assert ready, {
+            "runs_for_latest": summaries,
+            "store_scan_cursor": state.get("scan_cursor") if type(state) is dict else None,
+            "sleep_cursor": cursor,
+            "runtime_action_scan_seq": runtime_action["scan_seq"],
+        }
         active = state["active"]
         checkpoint_sha = active["checkpoint_sha256"]
         fit_steps = active.get("fit_steps")
         assert type(checkpoint_sha) is str and len(checkpoint_sha) == 64
-        worker_result = captured_runs[latest]
+        worker_result = next(
+            item for item in runs
+            if item.get("learning", {}).get("status") == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        )
         learning = worker_result.get("learning", {})
         metrics = learning.get("metrics", {})
-        assert learning.get("status") == "UPDATED_EXPERIMENTAL_WORLD_JEPA", {
-            "worker_status": worker_result.get("status"),
-            "learning_status": learning.get("status"),
-            "planner_status": worker_result.get("planner", {}).get("status"),
-        }
+        assert worker_result.get("event_id") == latest
         assert metrics.get("parameter_delta_norm", 0) > 0
         assert metrics.get("ema_target_delta_norm", 0) > 0
         assert metrics.get("holdout_loss_after", float("inf")) < metrics.get("holdout_loss_before", float("-inf"))

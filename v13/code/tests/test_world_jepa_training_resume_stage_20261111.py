@@ -88,3 +88,27 @@ def test_world_jepa_source_builder_pin_chain_is_exact():
     assert pin(termux21, r'BASE_BUILDER_BLOB_SHA1 = "([0-9a-f]{40})"') == git_blob
     assert pin(stage, r"BUILDER_SHA = '([0-9a-f]{64})'") == sha(termux21)
     assert pin(deploy, r'STAGER_SHA256 = "([0-9a-f]{64})"') == sha(stage)
+
+
+def test_staged_vision_source_forget_overlay_is_pinned_and_consumed():
+    """The staged lifecycle bundle must include the exact A3 lineage helper and JEPA forget overlay."""
+    lifecycle_path = CODE / "scripts/source_lifecycle_lock_integration_candidate.py"
+    spec = importlib.util.spec_from_file_location("vision_lifecycle_bundle", lifecycle_path)
+    lifecycle = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(lifecycle)
+
+    def sha(path):
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+
+    assert lifecycle.PINS["vision.py"] == sha(CODE / "v13/vision.py")
+    assert lifecycle.PINS["vision_source_lineage.py"] == sha(CODE / "v13/vision_source_lineage.py")
+    assert lifecycle.PINS["source_lifecycle_candidate.py"] == sha(CODE / "v13/source_lifecycle_candidate.py")
+
+    bundle = lifecycle.build_sources(CODE / "v13")
+    assert {"vision.py", "source_lifecycle_candidate.py", "vision_source_lineage.py"} <= set(bundle)
+    assert b"from .source_lifecycle_candidate import vision_ingest" in bundle["vision.py"]
+    assert b"from .source_lifecycle_candidate import vision_forget" in bundle["vision.py"]
+    assert b"from .source_lifecycle_candidate import load_vision_state" in bundle["vision.py"]
+    assert b"from .source_lifecycle_candidate import save_vision_state" in bundle["vision.py"]
+    assert b"def vision_forget(" in bundle["source_lifecycle_candidate.py"]
+    assert b"def invalidate_projectors(" in bundle["vision_source_lineage.py"]
