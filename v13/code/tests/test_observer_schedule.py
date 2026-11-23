@@ -205,7 +205,7 @@ class Turn(unittest.TestCase):
         self.assertGreaterEqual(len(pre),2)
         self.assertEqual([x[0] for x in pre[:2]],BOTH)
         for _,role_deadline,turn_deadline,called_at in pre[:2]:
-            self.assertLessEqual(role_deadline,turn_deadline-40.0)
+            self.assertLessEqual(role_deadline,turn_deadline-41.0)
             self.assertGreaterEqual(role_deadline-called_at,.99)
         decision_row=self.r.store.one("SELECT payload FROM packets WHERE kind='EffortDecision' ORDER BY rowid DESC LIMIT 1")
         decision=json.loads(decision_row['payload'])
@@ -215,6 +215,7 @@ class Turn(unittest.TestCase):
         self.assertTrue(plan_logs)
         self.assertEqual(plan_logs[0]["recent_real_prefill_failures"],2)
         self.assertGreaterEqual(plan_logs[0]["c3_reserved_seconds"],40.0)
+        self.assertEqual(plan_logs[0]["focal_reserved_seconds"],1.0)
 
     def test_missing_peer_gets_postcommit_observation_after_partial_preanswer(self):
         self.calls.clear()
