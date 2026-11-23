@@ -1,3 +1,18 @@
+# Core & Harness — latest verified checkpoint (2026-11-23T17:16:41.602Z)
+
+**No user action is required. Do not run a manual Termux command or send an update request.** This candidate is not released and has not been tested on the Redmi.
+
+- Draft PR [#2451](https://github.com/RedMentos/Aii/pull/2451), branch `core/v14-native-probe-staged-overlay-20261123-run2`, head `8d4c0678cfad1f0fce995c9b7df22d1f21d8da77`, based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- The local native-probe helper is now connected through a **post-composition staged overlay**, not a direct edit to canonical `operator.py`. Exact operator/module Git-blob pins are checked; only staged `v13/operator.py` is patched after the existing recovery/native-receiver/arithmetic builders. The stage manifest records the diagnostic-only authority boundary; `runtime_deploy.py` is rebound to the exact stage-builder SHA-256.
+- Local isolated overlay harness: **PASS** for staged-only replacement, compilation, source immutability, tamper rejection and duplicate-anchor rejection. Full local Aii pytest/stage build: **BLOCKED / NOT_RUN** (no mounted checkout; GitHub DNS failed).
+- Exact Python 3.13/3.14 GitHub Actions: **PENDING** after PR creation; no green result claimed. Redmi: **REDMI_UNVERIFIED**. No probe, Termux command, update request, model/weight/permission/data change.
+- PR #2449 remains blocked/superseded because it edits canonical `operator.py` and violates the pinned stage input. Do not merge it.
+- Next: poll exact #2451 CI, repair real failures, obtain independent review, then Boss integration. Only after authenticated installation may a separate explicit user decision authorize a one-shot local probe. Production B3 stays OFF until latent/exact/none, zero/shuffle/OOD and held-out receiver-utility controls pass.
+
+See `v14/handoffs/CORE_NATIVE_PROBE_STAGED_OVERLAY_20261123_RUN2.md` for the exact handoff and evidence boundary.
+
+---
+
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
