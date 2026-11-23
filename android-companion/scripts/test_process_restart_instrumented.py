@@ -53,7 +53,7 @@ def process_id() -> str:
     # Only the exact toybox "not found" shape (exit 1, empty stdout/stderr)
     # means the target is absent. adb transport errors can also return 1;
     # treating those as absence would invalidate the process-death proof.
-    if result.returncode == 0 and re.fullmatch(r"\\d+(?:\\s+\\d+)*", stdout):
+    if result.returncode == 0 and re.fullmatch(r"\d+(?:\s+\d+)*", stdout):
         return stdout
     if result.returncode == 1 and not stdout and not stderr:
         return ""
