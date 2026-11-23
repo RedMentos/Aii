@@ -9,7 +9,7 @@ from pathlib import Path
 BASE_PINS = {
     "v13/cognition.py": "6d7940b118f099c930ee94c5b00a117af60b759dc03d8113aa6e1350a9a5a04b",
     "v13/callosum.py": "de55ba637b9e0c0fe6ea12f74385b0f9f782735cc2f52098f5b227a52902d5fc",
-    "v13/runners.py": "f6adaa47ac8cb5d8aa27e0556ea35cfa16da13155834bbe20e58375b9cc669ab",
+    "v13/runners.py": "4aa8bcc2ed23e257f12a2bb69ac4f613418a3945d2113dba0f638d3d9ba85eec",
     "v13/models.py": "290ad845add126c7ada4da864bc3d0c112d9fe814279dfbb2a32a5a2dff740b8",
     "v13/contracts.py": "25466e9f938251db981256e8cbf7313c414aeddb4d7c9b880598fe61d92765b1",
     "v13/operator.py": "b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186"
