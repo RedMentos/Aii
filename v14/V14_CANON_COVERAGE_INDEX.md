@@ -2309,6 +2309,11 @@ The following is an additive evidence overlay. It does not change the 1,255-head
 | Two distinct sparse MoE bodies | Not proven | No distinct sparse expert routing | No accepted sparse-MoE/retention ablation | Not tested | Not implemented/accepted |
 | Execution-state forgetting across prompt, summaries, plans and KV | R-108 research only; ticket V14-020 | No artifact graph or active-session/KV replay consumer | No V14 implementation tests; paper results are not V14 tests | Not tested | Research-to-spec only |
 
-**Device boundary:** private PIPELINE_STATUS #775 confirms installed SHA `dfa3945b2bbfdb65d932db74e02f402435494e84`, Runtime/Dashboard UPDATED, auto-update enabled, last_error NONE. DIAGNOSTICS #776 is not a new chat turn and still reports slow stored output, B1/B2 TIME_BUDGET, and zero mapped native processes with unknown child readability. LEARNING_STATUS #777 is UNAVAILABLE. HEALTH #793 is pending. No device action, CHAT_SEND, model/weight change or permission change occurred.
+**Device boundary:** private PIPELINE_STATUS #775 confirms installed SHA `dfa3945b2bbfdb65d932db74e02f402435494e84`, Runtime/Dashboard UPDATED, auto-update enabled, last_error NONE. DIAGNOSTICS #776 is not a new chat turn and still reports slow stored output, B1/B2 TIME_BUDGET, and zero mapped native processes with unknown child readability. LEARNING_STATUS #777 is UNAVAILABLE. HEALTH #793 reports 1,388 MiB MemAvailable and 990 MiB disk free; HEALTH runtime field UNAVAILABLE while DIAGNOSTICS reports RUNNING. No LOG_PAGE consent. No device action, CHAT_SEND, model/weight change or permission change occurred.
 
 **Whole-Canon boundary:** Master blob `9748ad5ba9a4d4f5c3d004a0577141f6779fcbca` still contains the historical V13 Canon blob `218464b12a2d27d92524c751922fa8e1c3fb0ea7` byte-for-byte. The 1,255-heading inventory is preserved; semantic clause→consumer→test→platform→negative-control→rollback mapping remains incomplete.
+
+
+### HEALTH #793 evidence correction — 2026-11-23T11:33:30.773Z
+
+The earlier run-18 line that called HEALTH #793 pending is superseded: the private owner-read reply arrived. Current snapshot: 1,388 MiB MemAvailable / 5,569 MiB total; 990 MiB free disk / 109,641 MiB total. HEALTH runtime state is UNAVAILABLE while DIAGNOSTICS #776 reports RUNNING. No inference of shutdown is warranted. Remote observation is recent/PUBLISHED, but `console_errors` remains USER_NOT_OPTED_IN; no LOG_PAGE was requested.
