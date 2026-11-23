@@ -10,6 +10,7 @@ import hashlib
 import json
 import math
 import os
+import stat
 import struct
 import subprocess
 import time
@@ -35,15 +36,98 @@ class NativeReceiverError(ValueError):
     pass
 
 
-def _sha256_file(path: Path) -> str:
+def _fd_identity(info):
+    return (
+        info.st_dev, info.st_ino, info.st_size,
+        info.st_mtime_ns, info.st_ctime_ns,
+    )
+
+
+def _sha256_fd(fd: int) -> str:
+    """Hash an already-open regular file without reopening its mutable pathname."""
     digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        while True:
-            block = stream.read(8 * 1024 * 1024)
-            if not block:
-                break
-            digest.update(block)
+    offset = 0
+    while True:
+        block = os.pread(fd, 8 * 1024 * 1024, offset)
+        if not block:
+            break
+        digest.update(block)
+        offset += len(block)
     return digest.hexdigest()
+
+
+def _open_model_descriptor(model: Path, models_root: Path, expected_digest: str):
+    """Open the exact installed model beneath models_root and pin its inode for the child.
+
+    Every path component is opened relative to a held directory descriptor with
+    O_NOFOLLOW. The final regular-file descriptor is inherited by the native
+    child and addressed as /proc/self/fd/N, so a pathname replacement after
+    verification cannot redirect llama_model_load_from_file().
+    """
+    if os.name != "posix" or not Path("/proc/self/fd").is_dir():
+        raise NativeReceiverUnavailable("descriptor-pinned model loading requires POSIX /proc/self/fd")
+    nofollow = getattr(os, "O_NOFOLLOW", 0)
+    directory = getattr(os, "O_DIRECTORY", 0)
+    nonblock = getattr(os, "O_NONBLOCK", 0)
+    if not nofollow or not directory or not nonblock or os.open not in getattr(os, "supports_dir_fd", set()):
+        raise NativeReceiverUnavailable("descriptor-pinned model loading requires no-follow dirfd support")
+    try:
+        relative = model.relative_to(models_root)
+    except ValueError as exc:
+        raise NativeReceiverError("receiver model escaped the installed models root") from exc
+    if not relative.parts or any(part in ("", ".", "..") for part in relative.parts):
+        raise NativeReceiverError("receiver model relative path is unsafe")
+
+    directory_flags = os.O_RDONLY | directory | nofollow | getattr(os, "O_CLOEXEC", 0)
+    file_flags = os.O_RDONLY | nofollow | nonblock | getattr(os, "O_CLOEXEC", 0)
+    try:
+        root_fd = os.open(models_root, directory_flags)
+    except OSError as exc:
+        raise NativeReceiverError("receiver models root cannot be opened without following links") from exc
+    parent_fd = root_fd
+    fd = None
+    try:
+        for component in relative.parts[:-1]:
+            next_fd = os.open(component, directory_flags, dir_fd=parent_fd)
+            if parent_fd != root_fd:
+                os.close(parent_fd)
+            parent_fd = next_fd
+        fd = os.open(relative.parts[-1], file_flags, dir_fd=parent_fd)
+    except OSError as exc:
+        if fd is not None:
+            os.close(fd)
+        raise NativeReceiverError("receiver model path changed or contains a linked/non-directory component") from exc
+    finally:
+        if parent_fd != root_fd:
+            os.close(parent_fd)
+        os.close(root_fd)
+
+    try:
+        before = os.fstat(fd)
+        if not stat.S_ISREG(before.st_mode) or before.st_size < 1:
+            raise NativeReceiverError("receiver model descriptor is not a non-empty regular file")
+        actual = _sha256_fd(fd)
+        after = os.fstat(fd)
+        if _fd_identity(before) != _fd_identity(after):
+            raise NativeReceiverError("receiver model changed while its descriptor was hashed")
+        if actual != expected_digest:
+            raise NativeReceiverError("receiver model hash differs from installed manifest")
+        return fd, _fd_identity(after)
+    except Exception:
+        os.close(fd)
+        raise
+
+
+def _verify_model_descriptor(fd: int, expected_digest: str, expected_identity):
+    before = os.fstat(fd)
+    if not stat.S_ISREG(before.st_mode) or _fd_identity(before) != expected_identity:
+        raise NativeReceiverError("receiver model descriptor identity changed during native probe")
+    actual = _sha256_fd(fd)
+    after = os.fstat(fd)
+    if _fd_identity(after) != expected_identity or actual != expected_digest:
+        raise NativeReceiverError("receiver model bytes changed during native probe")
+
+
 
 
 def _finite_number(value) -> bool:
@@ -190,8 +274,15 @@ def _json_output(raw: bytes, stage: str) -> dict:
     return value
 
 
-def _run_cancelable(command, payload, deadline, cancel_event):
-    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+def _run_cancelable(command, payload, deadline, cancel_event, *, pass_fds=()):
+    kwargs = {}
+    if pass_fds:
+        if os.name != "posix":
+            raise NativeReceiverUnavailable("native model descriptor inheritance requires POSIX")
+        kwargs["pass_fds"] = tuple(pass_fds)
+    process = subprocess.Popen(
+        command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs
+    )
     first = True
     while True:
         if cancel_event is not None and cancel_event.is_set():
@@ -243,15 +334,18 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
     positions = _validate_positions(position_ids, rows, position_mode)
 
     root = Path(home).resolve()
+    models_dir = root / "models"
+    if models_dir.is_symlink():
+        raise NativeReceiverError("receiver models root symlink refused")
+    models_root = models_dir.resolve(strict=True)
+    if not models_root.is_relative_to(root):
+        raise NativeReceiverError("receiver models root escaped home")
     model = Path(model_path)
     if model.is_symlink():
         raise NativeReceiverError("receiver model symlink refused")
     model = model.resolve(strict=True)
-    models_root = (root / "models").resolve()
     if not model.is_relative_to(models_root) or not model.is_file():
         raise NativeReceiverError("receiver model must be an installed file under home/models")
-    if _sha256_file(model) != expected_model_sha256:
-        raise NativeReceiverError("receiver model hash differs from installed manifest")
 
     injected_binary = binary_path is not None
     binary = Path(binary_path) if injected_binary else root / "bin" / "native_latent_receiver"
@@ -281,12 +375,17 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
     remaining = float(deadline) - time.monotonic()
     if not math.isfinite(remaining) or remaining <= 0:
         raise TimeoutError("native receiver probe deadline expired")
-    returncode, stdout, stderr = _run_cancelable(
-        [str(binary), "--model", str(model), "--rows", str(rows),
-         "--input-dim", str(input_dim), "--positions", ",".join(str(x) for x in positions),
-         "--threads", str(max(1, min(int(threads), 2)))],
-        payload, deadline, cancel_event,
-    )
+    model_fd, model_identity = _open_model_descriptor(model, models_root, expected_model_sha256)
+    try:
+        returncode, stdout, stderr = _run_cancelable(
+            [str(binary), "--model", f"/proc/self/fd/{model_fd}", "--rows", str(rows),
+             "--input-dim", str(input_dim), "--positions", ",".join(str(x) for x in positions),
+             "--threads", str(max(1, min(int(threads), 2)))],
+            payload, deadline, cancel_event, pass_fds=(model_fd,),
+        )
+        _verify_model_descriptor(model_fd, expected_model_sha256, model_identity)
+    finally:
+        os.close(model_fd)
     if returncode != 0:
         raise NativeReceiverError("native receiver model probe failed")
     raw = _json_output(stdout, "probe")
@@ -340,9 +439,6 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
         status = "NATIVE_INPUT_EFFECT" if effect else "NATIVE_DECODE_NO_EFFECT"
     else:
         raise NativeReceiverError("unknown native receiver status")
-
-    if _sha256_file(model) != expected_model_sha256:
-        raise NativeReceiverError("receiver model changed during native probe")
 
     return {
         "sender_role": sender_role,
