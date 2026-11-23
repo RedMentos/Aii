@@ -5,7 +5,8 @@
 - Repository: `RedMentos/Aii`.
 - Base: `gpt6/v13-private-remote-bridge-20261111` at `8d93236c753f0194224c19edc7411d8d7082b1d6`.
 - Work branch: `core/v14-native-probe-staged-overlay-20261123-run2`.
-- Read-back branch HEAD: `81e08489ac3710c84f8228b8c095a80a14030597`.
+- Initial branch read-back before the code/handoff/board sync: `81e08489ac3710c84f8228b8c095a80a14030597`.
+- Code checkpoint commit: `8d4c0678cfad1f0fce995c9b7df22d1f21d8da77`; the handoff and board synchronization commits follow it on the same PR branch. PR #2451 is the authoritative current head.
 - Supersedes the direct-`operator.py` edit attempted by draft PR #2449. #2449 remains blocked because that edit violates the integrated receiver source pin; do not merge it.
 
 ## New connected runtime slice
