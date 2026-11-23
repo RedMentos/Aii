@@ -8,7 +8,7 @@ PINS = {
     'store.py': '40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb',
     'common.py': '0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a',
     'memory.py': '33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701',
-    'vision.py': 'd4a5e3e0b3faf27489e6ea8c1476876910d2708033ab9ae4267b665dd8f180dd',
+    'vision.py': 'ea64b7ea00decec80b190f0cad5e790fa77a704023bc8b298679b42b69dd620d',
     'vision_source_lineage.py': 'bb63636c9ae84d345fe1f4e37254de3be87c26990cb320ca058859fd0b51b72f',
     'archive_reader_guard_candidate.py': '84c06a9f5c0b6054f836615023822ff577984d3efe9ddfb07cae569ec124f438',
     'archive_stream_range_candidate.py': 'd2d021adcc844c1f321312cbfa60a4affb0a6b7fddc09e41a234cdf83f1eec98',
