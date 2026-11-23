@@ -28,7 +28,6 @@ class StageTest(unittest.TestCase):
         self.code = self.root / 'code'
         (self.code / 'scripts').mkdir(parents=True)
         (self.code / 'v13').mkdir()
-        (self.code / 'v13/runtime.py').write_text('ORIGINAL')
         source_code = Path(__file__).resolve().parents[1]
         shutil.copy2(source_code / 'v13/operator.py', self.code / 'v13/operator.py')
         shutil.copy2(source_code / 'v13/native_probe_approval.py', self.code / 'v13/native_probe_approval.py')
@@ -41,6 +40,7 @@ class StageTest(unittest.TestCase):
             b"            pass\n"
         )
         self.runtime_stub = runtime_stub
+        (self.code / 'v13/runtime.py').write_bytes(runtime_stub)
         overlay = (
             "SOURCE_PINS = {}\n"
             "def apply_staged_arithmetic(code_dir, staged_root):\n"
@@ -65,7 +65,7 @@ class StageTest(unittest.TestCase):
         result = module.stage(self.code, out)
         staged_runtime = (out / 'v13/runtime.py').read_bytes()
         self.assertIn(b'wait_for_runtime_probe_shutdown', staged_runtime)
-        self.assertEqual((self.code / 'v13/runtime.py').read_text(), 'ORIGINAL')
+        self.assertEqual((self.code / 'v13/runtime.py').read_bytes(), self.runtime_stub)
         self.assertEqual(result['native_probe_overlay']['status'], 'SHADOW_REVIEW_ONLY')
         self.assertEqual(result['native_probe_overlay']['replaced_files'], ['v13/operator.py', 'v13/runtime.py'])
         self.assertEqual(result['status'], 'SHADOW_REVIEW_ONLY')
