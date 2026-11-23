@@ -341,11 +341,14 @@ def test_native_child_loads_the_verified_descriptor_after_model_path_replacement
 
     worker = threading.Thread(target=replace_path_after_child_starts, daemon=True)
     worker.start()
-    receipt = run_probe(home, model, binary, digest)
+    with pytest.raises(NativeReceiverError, match="descriptor identity changed"):
+        run_probe(home, model, binary, digest)
     worker.join(timeout=5.0)
     assert not worker.is_alive()
     assert not failures
-    assert receipt["status"] == "NATIVE_INPUT_EFFECT"
+    # The child did not reopen the replacement pathname: it read the exact
+    # verified inode through /proc/self/fd/N. Metadata drift then rejects the
+    # receipt instead of accepting a probe during a concurrent model update.
     assert observed.read_text(encoding="utf-8") == digest
     assert model.read_bytes() == b"unapproved replacement model bytes"
 
