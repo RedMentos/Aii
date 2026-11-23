@@ -800,3 +800,97 @@ def test_concurrent_distinct_audio_receipts_claim_one_active_turn_once(tmp_path)
             thread.join(timeout=2)
         wait_idle(runtime)
         runtime.close()
+
+
+def _record_test_handoff(runtime, from_event, to_event):
+    decision = {
+        "decision": "INTERRUPT",
+        "relation": "AUDIO_BARGE_IN",
+        "from_event": from_event,
+        "to_event": to_event,
+        "at": time.time(),
+        "started": time.monotonic(),
+    }
+    assert duplex.record(runtime, decision) is True
+    return decision
+
+
+@pytest.mark.parametrize("failure", [
+    "missing_event",
+    "missing_user_message",
+    "malformed_packet",
+])
+def test_duplex_handoff_preparation_failure_keeps_pending_for_retry(
+    tmp_path, failure,
+):
+    runtime, _started = make_runtime(tmp_path, "interrupt")
+    try:
+        if failure == "missing_event":
+            from_event = "missing-previous-event"
+        else:
+            previous = runtime.store.event(runtime.session, "previous user question")
+            from_event = previous["event_id"]
+            with runtime.store.tx() as connection:
+                if failure == "missing_user_message":
+                    connection.execute(
+                        "DELETE FROM messages WHERE event_id=? AND role='user'",
+                        (from_event,),
+                    )
+                else:
+                    connection.execute(
+                        "UPDATE events SET packet=? WHERE id=?",
+                        ("not-json", from_event),
+                    )
+
+        decision = _record_test_handoff(runtime, from_event, "audio-handoff-retry")
+        if failure == "malformed_packet":
+            with pytest.raises(json.JSONDecodeError):
+                duplex.handoff(runtime, decision["to_event"])
+        else:
+            assert duplex.handoff(runtime, decision["to_event"]) is None
+
+        state, _version = runtime.store.state(duplex.KEY, None)
+        assert state["pending"][decision["to_event"]]["from_event"] == from_event
+    finally:
+        runtime.close()
+
+
+def test_duplex_handoff_source_failure_preserves_pending_and_allows_retry(
+    tmp_path, monkeypatch,
+):
+    runtime, _started = make_runtime(tmp_path, "interrupt")
+    try:
+        previous = runtime.store.event(runtime.session, "previous user question")
+        from_event = previous["event_id"]
+        with runtime.store.tx() as connection:
+            connection.execute(
+                "INSERT INTO messages(session_id,event_id,role,text,status,metadata,created) "
+                "VALUES (?,?,?,?,?,?,?)",
+                (
+                    runtime.session, from_event, "assistant", "partial answer",
+                    "CANCELLED", "{}", time.time(),
+                ),
+            )
+        decision = _record_test_handoff(runtime, from_event, "audio-handoff-source-retry")
+        original_source = runtime.store.source
+
+        def fail_source(_text, _kind="USER"):
+            raise OSError("simulated handoff source publication failure")
+
+        monkeypatch.setattr(runtime.store, "source", fail_source)
+        with pytest.raises(OSError, match="simulated handoff source publication failure"):
+            duplex.handoff(runtime, decision["to_event"])
+
+        state, _version = runtime.store.state(duplex.KEY, None)
+        assert state["pending"][decision["to_event"]]["from_event"] == from_event
+
+        monkeypatch.setattr(runtime.store, "source", original_source)
+        result = duplex.handoff(runtime, decision["to_event"])
+        assert result["body"]["interrupted_question"] == "previous user question"
+        assert result["body"]["partial_answer"] == "partial answer"
+        assert len(result["source_refs"]) == 2
+        assert duplex.handoff(runtime, decision["to_event"]) is None
+        state, _version = runtime.store.state(duplex.KEY, None)
+        assert decision["to_event"] not in state["pending"]
+    finally:
+        runtime.close()
