@@ -754,12 +754,28 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
             row["action_id"] for row in temporal_state["active"]["experience_rows"]
         }
         assert set(runtime_action_ids) <= temporal_rows
-        assert set(runtime_action_ids) & set(temporal_metrics.get("fit_action_ids", [])), {
+        from v13.world_jepa_temporal import build_temporal_windows, _split_windows
+        reconstructed_windows = build_temporal_windows(
+            runtime.store, temporal_state["active"]["experience_rows"]
+        )
+        reconstructed_train, reconstructed_holdout, reconstructed_split = _split_windows(
+            reconstructed_windows
+        )
+        train_window_ids = {window["window_id"] for window in reconstructed_train}
+        holdout_window_ids = {window["window_id"] for window in reconstructed_holdout}
+        assert train_window_ids == set(temporal_state["active"]["train_window_ids"])
+        assert holdout_window_ids == set(temporal_state["active"]["holdout_window_ids"])
+        assert train_window_ids.isdisjoint(holdout_window_ids)
+        fit_target_action_ids = {
+            window["action_ids"][-1] for window in reconstructed_train
+        }
+        assert set(runtime_action_ids) & fit_target_action_ids, {
             "runtime_action_count": len(runtime_action_ids),
-            "fit_runtime_action_count": len(set(runtime_action_ids) & set(temporal_metrics.get("fit_action_ids", []))),
+            "fit_runtime_target_count": len(set(runtime_action_ids) & fit_target_action_ids),
             "train_sessions": temporal_metrics.get("train_session_count"),
             "holdout_sessions": temporal_metrics.get("holdout_session_count"),
         }
+        assert reconstructed_split["source_disjoint"] is True
 
         telemetry = runtime.store.rows(
             "SELECT event_id,metrics FROM telemetry WHERE kind='v14_world_jepa_postcommit' ORDER BY id"
