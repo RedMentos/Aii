@@ -1852,3 +1852,6 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Redmi:** authenticated private owner receipts #840/#841/#842 confirm installed release `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled and service/dashboard up to date, but AI runtime `STOPPED_BY_USER`, autostart=false and model process stopped. B1/B2 remain TIME_BUDGET 53.2/54.2 s; last stored turn correctness is UNKNOWN. Preserve the stop state; no update request, restart, CHAT_SEND, LOG_PAGE, shell, model/weight/permission change or user-data mutation. Candidate #2454 is NOT_RELEASED / NOT_INSTALLED.
 
 **Research:** R-115 on stratified world-model retention is recorded in `V14_RESEARCH_LEDGER.md` on this branch. It is a conceptual evaluation proposal, not an adopted algorithm. No user action is required.
+
+
+**GitHub collaboration note:** PR conversation comments and PR metadata updates returned HTTP 403 because the linked GitHub account has no verified email; repository content commits and readbacks still succeeded. Optional account email verification would restore those collaboration writes. This is not a blocker for the current code-only work and does not require device action.
