@@ -23,11 +23,21 @@ from .audio_silero_vad import SileroVADStream, validate_vad_evidence
 from .a5_audio_admission_bridge import audio_to_admission
 from .audio_ear import observe_pcm16
 from .audio_percept_contract import audio_percept_packet
-from .audio_teacher_ear import validate_teacher_ear_result
 from .audio_perception_bridge import _require_current_consent, _validate_runtime_binding
 from .percept_admission import Percept, admit
 from .common import dumps, now
 from .contracts import validate
+
+
+def _load_teacher_ear_validator():
+    """Load the optional ASR teacher only when a source-bound result is supplied."""
+    try:
+        from .audio_teacher_ear import validate_teacher_ear_result
+    except ModuleNotFoundError as exc:
+        if exc.name not in {f"{__package__}.audio_teacher_ear", "audio_teacher_ear"}:
+            raise
+        return None
+    return validate_teacher_ear_result
 
 
 _ACTIVITY_HINTS = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}
@@ -732,19 +742,27 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         )
         audio_segment = audio_packet["segments"][0]
         teacher_ear = None
+        teacher_ear_status = "NOT_SUPPLIED"
         if teacher_result is not None:
-            teacher_ear = validate_teacher_ear_result(
-                teacher_result,
-                source_id=source_id,
-                generation_id=generation_id,
-                source_sha256=raw["source_ref"]["sha256"],
-                start_ms=segment["start_ms"],
-                end_ms=segment["end_ms"],
-                finality=finality,
-                consent_active=lease_active,
-                teacher_opt_in=teacher_opt_in,
-                transcript_consent=teacher_transcript_consent,
-            )
+            teacher_validator = _load_teacher_ear_validator()
+            if teacher_validator is None:
+                # The teacher is an optional add-on. Keep the acoustic path alive,
+                # but never admit unvalidated teacher text when its validator is absent.
+                teacher_ear_status = "UNAVAILABLE_MODULE"
+            else:
+                teacher_ear = teacher_validator(
+                    teacher_result,
+                    source_id=source_id,
+                    generation_id=generation_id,
+                    source_sha256=raw["source_ref"]["sha256"],
+                    start_ms=segment["start_ms"],
+                    end_ms=segment["end_ms"],
+                    finality=finality,
+                    consent_active=lease_active,
+                    teacher_opt_in=teacher_opt_in,
+                    transcript_consent=teacher_transcript_consent,
+                )
+                teacher_ear_status = teacher_ear["status"]
         audio_segment["acoustic"]["voice_cues"] = cues
         speaker_evidence = None
         if speaker_embeddings is not None:
@@ -858,7 +876,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "temporal_voice": temporal_voice,
             "speaker_change_evidence": speaker_evidence,
             "speaker_change_decision": speaker_change_decision,
-            "teacher_ear_status": teacher_ear["status"] if teacher_ear else "NOT_SUPPLIED",
+            "teacher_ear_status": teacher_ear_status,
             "teacher_ear_authority": teacher_ear["authority"] if teacher_ear else "NONE",
             "teacher_ear_word_count": teacher_ear["word_count"] if teacher_ear else 0,
             "attention": attention_result,
@@ -926,6 +944,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "temporal_voice": temporal_voice,
             "speaker_change_evidence": speaker_evidence,
             "teacher_ear": teacher_ear,
+            "teacher_ear_status": teacher_ear_status,
             "capture_authority": "CALLER_SUPPLIED_PCM16",
             "learning_authority": False,
             "action_authority": False,
