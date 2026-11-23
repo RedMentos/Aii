@@ -44,13 +44,27 @@ public final class CapabilityRegistryTest {
         assertEquals("READY_WITH_PER_ACTION_CONSENT", CapabilityRegistry.launchStatus(true, true));
     }
 
-    @Test public void onlyTheImplementedLaunchCapabilityCanBecomeReady() {
+    @Test public void launchAndOneShotScreenCaptureAreTheOnlyReadyCapabilities() {
         List<CapabilityRegistry.Capability> items = CapabilityRegistry.entries(true, true);
         assertEquals(8, items.size());
         int ready = 0;
         for (CapabilityRegistry.Capability item : items) {
-            if ("READY_WITH_PER_ACTION_CONSENT".equals(item.status)) ready++;
-            if (!"launch_app".equals(item.id)) {
+            if ("READY_WITH_PER_ACTION_CONSENT".equals(item.status)
+                    || "READY_WITH_PER_SESSION_OS_CONSENT".equals(item.status)) ready++;
+            if ("launch_app".equals(item.id)) {
+                assertEquals("PACKAGE_MANAGER_LAUNCH_INTENT", item.provider);
+                assertTrue(item.perActionConsent);
+                assertFalse(item.androidOsPermissionRequired);
+                assertFalse(item.resultObserved);
+                assertFalse(item.learningAuthority);
+            } else if ("screen_capture".equals(item.id)) {
+                assertEquals("READY_WITH_PER_SESSION_OS_CONSENT", item.status);
+                assertEquals("MEDIA_PROJECTION_ONE_SHOT", item.provider);
+                assertTrue(item.perActionConsent);
+                assertTrue(item.androidOsPermissionRequired);
+                assertTrue(item.resultObserved);
+                assertFalse(item.learningAuthority);
+            } else {
                 assertEquals(item.id, "OFF_NOT_IMPLEMENTED", item.status);
                 assertEquals(item.id, "NONE", item.provider);
                 assertFalse(item.perActionConsent);
@@ -63,7 +77,15 @@ public final class CapabilityRegistryTest {
                 assertFalse(item.learningAuthority);
             }
         }
-        assertEquals(1, ready);
+        assertEquals(2, ready);
+    }
+
+    @Test public void screenCaptureRequiresPairingAndTheCompanionEnableSwitch() {
+        assertEquals("OFF_TERMUX_NOT_PAIRED", CapabilityRegistry.screenCaptureStatus(false, false));
+        assertEquals("OFF_TERMUX_NOT_PAIRED", CapabilityRegistry.screenCaptureStatus(false, true));
+        assertEquals("OFF_STOP_SWITCH", CapabilityRegistry.screenCaptureStatus(true, false));
+        assertEquals("READY_WITH_PER_SESSION_OS_CONSENT",
+                CapabilityRegistry.screenCaptureStatus(true, true));
     }
 
     @Test public void launchReceiptDoesNotClaimObservationOrLearningAuthority() {

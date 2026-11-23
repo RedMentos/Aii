@@ -18,11 +18,15 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
+import android.os.SystemClock;
 import android.service.notification.StatusBarNotification;
 import android.util.Base64;
 
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -41,6 +45,7 @@ public final class CompanionProvider extends ContentProvider {
         Context context = getContext();
         if (context == null) return false;
         resetProcessStateForProviderStartup(context);
+        clearScreenFrame();
         db = new CompanionDb(context);
         signer = new ReceiptSigner();
         ensureChannel(context);
@@ -53,22 +58,96 @@ public final class CompanionProvider extends ContentProvider {
         Context context = getContext();
         if (context == null) return result(error("NO_CONTEXT"));
         try {
-            if (!isPairedCaller(context)) return result(error("TERMUX_NOT_PAIRED"));
-            if ("capabilities".equals(method)) return result(CapabilityRegistry.snapshot(context));
-            if ("public_key".equals(method)) return result(signer.publicKeyInfo());
-            if ("submit".equals(method)) return result(submit(context, decode(arg)));
-            if ("outcome".equals(method)) return result(outcome(decode(arg)));
-            if ("cancel".equals(method)) return result(cancel(context, decode(arg)));
-            if ("pending".equals(method)) return result(pending(context));
-            return result(error("UNKNOWN_METHOD"));
+            synchronized (ACTION_GATE_LOCK) {
+                // Pairing rotation uses this same outer lock before TRUST_LOCK, so
+                // no old caller can pass admission and then read/submit after rotation.
+                if (!isPairedCaller(context)) return result(error("TERMUX_NOT_PAIRED"));
+                if ("capabilities".equals(method)) return result(CapabilityRegistry.snapshot(context));
+                if ("public_key".equals(method)) return result(signer.publicKeyInfo());
+                if ("screen_frame_status".equals(method)) return result(screenFrameStatus(context));
+                if ("submit".equals(method)) return result(submit(context, decode(arg)));
+                if ("outcome".equals(method)) return result(outcome(decode(arg)));
+                if ("cancel".equals(method)) return result(cancel(context, decode(arg)));
+                if ("pending".equals(method)) return result(pending(context));
+                return result(error("UNKNOWN_METHOD"));
+            }
         } catch (Exception e) {
             return result(error("REJECTED:" + e.getClass().getSimpleName()));
         }
     }
 
+    private JSONObject screenFrameStatus(Context context) throws Exception {
+        if (!isEnabled(context)) return error("COMPANION_STOPPED");
+        return ProjectionFrameStore.status(SystemClock.elapsedRealtime());
+    }
+
+    @Override public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
+        Context context = getContext();
+        if (context == null || !"r".equals(mode)) {
+            throw new FileNotFoundException("screen frame access denied");
+        }
+        List<String> segments = uri == null ? null : uri.getPathSegments();
+        if (segments == null || segments.size() != 2 || !"ui-frame".equals(segments.get(0))
+                || !isHex(segments.get(1), 32)) {
+            throw new FileNotFoundException("invalid one-shot frame URI");
+        }
+        return openFramePipe(context, segments.get(1), SystemClock.elapsedRealtime(),
+                () -> isPairedCaller(context));
+    }
+
     // The provider and both Activities use the app's default process. This
     // gate linearizes stop/enable with request insertion and the final dispatch.
     static final Object ACTION_GATE_LOCK = new Object();
+
+    /** Serialize stop/discard/expiry with frame consumption and pipe registration. */
+    static void clearScreenFrame() {
+        synchronized (ACTION_GATE_LOCK) {
+            ProjectionFrameStore.clear();
+        }
+    }
+
+    interface PairedCallerCheck {
+        boolean isAllowed();
+    }
+
+    static ParcelFileDescriptor openFramePipe(Context context, String token, long nowElapsed,
+                                              PairedCallerCheck pairedCallerCheck)
+            throws FileNotFoundException {
+        synchronized (ACTION_GATE_LOCK) {
+            if (context == null || pairedCallerCheck == null
+                    || !isEnabledLocked(context) || !pairedCallerCheck.isAllowed()) {
+                throw new FileNotFoundException("paired caller or active companion required for frame pipe");
+            }
+            FrameReadLease lease = ProjectionFrameStore.consumeLease(token, nowElapsed);
+            if (lease == null) {
+                throw new FileNotFoundException("frame expired, revoked or already consumed");
+            }
+            ParcelFileDescriptor[] pipe = null;
+            try {
+                pipe = ParcelFileDescriptor.createPipe();
+                lease.start(pipe[0], new ParcelFileDescriptor.AutoCloseOutputStream(pipe[1]));
+                return pipe[0];
+            } catch (Exception failure) {
+                lease.cancel();
+                if (pipe != null) {
+                    closePipeEnd(pipe[0]);
+                    closePipeEnd(pipe[1]);
+                }
+                FileNotFoundException denied = new FileNotFoundException("could not open one-shot frame pipe");
+                denied.initCause(failure);
+                throw denied;
+            }
+        }
+    }
+
+    private static void closePipeEnd(ParcelFileDescriptor descriptor) {
+        if (descriptor == null) return;
+        try {
+            descriptor.close();
+        } catch (IOException ignored) {
+            // The one-shot lease already revoked this descriptor.
+        }
+    }
     // Enabling is a per-process session grant. A process restart always starts
     // stopped; the user must explicitly enable the companion again.
     private static volatile boolean processEnabled = false;
@@ -173,12 +252,21 @@ public final class CompanionProvider extends ContentProvider {
         // fails or throws, an old enabled state must not remain usable.
         processEnabled = false;
         if (context == null || writer == null) return false;
+        // Any enable/disable transition invalidates an older one-shot grant.
+        ProjectionFrameStore.clear();
+        try {
+            context.stopService(new Intent(context, MediaProjectionCaptureService.class));
+        } catch (RuntimeException ignoredStop) {}
         try {
             if (!writer.commit(context, enabled)) return false;
             processEnabled = enabled;
             return true;
         } catch (RuntimeException ignored) {
             processEnabled = false;
+            ProjectionFrameStore.clear();
+            try {
+                context.stopService(new Intent(context, MediaProjectionCaptureService.class));
+            } catch (RuntimeException ignoredStop) {}
             return false;
         }
     }
@@ -264,8 +352,7 @@ public final class CompanionProvider extends ContentProvider {
                                       boolean modelAuthority,
                                       String localApproval) {
         return companionConsentRequired && !osPermissionRequired && !permissionBypass
-                && !modelAuthority
-                && "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION".equals(localApproval);
+                && !modelAuthority && "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION".equals(localApproval);
     }
 
     private JSONObject submit(Context context, String json) throws Exception {
@@ -487,8 +574,8 @@ public final class CompanionProvider extends ContentProvider {
     }
 
     private static boolean pairedIdentityMatches(String callingPackage, String[] packages,
-                                                  String pairedPackage, String pairedDigest,
-                                                  String actualDigest) {
+                                                   String pairedPackage, String pairedDigest,
+                                                   String actualDigest) {
         return isExactPairedCaller(callingPackage, packages, pairedPackage)
                 && pairedDigest != null && !pairedDigest.isEmpty()
                 && actualDigest != null && pairedDigest.equals(actualDigest);
@@ -596,7 +683,11 @@ public final class CompanionProvider extends ContentProvider {
     @Override public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         throw new UnsupportedOperationException("ContentProvider query is disabled");
     }
-    @Override public String getType(Uri uri) { return null; }
+    @Override public String getType(Uri uri) {
+        List<String> segments = uri == null ? null : uri.getPathSegments();
+        return segments != null && segments.size() == 2 && "ui-frame".equals(segments.get(0))
+                && isHex(segments.get(1), 32) ? "image/jpeg" : null;
+    }
     @Override public Uri insert(Uri uri, ContentValues values) { throw new UnsupportedOperationException("insert is disabled"); }
     @Override public int delete(Uri uri, String selection, String[] selectionArgs) { throw new UnsupportedOperationException("delete is disabled"); }
     @Override public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) { throw new UnsupportedOperationException("update is disabled"); }
