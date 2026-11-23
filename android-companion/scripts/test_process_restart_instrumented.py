@@ -39,7 +39,21 @@ def adb(*args: str, timeout: float = 30.0) -> str:
 
 
 def process_id() -> str:
-    return adb("shell", "pidof", PACKAGE, timeout=10.0).strip()
+    result = subprocess.run(
+        ["adb", "shell", "pidof", PACKAGE],
+        capture_output=True,
+        text=True,
+        timeout=10.0,
+    )
+    # Android toybox pidof commonly returns 1 when the package has no PID.
+    # That is the expected state after force-stop; command/transport errors
+    # remain fatal and must not be interpreted as process death.
+    if result.returncode not in (0, 1):
+        raise RuntimeError(
+            "adb pidof failed (exit=" + str(result.returncode) + "): "
+            + result.stderr[-1000:]
+        )
+    return result.stdout.strip()
 
 
 def wait_for_process(*, present: bool, timeout: float = 45.0) -> str:
