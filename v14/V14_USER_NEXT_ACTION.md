@@ -1,3 +1,19 @@
+# V14 — current user-facing handoff (2026-11-23T06:11:31.207Z)
+
+**User action: none. Do not run a manual Termux command or send UPDATE_REQUEST/CHAT_SEND/LOG_PAGE. Do not download or swap models.**
+
+- Installed Redmi release remains `aed1d2b826290c95c70356b5d8b864b5ef382be4`; private owner-read #702 confirms auto-update enabled, Runtime/Dashboard UP_TO_DATE and last_error NONE.
+- Boss integration PR [#2370](https://github.com/RedMentos/Aii/pull/2370) is DRAFT at code/test SHA `8661e80f8cbc39ec3afb8eb8d40171fe2d777e91`, based on the installed release SHA. Exact-head CI: **17/17 substantive workflows SUCCESS, 1 SKIPPED, 0 failures**. This is CI evidence only; the candidate is not merged or installed.
+- New candidate path: SleepRuntime performs a bounded, nonblocking, read-only warm of the exact active numeric WorldJEPA checkpoint after postcommit work; B1/B2's Store-scoped receiver can then consume the cached shadow readout. The B1/B2 body context retains its explicit “prediction only; not fact/source/permission” boundary, train-split support threshold and unsupported-action evidence within the prompt budget. No native B1/B2 weights or permissions change.
+- Current phone evidence is still poor: last stored turn 57.739 s / TTFT 41.627 s / 2 generated tokens; B1/B2 TIME_BUDGET 53.2/54.2 s; C3 probe 3.1 s. Correctness remains UNKNOWN. Instant native residency shows 0 mapped processes.
+- HEALTH #704: 1,071 MiB MemAvailable / 5,569 MiB total, 1,312 MiB disk free. HEALTH's Runtime field is UNAVAILABLE while DIAGNOSTICS #703 reports Runtime/service/dashboard RUNNING. LEARNING_STATUS #705 is UNAVAILABLE. Preserve these as separate observations.
+- Official Age 0; lab request 10 / effective stage 5; physical feature execution is not verified. No device update or new turn was initiated.
+- Local full Aii suite is blocked because no repository checkout is mounted and GitHub DNS resolution fails in this execution environment.
+
+**Next internal step:** review the green #2370 candidate, then selectively recompose JEPA temporal episodic recall from #2405 only after its exact code/test head is rebased and green on the current source-lifecycle base. Keep Redmi B1/B2 latency/correctness, trained B3 latent utility, Android voice/UI/background control and process-death/reboot rollback OPEN. No user action is currently required.
+
+---
+
 # QA & Android — temporal JEPA and source-lifecycle follow-up (2026-11-22)
 
 - JEPA/Memory PR [#2351](https://github.com/RedMentos/Aii/pull/2351), exact head 3df0c8a6a65dd2545bde62db92efc761d143032a, adds dense contiguous T8 temporal windows (history lengths 2/3), explicit censored omissions, unknown-gap breaks, connected session/source split, NumPy WorldJEPA + EMA/Adam/checkpoint persistence, and B1/B2/SELF shadow readouts. It is wired into SleepRuntime post-commit but has no prompt consumer or native body-weight effect. Synthetic Store/T8 fixtures only. Exact CI currently queued; PR is DRAFT / NOT_RELEASED.
