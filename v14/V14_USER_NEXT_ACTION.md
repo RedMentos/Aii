@@ -1,3 +1,17 @@
+## Latest verified status — Perception follow-up (2026-11-23T01:02:03.124Z)
+
+**Keine Aktion nötig.** No manual Termux command, model download/swap, permission change, update request or device mutation is required.
+
+- **Installed Redmi release:** private V13OBS #115 last read at 2026-11-23T00:36:32Z confirms `aed1d2b826290c95c70356b5d8b864b5ef382be4`, auto-update enabled, Runtime/Dashboard UP_TO_DATE, last_error NONE. This is the installed release only; no candidate has been deployed.
+- **Stored functional evidence:** last stored turn remains 57.7388 s total / 41.6269 s TTFT / 38.9453 s C3 prefill / 751 admitted tokens / 2 generated tokens; correctness UNKNOWN. B1/B2 remain TIME_BUDGET at 53.2/54.2 s. No new turn or fresh device measurement occurred in this run.
+- **Perception audio compatibility:** PR #2369 exact code/test commit `245b2ef20c975f3446ab5df3ae2007d08a3332cf`; current PR branch head after handoff update `6e1050146fe7cbb9b57579404bfd700a494d0dce`. It changes Teacher Ear loading to lazy/optional, so an acoustic-only Core staged runtime can run without `audio_teacher_ear.py`. Missing module yields `UNAVAILABLE_MODULE`, no teacher text enters C3 or persistent RAW EAR, and the current lease + both separate opt-ins are checked before fallback. Current audio source blob `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`; test blob `1b3f3c5d461ff09158b757cc6dca1c4fd397de5a`. LOCAL_LINUX isolated helper/permission tests **5/5 PASS** (CPython 3.13.5). Exact-head CI is queued/pending; full local Aii suite remains BLOCKED by absent checkout and GitHub DNS failure.
+- **Core integration action (internal, no user action):** #2370 still pins the old `audio_voice_cues.py` blob `b18e4501…`. Core was notified on #2370 to rebind its own `SOURCE_BLOBS` to `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288` and refresh downstream pins. Teacher Ear may stay OFF and its module omitted until Core explicitly supplies `teacher_result` plus both default-false opt-ins. Staged/integrated audio path remains unverified until Core reruns it.
+- **A3 source-forget:** PR #2395 remains DRAFT / NOT_RELEASED. Focused tests are 7/7 local and 2/2 exact-head CI PASS, but staged/integrated tests FAIL because JEPA's overlay still replaces `vision.forget()` without projector invalidation and QA's composer pins old `vision.py`/omits `vision_source_lineage.py`. Those owners were notified; no foreign branch was edited.
+- **Research update:** R-101 now records the peer-reviewed ECML PKDD 2026 Research Track / Springer conference publication (DOI `10.1007/978-3-032-37673-2_7`), not merely an arXiv preprint. The exact-unlearning guarantee still applies only to the standardized ridge head, not the feature backbone.
+- **No Android proof:** no AudioRecord, MediaProjection, live microphone/screen capture, ASR inference, model download, weight update or Android UI action was run. REDMI_UNVERIFIED for all new candidates.
+
+---
+
 ## Latest verified status — Perception run 10 (2026-11-23T00:38:13Z)
 
 **No user action is required.** Do not run a manual Termux command, send a chat, change permissions, request an update, download a model, or swap weights for these draft candidates.
