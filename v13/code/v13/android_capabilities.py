@@ -161,23 +161,26 @@ class CapabilityRegistry:
             raise CapabilityRegistryError("launch_app contract mismatch")
 
         screen_capture = by_id["screen_capture"]
-        expected_capture_status = (
-            _OFF_UNPAIRED
-            if not raw["termux_paired"]
-            else (_READY_SESSION_OS if raw["enabled"] else _OFF_STOP)
-        )
-        if (
-            screen_capture.status != expected_capture_status
-            or screen_capture.provider != "MEDIA_PROJECTION_ONE_SHOT"
-            or screen_capture.per_action_consent is not True
-            or screen_capture.android_os_permission_required is not True
-            or screen_capture.result_observed is not True
-            or screen_capture.learning_authority is not False
-        ):
-            raise CapabilityRegistryError("screen_capture contract mismatch")
+        media_projection_present = screen_capture.provider == "MEDIA_PROJECTION_ONE_SHOT"
+        if media_projection_present:
+            expected_capture_status = (
+                _OFF_UNPAIRED
+                if not raw["termux_paired"]
+                else (_READY_SESSION_OS if raw["enabled"] else _OFF_STOP)
+            )
+            if (
+                screen_capture.status != expected_capture_status
+                or screen_capture.per_action_consent is not True
+                or screen_capture.android_os_permission_required is not True
+                or screen_capture.result_observed is not True
+                or screen_capture.learning_authority is not False
+            ):
+                raise CapabilityRegistryError("screen_capture contract mismatch")
+        elif screen_capture.provider != "NONE":
+            raise CapabilityRegistryError("screen_capture provider mismatch")
 
         for cap_id in CAPABILITY_IDS[1:]:
-            if cap_id == "screen_capture":
+            if cap_id == "screen_capture" and media_projection_present:
                 continue
             capability = by_id[cap_id]
             expected_os_permission = cap_id == "audio_capture"
