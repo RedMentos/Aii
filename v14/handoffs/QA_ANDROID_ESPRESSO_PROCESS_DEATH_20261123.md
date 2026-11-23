@@ -114,3 +114,10 @@ A separate authenticated private owner-read after the release update confirms:
 - Console excerpt remains redacted; console_errors is USER_NOT_OPTED_IN. No LOG_PAGE, CHAT_SEND, model/weight/permission change or device mutation was performed.
 
 A separate read-only HEALTH request is pending to refresh MemAvailable/free-disk metadata. This release receipt proves installation only. The companion Espresso PR still has no physical Redmi APK install, pairing or Android UI-control evidence; REDMI companion acceptance remains UNVERIFIED.
+
+
+### Additional read-only resource / learning receipts
+
+- HEALTH: MemAvailable 1,488 MiB of 5,569 MiB; free disk 993 MiB. HEALTH reports Runtime UNAVAILABLE while DIAGNOSTICS reports service/model RUNNING and Dashboard RUNNING; retain the conflict.
+- LEARNING_STATUS: UNAVAILABLE. DIAGNOSTICS says learning commit authority requires separate SHADOW mode; no active persistent weight-learning state is verified.
+- No LOG_PAGE or CHAT_SEND was issued. No permission, learning-mode, model or weight changes were made.
