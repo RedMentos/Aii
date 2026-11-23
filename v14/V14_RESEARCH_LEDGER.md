@@ -4,6 +4,24 @@
 **Aktive Architektur:** [V14 Master](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md) §§21–23; [Arbeitsplan](V14_LIVE_WORKPLAN.md).  
 **Vorsicht:** Ein Paper-Abstract ist kein reproduzierter Experimentalbefund; eine nachgeprüfte URL ist keine vollständig gelesene Arbeit. Jeder Eintrag erhält eine *genaue* Evidenzstufe.
 
+## R-108 — Source deletion in continual predictive memory: checkpoint invalidation vs synaptic unlearning (2026-11-23)
+
+**Primary sources / evidence level:**
+
+1. Mohammad Ali Vahedifar, Behzad Bozorgtabar and Qi Zhang, *Learning with Unlearning: Synaptic Role Partitioning for Simultaneous Continual Learning and Machine Unlearning*, arXiv:2611.24205, submitted 2026-11-18: https://arxiv.org/abs/2611.24205 . The arXiv search record and abstract were reviewed; the HTML full text could not be retrieved in this research pass. **Evidence: ABSTRACT_ONLY.** The abstract proposes four synaptic roles, separate retain/forget/update rules, and orthogonal projection for contested-weight updates. Full method, experiments, limitations, code, model-weight licensing and mobile compatibility remain unverified. No implementation or weights were reused.
+
+2. Xiaoyu Xu et al., *Unlearning Isn't Deletion: Investigating Reversibility of Machine Unlearning in LLMs*, Proceedings of the 43rd International Conference on Machine Learning, PMLR 306:142657–142704 (2026): https://proceedings.mlr.press/v306/xu26cd.html . Official PMLR bibliographic record and abstract reviewed. **Evidence: PEER_REVIEWED_PAPER_ABSTRACT_REVIEWED; no V14 reproduction.** The authors report that task-level apparent forgetting can be reversed by limited fine-tuning, and propose representation-level diagnostics including PCA similarity/shift, CKA and Fisher information.
+
+**Why this matters to V14:** In a continuously learning system, deleting an episodic row is insufficient if the source still exists in a current checkpoint, rollback checkpoint, receiver adapter, retention anchor or replay queue. Conversely, a single successful deletion operation does not prove that a learned influence is irreversibly gone; later retained-data updates may restore related behavior. The two papers motivate separating (a) source-reference deletion and checkpoint lifecycle correctness from (b) the harder scientific claim of synaptic/model unlearning.
+
+**V14 implementation decision:** The JEPA temporal source-forget path now conservatively invalidates every active/previous temporal checkpoint whose experience rows, retention holdouts or LearningIntent provenance references the source. If a verified clean previous checkpoint exists, it is restored and non-forgotten active-only rows are made replayable. If no clean checkpoint remains, temporal state is cleared and the next permitted update starts again from the durable T8 ledger after the source is tombstoned. This is **checkpoint invalidation + source-verified replay**, not synaptic unlearning, not a claim that all organs have erased derived influence, and not authority to promote body weights.
+
+**Testable follow-up:** After exact CI and source-pin integration, measure (1) source-id absence from active/previous experience rows, retention anchors, LearningIntent train/validation references and pending rows; (2) restart and retained-only replay; (3) a retained-data-only relearning probe against a clean retrain-without-source baseline; and (4) representation-level drift/retention where an appropriate small trainable adapter exists. A future synapse-level method such as LwU remains a research candidate only after full-text, code, license, resource and independent-ablation review.
+
+**Reuse boundary:** No paper code, dataset, model weights or dependency downloaded or copied. No license claim is made for arXiv:2611.24205 because its license was not verified in this pass. No Android or native-model evidence is implied.
+
+---
+
 ## R-107 — Future-Aware Recall for predictive episodic memory (cross-lane link, 2026-11-23)
 
 **Primary source / review record:** Beomsu Kim et al., *Learning What to Recall: Adaptive Multi-Cue Episodic Memory for World Models*, arXiv:2609.34677 (submitted 2026-09-28), https://arxiv.org/abs/2609.34677 . The full paper-method/limitations and OSS/license review are recorded in JEPA research PR [#2413](https://github.com/RedMentos/Aii/pull/2413); this entry is a cross-reference so the active ledger points to the current research candidate. The preprint is not treated as peer-reviewed or independently reproduced.
@@ -955,3 +973,19 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
+
+
+## R-080 — Continual source deletion, trajectory echoes and plasticity collapse
+
+- **Primary sources (abstracts checked 2026-11-23):**
+  - Ding, Huang & Dong, *When Unlearning Fails: Reliable Data Deletion under Post-Training in Agent Networks*, arXiv:2607.28829 (2026-07-30): https://arxiv.org/abs/2607.28829
+  - Jeong, Kim, Hong & Lee, *Continual Data Unlearning in Diffusion Models via Transition-based Regularization*, arXiv:2609.32328 (2026-09-26): https://arxiv.org/abs/2609.32328
+  - Shi, Xu, Ding, Hero & Wang, *On the Plasticity Collapse in Continual Machine Unlearning*, arXiv:2608.29513 (2026-08-30): https://arxiv.org/abs/2608.29513
+- **Evidence level:** ABSTRACT_VERIFIED. Primary arXiv abstracts inspected; no independent V14 reproduction and no full experimental replication.
+- **Reported claims:** the agent-network paper describes downstream influence echoes when retained post-training trajectories were shaped by data later requested for deletion, and proposes a lightweight lineage/audit plus quarantine/update method. The diffusion paper records fixed-probe response transitions after each deletion and uses a one-sided penalty to discourage later reversal, with a bounded transition memory. The plasticity-collapse paper reports that sequential unlearning can saturate parameter subspaces, causing weaker future forgetting and spontaneous re-memorization.
+- **What is not shown:** none of these abstracts proves the methods transfer to V14's small numeric JEPA, Android constraints, local source model, or B1/B2 receiver. The diffusion method is domain-specific. The reported experiments and metrics are paper claims, not V14 results.
+- **V14 connection:** the current temporal source-forget guard previously checked only bounded replay rows, retention holdouts and LearningIntent source lists. PR #2426 now additionally checks each checkpoint's full scanned T8 prefix via its persisted scan cursor, while excluding source rows still only pending/untrained. This addresses direct source influence after replay-row eviction; it does not establish deletion of downstream derived-trajectory influence or synaptic unlearning.
+- **Next falsifiable experiment:** create two source cohorts A/B where B's later ActionOutcome explicitly cites A-derived context; train a shadow checkpoint, request deletion of A, then continue learning on B. Verify that direct and descendant lineage is either invalidated/rebuilt or explicitly quarantined; compare deletion probes before/after later updates, B utility, A/B holdout retention, gradient/update norms, checkpoint diffs, restart and rollback. Add repeated A→B deletion sequences to detect declining forget efficacy or loss of future learning capacity. Use unrelated-source and pending-only negative controls.
+- **Privacy constraint:** any stored probe, response delta, embedding or derived trajectory that remains source-specific must itself participate in the forget lineage. Do not preserve raw deleted samples or source-derived transition probes merely to make deletion persistence easier.
+- **Code and licenses:** no MUTE, transition-regularization or plasticity-collapse implementation was imported. No exact dependency/weight/dataset license audit was completed for these papers' code; the plasticity-collapse abstract links a repository, but its exact LICENSE and dependency graph remain unverified. Do not reuse code until that audit is complete.
+- **Decision:** RESEARCH_ONLY / NO_ARCHITECTURE_CHANGE / NO_DEPENDENCY. Use these papers to motivate source-lineage closure and repeated-forget/retention measurements; do not label the current checkpoint invalidation as certified machine unlearning.

@@ -601,7 +601,9 @@ class SleepRuntime:
     def schedule_world_jepa(self,event_id=None):
         """Queue an observed T8 event for bounded idle JEPA learning/readout."""
         from .world_jepa_runtime import permission_state
-        observed="'FINAL','FAILED','ERROR','DEADLINE','REJECTED'"
+        # Known censored terminal outcomes are temporal omission targets too.
+        # Keep OUTCOME_UNKNOWN excluded: it has no verified learning target.
+        observed="'FINAL','FAILED','ERROR','DEADLINE','REJECTED','CANCELLED','ABORTED','INTERRUPTED'"
         if event_id is None:
             row=self.r.store.one(
                 "SELECT event_id,status FROM actions WHERE outcome IS NOT NULL "

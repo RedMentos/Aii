@@ -434,4 +434,8 @@ class Memory:
                 self.s.log('forget',event_id,{'memory_id':mid,'source_id':sid,
                     'scope':'source and dependent candidates; independent backups unchanged',
                     'temporal_pending_rows_removed':forget_guard_report.get('temporal_pending_rows_removed',0),
-                    'jepa_pending_rows_removed':forget_guard_report.get('pending_rows_removed',0)})
+                    'jepa_pending_rows_removed':forget_guard_report.get('pending_rows_removed',0),
+                    'component':'world_predictor',
+                    'count':forget_guard_report.get('temporal_checkpoints_invalidated',0),
+                    'retained_cases_saved':forget_guard_report.get('temporal_rows_requeued',0),
+                    'status':'PASS','mode':'shadow'})

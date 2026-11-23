@@ -21,6 +21,7 @@ from v13.world_jepa_store_authority import verify_committed_temporal_page
 from v13.world_jepa_temporal import (
     STATE_KEY,
     TemporalWorldJEPAStoreConsumer,
+    _record_references_source,
     _split_windows,
     build_temporal_windows,
 )
@@ -33,7 +34,8 @@ def _make_store(home):
     return store
 
 
-def _add_session(store, label, session_index, *, status_overrides=None, event_count=4):
+def _add_session(store, label, session_index, *, status_overrides=None, event_count=4,
+                 context_source_refs_factory=None):
     status_overrides = status_overrides or {}
     session = store.new_session(label)
     event_ids = []
@@ -44,9 +46,12 @@ def _add_session(store, label, session_index, *, status_overrides=None, event_co
         generation = event["brain_generation_id"]
         action_index = (session_index + offset) % len(world_model.ACTIONS)
         route = world_model.ACTIONS[action_index]
+        selection_source_refs = [event["source_ref"]]
+        if context_source_refs_factory is not None:
+            selection_source_refs.extend(context_source_refs_factory(session_index, offset) or [])
         selection = contracts.packet(
             "ActionSelection", "C2_CONTROL", event_id, generation,
-            [event["source_ref"]],
+            selection_source_refs,
             selected={
                 "action_id": "TEXT_REPORT", "action_type": "TEXT_REPORT",
                 "score": 0.0, "permission_class": "local_text_only",
@@ -138,6 +143,103 @@ def test_temporal_page_and_dense_windows_keep_known_omissions_and_reject_unknown
             assert len(window["action_ids"]) in (3, 4)
             assert len(set(window["source_sha256s"])) == len(window["source_sha256s"])
             assert window["generation_id"]
+    finally:
+        store.close()
+
+
+def test_temporal_action_selection_context_lineage_is_persisted_and_source_disjoint(tmp_path):
+    store = _make_store(tmp_path / "temporal-context-lineage")
+    try:
+        shared = store.source("shared recalled context source", "MEMORY")
+        session_ids = []
+        for index in range(4):
+            session, _events = _add_session(
+                store, "context-lineage", index, event_count=8,
+                context_source_refs_factory=(
+                    (lambda _session, _offset, ref=shared: [ref])
+                    if index in (0, 1) else None
+                ),
+            )
+            session_ids.append(session)
+        receipts, rejected, _cursor, _scanned, _censored, has_more = verify_committed_temporal_page(
+            store, after_seq=0, limit=64
+        )
+        assert rejected == 0 and has_more is False
+        from v13.world_jepa_temporal import _receipt_row, _split_windows
+        rows = [_receipt_row(store, receipt) for receipt in receipts
+                if receipt.status != "OUTCOME_UNKNOWN"]
+        shared_rows = [row for row in rows if row["session_id"] in set(session_ids[:2])]
+        assert shared_rows
+        assert all(
+            any(ref["source_id"] == shared["source_id"] for ref in row["source_refs"])
+            for row in shared_rows
+        )
+        windows = build_temporal_windows(store, rows)
+        train, holdout, split = _split_windows(windows)
+        train_sessions = {window["session_id"] for window in train}
+        holdout_sessions = {window["session_id"] for window in holdout}
+        assert (session_ids[0] in train_sessions) == (session_ids[1] in train_sessions)
+        assert (session_ids[0] in holdout_sessions) == (session_ids[1] in holdout_sessions)
+        train_lineage = {
+            source for window in train for source in window["lineage_source_ids"]
+        }
+        holdout_lineage = {
+            source for window in holdout for source in window["lineage_source_ids"]
+        }
+        assert not train_lineage & holdout_lineage
+        assert split["source_disjoint"] is True
+        assert shared["source_id"] in train_lineage or shared["source_id"] in holdout_lineage
+    finally:
+        store.close()
+
+
+def test_temporal_source_forget_detects_evicted_action_selection_context_and_censored_outcomes(tmp_path):
+    store = _make_store(tmp_path / "temporal-context-forget")
+    try:
+        from v13.world_jepa_temporal import _receipt_row, _record_references_source
+        context = store.source("context source to forget", "MEMORY")
+        _session, event_ids = _add_session(
+            store, "context-forget", 0, event_count=4, status_overrides={0: "INTERRUPTED"},
+            context_source_refs_factory=lambda _session, _offset: [context],
+        )
+        receipts, rejected, _cursor, _scanned, _censored, _more = verify_committed_temporal_page(
+            store, after_seq=0, limit=16
+        )
+        assert rejected == 0
+        target_receipt = next(receipt for receipt in receipts if receipt.event_id == event_ids[0])
+        target = store.one(
+            "SELECT a.id AS action_id,a.rowid AS scan_seq FROM actions a WHERE a.event_id=?",
+            (event_ids[0],),
+        )
+        assert target is not None and target_receipt.status == "INTERRUPTED"
+        _receipt_row(store, target_receipt)
+        evicted_record = {
+            "scan_cursor": target["scan_seq"],
+            "experience_rows": [],
+            "retention_holdouts": [],
+            "learning_intents": {},
+        }
+        assert _record_references_source(
+            store, evicted_record, context["source_id"]
+        ) is True
+        assert _record_references_source(
+            store, evicted_record, context["source_id"], {target["action_id"]}
+        ) is False
+        assert _record_references_source(
+            store, dict(evicted_record, scan_cursor=target["scan_seq"] - 1),
+            context["source_id"],
+        ) is False
+        assert _record_references_source(
+            store, evicted_record, "unrelated-context-source"
+        ) is False
+        with store.tx() as connection:
+            connection.execute("UPDATE sources SET deleted=1 WHERE id=?", (context["source_id"],))
+        try:
+            _receipt_row(store, target_receipt)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("revoked ActionSelection context source was accepted")
     finally:
         store.close()
 
@@ -325,11 +427,261 @@ def test_temporal_world_jepa_updates_ema_checkpoint_and_b1_b2_shadow_receivers(t
                 assert readout["support_samples"] >= 8
                 assert readout["checkpoint_sha256"] == first["checkpoint_sha256"]
 
-        # A learned source is protected while either active or rollback state retains it.
+        # Forget invalidates a source-bearing active checkpoint before tombstoning.
         source_row = active["active"]["experience_rows"][0]
-        memory = Memory(store, {})
-        with pytest.raises(ValueError, match="temporal WorldJEPA"):
-            memory._forget_source(source_row["source_id"], source_row["event_id"])
+        checkpoint_path = learner.home / active["active"]["checkpoint"]
+        from v13.memory import Memory
+        Memory(store, {})._forget_source(source_row["source_id"], source_row["event_id"])
+        forgotten, _ = store.state(STATE_KEY, None)
+        assert forgotten["active"] is None
+        assert forgotten["previous"] is None
+        assert forgotten["scan_cursor"] == 0
+        assert forgotten["pending_rows"] == []
+        assert not checkpoint_path.exists()
+        assert store.one(
+            "SELECT deleted FROM sources WHERE id=?", (source_row["source_id"],)
+        )["deleted"] == 1
+        import json
+        forget_log = store.one(
+            "SELECT metrics FROM telemetry WHERE kind=? ORDER BY id DESC LIMIT 1",
+            ("forget",),
+        )
+        assert forget_log is not None
+        forget_metrics = json.loads(forget_log["metrics"])
+        assert forget_metrics["component"] == "world_predictor"
+        assert forget_metrics["count"] == 1
+        assert forget_metrics["source_id"] == source_row["source_id"]
+        assert forget_metrics["status"] == "PASS"
+    finally:
+        store.close()
+
+
+def test_temporal_source_forget_checks_scanned_history_beyond_bounded_replay_and_ignores_pending(tmp_path):
+    """An evicted-but-scanned T8 source still taints parameters; pending-only does not."""
+    store = _make_store(tmp_path / "temporal-forget-scanned-history")
+    try:
+        _sessions, _events = _make_dataset(store, "forget-scanned-history", 8)
+        target = store.one(
+            """SELECT a.id AS action_id,a.rowid AS scan_seq,e.source_id
+               FROM actions a JOIN events e ON e.id=a.event_id
+               WHERE a.outcome IS NOT NULL AND a.expected LIKE ?
+                 AND a.status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED')
+               ORDER BY a.rowid ASC LIMIT 1""",
+            ('%"forecast"%',),
+        )
+        assert target is not None
+        # Deliberately model the bounded checkpoint after this row has aged out
+        # of experience_rows, holdouts and LearningIntent provenance.
+        evicted_record = {
+            "scan_cursor": target["scan_seq"],
+            "experience_rows": [],
+            "retention_holdouts": [],
+            "learning_intents": {},
+        }
+        assert _record_references_source(
+            store, evicted_record, target["source_id"]
+        ) is True
+        # A scanned-but-not-trained pending row is removed without invalidating
+        # an otherwise clean checkpoint.
+        assert _record_references_source(
+            store, evicted_record, target["source_id"], {target["action_id"]}
+        ) is False
+        assert _record_references_source(
+            store, evicted_record, "unrelated-source"
+        ) is False
+        before_row = dict(evicted_record, scan_cursor=target["scan_seq"] - 1)
+        assert _record_references_source(
+            store, before_row, target["source_id"]
+        ) is False
+    finally:
+        store.close()
+
+
+def test_temporal_source_forget_promotes_clean_previous_and_replays_after_restart(tmp_path):
+    home = tmp_path / "temporal-forget-clean-previous"
+    store = _make_store(home)
+    try:
+        # Use the full 256-action scan budget so the source/session-disjoint
+        # receiver holdout is stable across randomly generated Store identities.
+        _make_dataset(store, "forget-fallback-A", 64)
+        _permissions(store, steps=80)
+        learner = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        first = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert first["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", first
+        first_state, _ = store.state(STATE_KEY, None)
+        first_sha = first_state["active"]["checkpoint_sha256"]
+        first_cursor = first_state["scan_cursor"]
+        first_path = learner.home / first_state["active"]["checkpoint"]
+
+        _sessions, second_events = _make_dataset(
+            store, "forget-fallback-B", 64, start_index=64,
+        )
+        second = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert second["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", json.dumps(second, sort_keys=True)
+        second_state, _ = store.state(STATE_KEY, None)
+        second_record = second_state["active"]
+        second_path = learner.home / second_record["checkpoint"]
+        second_event_set = set(second_events)
+        source_row = next(
+            row for row in second_record["experience_rows"]
+            if row["event_id"] in second_event_set
+        )
+        source_id = source_row["source_id"]
+        assert not any(
+            row["source_id"] == source_id
+            for row in second_state["previous"]["experience_rows"]
+        )
+
+        from v13.memory import Memory
+        Memory(store, {})._forget_source(source_id, source_row["event_id"])
+
+        restored, _ = store.state(STATE_KEY, None)
+        assert restored["active"]["checkpoint_sha256"] == first_sha
+        assert restored["previous"] is None
+        assert restored["scan_cursor"] == first_cursor
+        assert restored["pending_rows"]
+        assert all(row["source_id"] != source_id for row in restored["pending_rows"])
+        assert not second_path.exists()
+        assert first_path.is_file()
+        assert store.one(
+            "SELECT deleted FROM sources WHERE id=?", (source_id,)
+        )["deleted"] == 1
+        import json
+        forget_log = store.one(
+            "SELECT metrics FROM telemetry WHERE kind=? ORDER BY id DESC LIMIT 1",
+            ("forget",),
+        )
+        forget_metrics = json.loads(forget_log["metrics"])
+        assert forget_metrics["count"] == 1
+        assert forget_metrics["retained_cases_saved"] > 0
+        assert forget_metrics["source_id"] == source_id
+
+        # The promoted checkpoint and retry queue survive a real SQLite reopen.
+        store.close()
+        store = Store(home)
+        restarted = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        retry = restarted.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert retry["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", retry
+        replayed, _ = store.state(STATE_KEY, None)
+        assert all(row["source_id"] != source_id
+                   for row in replayed["active"]["experience_rows"])
+        assert replayed["active"]["checkpoint_sha256"] == retry["checkpoint_sha256"]
+        assert replayed["active"]["metrics"]["source_disjoint"] is True
+    finally:
+        store.close()
+
+
+def test_temporal_source_forget_invalidates_both_checkpoints_then_rebuilds_from_remaining_t8(tmp_path):
+    home = tmp_path / "temporal-forget-full-replay"
+    store = _make_store(home)
+    try:
+        _sessions, first_events = _make_dataset(store, "forget-full-A", 32)
+        _permissions(store, steps=80)
+        learner = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        first = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert first["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", first
+        _make_dataset(store, "forget-full-B", 32, start_index=32)
+        second = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert second["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", second
+        before, _ = store.state(STATE_KEY, None)
+        active_path = learner.home / before["active"]["checkpoint"]
+        previous_path = learner.home / before["previous"]["checkpoint"]
+        first_event_set = set(first_events)
+        source_row = next(
+            row for row in before["active"]["experience_rows"]
+            if row["event_id"] in first_event_set
+        )
+        source_id = source_row["source_id"]
+        assert any(row["source_id"] == source_id
+                   for row in before["previous"]["experience_rows"])
+
+        from v13.memory import Memory
+        Memory(store, {})._forget_source(source_id, source_row["event_id"])
+
+        invalidated, _ = store.state(STATE_KEY, None)
+        assert invalidated["active"] is None
+        assert invalidated["previous"] is None
+        assert invalidated["scan_cursor"] == 0
+        assert invalidated["pending_rows"] == []
+        assert not active_path.exists()
+        assert not previous_path.exists()
+        assert store.one(
+            "SELECT deleted FROM sources WHERE id=?", (source_id,)
+        )["deleted"] == 1
+        import json
+        forget_log = store.one(
+            "SELECT metrics FROM telemetry WHERE kind=? ORDER BY id DESC LIMIT 1",
+            ("forget",),
+        )
+        forget_metrics = json.loads(forget_log["metrics"])
+        assert forget_metrics["count"] == 2
+        assert forget_metrics["retained_cases_saved"] == 0
+        assert forget_metrics["source_id"] == source_id
+
+        # Restart must reconstruct only from the surviving, source-verified T8 ledger.
+        store.close()
+        store = Store(home)
+        restarted = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        rebuilt = restarted.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert rebuilt["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", rebuilt
+        after, _ = store.state(STATE_KEY, None)
+        assert all(row["source_id"] != source_id
+                   for row in after["active"]["experience_rows"])
+        assert after["active"]["checkpoint_sha256"] == rebuilt["checkpoint_sha256"]
+        assert after["active"]["metrics"]["source_disjoint"] is True
+    finally:
+        store.close()
+
+
+def test_temporal_source_forget_unrelated_source_preserves_active_checkpoint(tmp_path):
+    home = tmp_path / "temporal-forget-negative-control"
+    store = _make_store(home)
+    try:
+        _make_dataset(store, "forget-negative-control", 32)
+        _permissions(store, steps=80)
+        learner = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        trained = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert trained["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", trained
+        before, _ = store.state(STATE_KEY, None)
+        active_sha = before["active"]["checkpoint_sha256"]
+        active_path = learner.home / before["active"]["checkpoint"]
+
+        unrelated_session = store.new_session("unrelated source-forget negative control")
+        unrelated_event = store.event(unrelated_session, "not present in temporal T8")
+        unrelated_source = unrelated_event["source_ref"]["source_id"]
+        from v13.memory import Memory
+        Memory(store, {})._forget_source(unrelated_source, unrelated_event["event_id"])
+
+        after, _ = store.state(STATE_KEY, None)
+        assert after["active"]["checkpoint_sha256"] == active_sha
+        assert after["previous"] is None
+        assert active_path.is_file()
+        assert all(row["source_id"] != unrelated_source
+                   for row in after["active"]["experience_rows"])
+        assert store.one(
+            "SELECT deleted FROM sources WHERE id=?", (unrelated_source,)
+        )["deleted"] == 1
     finally:
         store.close()
 
@@ -386,6 +738,56 @@ def test_sleep_runtime_commits_source_verified_base_and_temporal_learning_after_
             "SELECT id FROM actions WHERE event_id=? AND outcome IS NOT NULL",
             (event_ids[-1],),
         ) is not None
+    finally:
+        store.close()
+
+
+def test_sleep_runtime_schedules_censored_terminal_outcome_for_temporal_learning(tmp_path):
+    home = tmp_path / "sleep-censored-schedule"
+    store = _make_store(home)
+    try:
+        _sessions, _events = _make_dataset(store, "sleep-censored-schedule", 60)
+        _session, latest_ids = _add_session(
+            store, "sleep-censored-latest", 60,
+            status_overrides={3: "INTERRUPTED"}, event_count=4,
+        )
+        latest_event = latest_ids[-1]
+        _permissions(store, steps=80)
+        sleep = _sleep(store, home)
+        posted = []
+
+        def post(*args, **kwargs):
+            posted.append((args, kwargs))
+            return {"action": kwargs.get("action"), "payload": kwargs.get("payload")}
+
+        sleep.scheduler = SimpleNamespace(post=post)
+        queued = sleep.schedule_world_jepa()
+        assert queued == {
+            "action": "jepa_update",
+            "payload": {"event_id": latest_event},
+        }
+        assert len(posted) == 1
+        assert posted[0][0] == ("IDLE",)
+        assert posted[0][1]["action"] == "jepa_update"
+
+        # The same event is accepted by the real postcommit consumer and its
+        # censored outcome remains in the persisted temporal experience ledger.
+        result = sleep._run_world_jepa(latest_event, limit=64)
+        assert result["action_status"] == "INTERRUPTED", result
+        assert result["temporal"]["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", result
+        assert result["temporal"]["metrics"]["parameter_delta_norm"] > 0
+        assert result["temporal"]["metrics"]["ema_target_delta_norm"] > 0
+        action = store.one(
+            "SELECT id FROM actions WHERE event_id=? AND outcome IS NOT NULL",
+            (latest_event,),
+        )
+        persisted, _ = store.state(STATE_KEY, None)
+        assert any(
+            row["action_id"] == action["id"] and row["status"] == "INTERRUPTED"
+            for row in persisted["active"]["experience_rows"]
+        )
+        assert result["temporal"]["native_body_weights_changed"] is False
+        assert result["decision_authority"] == "NONE"
     finally:
         store.close()
 
