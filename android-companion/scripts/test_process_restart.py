@@ -50,7 +50,7 @@ def hierarchy_xml() -> str:
     # shell after uiautomator writes it. Keep this host-only probe artifact in
     # the shell-owned temporary directory instead of touching app storage.
     path = "/data/local/tmp/v14-window.xml"
-    adb("shell", "uiautomator", "dump", path, timeout=20)
+    adb("shell", "uiautomator", "dump", "--compressed", path, timeout=20)
     return adb("exec-out", "cat", path, timeout=10)
 
 
@@ -240,11 +240,18 @@ def wait_for_process(absent: bool, timeout: float = 45.0) -> str:
     )
 
 
+def launch_companion() -> None:
+    """Unlock and launch without sending the legacy MENU key to System UI."""
+    adb("shell", "wm", "dismiss-keyguard", check=False)
+    adb("shell", "am", "start", "-n", COMPONENT, timeout=60)
+    # TCG-backed hosted emulators need a bounded first-frame settling interval
+    # before the first UIAutomator hierarchy request.
+    time.sleep(2.0)
+
+
 def main() -> None:
     adb("shell", "am", "force-stop", PACKAGE, check=False)
-    adb("shell", "wm", "dismiss-keyguard", check=False)
-    adb("shell", "input", "keyevent", "82", check=False)
-    adb("shell", "am", "start", "-n", COMPONENT, timeout=60)
+    launch_companion()
     wait_for_process(absent=False)
     wait_for_text(STOPPED_TEXT, timeout=60.0)
 
@@ -268,7 +275,7 @@ def main() -> None:
 
     adb("shell", "am", "force-stop", PACKAGE)
     wait_for_process(absent=True)
-    adb("shell", "am", "start", "-n", COMPONENT)
+    launch_companion()
     wait_for_process(absent=False)
     restarted = wait_for_text(STOPPED_TEXT, timeout=60.0)
     assert ENABLED_TEXT not in restarted
