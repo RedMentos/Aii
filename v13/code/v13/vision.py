@@ -317,7 +317,7 @@ def _write_state_conn(conn, state, version):
     return version + 1
 
 
-def _validate_state_sources(conn, state):
+def _validate_state_sources(conn, state, allow_malformed_projectors=False):
     """Every retained image/caption/projector must still refer to a live source."""
     images = state.get('images')
     if type(images) is not dict:
@@ -347,6 +347,8 @@ def _validate_state_sources(conn, state):
         if projector is None:
             continue
         if type(projector) is not dict:
+            if allow_malformed_projectors:
+                continue
             raise ValueError('invalid vision projector record')
         captions = projector.get('captions')
         if captions is not None:
@@ -403,8 +405,10 @@ def save(store, st):
 
 
 def _verify_or_create_blob(path, data, sha):
-    if path.is_symlink():
-        raise ValueError('image blob path is a symlink')
+    if path.is_symlink() or path.parent.is_symlink() or path.parent.parent.is_symlink():
+        raise ValueError('image blob path or parent is a symlink')
+    if not path.parent.is_dir():
+        raise ValueError('image blob directory is unavailable')
     if path.exists():
         if not path.is_file() or digest(path.read_bytes()) != sha:
             raise ValueError('existing image blob does not match its content hash')
@@ -541,7 +545,7 @@ def forget(store,rec):
     invalidated = []
     with store.tx() as conn:
         state, version = _read_state_conn(conn)
-        _validate_state_sources(conn, state)
+        _validate_state_sources(conn, state, allow_malformed_projectors=True)
         current = state['images'].get(sid)
         current_ref = current.get('ref') if type(current) is dict else None
         if type(current_ref) is not dict or current_ref.get('sha256') != sha:
@@ -554,6 +558,11 @@ def forget(store,rec):
             raise ValueError('image source is not live or does not match')
         state['images'].pop(sid, None)
         invalidated = invalidate_projectors(state, sid)
+        for key in ('projector', 'tile_projector'):
+            record = state.get(key)
+            if record is not None and type(record) is not dict:
+                state[key] = None
+                invalidated.append((key, record))
         changed = conn.execute(
             'UPDATE sources SET deleted=1 WHERE id=? AND deleted=0', (sid,)
         )
