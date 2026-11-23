@@ -2369,3 +2369,17 @@ No result in this late poll changes the Redmi boundary: private #840/#841/#842 s
 
 
 - **Additional open JEPA acceptance:** B1/B2 target-adapter retention remains `NOT_MEASURED` in the current WeightDeltaReceipt schema. World-predictor EMA retention and current source-disjoint receiver holdouts do not substitute for retention of the prior B1/B2 adapter on a persisted old cohort. Keep the cross-organ receiver loop PARTIAL / SHADOW until the prior holdout outcomes are persisted, old/new adapter performance is compared on the identical disjoint cohort, and negative controls pass.
+
+
+## Evidence overlay — JEPA & Memory run 16 (2026-11-23)
+
+| Canon family / path | Candidate code change | Evidence class for the new sub-path | Acceptance status |
+|---|---|---|---|
+| T8 ActionOutcome → WorldJEPA → B1/B2 | Persist fixed source-disjoint receiver cohort; exclude it from later train; compare prior and updated encoder+head on identical old `X/A/Y` | CODE_PRESENT_UNVERIFIED; exact project tests not executed | NOT_IMPLEMENTED_FOR_ACCEPTANCE |
+| B1_DETAIL / B2_GIST receiver readout | WeightDeltaReceipt v3 adds old/new cohort MSE, mean/zero/shuffled controls and cohort/source-disjoint evidence | CODE_PRESENT_UNVERIFIED; synthetic numeric reproduction only | NOT_IMPLEMENTED_FOR_ACCEPTANCE |
+| SourceRef / Forget / bounded replay | Receiver cohort source IDs/hashes are scanned by source-forget even after experience-row eviction | CODE_PRESENT_UNVERIFIED; regression test committed but not executed | NOT_IMPLEMENTED_FOR_ACCEPTANCE |
+| Checkpoint / restart / rollback | Existing rollback code remains unchanged; new receiver cohort is part of the persisted record and therefore follows active/previous checkpoint selection | No new runtime evidence this run | NOT_ACCEPTED |
+| Native B1/B2 body weights / trained latent coupling | No native model weights or trained inter-body latent path changed | NONE | NOT_IMPLEMENTED |
+| Android / Redmi | No phone command, update, training, model swap or permission change | NO_LIVE_RECEIPT; private #115 is the latest stored evidence | REDMI_UNVERIFIED |
+
+**Test status:** latest exact-head Actions run #45272190117 is `startup_failure` with zero jobs; local Aii suite NOT_RUN because there is no checkout and GitHub DNS fails. The synthetic numeric control is not a project test. Keep V14-004, V14-010 and V14-011 partial; do not promote any new acceptance state.
