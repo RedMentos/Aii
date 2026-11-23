@@ -237,6 +237,17 @@ class UCIParserTests(unittest.TestCase):
         self.assertEqual(rows[0].values, (4.216, 234.840))
         self.assertIsNone(rows[1].values[0])
 
+    def test_truncated_measurement_row_fails_closed(self):
+        payload = (
+            "Date;Time;Global_active_power;Voltage\\n"
+            "16/12/2006;17:24:00;1,0\\n"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "truncated.txt"
+            path.write_text(payload, encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "truncated"):
+                parse_uci(path)
+
     def test_non_finite_measurements_fail_closed(self):
         for token in ("inf", "-inf", "Infinity"):
             payload = (
