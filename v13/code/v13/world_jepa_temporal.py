@@ -37,8 +37,8 @@ from .world_jepa_learning_intent import (
 )
 from .world_jepa_runtime import permission_state
 from .world_jepa_store_authority import (
-    committed_action_source_refs, verify_committed_temporal_page,
-), verify_rows
+    committed_action_source_refs, verify_committed_temporal_page, verify_rows,
+)
 
 
 STATE_KEY = "v14.world_jepa.temporal_consumer"
