@@ -9,12 +9,13 @@ authority or action authority is used.
 """
 from __future__ import annotations
 
+import json
 import time
 
 from . import duplex
 from .audio_voice_cues import AudioConsentLease, consume_pcm16_voice_window
 
-BRIDGE_REVISION = "V14_RAW_EAR_AUDIO_DUPLEX_BRIDGE_V1"
+BRIDGE_REVISION = "V14_RAW_EAR_AUDIO_DUPLEX_BRIDGE_V2"
 _AUDIO_STATUS = "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION"
 _ACTIVITY_HINTS = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}
 
@@ -70,10 +71,27 @@ def _validate_audio_result(runtime, audio_result, consent_lease):
     if not consent_lease.matches(runtime, source_id, generation_id, receipt):
         raise PermissionError("audio result is outside its active source-bound consent lease")
     event = runtime.store.one(
-        "SELECT id, brain_generation_id FROM events WHERE id=?", (event_id,)
+        "SELECT id, generation_id FROM events WHERE id=?", (event_id,)
     )
-    if not event or event["brain_generation_id"] != generation_id:
+    if not event or event["generation_id"] != generation_id:
         raise ValueError("audio event is missing or belongs to another generation")
+    packet_id = packet.get("packet_id")
+    if type(packet_id) is not str or not packet_id:
+        raise ValueError("audio PerceptPacket id is missing")
+    stored_packet = runtime.store.one(
+        "SELECT id, event_id, generation_id, payload FROM packets "
+        "WHERE id=? AND kind='PerceptPacket'",
+        (packet_id,),
+    )
+    if (not stored_packet or stored_packet["event_id"] != event_id
+            or stored_packet["generation_id"] != generation_id):
+        raise ValueError("audio PerceptPacket is not persisted for this event/generation")
+    try:
+        persisted_packet = json.loads(stored_packet["payload"])
+    except (TypeError, ValueError) as exc:
+        raise ValueError("persisted audio PerceptPacket is unreadable") from exc
+    if persisted_packet != packet:
+        raise ValueError("audio PerceptPacket differs from its persisted source-bound bytes")
     a4 = audio_result.get("a4")
     cues = a4.get("voice_cues") if type(a4) is dict else None
     temporal = a4.get("temporal_voice") if type(a4) is dict else None
