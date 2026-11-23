@@ -1057,6 +1057,9 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_mea
             pool=CapturePool(runner),
             cancel_event=threading.Event(),
         )
+        runtime._temporal_world_jepa_consumer = learner
+        warm = learner.warm_active_checkpoint()
+        assert warm["status"] == "WARMED"
         cognition = Cognition(runtime)
         for role in ("B1_DETAIL", "B2_GIST"):
             result = cognition.offer(role, event, 0, time.monotonic() + 5.0)
@@ -1173,6 +1176,9 @@ def test_bodyview_records_rejected_temporal_gate_without_prompt_leak(tmp_path, m
         text = "Do not expose an unaccepted temporal prediction."
         event = store.event(sessions[0], text)
         runtime = SimpleNamespace(store=store, session=sessions[0], home=home)
+        runtime._temporal_world_jepa_consumer = learner
+        warm = learner.warm_active_checkpoint()
+        assert warm["status"] == "WARMED"
         result = bodyview.body_state(runtime, event, "B1_DETAIL", text)
         assert result is not None
         assert "world_jepa_temporal" not in result["view"]
