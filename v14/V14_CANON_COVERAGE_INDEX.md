@@ -1,3 +1,9 @@
+## FASTDIAR model/weight license evidence — 2026-11-23T01:17:55.055Z
+
+R-104 reviewed the full arXiv paper (submitted to ICASSP 2027) and the exact upstream release. FASTDIAR code is MIT at signed v0.1.0 commit `e7f9bbccf98865216f48a04868d74f1d53c8734e`; checkpoint weights have no separate license statement in the inspected README/release. The 192-D/80 ms encoder and 960 ms diarization delay are paper results on a Threadripper CPU, not Android. Current V14 adapter accepts caller-supplied embeddings only; it does not load or execute weights. PyTorch/torchaudio/torchcodec/pyannote dependency closure is not proven on Termux/Bionic. No weights downloaded; REDMI_UNVERIFIED.
+
+---
+
 ## Research evidence overlay — 2026-11-23T01:14:50.933Z
 
 - **R-102 Orion / on-device OCL:** full-text methods, evaluation and limitations reviewed. URGE reallocates batch/replay/optimizer memory under a hard cap; evidence is Jetson AGX Orin 32 GB and emulated 8 GB, not Android. No Orion code found; Avalanche itself is MIT. No Android or Redmi acceptance.
