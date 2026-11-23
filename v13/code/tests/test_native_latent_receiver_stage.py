@@ -3,6 +3,7 @@ import hashlib
 import importlib.util
 import json
 import os
+import re
 import pytest
 from pathlib import Path
 import subprocess
@@ -148,3 +149,49 @@ def test_native_probe_overlay_rejects_tampered_stage_bytes_before_writing(tmp_pa
     with pytest.raises(ValueError, match="integrity mismatch"):
         overlay.apply_staged(code_dir, stage_dir)
     assert callosum_path.read_bytes() == before
+
+
+def test_native_receiver_source_pins_and_complete_stage_chain_are_current():
+    """Catch stale nested source pins before the full staged Runtime test."""
+    receiver_builder_path = CODE / "scripts/integrated_native_latent_receiver_candidate_20261122.py"
+    receiver_spec = importlib.util.spec_from_file_location(
+        "v14_native_receiver_pin_builder", receiver_builder_path
+    )
+    receiver_builder = importlib.util.module_from_spec(receiver_spec)
+    receiver_spec.loader.exec_module(receiver_builder)
+
+    for relative, expected in {
+        **receiver_builder.BASE_PINS,
+        **receiver_builder.NATIVE_FILES,
+    }.items():
+        source = CODE / relative
+        assert not source.is_symlink(), relative
+        assert source.is_file(), relative
+        assert hashlib.sha256(source.read_bytes()).hexdigest() == expected, relative
+
+    termux_path = CODE / "scripts/termux_runtime_recovery_candidate_20261121.py"
+    termux_spec = importlib.util.spec_from_file_location(
+        "v14_native_receiver_pin_termux", termux_path
+    )
+    termux = importlib.util.module_from_spec(termux_spec)
+    termux_spec.loader.exec_module(termux)
+    receiver_raw = receiver_builder_path.read_bytes()
+    git_blob = hashlib.sha1(
+        b"blob " + str(len(receiver_raw)).encode("ascii") + b"\\0" + receiver_raw
+    ).hexdigest()
+    assert termux.NATIVE_RECEIVER_BUILDER == "scripts/integrated_native_latent_receiver_candidate_20261122.py"
+    assert termux.NATIVE_RECEIVER_BLOB_SHA1 == git_blob
+
+    stage_path = CODE / "scripts/stage_integrated_candidate.py"
+    stage_spec = importlib.util.spec_from_file_location(
+        "v14_native_receiver_pin_stage", stage_path
+    )
+    stage = importlib.util.module_from_spec(stage_spec)
+    stage_spec.loader.exec_module(stage)
+    assert stage.BUILDER == "scripts/termux_runtime_recovery_candidate_20261121.py"
+    assert stage.BUILDER_SHA == hashlib.sha256(termux_path.read_bytes()).hexdigest()
+
+    deploy_source = (CODE / "v13/runtime_deploy.py").read_text(encoding="utf-8")
+    match = re.search(r'^STAGER_SHA256 = "([0-9a-f]{64})"$', deploy_source, re.MULTILINE)
+    assert match is not None
+    assert match.group(1) == hashlib.sha256(stage_path.read_bytes()).hexdigest()
