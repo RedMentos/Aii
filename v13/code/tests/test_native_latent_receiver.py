@@ -9,6 +9,8 @@ from pathlib import Path
 
 import pytest
 
+import v13.native_latent_receiver as native
+
 from v13.native_latent_receiver import (
     NativeReceiverError,
     NativeReceiverUnavailable,
@@ -269,3 +271,90 @@ def test_cancel_event_terminates_native_receiver_process(tmp_path):
             binary_path=binary,
             cancel_event=cancelled,
         )
+
+
+def fd_race_fake_binary(path: Path, ready: Path, release: Path, observed: Path):
+    source = f'''#!/usr/bin/env python3
+import hashlib, json, sys, time
+from pathlib import Path
+REV = {PINNED_LLAMA_REVISION!r}
+SCHEMA = {SCHEMA!r}
+if len(sys.argv) == 2 and sys.argv[1] == "--version":
+    print(json.dumps({{"schema": SCHEMA, "runner_revision": REV, "llama_version": "b10964"}}))
+    raise SystemExit(0)
+args = dict(zip(sys.argv[1::2], sys.argv[2::2]))
+ready = Path({str(ready)!r})
+release = Path({str(release)!r})
+observed = Path({str(observed)!r})
+ready.write_text("ready")
+limit = time.monotonic() + 5.0
+while not release.exists():
+    if time.monotonic() >= limit:
+        raise SystemExit(9)
+    time.sleep(0.005)
+model_bytes = Path(args["--model"]).read_bytes()
+observed.write_text(hashlib.sha256(model_bytes).hexdigest())
+rows = int(args["--rows"])
+dim = int(args["--input-dim"])
+positions = [int(value) for value in args["--positions"].split(",")]
+raw = sys.stdin.buffer.read()
+assert len(raw) == rows * dim * 4
+receipt = {{
+    "schema": SCHEMA, "runner_revision": REV, "llama_version": "b10964",
+    "status": "DECODED", "input_rows": rows, "input_dim": dim,
+    "receiver_input_dim": dim, "output_dim": 8,
+    "decode_status": 0, "output_norm": 2.0, "input_effect_rms": 0.5,
+    "zero_control_cosine": 0.2, "shuffle_control_cosine": 0.1,
+    "row_shuffle_control_applicable": rows >= 2,
+    "row_shuffle_control_cosine": 0.05 if rows >= 2 else None,
+    "repeat_cosine": 1.0, "position_ids": positions,
+    "position_mode": "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL",
+    "finite_output": True
+}}
+print(json.dumps(receipt))
+'''
+    path.write_text(source, encoding="utf-8")
+    path.chmod(0o755)
+    return path
+
+
+def test_native_child_loads_the_verified_descriptor_after_model_path_replacement(tmp_path):
+    home, model, binary, digest = fixture(tmp_path)
+    ready = tmp_path / "native-ready"
+    release = tmp_path / "native-release"
+    observed = tmp_path / "native-loaded-sha256"
+    fd_race_fake_binary(binary, ready, release, observed)
+    failures = []
+
+    def replace_path_after_child_starts():
+        limit = time.monotonic() + 5.0
+        while not ready.exists() and time.monotonic() < limit:
+            time.sleep(0.005)
+        if not ready.exists():
+            failures.append("native child did not reach its barrier")
+            release.write_text("release")
+            return
+        original_path = model.with_name("verified-original.gguf")
+        os.replace(model, original_path)
+        model.write_bytes(b"unapproved replacement model bytes")
+        release.write_text("release")
+
+    worker = threading.Thread(target=replace_path_after_child_starts, daemon=True)
+    worker.start()
+    receipt = run_probe(home, model, binary, digest)
+    worker.join(timeout=5.0)
+    assert not worker.is_alive()
+    assert not failures
+    assert receipt["status"] == "NATIVE_INPUT_EFFECT"
+    assert observed.read_text(encoding="utf-8") == digest
+    assert model.read_bytes() == b"unapproved replacement model bytes"
+
+
+def test_native_model_descriptor_rejects_fifo_without_blocking(tmp_path):
+    home, model, binary, digest = fixture(tmp_path)
+    model.unlink()
+    os.mkfifo(model)
+    started = time.monotonic()
+    with pytest.raises(NativeReceiverError, match="regular file"):
+        native._open_model_descriptor(model.resolve(strict=True), (home / "models").resolve(), digest)
+    assert time.monotonic() - started < 1.0
