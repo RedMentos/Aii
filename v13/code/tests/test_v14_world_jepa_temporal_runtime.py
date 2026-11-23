@@ -35,7 +35,7 @@ def _make_store(home):
 
 
 def _add_session(store, label, session_index, *, status_overrides=None, event_count=4,
-                 context_source_refs_factory=None):
+                 context_source_refs_factory=None, focal_context_source_refs_factory=None):
     status_overrides = status_overrides or {}
     session = store.new_session(label)
     event_ids = []
@@ -46,6 +46,22 @@ def _add_session(store, label, session_index, *, status_overrides=None, event_co
         generation = event["brain_generation_id"]
         action_index = (session_index + offset) % len(world_model.ACTIONS)
         route = world_model.ACTIONS[action_index]
+        focal_context_refs = (
+            focal_context_source_refs_factory(session_index, offset) or []
+            if focal_context_source_refs_factory is not None else []
+        )
+        if focal_context_refs:
+            item_id = f"focal-context-{session_index:03d}-{offset:02d}"
+            focal_item = contracts.packet(
+                "FocalItem", "C4_FOCAL", event_id, generation, focal_context_refs,
+                item_id=item_id, source_kind="MEMORY", source_refs=focal_context_refs,
+            )
+            store.add_packet("FocalItem", focal_item)
+            focal_cycle = contracts.packet(
+                "FocalCycle", "C4_FOCAL", event_id, generation, focal_context_refs,
+                cycle=1, coalition=[item_id], stage="COMMIT",
+            )
+            store.add_packet("FocalCycle", focal_cycle)
         selection_source_refs = [event["source_ref"]]
         if context_source_refs_factory is not None:
             selection_source_refs.extend(context_source_refs_factory(session_index, offset) or [])
@@ -173,6 +189,62 @@ def test_temporal_action_selection_context_lineage_is_persisted_and_source_disjo
         assert all(
             any(ref["source_id"] == shared["source_id"] for ref in row["source_refs"])
             for row in shared_rows
+        )
+        windows = build_temporal_windows(store, rows)
+        train, holdout, split = _split_windows(windows)
+        train_sessions = {window["session_id"] for window in train}
+        holdout_sessions = {window["session_id"] for window in holdout}
+        assert (session_ids[0] in train_sessions) == (session_ids[1] in train_sessions)
+        assert (session_ids[0] in holdout_sessions) == (session_ids[1] in holdout_sessions)
+        train_lineage = {
+            source for window in train for source in window["lineage_source_ids"]
+        }
+        holdout_lineage = {
+            source for window in holdout for source in window["lineage_source_ids"]
+        }
+        assert not train_lineage & holdout_lineage
+        assert split["source_disjoint"] is True
+        assert shared["source_id"] in train_lineage or shared["source_id"] in holdout_lineage
+    finally:
+        store.close()
+
+
+def test_temporal_c4_focal_lineage_is_persisted_and_source_disjoint(tmp_path):
+    store = _make_store(tmp_path / "temporal-c4-context-lineage")
+    try:
+        shared = store.source("shared C4 recalled context source", "MEMORY")
+        session_ids = []
+        for index in range(4):
+            session, _events = _add_session(
+                store, "c4-context-lineage", index, event_count=8,
+                focal_context_source_refs_factory=(
+                    (lambda _session, _offset, ref=shared: [ref])
+                    if index in (0, 1) else None
+                ),
+            )
+            session_ids.append(session)
+        receipts, rejected, _cursor, _scanned, _censored, has_more = verify_committed_temporal_page(
+            store, after_seq=0, limit=64
+        )
+        assert rejected == 0 and has_more is False
+        from v13.world_jepa_temporal import _receipt_row, _split_windows, _record_references_source
+        rows = [_receipt_row(store, receipt) for receipt in receipts
+                if receipt.status != "OUTCOME_UNKNOWN"]
+        shared_rows = [row for row in rows if row["session_id"] in set(session_ids[:2])]
+        assert shared_rows
+        assert all(
+            any(ref["source_id"] == shared["source_id"] for ref in row["source_refs"])
+            for row in shared_rows
+        ), "temporal receipt dropped C4-only source lineage"
+        record = {
+            "experience_rows": [shared_rows[0]],
+            "retention_holdouts": [],
+            "receiver_retention_holdouts": [],
+            "learning_intents": {},
+            "scan_cursor": 0,
+        }
+        assert _record_references_source(store, record, shared["source_id"]), (
+            "source-forget must see C4-only sources retained in temporal experience rows"
         )
         windows = build_temporal_windows(store, rows)
         train, holdout, split = _split_windows(windows)
