@@ -1356,3 +1356,14 @@ The implementation audit found an important distinction: `losses.py` implements 
 
 
 **V14 implementation gap noted during JEPA run 15:** the current experimental WorldJEPA predictor reports fixed-EMA retention, but the B1/B2 `WeightDeltaReceipt` still sets `target_adapter_retention=NOT_MEASURED`. The old adapter's score on the new validation cohort is not old-cohort retention. A follow-up should persist prior receiver holdout outcomes and compare old/new adapters on the same source-disjoint cohort, with shuffled/no-history controls; R-115 motivates separating invariant retention from revision latency but does not implement this.
+
+
+## R-115 implementation follow-up — 2026-11-23 (JEPA & Memory run 16)
+
+**Question:** Can receiver-adapter retention be measured on an old, source-disjoint ActionOutcome cohort without training on that cohort?
+
+**Candidate adaptation:** PR #2454 now adds a fixed B1/B2 receiver-retention cohort containing raw `X/A/Y`, window/action IDs, direct and transitive SourceRef IDs/hashes, creation-checkpoint SHA and a canonical cohort digest. Later updates exclude the cohort from training, measure the previous encoder+head before the update, and measure the updated encoder+head on the same old inputs/outcomes. A committed update requires both roles to remain within a 5% MSE tolerance; previously accepted receiver utility must continue to beat mean, zero-latent and shuffled-latent controls. Source overlap fails closed. The cohort's provenance is included in source-forget discovery and LearningIntent retention IDs.
+
+**Scope limitation:** This is a fixed historical ActionOutcome adapter-stability cohort. It is not the full R-115 proposal's stratified invariance/revision-latency protocol, does not label generated/dream samples as truth, and does not change the World Model's truth policy. The first update correctly records `NOT_MEASURED / NO_PRIOR_CHECKPOINT` while persisting a cohort for the next update.
+
+**Evidence status:** Code and tests are committed on PR #2454 head `1cfac4a1518a959a2022b81e796e3dfc0b6b2cf0`. A synthetic numeric Python control passed same-cohort retention, encoder drift, compensation, degraded-head rejection and source-overlap detection. The exact project suite was NOT_RUN locally (no checkout; GitHub DNS unavailable); exact-head GitHub Actions run #45272190117 ended `startup_failure` with zero jobs. No native Android or Redmi evidence exists. Do not mark this research adaptation as runtime-validated or release-accepted until the exact Python 3.13/3.14, staged and integrated tests run on a green CI head.
