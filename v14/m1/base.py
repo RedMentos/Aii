@@ -264,9 +264,7 @@ class DirectMAE(nn.Module):
         super().__init__()
         self.config = config
         self.encoder = SharedTokenEncoder(config.channels, config.latent_dim)
-        self.predictor = SharedWeightPredictor(
-            config.latent_dim, config.hidden_dim, config.predictor_steps
-        )
+        self.predictor = make_predictor(config)
         self.readout = nn.Sequential(
             nn.LayerNorm(config.latent_dim),
             nn.Linear(config.latent_dim, config.hidden_dim),
