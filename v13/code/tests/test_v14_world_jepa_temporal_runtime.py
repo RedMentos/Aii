@@ -396,7 +396,9 @@ def test_temporal_world_jepa_updates_ema_checkpoint_and_b1_b2_shadow_receivers(t
             assert receipt["holdout_mse_after"] == pytest.approx(intent["holdout_mse_after"])
             assert receipt["world_retention_pass"] is True
             assert receipt["target_adapter_retention"] == "NOT_MEASURED"
-            assert receipt["schema"] == "v14.weight_delta_receipt.v2"
+            assert receipt["target_adapter_retention_metrics"]["status"] == "NOT_MEASURED"
+            assert receipt["target_adapter_retention_metrics"]["reason"] == "NO_PRIOR_CHECKPOINT"
+            assert receipt["schema"] == "v14.weight_delta_receipt.v3"
             assert receipt["gradient_measured"] is True
             assert receipt["gradient_norm"] > 0
             assert receipt["gradient_steps"] == intent["gradient_budget"]["steps_executed"]
@@ -1732,3 +1734,129 @@ def test_b1_b2_receiver_adam_measures_gradient_clips_and_respects_zero_learning_
     assert np.array_equal(no_op_weights, initial_weights)
     assert np.array_equal(no_op_bias, initial_bias)
     assert no_op["train_mse_after"] == pytest.approx(no_op["train_mse_before"])
+
+
+
+def test_receiver_retention_compares_same_persisted_cohort_and_blocks_training_overlap():
+    from v13.world_jepa_learning_intent import (
+        pack_receiver_retention_holdout,
+        prepare_receiver_retention_baseline,
+        evaluate_receiver_retention,
+        validate_receiver_retention_holdout,
+    )
+
+    class LinearModel:
+        def predict(self, X, A):
+            return np.asarray(X, dtype=np.float64)[:, :2], None
+
+    X = np.asarray([
+        [1.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0.0, 1.0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [2.0, 1.0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [1.0, 3.0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ], dtype=np.float64)
+    A = np.zeros((len(X), 4), dtype=np.float64)
+    X2 = X.copy()
+    z = X[:, :2]
+    Y = np.zeros((len(X), 3), dtype=np.float64)
+    Y[:, 0] = 2.0 * z[:, 0] + z[:, 1]
+    Y[:, 1] = z[:, 0] - 2.0 * z[:, 1]
+    Y[:, 2] = -z[:, 0] + 0.5 * z[:, 1]
+
+    rows = []
+    for index in range(len(X)):
+        source_id = f"receiver-holdout-source-{index}"
+        source_sha = hashlib.sha256(source_id.encode("utf-8")).hexdigest()
+        rows.append({
+            "window_id": f"receiver-holdout-window-{index}",
+            "action_ids": [f"receiver-holdout-action-{index}"],
+            "source_ids": [source_id],
+            "source_sha256s": [source_sha],
+            "lineage_source_ids": [source_id],
+            "lineage_source_sha256s": [source_sha],
+            "y": Y[index].tolist(),
+        })
+
+    checkpoint_sha = "b" * 64
+    cohort = pack_receiver_retention_holdout((X, A, X2), rows, checkpoint_sha)
+    assert validate_receiver_retention_holdout(cohort) is True
+    heads = {
+        "B1_DETAIL": {
+            "target_indices": [0, 2],
+            "weights": [[2.0, -1.0], [1.0, 0.5]],
+            "bias": [0.0, 0.0],
+        },
+        "B2_GIST": {
+            "target_indices": [1],
+            "weights": [[1.0], [-2.0]],
+            "bias": [0.0],
+        },
+    }
+    active = {
+        "checkpoint_sha256": checkpoint_sha,
+        "receiver_heads": heads,
+        "receiver_metrics": {},
+        "metrics": {
+            "receiver_gates": {
+                "B1_DETAIL": {"accepted": False},
+                "B2_GIST": {"accepted": False},
+            },
+        },
+        "receiver_retention_holdouts": [cohort],
+    }
+    train_rows = []
+    for index in range(3):
+        source_id = f"receiver-train-source-{index}"
+        source_sha = hashlib.sha256(source_id.encode("utf-8")).hexdigest()
+        train_rows.append({
+            "window_id": f"receiver-train-window-{index}",
+            "action_ids": [f"receiver-train-action-{index}"],
+            "source_ids": [source_id],
+            "source_sha256s": [source_sha],
+            "lineage_source_ids": [source_id],
+            "lineage_source_sha256s": [source_sha],
+        })
+
+    model = LinearModel()
+    baseline = prepare_receiver_retention_baseline(active, model, train_rows)
+    assert baseline["status"] == "BASELINE_READY"
+    assert baseline["source_disjoint"] is True
+    assert baseline["cohort_sha256"] == cohort["cohort_sha256"]
+
+    unchanged = evaluate_receiver_retention(baseline, model, heads)
+    assert unchanged["status"] == "MEASURED_PASS"
+    assert unchanged["source_disjoint"] is True
+    assert all(item["retention_pass"] is True for item in unchanged["roles"].values())
+
+    degraded_heads = {
+        role: {
+            "target_indices": list(head["target_indices"]),
+            "weights": np.zeros_like(np.asarray(head["weights"], dtype=np.float64)).tolist(),
+            "bias": np.zeros_like(np.asarray(head["bias"], dtype=np.float64)).tolist(),
+        }
+        for role, head in heads.items()
+    }
+    degraded = evaluate_receiver_retention(baseline, model, degraded_heads)
+    assert degraded["status"] == "MEASURED_FAIL"
+    assert all(item["retention_pass"] is False for item in degraded["roles"].values())
+
+    overlap_source = rows[0]["source_ids"][0]
+    overlap_hash = rows[0]["source_sha256s"][0]
+    overlapping_train = [{
+        "window_id": "overlap-window",
+        "action_ids": [rows[0]["action_ids"][0]],
+        "source_ids": [overlap_source],
+        "source_sha256s": [overlap_hash],
+        "lineage_source_ids": [overlap_source],
+        "lineage_source_sha256s": [overlap_hash],
+    }]
+    blocked = prepare_receiver_retention_baseline(active, model, overlapping_train)
+    assert blocked["status"] == "NOT_MEASURED"
+    assert blocked["reason"] == "RETENTION_COHORT_OVERLAPS_CURRENT_TRAIN"
+    assert blocked["source_disjoint"] is False
+
+    tampered = dict(cohort)
+    tampered["Y"] = [list(row) for row in cohort["Y"]]
+    tampered["Y"][0][0] += 0.25
+    with pytest.raises(ValueError, match="receiver retention cohort digest"):
+        validate_receiver_retention_holdout(tampered)
