@@ -477,7 +477,6 @@ def _native_receive_interruptibly(runtime, sender, receiver, event, source_ref, 
     worker = threading.Thread(target=invoke, name="v14-native-probe", daemon=True)
     worker.start()
     interrupted = False
-    late_interrupt = False
     while worker.is_alive():
         try:
             worker.join(0.1)
@@ -487,8 +486,7 @@ def _native_receive_interruptibly(runtime, sender, receiver, event, source_ref, 
                 interrupted = True
                 # The native receiver checks this event while waiting on its child
                 # process. Keep the exclusive Runtime lease until that child exits.
-            else:
-                late_interrupt = True
+            # If the worker completed at the same instant, keep its real result.
     if interrupted:
         raise InterruptedError("Native probe cancelled by local operator")
     error = outcome.get("error")
