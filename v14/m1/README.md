@@ -8,8 +8,8 @@ This package starts with the DATA layer. It is deliberately isolated under v14/m
 
 - data.py: UCI minute-file parser, timestamp continuity checks, parameterized windows, chronological split, strict NaN rejection, seasonal lags, future calendar features, split/month rejection statistics, canonical manifest and hashes.
 - test_data.py: synthetic logic tests for the list-based DATA helpers only. These are not a UCI real-data run.
-- array_data.py: NumPy-backed `ArrayDataset`, common `InputBundle`, vectorized missing-window checks, and bounded `WindowBatch` generation. This is the intended path for real model training; it does not materialize every overlapping window.
-- test_array_data.py: synthetic checks for bounded batches, exact input/target/seasonal alignment, monthly statistics parity and hash-gated test access.
+- array_data.py: NumPy-backed `ArrayDataset`, common `InputBundle`, vectorized missing-window checks, bounded `WindowBatch` generation, and a two-pass `from_uci()` loader that writes directly into a dense matrix without constructing Python `MinuteRow` objects.
+- test_array_data.py: synthetic checks for bounded batches, exact input/target/seasonal alignment, monthly statistics parity, direct UCI hash parity, malformed-row rejection and hash-gated test access.
 - Numeric ingestion rejects non-finite values (`inf`, `-inf`, `Infinity`) and normalizes common case-insensitive missing markers such as `NaN` to missing values. Alternate row adapters and the test loader repeat finite-value and timestamp/channel integrity checks.
 - Every seasonal lag must be at least the forecast horizon, ensuring each horizon-aligned seasonal value is already known at the forecast origin.
 - UCI data is not downloaded by this module. The real-data run must use the user's local extracted UCI file and record its parsed-data fingerprint.
@@ -51,7 +51,7 @@ It appends a test-access event to the specified JSONL log. A hash is a tamper-ev
 13. NumPy batch path matches the list reference for counts/monthly rejection statistics and exact X/S/calendar/target values.
 14. Test batches remain inaccessible until the hash-bound test gate opens; the gate writes an access event.
 
-**Known memory boundary:** `ArrayDataset` avoids storing millions of expanded overlapping windows, but `parse_uci()` currently first creates Python `MinuteRow` objects before conversion to the dense matrix. A two-pass direct-to-array CSV loader is still required before claiming the entire UCI ingestion path is optimized for the Redmi RAM budget.
+**Memory path:** use `ArrayDataset.from_uci(path, config)` for real data. It counts/validates the minute grid on pass one, then parses values directly into a float32 matrix and computes the same parsed-data SHA-256 as `parse_uci()` on pass two. It checks that the source file did not change during ingestion. The `parse_uci()` list adapter remains for small fixtures and reference-hash tests, not for the full cohort.
 
 ## M1a protocol corrections to preserve
 
