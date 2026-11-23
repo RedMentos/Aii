@@ -12,6 +12,7 @@ import pytest
 from v13.audio_speaker_evidence import (
     SCHEMA, SpeakerChangeEvidenceRegistry, SpeakerEvidenceError,
 )
+from v13 import audio_speaker_evidence as speaker_evidence_module
 from v13 import audio_voice_cues as audio_voice_module
 from v13.audio_voice_cues import (
     _runtime_speaker_evidence_registry,
@@ -714,5 +715,165 @@ def test_provisional_audio_is_persisted_but_not_admitted_until_final(tmp_path):
         assert final["c3_admission"].selected[0].source_id == SOURCE
         assert final["learning_authority"] is False
         assert final["action_authority"] is False
+    finally:
+        runtime.store.close()
+
+
+def _test_local_calibration_artifact():
+    return {
+        "schema": "v14.raw-ear-speaker-calibration/1",
+        "method": "SOURCE_SESSION_SPEAKER_DISJOINT_COSINE_V1",
+        "dataset_kind": "REAL_LOCAL",
+        "dataset_id": "fixture-only",
+        "dataset_revision": "fixture-only",
+        "dataset_license": "TEST_ONLY",
+        "model_id": "fixture/three-dim-encoder",
+        "model_revision": "fixture-embedding-v1",
+        "model_sha256": MODEL_SHA,
+        "embedding_dim": 3,
+        "frame_step_ms": 80,
+        "lookback_frames": 10,
+        "source_disjoint": True,
+        "session_disjoint": True,
+        "speaker_disjoint": True,
+        "manifest_sha256": "c" * 64,
+        "calibration_speaker_count": 3,
+        "heldout_speaker_count": 3,
+        "calibration_positive_pairs": 30,
+        "calibration_negative_pairs": 90,
+        "heldout_positive_pairs": 30,
+        "heldout_negative_pairs": 90,
+        "max_false_accept_rate": 0.05,
+        "max_false_reject_rate": 0.2,
+        "threshold": 0.8,
+        "heldout_metrics": {
+            "false_accept_rate": 0.0,
+            "false_reject_rate": 0.0,
+            "true_accept_rate": 1.0,
+            "true_reject_rate": 1.0,
+            "balanced_accuracy": 1.0,
+        },
+        "status": "HELDOUT_PASS",
+        "calibration_id": "0123456789abcdef",
+        "artifact_sha256": "b" * 64,
+    }
+
+
+def test_locally_allowlisted_report_enables_only_non_identifying_a4_change_hint(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    generation = event["brain_generation_id"]
+    artifact = _test_local_calibration_artifact()
+    monkeypatch.setattr(
+        audio_voice_module, "load_approved_calibration",
+        lambda *args, **kwargs: artifact,
+    )
+    monkeypatch.setattr(
+        speaker_evidence_module, "validate_calibration_artifact",
+        lambda value, **kwargs: artifact,
+    )
+    try:
+        first = speaker_batch(
+            SOURCE, generation, 100, 1100, lambda _: (1.0, 0.0, 0.0),
+            threshold=None,
+        )
+        warmup = consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=generation,
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL", speaker_embeddings=first,
+            speaker_calibration_id=artifact["calibration_id"],
+        )
+        assert warmup["speaker_change_evidence"]["status"] == "WARMUP"
+
+        second = speaker_batch(
+            SOURCE, generation, 1100, 2100,
+            lambda end: (1.0, 0.0, 0.0) if end < 1660 else (0.0, 1.0, 0.0),
+            threshold=None,
+        )
+        result = consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=1100,
+            event_id=event["event_id"], generation_id=generation,
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL", speaker_embeddings=second,
+            speaker_calibration_id=artifact["calibration_id"],
+        )
+        evidence = result["speaker_change_evidence"]
+        assert evidence["threshold_status"] == "LOCAL_APPROVED_REPORT_HASH_MATCH"
+        assert evidence["calibration_receipt_sha256"] == artifact["artifact_sha256"]
+        assert evidence["peak_speaker_change_candidate"] is True
+        assert evidence["speaker_change_candidate"] is True
+        assert evidence["candidate_kind"] == "CHANGE_OR_OVERLAP"
+        assert result["a4"]["speaker_change_decision"] == "CHANGE_OR_OVERLAP_CANDIDATE"
+        assert evidence["speaker_label"] is None
+        assert evidence["identity_authority"] is False
+        assert evidence["learning_authority"] is False
+        assert evidence["action_authority"] is False
+        summary = result["c3_admission"].selected[0].summary
+        assert "speaker_change_candidate=1" in summary
+        assert "speaker_change_kind=CHANGE_OR_OVERLAP" in summary
+        # Calibration provenance remains structured in the PerceptPacket;
+        # the bounded C3 summary carries the actionable change/overlap hint.
+        persisted = json.dumps(result["packet"], sort_keys=True)
+        assert '"vector"' not in persisted
+        assert '"speaker_label": null' in persisted
+    finally:
+        runtime.store.close()
+
+
+def test_rejected_local_calibration_keeps_caller_threshold_unverified_and_defers(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    generation = event["brain_generation_id"]
+
+    def reject(*args, **kwargs):
+        from v13.audio_speaker_calibration import SpeakerCalibrationError
+        raise SpeakerCalibrationError("not allowlisted")
+
+    monkeypatch.setattr(audio_voice_module, "load_approved_calibration", reject)
+    try:
+        first = speaker_batch(SOURCE, generation, 100, 1100, lambda _: (1.0, 0.0, 0.0))
+        consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=generation,
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL", speaker_embeddings=first,
+            speaker_calibration_id="0123456789abcdef",
+        )
+        second = speaker_batch(
+            SOURCE, generation, 1100, 2100,
+            lambda end: (1.0, 0.0, 0.0) if end < 1660 else (0.0, 1.0, 0.0),
+        )
+        result = consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=1100,
+            event_id=event["event_id"], generation_id=generation,
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL", speaker_embeddings=second,
+            speaker_calibration_id="0123456789abcdef",
+        )
+        evidence = result["speaker_change_evidence"]
+        assert evidence["threshold_status"] == "CALLER_ASSERTED_UNVERIFIED"
+        assert evidence["speaker_change_candidate"] is None
+        assert evidence["peak_speaker_change_candidate"] is None
+        assert result["a4"]["speaker_change_decision"] == "DEFER"
+        assert result["a4"]["learning_authority"] is False
+        assert result["a4"]["action_authority"] is False
+    finally:
+        runtime.store.close()
+
+
+def test_speaker_calibration_id_without_embeddings_is_rejected(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    try:
+        with pytest.raises(ValueError, match="requires speaker_embeddings"):
+            consume_pcm16_voice_window(
+                runtime, tone(), sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE, consent_receipt=RECEIPT,
+                consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+                finality="FINAL", speaker_calibration_id="0123456789abcdef",
+            )
     finally:
         runtime.store.close()
