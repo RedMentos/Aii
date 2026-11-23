@@ -1,3 +1,20 @@
+# CURRENT USER ACTION / RELEASE STATUS — Boss integration run 13 (2026-11-23)
+
+**No user action is required for the current code/CI work. Do not run a manual Termux command, restart the AI runtime, or send a duplicate update request.** The phone's AI runtime is explicitly `STOPPED_BY_USER`; that state is being preserved.
+
+- Current release-development ancestor: `fb563d771fe2d493c4ec25abe94280981d24ef5c`.
+- Authenticated private PIPELINE_STATUS #819: auto-update enabled; Runtime/Dashboard UP_TO_DATE at exactly `fb563d771fe2d493c4ec25abe94280981d24ef5c`; last_error NONE.
+- Authenticated private DIAGNOSTICS #820: service and dashboard process RUNNING, but AI runtime STOPPED_BY_USER, autostart=false, model_process=STOPPED; native residency UNAVAILABLE because no verified model supervisor. No CHAT_SEND, restart, LOG_PAGE, shell, permission/model/weight change, or UPDATE_REQUEST was made.
+- Last stored turn only: FINAL, 6.295 s total, 2.046 s TTFT, 7 generated tokens. Correctness is UNKNOWN. B1/B2 still report TIME_BUDGET at 53.2/54.2 s; no useful same-turn offer delivery/consumption or 20-turn acceptance is proven.
+- The opted-in, redacted console excerpt confirms internal B1/B2/C3 hypothesis material was visible in the user-facing console. Console error logs remain USER_NOT_OPTED_IN; do not request LOG_PAGE or quote private output.
+- Boss integration candidate: branch `boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean`, code checkpoint `eeb6c8f729ff7ec41e2abd463e8815e9fac4445b`, followed by workplan checkpoint `2b22be0d4a29b8da4e8088eaf306e6d526f4cf40`. It combines serialized Memory source-forget, source-bound A3/A5 RAW EYE temporal ingress, A4 durable source outcomes, and caller-supplied RAW EAR/Teacher-Ear/FASTDIAR diagnostic paths. These are candidate code paths, not a released or installed build.
+- Exact combined-head CI has not yet been observed; LOCAL_LINUX full Aii suite remains BLOCKED / NOT_RUN. Redmi remains on `fb563d7`; the candidate is NOT_RELEASED / NOT_INSTALLED.
+- No microphone capture, Android UI/background execution, trained cross-organ latent coupling, native JEPA/body-weight update, or production B3 activation is established by this candidate.
+
+**Next:** verify the combined exact-head CI and fix only measured pin/composition failures; then address the separate output-privacy PR #2446 and continue the P0 B1_DETAIL/B2_GIST → C4 → C3 same-turn path. A real Redmi acceptance run must wait for the user to re-enable the AI runtime.
+
+---
+
 # Perception / RAW EYE — current verified handoff (2026-11-23 15:48 UTC)
 
 **User action: NONE.** Do not issue a manual Termux command or UPDATE_REQUEST. The latest sanitized private receipt says the installed base is still fb563d771fe2d493c4ec25abe94280981d24ef5c and auto-update reports UP_TO_DATE, but the AI runtime is STOPPED_BY_USER, the model process is STOPPED and native residency is unavailable. This Perception branch is not installed.
