@@ -24,15 +24,12 @@ class BaseConfig:
     horizon: int
     latent_dim: int = 128
     hidden_dim: int = 256
-    attention_heads: int = 4
     predictor_steps: int = 1
     ema_decay: float = 0.996
 
     def __post_init__(self) -> None:
         if min(self.channels, self.horizon, self.latent_dim, self.hidden_dim) < 1:
             raise ValueError("channel, horizon and model dimensions must be positive")
-        if self.latent_dim % self.attention_heads:
-            raise ValueError("latent_dim must be divisible by attention_heads")
         if self.predictor_steps not in (1, 2, 4):
             raise ValueError("predictor_steps must be one of the preregistered values 1, 2, 4")
         if not 0.0 <= self.ema_decay < 1.0:
@@ -86,9 +83,11 @@ class SharedTokenEncoder(nn.Module):
         return torch.sum(tokens * weights.unsqueeze(-1), dim=1)
 
     def encode_context(self, bundle: InputBundle) -> Tensor:
-        x = torch.as_tensor(bundle.x)
-        seasonal = torch.as_tensor(bundle.seasonal)
-        calendar = torch.as_tensor(bundle.calendar)
+        device = self.channel_projection.weight.device
+        dtype = self.channel_projection.weight.dtype
+        x = torch.as_tensor(bundle.x, device=device, dtype=dtype)
+        seasonal = torch.as_tensor(bundle.seasonal, device=device, dtype=dtype)
+        calendar = torch.as_tensor(bundle.calendar, device=device, dtype=dtype)
         if x.ndim != 3 or x.shape[-1] != self.channel_projection.in_features:
             raise ValueError("X must be [batch, input_length, channels]")
         if seasonal.ndim != 4 or seasonal.shape[0] != x.shape[0] or seasonal.shape[-1] != x.shape[-1]:
@@ -112,6 +111,10 @@ class SharedTokenEncoder(nn.Module):
         return self.output_norm(combined)
 
     def encode_target(self, target: Tensor) -> Tensor:
+        target = torch.as_tensor(
+            target, device=self.channel_projection.weight.device,
+            dtype=self.channel_projection.weight.dtype,
+        )
         if target.ndim != 3 or target.shape[-1] != self.channel_projection.in_features:
             raise ValueError("target must be [batch, horizon, channels]")
         return self.output_norm(self._pool(target, self.TYPE_TARGET))
