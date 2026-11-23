@@ -360,6 +360,9 @@ def body_state(r,e,role,text):
     temporal_context, temporal_audit = _temporal_world_jepa_body_readout(r,e,role)
     if temporal_context is not None:
         view['world_jepa_temporal']=temporal_context
+        # The temporal view already carries source-bound history; omit the static
+        # world-scope label from this compact prompt, not from persisted WORLD_STATE.
+        view['world'].pop('scope',None)
     try:
         from .agi import hub
         view['skills']=hub(r).skills.select(text)[:3]
