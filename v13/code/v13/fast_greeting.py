@@ -33,3 +33,11 @@ def match(text: object) -> dict | None:
     if reply is None:
         return None
     return {"normalized": normalized, "reply": reply, "rule_id": "BUILTIN_GREETING_ACK_V1"}
+
+
+
+def match_unclaimed(text: object, *, policy_match_ok: bool, fixed_policy: object) -> dict | None:
+    """Match only when the normal user-policy lookup succeeded and claimed no rule."""
+    if policy_match_ok is not True or fixed_policy is not None:
+        return None
+    return match(text)
