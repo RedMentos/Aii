@@ -139,6 +139,7 @@ def build_fastdiar_diagnostic_batch(
     *,
     source_id: str,
     generation_id: str,
+    consent_receipt_ref: str,
     current_chunk_sha256: str,
     model_revision: str,
     checkpoint_path,
@@ -150,13 +151,18 @@ def build_fastdiar_diagnostic_batch(
     """Wrap a causal FASTDIAR matrix and hash the exact local checkpoint bytes.
 
     current_chunk_sha256 must hash the exact PCM16 chunk passed to the RAW EAR
-    consumer. It does not attest the caller-supplied encoder or its prior state.
+    consumer. consent_receipt_ref binds this batch to one live provider consent epoch;
+    it is opaque and is not copied into the emitted speaker-evidence packet.
+    The hash does not attest the caller-supplied encoder or its prior state.
     first_frame_end_ms is the end timestamp of the first emitted 80-ms embedding;
     later timestamps advance by exactly 80 ms. The checkpoint is never changed.
     """
     for name, value in (("source_id", source_id), ("generation_id", generation_id)):
         if type(value) is not str or not value.strip() or len(value) > 128:
             raise ValueError(f"{name} must be a non-empty string of at most 128 characters")
+    if (type(consent_receipt_ref) is not str or not consent_receipt_ref.strip()
+            or len(consent_receipt_ref) > 256):
+        raise ValueError("consent_receipt_ref must be a non-empty opaque receipt")
     if model_revision != MODEL_REVISION:
         raise ValueError("model_revision must match the pinned FASTDIAR v0.1.0 commit")
     if (type(current_chunk_sha256) is not str or len(current_chunk_sha256) != 64
@@ -183,6 +189,7 @@ def build_fastdiar_diagnostic_batch(
         "schema": SCHEMA,
         "source_id": source_id,
         "generation_id": generation_id,
+        "consent_receipt_ref": consent_receipt_ref,
         "model_id": MODEL_ID,
         "model_revision": MODEL_REVISION,
         "model_sha256": model_sha256,
