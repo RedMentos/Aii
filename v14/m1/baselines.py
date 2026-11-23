@@ -245,6 +245,137 @@ class LADARBaseline(_LinearARBase):
         return self
 
 
+class RawWindowProbeBaseline:
+    """Full-bundle linear MAE probe over X, seasonal S and calendar inputs."""
+
+    name = "raw_window_probe_l1"
+
+    def __init__(
+        self,
+        *,
+        alpha: float = 0.01,
+        epochs: int = 5,
+        learning_rate: float = 0.01,
+        max_parameters: int = 40_000_000,
+    ):
+        if not np.isfinite(alpha) or alpha < 0:
+            raise ValueError("alpha must be finite and non-negative")
+        if type(epochs) is not int or not 1 <= epochs <= 100:
+            raise ValueError("epochs must be an integer in [1, 100]")
+        if not np.isfinite(learning_rate) or learning_rate <= 0:
+            raise ValueError("learning_rate must be finite and positive")
+        if type(max_parameters) is not int or max_parameters < 1:
+            raise ValueError("max_parameters must be a positive integer")
+        self.alpha = float(alpha)
+        self.epochs = epochs
+        self.learning_rate = float(learning_rate)
+        self.max_parameters = max_parameters
+        self.feature_width = 0
+        self.output_width = 0
+        self.trainable_parameters = 0
+        self.n_train_windows = 0
+        self.feature_mean: np.ndarray | None = None
+        self.feature_scale: np.ndarray | None = None
+        self.weights: np.ndarray | None = None
+        self.epoch_losses: list[float] = []
+
+    @staticmethod
+    def _raw_features(batch: WindowBatch) -> np.ndarray:
+        features = batch.inputs.flatten()
+        if features.ndim != 2 or not np.isfinite(features).all():
+            raise ValueError("non-finite or malformed full X/S/calendar feature bundle")
+        return features.astype(np.float32, copy=False)
+
+    def _fit_scaler(self, dataset: ArrayDataset, batch_size: int) -> None:
+        total = np.zeros(self.feature_width, dtype=np.float64)
+        total_sq = np.zeros(self.feature_width, dtype=np.float64)
+        count = 0
+        for batch in dataset.iter_batches("train", batch_size=batch_size):
+            features = self._raw_features(batch).astype(np.float64, copy=False)
+            if features.shape[1] != self.feature_width:
+                raise ValueError("full input bundle width changed during fit")
+            total += features.sum(axis=0)
+            total_sq += np.square(features).sum(axis=0)
+            count += len(features)
+        if count == 0:
+            raise ValueError("no accepted training windows for Raw-Window-Probe")
+        mean = total / count
+        variance = np.maximum(total_sq / count - np.square(mean), 1e-12)
+        self.feature_mean = mean.astype(np.float32)
+        self.feature_scale = np.sqrt(variance).astype(np.float32)
+        self.n_train_windows = count
+
+    def _design(self, batch: WindowBatch) -> np.ndarray:
+        if self.feature_mean is None or self.feature_scale is None:
+            raise RuntimeError("Raw-Window-Probe must be fitted before prediction")
+        features = self._raw_features(batch)
+        if features.shape[1] != self.feature_width:
+            raise ValueError("full input bundle width differs from fitted probe")
+        standardized = (features - self.feature_mean) / self.feature_scale
+        return np.concatenate(
+            (np.ones((len(features), 1), dtype=np.float32), standardized),
+            axis=1,
+        )
+
+    def fit(self, dataset: ArrayDataset, *, batch_size: int = 64) -> "RawWindowProbeBaseline":
+        if type(batch_size) is not int or batch_size < 1 or batch_size > 8192:
+            raise ValueError("batch_size must be an integer in [1, 8192]")
+        channels = len(dataset.channels)
+        self.feature_width = (
+            dataset.config.input_length * channels
+            + dataset.config.horizon * len(dataset.config.seasonal_lags) * channels
+            + (dataset.config.horizon * 4 if dataset.config.include_calendar else 0)
+        )
+        self.output_width = dataset.config.horizon * channels
+        self.trainable_parameters = (self.feature_width + 1) * self.output_width
+        if self.trainable_parameters > self.max_parameters:
+            raise ValueError(
+                f"Raw-Window-Probe requires {self.trainable_parameters} parameters; "
+                f"budget is {self.max_parameters}"
+            )
+
+        self._fit_scaler(dataset, batch_size)
+        weights = np.zeros((self.feature_width + 1, self.output_width), dtype=np.float32)
+        first_moment = np.zeros_like(weights)
+        second_moment = np.zeros_like(weights)
+        step = 0
+        self.epoch_losses = []
+        for _epoch in range(self.epochs):
+            absolute_sum = 0.0
+            element_count = 0
+            for batch in dataset.iter_batches("train", batch_size=batch_size):
+                design = self._design(batch)
+                target = batch.target.reshape(len(design), -1).astype(np.float32, copy=False)
+                residual = design @ weights - target
+                gradient = (design.T @ np.sign(residual)) / np.float32(residual.size)
+                if self.alpha:
+                    gradient[1:] += np.float32(self.alpha) * weights[1:]
+                step += 1
+                first_moment = 0.9 * first_moment + 0.1 * gradient
+                second_moment = 0.999 * second_moment + 0.001 * np.square(gradient)
+                corrected_m = first_moment / (1.0 - 0.9 ** step)
+                corrected_v = second_moment / (1.0 - 0.999 ** step)
+                weights -= np.float32(self.learning_rate) * corrected_m / (
+                    np.sqrt(corrected_v) + np.float32(1e-8)
+                )
+                absolute_sum += float(np.abs(residual).sum(dtype=np.float64))
+                element_count += int(residual.size)
+            if element_count == 0:
+                raise ValueError("no accepted training windows for Raw-Window-Probe")
+            penalty = 0.5 * self.alpha * float(np.square(weights[1:].astype(np.float64)).sum())
+            self.epoch_losses.append(absolute_sum / element_count + penalty)
+        self.weights = weights
+        return self
+
+    def predict(self, batch: WindowBatch) -> np.ndarray:
+        if self.weights is None:
+            raise RuntimeError("Raw-Window-Probe must be fitted before prediction")
+        prediction = self._design(batch) @ self.weights
+        return prediction.reshape(
+            len(batch.origin_indices), batch.target.shape[1], batch.target.shape[2]
+        )
+
+
 def evaluate_mae(
     predictor: Predictor,
     dataset: ArrayDataset,
