@@ -1,3 +1,17 @@
+# Core & Harness — latest verified checkpoint (2026-11-23T18:23:01.047Z)
+
+**No user action is required. Do not run a manual Termux command or send an update request.** PR #2451 is a draft candidate, not released or installed.
+
+- **Code-tested SHA:** `ea7535e8ad83f16cdbf7f5df626b96123ad309f6`, branch `core/v14-native-probe-staged-overlay-20261123-run2`, based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- **New fix:** the exact staged Runtime CI exposed three failures in `test_stage_integrated_candidate.py`: temporary stage fixtures omitted the now-required native-probe overlay, canonical operator and approval module. The fixture now copies the exact pinned source files and real overlay, asserts staged-only operator replacement/manifest status, and includes the new artifacts in the stage inventory. The production missing-overlay check remains fail-closed.
+- **Exact CI:** native receiver run `45236111168` — Python 3.13 and 3.14 (12 tests each), Linux pinned API and Android ARM64 cross-compile PASS. Staged/integrated run `45236111273` — staged Runtime **255 passed, 10 skipped, 47 subtests**; integrated regression **424 passed, 3 skipped, 58 subtests**. Audio/arithmetic run `45236111290` — **52 passed, 26 subtests** on each Python version. Same-turn B1/B2→C4→C3 consumer run `45236111088` — Python 3.13/3.14 PASS. Deployer integrity, Lab-Age, owner-read bootstrap and two-checkout migration workflows also PASS. The first Python 3.13 native-receiver attempt hit a transient package-download connection reset; the targeted rerun passed.
+- **Local environment:** full Aii checkout/pytest remains **BLOCKED / NOT_RUN** because no checkout is mounted and `git ls-remote` cannot resolve GitHub DNS. Earlier isolated overlay harness PASS is separate from the exact CI results.
+- **User-visible effect:** the staged Runtime now has a source/model-bound local one-shot native receiver diagnostic command. It does not enter normal chat routing, train a projector, establish receiver utility or activate B3. Same-turn consumer CI is synthetic/Store-backed, not native B1/B2 proof.
+- **Redmi:** `REDMI_UNVERIFIED`; no connected device test, no new receipt, no probe, no update request, no Termux command, no APK/model/weight/permission/data change. GitHub push is not deployment.
+- **Review/integration:** independent Boss/QA review is still required; PR #2451 remains DRAFT / NOT_RELEASED. PR #2449 remains blocked/superseded because it directly edits pinned canonical `operator.py`.
+- **Next:** obtain independent review and integrate the diagnostic overlay on the current release base. In parallel, the P0 normal-turn gap remains fair B1/B2 pre-answer time and useful same-turn OfferPacket→C4→C3 consumption; stale #2370/#2338 must be recomposed, not merged. Production B3 stays OFF until paired activations, trained projection, held-out utility and negative controls pass.
+
+---
 # Core & Harness — latest verified checkpoint (2026-11-23T17:16:41.602Z)
 
 **No user action is required. Do not run a manual Termux command or send an update request.** This candidate is not released and has not been tested on the Redmi.
