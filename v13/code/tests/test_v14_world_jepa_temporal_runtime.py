@@ -559,7 +559,7 @@ def test_temporal_source_forget_promotes_clean_previous_and_replays_after_restar
         )
         forget_metrics = json.loads(forget_log["metrics"])
         assert forget_metrics["count"] == 1
-        assert forget_metrics["retained_cases_saved"] > 0
+        assert forget_metrics["n"] > 0
         assert forget_metrics["source_id"] == source_id
 
         # The promoted checkpoint and retry queue survive a real SQLite reopen.
@@ -630,7 +630,7 @@ def test_temporal_source_forget_invalidates_both_checkpoints_then_rebuilds_from_
         )
         forget_metrics = json.loads(forget_log["metrics"])
         assert forget_metrics["count"] == 2
-        assert forget_metrics["retained_cases_saved"] == 0
+        assert forget_metrics["n"] == 0
         assert forget_metrics["source_id"] == source_id
 
         # Restart must reconstruct only from the surviving, source-verified T8 ledger.
