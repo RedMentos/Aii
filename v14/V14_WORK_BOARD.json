@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T00:18:33.283Z",
+  "updated_at": "2026-11-23T00:20:49.475Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; exact SHA readback 30/30 observed check-runs SUCCESS. Authenticated private PIPELINE_STATUS #619 confirms the same SHA installed, auto-update enabled, runtime/dashboard UP_TO_DATE and last_error NONE. DIAGNOSTICS #620 still shows a slow 2-token stored turn and B1/B2 TIME_BUDGET. Current candidates remain DRAFT / CI pending; functional and whole-Canon acceptance remain open.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -400,19 +400,19 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "GitHub CI synthetic/diagnostic adapter; full local Aii tests BLOCKED by GitHub DNS; no Termux/Redmi audio",
-      "next_step": "Perception #2369 corrected the RAW EAR comparator test/workflow pin to current audio_voice_cues.py blob 5dbb0fd5; current PR head 930f9a has model-lab/privacy/consent checks PASS but comparator and staged/integrated checks remain QUEUED/IN_PROGRESS. Core #2370 composer still pins stale blob b18e450 and must rebind its own chain. FASTDIAR is diagnostic-only; no diarization model or real speech corpus has run.",
+      "proof_environment": "GitHub Actions exact-head Python 3.13/3.14 + synthetic fixtures; full local Aii checkout BLOCKED by DNS; no Termux/Redmi audio",
+      "next_step": "Perception #2369 exact head 930f9a has 7 SUCCESS (RAW EAR comparator, FASTDIAR diagnostic, RAW EAR prosody→attention, optional NumPy, model-lab, privacy, consent-revocation), 1 expected SKIPPED and 1 CANCELLED; the only failing path is Core-owned staged/integrated. Run 45086824158: staged-runtime 16 failed / 234 passed / 10 skipped / 2 errors, integrated-regression 1 failed; failures all originate from Core #2370 SOURCE_BLOBS audio_voice_cues.py pin b18e4501 vs current Perception blob 5dbb0fd5. Core must rebind its own source and downstream stage/deployer chain; do not weaken hash checks.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T00:16:05.798Z",
+      "last_checkpoint": "2026-11-23T00:20:49.475Z",
       "latest_candidate_pr": {
         "pr": 2369,
         "head_sha": "930f9aab2aaca46dbf0f9ef876b2b1ef68ea85ab",
         "base": "gpt6/v13-private-remote-bridge-20261111@aed1d2b826290c95c70356b5d8b864b5ef382be4",
         "state": "OPEN_DRAFT_PARTIAL_CI",
-        "ci": "MODEL_LAB_PRIVACY_CONSENT_PASS; COMPARATOR_QUEUED; STAGED_IN_PROGRESS",
+        "ci": "7_SUCCESS_1_FAIL_CORE_PIN_1_SKIPPED_1_CANCELLED",
         "scope": "FASTDIAR diagnostic adapter + source-bound optional FINAL-only Teacher Ear; no model inference"
       },
-      "proof": "RAW EAR FIR anti-alias decimator is integrated in 9097d634 and candidate CI passed. Speaker-change decision remains DEFER without verified calibration; no identity model, Android mic or learned acoustic weights. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. #2369: code/test pin fix 9cca6f0, handoff head 930f9a; exact CI partial only. Private V13OBS #115 still shows B1/B2 no offers, but it is not evidence for speaker-change quality. No FASTDIAR model, weights or private audio were used."
+      "proof": "RAW EAR FIR anti-alias decimator is integrated in 9097d634 and candidate CI passed. Speaker-change decision remains DEFER without verified calibration; no identity model, Android mic or learned acoustic weights. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. #2369: code/test pin fix 9cca6f0, handoff head 930f9a; exact CI partial only. Private V13OBS #115 still shows B1/B2 no offers, but it is not evidence for speaker-change quality. No FASTDIAR model, weights or private audio were used. Exact head 930f9a: 7 SUCCESS / 1 FAIL / 1 SKIPPED / 1 CANCELLED. Comparator and FASTDIAR pass; only staged/integrated fails at Core-owned stale source pin. Run 45086824158: staged-runtime 16 failed, 234 passed, 10 skipped, 2 errors; integrated-regression 1 failed. Core head 4c0663 still pins b18e4501 while Perception source is 5dbb0fd5."
     },
     {
       "id": "V14-019",
