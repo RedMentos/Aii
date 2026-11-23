@@ -14,6 +14,11 @@ on:
       - "v13/code/tests/test_v14_world_jepa_temporal_runtime.py"
       - "v13/code/tests/test_v14_world_jepa_postcommit_runtime.py"
       - ".github/workflows/v14-temporal-world-jepa.yml"
+      - "v14/V14_USER_NEXT_ACTION.md"
+      - "v14/V14_WORK_BOARD.json"
+      - "v14/V14_LIVE_WORKPLAN.md"
+      - "v14/V14_CANON_COVERAGE_INDEX.md"
+      - "v14/handoffs/JEPA_MEMORY_RUN13_RELEASE_PORT_20261123.md"
   pull_request:
     paths:
       - "v13/code/v13/world_jepa_temporal.py"
@@ -27,6 +32,11 @@ on:
       - "v13/code/tests/test_v14_world_jepa_temporal_runtime.py"
       - "v13/code/tests/test_v14_world_jepa_postcommit_runtime.py"
       - ".github/workflows/v14-temporal-world-jepa.yml"
+      - "v14/V14_USER_NEXT_ACTION.md"
+      - "v14/V14_WORK_BOARD.json"
+      - "v14/V14_LIVE_WORKPLAN.md"
+      - "v14/V14_CANON_COVERAGE_INDEX.md"
+      - "v14/handoffs/JEPA_MEMORY_RUN13_RELEASE_PORT_20261123.md"
   workflow_dispatch:
 
 permissions:
