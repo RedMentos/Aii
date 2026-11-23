@@ -2244,3 +2244,70 @@ Focused B3 paired-capture run 45040617156 remains PASS (52 tests, compile, CLI s
 - Runtime deployment 45040617193: plain UI recovery builder changed under Python 3.11 and 3.14.
 
 JEPA transactional update, combined online JEPA, JEPA receipt integrity, role-specific tap provenance, privacy scan and offline bridge checks passed; same-turn B1/B2/C4/C3 was still in progress and audio/arithmetic/native latent receiver queued. These are shared integrated builder/recovery composition failures, not the focused B3 capture/trainer test. Keep #2346 DRAFT / NOT_RELEASED.
+
+
+## Boss evidence overlay — 2026-11-22T17:51:17.837Z (status-only; historical 1,255-heading inventory unchanged)
+
+- Release branch exact HEAD: `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; exact SHA CI 53/53 SUCCESS; authenticated private receipt confirms same SHA installed and updater/runtime/dashboard current.
+- Real phone functionality remains **not accepted**: last stored turn 57.739 s / 41.627 s TTFT / 38.945 s prefill / 751 prompt tokens / 2 generated tokens; correctness UNKNOWN. B1/B2 probes TIME_BUDGET; native probe SMOKE_PARTIAL. No 20-turn acceptance or same-turn native offer-consumption proof.
+- **A0–A5:** source-bound RAW EAR and vision adapter candidates exist; actual AudioRecord, camera/MediaProjection and Android sensor providers remain open/unverified.
+- **B1/B2/B4/C4/C3:** distinct role contracts and synthetic same-turn consumer paths exist; real useful offers, peer re-entry, C4 consumption and correct C3 answer remain unaccepted. #2343 remains DRAFT.
+- **B3 / Enlightened Space:** #2346 paired native taps/L1 shadow trainer is code-present but paired-capture has one failed exact-head assertion; shared staged/Lab-Age/migration gates were queued at last poll. Production remains OFF/SYMBOLIC; no trained receiver or latent utility proof.
+- **World/Self/Memory/JEPA/Sleep:** temporal T8/WorldJEPA candidates remain SHADOW/DRAFT; source-forget, promotion/rollback, retention, consumer and restart gates remain open. No accepted permanent target-weight update.
+- **Voice/audio:** caller-supplied PCM/acoustic feature work is not Android AudioRecord, full ASR/decoder/vocoder or full-duplex voice; these remain open.
+- **Android agency:** companion launch_app contract remains separate, default stopped and not phone-verified; UI observation, background API execution and tap/type remain OFF/unverified.
+- **Context OS/Memorilla, self-optimization/cross-organ gradients, independent OS sandbox/adaptive judge, sparse MoE, updater crash/reboot rollback:** remain partial/open; no new acceptance this run.
+- Local full Aii suite BLOCKED (no checkout and GitHub DNS unavailable in the execution container). CI is not local or Android proof. No model, weight, permission, setting or user data changed.
+
+This overlay changes only current evidence status. It does not promote any Canon clause, remove historical FAILs, or alter the V14 master/historical Canon bytes.
+
+
+## Release-branch / device divergence correction — 2026-11-22T17:55:17.015Z
+
+- The release-development branch moved to `aed1d2b826290c95c70356b5d8b864b5ef382be4` through documentation-only PR #2340. Exact push CI was 37 QUEUED at this poll. The Redmi remains installed at `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; no update request has been sent and no `aed1d2` install is claimed.
+- The last stored phone turn remains 57.739 s / 41.627 s TTFT / 38.945 s prefill / 751 prompt tokens / 2 generated; correctness UNKNOWN. B1/B2 TIME_BUDGET; native probe SMOKE_PARTIAL; no 20-turn acceptance.
+- Boss #2343 head `8e5cabb` contains the postcommit anchor correction; local isolated anchor simulation PASS, exact push workflow QUEUED. #2346 remains blocked by two paired-capture assertion failures; #2364 receiver probe checks are queued.
+- Whole-Canon classifications remain unchanged: no trained latent coupling, no accepted permanent weight update, no Android AudioRecord/UI-control provider, no production Memorilla consumer, and no Android companion device acceptance.
+
+
+
+## P0 privacy-risk overlay — llama.cpp prompt-cache isolation (2026-11-22T17:59:16.409Z)
+
+- Upstream llama.cpp #27148 reports cross-request stale prompt/KV contamination; #27624 remains OPEN for LRU stale-state, while #30295 is MERGED for a separate busy-pinned-slot path. The issue thread reports that mitigation depends on `kv_unified` and flag combination.
+- V13 source at c4eb82 uses per-role `llama-server -np 1`, `--cache-ram 128`, `--ctx-checkpoints 6`, and request payload `cache_prompt=true,id_slot=0`; no explicit `--no-cache-idle-slots` is passed. Eight managed sessions were reported, but exact session-to-runner sharing and installed binary revision remain UNKNOWN.
+- Classify as **POTENTIAL P0 PRIVACY/CORRECTNESS RISK / NOT REPRODUCED ON V13**. Do not claim a leak or alter settings until synthetic sequential/concurrent unique-marker canaries and same-session reuse tests run on the exact `-np1` path.
+- Required flag matrix and acceptance are recorded in R-080 and board V14-020. No private chat data, model, weight, dependency, permission or device setting changed.
+
+
+
+## Whole-system review overlay — 2026-11-22T18:02:28.124Z
+
+- **JEPA/Memory:** #2331 closed; #2351 remains red on temporal history contiguity and retention; #2359 remains red on source-lifecycle memory cleanup anchor/source pins; #2355 remains red and stacked. No accepted permanent numeric weight update, source-forget race proof or restart/retention acceptance.
+- **Vision/A5:** #2363 has 11 success / 1 skipped but is still only a callable adapter with synthetic tests; no ordinary Runtime call site and stale base c4eb82. No Android camera/MediaProjection or live visual C3 answer.
+- **Arithmetic:** #2362 date guard has 4 failures; no promotion.
+- **B3:** #2346 has two paired-capture assertion failures; production remains OFF/SYMBOLIC.
+- **Runtime timing:** #2343 source-anchor correction is queued; no same-turn B1/B2→C4→C3 acceptance.
+- **Prompt-cache privacy:** V14-020/R-080 remains P0 investigation; no V13 reproduction or cache-setting change.
+
+
+
+## Boss run 11 — current evidence overlay (2026-11-22T19:01:39.750Z; status-only)
+
+This overlay preserves the historical **1,255-heading** inventory and does not modify the V14 master or historical V13 Canon bytes.
+
+| Canon family | Current exact evidence | Missing acceptance | Classification |
+|---|---|---|---|
+| A0–A5 perception | RAW EAR and stored-image RAW EYE candidate code; #2366 has 12 exact checks PASS / 3 SKIP, including staged/integrated and same-turn synthetic A5→A4→C3 consumer. | Normal Runtime dispatch for RAW EYE; Android camera/MediaProjection/AudioRecord, real sensor provenance, live consent/revocation and Redmi proof. | CODE_PRESENT / WIRED_SYNTHETIC_CANDIDATE / NOT_ANDROID_VERIFIED |
+| B1_DETAIL + B2_GIST | Distinct role routes; phone diagnostics still show both TIME_BUDGET 53.2/54.2 s. | Useful native offers delivered and consumed by C4/C3 in same turn; correct final; 20-turn TTFT/total/RSS acceptance. | CODE_PRESENT / NATIVE_FAILURE_OBSERVED / NOT_ACCEPTED |
+| B3 / Enlightened Space | Paired token/tap and diagnostic receiver candidates exist in branches. | Trained sender→receiver latent alignment, source-disjoint held-out utility, OOD/shuffled/zero/no-message controls, persistence and Redmi proof. Production remains OFF/SYMBOLIC. | SHADOW / NOT_TRAINED / NOT_ANDROID_VERIFIED |
+| C/JEF/C3 | Runtime reports RUNNING and a stored FINAL turn. | Current correctness unknown; 57.739 s total, 41.627 s TTFT, 38.945 s prefill, 2 tokens; no verified C4 consumption trace. | WIRED / SLOW_NATIVE_METADATA / NOT_ACCEPTED |
+| World/Self/Memory/JEPA/Sleep | T8/WorldJEPA/source-forget candidates exist; #2351 has 9 failures and #2359 has 7 failures at current exact heads. | Accepted gradient/parameter update, source-forget atomicity, A→B→A retention, positive rollback/restart and held-out task utility. LEARNING_STATUS #605 = UNAVAILABLE. | SHADOW / CI_BLOCKED / WEIGHTS_UNVERIFIED |
+| Context OS / Memorilla | Existing context/memory paths and optional companion research remain in source. | Production overflow consumer, source-pointer fidelity and role-specific learned reader/writer. | CODE_PRESENT / CONSUMER_UNVERIFIED |
+| Voice / Audio | Caller PCM16 and acoustic feature paths exist; no Android microphone provider. | AudioRecord permission lifecycle, ASR, separate trainable decoder/vocoder, full duplex/barging, replay learning and Redmi audio proof. | CALLER_INPUT_ONLY / MICROPHONE_NOT_IMPLEMENTED |
+| Android agency | Companion app-launch/receipt candidate; #2356 has 6 checks PASS / 2 IN_PROGRESS on a stacked feature branch. | Installed APK, API-first background execution, authorized observation/control, Accessibility/MediaProjection, tap/type/navigation, stop/audit/rollback and brain-loop integration. | CODE_PRESENT / CI_IN_PROGRESS / NOT_ANDROID_VERIFIED |
+| Age / rights / ResourceGuard | Official Age 0, requested lab stage 10, effective implemented stage 5; physical feature execution false. | Stages 6–10 semantics and actual learning/tool feature receipts; keep compute budget separate from Age. | CONFIG_PRESENT / EXECUTION_UNVERIFIED |
+| Runtime install/update | aed1d2 is installed; auto-update enabled; runtime/dashboard UP_TO_DATE; exact branch SHA 41/41 checks PASS. | This is docs-only after code release c4eb82; no process-death/reboot/rollback test or new code release. | DEVICE_INSTALL_VERIFIED / LIFECYCLE_ACCEPTANCE_OPEN |
+| Prompt-cache isolation | R-080 identifies an upstream-related potential cross-session KV risk in the -np1/cache_prompt/id_slot path. | Exact binary/session mapping and synthetic sequential/concurrent unique-marker canary. No V13 reproduction; no cache settings changed. | POTENTIAL_RISK / NOT_REPRODUCED |
+| Canon traceability | 1,255 historical headings preserved. | Semantic clause→implementation→consumer→test→platform→rollback mapping remains incomplete. | INVENTORY_PRESERVED / SEMANTIC_COVERAGE_INCOMPLETE |
+
+**Evidence boundary:** PIPELINE_STATUS #602 proves the installed SHA, not chat quality. DIAGNOSTICS #603 repeats a stored turn and did not create a new turn. LEARNING_STATUS #605 is UNAVAILABLE. No LOG_PAGE was permitted because console-errors consent is not enabled. Full local Aii tests are BLOCKED by the absent checkout and GitHub DNS; GitHub Actions remain CI evidence only.
