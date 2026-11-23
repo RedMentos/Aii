@@ -703,7 +703,7 @@ def consume_projected_frame(
             end_ms=observation["end_ms"],
             tile_luminance=tile_luminance,
         )
-        attention_novelty = max(float(temporal_visual["change_score"]), float(temporal_visual.get("temporal_activity_score", 0.0)))
+        attention_novelty = float(temporal_visual["attention_novelty"])
         temporal_visual_packet = dict(temporal_visual)
         temporal_visual_packet["attention_novelty"] = round(attention_novelty, 6)
         temporal_visual_packet.update({
@@ -741,8 +741,13 @@ def consume_projected_frame(
             "status": temporal_visual["status"],
             "change_score": temporal_visual["change_score"],
             "temporal_activity_score": temporal_visual.get("temporal_activity_score", 0.0),
+            "global_luminance_shift": temporal_visual.get("global_luminance_shift", 0.0),
+            "global_change_score": temporal_visual.get("global_change_score", 0.0),
+            "local_change_score": temporal_visual.get("local_change_score", 0.0),
+            "local_temporal_activity_score": temporal_visual.get("local_temporal_activity_score", 0.0),
             "attention_novelty": round(attention_novelty, 6),
             "changed_tile_ids": list(temporal_visual["changed_tile_ids"]),
+            "locally_changed_tile_ids": list(temporal_visual.get("locally_changed_tile_ids", [])),
             "source_ref": dict(frame_ref),
             "truth_authority": 0,
         }
