@@ -1,3 +1,9 @@
+## Audio import-isolation evidence overlay — 2026-11-23T01:11:52.477Z
+
+PR #2369 current branch head `6dcf1fddd7b68d3cfe9526b764d086090fa054f9` adds a repository-level subprocess test that copies the actual `v13` package without `audio_teacher_ear.py` and imports `v13.audio_voice_cues`. Exact test commit `3f99bdcc6c133f44a897d59e5ef2a9292176f917`; test blob `a45c711ce7aac12beb5f9c567096c0e406962a08`; GitHub readback verified. LOCAL_LINUX minimal subprocess-pattern check PASS; full copied-package test NOT_RUN locally because no Aii checkout is mounted; exact-head CI queued/pending. This strengthens the import-time regression but does not prove Core staged integration, AudioRecord or Redmi operation.
+
+---
+
 ## Current evidence overlay — 2026-11-23T01:09:03.075Z (Perception / JEPA / QA)
 
 This additive overlay updates current evidence only. The historical Canon heading inventory below is unchanged.
