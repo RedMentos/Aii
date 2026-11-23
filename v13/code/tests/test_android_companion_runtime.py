@@ -577,9 +577,15 @@ def test_committed_receipt_recovers_locally_after_broker_finalize_crash(tmp_path
         (action_id,),
     ) is not None
     assert len(outcome_calls) == 1
+    stored_row = runtime.store.one(
+        "SELECT payload FROM packets WHERE kind='ActionOutcome' AND json_extract(payload,'$.action_id')=?",
+        (action_id,),
+    )
+    stored = json.loads(stored_row["payload"])
+    assert stored["actual"]["signed_receipt"]["body"]["action_id"] == action_id
     controller.broker.close()
 
-    restarted = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    restarted = AndroidCompanionController(runtime, transport=transport, clock=lambda: 5000.0)
     recovered = json.loads(restarted.poll(action_id))
     assert recovered["status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
     assert recovered["recovered_from_store"] is True
