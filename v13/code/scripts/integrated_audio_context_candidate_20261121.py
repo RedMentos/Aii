@@ -10,7 +10,7 @@ import hashlib
 from pathlib import Path
 
 SOURCE_BLOBS = {
-    "v13/runtime.py": "6e61af07326c5bb11406ee72361a710d5facc9a5",
+    "v13/runtime.py": "45fb9eb742e19abf00ec42fae2ee872639f4d555",
     "v13/cognition.py": "0455b478fd7a436432df6e96eac40b3fc6cca8bb",
     "v13/audio_perception_bridge.py": "719034281ee32af4207c8ec407fbf358b9800ad7",
     "v13/audio_voice_cues.py": "b18e450162b062b09368a12b1ca18924ed8c5025",
