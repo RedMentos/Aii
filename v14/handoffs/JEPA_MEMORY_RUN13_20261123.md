@@ -129,3 +129,29 @@ This candidate is based on the Run 13 C4→T8 branch but is intended to replace 
 - Fixed the FocalItem verification query to use the same committed-ActionSelection rowid boundary as FocalCycle. This also excludes same-timestamp post-selection FocalItems from final-coalition matching.
 - LOCAL_LINUX isolated SQLite 3.46.1 predicate reproduction: PASS. It demonstrates that the old timestamp-only T8/source-forget predicates include a post-action packet sharing the action timestamp, while the new rowid cutoff excludes it. This is a focused SQL reproduction, not the repository pytest suite.
 - New exact-head Python 3.13/3.14 optimizer-resume, staged-runtime and integrated-regression runs are required after this fix. Full local repository tests remain BLOCKED / NOT_RUN; Redmi remains REDMI_UNVERIFIED.
+
+
+## Run 14 final verification and research handoff — 2026-11-23
+
+### Exact code-head evidence
+- Code-bearing head `ea203f21b622310e884a89e57c677cda3c16ea35` is read back from the JEPA branch and PR #2439.
+- Optimizer-resume/source-forget workflows: **PASS** on Python 3.13 and 3.14. Per interpreter, the four targeted commands reported 20 + 14 + 1 + 12 passed (the final focused selection deselected 23 unrelated tests).
+- Staged context/integrated workflow: **PASS** — staged-runtime 255 passed / 10 skipped / 47 subtests; source recall 15 passed; arithmetic/broker 39 passed / 17 subtests; integrated regression 424 passed / 3 skipped / 58 subtests.
+- Release-event workflow completed successfully without merging or deploying this draft. Safe-additive candidate workflow was policy-skipped because the patch changes a production-path module.
+- LOCAL_LINUX isolated SQLite 3.46.1 predicate reproduction: **PASS**. It confirms that timestamp-only selection admits a post-action packet with the same timestamp while the committed-ActionSelection rowid prefix excludes it.
+- Full local Aii checkout/pytest: **BLOCKED / NOT_RUN** because no checkout is mounted and GitHub DNS resolution fails. CI is not a local run.
+- Private V13OBS #115 currently identifies the unchanged `dfa3945` base as installed with updater status UP_TO_DATE. PR #2439 is not installed; no candidate-specific Redmi test or update request exists. B1/B2 offer delivery and native learning remain unverified/failed in the latest device snapshot. REDMI_UNVERIFIED for this candidate.
+- PR #2439 is OPEN / READY_FOR_REVIEW, not merged or released. Independent Core/QA review is requested. No model, weight, permission, user-data or updater setting changed.
+
+### Research intake for the shared ledger — proposed R-109 (RESEARCH_ONLY)
+- Primary source: Everest Yang, *Changepoint-Aware World Models: Detecting Dynamics Shifts and Recovering by Forgetting Stale Replay in Model-Based RL*, arXiv:2609.18950 (2026-07-15), https://arxiv.org/abs/2609.18950
+- Method: online CUSUM on a rolling baseline of internal prediction error detects abrupt dynamics shifts; the DreamerV3 agent then flushes stale replay while retaining its learned representation. Reported evidence is simulated locomotion, two severe shifts (doubled gravity / halved actuator gain), three seeds, with the strongest gains when old experience is genuinely obsolete. No official code link or license was identified in the primary source; no code, data, weights or dependency imported.
+- V14 adaptation to test, not yet implemented: compute a rolling robust baseline from source-verified T8/WorldJEPA prediction residuals; add a CUSUM alarm only for abrupt persistent residual shifts; on alarm, down-weight/expire stale *predictor replay windows* while preserving the underlying episodic Memory and protected old-cohort anchors. Compare no-alarm, gradual-drift negative control, abrupt-shift positive control, dense/uniform replay, old-cohort retention, checkpoint rollback and return-to-prior-regime recovery. Never delete user memories or globally clear replay based on one error.
+- Limitation: CAWM is DreamerV3/robot-dynamics evidence, not proof for V14's multi-organ cognitive stream or mobile workload. Keep it separate from JEPA-TTT R-016; JEPA-TTT supports persistent predictor/optimizer plus dense temporal replay, while CAWM motivates selective stale-window management after a verified shift.
+
+### Next executable package
+1. After independent review, recompose the tested temporal WorldJEPA learner / LearningIntent / SleepRuntime / B1-B2 shadow receiver chain from the #2372/#2402/#2426 family onto the current release base, preserving current C4/FocalCycle rowid provenance and current Memory source-forget behavior. The old stack's green QA composite is not itself a current-base release.
+2. Coordinate with Core to attach all admitted pre-dispatch ContextPlan/history/Memory/World/Self SourceRefs in the production focal producer; JEPA must verify and persist the resulting complete receipt rather than infer prompt-only sources.
+3. Keep temporal learner, receiver readout and replay adaptation SHADOW until full source lineage, independent holdout utility, retention, restart and rollback pass. No native GGUF/body-weight claim.
+4. Current private owner-read requests #801–#803 have no authenticated phone reply at last read; record NO_LIVE_RECEIPT for those requests. No LOG_PAGE was issued.
+5. **User action: none.** No Termux command, model download/swap, updater request or device permission change is required.
