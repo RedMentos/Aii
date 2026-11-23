@@ -7,7 +7,7 @@ context encoder, not a permanently frozen teacher.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import copy
 import math
 
@@ -223,8 +223,47 @@ def matched_predictor_width_estimates(hidden_dim: int, steps: int) -> dict[str, 
     }
 
 
+
+def m1b_predictor_control_configs(config: BaseConfig) -> dict[str, BaseConfig]:
+    """Construct the preregistered shared/unshared and width-matched M1b configs."""
+    if config.predictor_steps not in (2, 4):
+        raise ValueError("M1b predictor controls require T=2 or T=4")
+    widths = matched_predictor_width_estimates(config.hidden_dim, config.predictor_steps)
+    return {
+        "shared_recurrent": replace(config, predictor_kind="shared"),
+        "unshared_compute_matched": replace(config, predictor_kind="unshared"),
+        "unshared_parameter_matched": replace(
+            config, predictor_kind="unshared",
+            hidden_dim=widths["parameter_matched_unshared"],
+        ),
+        "wide_t1_compute_matched": replace(
+            config, predictor_kind="shared", predictor_steps=1,
+            hidden_dim=widths["compute_matched_wide_t1"],
+        ),
+    }
+
+
+def predictor_budget_report(config: BaseConfig) -> dict[str, dict[str, int | str]]:
+    """Measure trainable parameters and analytic Linear MACs for each M1b control."""
+    report: dict[str, dict[str, int | str]] = {}
+    for label, control_config in m1b_predictor_control_configs(config).items():
+        predictor = make_predictor(control_config)
+        report[label] = {
+            "kind": control_config.predictor_kind,
+            "steps": control_config.predictor_steps,
+            "hidden_dim": control_config.hidden_dim,
+            "trainable_parameters": predictor_parameter_count(predictor),
+            "linear_macs_per_example": predictor_macs_per_example(
+                control_config.latent_dim,
+                control_config.hidden_dim,
+                control_config.predictor_steps,
+            ),
+        }
+    return report
+
+
 class M1JEPA(nn.Module):
-    """Two-view JEPA with EMA target encoder and a shared-weight recurrent predictor."""
+    """Two-view JEPA with EMA target encoder and configurable M1b predictor control."""
 
     def __init__(self, config: BaseConfig):
         super().__init__()
