@@ -428,6 +428,7 @@ class ProcessRestartDurabilityTests(unittest.TestCase):
             subprocess.TimeoutExpired(["adb", "shell", "uiautomator", "dump"], 20),
             subprocess.CalledProcessError(1, ["adb", "shell", "uiautomator", "dump"]),
             FileNotFoundError("adb"),
+            RuntimeError("adb transport failed"),
         )
         for failure in failures:
             with self.subTest(failure=type(failure).__name__):
@@ -438,6 +439,151 @@ class ProcessRestartDurabilityTests(unittest.TestCase):
                     with self.assertRaises(type(failure)):
                         harness.wait_for_stopped_ui_or_prove_durable()
                 durable.assert_called_once_with()
+
+
+class ProcessRestartPostRestartDurabilityTests(unittest.TestCase):
+    def test_post_restart_ui_failures_report_partial_only_after_marker_and_off(self) -> None:
+        import contextlib
+        import io
+        import subprocess
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        failures = (
+            AssertionError("System UI blocked"),
+            subprocess.TimeoutExpired(["adb", "shell", "uiautomator", "dump"], 20),
+            subprocess.CalledProcessError(1, ["adb", "shell", "uiautomator", "dump"]),
+            FileNotFoundError("adb"),
+            RuntimeError("adb transport failed"),
+        )
+        for failure in failures:
+            with self.subTest(failure=type(failure).__name__), TemporaryDirectory() as directory:
+                marker = Path(directory) / "stop-proof"
+                marker.write_text("STOP_ACTION_PERSISTED_OFF\\n", encoding="utf-8")
+                output = io.StringIO()
+                with (
+                    patch.object(harness, "STOP_PROOF_MARKER", marker),
+                    patch.object(harness, "persisted_enabled", return_value="false"),
+                    patch.object(harness, "wait_for_text", side_effect=failure),
+                    contextlib.redirect_stdout(output),
+                ):
+                    with self.assertRaises(type(failure)):
+                        harness.wait_for_restarted_stopped_ui_or_report_durable()
+                self.assertIn("PARTIAL_PASS: force-stop/PID disappearance", output.getvalue())
+
+    def test_post_restart_ui_failure_never_claims_partial_without_marker_or_off(self) -> None:
+        import contextlib
+        import io
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        cases = ((False, "false"), (True, "true"))
+        for marker_exists, enabled in cases:
+            with self.subTest(marker_exists=marker_exists, enabled=enabled), TemporaryDirectory() as directory:
+                marker = Path(directory) / "stop-proof"
+                if marker_exists:
+                    marker.write_text("STOP_ACTION_PERSISTED_OFF\\n", encoding="utf-8")
+                output = io.StringIO()
+                with (
+                    patch.object(harness, "STOP_PROOF_MARKER", marker),
+                    patch.object(harness, "persisted_enabled", return_value=enabled),
+                    patch.object(harness, "wait_for_text", side_effect=AssertionError("UI blocked")),
+                    contextlib.redirect_stdout(output),
+                ):
+                    with self.assertRaisesRegex(AssertionError, "UI blocked"):
+                        harness.wait_for_restarted_stopped_ui_or_report_durable()
+                self.assertIn("DURABLE_STOP_PROOF_FAILED", output.getvalue())
+                self.assertNotIn("PARTIAL_PASS", output.getvalue())
+
+
+class ProcessRestartStopSequenceTests(unittest.TestCase):
+    def test_verify_stop_restart_orders_durable_proof_before_restarted_ui_without_toggling(self) -> None:
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        with TemporaryDirectory() as directory:
+            marker = Path(directory) / "stop-proof"
+            marker.write_text("STOP_ACTION_PERSISTED_OFF\\n", encoding="utf-8")
+            restarted = harness.STOPPED_TEXT + "\\n" + harness.NOT_PAIRED_TEXT
+            with (
+                patch.object(harness, "STOP_PROOF_MARKER", marker),
+                patch.object(harness, "wait_for_stopped_ui_or_prove_durable",
+                             return_value=harness.STOPPED_TEXT) as stopped_ui,
+                patch.object(harness, "persisted_enabled", return_value="false"),
+                patch.object(harness, "verify_durable_off_after_process_death",
+                             return_value=("1234", "5678")) as durable,
+                patch.object(harness, "wait_for_restarted_stopped_ui_or_report_durable",
+                             return_value=restarted) as restarted_ui,
+                patch.object(harness, "tap_button") as tap,
+            ):
+                result = harness.verify_stop_and_restart(timeout=7.0)
+            self.assertEqual(result, ("1234", "5678"))
+            stopped_ui.assert_called_once_with(timeout=7.0)
+            durable.assert_called_once_with(clear_marker=False)
+            restarted_ui.assert_called_once_with(timeout=7.0)
+            tap.assert_not_called()
+            self.assertFalse(marker.exists())
+
+    def test_verify_stop_restart_rejects_reappearing_termux_pairing(self) -> None:
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        with TemporaryDirectory() as directory:
+            marker = Path(directory) / "stop-proof"
+            marker.write_text("STOP_ACTION_PERSISTED_OFF\\n", encoding="utf-8")
+            with (
+                patch.object(harness, "STOP_PROOF_MARKER", marker),
+                patch.object(harness, "wait_for_stopped_ui_or_prove_durable",
+                             return_value=harness.STOPPED_TEXT),
+                patch.object(harness, "persisted_enabled", return_value="false"),
+                patch.object(harness, "verify_durable_off_after_process_death",
+                             return_value=("1234", "5678")),
+                patch.object(harness, "wait_for_restarted_stopped_ui_or_report_durable",
+                             return_value=harness.STOPPED_TEXT),
+            ):
+                with self.assertRaisesRegex(AssertionError, "unexpectedly shows a Termux pairing"):
+                    harness.verify_stop_and_restart(timeout=7.0)
+            self.assertFalse(marker.exists())
+
+    def test_main_does_not_reenable_after_explicit_stop_before_process_death(self) -> None:
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from unittest.mock import call, patch
+        import test_process_restart as harness
+
+        with TemporaryDirectory() as directory:
+            marker = Path(directory) / "stop-proof"
+            with (
+                patch.object(harness, "STOP_PROOF_MARKER", marker),
+                patch.object(harness, "adb", return_value=""),
+                patch.object(harness, "launch_companion"),
+                patch.object(harness, "wait_for_process", return_value="1234"),
+                patch.object(
+                    harness, "wait_for_text",
+                    side_effect=[
+                        harness.STOPPED_TEXT + "\\n" + harness.NOT_PAIRED_TEXT,
+                        harness.ENABLED_TEXT,
+                    ],
+                ),
+                patch.object(harness, "persisted_enabled", side_effect=["false", "true"]),
+                patch.object(harness, "tap_button") as tap,
+                patch.object(harness, "record_stop_persisted_off"),
+                patch.object(harness, "verify_stop_and_restart", return_value=("1234", "5678")) as verify,
+            ):
+                harness.main()
+            self.assertEqual(
+                tap.call_args_list,
+                [call(harness.TOGGLE_LABEL), call(harness.TOGGLE_LABEL)],
+            )
+            verify.assert_called_once_with(timeout=60.0)
 
 
 if __name__ == "__main__":
