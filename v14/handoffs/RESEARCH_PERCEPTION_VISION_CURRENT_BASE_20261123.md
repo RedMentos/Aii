@@ -60,3 +60,19 @@
 4. Boss/Integrator: update the shared work board and Next Action only after independent review; keep the historical Canon unchanged.
 
 **Status:** CODE_PRESENT / WIRED_SYNTHETIC_CANDIDATE / LOCAL_HELPER_TEST_PASS / PERCEPTION_CI_PASS / CORE_STAGED_PIN_FAIL / REDMI_UNVERIFIED / NOT_RELEASED.
+
+
+## A3 source-disjoint projector validation follow-up — 2026-11-23
+
+Code inspection found a concrete evaluation leak: the previous A3 `crossval()` split region rows, while each image contributes whole-image, half, quadrant and tile-region examples. Rows from the same image could therefore occur in both train and holdout, making the reported retrieval score optimistic.
+
+- Added `vision_validation.source_disjoint_crossval`; global and tile projector training now group every row by its parent image source ID and assign complete source groups to deterministic, row-balanced folds.
+- Retrieval uses exact caption-label equivalence, so duplicate captions do not count as false negatives. The chance baseline is computed from the actual held-out label distribution. The luminance decoder is fit only on training sources.
+- If only one image source exists, the projector may remain LAB_SHADOW_ONLY but the metrics explicitly return `INSUFFICIENT_SOURCE_GROUPS` and no held-out score. The old row-wise function is retained as `ROW_WISE_DIAGNOSTIC_ONLY`, never used by the production train commands.
+- Tile projectors now persist and expose the same source-disjoint validation record. A measured score at/below chance is explicitly `AT_OR_BELOW_CHANCE`; `MEASURED` means the folds were complete, not that utility passed.
+
+**LOCAL_LINUX / CPython 3.13.5 / NumPy 2.3.5:** isolated copy of the helper algorithm and deterministic tests: **5 passed**. The leakage negative control gives row-wise label accuracy 1.00 versus source-disjoint accuracy 0.25 at chance 0.25 (16 sources × 4 region rows); no model/weight was downloaded or changed. This is an isolated helper test, not the full Aii suite.
+
+**CI:** exact-head workflows pending after this commit. Full repository suite remains BLOCKED locally (no checkout; GitHub DNS unavailable). **REDMI_UNVERIFIED / NOT_RELEASED.**
+
+**Core integration pin:** this modifies Perception-owned `vision.py`; Core must recompute its exact SHA-256 lifecycle allowlist and dependent recovery/stage/deployer pins bottom-up. Do not weaken the existing hash guard. New `vision.py` SHA-256: pending exact-byte readback.
