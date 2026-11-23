@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T15:31:56Z",
+  "updated_at": "2026-11-23T15:54:02Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof. JEPA/Memory release-base port PR #2447 is draft/CI-pending at 3767e991; not released or Redmi-verified.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -111,7 +111,7 @@
       "proof_environment": "CI_PENDING + synthetic Store-backed runtime tests; full LOCAL_LINUX checkout blocked by DNS; REDMI_UNVERIFIED",
       "next_step": "Poll exact-head PR #2447 CI and fix reproduced failures. Then Boss/QA recompose staged builder pins and compose #2443 Store-RLock/blob-unlink lifecycle fix; Core must attach all admitted context SourceRefs to production ActionSelection before receiver recall can be treated as fully source-complete.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T15:31:56Z",
+      "last_checkpoint": "2026-11-23T15:54:02Z",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -163,16 +163,16 @@
         "ci": "PR_HEAD_STAGED_249_10SKIP_47_INTEGRATED_424_3SKIP_58_PY313_314_64_EACH; MERGED_PUSH_30_OF_30_SUCCESS",
         "scope": "production Runtime/SleepRuntime Store-backed WorldJEPA numeric consumer with persistent Adam/inverse/RNG optimizer state, gated legacy optimizer bootstrap, per-role held-out-vs-mean/zero/shuffled Planner receiver gate, Android no-clobber renameat2 checkpoint publication"
       },
-      "proof": "PR #2429 merged at b20e9b1f3dd53af472055adb43da628785494ec4: ActionSelection SourceRefs validated against Store hashes/spans; source-disjoint T8 grouping; Memory forget restores a clean hash-verified checkpoint or invalidates tainted state and rewinds for source-verified replay. Exact push CI 37/37. This is synthetic checkpoint rollback/replay, not gradient unlearning, native body weights, trained latent transfer or Redmi learning. New release-base port PR #2447 at head 3767e9916fad125dd36d745f869f48db566e9632 adds the persistent temporal T8 JEPA/EMA loop, SleepRuntime postcommit consumer, source-disjoint B1/B2 SHADOW bodyview and Memory API forget/replay composition. Exact-head CI not yet reported; full local checkout blocked by DNS; REDMI_UNVERIFIED. No release or phone install claimed.",
+      "proof": "PR #2429 merged at b20e9b1f3dd53af472055adb43da628785494ec4: ActionSelection SourceRefs validated against Store hashes/spans; source-disjoint T8 grouping; Memory forget restores a clean hash-verified checkpoint or invalidates tainted state and rewinds for source-verified replay. Exact push CI 37/37. This is synthetic checkpoint rollback/replay, not gradient unlearning, native body weights, trained latent transfer or Redmi learning. New release-base port PR #2447 at head 581de80f164ab19ab559c946ce49a7af52be06ba adds the persistent temporal T8 JEPA/EMA loop, SleepRuntime postcommit consumer, source-disjoint B1/B2 SHADOW bodyview and Memory API forget/replay composition. Exact-head CI not yet reported; full local checkout blocked by DNS; REDMI_UNVERIFIED. No release or phone install claimed. Exact-head workflows now queued: 45210392877 (Temporal WorldJEPA T8) and 45210392798 (JEPA training-resume/source-forget); no PASS/FAIL result yet.",
       "latest_temporal_port_pr": {
         "pr": 2447,
         "branch": "jepa-memory/v14-temporal-world-jepa-release-20261123-run13",
         "base_sha": "fb563d771fe2d493c4ec25abe94280981d24ef5c",
-        "head_sha": "3767e9916fad125dd36d745f869f48db566e9632",
+        "head_sha": "581de80f164ab19ab559c946ce49a7af52be06ba",
         "state": "DRAFT_CI_PENDING",
         "scope": "Persistent ActionOutcome/T8 temporal JEPA+EMA, SleepRuntime postcommit, B1/B2 source-verified SHADOW receiver, episodic recall, Memory API source-forget composition and replay",
         "tests": {
-          "exact_head_ci": "PENDING_NO_RUN_REPORTED_AT_LAST_POLL",
+          "exact_head_ci": "QUEUED_RUN_45210392877_TEMPORAL_AND_45210392798_JEPA_RESUME_SOURCE_FORGET",
           "local_full_suite": "BLOCKED_GITHUB_DNS",
           "synthetic_runtime": "INCLUDED_IN_TARGETED_CI_NOT_YET_VERIFIED_ON_RELEASE_BASE",
           "redmi": "REDMI_UNVERIFIED"
