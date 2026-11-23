@@ -229,7 +229,6 @@ def body_state(r,e,role,text):
         # Preserve the primary temporal prediction and its explicit authority
         # boundary. Trim optional context before omitting the receiver readout.
         view['skills']=[]
-        world_jepa_context.pop('unsupported_actions',None)
         for key in ('unfinished_actions','system_stage','learning'):
             if prompt_chars()>STATE_CHARS:
                 view['self'].pop(key,None)
@@ -243,6 +242,11 @@ def body_state(r,e,role,text):
             view['self']={}
         if prompt_chars()>STATE_CHARS:
             view['world']={'mode':view['world'].get('mode')}
+        # The unsupported-action list is compact and meaningful to the body:
+        # preserve it while trimming optional world/self fields, then drop it
+        # only if the primary receiver context still exceeds the hard budget.
+        if prompt_chars()>STATE_CHARS:
+            world_jepa_context.pop('unsupported_actions',None)
         if prompt_chars()>STATE_CHARS:
             view.pop('world_jepa',None)
             world_jepa_audit=None
