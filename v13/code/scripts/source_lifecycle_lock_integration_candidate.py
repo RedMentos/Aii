@@ -105,46 +105,6 @@ MEMORY_OLD = b'''                source=self.s.one('SELECT hash FROM sources WHE
 MEMORY_NEW = b'''                from .source_lifecycle_candidate import cleanup_unreferenced
                 cleanup_unreferenced(self.s,sid)
 '''
-VISION_OLD = b'''def ingest(store,data,cfg=DEFAULTS,label=None):
-    """Store image bytes as an IMAGE source (dedup by hash) and register its regions. Returns the image record."""
-    im=decode(data,cfg);w,h=im.size;sha=digest(data);st=load(store)
-    for rec in st['images'].values():
-        if rec['ref']['sha256']==sha:return rec
-    if len(st['images'])>=cfg['max_images']:raise ValueError('Zu viele Bilder im Lab; erst :image forget')
-    path=store.home/'data/blobs'/sha
-    if not path.exists():atomic_write(path,data)
-    sid=uid('src')
-    with store.tx() as c:c.execute('INSERT INTO sources VALUES (?,?,?,?,?,?,0)',(sid,sha,'IMAGE',len(data),0,now()))
-    ref={'source_id':sid,'sha256':sha,'char_start':0,'char_end':0,'modality':'image'}
-    rec={'ref':ref,'size':[w,h],'label':(label or '')[:80],'regions':boxes(w,h,cfg['grid']),'captions':[],'created':now()}
-    st['images'][sid]=rec;save(store,st);return rec
-'''
-VISION_NEW = b'''def ingest(store,data,cfg=DEFAULTS,label=None):
-    from .source_lifecycle_candidate import vision_ingest
-    return vision_ingest(store,data,cfg,label)
-'''
-VISION_FORGET_OLD = b'''def forget(store,rec):
-    st=load(store);sid=rec['ref']['source_id'];st['images'].pop(sid,None)
-    if st.get('projector'):st['projector']['captions']={k:v for k,v in st['projector']['captions'].items() if k.split(':')[0]!=sid}
-    save(store,st)
-    with store.tx() as c:c.execute('UPDATE sources SET deleted=1 WHERE id=?',(sid,))
-    if not store.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(rec['ref']['sha256'],)):(store.home/'data/blobs'/rec['ref']['sha256']).unlink(missing_ok=True)
-    return {'forgotten':sid}
-'''
-VISION_FORGET_NEW = b'''def forget(store,rec):
-    from .source_lifecycle_candidate import vision_forget
-    return vision_forget(store,rec)
-'''
-VISION_STATE_OLD = b'''def load(store):return store.state(KEY,None)[0] or {'revision':REVISION,'images':{},'projector':None,'last':None}
-def save(store,st):store.set_state(KEY,st)
-'''
-VISION_STATE_NEW = b'''def load(store):
-    from .source_lifecycle_candidate import load_vision_state
-    return load_vision_state(store)
-def save(store,st):
-    from .source_lifecycle_candidate import save_vision_state
-    save_vision_state(store,st)
-'''
 RESTORE_OLD = '''def restore(store,h):
     p=_dir(store)/h;zp=p.with_name(h+'.z')
     if p.is_file():return 'ALREADY_PLAIN'
@@ -182,15 +142,15 @@ def build_sources(source_dir):
     raw['archive.py'] = module.build_sources(source_dir)['archive.py']
     if hashlib.sha256(raw['archive.py']).hexdigest() != OLD_ARCHIVE_INTEGRATED_SHA:
         raise ValueError('unexpected materialized archive revision')
+    # The pinned V14 vision.py already owns transactional image-source publication,
+    # registry updates and projector invalidation. Preserve those exact bytes instead
+    # of replaying legacy V13 anchors that no longer exist in this source revision.
     for filename, old, new in (
             ('store.py', STORE_OLD, STORE_NEW),
             ('store.py', RECOVER_OLD, RECOVER_NEW),
             ('store.py', EVENT_OLD, EVENT_NEW),
             ('store.py', READ_SOURCE_OLD, READ_SOURCE_NEW),
             ('memory.py', MEMORY_OLD, MEMORY_NEW),
-            ('vision.py', VISION_OLD, VISION_NEW),
-            ('vision.py', VISION_FORGET_OLD, VISION_FORGET_NEW),
-            ('vision.py', VISION_STATE_OLD, VISION_STATE_NEW),
             ('archive.py', RESTORE_OLD, RESTORE_NEW)):
         raw[filename] = _replace_once(raw[filename], old, new, filename)
     archive_sha = hashlib.sha256(raw['archive.py']).hexdigest().encode()
