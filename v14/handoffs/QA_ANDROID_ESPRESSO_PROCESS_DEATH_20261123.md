@@ -96,3 +96,21 @@ Read the exact-head Android companion and emulator jobs. If the instrumentation 
 Read both exact-head emulator jobs. If they pass, hand the emulator-only lifecycle evidence to Boss/Core for independent review; if they fail, preserve the new focus/resume diagnostics and keep the visible UI gate blocked. Do not bypass Espresso focus, select Close app, or treat a durable-state partial result as visible UI acceptance.
 
 **User action: none.**
+
+
+---
+
+## Fresh installed-runtime receipt — 2026-11-23
+
+A separate authenticated private owner-read after the release update confirms:
+
+- Installed release: \`4dc7595f383e7ba932ee8e9fcf52c5541210ed5e\`.
+- Auto-update enabled; Runtime and Dashboard \`UP_TO_DATE\`; \`last_error=NONE\`.
+- Service/model process reported RUNNING; 8 managed sessions.
+- Last stored turn is unchanged and therefore is **not a post-update functional test**: FINAL, 57.739 s total, 41.627 s TTFT, 38.945 s C3 prefill, 751 prompt tokens, 2 generated tokens; no prompt layers removed and source text not rewritten.
+- B1_DETAIL and B2_GIST remain TIME_BUDGET at 53.2 s / 54.2 s; C2 OK; C3 probe 3.1 s; native probe SMOKE_PARTIAL.
+- Instant native-process map: 0 mapped native processes / 0 MiB PSS/RSS, with child readability UNKNOWN_NO_GROUP_CHILDREN. This is not free-RAM or sustained-residency evidence.
+- Official Age 0; lab selector active/requested stage 10/effective implemented stage 5; physical feature execution remains unverified and learning commit authority still requires separate SHADOW mode.
+- Console excerpt remains redacted; console_errors is USER_NOT_OPTED_IN. No LOG_PAGE, CHAT_SEND, model/weight/permission change or device mutation was performed.
+
+A separate read-only HEALTH request is pending to refresh MemAvailable/free-disk metadata. This release receipt proves installation only. The companion Espresso PR still has no physical Redmi APK install, pairing or Android UI-control evidence; REDMI companion acceptance remains UNVERIFIED.
