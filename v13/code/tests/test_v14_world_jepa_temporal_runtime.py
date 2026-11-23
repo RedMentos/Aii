@@ -378,7 +378,7 @@ def test_temporal_world_jepa_updates_ema_checkpoint_and_b1_b2_shadow_receivers(t
             assert intent["gradient_budget"]["steps_executed"] > 0
             assert intent["gradient_budget"]["steps_executed"] <= intent["gradient_budget"]["max_steps"]
             assert intent["gradient_budget"]["gradient_clip_count"] >= 0
-            assert metrics[role.lower() + "_gradient_steps"] == intent["gradient_budget"]["steps_executed"]
+            assert active_record["receiver_metrics"][role.lower() + "_gradient_steps"] == intent["gradient_budget"]["steps_executed"]
             assert intent["approval_id"] is None
             assert intent["age_capability"] == "SHADOW_ONLY_NO_NATIVE_BODY_RIGHT"
             assert intent["authority"] == "NONE"
