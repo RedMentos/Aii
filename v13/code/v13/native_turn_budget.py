@@ -29,6 +29,7 @@ def register_store_telemetry():
 
     store.TELEMETRY_FIELDS.update({
         "preanswer_seconds_available",
+        "focal_reserved_seconds",
         "c3_reserved_seconds",
         "recent_real_prefill_failures",
         "minimum_role_slice_s",
