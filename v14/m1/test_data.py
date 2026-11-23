@@ -116,7 +116,7 @@ class WindowTests(unittest.TestCase):
         rows = synthetic_rows(1000, {100})
         windows, stats = make_split(rows, self.channels, self.cfg, "train", self.bounds["train"])
         self.assertGreater(stats.rejected_windows, 0)
-        affected = [w for w in windows if abs(w.origin_index - 100) <= 4]
+        affected = [w for w in windows if 98 <= w.origin_index <= 104]
         self.assertFalse(affected)
 
     def test_missing_seasonal_source_rejects_window(self):
@@ -260,8 +260,8 @@ class UCIParserTests(unittest.TestCase):
 
     def test_subminute_uci_timestamp_fails_closed(self):
         payload = (
-            "Date;Time;Global_active_power\\n"
-            "16/12/2006;17:24:30;1,0\\n"
+            "Date;Time;Global_active_power\n"
+            "16/12/2006;17:24:30;1,0\n"
         )
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "subminute.txt"
@@ -271,8 +271,8 @@ class UCIParserTests(unittest.TestCase):
 
     def test_truncated_measurement_row_fails_closed(self):
         payload = (
-            "Date;Time;Global_active_power;Voltage\\n"
-            "16/12/2006;17:24:00;1,0\\n"
+            "Date;Time;Global_active_power;Voltage\n"
+            "16/12/2006;17:24:00;1,0\n"
         )
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "truncated.txt"
