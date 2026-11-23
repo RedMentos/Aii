@@ -254,7 +254,7 @@ def test_ui_frame_grant_binds_public_provider_entrypoint_to_exact_lease_and_zero
         "lease": lease,
         "verify": verify_fn,
     }
-    assert frame == bytearray(b"\\x00" * len(frame))
+    assert frame == bytearray(b"\x00" * len(frame))
     with pytest.raises(FrameReceiptDenied, match="already consumed"):
         grant.consume(runtime, current_source="source")
 
@@ -279,7 +279,7 @@ def test_ui_frame_grant_zeroizes_when_public_provider_consumer_raises(monkeypatc
     )
     with pytest.raises(RuntimeError, match="perception consumer failed"):
         grant.consume(runtime, current_source="source")
-    assert frame == bytearray(b"\\x00" * len(frame))
+    assert frame == bytearray(b"\x00" * len(frame))
 
 
 
