@@ -916,6 +916,8 @@ def test_impulsive_non_speech_reaches_a4_novelty_without_speaker_or_interrupt(tm
 
         assert result["a4"]["voice_activity_hint"] == "IMPULSIVE"
         assert result["speaker_change_evidence"]["status"] == "SUPPRESSED_NON_VOICED"
+        assert result["speaker_change_evidence"]["current_chunk_sha256"] == pcm_sha256
+        assert result["speaker_change_evidence"]["source_binding_status"] == "CURRENT_PCM_SHA256_MATCH_ENCODER_UNATTESTED"
         assert result["speaker_change_evidence"]["accepted_frame_count"] == 0
         assert result["speaker_change_evidence"]["history_frame_count"] == 0
         assert result["a4"]["speaker_change_decision"] == "DEFER"
