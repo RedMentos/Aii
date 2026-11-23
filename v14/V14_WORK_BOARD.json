@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T11:07:22.216Z",
-  "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at b20e9b1f3dd53af472055adb43da628785494ec4. PR #2434 integrated IH-H12 output commit and C7 persisted-receipt egress at 69e77bc (39/39 exact push check-runs SUCCESS). PR #2429 integrated source-bound WorldJEPA checkpoint rollback/replay and ActionSelection SourceRef lineage at b20e9b1f3dd53af472055adb43da628785494ec4 (37/37 exact push check-runs SUCCESS). Latest authenticated phone receipt is stale at 8bf44cb / CI_WAIT; b20e9 is not yet device-verified. Full Canon acceptance remains open; V14 master and historical V13 appendix were not edited.",
+  "updated_at": "2026-11-23T12:34:49Z",
+  "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 now at 8fb5a61361e34862f8510f7f2c14c43cc9cd2952, 32 commits ahead of the b20e9b1f3dd53af472055adb43da628785494ec4 integration baseline. M1 DATA pipeline and regression coverage were added under v14/m1; exact GitHub Actions push and pull_request runs are queued, not passed. Phone receipt remains stale at 8bf44cb / CI_WAIT; no M1 UCI run, local full-suite run, or Redmi validation.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -413,6 +413,21 @@
       "user_action_required": false,
       "last_checkpoint": "2026-11-23T11:07:22.216Z",
       "proof": "b20e9 exact push CI 37/37. Latest phone receipt #767 still reports 8bf44cb / CI_WAIT; no install, process-death, reboot, marker recovery or runtime-only rollback receipt."
+    },
+    {
+      "id": "V14-020",
+      "title": "M1 reproducible forecasting experiment: DATA, BASE and PROBE",
+      "owner": "JEPA & Memory",
+      "reviewer": "Boss & QA",
+      "priority": "P1",
+      "status": "IN_PROGRESS_PARTIAL",
+      "scope": "M1a forecasting representation probe; M1b shared-weight recurrence controls; M1c local eligibility learning, with fixed split, matched inputs, fair baselines and source-bound evidence",
+      "acceptance": "Validated UCI ingestion and split manifest; all parity baselines and JEPA/direct-MAE controls; collapse/utility gates; recurrence matched-compute/parameter controls; local eligibility separated from activity traces; block-bootstrap and test-hash enforcement",
+      "proof_environment": "CODE_PRESENT; GitHub Actions push and pull_request runs QUEUED; no LOCAL_LINUX full-suite, real UCI data run, weight update or Redmi proof",
+      "next_step": "Complete DATA verification when exact CI starts; fix any failures; then implement shared InputBundle and baseline adapters before JEPA/PROBE models. Preserve M1a/b/c gates and preregistration requirements; do not open test split before hash-bound preregistration.",
+      "user_action_required": false,
+      "last_checkpoint": "2026-11-23T12:34:49Z",
+      "proof": "v14/m1/data.py and test_data.py present. Hardened finite numeric parsing, known-past seasonal-lag constraint, shared row integrity validation, exact seasonal alignment and split boundary regressions. No test result claimed; latest exact M1 workflow runs 45175650226 (push) and 45175661600 (pull_request) are QUEUED."
     }
   ],
   "current_redmi_status": "Latest authenticated PIPELINE_STATUS #767 at 2026-11-23 10:55:05 UTC reports updated_commit 8bf44cb, auto-update enabled, Runtime/Dashboard CI_WAIT, last_error NONE. It predates final CI green and does not prove b20e9 installed. DIAGNOSTICS #764 repeats stored 57.739 s total / 41.627 s TTFT / 38.945 s C3 prefill / 751 prompt / 2 generated; B1/B2 TIME_BUDGET 53.2/54.2 s; correctness UNKNOWN. HEALTH #765: 1,209 MiB MemAvailable and 1,030 MiB disk; runtime UNAVAILABLE in HEALTH but RUNNING in DIAGNOSTICS. LEARNING_STATUS #766 UNAVAILABLE. No new turn, LOG_PAGE, UPDATE_REQUEST, shell, model/weight/permission change or data mutation.",
