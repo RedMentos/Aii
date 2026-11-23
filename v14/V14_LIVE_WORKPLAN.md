@@ -1555,3 +1555,11 @@ JEPA #2396 Temporal WorldJEPA T8 Windows workflow is now SUCCESS. The same exact
 2. QA #2391 must compose #2397 + #2395 using the exact hashes above; rerun staged/integrated and all release/privacy gates before either PR can be accepted.
 3. Core #2370 must rebind the audio source pin and rerun staged/integrated before the optional Teacher Ear compatibility fix can affect the installed runtime.
 4. Continue the separate UI capture→RAW EYE→A5→C3 path on a shared exact ancestor; require real Android receipt for any REDMI_NATIVE claim.
+
+
+## Audio import-isolation follow-up — 2026-11-23T01:11:43.658Z
+
+- Added repository regression `test_audio_voice_cues_module_imports_without_optional_teacher_file` to #2369. It copies the actual `v13` package to a temporary tree without `audio_teacher_ear.py` and imports `v13.audio_voice_cues` in a fresh subprocess, directly covering Core's acoustic-only copy list.
+- Exact test commit `3f99bdcc6c133f44a897d59e5ef2a9292176f917`, test blob `a45c711ce7aac12beb5f9c567096c0e406962a08`; branch head after handoff `6dcf1fddd7b68d3cfe9526b764d086090fa054f9`. GitHub readback verified.
+- LOCAL_LINUX CPython 3.13.5: minimal subprocess import-isolation pattern PASS. The full copied-package repository test remains NOT_RUN locally because no Aii checkout is mounted. Exact-head CI is queued/pending; no pass claimed.
+- No code path now requires Teacher Ear for acoustic-only import; if a teacher result is supplied, the active lease and both separate opt-ins remain mandatory before lazy import. No transcript is admitted/persisted if the module is absent.
