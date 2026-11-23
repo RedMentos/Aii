@@ -61,3 +61,13 @@ Five scheduled agents are active: Boss & Integration, Core & Harness, QA & Andro
 - Whole team: continue clause→code→consumer→test→platform→rollback coverage across all historical Canon headings; do not narrow the project to one recent bug.
 
 User action: NONE. No manual Termux command, update request, package/model download, weight swap, permission change or device action is needed.
+
+ 
+## Late CI refresh — 2026-11-23T01:03:20Z
+
+- Boss #2370 exact head d149bd5e0a2f8394e44e0ed60a208638b9f4b3b9 remains 15 QUEUED / 1 CANCELLED / 1 SKIPPED; no exact-head PASS or FAIL has started.
+- JEPA #2396 exact head 3a1cecb0ddb4de3791d4ea6b66dc5d2038b3830c now has Temporal WorldJEPA T8 Windows SUCCESS. Three other workflows still FAIL at the same Termux12 pin for integrated_world_training_resume_candidate_20261111.py. This is a synthetic worker-path pass only, not optimizer-resume acceptance, native GGUF training or Redmi weight proof.
+- QA #2391 exact head 224153378e7ec5119509468fc996ba77ae2ead0d now shows 12 workflow failures / 2 successes; rebase after final JEPA code and recompute the full pin chain.
+- Perception #2395 still has focused vision-lineage tests green and staged/integrated regression failing at the old vision.py pin / obsolete forget anchor.
+- Core #2394 remains 2/2 synthetic PASS; parent #2356 process-restart acceptance remains FAIL. MediaProjection #2379 still requires rebase and combined A5/RAW EYE/C3 proof.
+
