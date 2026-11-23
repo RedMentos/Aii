@@ -1963,6 +1963,17 @@ def combined_source_forget_guard(store, source_id):
             if path is not None:
                 affected_paths[path.name] = path
 
+        # A checkpoint that survives this forget operation must still be
+        # loadable; otherwise do not publish a state that points at a missing file.
+        if active_uses and previous is not None and not previous_uses:
+            clean_path = _temporal_checkpoint_path(store, previous)
+            if clean_path is None:
+                raise ValueError("clean previous temporal checkpoint is missing")
+        elif not active_uses and active is not None:
+            clean_path = _temporal_checkpoint_path(store, active)
+            if clean_path is None:
+                raise ValueError("active temporal checkpoint is missing")
+
         next_active = active
         next_previous = previous
         scan_cursor = state["scan_cursor"]
