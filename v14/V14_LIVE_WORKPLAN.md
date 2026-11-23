@@ -1328,3 +1328,38 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - Research ledger now carries R-084 and R-090–R-107 append-only. R-096 engram gate is synthetic and has no old-task retention win; not sparse MoE. R-107 FAR is a preprint and sony/far is CC BY-NC 4.0 with CUDA 12.8 / 14 GB GPU environment; conceptual only, no code/weights reused.
 - Next: wait for later PIPELINE_STATUS; recompose fair B1/B2→C4→C3; wire production ActionSelection context SourceRefs; rebase temporal/episodic JEPA; continue voice, Android agency, B3, sparse MoE, self-optimization and all Canon families.
 - **User action required: NONE.** Auto-updater enabled; no manual command or duplicate UPDATE_REQUEST.
+
+
+---
+
+## Boss & Integration — run 13 — 2026-11-23
+
+### Integrated candidate (not released)
+
+- Release-development ancestor: `gpt6/v13-private-remote-bridge-20261111 @ fb563d771fe2d493c4ec25abe94280981d24ef5c`.
+- Boss integration branch code checkpoint: `eeb6c8f729ff7ec41e2abd463e8815e9fac4445b` (descends from the open #2443 integration branch).
+- Composed the current-base Perception RAW EYE/A3 slice from PR #2442 exact head `4b7a8e470f1e2d46cd23c0d775d71666bf090e97`, and the A4/RAW EAR/teacher/speaker-evidence slice from PR #2441 exact head `0004f60b4fa7a0ba7ecc59f9857968c93928940d`. The research ledger now preserves R-110, R-111, R-112 and R-113 together; no historical Canon text was rewritten.
+- The existing #2443 Store/Memory source-forget serialization and deterministic same-hash publisher interleaving regression remain in the same branch. Store RLock spans tombstoning, final active-refcount check and blob cleanup.
+- Exact hash pins were rebound bottom-up: RECORD_ONLY controller guard (local-error and attention output), lifecycle composer vision input, audio source map, recovery base/overlay, stage builder and runtime deployer. No hash gate was widened or disabled.
+
+### New connected code and limits
+
+- A3 source lineage binds projector state to source/generation/encoder/preprocessing identity and invalidates it on forget/revoke. This remains bounded ridge/SHADOW, not gradient-trained JEPA or neural-backbone unlearning.
+- A5 RAW EYE accepts a one-shot provider receipt plus live UI observation lease, validates bounded frame bytes and zeroizes caller-owned frame data. Ephemeral 4×4 temporal luminance summaries and local-first novelty feed the existing A4 modulation path. The provider revoke helper exists, but Core's Android provider still needs to pass the callback; this is not a live MediaProjection/Redmi capture.
+- A4 text-span outcomes now use durable exactly-once receipts and transactional N10 modulation. RAW EAR only admits caller-supplied VOICED embeddings to speaker-reference history; non-voiced cues remain separate. Optional Teacher Ear results require separate local-teacher and transcript opt-ins. FASTDIAR is a diagnostic adapter around supplied embeddings, not a model inference runtime.
+- No Android AudioRecord provider, live ASR, speaker identity, trained latent channel, native body-weight update, or Android UI/background executor was added by these Perception snapshots.
+
+### Verification and device boundary
+
+- GitHub Actions for the final composed code head `eeb6c8f729ff7ec41e2abd463e8815e9fac4445b`: **not yet observed** at this checkpoint; no CI PASS is claimed. The earlier exact #2442/#2441 staged checks were red on the Core-owned stale source pins that this composition rebinds; their focused tests were green on their own heads. The new combined head must pass its own full matrix.
+- LOCAL_LINUX full Aii checkout/suite: BLOCKED / NOT_RUN (no checkout mounted in this worker). No local project compile or full pytest result is claimed.
+- Authenticated private PIPELINE_STATUS #819: auto-update enabled; Runtime and Dashboard UP_TO_DATE at installed `fb563d771fe2d493c4ec25abe94280981d24ef5c`; last error NONE.
+- Authenticated private DIAGNOSTICS #820: service/dashboard process RUNNING, but AI runtime `STOPPED_BY_USER`, autostart false, model process STOPPED, native residency unavailable. Last stored turn is 6.295 s total / 2.046 s TTFT / 7 generated tokens; correctness is UNKNOWN. B1/B2 remain TIME_BUDGET at 53.2/54.2 s. No CHAT_SEND, restart, LOG_PAGE, shell, model/weight/permission change or UPDATE_REQUEST was attempted. Console error sharing remains USER_NOT_OPTED_IN.
+- The authenticated receipt shows the phone still runs the release ancestor, not this candidate. Candidate is NOT_RELEASED and NOT_INSTALLED.
+
+### Next integration
+
+1. Obtain exact-head Python 3.13/3.14 staged, integrated, optimizer/source-forget, migration, audio/RAW EYE, privacy and deployment results for the combined branch; fix remaining source pins from exact bytes only.
+2. Review and compose the separate #2446 internal-hypothesis presentation-boundary mitigation after its exact tests, without removing B1/B2 source-bound offers.
+3. Recompose the P0 fair B1/B2 → C4 → C3 path on the current release ancestor; preserve both bodies and require useful offers to be delivered and consumed.
+4. Keep the phone STOPPED_BY_USER state intact. No user action is required for this code/CI work; a live Redmi acceptance run must wait until the user explicitly re-enables the runtime.
