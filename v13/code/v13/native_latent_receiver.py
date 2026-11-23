@@ -119,12 +119,20 @@ def _open_model_descriptor(model: Path, models_root: Path, expected_digest: str)
 
 
 def _verify_model_descriptor(fd: int, expected_digest: str, expected_identity):
+    # A rename of the verified inode changes ctime even though the inherited
+    # descriptor still names the exact approved file. Keep dev/inode/size/mtime
+    # stable and re-hash the descriptor; do not confuse a pathname replacement
+    # with an in-place model mutation.
+    content_identity = lambda info: (
+        info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns,
+    )
+    expected_content_identity = expected_identity[:4]
     before = os.fstat(fd)
-    if not stat.S_ISREG(before.st_mode) or _fd_identity(before) != expected_identity:
+    if not stat.S_ISREG(before.st_mode) or content_identity(before) != expected_content_identity:
         raise NativeReceiverError("receiver model descriptor identity changed during native probe")
     actual = _sha256_fd(fd)
     after = os.fstat(fd)
-    if _fd_identity(after) != expected_identity or actual != expected_digest:
+    if content_identity(after) != expected_content_identity or actual != expected_digest:
         raise NativeReceiverError("receiver model bytes changed during native probe")
 
 
