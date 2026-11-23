@@ -1073,3 +1073,170 @@ def test_memory_forget_invalidates_both_tainted_checkpoints_then_replays(tmp_pat
         assert second["checkpoint_sha256"] != first["checkpoint_sha256"]
     finally:
         store.close()
+
+
+def test_source_disjoint_split_keeps_shared_context_components_together():
+    actions = tuple(world_model.ACTIONS)
+    rows, pairs = [], []
+    group_number = 0
+
+    def source_ref(name):
+        digest = hashlib.sha256(("multisource-holdout:" + name).encode("utf-8")).hexdigest()
+        return {"source_id": name, "sha256": digest}
+
+    def primary_fold(ref):
+        return int.from_bytes(bytes.fromhex(ref["sha256"])[:8], "big") % 2
+
+    for target_fold in (0, 1):
+        accepted = 0
+        while accepted < 12:
+            left = source_ref("primary-left-" + str(group_number))
+            right = source_ref("primary-right-" + str(group_number))
+            shared = source_ref("shared-context-" + str(group_number))
+            digests = sorted({left["sha256"], right["sha256"], shared["sha256"]})
+            component_digest = hashlib.sha256(
+                __import__("json").dumps(digests, separators=(",", ":")).encode("utf-8")
+            ).digest()
+            component_fold = int.from_bytes(component_digest[:8], "big") % 2
+            if component_fold != target_fold or primary_fold(left) == primary_fold(right):
+                group_number += 1
+                continue
+            first_id = "multi-" + str(group_number) + "-a"
+            second_id = "multi-" + str(group_number) + "-b"
+            for offset, (primary, route) in enumerate((
+                (left, actions[group_number % len(actions)]),
+                (right, actions[(group_number + 1) % len(actions)]),
+            )):
+                index = group_number * 2 + offset
+                rows.append({
+                    "action_id": first_id if offset == 0 else second_id,
+                    "source_id": primary["source_id"],
+                    "source_sha256": primary["sha256"],
+                    "source_refs": [primary, shared],
+                    "fingerprint": hashlib.sha256(("fingerprint-" + str(index)).encode()).hexdigest(),
+                    "outcome_sha256": hashlib.sha256(("outcome-" + str(index)).encode()).hexdigest(),
+                    "created": float(index + 1),
+                    "s": [float(index + 1), 0.1, 0.2, 0.3],
+                    "a": route,
+                    "y": [float(index % 7), 1.0, float(index % 11)],
+                })
+            pairs.append((first_id, second_id))
+            accepted += 1
+            group_number += 1
+
+    split = _source_disjoint_split(rows)
+    train, holdout = set(split["train_action_ids"]), set(split["holdout_action_ids"])
+    assert len(train) >= 8 and len(holdout) >= 8
+    assert split["manifest"]["source_disjoint"] is True
+    assert split["manifest"]["source_sha256_disjoint"] is True
+    for left_id, right_id in pairs:
+        assert (left_id in train) == (right_id in train)
+        assert (left_id in holdout) == (right_id in holdout)
+
+
+def test_t8_multisource_lineage_is_verified_split_disjoint_and_forget_taints_checkpoint(tmp_path):
+    store, session = _make_store(tmp_path / "brain-multisource")
+    context_by_index = {}
+    try:
+        def context_sources(index, current_store):
+            ref = current_store.source(
+                f"synthetic-memory-context-{index:04d}", "MEMORY_CONTEXT"
+            )
+            context_by_index[index] = ref
+            return [ref]
+
+        action_ids = _add_transitions(
+            store, session, 0, 256, context_source_factory=context_sources
+        )
+        receipts, rejected = verify_committed_transitions(store, limit=256)
+        assert rejected == 0 and len(receipts) >= 16
+        assert all(len(receipt.source_refs) == 2 for receipt in receipts)
+        assert all(
+            len(receipt.training_row()["source_refs"]) == 2 for receipt in receipts
+        )
+
+        consumer = WorldJEPAStoreConsumer(
+            store, tmp_path / "private-jepa-multisource",
+            learning_enabled=True, seed=29, ensemble=2,
+        )
+        updated = consumer.update(limit=256, steps=120, optimizer_permission=True)
+        assert updated["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        metrics = updated["metrics"]
+        assert metrics["train_holdout_source_disjoint"] is True
+        assert metrics["train_holdout_source_sha256_disjoint"] is True
+        assert metrics["train_holdout_content_disjoint"] is True
+        assert metrics["parameter_delta_norm"] > 0
+        assert metrics["ema_target_delta_norm"] > 0
+        assert metrics["negative_controls_separated"] is True
+        assert updated["native_body_weights_changed"] is False
+
+        state, version = store.state(STATE_KEY, None)
+        record = state["active"]
+        rows_by_id = {row["action_id"]: row for row in record["experience_rows"]}
+        train_rows = [rows_by_id[action_id] for action_id in record["train_ids"]]
+        holdout_rows = [rows_by_id[action_id] for action_id in record["holdout_ids"]]
+        train_source_ids = {
+            ref["source_id"] for row in train_rows for ref in row["source_refs"]
+        }
+        holdout_source_ids = {
+            ref["source_id"] for row in holdout_rows for ref in row["source_refs"]
+        }
+        train_source_hashes = {
+            ref["sha256"] for row in train_rows for ref in row["source_refs"]
+        }
+        holdout_source_hashes = {
+            ref["sha256"] for row in holdout_rows for ref in row["source_refs"]
+        }
+        assert not train_source_ids & holdout_source_ids
+        assert not train_source_hashes & holdout_source_hashes
+
+        target_action = action_ids[0]
+        target_context_ref = context_by_index[0]
+        # Simulate an older/evicted replay row that retained only its primary
+        # event source. The immutable ActionSelection packet still contains the
+        # full context lineage and must independently taint the checkpoint.
+        target_row = rows_by_id[target_action]
+        target_row["source_refs"] = [target_row["source_refs"][0]]
+        store.set_state(STATE_KEY, state, expected=version)
+
+        with source_forget_guard(store, target_context_ref["source_id"]) as report:
+            assert report["status"] == "RESET_FOR_SOURCE_VERIFIED_REPLAY"
+            assert report["tainted_checkpoints_invalidated"] == 1
+        state_after, _ = store.state(STATE_KEY, None)
+        assert state_after["active"] is None
+        assert state_after["previous"] is None
+        assert state_after["scan_cursor"] == 0
+        assert not list((tmp_path / "brain-multisource" / "world_jepa").glob("jepa-*.npz"))
+    finally:
+        store.close()
+
+
+def test_t8_rejects_unreadable_secondary_action_selection_source(tmp_path):
+    store, session = _make_store(tmp_path / "brain-bad-secondary-source")
+    try:
+        event = store.event(session, "synthetic-primary-event-source")
+        bad_ref = store.source("synthetic-secondary-context", "MEMORY_CONTEXT")
+        bad_ref = dict(bad_ref)
+        bad_ref["sha256"] = "0" * 64
+        selection = contracts.packet(
+            "ActionSelection", "C2_CONTROL", event["event_id"],
+            event["brain_generation_id"], [event["source_ref"], bad_ref],
+            selected={"action_id": "TEXT_REPORT", "action_type": "TEXT_REPORT",
+                      "score": 0.0, "permission_class": "local_text_only",
+                      "focal_support": 0.0},
+            candidates=[], suppressed=[], permission_class="local_text_only",
+            route_hint=tuple(world_model.ACTIONS)[0], stage="COMMIT",
+        )
+        store.add_packet("ActionSelection", selection)
+        action_id = store.start_action(
+            event["event_id"], event["brain_generation_id"],
+            forecast={"input_chars": 30, "resource_state": "NORMAL"},
+        )
+        store.finish_action(
+            action_id, "FINAL", {"action_duration_s": 0.5, "characters": 12}
+        )
+        verified, rejected = verify_committed_transitions(store, limit=16)
+        assert verified == []
+        assert rejected == 1
+    finally:
+        store.close()
