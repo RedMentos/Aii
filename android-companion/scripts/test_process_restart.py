@@ -289,7 +289,11 @@ def wait_for_stopped_ui_or_prove_durable(timeout: float = 60.0) -> str:
     """Keep visible UI strict; record independent durable state if UI is blocked."""
     try:
         return wait_for_text(STOPPED_TEXT, timeout=timeout)
-    except AssertionError as ui_failure:
+    except (AssertionError, subprocess.SubprocessError, OSError) as ui_failure:
+        # uiautomator may report an ANR as an assertion, an adb timeout/nonzero
+        # exit, or an OS-level transport error. All are UI-observation failures;
+        # preserve the original failure but still attempt the independent OFF
+        # + process-death proof.
         try:
             verify_durable_off_after_process_death()
         except Exception as durable_failure:
