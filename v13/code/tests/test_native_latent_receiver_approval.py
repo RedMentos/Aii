@@ -3,6 +3,8 @@ import json
 import os
 import subprocess
 import sys
+import threading
+import time
 from pathlib import Path
 
 import pytest
@@ -622,6 +624,47 @@ def test_operator_native_probe_holds_exclusive_lease_through_receiver_call(tmp_p
         assert runtime.paused is False
     finally:
         runtime.close()
+
+
+def test_operator_keyboard_interrupt_cancels_receiver_before_releasing_lease(tmp_path, monkeypatch):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    _set_empty_native_census(runtime)
+    runtime.resources = lambda: {"mem_available_bytes": 10**12}
+    started = threading.Event()
+
+    def blocking_native_receive(sender, receiver, current_event, source_ref, deadline):
+        assert runtime.current == "probe"
+        started.set()
+        while not runtime.cancel_event.is_set():
+            time.sleep(0.01)
+        raise InterruptedError("native receiver probe cancelled")
+
+    runtime.cognition.native_receive = blocking_native_receive
+    operator = Operator(runtime)
+    original_join = threading.Thread.join
+    injected = [False]
+
+    def interrupt_probe_wait(thread, timeout=None):
+        if thread.name == "v14-native-probe" and not injected[0]:
+            assert started.wait(1.0)
+            injected[0] = True
+            raise KeyboardInterrupt
+        return original_join(thread, timeout)
+
+    monkeypatch.setattr(threading.Thread, "join", interrupt_probe_wait)
+    try:
+        operator.run(":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+        with pytest.raises(InterruptedError, match="local operator"):
+            operator.run(":callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+        assert injected[0] is True
+        assert runtime.cancel_event.is_set()
+        assert runtime.current is None
+        assert runtime.paused is False
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record["status"] == "CONSUMED"
+    finally:
+        runtime.close()
+
 
 def test_native_probe_rejects_wrong_exclusive_lease_token_and_keeps_approval(tmp_path):
     runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
