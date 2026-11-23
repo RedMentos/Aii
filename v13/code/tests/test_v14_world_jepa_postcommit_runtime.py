@@ -945,7 +945,7 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
                     for source_ref in item["window_source_refs"]:
                         assert type(runtime.store.read_source(source_ref)) is str
                 assert len(delivered["evidence_refs"]) == 1
-                assert runtime.store.read_source(delivered["evidence_refs"][0]) == "verified action history"
+                assert runtime.store.read_source(delivered["evidence_refs"][0]) == receiver_text
             _, temporal_recall_state_version_after = runtime.store.state("v14.world_jepa.temporal_consumer", None)
             assert temporal_recall_state_version_after == temporal_recall_state_version
         finally:
