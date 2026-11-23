@@ -117,6 +117,22 @@ Report candidate, accepted and rejected windows and rejection fraction for each 
 
 The BASE tests check output shapes, stop-gradient behavior, EMA updates, shared-weight recurrence, gradient flow through every recurrence application, and direct-MAE/probe output dimensions. These are structural tests, not evidence that the forecasting objective works.\n\n`training.py` adds bounded-batch train/validation loops for JEPA, direct-MAE and the frozen-representation probe. It uses MAE for raw-target controls, latent L1 plus a separately weighted variance/covariance anti-collapse term for JEPA, EMA target updates after every optimizer step, gradient clipping, validation-based checkpoint selection and early stopping. The test split is never requested by these loops. JEPA's validation score is explicitly labelled latent-prediction L1, not forecasting MAE.
 
+## Baseline family
+
+`baselines.py` provides the explicit baseline/control model classes:
+
+- Persistence: repeat the last observed multichannel value.
+- Seasonal persistence: select a declared seasonal lag (e.g. 24-hour or 7-day channel) without blending them silently.
+- TrainMean and TrainMedian: channel-wise constants fitted only from raw training rows.
+- RidgeAR: linear model on the full common X/S/calendar bundle, fitted with squared error and an explicit L2 coefficient penalty.
+- L1AR: linear model on the same bundle, fitted with absolute error plus L2 coefficient penalty; it is not labelled Ridge.
+- RawWindowProbe: linear MAE probe on the full common information bundle.
+- RawWindowMLP: nonlinear raw-input control on that same bundle.
+- RawGRU: recurrent raw-input control. It receives X history followed by horizon-aligned seasonal/calendar tokens, so it does not silently lose S or calendar information.
+- RandomEncoderProbe: frozen random token encoder plus a trainable MAE readout.
+
+`fit_supervised_baseline()` streams bounded batches and selects checkpoints by validation MAE. For RidgeAR use `objective="mse"` and `l2_penalty>0`; for L1AR use `objective="mae"` and `l2_penalty>0`. The regularizer is explicit on coefficients and does not double-count AdamW weight decay. All models use the same train/validation window stream; none can request test batches through these helpers.
+
 ## Not yet implemented
 
 Training orchestration, the complete baseline suite, probe fitting/selection, the validation pilot, preregistration authoring/locking, MAE-vs-JEPA result comparisons, and any UCI real-data run. No gate has passed.
