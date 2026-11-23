@@ -15,10 +15,10 @@
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
       "proof_environment": "CI + authenticated ANDROID_DEVICE metadata; no correct-answer/native-organ acceptance",
-      "next_step": "Core PR #2458 is the current-base fair B1/B2 recovery candidate on 8d93236 (17 ahead / 0 behind). Exact current Runtime SHA-256 is 720342eb75a9cf3e38e43fa046dd38f6d37817c427d743f89b086da3d666eba3. Boss/Integrator must rebind the immutable JEPA/integrated-online-world and postcommit Runtime pins; QA must verify the A5 Store pin after Store was restored byte-identical to base. Then obtain executable Python 3.13/3.14 and staged/integrated CI before any release or Redmi claim.",
+      "next_step": "Current #2458 head 61509b1 makes the two-role Runtime fixture deterministic (50s test deadline / 40s C3 reserve) and adds a controlled 1.5s short-window regression. Exact-head Actions 45276837088 is startup_failure/no jobs; no CI PASS. Boss must rebind immutable JEPA/integrated-online-world and postcommit Runtime pins; QA must rerun the A5 Store lifecycle gate. Then run exact Python 3.13/3.14 staged, integrated and migration CI plus independent review. Redmi remains STOPPED_BY_USER / REDMI_UNVERIFIED; do not restart.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T20:34:31Z",
-      "proof": "IH-H12 output commit/C7 gate #2434 merged at 69e77bc (39/39 checks SUCCESS); #2429 source-forget merged at b20e9b1f3dd53af472055adb43da628785494ec4 (37/37 SUCCESS). Latest phone receipt #767 still reports 8bf44cb / CI_WAIT; no post-green device receipt. Correct answer UNKNOWN. Core #2458 head 8878c5e1b35dee8845d3f2e81a7dcb43d9668771 (17 ahead / 0 behind 8d93236) preserves both B1/B2 roles with per-role deadlines and C3 reserve; Store source restored to base blob f347e1c. Exact-head Actions 45260798204 startup_failure/no jobs, so no CI PASS. Exact native_turn_budget.py compile + import-time telemetry registration against isolated Store stub PASS; full Aii pytest BLOCKED. Runtime SHA-256 720342eb75a9cf3e38e43fa046dd38f6d37817c427d743f89b086da3d666eba3 pending Boss pin rebind. Redmi STOPPED_BY_USER #826; REDMI_UNVERIFIED.",
+      "last_checkpoint": "2026-11-23T22:08:56Z",
+      "proof": "Core commit 61509b1 on #2458 changes test_observer_schedule.py only: 50s integration fixture leaves 10s pre-answer / 40s C3 reserve, and a deterministic 1.5s case verifies that a subminimum first role is deferred while the peer receives its full slice. LOCAL_LINUX isolated CPython 3.13.5 helper probe PASS; full Aii pytest BLOCKED_NO_CHECKOUT_NO_GITHUB_DNS; exact-head Actions 45276837088 STARTUP_FAILURE_NO_JOBS. No Redmi proof. Earlier source-pin failures remain open and no pins were weakened.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -56,6 +56,22 @@
         "store_blob": "f347e1c960076e06e284369549275bc39a4195cb (matches base)",
         "runtime_sha256": "720342eb75a9cf3e38e43fa046dd38f6d37817c427d743f89b086da3d666eba3",
         "next_action": "Boss rebinds JEPA/integrated-online-world and postcommit Runtime source pins; QA reruns A5 Store lifecycle; then exact CI and independent review"
+      },
+      "core_run17_checkpoint": {
+        "date": "2026-11-23",
+        "owner": "Core & Harness",
+        "branch": "core/v14-fair-b1-b2-preanswer-budget-20261123-run1",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "code_commit": "61509b1b061b377d5c19f69d861acda6f7b9f07e",
+        "pull_request": 2458,
+        "status": "DRAFT_CI_STARTUP_FAILURE_SOURCE_PIN_REBIND_PENDING",
+        "tests": {
+          "local_linux_isolated": "PASS: CPython 3.13.5 helper py_compile and exact budget/scheduler logic probe; 30s/50s reserves and subminimum peer fallback",
+          "full_repository_local": "BLOCKED_NO_CHECKOUT_NO_GITHUB_DNS",
+          "exact_head_ci": "STARTUP_FAILURE_NO_JOBS run 45276837088"
+        },
+        "device": "REDMI_STOPPED_BY_USER_RECEIPT_826; REDMI_UNVERIFIED; no action",
+        "next_action": "Boss rebinds nested Runtime source pins; QA reruns A5 Store lifecycle; then exact-head staged/integrated/migration CI and independent review."
       }
     },
     {
