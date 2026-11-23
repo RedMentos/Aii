@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T00:21:03.981Z",
+  "updated_at": "2026-11-23T00:22:09.552Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; 45/45 observed exact-SHA check runs SUCCESS. Fresh private owner-authenticated PIPELINE_STATUS #654 confirms this exact SHA installed and UP_TO_DATE. DIAGNOSTICS #656 repeats the same slow 2-token stored turn and B1/B2 TIME_BUDGET. Functional/whole-Canon acceptance remains OPEN; QA PR #2391 is a separate unmerged JEPA-chain candidate.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -1151,6 +1151,7 @@
     "user_action_required": false,
     "pr_number": 2394,
     "pr_url": "https://github.com/RedMentos/Aii/pull/2394",
-    "pr_head_before_doc_refresh": "7b4bd0e80d889e612884d1f64dae2dcbcb5de754"
+    "pr_head_before_doc_refresh": "7b4bd0e80d889e612884d1f64dae2dcbcb5de754",
+    "current_pr_head_note": "Read live GitHub PR #2394 head before further edits; code-bearing checkpoint remains ef9ab161ac452c6af39a1d340077c7ea936e46a0."
   }
 }
