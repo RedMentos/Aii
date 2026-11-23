@@ -244,6 +244,64 @@ def test_temporal_world_jepa_updates_ema_checkpoint_and_b1_b2_shadow_receivers(t
         assert len(state["active"]["retention_holdouts"]) == 1
         assert state["active"]["fit_steps"] >= 80
 
+        # The WorldJEPA producer now issues typed source-bound LearningIntents
+        # to the B1/B2 float receiver adapters and records exact parameter diffs.
+        from v13.world_jepa_learning_intent import (
+            validate_learning_intent, validate_weight_delta_receipt,
+        )
+        active_record = state["active"]
+        intents = active_record["learning_intents"]
+        receipts = active_record["weight_delta_receipts"]
+        assert set(intents) == {"B1_DETAIL", "B2_GIST"}
+        assert set(receipts) == {"B1_DETAIL", "B2_GIST"}
+        for role in ("B1_DETAIL", "B2_GIST"):
+            intent, receipt = intents[role], receipts[role]
+            assert validate_learning_intent(intent) is True
+            assert validate_weight_delta_receipt(receipt) is True
+            assert intent["producer_organ"] == "WORLD_JEPA_TEMPORAL"
+            assert intent["target_organ"] == role
+            assert intent["target_model_revision"] == "v14-temporal-receiver-adapter-v1"
+            assert intent["target_parameter_scope"] == role + ".temporal_receiver_head.weights+bias"
+            assert intent["objective_revision"] == "v14-temporal-receiver-outcome-mse-v1"
+            assert intent["optimizer_revision"] == "RIDGE_CLOSED_FORM_V1"
+            assert intent["source_ids"] and intent["t8_transition_ids"]
+            assert set(intent["train_cohort_ids"]).isdisjoint(intent["validation_cohort_ids"])
+            assert set(intent["source_sha256s"]).isdisjoint(intent["validation_source_sha256s"])
+            assert intent["consent_snapshot"]["learning_enabled"] is True
+            assert intent["consent_snapshot"]["optimizer_permission"] is True
+            assert intent["eligibility_trace"]["path_id"] == "world_predictor"
+            assert intent["neuromodulation"]["status"] == "READY"
+            assert intent["gradient_budget"]["method"] == "CLOSED_FORM_RIDGE"
+            assert intent["approval_id"] is None
+            assert intent["age_capability"] == "SHADOW_ONLY_NO_NATIVE_BODY_RIGHT"
+            assert intent["authority"] == "NONE"
+            assert intent["native_body_weights_changed"] is False
+            assert intent["target_adapter_parameters_changed"] is True
+            assert intent["status"] == "SHADOW_ADAPTER_UPDATED"
+            assert intent["checkpoint_sha256"] == first["checkpoint_sha256"]
+            assert receipt["intent_id"] == intent["intent_id"]
+            assert receipt["receipt_id"] == intent["weight_delta_receipt_id"]
+            assert receipt["source_provenance_sha256"] == intent["provenance_sha256"]
+            assert receipt["checkpoint_sha256"] == first["checkpoint_sha256"]
+            assert receipt["old_parameter_sha256"] is None
+            assert receipt["new_parameter_sha256"] == intent["new_parameter_sha256"]
+            assert receipt["parameter_delta_norm"] > 0
+            assert receipt["holdout_mse_after"] == pytest.approx(intent["holdout_mse_after"])
+            assert receipt["world_retention_pass"] is True
+            assert receipt["target_adapter_retention"] == "NOT_MEASURED"
+            assert receipt["gradient_measured"] is False
+            assert receipt["native_body_weights_changed"] is False
+            assert receipt["target_adapter_parameters_changed"] is True
+
+        bad_intent = dict(intents["B1_DETAIL"])
+        bad_intent["target_organ"] = "C3_LANGUAGE"
+        with pytest.raises(ValueError, match="learning intent contract"):
+            validate_learning_intent(bad_intent)
+        bad_cohort = dict(intents["B1_DETAIL"])
+        bad_cohort["validation_cohort_ids"] = list(bad_cohort["train_cohort_ids"])
+        with pytest.raises(ValueError, match="learning intent cohort leakage"):
+            validate_learning_intent(bad_cohort)
+
         # Restart must reload the exact same persisted checkpoint and optimizer state.
         restarted = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
         active, _ = store.state(STATE_KEY, None)
@@ -464,6 +522,14 @@ def test_temporal_rollback_restores_previous_checkpoint_and_retries_pending_rows
         first_state, _ = store.state(STATE_KEY, None)
         first_record = first_state["active"]
         first_sha = first_record["checkpoint_sha256"]
+        first_intent_ids = {
+            role: intent["intent_id"]
+            for role, intent in first_record["learning_intents"].items()
+        }
+        first_receipt_ids = {
+            role: receipt["receipt_id"]
+            for role, receipt in first_record["weight_delta_receipts"].items()
+        }
 
         _make_dataset(store, "rollback-B", 32)
         second = learner.update(
@@ -481,9 +547,33 @@ def test_temporal_rollback_restores_previous_checkpoint_and_retries_pending_rows
         restored, _ = store.state(STATE_KEY, None)
         assert restored["active"]["checkpoint_sha256"] == first_sha
         assert restored["active"]["fit_steps"] == first_record["fit_steps"]
+        assert {
+            role: intent["intent_id"]
+            for role, intent in restored["active"]["learning_intents"].items()
+        } == first_intent_ids
+        assert {
+            role: receipt["receipt_id"]
+            for role, receipt in restored["active"]["weight_delta_receipts"].items()
+        } == first_receipt_ids
         assert restored["previous"] is None
         assert len(restored["pending_rows"]) >= 100
         assert not (learner.home / second_record["checkpoint"]).exists()
+
+        # Close and reopen SQLite itself, not merely the learner object. The
+        # source-bound intents and delta receipts must survive the real DB restart.
+        store.close()
+        store = Store(home)
+        reopened, _ = store.state(STATE_KEY, None)
+        assert reopened["active"]["checkpoint_sha256"] == first_sha
+        assert {
+            role: intent["intent_id"]
+            for role, intent in reopened["active"]["learning_intents"].items()
+        } == first_intent_ids
+        assert {
+            role: receipt["receipt_id"]
+            for role, receipt in reopened["active"]["weight_delta_receipts"].items()
+        } == first_receipt_ids
+        assert len(reopened["pending_rows"]) >= 100
 
         # Restart must preserve the restored checkpoint and make rolled-back
         # source-verified rows explicitly retryable without requiring a new T8 event.
@@ -503,6 +593,10 @@ def test_temporal_rollback_restores_previous_checkpoint_and_retries_pending_rows
         assert active["active"]["checkpoint_sha256"] == retry["checkpoint_sha256"]
         assert active["previous"]["checkpoint_sha256"] == first_sha
         assert active["pending_rows"] == []
+        assert active["previous"]["learning_intents"] == first_record["learning_intents"]
+        assert active["previous"]["weight_delta_receipts"] == first_record["weight_delta_receipts"]
+        assert active["active"]["learning_intents"] != first_record["learning_intents"]
+        assert active["active"]["weight_delta_receipts"] != first_record["weight_delta_receipts"]
     finally:
         store.close()
 
@@ -582,7 +676,7 @@ def test_source_forget_holds_store_lock_through_blob_unlink_against_republicatio
         store.close()
 
 
-def test_temporal_receiver_matrix_batches_bodyview_contract_with_single_readout_parity(tmp_path):
+def test_temporal_receiver_matrix_batches_bodyview_contract_with_single_readout_parity(tmp_path, monkeypatch):
     home = tmp_path / "temporal-bodyview-matrix-store"
     store = _make_store(home)
     try:
@@ -595,14 +689,65 @@ def test_temporal_receiver_matrix_batches_bodyview_contract_with_single_readout_
         )
         assert first["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", first
 
+        # Foreground reads must not synchronously load a cold checkpoint.
+        # A slow/cold model load belongs to the idle warm-up path only.
+        learner._ephemeral_model = None
+        learner._ephemeral_checkpoint_sha = None
+        original_load = learner._load_model
+
+        def unexpected_foreground_load(_record):
+            raise AssertionError("warm-only receiver attempted a cold checkpoint load")
+
+        learner._load_model = unexpected_foreground_load
+        try:
+            cold_matrix = learner.receiver_matrix(
+                sessions[0], world_model.ACTIONS, history_length=2,
+                nonblocking=True, warm_only=True,
+            )
+            assert cold_matrix["status"] == "MODEL_NOT_WARM"
+            cold_recall = learner.episodic_recall(
+                sessions[0], history_length=2, limit=4,
+                nonblocking=True, warm_only=True,
+            )
+            assert cold_recall["status"] == "MODEL_NOT_WARM"
+        finally:
+            learner._load_model = original_load
+
+        warm = learner.warm_active_checkpoint()
+        assert warm["status"] == "WARMED"
+
+        # The warm recall path has a cooperative budget: after a slow query or
+        # candidate batch it must stop before embedding the remaining candidates.
+        import time
+        model = learner._ephemeral_model
+        original_latent = model.latent
+        latent_calls = 0
+
+        def slow_latent(values, target=False):
+            nonlocal latent_calls
+            latent_calls += 1
+            time.sleep(0.03)
+            return original_latent(values, target=target)
+
+        monkeypatch.setattr(model, "latent", slow_latent)
+        recall = learner.episodic_recall(
+            sessions[0], history_length=2, limit=4, nonblocking=True,
+            budget_s=0.04, warm_only=True,
+        )
+        assert recall["status"] == "BUDGET_EXCEEDED", recall
+        assert latent_calls <= 2, latent_calls
+
         matrix = learner.receiver_matrix(
-            sessions[0], world_model.ACTIONS, history_length=2, nonblocking=True
+            sessions[0], world_model.ACTIONS, history_length=2,
+            nonblocking=True, warm_only=True,
         )
         assert matrix["status"] == "SHADOW_READOUT_ONLY"
         assert matrix["checkpoint_sha256"] == first["checkpoint_sha256"]
         assert matrix["native_body_consumed"] is False
         assert matrix["native_body_weights_changed"] is False
         assert matrix["decision_authority"] == "NONE"
+        assert set(matrix["learning_intent_ids"]) == {"B1_DETAIL", "B2_GIST"}
+        assert set(matrix["weight_delta_receipt_ids"]) == {"B1_DETAIL", "B2_GIST"}
         assert set(matrix["matrix"]) == set(world_model.ACTIONS)
 
         for action in world_model.ACTIONS:
@@ -625,6 +770,11 @@ def test_temporal_receiver_matrix_batches_bodyview_contract_with_single_readout_
                 assert batched["history_action_ids"] == single["history_action_ids"]
                 assert batched["history_source_sha256s"] == single["history_source_sha256s"]
                 assert batched["receiver_utility"] == single["receiver_utility"]
+                assert batched["learning_intent_id"] == matrix["learning_intent_ids"][role]
+                assert single["learning_intent_id"] == matrix["learning_intent_ids"][role]
+                assert batched["weight_delta_receipt_id"] == matrix["weight_delta_receipt_ids"][role]
+                assert single["weight_delta_receipt_id"] == matrix["weight_delta_receipt_ids"][role]
+                assert batched["target_adapter_revision"] == "v14-temporal-receiver-adapter-v1"
                 assert batched["native_body_consumed"] is False
                 assert batched["native_body_weights_changed"] is False
 
@@ -1030,21 +1180,53 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_mea
             pool=CapturePool(runner),
             cancel_event=threading.Event(),
         )
+        runtime._temporal_world_jepa_consumer = learner
         cognition = Cognition(runtime)
+
+        # A cold foreground call must fail closed without entering a slow model load.
+        learner._ephemeral_model = None
+        learner._ephemeral_checkpoint_sha = None
+        original_load = learner._load_model
+        cold_load_calls = 0
+
+        def slow_cold_load(record):
+            nonlocal cold_load_calls
+            cold_load_calls += 1
+            time.sleep(0.2)
+            return original_load(record)
+
+        learner._load_model = slow_cold_load
+        try:
+            cold_offer = cognition.offer(
+                "B1_DETAIL", event, 0, time.monotonic() + 5.0
+            )
+            assert cold_offer["role"] == "B1_DETAIL"
+            cold_payload = json.loads(runner.calls[-1][1]["content"])
+            assert "world_jepa_temporal" not in cold_payload["body_state"]
+            assert cold_load_calls == 0
+        finally:
+            learner._load_model = original_load
+
+        warm = learner.warm_active_checkpoint()
+        assert warm["status"] == "WARMED"
         for role in ("B1_DETAIL", "B2_GIST"):
             result = cognition.offer(role, event, 0, time.monotonic() + 5.0)
             assert result["role"] == role
 
+        assert len(runner.calls) == 3
         prompts = {}
-        for messages in runner.calls:
+        for messages in runner.calls[1:]:
             payload = json.loads(messages[1]["content"])
             assert "body_state" in payload
             state = payload["body_state"]
             assert state["authority"] == "STATE_NOT_FACT"
             assert "world_jepa_temporal" in state, state
+            assert "mode" in state["world"] and "observed_actions" in state["world"]
+            assert "scope" not in state["world"]
             prior = state["world_jepa_temporal"]
             assert prior["status"] == "SHADOW_READOUT_ONLY"
             assert prior["native_body_consumed"] is False
+            assert prior["native_body_weights_changed"] is False
             assert prior["decision_authority"] == "NONE"
             assert len(json.dumps(state, separators=(",", ":"))) <= 700
             prompts[state["role"]] = prior
@@ -1062,25 +1244,41 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_mea
         assert "not fact/permission" in detail["note"]
         assert "prediction" in gist["note"]
         assert "not fact/permission" in gist["note"]
+        assert all(len(row) == 4 for row in detail["rows"])
+        assert all(len(row) == 3 for row in gist["rows"])
 
         query_rows = store.rows(
             "SELECT payload FROM packets WHERE kind='QueryPacket' AND event_id=? ORDER BY created",
             (event["event_id"],),
         )
-        assert len(query_rows) == 2
+        temporal_query_rows = []
+        non_temporal_query_count = 0
         for row in query_rows:
             query_packet = json.loads(row["payload"])
-            role = query_packet["target_role"]
             ref = query_packet["bodyview"]["body_state_ref"]
-            assert ref in query_packet["provenance"]
             stored = json.loads(store.read_source(ref))
-            assert stored["schema"] == "V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/2"
+            audit = stored.get("temporal_world_jepa_audit")
+            if (stored.get("schema") == "V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/2"
+                    and isinstance(audit, dict)
+                    and audit.get("status") == "READOUT_CREATED"):
+                temporal_query_rows.append((query_packet, ref, stored))
+            else:
+                non_temporal_query_count += 1
+        # The cold B1 negative-control offer also emits a QueryPacket and a
+        # source-bound OMITTED audit; only the two warm readouts are receivers.
+        assert len(temporal_query_rows) == 2
+        assert non_temporal_query_count >= 1
+        for query_packet, ref, stored in temporal_query_rows:
+            role = query_packet["target_role"]
+            assert ref in query_packet["provenance"]
             audit = stored["temporal_world_jepa_audit"]
             assert audit["body_state_created"] is True
             # The source record is created before Cognition.offer consumes it.
             # The QueryPacket plus captured native prompt above is the consumption proof.
             assert audit["body_prompt_consumed"] is False
             assert audit["checkpoint_sha256"] == trained["checkpoint_sha256"]
+            assert audit["learning_intent_ids"][role] == trained["learning_intent_ids"][role]
+            assert audit["weight_delta_receipt_ids"][role] == trained["weight_delta_receipt_ids"][role]
             assert audit["role"] == role
             assert audit["history_length"] == (2 if role == "B1_DETAIL" else 3)
             assert audit["target_semantics"] == (
@@ -1093,6 +1291,8 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_mea
             assert audit["native_body_consumed"] is False
             assert audit["native_body_weights_changed"] is False
             assert audit["decision_authority"] == "NONE"
+            assert audit["supported_action_samples"]
+            assert all(value >= 8 for value in audit["supported_action_samples"].values())
 
         # A writer holding the temporal JEPA lock must not stall the foreground
         # B1 offer; the optional readout is omitted and the normal body state remains.
@@ -1146,6 +1346,9 @@ def test_bodyview_records_rejected_temporal_gate_without_prompt_leak(tmp_path, m
         text = "Do not expose an unaccepted temporal prediction."
         event = store.event(sessions[0], text)
         runtime = SimpleNamespace(store=store, session=sessions[0], home=home)
+        runtime._temporal_world_jepa_consumer = learner
+        warm = learner.warm_active_checkpoint()
+        assert warm["status"] == "WARMED"
         result = bodyview.body_state(runtime, event, "B1_DETAIL", text)
         assert result is not None
         assert "world_jepa_temporal" not in result["view"]

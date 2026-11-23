@@ -552,7 +552,7 @@ def load_vision_state(store):
 
 
 def _validate_vision_write(conn, state):
-    """Reject source/caption references to forgotten or mismatched images."""
+    """Reject stale image/caption/projector lineage before publishing state."""
     images = state.get('images')
     if not isinstance(images, dict):
         raise ValueError('invalid vision image registry')
@@ -569,13 +569,47 @@ def _validate_vision_write(conn, state):
             if (not isinstance(caption_ref, dict) or caption_ref.get('source_id') != sid
                     or caption_ref.get('sha256') != ref['sha256'] or caption_ref.get('modality') != 'image'):
                 raise ValueError('image caption references a non-live source')
-    projector = state.get('projector')
-    if projector:
-        if not isinstance(projector, dict) or not isinstance(projector.get('captions'), dict):
-            raise ValueError('invalid vision projector captions')
-        for key in projector['captions']:
-            if not isinstance(key, str) or ':' not in key or key.split(':', 1)[0] not in images:
-                raise ValueError('projector caption references a non-live image source')
+
+    # The staged runtime replaces vision.load/save with these helpers. Validate
+    # both source-trained heads here; direct vision.py checks are not enough
+    # because the lifecycle composer routes all staged writes through this path.
+    for key in ('projector', 'tile_projector'):
+        projector = state.get(key)
+        if projector is None:
+            continue
+        if not isinstance(projector, dict):
+            raise ValueError('invalid vision projector record')
+        captions = projector.get('captions')
+        if captions is not None:
+            if not isinstance(captions, dict):
+                raise ValueError('invalid vision projector captions')
+            for caption_key in captions:
+                if (not isinstance(caption_key, str) or ':' not in caption_key
+                        or caption_key.split(':', 1)[0] not in images):
+                    raise ValueError('projector caption references a non-live image source')
+        lineage = projector.get('training_sources')
+        if lineage in (None, []):
+            # Unknown legacy lineage remains readable only until explicit forget,
+            # which conservatively invalidates that projector.
+            continue
+        if not isinstance(lineage, list) or len(lineage) > 256:
+            raise ValueError('invalid vision projector source lineage')
+        seen = set()
+        for item in lineage:
+            if not isinstance(item, dict) or set(item) != {'source_id', 'sha256'}:
+                raise ValueError('invalid vision projector source lineage item')
+            source_id = item['source_id']
+            if not isinstance(source_id, str) or not source_id or source_id in seen:
+                raise ValueError('invalid vision projector source lineage item')
+            try:
+                source_sha = _key(item['sha256'])
+            except (KeyError, ValueError) as exc:
+                raise ValueError('invalid vision projector source lineage item') from exc
+            image = images.get(source_id)
+            image_ref = image.get('ref') if isinstance(image, dict) else None
+            if not isinstance(image_ref, dict) or image_ref.get('sha256') != source_sha:
+                raise ValueError('vision projector lineage references a non-live image source')
+            seen.add(source_id)
 
 
 def save_vision_state(store, state):
@@ -649,13 +683,75 @@ def vision_ingest(store, data, cfg=vision.DEFAULTS, label=None):
         return record
 
 
+def _vision_pending_cleanup(state):
+    pending = state.get('pending_projector_cleanup', [])
+    if type(pending) is not list:
+        raise ValueError('invalid pending vision projector cleanup')
+    for item in pending:
+        if (type(item) is not dict or set(item) != {'source_id', 'key', 'record'}
+                or type(item.get('source_id')) is not str or not item['source_id']
+                or item.get('key') not in ('projector', 'tile_projector')
+                or type(item.get('record')) is not dict):
+            raise ValueError('invalid pending vision projector cleanup item')
+        path = item['record'].get('path')
+        if path is not None and type(path) is not str:
+            raise ValueError('invalid pending vision projector path')
+    return pending
+
+
+def _cleanup_vision_projectors(store, source_id):
+    """Retry source-bound artifact deletion without holding the Store lock."""
+    from .vision_source_lineage import unlink_projector_artifact
+    with store.tx() as conn:
+        state, _ = _read_vision_state(conn)
+        pending = _vision_pending_cleanup(state)
+        selected = [dict(item) for item in pending if item['source_id'] == source_id]
+
+    deleted = {}
+    failures = []
+    completed = set()
+    for item in selected:
+        key = item['key']
+        try:
+            ok = bool(unlink_projector_artifact(store.home, item['record']))
+        except Exception as exc:
+            ok = False
+            failures.append(key + '_artifact:' + type(exc).__name__)
+        deleted[key] = deleted.get(key, True) and ok
+        if ok:
+            completed.add((source_id, key, item['record'].get('path')))
+        elif not any(value == key + '_artifact' or value.startswith(key + '_artifact:')
+                     for value in failures):
+            failures.append(key + '_artifact')
+
+    if completed:
+        with store.tx() as conn:
+            state, version = _read_vision_state(conn)
+            pending = _vision_pending_cleanup(state)
+            state['pending_projector_cleanup'] = [
+                item for item in pending
+                if (item['source_id'], item['key'], item['record'].get('path')) not in completed
+            ]
+            _write_vision_state(conn, state, version)
+    return deleted, failures
+
+
 def vision_forget(store, rec):
-    """Atomically unregister an image, then safely retry blob cleanup if needed."""
+    """Revoke source-derived global/tile projectors before source/blob cleanup.
+
+    Unknown or legacy projector lineage is invalidated conservatively. Artifact
+    paths are persisted as retryable cleanup work before unlink, so a crash
+    after state revocation cannot leave a usable projector or lose the cleanup
+    reference.
+    """
+    from .vision_source_lineage import invalidate_projectors
     _store(store)
     if not isinstance(rec, dict) or not isinstance(rec.get('ref'), dict):
         raise ValueError('invalid vision image record')
     sid = rec['ref'].get('source_id')
     ref = _vision_ref(rec, sid)
+    invalidated = []
+    untracked = []
     with store.tx() as conn:
         state, version = _read_vision_state(conn)
         source = conn.execute('SELECT hash,kind,deleted FROM sources WHERE id=?', (sid,)).fetchone()
@@ -669,15 +765,46 @@ def vision_forget(store, rec):
             raise ValueError('image registry does not match source')
         if entry is not None:
             del state['images'][sid]
-        projector = state.get('projector')
-        if projector:
-            if not isinstance(projector, dict) or not isinstance(projector.get('captions'), dict):
-                raise ValueError('invalid vision projector captions')
-            if any(not isinstance(k, str) for k in projector['captions']):
-                raise ValueError('invalid vision projector caption key')
-            projector['captions'] = {k: v for k, v in projector['captions'].items()
-                                     if k.split(':')[0] != sid}
+
+        # New projectors carry exact training_sources. Missing/legacy lineage is
+        # treated as unknown by the helper and invalidated; disjoint proven
+        # lineage may remain. This covers both global and tile projectors.
+        invalidated = invalidate_projectors(state, sid)
+        for key in ('projector', 'tile_projector'):
+            record = state.get(key)
+            if record is not None and type(record) is not dict:
+                state[key] = None
+                untracked.append(key)
+
+        pending = _vision_pending_cleanup(state)
+        for key, record in invalidated:
+            path = record.get('path') if type(record) is dict else None
+            item = {'source_id': sid, 'key': key, 'record': {'path': path}}
+            identity = (sid, key, path)
+            if not any((prior['source_id'], prior['key'], prior['record'].get('path')) == identity
+                       for prior in pending):
+                pending.append(item)
+        state['pending_projector_cleanup'] = pending
         conn.execute('UPDATE sources SET deleted=1 WHERE id=?', (sid,))
         _write_vision_state(conn, state, version)
-    cleanup_unreferenced(store, sid)
-    return {'forgotten': sid}
+
+    cleanup_failed = []
+    try:
+        blob_status = cleanup_unreferenced(store, sid)
+    except Exception as exc:
+        blob_status = 'ERROR'
+        cleanup_failed.append('image_blob:' + type(exc).__name__)
+
+    projector_files_deleted, projector_failures = _cleanup_vision_projectors(store, sid)
+    cleanup_failed.extend(projector_failures)
+    cleanup_failed.extend(key + '_artifact_untracked' for key in untracked)
+    invalidated_keys = [key for key, _ in invalidated] + [key for key in untracked if key not in [x[0] for x in invalidated]]
+    return {
+        'forgotten': sid,
+        'invalidated_projectors': invalidated_keys,
+        'projector_files_deleted': projector_files_deleted,
+        'blob_deleted': blob_status == 'REMOVED',
+        'blob_retained_shared': blob_status == 'PRESERVED_LIVE',
+        'retrain_required': invalidated_keys,
+        'cleanup_failed': cleanup_failed,
+    }

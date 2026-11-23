@@ -4,6 +4,7 @@ All transitions are synthetic fixtures written through the real SQLite Store.
 No native GGUF body, Android device, or Redmi behavior is claimed.
 """
 from types import SimpleNamespace
+import json
 import os
 import threading
 
@@ -57,8 +58,10 @@ def _make_store(home):
     return store, session
 
 
-def _add_transitions(store, session, start, count, status_overrides=None):
+def _add_transitions(store, session, start, count, status_overrides=None,
+                     status_by_route=None):
     status_overrides = status_overrides or {}
+    status_by_route = status_by_route or {}
     event_ids = []
     actions = tuple(world_model.ACTIONS)
     for index in range(start, start + count):
@@ -84,9 +87,13 @@ def _add_transitions(store, session, start, count, status_overrides=None):
             forecast={"input_chars": len(text), "resource_state": "NORMAL"},
         )
         action_index = index % len(actions)
+        status = (
+            status_overrides[index] if index in status_overrides
+            else status_by_route.get(route, "FAILED" if index % 5 == 0 else "FINAL")
+        )
         store.finish_action(
             action_id,
-            status_overrides.get(index, "FAILED" if index % 5 == 0 else "FINAL"),
+            status,
             {
                 "action_duration_s": 0.15 + action_index * 0.65 + (index % 13) * 0.02,
                 "characters": 9 + action_index * 24 + (index % 23) * 0.75,
@@ -96,13 +103,63 @@ def _add_transitions(store, session, start, count, status_overrides=None):
     return event_ids
 
 
-def _add_temporal_cohort(store, label, start, session_count):
+def _add_temporal_cohort(store, label, start, session_count, status_by_route=None):
     """Build independent four-event sessions for strict temporal holdouts."""
     event_ids = []
     for offset in range(session_count):
         session = store.new_session(f"{label}-{offset:03d}")
-        event_ids.extend(_add_transitions(store, session, start + offset * 4, 4))
+        event_ids.extend(_add_transitions(
+            store, session, start + offset * 4, 4, status_by_route=status_by_route
+        ))
     return event_ids
+
+
+def test_body_state_surfaces_temporal_omission_reason_without_authority(tmp_path, monkeypatch):
+    from v13 import bodyview
+
+    home = tmp_path / "brain-temporal-omission-status"
+    store, session = _make_store(home)
+    try:
+        event = store.event(session, "A temporal receiver is unavailable.")
+        audit = {
+            "schema": "V14_TEMPORAL_WORLDJEPA_BODY_RECEIVER_AUDIT/1",
+            "status": "OMITTED",
+            "reason": "RECEIVER_UTILITY_REJECTED",
+            "role": "B2_GIST",
+            "action": "simple",
+            "action_status": "RECEIVER_UTILITY_REJECTED",
+            "utility_reason": "HELDOUT_DID_NOT_BEAT_ALL_CONTROLS",
+            "decision_authority": "NONE",
+        }
+        monkeypatch.setattr(
+            bodyview, "_temporal_world_jepa_body_readout",
+            lambda *_args: (None, audit),
+        )
+        result = bodyview.body_state(
+            SimpleNamespace(store=store, session=session),
+            event, "B2_GIST", "Estimate the next action outcome.",
+        )
+        view = result["view"]
+        expected = {
+            "status": "OMITTED",
+            "reason": "RECEIVER_UTILITY_REJECTED",
+            "role": "B2_GIST",
+            "decision_authority": "NONE",
+            "action": "simple",
+            "action_status": "RECEIVER_UTILITY_REJECTED",
+            "utility_reason": "HELDOUT_DID_NOT_BEAT_ALL_CONTROLS",
+        }
+        assert view.get("world_jepa_temporal_status") == expected
+        assert "world_jepa_temporal" not in view
+        assert view["authority"] == "STATE_NOT_FACT"
+        assert view["role"] == "B2_GIST"
+        assert len(bodyview.dumps(view)) <= bodyview.STATE_CHARS
+        persisted = json.loads(store.read_source(result["source_ref"]))
+        assert persisted["schema"] == "V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/2"
+        assert persisted["view"]["world_jepa_temporal_status"] == expected
+        assert persisted["temporal_world_jepa_audit"]["reason"] == "RECEIVER_UTILITY_REJECTED"
+    finally:
+        store.close()
 
 
 def _sleep(store, home):
@@ -285,7 +342,9 @@ def test_sleep_jepa_job_requeues_when_only_temporal_page_has_more_rows(tmp_path)
         result = sleep.job(dispatched)
         assert result["learning"]["has_more"] is False
         assert result["temporal"]["has_more"] is True
+        assert result["learning_status"] == "NO_NEW_TRANSITIONS"
         assert result["temporal_status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA"
+        assert result["planner_status"] == "NO_CHECKPOINT"
         assert result["learning_has_more"] is False
         assert result["temporal_has_more"] is True
         assert result["continuation_reason"] == "TEMPORAL_PAGE"
@@ -559,9 +618,9 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         # A real Runtime.submit -> Runtime._worker -> Runtime._turn path.
         # Copy-exact keeps this acceptance test independent of installed GGUFs.
         turn_event_id = runtime.submit("Copy exactly: worker-jepa-lifecycle")
-        def action_is_final():
+        def action_is_final(event_id=turn_event_id):
             row = runtime.store.one(
-                "SELECT status,outcome FROM actions WHERE event_id=?", (turn_event_id,)
+                "SELECT status,outcome FROM actions WHERE event_id=?", (event_id,)
             )
             return row is not None and row["status"] == "FINAL" and row["outcome"] is not None
 
@@ -577,77 +636,215 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         ) is not None
         assert _wait_until(runtime.idle)
 
-        # Keep the actual Runtime turn as the worker-lifecycle proof. Start the
-        # learner cursor after it so the numeric update below uses a full,
-        # source-disjoint 256-row synthetic cohort rather than mixing the generic
-        # copy-exact action forecast into the JEPA training/holdout split.
-        from v13.world_jepa_consumer import STATE_KEY, WorldJEPAStoreConsumer
-        runtime_action = runtime.store.one(
-            "SELECT rowid AS scan_seq FROM actions WHERE event_id=?", (turn_event_id,)
-        )
-        assert runtime_action is not None
-        consumer = WorldJEPAStoreConsumer(runtime.store, home)
-        consumer_state, consumer_version = consumer._read_state()
-        consumer_state["scan_cursor"] = runtime_action["scan_seq"]
-        runtime.store.set_state(STATE_KEY, consumer_state, expected=consumer_version)
+        # Feed the learner 32 source-bound outcomes produced by the real Runtime
+        # worker, spread over eight independent sessions. Do not move the learner
+        # cursor past these actions: they must be part of the trained cohort.
+        runtime_action_ids = []
+        runtime_session_ids = []
+        for session_index in range(8):
+            if session_index:
+                runtime.session = runtime.store.new_session(
+                    f"real-runtime-jepa-{session_index:02d}"
+                )
+            runtime_session_ids.append(runtime.session)
+            for turn_index in range(4):
+                if session_index == 0 and turn_index == 0:
+                    event_id = turn_event_id
+                else:
+                    event_id = runtime.submit(
+                        f"Copy exactly: runtime-jepa-{session_index:02d}-{turn_index:02d}"
+                    )
+                assert _wait_until(lambda event_id=event_id: action_is_final(event_id))
+                assert _wait_until(runtime.idle)
+                action = runtime.store.one(
+                    "SELECT id,rowid AS scan_seq,status,outcome FROM actions WHERE event_id=?",
+                    (event_id,),
+                )
+                assert action is not None and action["status"] == "FINAL" and action["outcome"] is not None
+                runtime_action_ids.append(action["id"])
+        assert len(runtime_action_ids) == 32 and len(set(runtime_action_ids)) == 32
 
-        # Add a source-disjoint T8 cohort through the same durable Store API.
-        # The temporary permission is test-only; production gates remain OFF.
-        _add_transitions(runtime.store, runtime.session, 0, 256)
+        # Prove the Runtime-produced rows have the full T8 source / CorollaryCopy /
+        # ActionOutcome chain before they enter JEPA training.
+        from v13.world_jepa_store_authority import verify_committed_transitions
+        verified_runtime, rejected_runtime = verify_committed_transitions(
+            runtime.store, limit=256
+        )
+        verified_runtime_ids = {item.action_id for item in verified_runtime}
+        assert set(runtime_action_ids) <= verified_runtime_ids, {
+            "runtime_actions": len(runtime_action_ids),
+            "verified_runtime_actions": len(verified_runtime_ids),
+            "rejected": rejected_runtime,
+        }
+
+        # Add source-disjoint sessions covering every action route. These supply
+        # balanced training/holdout support and the negative controls; the actual
+        # Runtime outcomes remain in the same persisted learning cohort.
+        # B2 predicts P(FINAL) conditioned on the action route. The previous
+        # index%5 fixture accidentally gave only a weak, periodic label signal
+        # against the four-route cycle. This balanced route-conditioned cohort
+        # makes the intended synthetic receiver task learnable without sharing
+        # any source/session between train and holdout.
+        b2_status_by_route = {
+            action: ("FINAL" if index % 2 else "FAILED")
+            for index, action in enumerate(world_model.ACTIONS)
+        }
+        _add_temporal_cohort(
+            runtime.store, "synthetic-postcommit", 0, 48,
+            status_by_route=b2_status_by_route,
+        )
         latest = runtime.store.one(
             "SELECT event_id FROM actions WHERE outcome IS NOT NULL "
             "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED') "
             "ORDER BY created DESC,id DESC LIMIT 1"
         )["event_id"]
+        target_scan_seq = runtime.store.one(
+            "SELECT rowid AS scan_seq FROM actions WHERE event_id=?", (latest,)
+        )["scan_seq"]
+        # Install the observer before opening the local lab gates. The real
+        # Runtime worker polls SleepRuntime while idle; enabling first can let
+        # an unobserved update consume the cohort before this test captures it.
+        original_run = runtime.sleep._run_world_jepa
+        captured_runs = {}
+
+        def capture_run(event_id, limit=64):
+            result = original_run(event_id, limit=256)
+            captured_runs.setdefault(event_id, []).append(result)
+            return result
+
+        runtime.sleep._run_world_jepa = capture_run
+        runtime.sleep.last_tick = -1e18
         runtime.store.set_state(PERMISSION_KEY, {
             "learning_enabled": True,
             "optimizer_permission": True,
             "steps": 120,
             "replay_mode": "uniform",
         })
-        original_run = runtime.sleep._run_world_jepa
-        captured_runs = {}
-
-        def capture_run(event_id, limit=64):
-            result = original_run(event_id, limit=256)
-            captured_runs[event_id] = result
-            return result
-
-        runtime.sleep._run_world_jepa = capture_run
-        runtime.sleep.last_tick = -1e18
         runtime.wake.set()
 
         def learned_and_planned():
             state, _ = runtime.store.state("v14.world_jepa.store_consumer", None)
+            temporal_state, _ = runtime.store.state("v14.world_jepa.temporal_consumer", None)
             cursor, _ = runtime.store.state("v14.world_jepa.sleep_cursor", None)
             active = state.get("active") if type(state) is dict else None
+            temporal_active = temporal_state.get("active") if type(temporal_state) is dict else None
+            runs = captured_runs.get(latest, [])
+            learned = any(
+                type(item) is dict
+                and item.get("learning", {}).get("status") == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+                and item.get("temporal", {}).get("status") == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA"
+                and item.get("scan_complete") is True
+                and item.get("learning_scan_reached_target") is True
+                and item.get("temporal_scan_reached_target") is True
+                for item in runs
+            )
             return (
-                type(active) is dict
+                learned
+                and type(active) is dict
+                and type(temporal_active) is dict
                 and type(cursor) is dict
                 and cursor.get("last_learning_event_id") == latest
                 and cursor.get("last_planner_event_id") == latest
             )
 
-        assert _wait_until(lambda: latest in captured_runs and learned_and_planned())
+        ready = _wait_until(learned_and_planned)
         state, _ = runtime.store.state("v14.world_jepa.store_consumer", None)
+        temporal_state, _ = runtime.store.state("v14.world_jepa.temporal_consumer", None)
+        cursor, _ = runtime.store.state("v14.world_jepa.sleep_cursor", None)
+        runs = captured_runs.get(latest, [])
+        summaries = [{
+            "status": item.get("learning", {}).get("status"),
+            "temporal_status": item.get("temporal", {}).get("status"),
+            "verified_receipts": item.get("learning", {}).get("verified_receipts"),
+            "temporal_verified_receipts": item.get("temporal", {}).get("verified_receipts"),
+            "rejected_receipts": item.get("learning", {}).get("rejected_receipts"),
+            "scanned_rows": item.get("learning", {}).get("scanned_rows"),
+            "learning_scan_cursor": item.get("learning", {}).get("scan_cursor"),
+            "temporal_scan_cursor": item.get("temporal", {}).get("scan_cursor"),
+            "target_scan_seq": item.get("target_scan_seq"),
+            "scan_complete": item.get("scan_complete"),
+            "learning_scan_reached_target": item.get("learning_scan_reached_target"),
+            "temporal_scan_reached_target": item.get("temporal_scan_reached_target"),
+            "has_more": item.get("learning", {}).get("has_more"),
+            "temporal_has_more": item.get("temporal", {}).get("has_more"),
+            "pending_rows": item.get("learning", {}).get("pending_rows"),
+            "planner_status": item.get("planner", {}).get("status"),
+        } for item in runs]
+        assert ready, {
+            "runs_for_latest": summaries,
+            "store_scan_cursor": state.get("scan_cursor") if type(state) is dict else None,
+            "sleep_cursor": cursor,
+            "target_scan_seq": target_scan_seq,
+            "runtime_action_count": len(runtime_action_ids),
+        }
         active = state["active"]
         checkpoint_sha = active["checkpoint_sha256"]
         fit_steps = active.get("fit_steps")
         assert type(checkpoint_sha) is str and len(checkpoint_sha) == 64
-        worker_result = captured_runs[latest]
+        worker_result = next(
+            item for item in runs
+            if item.get("learning", {}).get("status") == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+            and item.get("temporal", {}).get("status") == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA"
+        )
         learning = worker_result.get("learning", {})
         metrics = learning.get("metrics", {})
-        assert learning.get("status") == "UPDATED_EXPERIMENTAL_WORLD_JEPA", {
-            "worker_status": worker_result.get("status"),
-            "learning_status": learning.get("status"),
-            "planner_status": worker_result.get("planner", {}).get("status"),
-        }
+        temporal = worker_result.get("temporal", {})
+        temporal_metrics = temporal.get("metrics", {})
+        temporal_checkpoint_sha = temporal.get("checkpoint_sha256")
+        assert worker_result.get("event_id") == latest
         assert metrics.get("parameter_delta_norm", 0) > 0
         assert metrics.get("ema_target_delta_norm", 0) > 0
         assert metrics.get("holdout_loss_after", float("inf")) < metrics.get("holdout_loss_before", float("-inf"))
         assert metrics.get("train_holdout_source_disjoint") is True
         assert metrics.get("negative_controls_separated") is True
         assert metrics.get("retention_gate_accepted") is True
+
+        # The temporal JEPA update must be numeric, persistent and source-disjoint;
+        # the same checkpoint must include real Runtime ActionOutcome rows.
+        assert temporal.get("checkpoint_committed") is True
+        assert temporal.get("optimizer_state_persisted") is True
+        assert temporal.get("native_body_weights_changed") is False
+        assert temporal.get("decision_authority") == "NONE"
+        assert type(temporal_checkpoint_sha) is str and len(temporal_checkpoint_sha) == 64
+        assert temporal_state["active"]["checkpoint_sha256"] == temporal_checkpoint_sha
+        assert temporal_state["scan_cursor"] >= target_scan_seq
+        assert temporal_metrics.get("parameter_delta_norm", 0) > 0
+        assert temporal_metrics.get("encoder_delta_norm", 0) > 0
+        assert temporal_metrics.get("predictor_delta_norm", 0) > 0
+        assert temporal_metrics.get("ema_target_delta_norm", 0) > 0
+        assert temporal_metrics.get("holdout_mse_after", float("inf")) < temporal_metrics.get("holdout_mse_before", float("-inf"))
+        assert temporal_metrics.get("shuffled_action_mse", float("-inf")) > temporal_metrics.get("holdout_mse_after", float("inf"))
+        assert temporal_metrics.get("shuffled_target_mse", float("-inf")) > temporal_metrics.get("holdout_mse_after", float("inf"))
+        assert temporal_metrics.get("source_disjoint") is True
+        assert temporal_metrics.get("retention_pass") is True
+        assert temporal_metrics.get("optimizer_steps", 0) > 0
+        assert temporal_metrics.get("steps_this_update", 0) > 0
+        temporal_rows = {
+            row["action_id"] for row in temporal_state["active"]["experience_rows"]
+        }
+        assert set(runtime_action_ids) <= temporal_rows
+        from v13.world_jepa_temporal import build_temporal_windows, _split_windows
+        reconstructed_windows = build_temporal_windows(
+            runtime.store, temporal_state["active"]["experience_rows"]
+        )
+        reconstructed_train, reconstructed_holdout, reconstructed_split = _split_windows(
+            reconstructed_windows
+        )
+        train_window_ids = {window["window_id"] for window in reconstructed_train}
+        holdout_window_ids = {window["window_id"] for window in reconstructed_holdout}
+        assert train_window_ids == set(temporal_state["active"]["train_window_ids"])
+        assert holdout_window_ids == set(temporal_state["active"]["holdout_window_ids"])
+        assert train_window_ids.isdisjoint(holdout_window_ids)
+        fit_target_action_ids = {
+            window["action_ids"][-1] for window in reconstructed_train
+        }
+        assert set(runtime_action_ids) & fit_target_action_ids, {
+            "runtime_action_count": len(runtime_action_ids),
+            "fit_runtime_target_count": len(set(runtime_action_ids) & fit_target_action_ids),
+            "train_sessions": temporal_metrics.get("train_session_count"),
+            "holdout_sessions": temporal_metrics.get("holdout_session_count"),
+        }
+        assert reconstructed_split["source_disjoint"] is True
 
         telemetry = runtime.store.rows(
             "SELECT event_id,metrics FROM telemetry WHERE kind='v14_world_jepa_postcommit' ORDER BY id"
@@ -673,8 +870,165 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
             and row.get("native_body_parameters_modified") is False
             for row in matching
         ), matching
+        temporal_telemetry = runtime.store.rows(
+            "SELECT event_id,metrics FROM telemetry WHERE kind='v14_world_jepa_temporal_postcommit' ORDER BY id"
+        )
+        decoded_temporal = [
+            {
+                "event_id": row["event_id"],
+                **(json.loads(row["metrics"]) if isinstance(row["metrics"], str) else row["metrics"]),
+            }
+            for row in temporal_telemetry
+        ]
+        matching_temporal = [row for row in decoded_temporal if row.get("event_id") == latest]
+        assert any(
+            row.get("status") == "PASS"
+            and row.get("component") == "world_predictor"
+            and row.get("mode") == "shadow"
+            and row.get("sha256") == temporal_checkpoint_sha
+            and row.get("optimizer_steps", 0) > 0
+            and row.get("target_changed") is True
+            and row.get("loss_after", float("inf")) < row.get("loss_before", float("-inf"))
+            and row.get("decision") == "none"
+            and row.get("native_body_parameters_modified") is False
+            for row in matching_temporal
+        ), matching_temporal
         assert "worker-jepa-lifecycle" not in repr(state)
+        assert "worker-jepa-lifecycle" not in repr(temporal_state)
+        assert "runtime-jepa-" not in repr(temporal_state)
         assert "worker-jepa-lifecycle" not in repr(telemetry)
+        assert "worker-jepa-lifecycle" not in repr(temporal_telemetry)
+
+        # The idle postcommit consumer warms one Runtime-scoped model cache.
+        # B1 and B2 must share it; the foreground path is warm-cache-only.
+        shared_temporal_consumer = getattr(runtime, "_temporal_world_jepa_consumer", None)
+        assert shared_temporal_consumer is not None
+        assert shared_temporal_consumer._ephemeral_checkpoint_sha == temporal_checkpoint_sha
+
+        # The numeric episodic recall must reach the actual B1/B2 prompt consumer.
+        # The fake runner isolates prompt delivery; all recalled T8 rows and
+        # SourceRefs below are read from the real Runtime SQLite Store.
+        receiver_text = "The verified action history is ready. Estimate the next action duration."
+        receiver_event = runtime.store.event(runtime.session, receiver_text)
+        # Exercise the gated B2 receiver explicitly; product default stays OFF
+        # because the prior STEP2 ablation found B2 offer hijacking.
+        runtime.cfg["b2_offer_body_state"] = True
+        seen_queries = {}
+        original_pool_get = runtime.pool.get
+
+        class CaptureReceiverRunner:
+            def __init__(self, role):
+                self.role = role
+                self.last_metrics = {"status": "FINAL", "duration_s": 0.0}
+
+            def generate(self, messages, cancel, deadline, max_tokens, schema):
+                query = json.loads(messages[1]["content"])
+                seen_queries[self.role] = query
+                if self.role == "B2_GIST":
+                    # B2's product default is pointer selection: return an ID
+                    # from the supplied exact-source choices, not a string.
+                    assert query.get("quote_choices"), query
+                    quotes = [1]
+                else:
+                    quotes = ["verified action history is ready"]
+                return iter([json.dumps({
+                    "summary": "A source-quoted next-action estimate.",
+                    "quotes": quotes,
+                    "uncertainty": "low",
+                    "needs_reentry": False,
+                })])
+
+        runtime.pool.get = lambda role: CaptureReceiverRunner(role)
+        _, temporal_recall_state_version = runtime.store.state("v14.world_jepa.temporal_consumer", None)
+        try:
+            receiver_specs = (
+                ("B1_DETAIL", 2, "DURATION+OUTPUT_CHARS"),
+                ("B2_GIST", 3, "P_FINAL_NOT_CORRECTNESS"),
+            )
+            for role, expected_history, expected_target in receiver_specs:
+                assert runtime._temporal_world_jepa_consumer is shared_temporal_consumer
+                delivered = runtime.cognition.offer(
+                    role, receiver_event, 0, time.monotonic() + 30.0
+                )
+                query = seen_queries[role]
+                body_state = query.get("body_state")
+                assert type(body_state) is dict, (role, query.keys())
+                temporal_view = body_state.get("world_jepa_temporal")
+                assert type(temporal_view) is dict, (role, body_state)
+                assert temporal_view.get("status") == "SHADOW_READOUT_ONLY"
+                assert temporal_view.get("native_body_consumed") is False
+                assert temporal_view.get("native_body_weights_changed") is False
+                assert temporal_view.get("history_length") == expected_history
+                assert temporal_view.get("target") == expected_target
+                assert temporal_view.get("rows")
+                episodic_view = temporal_view.get("episodic")
+                assert type(episodic_view) is list and 1 <= len(episodic_view) <= 2
+                assert all(
+                    type(row) is list and len(row) == 6
+                    and row[0] in world_model.ACTIONS
+                    and type(row[1]) in (int, float)
+                    and type(row[2]) in (int, float)
+                    and type(row[3]) is bool
+                    and type(row[4]) is int
+                    and type(row[5]) is str and len(row[5]) == 8
+                    for row in episodic_view
+                )
+                assert "runtime-jepa-" not in repr(episodic_view)
+                assert "synthetic-postcommit-source-" not in repr(episodic_view)
+
+                query_row = runtime.store.one(
+                    "SELECT payload FROM packets WHERE kind='QueryPacket' AND event_id=? "
+                    "ORDER BY rowid DESC LIMIT 1",
+                    (receiver_event["event_id"],),
+                )
+                assert query_row is not None
+                query_packet = json.loads(query_row["payload"])
+                body_state_ref = query_packet["bodyview"]["body_state_ref"]
+                assert body_state_ref in query_packet["provenance"]
+                body_state_raw = runtime.store.read_source(body_state_ref)
+                assert "runtime-jepa-" not in body_state_raw
+                assert "synthetic-postcommit-source-" not in body_state_raw
+                body_state_payload = json.loads(body_state_raw)
+                receiver_audit = body_state_payload["temporal_world_jepa_audit"]
+                episodic_audit = receiver_audit["episodic_recall"]
+                assert episodic_audit["status"] in {
+                    "EPISODIC_RECALL_SHADOW", "EPISODIC_RECALL_PARTIAL",
+                }
+                assert episodic_audit["train_split_only"] is True
+                assert episodic_audit["candidate_cap"] == 256
+                assert episodic_audit["candidate_sampling"] == "TEMPORALLY_STRATIFIED_TRAIN_ONLY"
+                assert episodic_audit["train_window_count_before_cap"] >= episodic_audit["train_window_count"]
+                assert episodic_audit["heldout_used"] is False
+                assert episodic_audit["source_disjoint_from_query"] is True
+                assert episodic_audit["text_disclosed"] is False
+                assert episodic_audit["decision_authority"] == "NONE"
+                assert episodic_audit["native_memory_consumed"] is False
+                assert episodic_audit["native_body_consumed"] is False
+                assert episodic_audit["native_body_weights_changed"] is False
+                query_history_ids = set(episodic_audit["query_history_action_ids"])
+                query_history_sources = set(episodic_audit["query_history_source_sha256s"])
+                holdout_ids = set(temporal_state["active"]["holdout_window_ids"])
+                train_ids = set(temporal_state["active"]["train_window_ids"])
+                audit_items = episodic_audit["items"]
+                assert audit_items
+                assert len(audit_items) >= len(episodic_view)
+                for item in audit_items:
+                    assert item["window_id"] in train_ids
+                    assert item["window_id"] not in holdout_ids
+                    assert len(item["window_action_ids"]) == expected_history + 1
+                    assert not query_history_ids.intersection(item["window_action_ids"])
+                    assert not query_history_sources.intersection(item["window_source_sha256s"])
+                    assert item["source_sha256"] == item["source_ref"]["sha256"]
+                    assert item["source_ref"] == item["window_source_refs"][-1]
+                    assert len(item["window_source_refs"]) == expected_history + 1
+                    for source_ref in item["window_source_refs"]:
+                        assert type(runtime.store.read_source(source_ref)) is str
+                assert len(delivered["evidence_refs"]) == 1
+                assert runtime.store.read_source(delivered["evidence_refs"][0]) == receiver_text
+            _, temporal_recall_state_version_after = runtime.store.state("v14.world_jepa.temporal_consumer", None)
+            assert temporal_recall_state_version_after == temporal_recall_state_version
+        finally:
+            runtime.pool.get = original_pool_get
     finally:
         runtime.close()
 
@@ -695,11 +1049,17 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         assert _wait_until(lambda: (
             (reopened.store.state("v14.world_jepa.store_consumer", None)[0] or {})
             .get("active", {}).get("checkpoint_sha256") == checkpoint_sha
+            and (reopened.store.state("v14.world_jepa.temporal_consumer", None)[0] or {})
+            .get("active", {}).get("checkpoint_sha256") == temporal_checkpoint_sha
         ))
         time.sleep(0.5)
         restored, _ = reopened.store.state("v14.world_jepa.store_consumer", None)
+        restored_temporal, _ = reopened.store.state("v14.world_jepa.temporal_consumer", None)
         assert restored["active"]["checkpoint_sha256"] == checkpoint_sha
         assert restored["active"].get("fit_steps") == fit_steps
+        assert restored_temporal["active"]["checkpoint_sha256"] == temporal_checkpoint_sha
+        assert restored_temporal["active"].get("fit_steps") == temporal_metrics.get("optimizer_steps")
+        assert restored_temporal["scan_cursor"] >= target_scan_seq
         assert not [
             item for item in reopened.sleep.scheduler.pending()
             if item.get("action") == "jepa_update"
@@ -851,5 +1211,23 @@ def test_planner_withholds_each_role_when_its_own_negative_control_fails(tmp_pat
             restored = consume_world_planner_shadow(store, event_ids[-1], home=home)
             assert restored["status"] == "SHADOW_PLANNER_READY"
             assert read_world_planner_shadow(store, event_ids[-1])["status"] == "SHADOW_PLANNER_READY"
+    finally:
+        store.close()
+
+
+def test_temporal_episodic_recall_fails_closed_without_checkpoint(tmp_path):
+    home = tmp_path / "temporal-episodic-no-checkpoint"
+    store, session = _make_store(home)
+    try:
+        from v13.world_jepa_temporal import TemporalWorldJEPAStoreConsumer
+
+        learner = TemporalWorldJEPAStoreConsumer(store)
+        result = learner.episodic_recall(
+            session, history_length=2, limit=len(world_model.ACTIONS), nonblocking=True,
+        )
+        assert result["status"] == "NO_CHECKPOINT"
+        assert result["items"] == []
+        assert result["decision_authority"] == "NONE"
+        assert result["native_memory_consumed"] is False
     finally:
         store.close()

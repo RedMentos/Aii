@@ -8,7 +8,7 @@ import importlib.util
 from pathlib import Path
 
 BUILDERS = {
-    'scripts/integrated_world_training_resume_candidate_20261111.py': 'b05a5f4c6533f82f8c5092d9392e6a824f5c86d6857b06df04125fac2eaeed4d',
+    'scripts/integrated_world_training_resume_candidate_20261111.py': '0a0c3fda77dff0436530311b2521ce196614dbf605d8c38932d07a071d9bf0a4',
     'scripts/termux_probe_recovery_candidate_20261112.py': '27aec15dc1f003fd2c90d3d5a08d5a4a9af223ab57c188720ea9cd18aebc1b2b',
     'scripts/termux_chat_recovery_candidate_20261112.py': 'befbaca164fd5453d4c93017eca1b556f2d771b1b7cf54879c6764e4716587c7',
     'scripts/termux_idle_recovery_candidate_20261112.py': '2cc656b102b9950fdb9cb81970708692573189995218bff8a18f95ff01fa97d7',
@@ -43,7 +43,7 @@ def build_sources(code_dir, *, include_postcommit=True):
                       '72bf8a829a7de064e7703271228bcdf02632108418c41c571126fbd8c05d5567')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
-                              'b568613863fef6a687a3237d089b91d8b612ce4163ccb5795df9e21af51c1489')
+                              '46a83d1a8383ce7d376d2b577fa301e6588e3c9bec97f7d8fa70af9955178b61')
     result = arithmetic_outcome.apply_sources(code_dir, result)
 
     # Snapshot every generated consumer pin before the later Store telemetry
@@ -220,7 +220,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             raise ValueError('LateWatch output changed')
         result['v13/latewatch.py'] = late
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
-                             '86ad7838d15eb9a038fec629c340936edde78d65d921507e10cec29fed74b9d9')
+                             'aa4d571c0adf8b2f655a682a57fa2e31967bfb45153a9d0040b04579482c70d4')
         result = control_guard.apply_sources(code_dir, result)
         # The guard rewrites the semantic module and its local-error consumer as
         # one reviewed generation. Snapshot that exact pair before Store overlays.

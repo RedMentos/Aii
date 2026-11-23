@@ -63,7 +63,7 @@ def _valid_sha256(value):
 
 
 def _temporal_world_jepa_body_readout(r, e, role):
-    """Read source-bound temporal T8 predictions for B1/B2 without blocking a turn."""
+    """Read source-bound temporal T8 predictions only from an already-warm checkpoint."""
     if role not in ("B1_DETAIL", "B2_GIST"):
         return None, None
     history_length = 2 if role == "B1_DETAIL" else 3
@@ -90,15 +90,16 @@ def _temporal_world_jepa_body_readout(r, e, role):
 
     try:
         from . import world_model
-        from .world_jepa_temporal import TemporalWorldJEPAStoreConsumer
+        from .world_jepa_temporal import runtime_consumer
 
         session_id = getattr(r, "session", None)
         if type(session_id) is not str or not session_id:
             return omitted("NO_SESSION")
         actions = tuple(world_model.ACTIONS)
-        learner = TemporalWorldJEPAStoreConsumer(r.store)
+        learner = runtime_consumer(r)
         matrix = learner.receiver_matrix(
             session_id, actions, history_length=history_length, nonblocking=True,
+            warm_only=True,
         )
         matrix_status = matrix.get("status")
         if matrix_status != "SHADOW_READOUT_ONLY":
@@ -179,7 +180,6 @@ def _temporal_world_jepa_body_readout(r, e, role):
                     round(min(86400.0, max(0.0, float(duration))), 2),
                     int(round(min(1000000.0, max(0.0, float(output_chars))))),
                     round(float(uncertainty), 3),
-                    support,
                 ]
             else:
                 success = prediction.get("predicted_success_probability")
@@ -188,8 +188,10 @@ def _temporal_world_jepa_body_readout(r, e, role):
                     return omitted("INVALID_PREDICTION", action=action)
                 row = [
                     action, round(min(1.0, max(0.0, float(success))), 3),
-                    round(float(uncertainty), 3), support,
+                    round(float(uncertainty), 3),
                 ]
+            # Per-action support counts remain in the full source-bound audit;
+            # the prompt already receives only gated predictions and uncertainty.
             rows.append(row)
         if not rows:
             return omitted("NO_SUPPORTED_ACTIONS", unsupported_actions=unsupported)
@@ -213,11 +215,59 @@ def _temporal_world_jepa_body_readout(r, e, role):
             "history_sources": [value[:8] for value in history_sources],
             "rows": rows,
             "native_body_consumed": False,
+            "native_body_weights_changed": False,
             "decision_authority": "NONE",
             "note": "prediction; not fact/permission",
         }
-        if unsupported:
-            context["unsupported_actions"] = unsupported
+        # Unsupported-action detail remains in the stored audit. Do not spend
+        # the 700-character B1/B2 prompt budget on optional diagnostics.
+
+        episodic = {"status": "UNAVAILABLE", "items": []}
+        try:
+            episodic = learner.episodic_recall(
+                session_id, history_length=history_length, limit=len(actions),
+                nonblocking=True, budget_s=0.05, warm_only=True,
+            )
+        except (BlockingIOError, ValueError, TypeError, KeyError, OSError,
+                OverflowError, ArithmeticError, AttributeError):
+            episodic = {"status": "UNAVAILABLE", "items": []}
+        if (episodic.get("checkpoint_sha256") != checkpoint_sha
+                or episodic.get("query_history_action_ids") != history_ids
+                or episodic.get("query_history_source_sha256s") != history_sources):
+            episodic = {"status": "PROVENANCE_MISMATCH", "items": []}
+
+        episodic_rows = []
+        if episodic.get("status") in {"EPISODIC_RECALL_SHADOW", "EPISODIC_RECALL_PARTIAL"}:
+            episodic_items = sorted(
+                episodic.get("items", []),
+                key=lambda item: float(item.get("distance", float("inf"))),
+            )[:2]
+            for item in episodic_items:
+                outcome = item.get("observed_outcome")
+                distance = item.get("distance")
+                source_sha = item.get("source_sha256")
+                if (not isinstance(outcome, dict)
+                        or type(distance) not in (int, float)
+                        or not math.isfinite(float(distance))
+                        or not _valid_sha256(source_sha)
+                        or item.get("action") not in actions):
+                    continue
+                duration = outcome.get("duration_s")
+                success = outcome.get("success")
+                output_chars = outcome.get("output_characters")
+                if (type(duration) not in (int, float) or not math.isfinite(float(duration))
+                        or type(success) is not bool
+                        or type(output_chars) is not int or output_chars < 0):
+                    continue
+                episodic_rows.append([
+                    item["action"], round(float(distance), 3),
+                    round(min(86400.0, max(0.0, float(duration))), 1),
+                    success, min(1000000, output_chars), source_sha[:8],
+                ])
+        episodic_rows = episodic_rows[:2]
+        if episodic_rows:
+            context["episodic"] = episodic_rows
+
         audit = {
             "schema": "V14_TEMPORAL_WORLDJEPA_BODY_RECEIVER_AUDIT/1",
             "status": "READOUT_CREATED",
@@ -230,6 +280,8 @@ def _temporal_world_jepa_body_readout(r, e, role):
             "brain_generation_id": e.get("brain_generation_id"),
             "role": role,
             "action_order": list(actions),
+            "learning_intent_ids": matrix.get("learning_intent_ids", {}),
+            "weight_delta_receipt_ids": matrix.get("weight_delta_receipt_ids", {}),
             "supported_action_samples": {
                 action: item.get("support_samples")
                 for action in actions
@@ -244,6 +296,50 @@ def _temporal_world_jepa_body_readout(r, e, role):
             "native_body_consumed": False,
             "native_body_weights_changed": False,
             "decision_authority": "NONE",
+        }
+        audit["episodic_recall"] = {
+            "status": episodic.get("status", "UNAVAILABLE"),
+            "checkpoint_sha256": episodic.get("checkpoint_sha256"),
+            "training_source_sha256": episodic.get("training_source_sha256"),
+            "history_length": episodic.get("history_length"),
+            "query_history_action_ids": episodic.get("query_history_action_ids", history_ids),
+            "query_history_source_sha256s": episodic.get(
+                "query_history_source_sha256s", history_sources
+            ),
+            "candidate_window_count": episodic.get("candidate_window_count", 0),
+            "train_window_count_before_cap": episodic.get("train_window_count_before_cap", 0),
+            "train_window_count": episodic.get("train_window_count", 0),
+            "candidate_cap": episodic.get("candidate_cap", 0),
+            "candidate_sampling": episodic.get("candidate_sampling", "UNAVAILABLE"),
+            "verified_item_count": episodic.get("verified_item_count", 0),
+            "rejected_windows": episodic.get("rejected_windows", 0),
+            "train_split_only": episodic.get("train_split_only") is True,
+            "heldout_used": episodic.get("heldout_used") is True,
+            "source_disjoint_from_query": episodic.get("source_disjoint_from_query") is True,
+            "text_disclosed": episodic.get("text_disclosed") is True,
+            "budget_exhausted": episodic.get("budget_exhausted", False),
+            "items": [
+                {
+                    "action": item["action"],
+                    "distance": item["distance"],
+                    "window_id": item["window_id"],
+                    "action_id": item["action_id"],
+                    "event_id": item["event_id"],
+                    "generation_id": item["generation_id"],
+                    "target_status": item["target_status"],
+                    "source_ref": item["source_ref"],
+                    "source_sha256": item["source_sha256"],
+                    "window_action_ids": item["window_action_ids"],
+                    "window_source_sha256s": item["window_source_sha256s"],
+                    "window_source_refs": item["window_source_refs"],
+                    "observed_outcome": item["observed_outcome"],
+                }
+                for item in episodic.get("items", [])
+            ],
+            "decision_authority": "NONE",
+            "native_memory_consumed": False,
+            "native_body_consumed": False,
+            "native_body_weights_changed": False,
         }
         return context, audit
     except BlockingIOError:
@@ -266,6 +362,27 @@ def body_state(r,e,role,text):
     temporal_context, temporal_audit = _temporal_world_jepa_body_readout(r,e,role)
     if temporal_context is not None:
         view['world_jepa_temporal']=temporal_context
+        # The temporal view already carries source-bound history; omit the static
+        # world-scope label from this compact prompt, not from persisted WORLD_STATE.
+        view['world'].pop('scope',None)
+    elif isinstance(temporal_audit, dict):
+        # An omitted readout must remain visible to the receiving body. Otherwise
+        # a failed utility/provenance/warm-cache gate looks identical to "no
+        # temporal subsystem", which hides the reason from both the model and QA.
+        reason = temporal_audit.get("reason")
+        if temporal_audit.get("status") == "OMITTED" and type(reason) is str:
+            status_view = {
+                "status": "OMITTED",
+                "reason": reason[:48],
+                "role": role,
+                "decision_authority": "NONE",
+            }
+            for key, limit in (("action", 48), ("action_status", 48),
+                               ("utility_reason", 64)):
+                value = temporal_audit.get(key)
+                if type(value) is str and value:
+                    status_view[key] = value[:limit]
+            view["world_jepa_temporal_status"] = status_view
     try:
         from .agi import hub
         view['skills']=hub(r).skills.select(text)[:3]
@@ -278,9 +395,22 @@ def body_state(r,e,role,text):
         skills=view.get('skills')
         if isinstance(skills,list) and len(skills)>1:view['skills']=skills[:1]
         if prompt_chars()>STATE_CHARS and isinstance(view.get('skills'),list):view['skills']=[]
-        if prompt_chars()>STATE_CHARS:
-            view.pop('world_jepa_temporal',None)
-            temporal_audit=None
+    if (prompt_chars()>STATE_CHARS and temporal_context is not None
+            and isinstance(temporal_context.get("episodic"),list)
+            and len(temporal_context["episodic"])>1):
+        temporal_context["episodic"]=temporal_context["episodic"][:1]
+    if (prompt_chars()>STATE_CHARS and temporal_context is not None
+            and "episodic" in temporal_context):
+        temporal_context.pop("episodic",None)
+        temporal_context.pop("episodic_note",None)
+        if isinstance(temporal_audit,dict):
+            recall_audit=temporal_audit.get("episodic_recall")
+            if isinstance(recall_audit,dict):
+                recall_audit["status"]="OMITTED_PROMPT_BUDGET"
+                recall_audit["items"]=[]
+    if prompt_chars()>STATE_CHARS and temporal_context is not None:
+        view.pop('world_jepa_temporal',None)
+        temporal_audit=None
     if prompt_chars()>STATE_CHARS and isinstance(view.get('skills'),list):
         view['skills']=[]
     s=dumps(view)

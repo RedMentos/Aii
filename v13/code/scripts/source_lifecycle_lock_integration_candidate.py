@@ -7,11 +7,12 @@ PINS = {
     'archive.py': 'adbdd844c2275d527a689eda789a3f247759967677e573b92bf7af7ad68404bf',
     'store.py': '40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb',
     'common.py': '0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a',
-    'memory.py': '61e881ad8b3f8cb60a96339599a1627cd5af7b5a5bfd29fe5f371c17f5a29ebc',
-    'vision.py': '758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5',
+    'memory.py': '33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701',
+    'vision.py': 'ea64b7ea00decec80b190f0cad5e790fa77a704023bc8b298679b42b69dd620d',
+    'vision_source_lineage.py': 'bb63636c9ae84d345fe1f4e37254de3be87c26990cb320ca058859fd0b51b72f',
     'archive_reader_guard_candidate.py': '84c06a9f5c0b6054f836615023822ff577984d3efe9ddfb07cae569ec124f438',
     'archive_stream_range_candidate.py': 'd2d021adcc844c1f321312cbfa60a4affb0a6b7fddc09e41a234cdf83f1eec98',
-    'source_lifecycle_candidate.py': '3ace74b802d3e3e7340eabcccb03275d348deae2297fe8a1b4d2e1eab17d62b0',
+    'source_lifecycle_candidate.py': '69378f39c84807048c4f626100c72fa1a427066e77ebac266599153b44bf806a',
 }
 GUARD_SCRIPT_SHA = '69a20b1c9e10882f80086c0620e8f87575c4559e7113ed19fd53002330be8747'
 OLD_ARCHIVE_INTEGRATED_SHA = '3f421423ce890b90033470e15150b1ba9830642e6b5e92e61b654801602e90b4'
@@ -97,11 +98,13 @@ READ_SOURCE_NEW = b'''    def read_source(self,ref):
         if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef out of bounds")
         return txt[ref["char_start"]:ref["char_end"]]
 '''
-MEMORY_OLD = b'''            src=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
-            if not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(src['hash'],)):(self.s.home/'data/blobs'/src['hash']).unlink(missing_ok=True);(self.s.home/'data/blobs'/(src['hash']+'.z')).unlink(missing_ok=True)
+MEMORY_OLD = b'''                source=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
+                if source and not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(source['hash'],)):
+                    (self.s.home/'data/blobs'/source['hash']).unlink(missing_ok=True)
+                    (self.s.home/'data/blobs'/(source['hash']+'.z')).unlink(missing_ok=True)
 '''
-MEMORY_NEW = b'''            from .source_lifecycle_candidate import cleanup_unreferenced
-            cleanup_unreferenced(self.s,sid)
+MEMORY_NEW = b'''                from .source_lifecycle_candidate import cleanup_unreferenced
+                cleanup_unreferenced(self.s,sid)
 '''
 VISION_OLD = b'''def ingest(store,data,cfg=DEFAULTS,label=None):
     """Store image bytes as an IMAGE source (dedup by hash) and register its regions. Returns the image record."""
@@ -122,12 +125,43 @@ VISION_NEW = b'''def ingest(store,data,cfg=DEFAULTS,label=None):
     return vision_ingest(store,data,cfg,label)
 '''
 VISION_FORGET_OLD = b'''def forget(store,rec):
-    st=load(store);sid=rec['ref']['source_id'];st['images'].pop(sid,None)
-    if st.get('projector'):st['projector']['captions']={k:v for k,v in st['projector']['captions'].items() if k.split(':')[0]!=sid}
+    st=load(store)
+    sid=rec['ref']['source_id']
+    current=st['images'].get(sid)
+    if (type(current) is not dict or type(current.get('ref')) is not dict
+            or current['ref'].get('sha256') != rec['ref'].get('sha256')):
+        raise ValueError('Image source is missing or changed; refusing stale forget request')
+
+    # Clear learned state first. If the process stops after this save, no
+    # projector can continue using a source whose deletion is in progress.
+    st['images'].pop(sid,None)
+    invalidated=invalidate_projectors(st,sid)
     save(store,st)
+
     with store.tx() as c:c.execute('UPDATE sources SET deleted=1 WHERE id=?',(sid,))
-    if not store.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(rec['ref']['sha256'],)):(store.home/'data/blobs'/rec['ref']['sha256']).unlink(missing_ok=True)
-    return {'forgotten':sid}
+    shared=store.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(rec['ref']['sha256'],))
+    blob_deleted=False
+    blob_retained_shared=bool(shared)
+    cleanup_failed=[]
+    if not shared:
+        blob_deleted=unlink_source_blob(store.home,rec['ref']['sha256'])
+        if not blob_deleted:cleanup_failed.append('image_blob')
+
+    projector_files_deleted={}
+    for key,record in invalidated:
+        deleted=unlink_projector_artifact(store.home,record)
+        projector_files_deleted[key]=deleted
+        if not deleted:cleanup_failed.append(key+'_artifact')
+
+    return {
+        'forgotten':sid,
+        'invalidated_projectors':[key for key,_ in invalidated],
+        'projector_files_deleted':projector_files_deleted,
+        'blob_deleted':blob_deleted,
+        'blob_retained_shared':blob_retained_shared,
+        'retrain_required':[key for key,_ in invalidated],
+        'cleanup_failed':cleanup_failed,
+    }
 '''
 VISION_FORGET_NEW = b'''def forget(store,rec):
     from .source_lifecycle_candidate import vision_forget
@@ -201,4 +235,4 @@ def build_sources(source_dir):
         raw['archive_stream_range_candidate.py'], PINS['store.py'].encode(), store_sha, 'stream store pin')
     return {name: raw[name] for name in ('archive.py', 'store.py', 'memory.py', 'vision.py',
                                          'archive_reader_guard_candidate.py', 'archive_stream_range_candidate.py',
-                                         'source_lifecycle_candidate.py')}
+                                         'source_lifecycle_candidate.py', 'vision_source_lineage.py')}

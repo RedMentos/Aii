@@ -1,3 +1,26 @@
+## JEPA & Memory — Run 9: current QA-base recompose (2026-11-23T06:44:52.384Z)
+
+**Hypothesis / defect:** PR #2405 carried the intended temporal JEPA/episodic-recall code but its ancestry was stale and diverged from QA's current source-forget head (64 ahead / 22 behind at the previous compare). QA's exact integration matrix also exposed a prompt-facing contract omission: successful temporal body state needed the explicit `native_body_weights_changed=false` boundary, not only the audit copy.
+
+**Implementation:** Created PR [#2418](https://github.com/RedMentos/Aii/pull/2418) on `jepa-memory/v14-temporal-episodic-recall-current-qa-20261123-run9`, exact head `1df357b9ae41ac01016437857f6c325fb6e8611c`, directly based on QA head `c5d847ca36567ea265610b235941bf251f1425fa`. The new compare is 1 ahead / 0 behind. Reused the reviewed exact JEPA branch blobs for:
+- `v13/code/v13/world_jepa_temporal.py`: shared Runtime-scoped temporal consumer, idle checkpoint warm-up, warm-only receiver/episodic recall, source-disjoint train-only candidate retrieval and cooperative budget.
+- `v13/code/v13/bodyview.py`: B1/B2 role-specific temporal readout and compact episodic rows; explicit native-consumption/weight-change false fields; omission audit exposed without authority.
+- `v13/code/v13/sleep.py`: pass the actual Runtime into the postcommit temporal consumer so idle learning and foreground readers share the cache.
+- Two focused temporal/postcommit test files and the matching workflow trigger/compile/test steps.
+
+**Composition safety:** Before copying, compared the current QA base with the common ancestor. Its `bodyview.py`, `world_jepa_temporal.py` and `sleep.py` blobs were byte-identical to the common-ancestor versions; the QA branch's source-lifecycle, vision, composer and pin files are separate and were not changed. The JEPA test files include the current QA runtime-worker test additions plus the new episodic/warm-cache assertions. PR #2405 remains the old divergent draft; do not merge it.
+
+**Exact tests / evidence:**
+- Branch compare: PASS, 1 ahead / 0 behind; exact file readback hashes match the reviewed source blobs.
+- GitHub Actions on exact head: temporal T8/JEPA run `45125836185`, optimizer-resume/source-forget `45125836217`, staged/integrated `45125836192`, owner-read bootstrap `45125836165` were QUEUED at last readback. No CI PASS claimed.
+- LOCAL_LINUX full Aii suite: BLOCKED / NOT_RUN; no checkout and GitHub DNS resolution failure.
+- TERMUX/REDMI: REDMI_UNVERIFIED for this candidate; no device access or mutation. Latest private V13OBS #115 receipt is `2026-11-23T04:05:46Z` and still records slow C3, B1/B2 TIME_BUDGET and zero valid offers.
+
+**Research connection:** PR #2413's R-107 review of *Learning What to Recall: Adaptive Multi-Cue Episodic Memory for World Models* (arXiv:2609.34677) suggests a future-blind query-conditioned cue-utility head trained from later committed outcomes. The upstream implementation is CC BY-NC 4.0 and resource-heavy; no reuse/import. Keep the V14 adaptation as a hypothesis until a matched numeric baseline/negative-control experiment is run.
+
+**Next:** inspect exact-head Actions; repair failures without weakening receiver utility or authority assertions; have QA rerun the full composed matrix; then continue the remaining Memory/Self/Replay/Retention and true cross-organ latent receiver gaps. No release/deployment, native GGUF weight change or Redmi claim.
+---
+
 ## Boss follow-up — JEPA exact-head pin recheck — 2026-11-22T10:00:40.871Z
 
 - PR #2331 advanced to `535eba6f668b3990416c361368f36e3e8f1e599e` on b3b92. Exact matrix: **9 failures / 4 in progress / 2 queued / 4 success / 1 skipped**.

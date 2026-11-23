@@ -1,0 +1,40 @@
+name: V14 JEPA vision-forget overlay regressions
+
+on:
+  push:
+    branches:
+      - "jepa-memory/**"
+    paths:
+      - "v13/code/v13/source_lifecycle_candidate.py"
+      - "v13/code/v13/vision_source_lineage.py"
+      - "v13/code/tests/test_v14_jepa_vision_forget_overlay.py"
+      - ".github/workflows/v14-jepa-vision-forget-overlay.yml"
+  pull_request:
+    paths:
+      - "v13/code/v13/source_lifecycle_candidate.py"
+      - "v13/code/v13/vision_source_lineage.py"
+      - "v13/code/tests/test_v14_jepa_vision_forget_overlay.py"
+      - ".github/workflows/v14-jepa-vision-forget-overlay.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  jepa-vision-forget:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install bounded image and test dependencies
+        run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.3.5 Pillow==12.3.0
+      - name: Compile exact JEPA overlay and source-lineage tests
+        run: python -m py_compile v13/code/v13/source_lifecycle_candidate.py v13/code/v13/vision_source_lineage.py v13/code/tests/test_v14_jepa_vision_forget_overlay.py
+      - name: Run JEPA vision-forget overlay and source-lineage regressions
+        working-directory: v13/code
+        run: python -m pytest -q tests/test_v14_jepa_vision_forget_overlay.py tests/test_vision_source_lineage.py

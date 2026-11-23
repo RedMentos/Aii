@@ -3,12 +3,12 @@ import hashlib
 import importlib.util
 from pathlib import Path
 
-BASE_BUILDER_SHA = '04b811db3676b79d57d7be3965ca9905266337d9ea44d9358dd4f1c91e195a9b'
+BASE_BUILDER_SHA = '920fcc852ada252156e03b7f6f59d480759ea69a35127c173feb8bea148770c5'
 PINS = {
     'v13/inputs.py': '235cce055cdc5eb1c889593dd279d9c837a718f0630b8427223a3883c5079539',
     'v13/actionlearn.py': '603e874d8fbb37f41aee1fae5fcb6c07007310388dc2c653f1b84ec5d264a7d6',
     'v13/world_semantic_evidence_candidate.py': '354306bb763fda116728bd13e8502d81ed8e6a790c4387d98e0920960a87b8a5',
-    'v13/local_error_route_shadow_candidate.py': '87bb77ed43b739fb890308fa565d0ca4a84278992a2312e219122c358f2c5187',
+    'v13/local_error_route_shadow_candidate.py': '904a54c6dcf9b78fce6b390890076441b130ba021ee6681ecfa999ad61b676e4',
     'v13/c5_feedback_shadow_store_candidate.py': '20096bd965100c7d3fb1c6084c6f49c361567f331a2a5f374f5e2afa539a87bc',
     'v13/c5_feedback_ledger_candidate.py': '6e86e4fa2e6f359a13a0a6567be5bb095c4ba6b7e0254f536588d46b96563c21',
     'v13/skill_parity_shadow_candidate.py': 'd6d14a22a5d7cc06191edba97ece3412b84346de7896604ed18b73f3abd51756',
