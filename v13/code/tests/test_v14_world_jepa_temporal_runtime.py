@@ -339,6 +339,17 @@ def test_temporal_world_jepa_updates_ema_checkpoint_and_b1_b2_shadow_receivers(t
         assert store.one(
             "SELECT deleted FROM sources WHERE id=?", (source_row["source_id"],)
         )["deleted"] == 1
+        import json
+        forget_log = store.one(
+            "SELECT metrics FROM telemetry WHERE kind=? ORDER BY id DESC LIMIT 1",
+            ("temporal_source_forget",),
+        )
+        assert forget_log is not None
+        forget_metrics = json.loads(forget_log["metrics"])
+        assert forget_metrics["component"] == "world_predictor"
+        assert forget_metrics["count"] == 1
+        assert forget_metrics["source_id"] == source_row["source_id"]
+        assert forget_metrics["status"] == "PASS"
     finally:
         store.close()
 
@@ -396,6 +407,15 @@ def test_temporal_source_forget_promotes_clean_previous_and_replays_after_restar
         assert store.one(
             "SELECT deleted FROM sources WHERE id=?", (source_id,)
         )["deleted"] == 1
+        import json
+        forget_log = store.one(
+            "SELECT metrics FROM telemetry WHERE kind=? ORDER BY id DESC LIMIT 1",
+            ("temporal_source_forget",),
+        )
+        forget_metrics = json.loads(forget_log["metrics"])
+        assert forget_metrics["count"] == 1
+        assert forget_metrics["retained_cases_saved"] > 0
+        assert forget_metrics["source_id"] == source_id
 
         # The promoted checkpoint and retry queue survive a real SQLite reopen.
         store.close()
@@ -458,6 +478,15 @@ def test_temporal_source_forget_invalidates_both_checkpoints_then_rebuilds_from_
         assert store.one(
             "SELECT deleted FROM sources WHERE id=?", (source_id,)
         )["deleted"] == 1
+        import json
+        forget_log = store.one(
+            "SELECT metrics FROM telemetry WHERE kind=? ORDER BY id DESC LIMIT 1",
+            ("temporal_source_forget",),
+        )
+        forget_metrics = json.loads(forget_log["metrics"])
+        assert forget_metrics["count"] == 2
+        assert forget_metrics["retained_cases_saved"] == 0
+        assert forget_metrics["source_id"] == source_id
 
         # Restart must reconstruct only from the surviving, source-verified T8 ledger.
         store.close()
