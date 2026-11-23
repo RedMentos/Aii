@@ -8,7 +8,7 @@
 - Existing ActionIntent/ActionOutcome semantics are unchanged: companion receipts remain COMPANION_RECEIPT_ONLY, observed=false, t8_authoritative=false, world_learning_eligible=false. This is registry validation and dispatch gating, not a new Android executor, device observation or T8 learning.
 - LOCAL_LINUX: isolated parser contract and negative-control reproduction PASS on CPython 3.13.5. Full Aii repository pytest/compile: BLOCKED / NOT_RUN because no local checkout is mounted and git ls-remote fails with GitHub DNS resolution. Exact branch CI is pending PR creation; no pass is claimed yet.
 - TERMUX/REDMI and Android emulator: REDMI_UNVERIFIED / NOT_RUN. The parent QA companion process-restart UI acceptance remains a separate blocker; the old #2376 branch is 6 commits behind the current QA base and its stale-base CI is not relied upon. The new branch is the current-base successor, still DRAFT / NOT_RELEASED.
-- Next: open the successor draft PR, run the exact Python 3.13/3.14 companion workflow and integrated consumers, fix any real failures, then obtain independent Boss/QA review. Do not enable any other capability or request a device action until the parent lifecycle gate is green.
+- Draft successor PR #2394 is open at head 7b4bd0e80d889e612884d1f64dae2dcbcb5de754 against current QA base 43975b78659a02ce1ba9520ac5dfae10b2556d37. Exact Python 3.13/3.14 companion workflow and integrated consumers are not yet observed; poll the exact PR head, fix real failures, then obtain independent Boss/QA review. Do not enable any other capability or request a device action until the parent lifecycle gate is green.
 
 ---
 
