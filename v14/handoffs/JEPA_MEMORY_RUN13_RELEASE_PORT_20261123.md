@@ -46,3 +46,31 @@ R-107, *Learning What to Recall: Adaptive Multi-Cue Episodic Memory for World Mo
 
 Run start: 2026-11-23 16:31:56 Europe/Berlin. Completion time: UNKNOWN.
 User action: none.
+
+
+## Run 11 — exact-head regression repair (2026-11-23)
+
+### Branch and code checkpoint
+
+- Release-development base was re-read and `compare_commits` confirmed `gpt6/v13-private-remote-bridge-20261111` is still exactly `fb563d771fe2d493c4ec25abe94280981d24ef5c` (identical, 0 ahead / 0 behind).
+- JEPA branch: `jepa-memory/v14-temporal-world-jepa-release-20261123-run13`. Latest code head: `62e425ec050cf34e62a31c3acb4ad6ae1bff5130`; preceding fixes are `cba0c5b3e254c3dee547d00e30d3a7b1cb11c9a8` and `ad8745c36e848b5d8a5dd61f9a51bf260371870e`. PR #2447 remains open/draft and NOT_RELEASED.
+
+### Reproduced defects and code fixes
+
+1. The previous exact-head temporal suite exposed four failures: source-forget telemetry assertions could not find `component` / `count`, and a warm temporal model survived source-forget. The runtime code path was real; the test was not backed by the base Memory telemetry schema.
+2. `world_jepa_temporal.py` now registers live `TemporalWorldJEPAStoreConsumer` instances in a weak registry. When the active checkpoint changes or is invalidated, source-forget clears every registered warm model for the same Store whose cached checkpoint no longer matches. This replaces the previous single, never-populated Store attribute lookup.
+3. `world_jepa_consumer.source_forget_guard` now appends the JEPA-specific `forget` receipt only after the wrapped `Memory._forget_source` body returns successfully. It records the allowlisted `world_predictor` component, invalidated checkpoint count, retained/requeued case count, source ID, `PASS` status and `shadow` mode. `memory.py` and Store-RLock ownership were not changed.
+4. The staged optimizer-resume test exposed a stale exact `WORLD_SHA` pin. It is now rebound to the read-back SHA-256 `1436b6bcf850218addf12638452cad61a01545ea127061375bd3961d631623d2` of the current-base `world_jepa.py`. The checkpoint/state pins were independently checked and remain `560653e1a59b48991163a61b01135e2ab6e6d89c85fdeec4a8a40198f9bacf97` and `94a785e72c279965a20fabd81eb6e78c9ca1c14b8bee66e83e693755da8a768d` respectively.
+
+### Exact CI and local/device evidence
+
+- Exact latest head `62e425ec050cf34e62a31c3acb4ad6ae1bff5130`: `V14 JEPA training-resume and source-forget` run `45212762411` queued (Python 3.13/3.14); `V14 Temporal WorldJEPA T8` run `45212762455` queued (Python 3.13/3.14); combined online JEPA run `45212762453` queued. Incremental WorldJEPA run `45212762233` completed SUCCESS. Staged/integrated shared checks were still queued at last poll. No queued job is described as PASS.
+- Full LOCAL_LINUX Aii checkout/tests remain BLOCKED: no checkout is mounted and `git ls-remote` cannot resolve GitHub DNS. Python is present, but the repository sources are not locally available; no local compile or pytest result is claimed.
+- Private read-only V13OBS issue #115, updated 2026-11-23 16:00 UTC: installed/runtime revision `fb563d771fe2d493c4ec25abe94280981d24ef5c`, updater auto-enabled and UP_TO_DATE; AI runtime `STOPPED_BY_USER`, model process STOPPED, service/dashboard RUNNING. Last stored turn: 6.295 s total, 2.046 s TTFT, 358 prompt tokens, 7 generated tokens; prompt inclusion and semantic use are not proven. B1/B2 each had two failed native attempts, 0 valid offers, with ~36.7 s prefill deadlines. Official Age remains 0; requested lab stage 10 / effective stage 5; physical feature execution unverified; learning commit authority still requires separate SHADOW. No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, shell, model/weight/permission change or device mutation was made.
+- Device classification: REDMI_UNVERIFIED for the new JEPA candidate. Release SHA: NOT_RELEASED. No user action or manual Termux command is required.
+
+### Cross-team dependency and next step
+
+- Boss PR #2443 independently owns the Store-RLock/blob-unlink serialization and the bottom-up staged-builder pin chain. It also changes `integrated_world_training_resume_candidate_20261111.py`, but its current patch changes `BASE_SHA` while this JEPA branch changes `WORLD_SHA`; preserve both byte-derived pins when composing. This PR does not claim #2443's concurrency fix.
+- Core still needs to attach all admitted Memory/observer/Enlightened-Space SourceRefs to production ActionSelection; the current producer remains event-source-only.
+- Next JEPA experiment after exact CI: multi-regime A→B→A retention with disjoint session/source holdouts, delayed-outcome negatives, dense-vs-sparse/no-replay/shuffled controls, optimizer/restart identity, checkpoint diff, positive rollback and real B1/B2/SELF receiver utility. Keep retrieval and all weight promotion SHADOW/OFF until those gates pass.
