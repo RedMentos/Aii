@@ -902,3 +902,48 @@ def test_teacher_ear_rejects_finality_mismatch_before_c3():
     provisional = _teacher_ear_result("gen-teacher", finality="PROVISIONAL")
     with pytest.raises(ValueError, match="finality differs"):
         _validate_teacher_fixture(provisional, finality="FINAL")
+
+
+def test_optional_teacher_module_absence_preserves_acoustic_path_and_blocks_transcript(
+    monkeypatch, tmp_path,
+):
+    import builtins
+
+    runtime, event = make_runtime(tmp_path)
+    real_import = builtins.__import__
+
+    def without_optional_teacher(name, globals=None, locals=None, fromlist=(), level=0):
+        if level == 1 and name == "audio_teacher_ear":
+            raise ModuleNotFoundError(
+                "optional Teacher Ear module is absent", name="v13.audio_teacher_ear",
+            )
+        return real_import(name, globals, locals, fromlist, level)
+
+    monkeypatch.setattr(builtins, "__import__", without_optional_teacher)
+    try:
+        assert audio_voice_module._load_teacher_ear_validator() is None
+        result = consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL",
+            teacher_result=_teacher_ear_result(event["brain_generation_id"]),
+            teacher_opt_in=True, teacher_transcript_consent=True,
+        )
+        assert result["status"] == "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION"
+        assert result["teacher_ear"] is None
+        assert result["teacher_ear_status"] == "UNAVAILABLE_MODULE"
+        assert result["a4"]["teacher_ear_status"] == "UNAVAILABLE_MODULE"
+        assert all("teacher_hypothesis" not in item.summary
+                   for item in result["c3_admission"].selected)
+        stored = runtime.store.one(
+            "SELECT payload FROM packets WHERE id=? AND kind='PerceptPacket'",
+            (result["packet"]["packet_id"],),
+        )
+        assert stored is not None
+        payload = json.loads(stored["payload"])
+        assert payload["segments"][0]["asr_transcript"] is None
+        assert "hello" not in json.dumps(payload, sort_keys=True)
+    finally:
+        runtime.store.close()
