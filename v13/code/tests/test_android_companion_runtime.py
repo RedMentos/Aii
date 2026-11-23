@@ -364,10 +364,15 @@ def test_action_intent_history_is_session_scoped_restartable_and_non_authoritati
     receipt = json.loads(controller.poll(action_id))
     assert receipt["status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
     assert receipt["observed"] is False
+    assert "signed_receipt" not in json.dumps(receipt)
+    assert transport.receipt["signature"] not in json.dumps(receipt)
     assert receipt["t8_authoritative"] is False
     assert receipt["world_learning_eligible"] is False
 
     history = json.loads(controller.history())
+    assert "signed_receipt" not in json.dumps(history)
+    assert "receipt_nonce" not in json.dumps(history)
+    assert transport.receipt["signature"] not in json.dumps(history)
     item = history["actions"][0]
     assert item["action_id"] == action_id
     assert item["outcome_status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
