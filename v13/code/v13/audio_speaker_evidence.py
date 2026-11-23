@@ -213,6 +213,8 @@ class SpeakerChangeEvidenceRegistry:
                     frame_record = {
                         "status": "MEASURED",
                         "frame_end_ms": frame_end,
+                        "lookback_target_ms": target_ms,
+                        "reference_frame_end_ms": reference_end,
                         "reference_age_ms": frame_end - reference_end,
                         "cosine_similarity": round(similarity, 6),
                         "change_score": change_score,
@@ -249,6 +251,8 @@ class SpeakerChangeEvidenceRegistry:
                 latest = {
                     "status": "WARMUP",
                     "frame_end_ms": batch["frames"][-1][0],
+                    "lookback_target_ms": batch["frames"][-1][0] - batch["lookback_ms"],
+                    "reference_frame_end_ms": None,
                     "reference_age_ms": None,
                     "cosine_similarity": None,
                     "change_score": None,
