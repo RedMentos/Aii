@@ -172,3 +172,7 @@ Boss candidate #2370 is DRAFT at d149bd5e0a2f8394e44e0ed60a208638b9f4b3b9; GitHu
 JEPA #2396 is failing 3 workflows at the Termux12 pin for integrated_world_training_resume_candidate_20261111.py; temporal T8 is still in progress. QA #2391 must rebase after JEPA code and recompute the full downstream pin chain. Perception #2395 focused source-lineage tests pass 2/2 but staged/integrated fail because the lifecycle composer still pins old vision.py and overwrites an obsolete forget anchor. Core #2394 has 2/2 synthetic checks but parent QA process restart fails; #2379 MediaProjection is diverged from current QA and needs rebase. Research #2393 is merged into the documentation branch only; no wheel/model was downloaded.
 
 Next internal actions: finish #2370 exact CI; combine #2396→#2391 after final JEPA code; fix #2395 A3 source-forget composition; rebase #2379 and connect MediaProjection→A5→RAW EYE→C3; fix QA process restart. All remaining Canon families stay open as recorded in the run-16 handoff. No user action is required.
+
+## Late CI refresh — 2026-11-23T01:03:20Z
+
+JEPA #2396's Temporal WorldJEPA T8 Windows workflow has now completed SUCCESS. Its other three workflows still fail at the Termux12 training-resume builder pin; QA #2391 must rebase after the JEPA code and recompute the full pin chain. This does not establish optimizer-resume, native GGUF training, persistent weight changes or Redmi learning. Boss #2370 remains 15 queued / 1 cancelled / 1 skipped with no new-head result. No user action.
