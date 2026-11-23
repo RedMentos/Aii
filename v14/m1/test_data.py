@@ -59,6 +59,10 @@ class DataConfigTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.config(6)
 
+    def test_seasonal_lag_shorter_than_horizon_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "seasonal lag"):
+            DataConfig(input_length=5, horizon=3, max_candidate_input_length=5, seasonal_lags=(2, 4))
+
     def test_split_gap_cannot_be_reduced(self):
         with self.assertRaises(ValueError):
             DataConfig(
@@ -205,6 +209,29 @@ class UCIParserTests(unittest.TestCase):
         self.assertEqual(channels, ("Global_active_power", "Voltage"))
         self.assertEqual(rows[0].values, (4.216, 234.840))
         self.assertIsNone(rows[1].values[0])
+
+    def test_non_finite_measurements_fail_closed(self):
+        for token in ("inf", "-inf", "Infinity"):
+            payload = (
+                "Date;Time;Global_active_power\\n"
+                f"16/12/2006;17:24:00;{token}\\n"
+            )
+            with tempfile.TemporaryDirectory() as directory:
+                path = Path(directory) / "nonfinite.txt"
+                path.write_text(payload, encoding="utf-8")
+                with self.assertRaisesRegex(ValueError, "non-finite"):
+                    parse_uci(path)
+
+    def test_nan_spellings_are_treated_as_missing(self):
+        payload = (
+            "Date;Time;Global_active_power;Voltage\\n"
+            "16/12/2006;17:24:00;NAN;234,840\\n"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "nan.txt"
+            path.write_text(payload, encoding="utf-8")
+            _, rows = parse_uci(path)
+        self.assertIsNone(rows[0].values[0])
 
 
     def test_missing_minute_timestamp_fails_closed(self):
