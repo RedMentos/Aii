@@ -13,7 +13,6 @@ import subprocess
 import time
 
 PACKAGE = "com.redmentos.v14.companion"
-COMPONENT = PACKAGE + "/.MainActivity"
 TEST_RUNNER = (
     "com.redmentos.v14.companion.test/"
     "androidx.test.runner.AndroidJUnitRunner"
@@ -131,8 +130,8 @@ def run_instrumentation(method: str, timeout: float = 180.0) -> str:
 
 
 def main() -> None:
-    # Start from a known stopped process. The first instrumentation invocation
-    # explicitly foregrounds MainActivity after provider startup.
+    # Start from a known stopped process. ActivityScenario owns the only
+    # MainActivity launch inside each instrumentation invocation.
     adb("shell", "am", "force-stop", PACKAGE)
     wait_for_process(present=False)
     run_instrumentation(INITIAL_METHOD)
