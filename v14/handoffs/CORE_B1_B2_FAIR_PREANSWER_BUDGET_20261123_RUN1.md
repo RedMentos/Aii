@@ -49,3 +49,39 @@ The existing staged C4 source-validation/receipt and C3 same-turn consumer path 
 - Next: poll this branch's exact CI, fix failures on this branch, then request independent Boss/QA review. After release integration, use the existing consented private owner-read path for a fresh Redmi turn; do not infer installation or user-visible improvement from CI.
 - Shared-board ownership: Boss/Integrator should now update `V14_WORK_BOARD.json`, `V14_LIVE_WORKPLAN.md` and `V14_USER_NEXT_ACTION.md` with this exact branch/head and pending evidence; Core will not overwrite the concurrently edited shared-status files.
 - User action: none required at this checkpoint.
+
+
+## Run 2 — recovery admission and exact CI readback (2026-11-23)
+
+### New code-bearing changes
+
+- `v13/code/v13/effort.py`: `constrain()` now accepts an explicit positive finite `minimum_body_seconds`; the default remains the BOOT 2 s floor.
+- `v13/code/v13/runtime.py`: only when the measured C3 zero-token recovery plan is active, Runtime forwards the existing 1 s fair-role floor into the effort planner. The 26 s C3 reserve remains unchanged. Outside recovery, the original 2 s minimum remains; GREEN/YELLOW/ORANGE/RED resource caps still bind independently.
+- `v13/code/tests/test_observer_schedule.py`: fixes the Runtime fixture to a deterministic synthetic GREEN resource snapshot, imports the actual `Limits` exception, asserts the recorded EffortDecision admits both roles, checks both per-role deadlines have at least 0.99 s remaining, proves ordinary 2 s behavior still caps one role, proves ORANGE still caps one role, and proves a 1.9 s window does not admit two. The missing-peer test now explicitly proves B2 was attempted pre-answer and then retried post-commit after its bounded pre-answer failure.
+
+### Exact pushed/read-back commits
+
+- `06a2cd30f4a91d6f8c10e6c99a7029b749c43fb2` — effort-planner explicit minimum.
+- `6fe53ad7eb4c61b99aa002bb58d20c8800ead868` — Runtime recovery-only forwarding.
+- `4d3fd02b5ff38253513c4e0eb0a0fe7d51f71347` — deterministic dual-body Runtime regressions.
+- Read-back blobs: effort.py `56e1631e4e75439659d560490f765a866e03dddf`; runtime.py `5b04a033b8bf6701dd0569e5506f9172243a97d6`; test_observer_schedule.py `a7253f78d010f7e1192bea4d85b4117fba06c785`.
+- Compare against base `8d93236c753f0194224c19edc7411d8d7082b1d6`: 12 commits ahead / 0 behind. No force-push.
+
+### Test evidence and unresolved gates
+
+- Exact-head CI run `45256656384`: `startup_failure`, no job was created; GitHub refused retry with HTTP 403 because the run is not retryable. This is NOT a test pass and does not execute the new tests.
+- Previous exact-head run `45248781942` on the prior code head had 34 failures / 233 passed / 10 skipped / 2 errors. The two scheduler assertions failed because the fixture did not establish that both roles were admitted; the source-pinned staged/runtime and migration failures were separate. The new scheduler fixture and effort admission code are not yet re-executed by CI.
+- Separate A5 UI lease run `45248782113` failed because the QA-owned `source_lifecycle_lock_integration_candidate.py` still pins older `store.py` bytes. Core did not edit that builder or weaken its pin.
+- LOCAL_LINUX full project compile/pytest: BLOCKED / NOT_RUN — no repository checkout is mounted and GitHub DNS resolution fails from this container. No local project PASS is claimed.
+- TERMUX/REDMI: REDMI_UNVERIFIED. No phone receipt, chat send, update request, shell, permission change, model/weight swap or device mutation was performed.
+
+### Coordination / next executable action
+
+1. Obtain a fresh exact-head CI run for `4d3fd02` (the preceding run had no jobs and cannot be retried).
+2. Boss/Integrator must rebind the existing immutable staged/integrated runtime and postcommit-observer source-pin chain to the exact final `runtime.py` bytes; QA must independently rebase the A5 Store lifecycle builder to the final `store.py` bytes. Core does not own or edit those shared pin chains.
+3. Keep PR #2458 DRAFT / NOT_RELEASED until scheduler tests, staged/integrated regression, Python 3.13/3.14 A5 lease, migration and independent review are green.
+4. After an integrated release and a fresh consented Redmi receipt, measure actual B1/B2 native prompt/output tokens, OfferPacket IDs, C4 selected IDs, C3 consumed IDs, per-stage TTFT/prefill/generation and C3 deadline. CI or this scheduler change alone is not a Redmi performance claim.
+
+Shared `V14_WORK_BOARD.json`, `V14_LIVE_WORKPLAN.md` and `V14_USER_NEXT_ACTION.md` remain Boss/Integrator-owned and are currently being edited by active Boss #2443 and JEPA #2454; this Core branch records the exact handoff instead of overwriting those concurrent files. User action: none.
+
+Run start/end timestamps and elapsed execution time: UNKNOWN (not measured by the available execution interface).
