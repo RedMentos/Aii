@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T21:43:37.326Z",
+  "updated_at": "2026-11-23T21:44:55.998Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6. Boss candidate code-bearing checkpoint a5e536a96f6dc2a3a515d37b08393f7136e9efff on boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean; documentation-only descendants follow (last PR metadata readback 5166643ac74fbca318511c0918dea06e98a11ff9). QA #2459 and #2460 fast-forward integrated. Candidate PR #2443 remains DRAFT / NOT_RELEASED; full combined exact-head CI incomplete.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "The Boss branch is a candidate only, NOT_RELEASED/NOT_INSTALLED. CI must pass on its exact final head before any release action. Do not restart the explicitly stopped phone runtime or issue a duplicate update request. Keep synthetic, CI, local Linux and real Redmi evidence separate.",
@@ -199,14 +199,14 @@
         "compare_to_parent_latest": "45_AHEAD_47_BEHIND",
         "target_adapter_retention": "CODE_PRESENT_UNVERIFIED; FIRST_UPDATE_NOT_MEASURED_BOOTSTRAP; SECOND_UPDATE_NOT_RUN",
         "world_predictor_retention": "MEASURED_IN_EXPERIMENTAL_GATE",
-        "documentation_head": "09fff463a666f85bc36094a3f763b45984861a43",
+        "documentation_head": "6299c84c08c217b63c64393952212a3af23c7c3d",
         "latest_code_commits": {
           "learning_intent": "5736a303669dc473187b5f39e25b658ce5a92225",
           "temporal": "166ffa1a4e141653d91e6d190e1e82dc5cd707f7",
           "tests": "1cfac4a1518a959a2022b81e796e3dfc0b6b2cf0"
         }
       },
-      "collaboration_write_blocker": "GitHub PR comments and PR metadata updates returned HTTP 403 because the linked GitHub account has no verified email. Repository content commits/readbacks succeeded. Optional account email verification would restore PR discussion/metadata writes; no device action is needed."
+      "collaboration_write_blocker": "GitHub PR comments and PR metadata updates returned HTTP 403 because the linked GitHub account has no verified email. Repository content commits/readbacks succeeded. Optional account email verification would restore PR discussion/metadata writes; no device action is needed. Run16 PR #2454 body update and issue #1984 comment also returned HTTP 403 (unverified email); code commits/readbacks remain successful."
     },
     {
       "id": "V14-005",
@@ -1271,7 +1271,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-23T21:43:37.326Z",
+    "timestamp": "2026-11-23T21:44:55.998Z",
     "release_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
     "code_candidate_sha": "a5e536a96f6dc2a3a515d37b08393f7136e9efff",
     "documentation_head": "5166643ac74fbca318511c0918dea06e98a11ff9",
@@ -1318,7 +1318,9 @@
       "private_device": "ISSUE_115_LAST_STORED_2026-11-23T19:52:16Z; INSTALLED_8D93236; AUTO_UPDATE_ENABLED; STOPPED_BY_USER; B1_B2_ZERO_VALID_OFFERS; NO_LIVE_RECEIPT",
       "private_owner_read": "NEW_READ_ISSUES_BLOCKED_HTTP_422_UNVERIFIED_EMAIL",
       "release": "NOT_RELEASED",
-      "user_action_required": "NONE"
+      "user_action_required": "NONE",
+      "documentation_head": "6299c84c08c217b63c64393952212a3af23c7c3d",
+      "pr_metadata": "PR_BODY_AND_ISSUE_1984_COMMENT_HTTP403_UNVERIFIED_EMAIL"
     }
   },
   "qa_latest_checkpoint": {
@@ -1372,13 +1374,13 @@
     "active_agents": "Exactly five active V14 roles: Boss & Integration, QA & Android, JEPA & Memory, Research & Perception, Core & Harness.",
     "documentation_pr2333": "DRAFT documentation/evidence synchronization PR #2333, branch boss/v14-run12-whole-system-handoff-20261122; base b3b92. Updates board/workplan/next-action/append-only coverage only; no runtime code."
   },
-  "latest_documentation_head_at_readback": "09fff463a666f85bc36094a3f763b45984861a43",
+  "latest_documentation_head_at_readback": "6299c84c08c217b63c64393952212a3af23c7c3d",
   "latest_jepa_checkpoint": {
     "timestamp": "2026-11-23T21:43:37.326Z",
     "branch": "jepa-memory/v14-temporal-boss-2443-rebase-20261123-run14",
     "code_head": "1cfac4a1518a959a2022b81e796e3dfc0b6b2cf0",
     "handoff_commit": "3066dac6aaaa5573b13c1dc0e0864f144e08c2c2",
-    "user_next_action_commit": "814142e27dd93ab83eae9b3fb81d2ba08a379f11",
+    "user_next_action_commit": "6299c84c08c217b63c64393952212a3af23c7c3d",
     "workplan_commit": "40a2ddbbf66ae2a6f2f0c4c953e4bb612e32ecf6",
     "research_ledger_commit": "96612248e48500a09ca82de767aff85f9d86c03f",
     "canon_coverage_commit": "09fff463a666f85bc36094a3f763b45984861a43",
@@ -1388,6 +1390,7 @@
     "local_project_tests": "NOT_RUN_NO_CHECKOUT_DNS_FAILURE",
     "synthetic_numeric": "PASS",
     "redmi": "REDMI_UNVERIFIED_NO_LIVE_RECEIPT",
-    "next_action": "Wait for exact-head Boss CI green; rebase JEPA #2454 then Core #2457; run Python 3.13/3.14 and staged/integrated suites."
+    "next_action": "Wait for exact-head Boss CI green; rebase JEPA #2454 then Core #2457; run Python 3.13/3.14 and staged/integrated suites.",
+    "documentation_head": "6299c84c08c217b63c64393952212a3af23c7c3d"
   }
 }
