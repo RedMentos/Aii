@@ -5,6 +5,7 @@ CorollaryCopy, ActionSelection and ActionOutcome producers. Its rows are
 synthetic test experiences, not live user or Redmi data.
 """
 import hashlib
+import json
 import math
 
 import pytest
@@ -1095,7 +1096,7 @@ def test_source_disjoint_split_keeps_shared_context_components_together():
             shared = source_ref("shared-context-" + str(group_number))
             digests = sorted({left["sha256"], right["sha256"], shared["sha256"]})
             component_digest = hashlib.sha256(
-                __import__("json").dumps(digests, separators=(",", ":")).encode("utf-8")
+                json.dumps(digests, separators=(",", ":")).encode("utf-8")
             ).digest()
             component_fold = int.from_bytes(component_digest[:8], "big") % 2
             if component_fold != target_fold or primary_fold(left) == primary_fold(right):
