@@ -16,6 +16,8 @@ BUILDER = 'scripts/termux_runtime_recovery_candidate_20261121.py'
 BUILDER_SHA = 'ae34b45f59bb5daba1cd0fc593e437dbc0478e53a2ea437d362bda4fdeed7530'
 ARITHMETIC_OVERLAY = 'scripts/integrated_arithmetic_guard_candidate_20261121.py'
 ARITHMETIC_OVERLAY_GIT_BLOB = '88c179a71387c5caba7bbd645f868a7cccf39d30'
+NATIVE_PROBE_APPROVAL_OVERLAY = 'scripts/integrated_native_probe_approval_candidate_20261122.py'
+NATIVE_PROBE_APPROVAL_OVERLAY_SHA256 = '84e9a145eb79a04c7df461f6b1124bf7009c06ec5afc864a1f9107f9dfd049fb'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 
@@ -123,6 +125,19 @@ def stage(code_dir: Path, destination: Path) -> dict:
                             'no automatic learning permission'],
         }
         (staging / 'INTEGRATION_STAGE.json').write_text(json.dumps(manifest, indent=2) + '\n')
+        native_probe_overlay_path = code_dir / NATIVE_PROBE_APPROVAL_OVERLAY
+        if native_probe_overlay_path.is_symlink() or not native_probe_overlay_path.is_file():
+            raise ValueError('native probe approval overlay missing or unsafe')
+        native_probe_overlay_raw = native_probe_overlay_path.read_bytes()
+        if hashlib.sha256(native_probe_overlay_raw).hexdigest() != NATIVE_PROBE_APPROVAL_OVERLAY_SHA256:
+            raise ValueError('native probe approval overlay source changed')
+        native_probe_overlay_spec = importlib.util.spec_from_file_location(
+            'v14_checked_native_probe_approval', native_probe_overlay_path)
+        if native_probe_overlay_spec is None or native_probe_overlay_spec.loader is None:
+            raise RuntimeError('native probe approval overlay is not loadable')
+        native_probe_overlay_module = importlib.util.module_from_spec(native_probe_overlay_spec)
+        native_probe_overlay_spec.loader.exec_module(native_probe_overlay_module)
+        manifest = native_probe_overlay_module.apply_staged(code_dir, staging)
         _publish(staging, destination)
         return manifest
     except BaseException:
