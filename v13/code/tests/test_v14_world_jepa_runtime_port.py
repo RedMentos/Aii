@@ -24,7 +24,65 @@ def _make_store(home):
     return store, session
 
 
-def _add_transitions(store, session, start, count, status_overrides=None, source_text_factory=None, context_source_refs_factory=None):
+def _add_focal_cycle_context(store, event_id, generation, refs, index, provenance_refs=None, cycle_number=1, persist_items=True):
+    """Persist one C4 cycle; only the final producer cycle persists FocalItems."""
+    item_ids = [
+        f"focal-context-{index:04d}-{cycle_number:02d}-{offset:02d}"
+        for offset in range(len(refs))
+    ]
+    cycle = contracts.packet(
+        "FocalCycle",
+        "C4_FOCAL",
+        event_id,
+        generation,
+        refs if provenance_refs is None else provenance_refs,
+        cycle=cycle_number,
+        decision="IGNORE",
+        coalition=item_ids,
+        signals={},
+        budget={"queries_left": 0, "inquisition_steps_left": 0, "cycles": cycle_number, "slots": len(item_ids)},
+    )
+    store.add_packet("FocalCycle", cycle)
+    if not persist_items:
+        return
+    for item_id, ref in zip(item_ids, refs):
+        item = contracts.packet(
+            "FocalItem",
+            "C4_FOCAL",
+            event_id,
+            generation,
+            [ref],
+            item_id=item_id,
+            source_kind="MEMORY",
+            source_refs=[ref],
+            fact_hypothesis_status="HYPOTHESIS",
+            state_type="ACTIVE",
+            salience=0.5,
+            uncertainty=0.1,
+            priority=0.5,
+            self_generated=False,
+            created_wall=0.0,
+            origin_event_id=event_id,
+            age_ms=0,
+            expiry={"turns_left": 1, "policy": "TEST_ONLY"},
+            confidence_type="TEST",
+            exact_fallback="SOURCE_REF",
+            exact_fallback_refs=[ref],
+            scale="event",
+            covered_range=[{
+                "source_id": ref["source_id"],
+                "char_start": ref["char_start"],
+                "char_end": ref["char_end"],
+            }],
+            compression_ratio=None,
+            boundary_confidence=None,
+            boundary_source="NONE",
+            children=[],
+            parents=[],
+        )
+        store.add_packet("FocalItem", item)
+
+def _add_transitions(store, session, start, count, status_overrides=None, source_text_factory=None, context_source_refs_factory=None, focal_cycle_context_refs_factory=None, focal_cycle_provenance_refs_factory=None, focal_cycle_history_factory=None):
     status_overrides = status_overrides or {}
     action_ids = []
     actions = tuple(world_model.ACTIONS)
@@ -34,6 +92,34 @@ def _add_transitions(store, session, start, count, status_overrides=None, source
         event = store.event(session, text)
         event_id = event["event_id"]
         generation = event["brain_generation_id"]
+        cycle_history = (
+            focal_cycle_history_factory(index) or []
+            if focal_cycle_history_factory is not None else []
+        )
+        if type(cycle_history) is not list:
+            raise TypeError("focal_cycle_history_factory must return a list")
+        for cycle_number, cycle_refs in enumerate(cycle_history, start=1):
+            if cycle_refs:
+                _add_focal_cycle_context(
+                    store, event_id, generation, cycle_refs, index,
+                    cycle_number=cycle_number,
+                    persist_items=False,
+                )
+        focal_refs = (
+            focal_cycle_context_refs_factory(index) or []
+            if focal_cycle_context_refs_factory is not None else []
+        )
+        if focal_refs:
+            cycle_refs = (
+                focal_cycle_provenance_refs_factory(focal_refs)
+                if focal_cycle_provenance_refs_factory is not None else focal_refs
+            )
+            _add_focal_cycle_context(
+                store, event_id, generation, focal_refs, index,
+                provenance_refs=cycle_refs,
+                cycle_number=len(cycle_history) + 1,
+                persist_items=True,
+            )
         action_index = index % len(actions)
         route = actions[action_index]
 
@@ -783,6 +869,61 @@ def test_verified_t8_receipt_preserves_complete_source_ref(tmp_path):
         store.close()
 
 
+def test_verified_t8_receipt_merges_final_focal_cycle_coalition_refs(tmp_path):
+    store, session = _make_store(tmp_path / "brain-focal-cycle-lineage")
+    try:
+        context_ref = store.source("source admitted to the final C4 coalition", "MEMORY")
+        _add_transitions(
+            store, session, 0, 1,
+            focal_cycle_context_refs_factory=lambda _index: [context_ref],
+        )
+        receipts, rejected = verify_committed_transitions(store, limit=16)
+        assert rejected == 0 and len(receipts) == 1
+        assert context_ref in receipts[0].source_refs
+        row = _receipt_row(receipts[0])
+        assert context_ref in row["source_refs"]
+    finally:
+        store.close()
+
+
+def test_verified_t8_rejects_truncated_focal_cycle_coalition_lineage(tmp_path):
+    store, session = _make_store(tmp_path / "brain-focal-cycle-truncated")
+    try:
+        refs = [
+            store.source(f"coalition-source-{index:02d}", "MEMORY")
+            for index in range(17)
+        ]
+        _add_transitions(
+            store, session, 0, 1,
+            focal_cycle_context_refs_factory=lambda _index: refs,
+            # Reproduce the current producer's [:16] cap while all 17 FocalItems
+            # remain present. The verifier must not certify the incomplete list.
+            focal_cycle_provenance_refs_factory=lambda values: values[:16],
+        )
+        receipts, rejected = verify_committed_transitions(store, limit=16)
+        assert receipts == [] and rejected == 1
+    finally:
+        store.close()
+
+
+def test_verified_t8_rejects_revoked_focal_cycle_coalition_source(tmp_path):
+    store, session = _make_store(tmp_path / "brain-focal-cycle-revoked")
+    try:
+        context_ref = store.source("revoked source admitted to C4", "MEMORY")
+        _add_transitions(
+            store, session, 0, 1,
+            focal_cycle_context_refs_factory=lambda _index: [context_ref],
+        )
+        with store.tx() as connection:
+            connection.execute(
+                "UPDATE sources SET deleted=1 WHERE id=?", (context_ref["source_id"],)
+            )
+        receipts, rejected = verify_committed_transitions(store, limit=16)
+        assert receipts == [] and rejected == 1
+    finally:
+        store.close()
+
+
 def _memory_forget_source(store, source_id):
     from v13.memory import Memory
     memory = object.__new__(Memory)
@@ -938,7 +1079,7 @@ def test_memory_forget_rebuilds_after_context_source_replay_row_eviction(tmp_pat
         context_ref = store.source("context used by an old action", "MEMORY")
         ids = _add_transitions(
             store, session, 0, 256,
-            context_source_refs_factory=lambda index: [context_ref] if index == 0 else [],
+            focal_cycle_context_refs_factory=lambda index: [context_ref] if index == 0 else [],
         )
         _set_runtime_permissions(
             store, learning_enabled=True, optimizer_permission=True, steps=120
@@ -968,6 +1109,137 @@ def test_memory_forget_rebuilds_after_context_source_replay_row_eviction(tmp_pat
         current, _ = store.state("v14.world_jepa.store_consumer", None)
         assert current["active"] is None and current["previous"] is None
         assert current["scan_cursor"] == 0
+    finally:
+        store.close()
+
+
+def test_memory_forget_conservatively_invalidates_nonfinal_focal_cycle_source_after_replay_row_eviction(tmp_path):
+    home = tmp_path / "brain-forget-nonfinal-focal-context"
+    store, session = _make_store(home)
+    try:
+        earlier_ref = store.source("source used only in an earlier C4 cycle", "MEMORY")
+        final_ref = store.source("source retained in the final C4 coalition", "MEMORY")
+        ids = _add_transitions(
+            store, session, 0, 256,
+            focal_cycle_history_factory=lambda index: [[earlier_ref]] if index == 0 else [],
+            focal_cycle_context_refs_factory=lambda index: [final_ref] if index == 0 else [],
+        )
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=120
+        )
+        result = consume_after_commit(store, home, limit=256)
+        assert result["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+
+        state, version = store.state("v14.world_jepa.store_consumer", None)
+        active = dict(state["active"])
+        target = next(row for row in active["experience_rows"] if row["action_id"] == ids[0])
+        assert final_ref in target["source_refs"]
+        # Earlier-cycle sources are part of the bounded T8 trajectory receipt,
+        # even when they are absent from the final coalition.
+        assert earlier_ref in target["source_refs"]
+        active["experience_rows"] = [
+            row for row in active["experience_rows"] if row["action_id"] != ids[0]
+        ]
+        active["train_ids"] = [item for item in active["train_ids"] if item != ids[0]]
+        active["holdout_ids"] = [item for item in active["holdout_ids"] if item != ids[0]]
+        state = dict(state)
+        state["active"] = active
+        store.set_state("v14.world_jepa.store_consumer", state, expected=version)
+
+        _memory_forget_source(store, earlier_ref["source_id"])
+
+        forgotten = store.one(
+            "SELECT deleted FROM sources WHERE id=?", (earlier_ref["source_id"],)
+        )
+        assert forgotten is not None and forgotten["deleted"] == 1
+        current, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert current["active"] is None and current["previous"] is None
+        assert current["scan_cursor"] == 0
+    finally:
+        store.close()
+
+
+def test_verified_t8_rejects_capped_nonfinal_focal_cycle_lineage_without_item_receipts(tmp_path):
+    store, session = _make_store(tmp_path / "brain-focal-history-truncated")
+    try:
+        earlier_refs = [
+            store.source(f"earlier-cycle-source-{index:02d}", "MEMORY")
+            for index in range(16)
+        ]
+        final_ref = store.source("final-cycle-source", "MEMORY")
+        _add_transitions(
+            store, session, 0, 1,
+            focal_cycle_history_factory=lambda index: [earlier_refs] if index == 0 else [],
+            focal_cycle_context_refs_factory=lambda index: [final_ref] if index == 0 else [],
+        )
+        receipts, rejected = verify_committed_transitions(store, limit=16)
+        assert receipts == [] and rejected == 1
+    finally:
+        store.close()
+
+
+def test_memory_forget_uses_all_preaction_cycles_but_ignores_same_timestamp_postaction_cycle_after_row_eviction(tmp_path):
+    home = tmp_path / "brain-forget-postaction-focal-context"
+    store, session = _make_store(home)
+    try:
+        earlier_ref = store.source("source in C4 cycle one", "MEMORY")
+        final_ref = store.source("source in C4 cycle two", "MEMORY")
+        post_ref = store.source("source in a post-action C4 packet", "MEMORY")
+        ids = _add_transitions(
+            store, session, 0, 256,
+            focal_cycle_history_factory=lambda index: [[earlier_ref]] if index == 0 else [],
+            focal_cycle_context_refs_factory=lambda index: [final_ref] if index == 0 else [],
+        )
+        action = store.one(
+            "SELECT id,event_id,created FROM actions WHERE id=?", (ids[0],)
+        )
+        event = store.one(
+            "SELECT generation_id FROM events WHERE id=?", (action["event_id"],)
+        )
+        before = store.one("SELECT COALESCE(MAX(rowid),0) AS last_rowid FROM packets")
+        # A post-action C4 packet can share the action's time.time() float.
+        # Packet row order, not wall-clock equality, must define the causal cutoff.
+        _add_focal_cycle_context(
+            store, action["event_id"], event["generation_id"], [post_ref], 999,
+            cycle_number=3, persist_items=True,
+        )
+        with store.tx() as connection:
+            connection.execute(
+                "UPDATE packets SET created=? WHERE event_id=? AND rowid>? AND kind IN ('FocalCycle','FocalItem')",
+                (float(action["created"]), action["event_id"], before["last_rowid"]),
+            )
+
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=120
+        )
+        result = consume_after_commit(store, home, limit=256)
+        assert result["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+
+        state, version = store.state("v14.world_jepa.store_consumer", None)
+        active = dict(state["active"])
+        target = next(row for row in active["experience_rows"] if row["action_id"] == ids[0])
+        assert earlier_ref in target["source_refs"]
+        assert final_ref in target["source_refs"]
+        assert post_ref not in target["source_refs"]
+        active["experience_rows"] = [
+            row for row in active["experience_rows"] if row["action_id"] != ids[0]
+        ]
+        active["train_ids"] = [item for item in active["train_ids"] if item != ids[0]]
+        active["holdout_ids"] = [item for item in active["holdout_ids"] if item != ids[0]]
+        state = dict(state)
+        state["active"] = active
+        store.set_state("v14.world_jepa.store_consumer", state, expected=version)
+        cursor_before = state["scan_cursor"]
+
+        _memory_forget_source(store, post_ref["source_id"])
+
+        forgotten = store.one(
+            "SELECT deleted FROM sources WHERE id=?", (post_ref["source_id"],)
+        )
+        assert forgotten is not None and forgotten["deleted"] == 1
+        current, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert current["active"] is not None
+        assert current["scan_cursor"] == cursor_before
     finally:
         store.close()
 

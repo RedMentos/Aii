@@ -1,3 +1,66 @@
+# M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
+
+The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
+
+Overlapping windows are generated only when requested in bounded NumPy batches. Prefix counts make strict missing-window checks independent of input length; estimated batch allocation is capped at 256 MiB. Every model receives the same `InputBundle` (X, seasonal S, calendar). The test split remains locked until exact preregistration/config/split/data hashes match and the access log has been flushed and fsynced.
+
+**Evidence boundary:** exact Python 3.13/3.14 M1 CI is queued, not passed. No local full suite, real UCI cohort, training, weight update or Redmi validation. M1 remains [ENTWURF].
+
+**Next:** wait for CI and fix failures; then implement BASE adapters on the common InputBundle, followed by the two-stage JEPA/direct-MAE PROBE. Keep the full baseline list and M1a/b/c controls.
+
+**No user action is required.** Do not run a manual Termux command or send another update request; the phone updater state is separate from M1.
+
+---
+
+# M1 DATA — latest implementation checkpoint (2026-11-23 12:43 UTC)
+
+The DATA path now has a bounded-memory route for the real UCI file:
+
+- `ArrayDataset.from_uci()` validates the file in two passes and fills a float32 matrix directly; it does not construct a Python object for every minute.
+- `iter_batches()` creates overlapping windows only when needed. Missing-window checks use prefix counts; batch allocation is capped at 256 MiB.
+- Every model receives the same `InputBundle`: X context, horizon-aligned seasonal S and calendar features. Disabling calendar creates a zero-width calendar tensor, not a different data route.
+- Test batches remain locked until exact preregistration/config/split/data hashes match and the audit event is flushed and fsynced.
+
+**Evidence boundary:** exact M1 GitHub Actions CI is queued/pending, not passed. No local full suite, real UCI cohort, training, weight update or Redmi validation. M1 remains [ENTWURF].
+
+**Next:** wait for exact Python 3.13/3.14 CI; fix failures; then build BASE adapters on the common InputBundle, followed by JEPA/direct-MAE PROBE. Keep the full baseline list and M1a/b/c controls.
+
+**No user action is required.** Do not run a manual Termux command or send another update request; the phone updater state remains separate from this M1 experiment.
+
+---
+
+# M1 experiment — latest implementation checkpoint (2026-11-23 12:34 UTC)
+
+The M1 DATA implementation is present on the release-development branch. It now rejects non-finite measurements, treats common missing markers case-insensitively, requires every seasonal lag to be at least the forecast horizon, validates rows/channels/timestamp continuity at both normal dataset construction and hash-gated test access, and tests exact seasonal alignment plus missing seasonal-source rejection.
+
+- Current branch HEAD: `8fb5a61361e34862f8510f7f2c14c43cc9cd2952` (32 commits ahead of integration baseline `b20e9b1f3dd53af472055adb43da628785494ec4`).
+- M1 GitHub Actions runs: push `45175650226` and pull_request `45175661600` are **QUEUED**, not passed.
+- No local full suite, real UCI data run, model training, weight update or Redmi validation. M1 remains [ENTWURF]; no test-year access.
+- Next: wait for exact CI result, fix failures, then implement common InputBundle and baseline adapters before JEPA/direct-MAE PROBE. Preserve the M1a/b/c gates and all equal-input/parity controls.
+
+**No user action is required.** Do not run a manual Termux command or send another update request; the phone updater status remains governed by the existing authenticated receipt below.
+
+---
+
+# Boss & Integration — current verified handoff (2026-11-23)
+
+**No user action is required. Do not run a manual Termux command or send a duplicate update request.** The existing authenticated auto-updater is enabled.
+
+- Current release branch gpt6/v13-private-remote-bridge-20261111 = b20e9b1f3dd53af472055adb43da628785494ec4. PR #2429 is merged; exact merge-SHA push CI is 37/37 SUCCESS, including staged-runtime and integrated-regression.
+- New code: source-bound ActionSelection SourceRef lineage, source-disjoint T8 cohorts, and Memory-forget checkpoint restore/invalidation with source-verified replay. This is Store/SQLite checkpoint rollback/replay, not native body-weight unlearning, trained B3 latent coupling or Redmi proof.
+- IH-H12 durable output-commit and C7 persisted-receipt gate is merged via #2434 at 69e77bc (39/39 exact push check-runs SUCCESS).
+- Latest PIPELINE_STATUS #767 still reports 8bf44cb / CI_WAIT from 10:55:05 UTC, before final b20e9 CI green. Auto-update is enabled; b20e9 installation is not confirmed. UPDATE_REQUEST #737 was already acknowledged QUEUED; do not duplicate.
+- Last stored diagnostics: 57.739 s total, 41.627 s TTFT, 38.945 s C3 prefill, 751 prompt tokens, 2 generated; B1/B2 TIME_BUDGET 53.2/54.2 s; correctness UNKNOWN. HEALTH: 1,209 MiB MemAvailable and 1,030 MiB disk; LEARNING_STATUS unavailable.
+- Local full Aii suite BLOCKED / NOT_RUN (no checkout and GitHub DNS unavailable). Isolated SQLite 3.46.1 JSON1 smoke passed, but it is not a project or Android test.
+- Highest next integration: recompose #2370 fair B1/B2→C4→C3 on b20e9; old branch 193 ahead / 34 behind and ~1.95 s/body synthetic slices do not solve 53.2/54.2 s native timeouts. Preserve both bodies and require useful source-bound offers consumed by C4/C3.
+- Production ActionSelection still records only the event source; all admitted Memory/observer/Enlightened context SourceRefs must be emitted by the real producer.
+- #2433 remains draft with 3 CI failures (path vs path_id assertion and stale attention.py pin). #2372 temporal JEPA and #2405 episodic recall remain stacked on non-release branches and must rebase.
+- Docs PR #2378 remains unmerged: 117 ahead / 34 behind and deletes 1,582 lines from Next Action. Research R-090–R-107 was ported append-only; historical Next Action and 1,255-heading Canon inventory are preserved.
+
+See [BOSS_INTEGRATION_RUN12_20261123.md](v14/handoffs/BOSS_INTEGRATION_RUN12_20261123.md) for exact evidence.
+
+---
+
 # QA & Android — temporal JEPA and source-lifecycle follow-up (2026-11-22)
 
 - JEPA/Memory PR [#2351](https://github.com/RedMentos/Aii/pull/2351), exact head 3df0c8a6a65dd2545bde62db92efc761d143032a, adds dense contiguous T8 temporal windows (history lengths 2/3), explicit censored omissions, unknown-gap breaks, connected session/source split, NumPy WorldJEPA + EMA/Adam/checkpoint persistence, and B1/B2/SELF shadow readouts. It is wired into SleepRuntime post-commit but has no prompt consumer or native body-weight effect. Synthetic Store/T8 fixtures only. Exact CI currently queued; PR is DRAFT / NOT_RELEASED.

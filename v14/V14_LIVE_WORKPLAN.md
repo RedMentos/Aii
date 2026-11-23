@@ -1,3 +1,34 @@
+## M1 DATA audit-first and direct-array checkpoint — 2026-11-23 12:44 UTC
+
+- `ArrayDataset.from_uci()` validates/counts the source on pass one, fills a float32 matrix and computes the exact parsed-data fingerprint on pass two, and rejects file changes between passes. It does not allocate Python `MinuteRow` objects for the real cohort.
+- Window construction is lazy and batched. Prefix missing-counts avoid rescanning L for every candidate; estimated batch allocation is hard-capped at 256 MiB. The shared `InputBundle` exposes X, horizon-aligned seasonal S and calendar tensors to all primary models; calendar ablation has a zero-width calendar tensor.
+- Both test entry points now verify exact preregistration/config/split/data hashes and persist+fsync the access event before test windows are materialized or unlocked. Failed audit writes fail closed.
+- New regression coverage includes two-pass parser hash parity, malformed/truncated CSV, off-grid timestamps, non-finite values, seasonal alignment, monthly statistics parity, batch bounds, audit persistence failure and test-gate enforcement.
+- Latest code snapshot: `a0088effa5e820b86e69751744d7f6dcda99a780`. Exact Python 3.13/3.14 GitHub Actions remain queued; no test result is claimed. No local full suite, real UCI cohort, training, weight update or Redmi validation. M1 remains [ENTWURF].
+- Next: wait for exact CI; fix failures; then implement BASE adapters and the full baseline set before PROBE. Preserve M1a/b/c and every input-parity control.
+
+---
+
+## M1 DATA memory-path checkpoint — 2026-11-23 12:43 UTC
+
+- The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass CSV validation/counting, direct float32 matrix fill, parsed-data fingerprint parity with the list parser, and source-file stat checks across both passes. The list parser remains a small-fixture/reference adapter.
+- Overlapping windows are no longer required to be materialized as Python objects. `iter_batches()` builds bounded NumPy batches, prefix counts make strict missing-window checks independent of L, and a 256 MiB hard ceiling rejects oversized batches. `InputBundle` carries X, seasonal S and calendar features identically for every primary model; calendar-off ablation is represented by a zero-width calendar tensor.
+- Test access is still hash-gated. `open_test_split()` checks preregistration/config/split/data hashes and only unlocks test batches after the access event is flushed and fsynced.
+- Exact M1 Actions runs are still queued/pending; no test result is claimed. No local full suite, real UCI cohort, model training, weight update or Redmi validation has occurred. M1 remains [ENTWURF].
+- Code snapshot before this handoff sync: `8c24322f32ae9af27c57efa9b2c59f32a8fafcf6`. Next: wait for Python 3.13/3.14 exact CI, fix any failures, then implement BASE adapters using the common InputBundle. Preserve every agreed baseline and M1a/b/c control.
+
+---
+
+## M1 forecasting experiment checkpoint — 2026-11-23 12:34 UTC
+
+- M1 DATA files are present on the release-development branch: `v14/m1/data.py`, `test_data.py`, `README.md`, package initializer and `.github/workflows/v14-m1-data.yml`.
+- Independent static audit found and fixed non-finite numeric ingestion, case-insensitive missing markers, seasonal lags shorter than horizon, direct-entry row/channel/timestamp validation, exact seasonal alignment test and missing seasonal-source rejection.
+- Current branch HEAD is `8fb5a61361e34862f8510f7f2c14c43cc9cd2952`, 32 commits ahead of integration baseline `b20e9b1f3dd53af472055adb43da628785494ec4`; no force-push. M1 exact GitHub Actions runs 45175650226 (push) and 45175661600 (pull_request) are QUEUED. Do not call them passed.
+- No local full Aii suite, UCI real-data run, M1 model training, weight update, or Redmi validation has been performed. M1 remains [ENTWURF]. No test-year access.
+- Next: inspect exact M1 CI results; then implement common InputBundle and baseline adapters (Persistence, Seasonal Persistence, Train Mean/Median, Ridge-AR, LAD/L1-AR, Raw-Window-Probe, Raw-Window-MLP) before JEPA/direct-MAE PROBE. Preserve all same-information input parity and M1a/b/c controls. This is an additive experiment lane and does not replace the P0 whole-runtime work.
+
+---
+
 ## Boss follow-up — JEPA exact-head pin recheck — 2026-11-22T10:00:40.871Z
 
 - PR #2331 advanced to `535eba6f668b3990416c361368f36e3e8f1e599e` on b3b92. Exact matrix: **9 failures / 4 in progress / 2 queued / 4 success / 1 skipped**.
@@ -1266,3 +1297,34 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 2. Recompose the B1/B2→C4→C3 fair-budget path on 4dc7595f383e7ba932ee8e9fcf52c5541210ed5e, retaining both bodies and source-bound offer receipts. Do not cherry-pick from a 12-commit-behind divergent branch without rebuilding its exact source chain.
 3. Coordinate QA/JEPA #2426 pin repair and port #2355 Store serialization onto the current guard; run Python 3.13/3.14, staged, migration, optimizer and negative interleaving tests.
 4. Continue independent whole-Canon vertical slices after integration; do not let C3 latency work replace voice, Android agency, World/Self/Memory, JEPA, B3 or self-optimization scope.
+
+## Boss & Integration — run 12, 2026-11-23
+
+### Release and integrated runtime behavior
+
+- Fixed release branch gpt6/v13-private-remote-bridge-20261111 is exactly b20e9b1f3dd53af472055adb43da628785494ec4; branch readback matched.
+- PR #2429 was independently reviewed and merged. Memory._forget_source now enters a source-aware WorldJEPA guard. It validates ActionSelection SourceRefs against exact Store hashes/spans, carries multiple refs into T8 fingerprints, groups training rows by connected source lineage to prevent train/holdout leakage, and on forget restores a clean hash-verified previous checkpoint or invalidates tainted state and rewinds to source-verified replay. Pending-only rows are discarded without being called trained influence.
+- IH-H12 durable output commit and C7 persisted-receipt gate was integrated by PR #2434 at 69e77bc; Broker C7 checks the persisted Store receipt before egress. Exact push 39/39 SUCCESS.
+- PR #2429 PR-head Python 3.13/3.14 optimizer-resume/source-forget PASS; staged-runtime PASS; integrated-regression PASS; offline bridge security PASS; additive validator policy-SKIPPED. Exact merged push b20e9b1f3dd53af472055adb43da628785494ec4 has 37/37 check-runs SUCCESS.
+- LOCAL_LINUX full Aii suite BLOCKED / NOT_RUN; no checkout and GitHub DNS unavailable. Isolated SQLite 3.46.1 JSON1 smoke PASS, not project or Android evidence.
+
+### Honest device boundary
+
+- PIPELINE_STATUS #767 at 10:55:05 UTC reports 8bf44cb, auto-update enabled, Runtime/Dashboard CI_WAIT, last_error NONE. It predates final b20e9 CI green and does not confirm installation.
+- DIAGNOSTICS #764 repeats stored FINAL turn: 57.739 s total, 41.627 s TTFT, 38.945 s C3 prefill, 751 prompt, 2 generated; correctness UNKNOWN. B1/B2 TIME_BUDGET 53.2/54.2 s. Instant native map 0 mapped processes, child readability UNKNOWN; not sustained residency/free RAM.
+- HEALTH #765: 1,209 MiB MemAvailable / 5,569 MiB and 1,030 MiB disk; Runtime UNAVAILABLE in HEALTH while DIAGNOSTICS says RUNNING. LEARNING_STATUS #766 UNAVAILABLE. Official Age 0; lab request 10 / effective 5; physical execution false; learning authority requires separate SHADOW.
+- No CHAT_SEND, LOG_PAGE (console error sharing not opted in), duplicate UPDATE_REQUEST, shell, model/weight/permission change or data mutation. Existing #737 already QUEUED.
+
+### Cross-agent integration and whole-system gaps
+
+- Fair B1/B2 #2370 remains DRAFT / NOT_MERGEABLE: exact head 0fdd033 is 193 ahead / 34 behind b20e9. Old-base matrix 37 SUCCESS / 1 policy SKIP is not current-base acceptance. Its 30 s fixture gives ~1.95 s per body, far below 53.2/54.2 s Redmi timeouts. This proves synthetic fairness, not useful OfferPacket. Recompose current-base; retain both bodies, IH-H12 gate and exact pins; report attempted/delivered/consumed offers separately.
+- Perception #2433 remains DRAFT with three failures: path vs path_id assertion on Python 3.13/3.14 and stale attention.py record-only controller pin. New attention.py blob 0c1831f5a0b7aef990e15e3e2842dc445776153a. Rebind dependent recovery/stage/deployer pins; do not weaken hashes. No AudioRecord/Android capture proof.
+- JEPA temporal #2372 and episodic #2405 remain stacked on non-release branches; rebase onto b20e9 and reuse source-forget contract. Production ActionSelection still records only event source; recalled Memory/observer/Enlightened context SourceRefs remain a missing producer path.
+- Docs #2378 is stale (117 ahead / 34 behind) and its Next Action diff removes 1,582 lines. Not merged; 1,255-heading inventory and history remain intact; research notes ported append-only.
+- Whole Canon remains open: native B1/B2 offers and correct C3; trained B3 latent utility; body-weight updates and cross-organ gradients; voice/audio capture and trainable decoder; Android background/UI control; distinct sparse MoE; Age/ResourceGuard separation; Memorilla consumer; self-optimization; OS sandbox/Judge; reboot/rollback; semantic traceability.
+
+### Research and next order
+
+- Research ledger now carries R-084 and R-090–R-107 append-only. R-096 engram gate is synthetic and has no old-task retention win; not sparse MoE. R-107 FAR is a preprint and sony/far is CC BY-NC 4.0 with CUDA 12.8 / 14 GB GPU environment; conceptual only, no code/weights reused.
+- Next: wait for later PIPELINE_STATUS; recompose fair B1/B2→C4→C3; wire production ActionSelection context SourceRefs; rebase temporal/episodic JEPA; continue voice, Android agency, B3, sparse MoE, self-optimization and all Canon families.
+- **User action required: NONE.** Auto-updater enabled; no manual command or duplicate UPDATE_REQUEST.
