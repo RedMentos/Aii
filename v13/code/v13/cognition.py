@@ -285,12 +285,15 @@ class Cognition:
             self.s.log('enlightened_space_unavailable',e['event_id'],
                        {'stage':'perception','error':type(exc).__name__})
         return stored
-    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None):
+    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None,preanswer_budgeted=None):
         if role not in {'B1_DETAIL','B2_GIST'}:raise ValueError('Unbekannte Body-Rolle')
+        if preanswer_budgeted is not None and type(preanswer_budgeted) is not bool:
+            raise ValueError('preanswer_budgeted must be bool or None')
         # Inference must finish within its own budget. A completed foreground
         # result may remain eligible until the already bounded consumer turn ends.
         # Background/probe callers retain their original observer-window expiry.
-        preanswer_observer = valid_until is not None
+        preanswer_observer = (valid_until is not None if preanswer_budgeted is None
+                              else preanswer_budgeted)
         valid_until=deadline if valid_until is None else valid_until
         for value in (deadline,valid_until):
             if isinstance(value,bool) or not isinstance(value,(int,float)) or not math.isfinite(value) or value<=0:raise ValueError('Offer deadline ungültig')
