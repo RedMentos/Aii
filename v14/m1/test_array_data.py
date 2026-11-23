@@ -17,6 +17,8 @@ from v14.m1.data import (
     dataset_sha256,
     make_split,
     split_boundaries_sha256,
+    data_config_sha256,
+    dataset_sha256,
 )
 
 
@@ -109,6 +111,28 @@ class ArrayWindowTests(unittest.TestCase):
             self.assertTrue(batches)
             event = json.loads((root / "access.jsonl").read_text(encoding="utf-8"))
             self.assertEqual(event["preregistration_sha256"], digest)
+
+    def test_test_access_fails_closed_when_audit_log_cannot_be_written(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            prereg = {
+                "data_config_sha256": data_config_sha256(self.config),
+                "split_boundaries_sha256": split_boundaries_sha256(self.rows, self.config),
+                "dataset_sha256": dataset_sha256(self.rows, self.channels),
+            }
+            raw = json.dumps(prereg, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            path = root / "prereg.json"
+            path.write_bytes(raw)
+            log_directory = root / "not-a-file"
+            log_directory.mkdir()
+            with self.assertRaises(OSError):
+                self.dataset.open_test_split(
+                    preregistration_path=path,
+                    preregistration_sha256=hashlib.sha256(raw).hexdigest(),
+                    access_log_path=log_directory,
+                )
+            with self.assertRaises(PermissionError):
+                next(self.dataset.iter_batches("test", batch_size=8))
 
     def test_test_preregistration_rejects_data_mismatch(self):
         with tempfile.TemporaryDirectory() as directory:
