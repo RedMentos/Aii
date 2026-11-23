@@ -125,9 +125,12 @@ def _add_transitions(store, session, start, count, status_overrides=None, source
 
         # Selection must be persisted before dispatch: world_model.transitions()
         # admits only the committed selection that existed at action.created.
+        context_source_refs = (
+            context_source_refs_factory(index) or []
+            if context_source_refs_factory is not None else []
+        )
+        assistant_message_id = store.message(session, event_id, "assistant")
         selection_source_refs = [event["source_ref"]]
-        if context_source_refs_factory is not None:
-            selection_source_refs.extend(context_source_refs_factory(index) or [])
         selection = contracts.packet(
             "ActionSelection",
             "C2_CONTROL",
@@ -168,6 +171,17 @@ def _add_transitions(store, session, start, count, status_overrides=None, source
             action_id,
             status,
             {"action_duration_s": duration, "characters": characters},
+        )
+        message_status = status if status in {
+            "FINAL", "CANCELLED", "DEADLINE", "ERROR", "INTERRUPTED"
+        } else "ERROR"
+        store.finish_message(
+            assistant_message_id, message_status,
+            {
+                "action_selection": selection["packet_id"],
+                "context_source_refs": [event["source_ref"], *context_source_refs],
+                "selected_offer_ids": [],
+            },
         )
         action_ids.append(action_id)
     return action_ids
