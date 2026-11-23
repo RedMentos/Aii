@@ -18,7 +18,7 @@ NATIVE_FILES = {
     "v13/native_latent_receiver.py": "b3d1224e0ef5e8847cbca5962995321185eec192c9cdf8cc507088d9f60982d5",
     "v13/native/latent_receiver/CMakeLists.txt": "265cbba812499257fe559c761ca0e9410f2049fdc4a3fe30359a148c765dc30a",
     "v13/native/latent_receiver/native_latent_receiver.cpp": "3a78fc92fd74be85e0b91859fad23f5917a633f4e233376226e1082f80aed344",
-    "v13/native/latent_receiver/README.md": "568757eed361977c60e18764476c1687b1584a8ce001e7847176f92cd84eee08"
+    "v13/native/latent_receiver/README.md": "ddd6240ab8019e621ec6fadbc87dac904c2a0e90c979aec2f3065c4754b63657"
 }
 
 NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,source_ref,deadline):
