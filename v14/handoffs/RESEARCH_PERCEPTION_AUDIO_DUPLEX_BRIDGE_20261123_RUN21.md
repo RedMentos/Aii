@@ -8,7 +8,7 @@
 - New module: `v13/code/v13/audio_duplex_bridge.py`.
 - Consumer: wraps the existing `consume_pcm16_voice_window` A5→A4→C3 admission path and feeds its timed RAW EAR voice-onset result into the existing `duplex.record` / `duplex.settle` path.
 - Policy: default `duplex_mode=auto` records only an overlap candidate and never cancels. Only the existing explicit `duplex_mode=interrupt` setting turns a fresh VOICED onset into `AUDIO_BARGE_IN`. `off` remains inert. The bridge uses no ASR transcript, speaker identity, learning authority or action authority.
-- Consent: a live, thread-bound `AudioConsentLease` must cover both A5/A4/C3 admission and duplex dispatch. It validates source, generation, receipt, stored event and A4 onset evidence. No microphone is opened and no raw PCM is persisted by this adapter.
+- Consent: a live, thread-bound `AudioConsentLease` must cover both A5/A4/C3 admission and duplex dispatch. It validates source, generation, receipt, stored event, the exact persisted PerceptPacket payload, and A4 onset evidence. No microphone is opened and no raw PCM is persisted by this adapter.
 
 ## Evidence
 
