@@ -582,7 +582,7 @@ def test_source_forget_holds_store_lock_through_blob_unlink_against_republicatio
         store.close()
 
 
-def test_temporal_receiver_matrix_batches_bodyview_contract_with_single_readout_parity(tmp_path):
+def test_temporal_receiver_matrix_batches_bodyview_contract_with_single_readout_parity(tmp_path, monkeypatch):
     home = tmp_path / "temporal-bodyview-matrix-store"
     store = _make_store(home)
     try:
@@ -621,6 +621,31 @@ def test_temporal_receiver_matrix_batches_bodyview_contract_with_single_readout_
 
         warm = learner.warm_active_checkpoint()
         assert warm["status"] == "WARMED"
+
+        # The warm recall path has a cooperative budget: after a slow query or
+        # candidate batch it must stop before embedding the remaining candidates.
+        import time
+        model = learner._ephemeral_model
+        original_latent = model.latent
+        latent_calls = 0
+
+        def slow_latent(values, target=False):
+            nonlocal latent_calls
+            latent_calls += 1
+            time.sleep(0.03)
+            return original_latent(values, target=target)
+
+        monkeypatch.setattr(model, "latent", slow_latent)
+        recall_started = time.monotonic()
+        recall = learner.episodic_recall(
+            sessions[0], history_length=2, limit=4, nonblocking=True,
+            budget_s=0.04, warm_only=True,
+        )
+        recall_elapsed = time.monotonic() - recall_started
+        assert recall["status"] == "BUDGET_EXCEEDED", recall
+        assert 1 <= latent_calls <= 2, latent_calls
+        assert recall_elapsed < 0.25, recall_elapsed
+
         matrix = learner.receiver_matrix(
             sessions[0], world_model.ACTIONS, history_length=2,
             nonblocking=True, warm_only=True,
