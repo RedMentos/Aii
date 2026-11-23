@@ -8,7 +8,7 @@ import importlib.util
 from pathlib import Path
 
 BUILDERS = {
-    'scripts/integrated_world_training_resume_candidate_20261111.py': '053fa59dbc2aba606343e7fdd4ea7b904dbb1a8d873ea4a633dbf04419041e77',
+    'scripts/integrated_world_training_resume_candidate_20261111.py': 'd2ed179dddd3e9083c5b578bead3e594f7f9768540f387e3dc5683b349f153a7',
     'scripts/termux_probe_recovery_candidate_20261112.py': '27aec15dc1f003fd2c90d3d5a08d5a4a9af223ab57c188720ea9cd18aebc1b2b',
     'scripts/termux_chat_recovery_candidate_20261112.py': 'befbaca164fd5453d4c93017eca1b556f2d771b1b7cf54879c6764e4716587c7',
     'scripts/termux_idle_recovery_candidate_20261112.py': '2cc656b102b9950fdb9cb81970708692573189995218bff8a18f95ff01fa97d7',
@@ -127,7 +127,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             ):
         raise ValueError('base-composer downstream source pins are inconsistent')
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
-                     '5c4764b29024ca938e6eac2fe2cd213dfc2cea17daf7671a8930aaf33ff41ded')
+                     '1afd1acc954f864b5b2136b4d58a9170b5a259cb95d75799971fd6568c4efd91')
     result = observers.apply_sources(code_dir, result)
     # Apply only the reviewed ContextOS input and the exact checked builder.
     # The dependent recall module pins ContextOS, so rebind that one pin.
