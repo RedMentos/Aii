@@ -4,6 +4,8 @@ Caller-supplied thresholds are unverified and cannot produce speaker decisions.
 A separately validated, model-bound calibration artifact is required first.
 This is not speaker recognition or a full diarizer. Embeddings stay in RAM;
 persisted packets contain similarity evidence and provenance, never vectors.
+Each batch must match the exact current PCM chunk SHA-256 and consent epoch.
+That hash does not attest the caller-supplied encoder, weights or recurrent state.
 """
 from __future__ import annotations
 
@@ -264,8 +266,8 @@ class SpeakerChangeEvidenceRegistry:
                 state.frames.extend(batch["frames"])
                 state.last_voiced_end_ms = batch["frames"][-1][0]
             else:
-                # Non-speech embeddings remain available as no stored vectors:
-                # preserve timing order, but never let noise/silence seed identity history.
+                # Non-speech cues remain available to RAW EAR/A4; their embeddings never seed speaker history.
+                # Preserve timing order without storing vectors from noise or silence.
                 for frame_end, _ in batch["frames"]:
                     if last_seen_end_ms is not None and frame_end <= last_seen_end_ms:
                         raise SpeakerEvidenceError("speaker frames must advance across windows")
@@ -314,7 +316,7 @@ class SpeakerChangeEvidenceRegistry:
                 "generation_id": generation_id,
                 "consent_receipt_ref": batch["consent_receipt_ref"],
                 "current_chunk_sha256": batch["current_chunk_sha256"],
-                "source_binding_status": "CURRENT_PCM_CHUNK_SHA256_MATCH",
+                "source_binding_status": "CURRENT_PCM_SHA256_MATCH_ENCODER_UNATTESTED",
                 "activity_hint": activity_hint,
                 "accepted_frame_count": len(batch["frames"]) if activity_hint == "VOICED" else 0,
                 "history_frame_count": len(state.frames),
