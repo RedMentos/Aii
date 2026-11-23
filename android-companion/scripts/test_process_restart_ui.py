@@ -229,10 +229,6 @@ class ProcessRestartLogcatTests(unittest.TestCase):
             )
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 
 class ProcessRestartLaunchTests(unittest.TestCase):
     def test_launch_dismisses_keyguard_and_waits_without_menu_key(self) -> None:
@@ -266,3 +262,85 @@ class ProcessRestartLaunchTests(unittest.TestCase):
             call("shell", "uiautomator", "dump", "--compressed",
                  "/data/local/tmp/v14-window.xml", timeout=20),
         )
+
+
+class ProcessRestartDurabilityTests(unittest.TestCase):
+    def test_stop_marker_requires_persisted_off(self) -> None:
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        with TemporaryDirectory() as directory:
+            marker = Path(directory) / "stop-proof"
+            with (
+                patch.object(harness, "STOP_PROOF_MARKER", marker),
+                patch.object(harness, "persisted_enabled", return_value="true"),
+            ):
+                with self.assertRaisesRegex(AssertionError, "did not persist OFF"):
+                    harness.record_stop_persisted_off()
+            self.assertFalse(marker.exists())
+
+            with (
+                patch.object(harness, "STOP_PROOF_MARKER", marker),
+                patch.object(harness, "persisted_enabled", return_value="false"),
+            ):
+                harness.record_stop_persisted_off()
+            self.assertEqual(marker.read_text(encoding="utf-8").strip(),
+                             "STOP_ACTION_PERSISTED_OFF")
+
+    def test_durable_restart_requires_verified_visible_stop_marker(self) -> None:
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        with TemporaryDirectory() as directory:
+            marker = Path(directory) / "stop-proof"
+            with (
+                patch.object(harness, "STOP_PROOF_MARKER", marker),
+                patch.object(harness, "persisted_enabled", return_value="false"),
+            ):
+                with self.assertRaisesRegex(AssertionError, "no verified visible Stop action marker"):
+                    harness.verify_durable_off_after_process_death()
+
+    def test_durable_restart_force_stops_relaunches_and_checks_off(self) -> None:
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from unittest.mock import call, patch
+        import test_process_restart as harness
+
+        with TemporaryDirectory() as directory:
+            marker = Path(directory) / "stop-proof"
+            marker.write_text("STOP_ACTION_PERSISTED_OFF\\n", encoding="utf-8")
+            with (
+                patch.object(harness, "STOP_PROOF_MARKER", marker),
+                patch.object(harness, "persisted_enabled", side_effect=["false", "false"]),
+                patch.object(harness, "process_id", return_value="1234"),
+                patch.object(harness, "adb") as adb_call,
+                patch.object(harness, "wait_for_process", side_effect=["", "5678"]) as wait_call,
+                patch.object(harness, "launch_companion") as launch_call,
+            ):
+                harness.verify_durable_off_after_process_death()
+
+            adb_call.assert_called_once_with("shell", "am", "force-stop", harness.PACKAGE)
+            self.assertEqual(wait_call.call_args_list,
+                             [call(absent=True), call(absent=False)])
+            launch_call.assert_called_once_with()
+            self.assertFalse(marker.exists())
+
+    def test_ui_failure_runs_durable_probe_but_remains_a_failure(self) -> None:
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        with (
+            patch.object(harness, "wait_for_text", side_effect=AssertionError("System UI blocked")),
+            patch.object(harness, "verify_durable_off_after_process_death") as durable,
+        ):
+            with self.assertRaisesRegex(AssertionError, "System UI blocked"):
+                harness.wait_for_stopped_ui_or_prove_durable()
+        durable.assert_called_once_with()
+
+
+if __name__ == "__main__":
+    unittest.main()
