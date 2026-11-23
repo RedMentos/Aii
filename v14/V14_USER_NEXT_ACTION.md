@@ -1,3 +1,9 @@
+## FASTDIAR license boundary — 2026-11-23T01:18:04.345Z
+
+No user action is needed now. R-104 confirms the FASTDIAR repository code is MIT at signed release commit `e7f9bbccf98865216f48a04868d74f1d53c8734e`, but the separate checkpoint-weight license is not stated in the inspected release/README. The current V14 adapter only wraps caller-supplied 192-D embeddings and hashes the local checkpoint; it does not load or run FASTDIAR. Its upstream PyTorch/torchaudio/torchcodec/pyannote dependency stack has no verified Termux/Bionic installation path. Do not download the checkpoint or attempt a model swap until the weight license is clarified and a disposable local test is explicitly approved. Paper results are from a Threadripper CPU, not Redmi.
+
+---
+
 ## New research note — 2026-11-23T01:15:00.650Z
 
 No user action required. Two full-text research reviews were added to the ledger:
