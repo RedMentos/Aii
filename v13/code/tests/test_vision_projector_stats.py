@@ -62,7 +62,8 @@ def test_delete_rebuild_matches_fresh_production_ridge_fit(tmp_path):
     assert mode == SOURCE_STATS_MODE and len(records) == 6
     record = {
         "source_stats":records, "source_stats_mode":mode, "training_sources":lineage,
-        "encoder":"hashed_bow", "feature_schema":"vision.features.v1", "ridge":1., "n":len(X),
+        "encoder":"hashed_bow", "feature_schema":"vision.features.v1:global", "ridge":1., "n":len(X),
+        "captions":{key:"source-bound caption" for key in keys},
     }
     retained = {key:value for key,value in images.items() if key != "src2"}
     rebuilt, reason = rebuild_without_source(home, record, "src2", lineage[2]["sha256"], retained, Projector, 4)
@@ -157,3 +158,19 @@ def test_source_digest_and_retained_registry_mismatch_fail_closed(tmp_path):
     retained.pop("src3")
     result, reason = rebuild_without_source(home, record, "src1", lineage[1]["sha256"], retained, Projector, 4)
     assert result is None and "not live" in reason
+
+
+def test_global_rebuild_requires_complete_caption_provenance(tmp_path):
+    home = _home(tmp_path)
+    X, Y, keys, lineage, images = _fixture(sources=5)
+    records, mode = _build(home, X, Y, keys, lineage)
+    record = {
+        "source_stats":records, "source_stats_mode":mode, "training_sources":lineage,
+        "encoder":"hashed_bow", "feature_schema":"vision.features.v1:global", "ridge":1., "n":len(X),
+        "captions":{key:"source-bound caption" for key in keys},
+    }
+    retained = {key:value for key,value in images.items() if key != "src1"}
+    incomplete = dict(record, captions={key:value for key,value in record["captions"].items()
+                                        if not key.startswith("src0:")})
+    result, reason = rebuild_without_source(home, incomplete, "src1", lineage[1]["sha256"], retained, Projector, 4)
+    assert result is None and "caption lineage" in reason
