@@ -1,4 +1,4 @@
-"""Bounded source-bound speaker-similarity diagnostics from local frame embeddings.
+"""Bounded source- and consent-epoch-bound speaker-similarity diagnostics from local frame embeddings.
 
 Caller-supplied thresholds are unverified and cannot produce speaker decisions.
 A separately validated, model-bound calibration artifact is required first.
@@ -133,7 +133,7 @@ class _Stream:
 
 
 class SpeakerChangeEvidenceRegistry:
-    """Bounded per-source/generation cosine look-back state; vectors remain RAM-only."""
+    """Bounded per-source/generation/consent-epoch cosine look-back state; vectors remain RAM-only."""
 
     def __init__(self, *, max_streams=16, max_frames=128, reset_gap_ms=2000):
         if type(max_streams) is not int or not 1 <= max_streams <= 256:
