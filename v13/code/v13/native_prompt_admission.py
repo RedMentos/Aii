@@ -261,8 +261,16 @@ def _remove_body_metadata(messages):
     return result, reason
 
 
-def reduce_once(messages, role, cfg):
-    """Return (new messages, exact omission reason) or None, no silent clipping."""
+def reduce_once(messages, role, cfg, *, allow_old_turn=True):
+    """Return (new messages, exact omission reason) or None, no silent clipping.
+
+    Normal C3 turns may remove explicitly redundant control layers but retain
+    complete history when the prefill target is only a soft latency envelope.
+    Whole old turns are removable only when the caller's remaining deadline is
+    already in the short-window recovery band.
+    """
+    if type(allow_old_turn) is not bool:
+        raise TypeError("allow_old_turn must be bool")
     # Unknown message fields can carry semantics outside this admission
     # contract. Preserve all content instead of guessing which part is optional.
     if any(type(message) is not dict or set(message) != {"role", "content"}
@@ -272,7 +280,7 @@ def reduce_once(messages, role, cfg):
         candidate = _remove_c3_layer(messages, cfg)
         if candidate:
             return candidate
-        return _remove_old_turn(messages)
+        return _remove_old_turn(messages) if allow_old_turn else None
     elif role in ("B1_DETAIL", "B2_GIST"):
         return _remove_body_metadata(messages)
     return None
