@@ -12,7 +12,9 @@ import pytest
 from v13 import contracts, world_jepa, world_model
 from v13.store import Store
 from v13.world_jepa_store_authority import verify_committed_transition_page, verify_committed_transitions
-from v13.world_jepa_consumer import WorldJEPAStoreConsumer, _source_disjoint_split
+from v13.world_jepa_consumer import (
+    STATE_KEY, WorldJEPAStoreConsumer, _source_disjoint_split, source_forget_guard,
+)
 from v13.world_jepa_runtime import (DEFAULT_PERMISSIONS, PERMISSION_KEY, consume_after_commit, receiver_readout, memory_recall)
 
 
@@ -24,7 +26,8 @@ def _make_store(home):
     return store, session
 
 
-def _add_transitions(store, session, start, count, status_overrides=None, source_text_factory=None):
+def _add_transitions(store, session, start, count, status_overrides=None, source_text_factory=None,
+                    context_source_factory=None):
     status_overrides = status_overrides or {}
     action_ids = []
     actions = tuple(world_model.ACTIONS)
@@ -39,12 +42,18 @@ def _add_transitions(store, session, start, count, status_overrides=None, source
 
         # Selection must be persisted before dispatch: world_model.transitions()
         # admits only the committed selection that existed at action.created.
+        selection_refs = [event["source_ref"]]
+        if context_source_factory is not None:
+            extra_refs = context_source_factory(index, store)
+            if type(extra_refs) is not list:
+                raise AssertionError("context_source_factory must return a list")
+            selection_refs.extend(extra_refs)
         selection = contracts.packet(
             "ActionSelection",
             "C2_CONTROL",
             event_id,
             generation,
-            [event["source_ref"]],
+            selection_refs,
             selected={
                 "action_id": "TEXT_REPORT",
                 "action_type": "TEXT_REPORT",
