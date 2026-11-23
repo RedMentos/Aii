@@ -146,15 +146,32 @@ class LiveHookTests(Base):
         self.assertEqual(A.coverage('Invoice 4471 says not 30','It is 31.'),0.)
         self.assertAlmostEqual(A.coverage('call "Anna Berg" at 5','Anna Berg called'),.5)
     def test_source_outcome_books_once_and_updates_policy(self):
-        text='Calm intro sentence here. Invoice 4471 says not 30 but 45 EUR.';e=self.ev(text)
-        src={'source_id':'s','sha256':'0','char_start':0,'char_end':len(text),'modality':'text'}
+        text='Calm intro sentence here. Invoice 4471 says not 30 but 45 EUR.'
+        ev=self.r.store.event(self.r.session,text);e=ev['event_id'];src=ev['source_ref']
         out=self.a.perceive(e,segments(text,src,30),goal='How much is invoice 4471?')
         self.assertTrue(out['requests'])
         self.a.admit(e,out['requests'],providers={'A_SOURCE':lambda r:{'source_ref':r['source_ref']}})
         done=self.a.source_outcome(e,text,'Invoice 4471 is 45 EUR, not 30.')
         self.assertTrue(done);self.assertTrue(all(d['key'].endswith('|A_SOURCE') for d in done))
-        self.assertEqual(self.a.source_outcome(e,text,'again'),[])  # booked once
+        self.assertTrue(all(d['source_sha256']==src['sha256'] and d['source_ref_count']>=1 for d in done))
+        mods=[json.loads(x['payload']) for x in self.r.store.rows("SELECT payload FROM packets WHERE kind='ModulatorPacket' AND event_id=?",(e,))]
+        attention_mods=[p for p in mods if p.get('path')==A.PATH]
+        self.assertTrue(attention_mods)
+        self.assertTrue(all(any(ref.get('source_id')==src['source_id'] and ref.get('sha256')==src['sha256']
+                                for ref in p.get('provenance',[])) for p in attention_mods))
+        self.assertEqual(self.a.source_outcome(e,text,'again'),[])  # durable receipt prevents replay
         pol=self.a.report()['policy'];self.assertTrue(any(k.endswith('|A_SOURCE') and v['n']>=1 for k,v in pol.items()))
+
+    def test_source_outcome_rejects_tampered_source_text(self):
+        text='Invoice 4471 says not 30 but 45 EUR.'
+        ev=self.r.store.event(self.r.session,text);e=ev['event_id'];src=ev['source_ref']
+        out=self.a.perceive(e,segments(text,src,24),goal='How much is invoice 4471?')
+        self.assertTrue(out['requests'])
+        self.a.admit(e,out['requests'],providers={'A_SOURCE':lambda r:{'source_ref':r['source_ref']}})
+        self.assertEqual(self.a.source_outcome(e,text.replace('45','46'),'Invoice 4471 is 45 EUR.'),[])
+        self.assertEqual(self.a.report()['policy'],{})
+        mods=[json.loads(x['payload']) for x in self.r.store.rows("SELECT payload FROM packets WHERE kind='ModulatorPacket' AND event_id=?",(e,))]
+        self.assertFalse(any(p.get('path')==A.PATH for p in mods))
     def test_action_gain_scales_c5_focal_support(self):
         from v13.focal import ActionGate
         e=self.r.store.event(self.r.session,'x');coal=[{'item_id':'o','source_kind':'B1_DETAIL','priority':1.}]
