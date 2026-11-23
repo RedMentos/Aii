@@ -81,6 +81,21 @@ class DirectUCIArrayTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "non-finite"):
                 ArrayDataset.from_uci(path, config)
 
+    def test_two_pass_array_loader_rejects_truncated_rows(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "uci.txt"
+            path.write_text(
+                "Date;Time;Global_active_power;Voltage\\n"
+                "01/01/2020;00:00:00;1,0\\n",
+                encoding="utf-8",
+            )
+            config = DataConfig(
+                input_length=5, horizon=2, max_candidate_input_length=5,
+                seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
+            )
+            with self.assertRaisesRegex(ValueError, "truncated"):
+                ArrayDataset.from_uci(path, config)
+
     def test_two_pass_array_loader_rejects_off_grid_timestamps(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "uci.txt"
