@@ -33,8 +33,8 @@ MAX_WORDS = 64
 MAX_WORD_TEXT = 128
 MAX_SUMMARY_CHARS = 512
 TIMING_METHOD = "TOKEN_STARTS_NEXT_WORD_END_INFERRED"
-_SHA256 = re.compile(r"[0-9a-f]{64}\\Z")
-_LANGUAGE = re.compile(r"(?:und|[a-z]{2,3}(?:-[A-Za-z0-9]{2,8}){0,3})\\Z")
+_SHA256 = re.compile(r"[0-9a-f]{64}\Z")
+_LANGUAGE = re.compile(r"(?:und|[a-z]{2,3}(?:-[A-Za-z0-9]{2,8}){0,3})\Z")
 DEFAULT_MODEL_FILES = {
     "tokens": "tokens.txt",
     "encoder": "encoder-epoch-99-avg-1.int8.onnx",
@@ -301,7 +301,8 @@ def validate_teacher_ear_result(
         raise ValueError("audio source id is invalid")
     if type(generation_id) is not str or not generation_id.strip() or len(generation_id) > 128:
         raise ValueError("audio generation id is invalid")
-    if not _SHA256.fullmatch(source_sha256) or not _SHA256.fullmatch(model_sha256):
+    if (type(source_sha256) is not str or type(model_sha256) is not str
+            or not _SHA256.fullmatch(source_sha256) or not _SHA256.fullmatch(model_sha256)):
         raise ValueError("audio/model SHA-256 is invalid")
     if type(start_ms) is not int or type(end_ms) is not int or not 0 <= start_ms < end_ms:
         raise ValueError("audio interval is invalid")
@@ -447,7 +448,7 @@ def enrich_audio_result_with_sherpa_teacher(
     if not raw or len(raw) % 2 or len(raw) > MAX_PCM_BYTES:
         raise ValueError("PCM16 input length is outside the one-second bound")
     actual_sha256 = hashlib.sha256(raw).hexdigest()
-    if not _SHA256.fullmatch(source_sha256) or actual_sha256 != source_sha256:
+    if type(source_sha256) is not str or not _SHA256.fullmatch(source_sha256) or actual_sha256 != source_sha256:
         raise PermissionError("teacher PCM bytes differ from the source-bound PerceptPacket")
     duration_ms = len(raw) * 1000.0 / (2 * SAMPLE_RATE)
     if abs(duration_ms - (end_ms - start_ms)) > 2.0:
@@ -458,6 +459,12 @@ def enrich_audio_result_with_sherpa_teacher(
     except ImportError as exc:
         raise RuntimeError("NumPy is required only when the optional ASR teacher is enabled") from exc
     samples = np.frombuffer(raw, dtype="<i2").astype(np.float32) / 32768.0
+    manifest = teacher_runtime.manifest
+    if (type(manifest) is not dict or manifest.get("model_id") != MODEL_ID
+            or manifest.get("model_revision") != MODEL_REVISION
+            or type(manifest.get("model_sha256")) is not str
+            or not _SHA256.fullmatch(manifest["model_sha256"])):
+        raise ValueError("teacher runtime model manifest is invalid")
     recognizer = teacher_runtime.recognizer
     stream = recognizer.create_stream()
     stream.accept_waveform(SAMPLE_RATE, samples)
