@@ -119,10 +119,12 @@ def parse_uci(path: str | Path) -> tuple[tuple[str, ...], list[MinuteRow]]:
         if not reader.fieldnames or "Date" not in reader.fieldnames or "Time" not in reader.fieldnames:
             raise ValueError("Expected UCI Date and Time columns")
         channels = tuple(name for name in reader.fieldnames if name not in {"Date", "Time"})
-        if not channels:
-            raise ValueError("No measurement channels found")
+        if not channels or any(not name.strip() for name in channels) or len(set(channels)) != len(channels):
+            raise ValueError("Measurement channel names must be non-empty and unique")
         previous: datetime | None = None
         for line_no, raw in enumerate(reader, start=2):
+            if None in raw or raw.get("Date") is None or raw.get("Time") is None or any(raw.get(channel) is None for channel in channels):
+                raise ValueError(f"truncated or overlong CSV row at line {line_no}")
             timestamp = datetime.strptime(
                 f"{raw['Date'].strip()} {raw['Time'].strip()}",
                 UCI_TIMESTAMP_FORMAT,
