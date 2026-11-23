@@ -6,7 +6,7 @@ Date: 2026-11-23 (Europe/Berlin)
 
 - Branch: `jepa-memory/v14-temporal-boss-2443-rebase-20261123-run14`
 - Current code/test checkpoint: `d60fcb66b24f44b061a48c173b5de87fc05ecbe0`
-- Latest PR head after documentation sync: `a05e5261acc25320a40d91cd34aef844fa00daa9`
+- Latest PR head at comparison: `0d55d8510f23917ab8813c6b5e2cd77bed8c0962` (handoff/docs commits follow)
 - PR: [#2454](https://github.com/RedMentos/Aii/pull/2454), DRAFT, NOT_RELEASED, mergeable=false.
 - Latest file commits:
   - `v13/code/v13/world_jepa_learning_intent.py`: `477ba539c8196d7934ed0895fbb31c18ec7f6def`
@@ -28,7 +28,7 @@ The adapter target is still the small float receiver head consumed through `body
 
 | Environment | Result | Evidence |
 |---|---|---|
-| GitHub exact-head CI | **BLOCKED / startup_failure** | Latest PR-head push run [#45273528879](https://github.com/RedMentos/Aii/actions/runs/45273528879) and exact code/test-head run [#45273031215](https://github.com/RedMentos/Aii/actions/runs/45273031215) both ended `startup_failure` with **0 jobs**. PR-head combined commit status has 0 contexts / pending. These are runner-startup blocks, not code-test failures and not passes. |
+| GitHub exact-head CI | **BLOCKED / startup_failure** | Latest PR-head push run [#45273658996](https://github.com/RedMentos/Aii/actions/runs/45273658996) and exact code/test-head run [#45273031215](https://github.com/RedMentos/Aii/actions/runs/45273031215) both ended `startup_failure` with **0 jobs**. PR-head combined commit status has 0 contexts / pending. These are runner-startup blocks, not code-test failures and not passes. |
 | Local Aii project suite | **NOT_RUN / BLOCKED** | Container has Python 3.13.5, NumPy 2.3.5 and pytest 9.0.2, but no `/mnt/data/Aii/.git` checkout; `github.com` DNS resolution fails. No project compile, pytest, staged or integrated test was run. |
 | Synthetic numeric control | **PASS** | Python tool checked unchanged adapter retention, encoder scale drift with old head, compensated head after encoder drift, degraded-head rejection, and source-overlap detection. This is a small numerical reproduction, not execution of the Aii implementation. |
 | Termux / Redmi | **REDMI_UNVERIFIED** | No device command, update request, CHAT_SEND, shell, model/weight swap or permission change was performed. |
@@ -36,8 +36,8 @@ The adapter target is still the small float receiver head consumed through `body
 ### Git/CI integration state
 
 - Boss parent PR #2443 branch head read back as `cdf6b64067ac426ba32194100d3764f6e74c105f`; its combined code head had Actions `startup_failure` attempts with no jobs, and its documentation descendant has no workflow runs.
-- PR #2454 still has merge base `6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4`; against current Boss head `cdf6b64067ac426ba32194100d3764f6e74c105f`, the branch is **84 ahead / 47 behind**. It remains DRAFT / mergeable=false.
-- Core PR #2457 head `f8d0427100019da42e23d29a14e43440c641e0f3` is 10 ahead / 80 behind current JEPA head `a05e5261acc25320a40d91cd34aef844fa00daa9` (merge base `bf2913b150d8decbf6e33c43920d21acc83439b3`). It must be rebased only after the Boss parent and JEPA stack have exact-head verification. No force-push or rebase was attempted.
+- PR #2454 still has merge base `6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4`; against current Boss head `cdf6b64067ac426ba32194100d3764f6e74c105f`, the branch is **87 ahead / 47 behind**. It remains DRAFT / mergeable=false.
+- Core PR #2457 head `f8d0427100019da42e23d29a14e43440c641e0f3` is 10 ahead / 83 behind current JEPA head `0d55d8510f23917ab8813c6b5e2cd77bed8c0962` (merge base `bf2913b150d8decbf6e33c43920d21acc83439b3`). It must be rebased only after the Boss parent and JEPA stack have exact-head verification. No force-push or rebase was attempted.
 - No release SHA was created: **NOT_RELEASED**. The source-pinned stage/deployer chain was not modified by this change; the stage copies the complete `v13` tree. Core retains stage/deployer ownership.
 
 ## Latest available private device evidence
