@@ -62,6 +62,7 @@ jobs:
           tests/test_unified_brain_delivery.py
           tests/test_enlightened_space.py
           tests/test_native_prompt_admission.py
+          tests/test_public_probe_privacy.py
           tests/test_native_stream_integrity.py
           tests/test_prompt_source_integrity_20261116.py
           tests/test_context_offer_budget_20261116.py
@@ -110,4 +111,4 @@ jobs:
         working-directory: v13/code
         env:
           PYTHONDONTWRITEBYTECODE: '1'
-        run: python -m pytest -q -s tests/test_staged_integrated_regression_20261111.py
+        run: python -m pytest -q -s tests/test_staged_integrated_regression_20261111.py tests/test_public_probe_privacy.py
