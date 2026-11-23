@@ -1,5 +1,6 @@
 """V14 A4 attention outcomes: durable exactly-once receipts in real Runtime/Store SQLite."""
 from concurrent.futures import ThreadPoolExecutor
+import json
 from pathlib import Path
 import tempfile
 import threading
