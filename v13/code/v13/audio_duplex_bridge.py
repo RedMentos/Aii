@@ -309,6 +309,7 @@ def on_audio_input(runtime, audio_result, consent_lease, *, temporal_state=None,
     _claim_one_use_audio_receipt(runtime, event_id, packet_id, temporal_receipt_id)
     if outcome is None:
         return None
+    decision_name, relation = outcome
 
     # Snapshot only in-memory turn identity while holding Runtime.lock.
     with runtime.lock:
