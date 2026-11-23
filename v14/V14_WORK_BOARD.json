@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T11:32:12.480Z",
+  "updated_at": "2026-11-23T11:33:30.773Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at dfa3945b2bbfdb65d932db74e02f402435494e84 (run-18 evidence/docs checkpoint); latest code-bearing integration remains b20e9b1f3dd53af472055adb43da628785494ec4. b20e9 integrated source-bound WorldJEPA checkpoint rollback/replay and ActionSelection SourceRef lineage (37/37 exact push check-runs SUCCESS). dfa3945 has 21/21 observed workflow runs SUCCESS and is confirmed installed by private PIPELINE_STATUS #775 (Runtime/Dashboard UPDATED). Full Canon acceptance remains open; Master and historical V13 appendix unchanged.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -48,7 +48,7 @@
       "proof_environment": "ANDROID_DEVICE exact code-install receipt + CI; restart/rollback still NOT_DEVICE_VERIFIED",
       "next_step": "The normal updater has now installed exact dfa3945 (#775). Keep process-death, reboot, activation-journal recovery and runtime-only rollback acceptance OPEN; no destructive device test without its separate bounded authorization. Do not send another update request or ask for a manual Termux command.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:32:12.480Z",
+      "last_checkpoint": "2026-11-23T11:33:30.773Z",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -66,7 +66,7 @@
           "redmi": "NO_LIVE_RECEIPT; issues #351–354 unanswered; installed SHA unknown"
         }
       },
-      "proof": "PIPELINE_STATUS #775 exact dfa3945; Runtime/Dashboard UPDATED, auto-update true, last_error NONE. DIAGNOSTICS #776 is a stored-turn snapshot only. No rollback/reboot/process-death proof."
+      "proof": "PIPELINE_STATUS #775 exact dfa3945; Runtime/Dashboard UPDATED, auto-update true, last_error NONE. DIAGNOSTICS #776 is a stored-turn snapshot only. No rollback/reboot/process-death proof. Fresh HEALTH #793 reports 1,388 MiB MemAvailable and 990 MiB free disk; health runtime field is UNAVAILABLE while diagnostics says RUNNING. No shutdown/rollback conclusion; no device action."
     },
     {
       "id": "V14-003",
@@ -411,8 +411,8 @@
       "proof_environment": "Phone code-install proof only; rollback not device-validated",
       "next_step": "Exact dfa3945 Runtime/Dashboard installation is now confirmed by #775. Keep activation journal recovery, managed-chat stop/resume, process death, reboot and runtime-only rollback unverified until separately authorized bounded tests can be run without touching models, SQLite or chats.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:32:12.480Z",
-      "proof": "#775 confirms exact dfa3945 installed and Runtime/Dashboard UPDATED. No device process-death, reboot, marker recovery or rollback test was run."
+      "last_checkpoint": "2026-11-23T11:33:30.773Z",
+      "proof": "#775 confirms exact dfa3945 installed and Runtime/Dashboard UPDATED. No device process-death, reboot, marker recovery or rollback test was run. Fresh HEALTH #793: 1,388 MiB MemAvailable, 990 MiB free disk; runtime field UNAVAILABLE in health while diagnostics says RUNNING. No process-death or rollback test."
     },
     {
       "id": "V14-020",
@@ -430,7 +430,7 @@
       "proof": "R-108: Yao et al., arXiv:2609.04875v1 full text reviewed. Paper proposes provenance-guided selective replay across prompt, summaries, plans and KV cache; exactness depends on deterministic/fixed RNG, reproducible observations and no un-restorable side effects. No official code/license found, no import, no Android proof. Existing b20e9 forget protects WorldJEPA checkpoint state only."
     }
   ],
-  "current_redmi_status": "Authenticated PIPELINE_STATUS #775 confirms exact dfa3945b2bbfdb65d932db74e02f402435494e84 installed, Runtime UPDATED, Dashboard UPDATED, auto-update enabled, last_error NONE. DIAGNOSTICS #776 has no new turn: last stored turn 57.7388 s / TTFT 41.6269 s / C3 prefill 38.9453 s / 751 prompt / 2 generated; B1/B2 TIME_BUDGET 53.2/54.2 s; 0 mapped native processes with child readability unknown. LEARNING_STATUS #777 UNAVAILABLE. HEALTH #793 pending. Functional acceptance remains OPEN; no new CHAT_SEND or device mutation.",
+  "current_redmi_status": "Authenticated PIPELINE_STATUS #775 confirms exact dfa3945 installed, Runtime/Dashboard UPDATED, auto-update enabled, last_error NONE. DIAGNOSTICS #776 stored-turn snapshot remains slow (57.739 s / 41.627 s TTFT / 38.945 s C3 prefill / 751 prompt / 2 generated), B1/B2 TIME_BUDGET, 0 mapped native processes, child readability unknown. Fresh HEALTH #793: MemAvailable 1,388 MiB / 5,569 MiB, disk free 990 MiB / 109,641 MiB; HEALTH runtime field UNAVAILABLE while DIAGNOSTICS reports model/service RUNNING. Treat this as telemetry-surface discrepancy, not proof of shutdown. LEARNING_STATUS #777 UNAVAILABLE. No new turn or device mutation.",
   "last_code_release_head": "b20e9b1f3dd53af472055adb43da628785494ec4",
   "latest_integrated_head": "b20e9b1f3dd53af472055adb43da628785494ec4",
   "latest_integrated_head_verified_at": "2026-11-23T11:32:12.480Z",
@@ -440,7 +440,7 @@
     "pipeline_status_issue": 775,
     "diagnostics_issue": 776,
     "health_issue": 793,
-    "health_status": "PENDING",
+    "health_status": "RECEIVED",
     "learning_status_issue": 777,
     "update_request_issue": 770,
     "installed_sha": "dfa3945b2bbfdb65d932db74e02f402435494e84",
@@ -486,11 +486,30 @@
     },
     "health_snapshot": {
       "issue": 793,
-      "status": "PENDING",
-      "previous_snapshot_issue": 765,
-      "previous_memavailable_mib": 1209,
-      "previous_disk_free_mib": 1030,
-      "note": "Previous #765 snapshot predates this receipt; do not present as current health."
+      "status": "OK",
+      "source": "LOCAL_OS_SNAPSHOT",
+      "memavailable_mib": 1388,
+      "memtotal_mib": 5569,
+      "disk_free_mib": 990,
+      "disk_total_mib": 109641,
+      "runtime_state": "UNAVAILABLE_IN_HEALTH",
+      "diagnostics_runtime_state": "RUNNING_IN_DIAGNOSTICS",
+      "remote_observation": {
+        "observe": true,
+        "include_console": true,
+        "last_result": "PUBLISHED",
+        "relay_recently_polled": true,
+        "last_poll_utc": 1795433238,
+        "last_upload_utc": 1795432887
+      },
+      "owner_capabilities": {
+        "chat_operator": true,
+        "chat_result": true,
+        "chat_send": true,
+        "log_sharing_toggle": true,
+        "update_request": true
+      },
+      "note": "Health and diagnostics expose different runtime availability surfaces. Do not infer service shutdown. include_console/remote observation is not the explicit local LOG_PAGE consent flag; DIAGNOSTICS #776 console_errors remains USER_NOT_OPTED_IN."
     },
     "update_request": {
       "issue": 770,
@@ -773,6 +792,13 @@
       "pr2436": "83f627a; optimizer-resume FAIL Python 3.13/3.14; FocalCycle source-forget gap",
       "pr2433": "a2184e0; staged/integrated FAIL attention.py guard pin",
       "pr2430": "35cf92a; staged/integrated FAIL runtime.py source pin"
+    },
+    "health": {
+      "issue": 793,
+      "memavailable_mib": 1388,
+      "memtotal_mib": 5569,
+      "disk_free_mib": 990,
+      "runtime": "UNAVAILABLE_IN_HEALTH; RUNNING_IN_DIAGNOSTICS"
     }
   },
   "active_agent_automations": [
@@ -838,7 +864,13 @@
     "local_full_checkout": "BLOCKED_NO_LOCAL_CHECKOUT_OR_NETWORK",
     "user_action_required": false,
     "canonical_inventory_headings": 1255,
-    "next_action": "Recompose fair B1/B2→C4→C3 on current base; fix FocalCycle-aware source-forget; rebind attention/runtime source pins; add full prompt Context SourceRefs; keep Android rollback and whole-Canon acceptance open."
+    "next_action": "Recompose fair B1/B2→C4→C3 on current base; fix FocalCycle-aware source-forget; rebind attention/runtime source pins; add full prompt Context SourceRefs; keep Android rollback and whole-Canon acceptance open.",
+    "health": {
+      "issue": 793,
+      "memavailable_mib": 1388,
+      "disk_free_mib": 990,
+      "runtime": "UNAVAILABLE_IN_HEALTH; RUNNING_IN_DIAGNOSTICS"
+    }
   },
   "capability_matrix": [
     {
@@ -1186,7 +1218,7 @@
     "device_receipt": "PIPELINE_STATUS_775_AUTHENTICATED_INSTALLED_DFA3945_RUNTIME_UPDATED_DASHBOARD_UPDATED_AUTO_UPDATE_TRUE_LAST_ERROR_NONE",
     "device_diagnostics": "DIAGNOSTICS_776_NO_NEW_TURN; STORED_FINAL_57.739S_TOTAL_41.627S_TTFT_38.945S_PREFILL_751_PROMPT_2_GENERATED; B1_B2_TIMEOUT_53.2S_54.2S; C2_OK_C3_3.1S; CORRECTNESS_UNKNOWN",
     "learning_status": "LEARNING_STATUS_777_UNAVAILABLE; OFFICIAL_AGE_0; LAB_10_EFFECTIVE_5; PHYSICAL_FEATURE_EXECUTION_FALSE; SHADOW_REQUIRED",
-    "health": "HEALTH_793_PENDING; #765 IS STALE",
+    "health": "HEALTH_793_MEMAVAILABLE_1388_MIB_OF_5569; DISK_FREE_990_MIB_OF_109641; HEALTH_RUNTIME_UNAVAILABLE_WHILE_DIAGNOSTICS_RUNTIME_RUNNING; REMOTE_OBSERVATION_RECENT; NO_LOG_PAGE_CONSENT",
     "native_residency": "0_MAPPED_PROCESSES_INSTANT; CHILD_READABILITY_UNKNOWN; NOT_SUSTAINED",
     "local_full_suite": "BLOCKED_NO_LOCAL_CHECKOUT_OR_DNS; NO_LOCAL_PROJECT_TESTS",
     "pr2370": "0FDD033; 20_WORKFLOW_SUCCESS_1_CANCELLED_1_SKIPPED; 193_AHEAD_35_BEHIND; DRAFT_UNMERGEABLE",
@@ -1329,7 +1361,8 @@
           "boss_pr2343": "CURRENT_HEAD_023E56D_29_AHEAD_0_BEHIND; substantive exact CI queued. Recovery12 and some Store/Runtime pins corrected; stage/deployer, recovery21, archive stream preimage, record-only Runtime pin and fair-observer ask anchor still mismatch. Previous 70c6a5 migration failed; not current-head result."
         }
       }
-    }
+    },
+    "health_issue": 793
   },
   "qa_latest_checkpoint": {
     "timestamp": "2026-11-22T12:02:49.539Z",
