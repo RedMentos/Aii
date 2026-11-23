@@ -96,7 +96,13 @@ def _fit_supervised(
     *,
     device: str | torch.device,
     probe_only: bool,
+    objective: str = "mae",
+    l2_penalty: float = 0.0,
 ) -> FitReport:
+    if objective not in {"mae", "mse"} or l2_penalty < 0:
+        raise ValueError("objective must be mae or mse and l2_penalty must be non-negative")
+    if l2_penalty and not hasattr(model, "linear"):
+        raise ValueError("explicit L2 coefficient penalty requires a linear baseline")
     target_device = torch.device(device)
     model.to(target_device)
     if probe_only:
@@ -126,7 +132,9 @@ def _fit_supervised(
             target = _torch_target(batch, target_device)
             optimizer.zero_grad(set_to_none=True)
             prediction = model(bundle)
-            loss = F.l1_loss(prediction, target)
+            loss = F.l1_loss(prediction, target) if objective == "mae" else F.mse_loss(prediction, target)
+            if l2_penalty:
+                loss = loss + l2_penalty * model.linear.weight.square().sum()
             if not torch.isfinite(loss):
                 raise FloatingPointError("non-finite supervised MAE loss")
             loss.backward()
@@ -166,6 +174,26 @@ def _fit_supervised(
         validation_metric="MAE",
         final_training_loss=final_loss,
         optimizer_steps=optimizer_steps,
+    )
+
+
+def fit_supervised_baseline(
+    model: nn.Module,
+    dataset: ArrayDataset,
+    config: FitConfig = FitConfig(),
+    *,
+    objective: str = "mae",
+    l2_penalty: float = 0.0,
+    device: str | torch.device = "cpu",
+) -> FitReport:
+    """Fit a baseline from bounded train batches; select checkpoints by validation MAE.
+
+    Use objective='mse' and explicit L2 for conventional Ridge-AR; use objective='mae'
+    plus L2 for LAD/L1-AR. These objectives are intentionally labelled separately.
+    """
+    return _fit_supervised(
+        model, dataset, config, device=device, probe_only=False,
+        objective=objective, l2_penalty=l2_penalty,
     )
 
 
