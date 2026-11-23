@@ -33,6 +33,7 @@ LEGACY_STATE_SCHEMA = 2
 MAX_ROWS = min(2048, world_model.MAX_ROWS)
 DEFAULT_PAGE_SIZE = MAX_ROWS
 MAX_TRACKED = 10000
+MAX_SOURCE_REFS_PER_ACTION = 16
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 CHECKPOINT_NAME = re.compile(r"jepa-[0-9a-f]{32}\.npz\Z")
 ROLE_TARGETS = {
@@ -59,6 +60,41 @@ def _sha(value):
     return value
 
 
+def _row_source_refs(row):
+    """Normalize legacy single-source rows and validate the complete new lineage."""
+    refs = row.get("source_refs")
+    if refs is None:
+        refs = [{"source_id": row.get("source_id"), "sha256": row.get("source_sha256")}]
+    if type(refs) is not list or not 1 <= len(refs) <= MAX_SOURCE_REFS_PER_ACTION:
+        raise ValueError("invalid source reference set")
+    normalized, seen = [], set()
+    for ref in refs:
+        if type(ref) is not dict:
+            raise ValueError("invalid source reference")
+        source_id = ref.get("source_id")
+        source_sha = _sha(ref.get("sha256"))
+        if type(source_id) is not str or not source_id or len(source_id) > 256:
+            raise ValueError("invalid source identity")
+        if "char_start" in ref or "char_end" in ref or "modality" in ref:
+            if (set(ref) != {"source_id", "sha256", "char_start", "char_end", "modality"}
+                    or type(ref.get("char_start")) is not int
+                    or type(ref.get("char_end")) is not int
+                    or not 0 <= ref["char_start"] <= ref["char_end"]
+                    or type(ref.get("modality")) is not str or not ref["modality"]):
+                raise ValueError("invalid SourceRef span")
+        elif set(ref) != {"source_id", "sha256"}:
+            raise ValueError("invalid legacy source reference")
+        identity = (source_id, source_sha, ref.get("char_start"), ref.get("char_end"), ref.get("modality"))
+        if identity in seen:
+            raise ValueError("duplicate source reference")
+        seen.add(identity)
+        normalized.append(dict(ref))
+    if (normalized[0]["source_id"] != row.get("source_id")
+            or normalized[0]["sha256"] != row.get("source_sha256")):
+        raise ValueError("primary source reference mismatch")
+    return normalized
+
+
 def _receipt_row(receipt):
     if type(receipt.action_id) is not str or not receipt.action_id or len(receipt.action_id) > 128:
         raise ValueError("invalid verified action id")
@@ -68,25 +104,37 @@ def _receipt_row(receipt):
     if route not in world_model.ACTIONS:
         raise ValueError("unknown verified action route")
     source_id = proof.get("source_id")
+    source_sha = _sha(proof.get("source_sha256"))
     if type(source_id) is not str or not source_id or len(source_id) > 256:
         raise ValueError("invalid verified source id")
-    return {
+    refs = proof.get("source_refs")
+    if type(refs) is not list:
+        raise ValueError("verified source lineage missing")
+    row = {
         "action_id": receipt.action_id,
         "source_id": source_id,
         "fingerprint": _sha(receipt.fingerprint),
-        "source_sha256": _sha(proof.get("source_sha256")),
+        "source_sha256": source_sha,
         "outcome_sha256": _sha(proof.get("outcome_sha256")),
         "created": float(receipt.created),
         "s": _vector(raw.get("s"), 4),
         "a": route,
         "y": _vector(raw.get("y"), 3),
+        "source_refs": refs,
     }
+    _row_source_refs(row)
+    return row
 
 
 def _cohort_sha(rows):
     body = [
         {"action_id": row["action_id"], "source_id": row["source_id"],
-         "source_sha256": row["source_sha256"], "fingerprint": row["fingerprint"]}
+         "source_sha256": row["source_sha256"],
+         "source_refs": [
+             {"source_id": ref["source_id"], "sha256": ref["sha256"]}
+             for ref in _row_source_refs(row)
+         ],
+         "fingerprint": row["fingerprint"]}
         for row in sorted(rows, key=lambda item: item["action_id"])
     ]
     raw = json.dumps(body, sort_keys=True, separators=(",", ":"), allow_nan=False)
@@ -105,7 +153,7 @@ def _arrays(rows):
 
 
 def _source_disjoint_split(rows):
-    """Deterministic holdout split by source identity, never by action ID."""
+    """Deterministic source-disjoint split over every source admitted to an action."""
     if type(rows) not in (list, tuple) or not 16 <= len(rows) <= MAX_ROWS:
         raise ValueError("invalid source-disjoint cohort size")
     canonical, seen_actions, source_hashes = [], set(), {}
@@ -118,31 +166,64 @@ def _source_disjoint_split(rows):
                 or action_id in seen_actions or type(source_id) is not str
                 or not source_id or len(source_id) > 256 or route not in world_model.ACTIONS):
             raise ValueError("invalid source-disjoint identity")
-        prior_sha = source_hashes.get(source_id)
-        if prior_sha is not None and prior_sha != source_sha:
-            raise ValueError("source identity changed digest")
-        source_hashes[source_id] = source_sha
+        refs = _row_source_refs(item)
+        for ref in refs:
+            prior_sha = source_hashes.get(ref["source_id"])
+            if prior_sha is not None and prior_sha != ref["sha256"]:
+                raise ValueError("source identity changed digest")
+            source_hashes[ref["source_id"]] = ref["sha256"]
         seen_actions.add(action_id)
         canonical.append({
             "action_id": action_id, "source_id": source_id,
             "source_sha256": source_sha, "fingerprint": _sha(item.get("fingerprint")),
             "outcome_sha256": _sha(item.get("outcome_sha256")),
             "created": float(item["created"]), "s": _vector(item.get("s"), 4),
-            "a": route, "y": _vector(item.get("y"), 3),
+            "a": route, "y": _vector(item.get("y"), 3), "source_refs": refs,
         })
     canonical.sort(key=lambda item: item["action_id"])
-    # Group by the content digest as well as source_id. Two different event/source
-    # IDs can point to byte-identical source content; those must never straddle
-    # train and holdout. The earlier source_id-only split leaked this case.
-    def partition(source_sha256):
-        digest = bytes.fromhex(source_sha256)
-        return int.from_bytes(digest[:8], "big") % 2
-    train = [row for row in canonical if partition(row["source_sha256"]) == 0]
-    holdout = [row for row in canonical if partition(row["source_sha256"]) == 1]
-    train_sources = {row["source_id"] for row in train}
-    holdout_sources = {row["source_id"] for row in holdout}
-    train_source_hashes = {row["source_sha256"] for row in train}
-    holdout_source_hashes = {row["source_sha256"] for row in holdout}
+    # Rows sharing any admitted source ID or content digest belong to one
+    # connected component. This prevents recalled/observer context from leaking
+    # between train and holdout when primary event sources differ.
+    parent = list(range(len(canonical)))
+
+    def find(index):
+        while parent[index] != index:
+            parent[index] = parent[parent[index]]
+            index = parent[index]
+        return index
+
+    def union(left, right):
+        a, b = find(left), find(right)
+        if a != b:
+            parent[max(a, b)] = min(a, b)
+
+    owners = {}
+    for index, row in enumerate(canonical):
+        for ref in row["source_refs"]:
+            for key in ("id:" + ref["source_id"], "sha:" + ref["sha256"]):
+                prior = owners.get(key)
+                if prior is None:
+                    owners[key] = index
+                else:
+                    union(index, prior)
+    components = {}
+    for index in range(len(canonical)):
+        components.setdefault(find(index), []).append(index)
+    folds = {}
+    for root, indices in components.items():
+        digests = sorted({
+            ref["sha256"] for index in indices for ref in canonical[index]["source_refs"]
+        })
+        component_key = hashlib.sha256(
+            json.dumps(digests, separators=(",", ":")).encode("utf-8")
+        ).digest()
+        folds[root] = int.from_bytes(component_key[:8], "big") % 2
+    train = [row for index, row in enumerate(canonical) if folds[find(index)] == 0]
+    holdout = [row for index, row in enumerate(canonical) if folds[find(index)] == 1]
+    train_sources = {ref["source_id"] for row in train for ref in row["source_refs"]}
+    holdout_sources = {ref["source_id"] for row in holdout for ref in row["source_refs"]}
+    train_source_hashes = {ref["sha256"] for row in train for ref in row["source_refs"]}
+    holdout_source_hashes = {ref["sha256"] for row in holdout for ref in row["source_refs"]}
     if train_sources & holdout_sources:
         raise ValueError("source leakage across holdout")
     if train_source_hashes & holdout_source_hashes:
