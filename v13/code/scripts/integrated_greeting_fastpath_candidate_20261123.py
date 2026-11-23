@@ -5,6 +5,7 @@ patches only the composed staged Runtime and adds one small pure matcher.
 """
 from __future__ import annotations
 
+import ast
 import hashlib
 from pathlib import Path
 
@@ -26,6 +27,148 @@ def _replace_once(raw: bytes, old: bytes, new: bytes, label: str) -> bytes:
     return raw.replace(old, new, 1)
 
 
+
+def _patch_worker_learning(raw: bytes) -> bytes:
+    """Guard the existing post-turn learning dispatch without depending on an old worker layout."""
+    if not isinstance(raw, bytes):
+        raise TypeError("Runtime source must be bytes")
+    try:
+        tree = ast.parse(raw.decode("utf-8"))
+    except (SyntaxError, UnicodeDecodeError) as exc:
+        raise ValueError("Runtime source is not parseable UTF-8 Python") from exc
+
+    classes = [node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "Runtime"]
+    if len(classes) != 1:
+        raise ValueError("expected one Runtime class")
+    workers = [
+        node for node in classes[0].body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == "_worker"
+    ]
+    if len(workers) != 1:
+        raise ValueError("expected one Runtime._worker method")
+    worker = workers[0]
+
+    parents = {}
+    for node in ast.walk(worker):
+        for child in ast.iter_child_nodes(node):
+            parents[child] = node
+
+    def is_self_call(node, name):
+        return (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == name
+            and isinstance(node.func.value, ast.Name)
+            and node.func.value.id == "self"
+        )
+
+    turn_calls = [
+        node for node in ast.walk(worker)
+        if is_self_call(node, "_turn")
+        and node.args
+        and isinstance(node.args[0], ast.Name)
+        and node.args[0].id == "payload"
+    ]
+    if len(turn_calls) != 1:
+        raise ValueError(f"expected one _turn(payload) call in Runtime._worker; found {len(turn_calls)}")
+    turn_call = turn_calls[0]
+    turn_parent = parents.get(turn_call)
+    prefix = b""
+    if isinstance(turn_parent, ast.Assign) and turn_parent.value is turn_call:
+        if len(turn_parent.targets) != 1 or not isinstance(turn_parent.targets[0], ast.Name):
+            raise ValueError("unsupported _turn(payload) assignment target")
+        result_name = turn_parent.targets[0].id
+    elif (
+        isinstance(turn_parent, ast.AnnAssign)
+        and turn_parent.value is turn_call
+        and isinstance(turn_parent.target, ast.Name)
+    ):
+        result_name = turn_parent.target.id
+    elif isinstance(turn_parent, ast.Expr) and turn_parent.value is turn_call:
+        result_name = "_v14_greeting_turn_result"
+        prefix = (result_name + "=").encode("ascii")
+    else:
+        raise ValueError("unsupported _turn(payload) statement shape")
+
+    update_calls = [
+        node for node in ast.walk(worker)
+        if is_self_call(node, "online_world_update")
+        and any(
+            keyword.arg == "limit"
+            and isinstance(keyword.value, ast.Constant)
+            and keyword.value.value == 64
+            for keyword in node.keywords
+        )
+    ]
+    if len(update_calls) != 1:
+        raise ValueError(
+            f"expected one online_world_update(limit=64) in Runtime._worker; found {len(update_calls)}"
+        )
+    update_call = update_calls[0]
+    if turn_call.lineno > update_call.lineno:
+        raise ValueError("turn result must be produced before online-world dispatch")
+
+    child = update_call
+    parent = parents.get(child)
+    try_node = None
+    while parent is not None:
+        if isinstance(parent, ast.Try):
+            try_node = parent
+            break
+        child, parent = parent, parents.get(parent)
+    if try_node is None or child not in try_node.body:
+        raise ValueError("online-world dispatch must remain inside its existing try body")
+
+    lines = raw.splitlines(keepends=True)
+    start_index = try_node.lineno - 1
+    end_index = try_node.end_lineno
+    first = lines[start_index]
+    indent_len = len(first) - len(first.lstrip(b" \t"))
+    indent = first[:indent_len]
+    if try_node.col_offset != indent_len or not first[indent_len:].startswith(b"try:"):
+        raise ValueError("online-world try block must start on its own statement line")
+
+    worker_start = worker.lineno - 1
+    worker_end = worker.end_lineno
+    worker_bytes = b"".join(lines[worker_start:worker_end])
+    if b"skip_online_world_update" in worker_bytes:
+        raise ValueError("online-world greeting guard is already present")
+
+    block = lines[start_index:end_index]
+    indented = []
+    for line in block:
+        if line.strip():
+            if not line.startswith(indent):
+                raise ValueError("unexpected indentation inside online-world try block")
+            indented.append(indent + b"    " + line[len(indent):])
+        else:
+            indented.append(line)
+
+    name = result_name.encode("ascii")
+    guard = (
+        indent
+        + b"if not (isinstance("
+        + name
+        + b", dict) and "
+        + name
+        + b".get('skip_online_world_update') is True):\n"
+    )
+    replacement = guard + b"".join(indented)
+    start_offset = sum(len(line) for line in lines[:start_index])
+    end_offset = sum(len(line) for line in lines[:end_index])
+    patched = raw[:start_offset] + replacement + raw[end_offset:]
+
+    if prefix:
+        call_offset = sum(len(line) for line in lines[:turn_call.lineno - 1]) + turn_call.col_offset
+        patched = patched[:call_offset] + prefix + patched[call_offset:]
+
+    try:
+        compile(patched.decode("utf-8"), "v13/runtime.py", "exec")
+    except (SyntaxError, UnicodeDecodeError) as exc:
+        raise ValueError("patched Runtime does not compile") from exc
+    return patched
+
+
 def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]:
     """Return a new composed source map; never mutate the caller's map or checkout."""
     code_dir = Path(code_dir).resolve(strict=True)
@@ -42,29 +185,8 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
     if b"EXACT_GREETING_ACK" in runtime:
         raise ValueError("greeting fastpath is already present")
 
-    worker_old = (
-        b"                        self._turn(payload)\n"
-        b"                        # Local plasticity runs after the turn's committed action\n"
-        b"                        # record, never on an uncommitted prediction. Failure is\n"
-        b"                        # isolated from user-visible output and logged for repair.\n"
-        b"                        try:self.online_world_update(limit=64)\n"
-        b"                        except Exception as exc:\n"
-        b"                            self.store.log('online_world_learning_error',payload['event_id'],\n"
-        b"                                           {'error':type(exc).__name__})\n"
-    )
-    worker_new = (
-        b"                        turn_result=self._turn(payload)\n"
-        b"                        # A source-only greeting has no action-conditioned transition.\n"
-        b"                        if not (isinstance(turn_result,dict) and turn_result.get('skip_online_world_update') is True):\n"
-        b"                            # Local plasticity runs after the turn's committed action\n"
-        b"                            # record, never on an uncommitted prediction. Failure is\n"
-        b"                            # isolated from user-visible output and logged for repair.\n"
-        b"                            try:self.online_world_update(limit=64)\n"
-        b"                            except Exception as exc:\n"
-        b"                                self.store.log('online_world_learning_error',payload['event_id'],\n"
-        b"                                               {'error':type(exc).__name__})\n"
-    )
-    runtime = _replace_once(runtime, worker_old, worker_new, "post-turn learning dispatch")
+    runtime = _patch_worker_learning(runtime)
+
 
     marker = b"        mark('ingress')\n        monitor=NativePressureMonitor"
     inserted = """        mark('ingress')
