@@ -6,6 +6,7 @@ on:
       - "research-perception/**"
     paths:
       - "v13/code/v13/audio_duplex_bridge.py"
+      - "v13/code/v13/duplex.py"
       - "v13/code/v13/audio_voice_cues.py"
       - "v13/code/v13/audio_teacher_ear.py"
       - "v13/code/v13/audio_temporal_evidence.py"
@@ -22,6 +23,7 @@ on:
       - "gpt6/v13-private-remote-bridge-20261111"
     paths:
       - "v13/code/v13/audio_duplex_bridge.py"
+      - "v13/code/v13/duplex.py"
       - "v13/code/v13/audio_voice_cues.py"
       - "v13/code/v13/audio_teacher_ear.py"
       - "v13/code/v13/audio_temporal_evidence.py"
@@ -56,6 +58,7 @@ jobs:
         run: |
           python -m py_compile \
             v13/code/v13/audio_duplex_bridge.py \
+            v13/code/v13/duplex.py \
             v13/code/v13/audio_teacher_ear.py \
             v13/code/v13/audio_voice_cues.py \
             v13/code/v13/audio_temporal_evidence.py \
