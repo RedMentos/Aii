@@ -102,31 +102,6 @@ def _ui_frame_receipt(frame):
     }
 
 
-class FakeFrameTransport(FakeTransport):
-    def __init__(self, frame, receipt):
-        super().__init__(
-            enabled=True, paired=True,
-            capability_override=capability_snapshot(screen_capture_ready=True),
-        )
-        self.frame = frame
-        self.frame_receipt = receipt
-        self.frame_read_calls = 0
-
-    def screen_frame_status(self):
-        return {
-            "status": "FRAME_READY",
-            "receipt": self.frame_receipt,
-            "frame_uri": "content://com.redmentos.v14.companion/ui-frame/" + "b" * 32,
-            "expires_in_ms": 15000,
-        }
-
-    def read_frame(self, uri, *, max_bytes):
-        self.frame_read_calls += 1
-        assert uri.endswith("b" * 32)
-        assert len(self.frame) <= max_bytes
-        return self.frame
-
-
 DENIAL_BODY = {**BODY, "nonce": "3" * 32, "status": "USER_DENIED", "local_consent": False}
 DENIAL_RECEIPT = {
     "body": DENIAL_BODY,
@@ -241,6 +216,31 @@ class FakeTransport:
 
     def pending(self):
         return {"status": "OK", "pending": list(self.pending_items)}
+
+
+class FakeFrameTransport(FakeTransport):
+    def __init__(self, frame, receipt):
+        super().__init__(
+            enabled=True, paired=True,
+            capability_override=capability_snapshot(screen_capture_ready=True),
+        )
+        self.frame = frame
+        self.frame_receipt = receipt
+        self.frame_read_calls = 0
+
+    def screen_frame_status(self):
+        return {
+            "status": "FRAME_READY",
+            "receipt": self.frame_receipt,
+            "frame_uri": "content://com.redmentos.v14.companion/ui-frame/" + "b" * 32,
+            "expires_in_ms": 15000,
+        }
+
+    def read_frame(self, uri, *, max_bytes):
+        self.frame_read_calls += 1
+        assert uri.endswith("b" * 32)
+        assert len(self.frame) <= max_bytes
+        return self.frame
 
 
 def make_runtime(tmp_path):
