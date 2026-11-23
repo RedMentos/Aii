@@ -1,3 +1,100 @@
+## QA latest-head source-forget blocker — 2026-11-23T01:20:02.363Z
+
+QA #2391 latest head is `076aa21e6b8c13a2a48d63d70f530ba6eba73072`; its nested training-resume pin chain is repaired, but its source-lifecycle composer still pins old `vision.py` SHA-256 `758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5` and omits `vision_source_lineage.py`. Seven exact-head workflows are queued. It is not yet composed with JEPA #2397; do not mark A3 source-forget accepted until the combined staged/integrated chain passes.
+
+---
+
+## FASTDIAR model/weight license evidence — 2026-11-23T01:17:55.055Z
+
+R-104 reviewed the full arXiv paper (submitted to ICASSP 2027) and the exact upstream release. FASTDIAR code is MIT at signed v0.1.0 commit `e7f9bbccf98865216f48a04868d74f1d53c8734e`; checkpoint weights have no separate license statement in the inspected README/release. The 192-D/80 ms encoder and 960 ms diarization delay are paper results on a Threadripper CPU, not Android. Current V14 adapter accepts caller-supplied embeddings only; it does not load or execute weights. PyTorch/torchaudio/torchcodec/pyannote dependency closure is not proven on Termux/Bionic. No weights downloaded; REDMI_UNVERIFIED.
+
+---
+
+## Research evidence overlay — 2026-11-23T01:14:50.933Z
+
+- **R-102 Orion / on-device OCL:** full-text methods, evaluation and limitations reviewed. URGE reallocates batch/replay/optimizer memory under a hard cap; evidence is Jetson AGX Orin 32 GB and emulated 8 GB, not Android. No Orion code found; Avalanche itself is MIT. No Android or Redmi acceptance.
+- **R-103 duplex streaming ASR:** full arXiv HTML reviewed. A separate user-ASR head can run alongside agent text while sharing hidden states; the reported 9B + 600M model is too large for the Redmi target, and code is not yet released. This supports RAW EAR/transcript/agent-text separation, not transcript-only perception.
+- Neither result changes the active architecture or enables model downloads. R-102/R-103 are research candidates only; no code/weights imported and no device measurements performed.
+
+---
+
+## Audio import-isolation evidence overlay — 2026-11-23T01:11:52.477Z
+
+PR #2369 current branch head `6dcf1fddd7b68d3cfe9526b764d086090fa054f9` adds a repository-level subprocess test that copies the actual `v13` package without `audio_teacher_ear.py` and imports `v13.audio_voice_cues`. Exact test commit `3f99bdcc6c133f44a897d59e5ef2a9292176f917`; test blob `a45c711ce7aac12beb5f9c567096c0e406962a08`; GitHub readback verified. LOCAL_LINUX minimal subprocess-pattern check PASS; full copied-package test NOT_RUN locally because no Aii checkout is mounted; exact-head CI queued/pending. This strengthens the import-time regression but does not prove Core staged integration, AudioRecord or Redmi operation.
+
+---
+
+## Current evidence overlay — 2026-11-23T01:09:03.075Z (Perception / JEPA / QA)
+
+This additive overlay updates current evidence only. The historical Canon heading inventory below is unchanged.
+
+| Canon family | Current evidence | Acceptance boundary |
+| --- | --- | --- |
+| A0–A5 / RAW EAR audio | #2369 lazy-loads optional Teacher Ear only when a caller-supplied result exists; absent module gives UNAVAILABLE_MODULE while acoustic A5/A4/C3 stays importable; current lease + separate teacher/transcript opt-ins remain required | LOCAL_LINUX isolated helper/permission 5/5 PASS; exact-head CI queued/pending; Core #2370 still pins old audio source; no AudioRecord/Redmi proof |
+| A3 vision source lineage | #2395 records exact source IDs + SHA-256 for global/tile projectors and invalidates affected or unknown legacy weights on forget | LOCAL_LINUX helper 7/7 and focused CI 2/2 PASS; staged/integrated blocked |
+| JEPA vision-forget overlay | #2397 carries shared lineage invalidation through the actual overlaid vision_forget; retryable cleanup persists before unlink; shared live blobs retained | Dedicated Python 3.13/3.14 CI 2/2 PASS; staged/integrated FAIL at QA-owned stale vision.py pin; DRAFT |
+| QA source-lifecycle composition | #2391 latest branch is based on #2372, not #2397 | NOT_COMPOSED_WITH_CURRENT_JEPA_OVERLAY; must rebase, pin/copy vision_source_lineage.py and rebind vision.py before rerun |
+| MediaProjection → RAW EYE → A5/C3 | #2356/#2375/#2379 remain separate candidates | No common accepted source ancestor, real C3 UI consumer receipt, or Android frame capture |
+| Voice model feasibility | R-100 confirms sherpa-onnx Android CPython 3.14 ARM64 wheel metadata; R-101 confirms peer-reviewed ECML PKDD 2026 ridge-head unlearning paper | No Termux/Bionic wheel install, model download, weight license clearance or Android performance proof |
+
+**Audio source candidate:** #2369 code/test commit `245b2ef20c975f3446ab5df3ae2007d08a3332cf`, branch head `6e1050146fe7cbb9b57579404bfd700a494d0dce`, current source blob `1fc3ac7b6624fcd0d1aef52a77ae6221fdf43288`; DRAFT / NOT_RELEASED.
+
+**A3/JEPA candidate:** #2395 + #2397; #2397 exact head `f63a5877774f58b6928b4e8dd7125651e9d8173d`; dedicated overlay CI 2/2 PASS, staged/integrated FAIL. QA hashes: vision.py SHA-256 `d4a5e3e0b3faf27489e6ea8c1476876910d2708033ab9ae4267b665dd8f180dd`; vision_source_lineage.py SHA-256 `bb63636c9ae84d345fe1f4e37254de3be87c26990cb320ca058859fd0b51b72f`.
+
+**Device:** private V13OBS #115 read 2026-11-23T00:52:16Z confirms installed release `aed1d2b826290c95c70356b5d8b864b5ef382be4`, auto-update enabled and Runtime/Dashboard UP_TO_DATE; stored turns remain slow and B1/B2 TIME_BUDGET. No candidate is deployed; all new features REDMI_UNVERIFIED.
+
+---
+
+## Perception run 10 evidence overlay — 2026-11-23
+
+- **A3 source provenance/forget:** PR #2395 exact head 26ccaf0825d4ebf02aedcdae781a9164b04f53d5 records source ID + SHA-256 for global and tile ridge projectors and invalidates affected or legacy-unknown weights on forget. Focused GitHub CI 2/2 PASS and local helper tests 7/7 PASS. This remains a draft candidate, not accepted: the staged JEPA overlay still replaces vision.forget() with a caption-only cleanup path, and the QA composer has stale vision.py/missing helper pins. Staged/integrated CI FAIL; Redmi unverified.
+- **Exact ridge-head unlearning research:** R-101 is a local synthetic sufficiency experiment only. It is not evidence of neural-body unlearning, actual visual semantics, native training or Android performance.
+
+---
+
+## Research & Perception evidence overlay — 2026-11-23T00:19:01.123Z (append-only; historical 1,255-heading inventory unchanged)
+
+| Canon family | Current verified state | Acceptance boundary / next owner |
+|---|---|---|
+| A0–A5 / RAW EAR / Teacher Ear | #2369 Perception branch fixes its own stale comparator pin to the exact current `audio_voice_cues.py` blob; current PR head `930f9aab` has 7 SUCCESS (RAW EAR comparator, FASTDIAR diagnostic, RAW EAR prosody→attention, optional NumPy, model-lab, privacy and consent-revocation QA), 1 expected safe-additive SKIPPED, 1 release-event integration CANCELLED and 1 Core-owned staged/integrated FAIL. Run 45086824158: staged-runtime 16 failed / 234 passed / 10 skipped / 2 errors; integrated-regression 1 failed, all at Core #2370's stale audio source pin. Follow-on integration blocker: Core branch lacks `audio_teacher_ear.py` (Perception blob `5a26193c94c864e6ad3af55def59bae040e59f35`) even though `audio_voice_cues.py` imports it, and the Core audio-window contract does not propagate the separate teacher/transcript opt-ins. | Core #2370 still has a stale composer pin `b18e4501` versus current blob `5dbb0fd5`; Core must rebind its own chain. Teacher Ear remains caller-supplied, FINAL-only, ephemeral C3 hypothesis; no model inference or AudioRecord provider. |
+| Vision / RAW EYE / A3–A5 | #2375 exact head `e21a85a` has 4 executed workflows SUCCESS + 1 expected safe-additive SKIPPED on synthetic frames. A5 cache and bounded 320-character envelope are wired; optional A3 test fits a tiny synthetic hashed-label projector and scores a shifted synthetic frame. | `WIRED_SYNTHETIC` only. No semantic visual recognition, neural gradient/JEPA/retention proof, normal Runtime→C3 dispatch, Android MediaProjection receipt or Redmi capture. Core #2379 must combine its signed provider with the accepted Perception/QA base and pass the same live lease through C3. |
+| B1_DETAIL / B2_GIST / C3 | Private V13OBS #115 (2026-11-23T00:05:52Z): last turn 57.74 s total / 41.63 s TTFT / 38.95 s prefill / 751 prompt tokens / 2 generated tokens. Five-turn summary: B1 4/4 native failures, B2 2/2 failures, zero valid offers; prompt inclusion, semantic use and native latent exchange remain unproven. | P0 product blocker remains. No prompt-budget or response-quality acceptance from an UP_TO_DATE updater status. Core/Boss must keep real C3/B1/B2 consumer and latency work ahead of cosmetic status. |
+| Android / voice / deployment | Same private V13OBS receipt confirms installed release `aed1d2b826290c95c70356b5d8b864b5ef382be4`, auto-updater enabled, runtime/dashboard UP_TO_DATE, last error NONE. Runtime process is RUNNING; native process sample maps 0 processes and does not prove model residency/free RAM. | This proves only current release deployment. #2369/#2375/#2379/#2393 are not deployed. No new microphone, screen capture, Android action, permission change or device mutation. |
+| Mobile ASR/runtime candidate | R-100 / #2393: sherpa-onnx v2.0.3 exposes a CPython 3.14 Android API 24+ ARM64 wheel; companion wheels are listed, but PyPI provenance is absent and model licenses are separate. | Candidate only. No download/install; Termux tag acceptance, Bionic ELF dependencies, model choice, German/English quality, TTFT and RSS untested. Explicit approval required before an experimental device install. |
+
+**Environment boundary:** full local Aii checkout is unavailable and `git ls-remote` fails with DNS resolution for `github.com`; no local repository pytest/Gradle run was possible in this worker. CI results above are GitHub Actions evidence, not LOCAL_LINUX or Redmi tests. New perception/provider paths remain `REDMI_UNVERIFIED`. No historical Canon requirement was removed.
+
+## Current evidence overlay — 2026-11-23T00:05:08.222Z
+
+This overlay supplements the complete historical heading inventory below; it does not replace, renumber or reduce the Canon. Inventory count remains 1,255 headings. The historical V13 appendix and master architecture were not edited in this run.
+
+| Canon family | Current executable state | Acceptance boundary |
+|---|---|---|
+| A0–A5 perception, segmentation, salience, source/clock | RAW EAR feature path is partial; RAW EYE Python adapter/provider verifier is on draft #2375 | No Android AudioRecord or MediaProjection capture receipt; no accepted A3/A4/C3 visual consumer |
+| B1_DETAIL / B2_GIST | Distinct role models and source-bound OfferPacket→C4→C3 candidate exist in #2370 | Current exact CI pending; Redmi B1/B2 still TIME_BUDGET 53.2/54.2 s; no accepted native offers, peer re-entry or correct answer |
+| B3 / Enlightened Space | Symbolic exchange and diagnostic receiver experiments only | No trained cross-family latent adapter, paired native tap utility, semantic transfer or retention |
+| B4/B5 and C4 coalition | Partial source-span/context contracts and staged synthetic consumer | No accepted full coalition or native same-turn consumer proof |
+| C1/JEF/C2/C3 language/output | C3 runtime and exact arithmetic guard; fair-budget candidate pending | Last stored Redmi turn 57.74 s, TTFT 41.63 s, prefill 38.95 s, 2 tokens; correctness UNKNOWN |
+| Attention / curiosity / salience | Partial A4/RAW EAR and RAW EYE features | No measured online attention learning or Android multimodal feedback |
+| World / Self / episodic, semantic, procedural memory / Context OS / Memorilla | Partial Store, retrieval and additive companion research | No accepted overflow consumer, durable per-session retention or complete source-forget/revocation |
+| JEPA / EMA / T8 / temporal prediction | Shadow candidate and research; #2372/#2390 source/optimizer stacks remain failing | No verified gradient, optimizer-moment restart, persistent parameter diff, retention or rollback |
+| Eligibility × error × modulator × plasticity / cross-organ learning | No accepted end-to-end sender→receiver gradient path | No numeric cross-organ update or ablation |
+| Sleep / Dream / Replay | Partial cancellable postcommit worker | No accepted native replay, retention and restart proof |
+| RAW EAR / audio / voice | Feature extraction and optional teacher research | No Android AudioRecord provider, trainable decoder/vocoder, full duplex or nonverbal learning |
+| RAW EYE / vision | Bounded Python adapter and provider verifier entrypoint merged into #2375 | No Android capture or real Runtime/C3 consumer; Core #2379 still has stale-base import failures |
+| Android background / UI control | Companion contracts and action-intent prototypes | #2356 process restart remains blocked by emulator System UI ANR; no accepted OS executor or Redmi UI action |
+| Tools / permissions / goal agency | Typed contracts and partial companion broker | No end-to-end OS-authenticated action with audit, stop and rollback on Redmi |
+| Age 0–5 / X10 / ResourceGuard | Official Age 0 separated from lab selector; diagnostic says request 10/effective 5 | Physical feature execution false; SHADOW required; Age remains rights, not resource budget |
+| Self-optimization / cross-organ weight edits | JEPA SHADOW prototypes | No accepted B1/B2/C3 master update, cross-organ gradients or structural self-edit |
+| Sparse MoE B1/B2 | Research only | No two distinct measured sparse MoE bodies or licensed imported implementation |
+| Technical OS sandbox / adaptive behavior Judge / memory egress | Prototypes and contracts | No independent Android OS enforcement or accepted production judge/egress registry |
+| Install / update / diagnostics / rollback | Existing CI-gated updater and private owner-read are operational | aed1d2 installed and up-to-date; candidate #2370 not released; process-death/reboot/rollback unverified |
+| Canon traceability | 1,255 historical headings retained | Semantic clause→code→consumer→test→platform→rollback mapping remains incomplete |
+
+**Current candidate:** Boss PR #2370 exact head 11c4ffea182a6bfbb729fbf176b0c1b1f6541189, 29 pending / 1 skipped / 0 completed; NOT_GREEN and NOT_RELEASED. **Current phone:** installed aed1d2b826290c95c70356b5d8b864b5ef382be4; private receipts #653/#655. No new turn or device mutation. Full local checkout unavailable; no local full-suite or native proof.
+
+---
+
 # V14 Canon-Coverage-Index — vollständiger historischer Heading-Inventarstand
 
 **Stand:** 2026-11-22 · **Basis:** `v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md` · **Master-BLOB-SHA:** `9748ad5ba9a4d4f5c3d004a0577141f6779fcbca`  
@@ -6,6 +103,31 @@
 **Erhaltungsregel:** Keine Zeile/Kontrakt aus dem historischen Ursprung darf aus dem Endziel still gelöscht werden. Bei jeder bedeutenden Masterrevision Index anhand Teil III neu erstellen und alte gegenüber neuen Einträgen/Quell-SHAs vergleichen. Originalanhang darf nicht still verändert werden. Umsetzung muss alle Einzelanforderungen nach Verifikation auf passende aktive V14-Organe, Consumer, Tests und Evidenz mappen. Duplicate headings und historische Namenskonflikte bleiben unter ihrer **eigenen Quellzeile** erhalten; neuer Status darf alte FAILs nicht nachträglich überschreiben.
 
 **Default pro Eintrag:** `CANON_REQUIREMENT / IMPLEMENTATION_UNVERIFIED / COVERAGE_REVIEW_PENDING`. Eine Zuordnung oder `DONE` verlangt konkrete Datei/Funktionspfad + Consumer + Test + Evidenz und kompatible Nutzerentscheidung. Ein Quellabschnitt kann mehrere atomare Anforderungen enthalten und später aufgeteilt werden.
+
+## Current execution evidence overlay — 2026-11-22T22:03:32.071Z
+
+This overlay is a **whole-system** status snapshot, not a replacement for the 1,255 historical heading rows below. Statuses are deliberately separate: `NOT_IMPLEMENTED`, `ISOLATED_MOCK`, `WIRED_SYNTHETIC`, `NATIVE_LINUX_PROOF`, `REAL_REDM I_PROOF`, `ACCEPTED`. A candidate test or code file never upgrades a feature by itself.
+
+| Canon family | Current evidence | Missing acceptance / exact blocker | Honest state |
+| --- | --- | --- | --- |
+| A0–A5 perception, segmentation, attention, source/time | Existing local metadata/perception code; RAW EAR signed consumer #2312 is Termux-side; RAW EYE #2375 has a synthetic/provider-verifier adapter. | #2375 exact head has 4 failures: missing content-free `_summary` import and buffer-zeroization ownership tests. #2379 provider is still in CI; no normal Runtime/C3 consumer or Android frame. | `WIRED_SYNTHETIC` / provider absent |
+| Raw audio / voice / nonverbal learning | PCM16 ingress and feature-level RAW EAR consumer exist; Android AudioRecord geometry is documented in R-092. | No visible AudioRecord provider, RECORD_AUDIO permission, ASR decoder, trainable speech decoder/vocoder, full-duplex/barge-in or acoustic weight learning. | `PARTIAL` / capture OFF |
+| B1_DETAIL and B2_GIST | Distinct local model runners and source-bound OfferPacket candidate path. | Redmi still reports 4/4 B1 and 2/2 B2 failures / 0 valid offers in latest five-turn observation; latest probe TIME_BUDGET 53.2/54.2 s. #2370 C4→C3 integration test is synthetic and exact CI pending. | `CODE_PRESENT` / `WIRED_SYNTHETIC` / not accepted |
+| B3 / Enlightened Space / activation transfer | Native input-embedding receiver candidate and negative controls; #2377 is adding actual GGUF byte/path identity. | #2377/#2381 not green; no same-model parity, target-generation utility, source-disjoint holdout or trained receiver; RMS/input effect is not semantics. | diagnostic only / B3 OFF |
+| C2, C3, C4, C5 and output | C2 reports OK; C3 can produce FINAL; C4 source-bound coalition path is under test; companion ActionIntent/Outcome journal #2376 is 7/7 CI. | Latest C3 turn generated 2 tokens after 38.95 s prefill; semantic correctness unscored. #2370 C4→C3 test not yet run on exact SHA. #2376 receipts remain `COMPANION_ATTESTED_NOT_DEVICE_VERIFIED`. | partial / synthetic / not accepted |
+| World / Self / episodic-semantic-procedural memory / JEPA / EMA | Persistent Store-backed temporal/WorldJEPA candidate and numeric SHADOW paths exist. | #2372 has 5 failures from source-lifecycle anchor mismatch; #2383 is fixing it. No accepted target-weight diff, cross-organ gradients, held-out utility, per-session retention, restart and rollback. | SHADOW / no weight proof |
+| Sleep, Dream, Replay, consolidation | Candidate persistence/replay and source-forget paths exist. | Source-forget/promotion lock interleavings, positive rollback/restart and retained old-session utility remain unaccepted. | partial / synthetic |
+| Context OS and additive Memorilla | Existing Context OS/source-pointer path; #1983 remains additive. | No production overflow consumer or verified query-sensitive writer/reader loop with forget/revoke/restart. | partial / SHADOW |
+| Android background agency / app launch | Companion pairing/receipt and ActionIntent journal candidates; #2356 QA base is still in process-restart CI. | No accepted process-death/restart sequence, no Redmi APK/device action, no autonomous OS executor. | code + CI partial / no device proof |
+| Android UI agency / screen observation | #2379 one-shot visible MediaProjection provider candidate; #2375 RAW EYE consumer candidate. | Both remain stacked/in CI; no integrated Runtime→A5→C3 consumer, no tap/type/navigation executor, no Redmi capture. | provider/adapter partial / no UI control proof |
+| Age, X10, rights, resource budgets | Official Age 0; lab request 10; effective implemented ceiling 5. | Physical feature execution not verified; learning commit authority requires separate SHADOW. Keep CPU/RAM/time in ResourceGuard, not Age. | configured / not physically proven |
+| Technical OS sandbox and adaptive behavior judge | Typed action/outcome and risk-head prototypes remain partial. | Independent OS-enforced boundary, full audit/stop/rollback, production judge and authority-separation tests are not complete. | partial contracts |
+| Tools, remote maintenance, consent, privacy | Owner-read pipeline and read-only diagnostics work; update status is authenticated. | No remote shell or user action was used. Process rollback, approved patch-stage/apply/restore and full audit remain open. | read-only status verified / maintenance partial |
+| Install, update, diagnostics, recovery | Release `aed1d2b826290c95c70356b5d8b864b5ef382be4` has 45/45 exact-SHA checks and is confirmed installed/up-to-date by #630. | Candidate #2370 is not released; process death, reboot and runtime-only rollback are not device-verified. | code install verified / rollback unverified |
+| Self-optimization / cross-organ weight editing | Numeric JEPA/World shadow scaffolding. | No permanent B1/B2/C3 updates, no real cross-organ gradient/parameter diff, no tested self-edit generation. | SHADOW only |
+| Whole-Canon traceability | 1,255 historical headings retained; exact V13 Canon bytes verified embedded in V14 master. | Atomized clause→implementation→consumer→test→platform→rollback mapping remains incomplete; one heading can contain multiple requirements. | inventory complete / semantic coverage incomplete |
+
+**Current device evidence:** PIPELINE_STATUS #630 confirms installed `aed1d2b826290c95c70356b5d8b864b5ef382be4`; DIAGNOSTICS #631 reports 57.74 s / 41.63 s TTFT / 38.95 s prefill / 751 prompt tokens / 2 generated tokens and B1/B2 TIME_BUDGET; HEALTH #632 conflicts on runtime availability; LEARNING_STATUS #633 is unavailable. This is metadata, not semantic or weight proof. No CHAT_SEND, LOG_PAGE, model/weight/permission change or device mutation was performed.
 
 ## Historische Quellblöcke
 
@@ -2244,3 +2366,188 @@ Focused B3 paired-capture run 45040617156 remains PASS (52 tests, compile, CLI s
 - Runtime deployment 45040617193: plain UI recovery builder changed under Python 3.11 and 3.14.
 
 JEPA transactional update, combined online JEPA, JEPA receipt integrity, role-specific tap provenance, privacy scan and offline bridge checks passed; same-turn B1/B2/C4/C3 was still in progress and audio/arithmetic/native latent receiver queued. These are shared integrated builder/recovery composition failures, not the focused B3 capture/trainer test. Keep #2346 DRAFT / NOT_RELEASED.
+
+
+---
+
+## Current evidence overlay — Boss run 11 (2026-11-22)
+
+| Canon family | Current exact code / consumer evidence | Missing acceptance | Classification |
+|---|---|---|---|
+| A0–A5 perception / attention | Caller PCM16→staged A5/A4/C3 remains synthetic; #2375 adds a lease-bound RAW EYE adapter for an already-authorized frame (8 queued / 1 skipped). | Android MediaProjection provider, signed receipt verifier, foreground-service lifecycle, screen decoder, microphone provider, target-device measurements. | CODE_PRESENT / WIRED_SYNTHETIC / CI_PENDING / NOT_ANDROID_VERIFIED |
+| B1_DETAIL + B2_GIST | Distinct role models and synthetic OfferPacket→C4→C3 consumer remain; #2370 fair-budget candidate preserves both roles. | #2370 exact head has 27 queued / 3 skipped; valid native offers, both-body delivery, C4→C3 consumption, correct answers and 20-turn Redmi acceptance. | CODE_PRESENT / WIRED_SYNTHETIC / CI_PENDING / NOT_ACCEPTED |
+| B3 / Enlightened Space | Symbolic production exchange plus diagnostic native input receiver #2367 (26 success / 4 skipped). | #2377 actual GGUF-byte check is queued; path_for identity still requested. No paired native activation training, gradient, held-out utility, retention or semantic latent transfer. | DIAGNOSTIC_ONLY / B3_OFF / NOT_ANDROID_VERIFIED |
+| C1/JEF/C2/C3 | Runtime and output adapter present; #620 stored FINAL turn measured at 57.739 s, TTFT 41.627 s, prefill 38.945 s, 2 tokens. | Correctness unknown; no 20-turn acceptance; B1/B2 still TIME_BUDGET. | CODE_PRESENT / NATIVE_DEVICE_METADATA / NOT_ACCEPTED |
+| World / Self / Memory / JEPA / Sleep | Persistent numeric WorldJEPA SHADOW and temporal T8/B1/B2 readout candidate #2372 (9 checks queued). | SleepRuntime postcommit root-cause fix, source-forget/promotion lock interleavings, positive rollback/restart, per-session retention, held-out utility and actual GGUF weight diff. | SHADOW / CI_PENDING / WEIGHTS_UNVERIFIED |
+| Voice / audio / multimodal learning | Caller-supplied PCM16 and RAW EAR feature path; research-only libfvad comparator. | Android AudioRecord, ASR, trainable decoder/vocoder, full duplex, source-bound acoustic gradients and persistent weight/retention proof. | PARTIAL_FEATURES / NO_DEVICE_CAPTURE |
+| Android background agency | Companion prototype and Core action journal #2376 (7/7 CI). | QA base #2356 has one failed emulator process-restart job; no APK install, authenticated OS executor, app launch or Redmi action. | CODE_PRESENT / CI_PASS_STACKED / NO_OS_EXECUTOR |
+| Android UI agency | A5 metadata lease plus #2375 frame adapter. | No MediaProjection provider, signed frame receipt, AccessibilityService, screen capture, tap/type or navigation executor. | SHADOW_ADAPTER / PROVIDER_ABSENT |
+| Age / X10 / resource rights | Official Age 0; lab request 10, implemented ceiling 5; commit authority requires separate SHADOW. | Physical feature execution and learning rights proof; keep CPU/RAM/time in ResourceGuard, not Age. | CONFIGURED / PHYSICAL_EXECUTION_UNVERIFIED |
+| Tools / sandbox / behavior judge | Typed action/outcome and risk-head prototypes remain partial. | Independent OS-enforced boundary, full audit/stop/rollback, production judge and no authority leakage. | PARTIAL_CONTRACTS / NOT_ANDROID_VERIFIED |
+| Context OS / Memorilla | Context OS source-pointer infrastructure partial; #1983 additive SHADOW. | Production overflow consumer, source-pointer fidelity, forget/revoke/restart and reader/writer learning. | PARTIAL / SHADOW_ONLY |
+| Distinct sparse MoE bodies | Separate B1/B2 role models only. | Two independently trainable sparse MoE bodies, expert routing, load/quality/retention measurement. | NOT_PROVEN |
+| Updater / install / rollback / remote maintenance | #619 confirms aed1d2 installed, auto-update enabled and UP_TO_DATE; read-only owner relay works. | Candidate deployment, process-death/reboot, rollback, patch stage, local approved apply and restore. | CODE_INSTALL_VERIFIED / ROLLBACK_NOT_DEVICE_VERIFIED |
+| Cross-organ self-optimization / weight updates | WorldJEPA numeric SHADOW candidate. | Persistent B1/B2/C3 updates, cross-organ gradients, held-out utility, old-task retention and controlled self-edit. | SHADOW_ONLY / NO_WEIGHT_PROOF |
+
+**Device receipt boundary:** private #619/#620 are authenticated metadata only. No new chat turn, native receiver probe, screen/microphone capture, model/weight change or permission action was performed. 0 mapped native processes is one instantaneous sample with child readability UNKNOWN, not proof of zero total residency. The 1,255-heading historical inventory remains intact; semantic clause-level mapping is incomplete.
+
+
+## Perception evidence overlay — 2026-11-22 (Run 7; historical inventory preserved)
+
+| Canon family | Current implementation / exact evidence | Missing acceptance | Classification |
+|---|---|---|---|
+| A0–A5 visual/UI | PR #2375 code/test head `f87ebac407a19c147da7eb52bc63f10e9eed25d2` adds bounded MediaProjection frame ingress, digest-bound snapshot decode, mutable-buffer zeroization and a scoped per-frame source/cache cleanup contract. Focused file has 18 tests; privacy and offline-bridge-security checks pass; six exact-head checks remain queued; additive validator is policy-skipped. | Signed Android MediaProjection provider, OS consent/lifecycle, normal Runtime/C3 dispatch, real screen decoder and Redmi capture. | WIRED_SYNTHETIC / PARTIAL_CI / PROVIDER_ABSENT |
+| A0–A5 RAW EAR/audio | PR #2312 code head `5221314d3c01ab6d874ecc0a8b8ff72c34e504a2` verifies one-shot 44.1-kHz mono PCM16 receipts and submits to the existing RAW EAR consumer; dedicated signed-consumer CI `44992975596` PASS. | Staged migration `44992975599` has two inherited UPDATED-vs-PARTIAL failures; PR base is historical `58666dd`; no Android AudioRecord provider, RECORD_AUDIO permission, foreground capture or microphone receipt. | TERMUX_CONSUMER_CI_PASS / STAGED_FAIL / PROVIDER_ABSENT |
+| Audio platform/consent | QA companion ref `qa/v14-companion-os-permission-contract-20261122` at `7650ae0c19e93e4b6cbb778abb2f5123e49c364f`: manifest lacks RECORD_AUDIO; CapabilityRegistry marks audio_capture unavailable; AudioCaptureDefaultOffTest asserts absence. | Visible one-shot provider, AudioRecordingCallback, route/silence/format-change rejection, exact client PCM receipt and explicit user consent. | INTENTIONALLY_OFF |
+| B3 / Enlightened Space | Native receiver diagnostic #2367 consumes final sender embeddings at receiver input and measures numerical input effect; R-091 / PR #2380 documents the distinction. | Same-model parity, mid-layer residual injection if claimed, target generation/task utility, source-disjoint holdout, bidirectional/negative controls, gradients, retention and restart. | DIAGNOSTIC_ONLY / INPUT_EFFECT_NOT_SEMANTIC / B3_OFF |
+| C3 / B1 / B2 live acceptance | Latest private V13OBS #115 (2026-11-22T21:11:21Z) repeats installed `aed1d2`, updater UP_TO_DATE; five-turn metadata shows B1 4/4 failures / 0 offers and B2 2/2 failures / 0 offers; latest turn 57.739 s / TTFT 41.627 s / prefill 38.945 s / 751 prompt tokens / 2 generated tokens. | Correctness, B1/B2 delivery into final C3, C3 prompt inclusion/semantic use, native latent exchange and 20-turn acceptance. | INSTALLED_BASE / P0_OPEN / NOT_ACCEPTED |
+| Environment and release | LOCAL_LINUX CPython 3.13.5 isolated helper reproduction PASS for config bounds, snapshot/hash/decode, Pillow decode, zeroization and scoped cleanup. Exact GitHub CI is separately classified above. | Full Aii checkout and local repository pytest/compile unavailable; no Android/Termux native test or new release. | LOCAL_ISOLATED_PASS / FULL_SUITE_BLOCKED / REDMI_UNVERIFIED |
+
+**Research:** R-091 full-text cross-architecture steering preprint review and R-092 official Android AudioRecord API review are in `V14_RESEARCH_LEDGER.md`. Neither authorizes code/weight reuse or model changes. PR #2310 remains the stale 16-kHz audio predecessor and must not be merged; #2312 is the 44.1-kHz successor but requires current-base reconciliation after the QA/Boss parent stack settles.
+
+**Whole-system boundary:** this overlay updates only Perception evidence. It does not close the whole Canon, replace any V13 organ, enable B3, enable microphone/screen capture, or establish Android acceptance. No model, weight, permission, device data or release was changed. User action: NONE.
+
+ 
+## Whole-system evidence overlay — Boss run 12 (2026-11-22T22:24:48.002Z)
+
+| Canon family | Current exact implementation / evidence | Missing acceptance | Classification |
+|---|---|---|---|
+| A0–A5 / RAW EYE / attention | #2375 adds lease-bound frame ingress for an already-authorized frame; exact head still fails because _feature_summary was undefined. QA #2384 head 876221d adds bounded numeric/content-free helper; two workflows queued. | Signed Android MediaProjection provider, OS consent/lifecycle, full Runtime→C3 consumer and Redmi capture. | CODE_PRESENT / WIRED_SYNTHETIC / CI_PENDING / NOT_ANDROID_VERIFIED |
+| B1_DETAIL + B2_GIST | #2370 synthetic source-bound OfferPacket→C4→C3 consumer requires both quotes in the actual C3 prompt and a readiness receipt. Exact head 03909f0: 3 success / 13 queued / 2 cancelled / 2 skipped. | Native B1/B2 offers, semantic C4 selection, correct C3 output, TTFT and 20-turn Redmi acceptance. | WIRED_SYNTHETIC / CI_PENDING / NOT_ACCEPTED |
+| B3 / Enlightened Space | #2377 exact head 45f08a3: native receiver and staged/integrated workflows SUCCESS; actual model bytes, O_NOFOLLOW/O_NONBLOCK, manifest and route checks exist. | Persist original canonical path + file identity across approval arm/consume; source-disjoint held-out utility, trained bridge, gradients, retention and Redmi proof. B3 remains OFF. | DIAGNOSTIC_ONLY / APPROVAL_BINDING_GAP / B3_OFF |
+| C / JEF / C3 | Installed Runtime last stored turn FINAL, 57.74 s total / 41.63 s TTFT / 38.95 s prefill / 751 prompt tokens / 2 generated tokens. | Correct answer/semantic scoring, responsive TTFT, real B1/B2 cooperation and 20 accepted turns. | DEVICE_OBSERVED / NOT_ACCEPTED |
+| World / Self / Memory / JEPA / Sleep | #2372 temporal T8 Windows workflow passes; #2372 staged/optimizer/owner-read fail. #2383 source-lifecycle chain still has stale pins and migration/stage failures. | Source-forget atomicity, restart retention, positive rollback, real gradient/parameter diffs, held-out utility and Android proof. | PARTIAL / CI_BLOCKED / WEIGHTS_UNVERIFIED |
+| Android background agency / companion | #2356 staged context, Android outcome contract and Core Store/caller gate pass. Emulator process-restart fails because System UI is not responding. #2376 action journal has two workflows pass on stale base. | Emulator process-death acceptance, current-base integration, physical Redmi app launch/action receipt, stop/rollback. | CODE_PRESENT / CI_PARTIAL / NOT_ANDROID_VERIFIED |
+| Android UI / MediaProjection | #2379 one-shot provider code exists but its two workflows are queued and its base is stale vs current #2356. #2384 frame-consumer repair is queued. | Rebased provider, signed frame receipt, OS consent/revocation, full perception→C3 dispatch and Redmi capture. | CODE_PRESENT / STACKED / NOT_ANDROID_VERIFIED |
+| Voice / RAW EAR / audio | R-092 documents AudioRecord API geometry; no companion AudioRecord provider or RECORD_AUDIO capability exists. | Visible one-shot AudioRecord provider, PCM receipt, decoder/vocoder, full-duplex and source-bound audio learning. | RESEARCH / PROVIDER_ABSENT |
+| Age / permissions / resources | Official Age 0 remains separate; lab requested 10/effective stage 5; physical feature execution false; learning commit authority requires SHADOW. | Physical feature execution and real persistent weight-update/rollback proof. | CONFIGURED / NOT_PHYSICALLY_VERIFIED |
+| Self-optimization / cross-organ weight learning | WorldJEPA numeric SHADOW hooks remain partial. | Cross-organ gradients, persistent target weight changes, held-out improvement, old-task retention, rollback and approved self-edit. | SHADOW_ONLY / NO_WEIGHT_PROOF |
+| Updater / install / recovery | #634 confirms aed1d2 installed, auto-update enabled, runtime/dashboard UP_TO_DATE. | Process-death/reboot, rollback and current candidate installation receipt; HEALTH runtime remains UNAVAILABLE vs DIAGNOSTICS RUNNING. | CODE_INSTALL_VERIFIED / ROLLBACK_NOT_DEVICE_VERIFIED |
+| Whole-Canon traceability | 1,255 historical headings preserved; V13 appendix remains byte-identical in the V14 master. | Semantic clause→code→consumer→test→environment→rollback mapping. | INVENTORY_PRESERVED / MAPPING_INCOMPLETE |
+
+**Private device boundary:** #634–#637 are authenticated owner-read metadata. No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, native model probe, microphone/screen capture, permission change or model/weight edit occurred. console_errors=USER_NOT_OPTED_IN, so no LOG_PAGE was authorized. The 0-process residency view is instantaneous and has unknown child readability. User action: NONE.
+
+
+ 
+## Live status delta — Boss run 12 (2026-11-22T22:30:37.104Z)
+
+- B1/B2→C4→C3 candidate: exact head bae7d03196d98ac6dfebc0a2649faf257ba8308f, 16 workflows queued; previous head audio/arithmetic Python 3.13/3.14 failed one stale source assertion each; new head corrects the test expectation only. No native offer or speed acceptance.
+- B3: #2377 f64e994 persists canonical path + file identity and adds joint redirect negative; exact workflows queued and duplicate test definition remains. #2381 07b4ffbd still has stale overlay without O_NONBLOCK/verifier and a double-apply test; B3 OFF.
+- RAW EYE: #2384 5cd8ffae includes bounded feature summary and direct negative tests; two workflows queued, duplicate test definitions remain. #2375 original head still fails 9 tests; no Android frame provider acceptance.
+- Android companion: #2356 27aaa29 has one safe System-UI Wait + filtered logcat; four workflows queued. #2379 4ce32890 is 11 commits behind current QA parent; #2376 e0985029 is 14 commits behind. No process-death or Redmi proof.
+- JEPA: #2372 has three failed workflows / one temporal pass; #2383 has five failures on source lifecycle, migration, lab-age and staged integration. No persistent weight diff or held-out improvement.
+- Device evidence unchanged: #634–#637 confirm aed1d2 installed, 57.74 s last turn / 2 tokens, B1/B2 TIME_BUDGET, health/diagnostics runtime conflict, learning status unavailable. No LOG_PAGE because console_errors opt-in is false.
+- Historical 1,255-heading inventory and V13 appendix remain preserved; semantic mapping incomplete. No user action.
+
+
+## Final run 12 device and queue note — 2026-11-22T22:33:13.116Z
+
+Lab-Age metadata: mode ACTIVE; requested stage 10; effective implemented stage 5; official stage 0; physical feature execution false; learning commit authority REQUIRES_SEPARATE_SHADOW_MODE. The 35 s observer window and 53.2/54.2 s B1/B2 timeouts remain incompatible without measured optimization. Exact #2370 head bae7d031 has 0 success / 16 queued / 5 cancelled / 5 skipped; no new-head pass. Installed release aed1d2, HEALTH/DIAGNOSTICS runtime conflict, LEARNING_STATUS unavailable. No device action; user action NONE.
+
+
+## Final queue refresh — 2026-11-22T22:34:58.624Z
+
+Boss candidate #2370 head bae7d031: 1 SUCCESS / 14 QUEUED / 1 IN_PROGRESS / 7 CANCELLED / 7 SKIPPED. Companion QA #2356 head 27aaa29: two successful workflows (Android outcome contract, Core Store/caller gate), two queued (emulator process restart, staged/integrated). Process-death remains unaccepted. No new release, no Redmi action, no user action.
+
+
+## Latest CI detail — 2026-11-22T22:36:01.944Z
+
+#2370 current head has one CI success (private owner-read bootstrap only), one JEPA Runtime transactional update in progress, and 14 queued; no functional acceptance. #2379 provider workflow passes but its staged/integrated regression is queued and base is stale. No Android capture/process-death proof.
+
+
+## Live whole-Canon evidence overlay — Boss run 14 (2026-11-22T23:05:31.059Z)
+
+**Preservation:** historical inventory remains 1,255 headings. The V14 master blob is `9748ad5ba9a4d4f5c3d004a0577141f6779fcbca` on both release and Boss docs branches (963,129 bytes, exact byte equality); no master edit was made and the V13 appendix remains unchanged.
+
+| Canon family | Current code / wiring | Test environment evidence | Android / active status |
+|---|---|---|---|
+| A0–A5 perception, attention and salience | RAW EAR features exist; RAW EYE frame ingress and audio-window candidate are partial | #2375 6 success / 4 failure / 1 skipped; #2384 3 success / 2 failure | No AudioRecord or MediaProjection receipt; SHADOW |
+| B1_DETAIL / B2_GIST | Distinct role models; candidate source-bound OfferPacket → C4 → C3 and fair observer slices | #2370 exact head 9a563: 27 queued / 1 skipped; no completed functional pass | B1/B2 TIME_BUDGET 53.2/54.2 s; no accepted offers |
+| B3 / Enlightened Space | Symbolic space plus diagnostic input-embedding receiver | #2377 7/7 CI; residual loader path race; #2381 stale | OFF; no semantic transfer or trained adapter proof |
+| B4/B5 / C4 coalition | Source-span C4 receipt and staged coalition | Candidate consumer CI pending | No learned coalition or Redmi proof |
+| C1/JEF/C2/C3 | Runtime and bounded exact-arithmetic candidate | #2370 exact matrix queued | Last stored phone turn 57.74 s / 2 tokens; correctness unknown |
+| World/Self/Memory/Context OS/Memorilla | Source-bound Store and partial context companion; temporal JEPA receiver candidate | #2372/#2383 not green; #1983 not accepted | Not tested on Android |
+| JEPA/EMA / temporal T8 | Persistent encoder/predictor/EMA and replay candidate | #2372 2 success / 9 failure; stacked on #2351 base 5 success / 9 failure / 1 skipped; #2383 4 success / 7 failure | SHADOW only; no accepted native model-weight diff |
+| Eligibility × error × modulator × plasticity | No accepted cross-organ plasticity consumer | No gradient/parameter-diff acceptance | OFF |
+| Sleep/Dream/Replay | Bounded postcommit JEPA shadow worker | Source-lifecycle and optimizer/postcommit failures remain | No accepted Android consolidation |
+| Audio / voice | RAW EAR plus optional Teacher Ear contract; candidate audio-window dispatch | #2369 14 queued / 2 skipped; #2370 pending | No visible AudioRecord provider, trainable decoder/vocoder or full-duplex |
+| Vision / RAW EYE | MediaProjection provider and Perception adapter exist on separate branches | #2379 5 success / 2 failure; #2375/#2384 frame-ingress failures | No signed capture receipt or C3 delivery |
+| Android background/UI control | Companion action journal and UI provider candidates | #2356 7 success / 1 failure; #2376 stale | No accepted OS executor or process-death proof |
+| Tools, goals and permissions | Typed action/outcome contracts | Synthetic contract tests only | No authenticated Android action loop |
+| Age rights / X10 / resources | Official Age 0 separated from Lab-Age selector | Control-state CI only | Requested 10 / effective 5 / official 0; physical feature execution false |
+| Self-optimization / weight editing | WorldJEPA SHADOW candidate; no B1/B2/C3 master update | No accepted parameter diff, held-out retention or rollback | GATES_OFF |
+| Distinct sparse MoE B1/B2 | Two role models only | No accepted sparse expert routing test | NOT_IMPLEMENTED |
+| OS sandbox / adaptive Judge / memory egress | Partial contracts and draft trainable risk head | Partial synthetic only | No independent OS enforcement or complete egress registry |
+| Remote maintenance / updater / rollback | Authenticated read-only owner relay and CI-gated updater | Release SHA 45/45; #641/#642 read receipts | aed1d2 installed; patch apply, process-death and rollback not verified |
+
+**Release boundary:** release `aed1d2b826290c95c70356b5d8b864b5ef382be4` remains installed and CI-green. Candidate #2370 `de50fd4708490fb6db19cf24c22fef22baf23eca` remains DRAFT / NOT_GREEN. No UPDATE_REQUEST was sent. No user action is required.
+
+## Current Boss evidence overlay — 2026-11-23T00:59:43Z
+
+This overlay supplements the historical 1,255-heading inventory; it does not mark the Canon complete.
+
+| Canon family | Code / wiring state | Latest test evidence | Android / active state |
+|---|---|---|---|
+| A0–A5 perception, attention, salience | Partial raw audio/vision feature adapters; A5/RAW EYE provider not connected to a proven C3 consumer | #2375 synthetic frames only; #2379 provider stack diverged; #2369 Perception-owned audio checks green but Core staged/import path fails | No accepted AudioRecord or MediaProjection capture; PARTIAL/SHADOW |
+| B1_DETAIL / B2_GIST | Distinct role models and source-bound OfferPacket candidate; arithmetic/observer budget composition under #2370 | #2370 exact head d149bd5e0a2f8394e44e0ed60a208638b9f4b3b9: 7/7 immutable source links read back; 15 CI queued, no new-head pass | B1/B2 TIME_BUDGET 53.2/54.2 s; zero valid offers; NOT_ACCEPTED |
+| B3 / Enlightened Space | Symbolic exchange and native receiver candidate; no trained cross-organ latent semantics | Receiver checks remain synthetic; no source-disjoint semantic holdout proof | OFF; no native latent transfer proof |
+| B4/B5 / C4 coalition | Staged source-span coalition candidate | Synthetic only; no accepted same-turn body contribution | NOT_ACCEPTED |
+| C1/JEF/C2/C3 | Runtime and C3 output path exist; response quality/latency remain defective | Latest stored turn 57.74 s, 2 tokens; correctness unknown | NOT_ACCEPTED |
+| World/Self/Memory/Context OS/Memorilla | Partial stores/retrieval and temporal learner candidate | JEPA #2396 staged/resume failures; no full overflow consumer or persistent cross-organ feedback | PARTIAL / SHADOW |
+| JEPA/EMA/eligibility/modulation/plasticity | Temporal/postcommit worker code candidate; no accepted cross-organ gradient path | #2396 three workflow failures at stale training-resume pin; T8 in progress; no master parameter-diff/retention proof | SHADOW only; no accepted weight updates |
+| Sleep/Dream/Replay | Cancellable postcommit worker candidate | Postcommit test now in T8 workflow; staged startup and optimizer resume still fail | NOT_ACCEPTED |
+| Audio / voice | RAW EAR feature adapter partial; Teacher Ear research candidate | #2369 seven Perception-owned checks green; Core import/staged failure remains | No AudioRecord provider, decoder or vocoder; Teacher Ear OFF |
+| Vision / RAW EYE / A3 source forget | A3 source-lineage helper and projector invalidation candidate | #2395 focused 2/2 PASS; staged/integrated FAIL on old vision.py pin/forget anchor | No Android capture; source forget NOT_WIRED |
+| Android background/UI control | Capability registry contract; launch_app only is ready | #2394 2/2 synthetic checks pass; QA #2356 process-restart emulator failure persists | No OS executor or process-death acceptance; other capabilities OFF |
+| Tools / permissions / goal agency | Typed contracts and partial companion action intent | Synthetic contract tests only | No OS-authenticated action loop |
+| Age rights / X10 lab / resources | Official Age 0 separated from test selector | Lab selector ACTIVE, requested 10/effective 5 | Official 0; physical feature execution false; shadow authority required |
+| Self-optimization / cross-organ edits | No accepted B1/B2/C3 master update or cross-organ gradients | No gradient, parameter-diff, retention or rollback acceptance | GATES OFF |
+| Sparse MoE B1/B2 | Two role models only | No sparse expert router or load-balancing test | NOT_IMPLEMENTED |
+| OS sandbox / adaptive Judge / egress | Partial contracts and trainable-head draft | Synthetic only; no independent OS enforcement | NOT_ACCEPTED |
+| Remote maintenance / updater / rollback | Read-only owner relay and CI-gated updater | PIPELINE_STATUS #664 confirms release aed1d2b826290c95c70356b5d8b864b5ef382be4 installed/up-to-date; exact release workflows 21/21 green | Read-only status verified; patch stage/local apply/restore not proven |
+
+Research note: R-100 is a runtime-wheel compatibility candidate only; no wheel or model is installed. R-101 is a peer-reviewed ECML-PKDD 2026 ridge-head unlearning paper; its frozen-backbone limitation remains decisive. Synthetic sufficient-statistics equivalence does not prove real image accuracy, Android performance or neural-backbone unlearning.
+
+
+### Late CI refresh — 2026-11-23T01:03:20Z
+
+JEPA #2396's Temporal WorldJEPA T8 Windows workflow now reports SUCCESS; its staged startup, integrated regression and optimizer-resume workflows remain FAIL at the Termux12 training-resume source pin. Therefore the postcommit worker path has a synthetic workflow pass, while persistent optimizer resume, source-forget composition, master weight diff/retention and Android acceptance remain open. QA #2391 must rebase after the JEPA code and recompute the downstream builder pins.
+
+## Perception evidence overlay — 2026-11-23 run 16 (append-only)
+
+| Canon family | New code / consumer | Exact evidence | Acceptance boundary |
+|---|---|---|---|
+| A3 source-bound visual student → consented UI perception | PR #2401 carries the #2375 RAW EYE frame ingress on JEPA #2397/#2395 and checks every A3 tile-projector training source against both the live VISION image index and Store IMAGE row before reading projector bytes | LOCAL_LINUX isolated lineage guard 6/6 PASS; five new synthetic consumer negatives; exact head 62551749d0b7b0de7434e82b6381f305cf178b30 has two GitHub workflows IN_PROGRESS at last readback | DRAFT / NOT_RELEASED; full local repository tests BLOCKED; no Android MediaProjection receipt, no C3 delivery, REDMI_UNVERIFIED |
+| A4/A5 RAW EYE UI frame path | Same consent lease and ephemeral frame route remain; stale/legacy projector falls back to handcrafted features | Synthetic provider/lease regressions retained; exact-head CI pending | Does not replace Core #2379 provider or normal Runtime/C3 wiring; no Android capture/action authority |
+| Research-to-code / low-resource learning | R-105 ECL full-text review adds scenario-specific head + temporal embedder candidate | Chameleon ASIC results only; 4-bit ZSL -19.6 accuracy points vs FP32; separate ECL code/weight licenses not verified | Research-only; no code/weights imported; no Android or Redmi benchmark |
+
+Historical Canon heading inventory is unchanged. This overlay does not promote the A3, A4/A5 or Android-control paths to ACCEPTED.
+
+
+## Perception CI readback — 2026-11-23
+
+PR #2401 exact head 21b0c05219629fa6b29833ba60647e133cd0acda now has focused MediaProjection/RAW EYE CI PASS: 30 passed under Python 3.13.18 and 30 passed under Python 3.14.10. The first focused run failed at py_compile because the branch omitted test_vision_ui_frame_provider_entrypoint.py; Perception copied that existing test from #2375 (blob fcf8337b36472ce19cbcaddfb9f2ad17dab55f52) and reran the exact branch successfully. The staged/integrated workflow still FAILS: staged 19 failed / 231 passed / 10 skipped / 2 errors / 41 subtests; integrated 1 failed. Dominant blocker remains QA's immutable source-lifecycle pin rejecting vision.py; migration checks also return PARTIAL. Do not merge #2401 or claim the A3 source-forget chain accepted until QA composes #2397/#2395 and all staged/migration/privacy/owner-read gates pass. Full local suite BLOCKED; no Android capture/C3 receipt; REDMI_UNVERIFIED.
+
+
+## Run 14 evidence overlay — 2026-11-23T03:02:25.620Z
+
+| Canon family | Current code / consumer status | Exact evidence | Acceptance state |
+|---|---|---|---|
+| A0–A5 perception / attention | RAW EAR features and RAW EYE consented frame adapters exist as candidates; no Android microphone or screen capture provider is accepted | #2395 focused source-lineage 2/2 PASS but staged/integrated blocked; #2401 focused provider tests 30/30 on Python 3.13 and 30/30 on 3.14, staged source-lifecycle still blocked; #2404 newer CAS/serialization branch not yet verified | PARTIAL / SHADOW; no Android capture receipt |
+| B1_DETAIL / B2_GIST | Distinct role models and source-bound offer candidates; #2370 recovery-only fair scheduler and C4/C3 path are staged candidates | Boss #2370 exact head ec1c595; 16/16 immutable source links read back; 16 CI queued + 1 skipped; device B1/B2 53.2/54.2 s TIME_BUDGET, zero valid offers | NOT_ACCEPTED; no native offers or C3 consumption proof |
+| B3 / Enlightened Space | Symbolic exchange and diagnostic receiver only; no trained activation-to-activation semantics | #2377/#2381 receiver work remains source/verifier/permission-bound; no source-disjoint utility/negative-control proof | OFF / SYMBOLIC_ONLY |
+| B4/B5 / C4 coalition | Source-span and context receipts remain heuristic/staged candidates | No same-turn native B1/B2 contribution accepted | NOT_ACCEPTED |
+| C1/JEF/C2/C3 | Native C3 Runtime runs, but response quality and TTFT remain defective | Private #691: 57.74 s turn, 41.63 s TTFT, 38.95 s prefill, 2 tokens; correctness UNKNOWN; C3 probe 3.1 s | NOT_ACCEPTED |
+| World / Self / Memory / JEPA / EMA | Temporal numeric learner and B1/B2 receiver candidate in #2372/#2396/#2402; prompt audit contract still fails | #2402 exact head c5d847: temporal, staged and optimizer-resume workflows fail because temporal_view omits native_body_weights_changed=False; no Android or master-weight proof | SHADOW_ONLY; not accepted |
+| Sleep / Dream / Replay | Bounded postcommit worker candidate; source scan and checkpoint path under test | #2396/#2402 staged and optimizer-resume still fail; restart/rollback not accepted | PARTIAL / SHADOW |
+| Context OS / episodic memory / Memorilla | Context OS partial; Memorilla remains additive draft | No production overflow consumer, cross-organ writer/reader learning or native latent injection | PARTIAL / SHADOW |
+| Audio / voice | RAW EAR feature adapters; Teacher Ear remains separately opt-in | No Android AudioRecord provider, trainable speech decoder/vocoder, full-duplex or raw acoustic learning proof | PARTIAL; capture/voice learning OFF |
+| Android background/UI control | Companion and one-shot MediaProjection provider candidates | #2356 process-restart/emulator System UI issue remains; #2379 provider must be combined with current UI lease and normal C3 consumer | OFF / NOT_DEVICE_VERIFIED |
+| Age / permissions / resources | Official Age and test selector remain separate | Private #691: official 0, lab requested 10/effective 5, physical feature execution false, learning commit authority requires separate SHADOW | OFFICIAL AGE 0; no promotion |
+| Self-optimization / cross-organ weight editing | No accepted master/adapter update or cross-organ gradient | No permanent B1/B2/C3 parameter diff, held-out utility, retention, restart or rollback proof | GATES OFF |
+| Sparse MoE B1/B2 | Two role models do not constitute sparse MoE | No expert router, sparsity or load-balancing test | NOT_IMPLEMENTED |
+| OS sandbox / adaptive Judge / memory egress | Partial contracts only | No independent Android OS enforcement, complete declared egress registry or production Judge authority | NOT_ACCEPTED |
+| Updater / install / rollback / remote maintenance | Read-only owner relay and CI-gated updater report current release up-to-date | Private #690 confirms aed1d2 installed, auto-update enabled, Runtime/Dashboard UP_TO_DATE, last_error NONE; candidate ec1c595 not deployed; no UPDATE_REQUEST | READ_ONLY_STATUS_VERIFIED; rollback/process-death not device-verified |
+| Whole-Canon traceability | Historical V13 appendix and 1,255-heading inventory remain intact | V14 master/appendix preservation retained; clause→code→consumer→test→platform→rollback mapping remains incomplete | PARTIAL; no whole-system completion claim |
+
+The private #690–#693 receipts do not change any candidate's release state. HEALTH reports Runtime UNAVAILABLE while DIAGNOSTICS reports RUNNING; keep both snapshots visible rather than reconciling by guess. The instantaneous zero-mapped-process sample is not free-RAM or model-residency proof. No user/device action occurred.
