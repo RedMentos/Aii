@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T00:17:54.591Z",
+  "updated_at": "2026-11-23T00:21:03.981Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; 45/45 observed exact-SHA check runs SUCCESS. Fresh private owner-authenticated PIPELINE_STATUS #654 confirms this exact SHA installed and UP_TO_DATE. DIAGNOSTICS #656 repeats the same slow 2-token stored turn and B1/B2 TIME_BUDGET. Functional/whole-Canon acceptance remains OPEN; QA PR #2391 is a separate unmerged JEPA-chain candidate.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -374,8 +374,8 @@
       "status": "BLOCKED_REVIEW",
       "last_checkpoint": "2026-11-23T00:17:54.591Z",
       "proof_environment": "LOCAL_LINUX isolated parser test PASS on CPython 3.13.5; exact PR CI pending; no APK/emulator/Redmi proof",
-      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance. Core follow-up 2026-11-23T00:17:54.591Z: current-base branch core/v14-android-capability-registry-current-qa-20261123 at code commit ef9ab161ac452c6af39a1d340077c7ea936e46a0 adds strict typed validation of the native v14.android-capability-registry/1 snapshot. Only launch_app may be READY with per-action consent; all other capabilities and network/shell/model authority remain OFF/false. Malformed, incomplete, duplicate, mismatched or authority-escalated inventories fail closed before ActionIntent/dispatch. Isolated parser negative controls PASS; full repository local suite BLOCKED (no checkout/DNS); exact CI pending; Android/Redmi NOT_RUN. Receipt remains non-authoritative for T8.",
-      "next_step": "Core successor branch core/v14-android-capability-registry-current-qa-20261123: exact Python 3.13/3.14 and integrated CI, then independent Boss/QA review. Parent QA companion process-restart UI gate must be green before APK/device acceptance. Keep every capability except explicitly approved launch_app OFF; no T8 promotion from companion receipt."
+      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance. Core follow-up 2026-11-23T00:17:54.591Z: current-base branch core/v14-android-capability-registry-current-qa-20261123 at code commit ef9ab161ac452c6af39a1d340077c7ea936e46a0 adds strict typed validation of the native v14.android-capability-registry/1 snapshot. Only launch_app may be READY with per-action consent; all other capabilities and network/shell/model authority remain OFF/false. Malformed, incomplete, duplicate, mismatched or authority-escalated inventories fail closed before ActionIntent/dispatch. Isolated parser negative controls PASS; full repository local suite BLOCKED (no checkout/DNS); exact CI pending; Android/Redmi NOT_RUN. Receipt remains non-authoritative for T8. Draft Core successor PR #2394: https://github.com/RedMentos/Aii/pull/2394 (head before this documentation refresh 7b4bd0e80d889e612884d1f64dae2dcbcb5de754); exact PR CI pending.",
+      "next_step": "Core PR #2394 (core/v14-android-capability-registry-current-qa-20261123) exact Python 3.13/3.14 and integrated CI, then independent Boss/QA review. Parent QA companion process-restart UI gate must be green before APK/device acceptance. Keep every capability except explicitly approved launch_app OFF; no T8 promotion from companion receipt."
     },
     {
       "id": "V14-018",
@@ -850,7 +850,7 @@
       "capability": "ANDROID_BACKGROUND_CONTROL",
       "code": "COMPANION_PROTOTYPE + STRICT_TERMUX_CAPABILITY_REGISTRY_VALIDATION",
       "wired": "NO_ADDITIONAL_OS_EXECUTOR",
-      "tested_synthetic": "Core current-base branch core/v14-android-capability-registry-current-qa-20261123 isolated CPython 3.13.5 parser/schema/authority negatives PASS; exact Python 3.13/3.14 CI pending",
+      "tested_synthetic": "PR #2394 current-base successor: isolated CPython 3.13.5 parser/schema/authority negatives PASS; exact Python 3.13/3.14 CI pending.",
       "tested_android": "UNVERIFIED",
       "active": "OFF",
       "evidence": "Only launch_app is currently advertised READY with per-action consent when paired/enabled; all other providers remain OFF. Receipt is COMPANION_RECEIPT_ONLY, observed=false, T8/world learning false. No APK/device/Redmi proof."
@@ -1138,7 +1138,7 @@
       "e0695f0c5dac981af456ed589676dfb2682501e3",
       "ef9ab161ac452c6af39a1d340077c7ea936e46a0"
     ],
-    "status": "DRAFT_CI_PENDING_NOT_RELEASED",
+    "status": "DRAFT_PR2394_CI_PENDING_NOT_RELEASED",
     "change": "Strict typed Termux parser for the companion's exact Android capability registry; launch_app requires paired+enabled and per-action consent; every other capability stays OFF; network/shell/model authority and learning/observation flags must remain false.",
     "tests": {
       "local_linux_isolated": "PASS: CPython 3.13.5 parser/schema/stop-state/authority negative controls",
@@ -1147,7 +1147,10 @@
       "android_emulator": "NOT_RUN",
       "termux_redmi": "REDMI_UNVERIFIED"
     },
-    "next_action": "Open current-base successor PR; run Python 3.13/3.14 companion and integrated consumers; fix exact failures; wait for parent QA process-restart UI gate and independent Boss/QA review before any APK/device action.",
-    "user_action_required": false
+    "next_action": "Poll exact PR #2394 head workflows; run Python 3.13/3.14 companion and integrated consumers; fix real failures; obtain independent Boss/QA review after parent lifecycle gate is green.",
+    "user_action_required": false,
+    "pr_number": 2394,
+    "pr_url": "https://github.com/RedMentos/Aii/pull/2394",
+    "pr_head_before_doc_refresh": "7b4bd0e80d889e612884d1f64dae2dcbcb5de754"
   }
 }
