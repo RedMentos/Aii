@@ -210,6 +210,7 @@ class CapabilityRegistry:
         return next((item for item in self.capabilities if item.capability == name), None)
 
     def require_ready(self, name: str) -> Capability:
+        """Validate advertised availability only; never request OS consent or dispatch an action."""
         capability = self.capability(name)
         expected_status = {
             "launch_app": _READY,
