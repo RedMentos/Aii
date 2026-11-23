@@ -84,6 +84,7 @@ public final class CompanionLifecycleInstrumentedTest {
     public void testProviderStartupAfterProcessDeathRemainsStopped() {
         try (ActivityScenario<MainActivity> ignored =
                      ActivityScenario.launch(MainActivity.class)) {
+            awaitWindowFocus(ignored);
             assertVisibleState(STOPPED);
             assertFalse("provider startup after process death must revoke the grant",
                     persistedEnabled());
