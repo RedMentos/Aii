@@ -711,13 +711,11 @@ def consume_projected_frame(
             raise PermissionError("UI observation was cancelled or revoked before context caching")
 
         adapter = A5UIRuntimeAdapter(runtime)
+        cache_key = adapter.cache_packet(percept_packet, consent_lease)
         cache = runtime._a5_ui_context_cache
-        cache[observation["source_id"]] = percept_packet
-        while len(cache) > 64:
-            cache.pop(next(iter(cache)))
         context_packets = adapter.context(event["event_id"], consent_lease)
         if observation["finality"] == "FINAL" and percept_packet not in context_packets:
-            cache.pop(observation["source_id"], None)
+            cache.pop(cache_key, None)
             raise RuntimeError("final RAW EYE packet did not reach the active UI context consumer")
 
         return {
