@@ -68,7 +68,7 @@ jobs:
           stage_text = stage_path.read_text(encoding="utf-8")
           stage_overlay_pin = re.search(r"NATIVE_PROBE_OVERLAY_GIT_BLOB = '([a-f0-9]{40})'", stage_text)
           raw = overlay_path.read_bytes()
-          actual_blob = hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\\0" + raw).hexdigest()
+          actual_blob = hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw).hexdigest()
           assert stage_overlay_pin and stage_overlay_pin.group(1) == actual_blob
           print("PASS: deployer -> stage builder -> overlay -> operator/module pins")
           PY
