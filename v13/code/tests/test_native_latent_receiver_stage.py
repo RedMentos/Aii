@@ -177,7 +177,7 @@ def test_native_receiver_source_pins_and_complete_stage_chain_are_current():
     termux_spec.loader.exec_module(termux)
     receiver_raw = receiver_builder_path.read_bytes()
     git_blob = hashlib.sha1(
-        b"blob " + str(len(receiver_raw)).encode("ascii") + b"\0" + receiver_raw
+        b"blob " + str(len(receiver_raw)).encode("ascii") + b"\x00" + receiver_raw
     ).hexdigest()
     assert termux.NATIVE_RECEIVER_BUILDER == "scripts/integrated_native_latent_receiver_candidate_20261122.py"
     assert termux.NATIVE_RECEIVER_BLOB_SHA1 == git_blob
