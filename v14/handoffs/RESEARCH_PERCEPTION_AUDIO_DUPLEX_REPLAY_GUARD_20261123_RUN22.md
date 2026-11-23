@@ -32,3 +32,13 @@
 ## Device-status correction — 2026-11-23
 
 A prior handoff sentence incorrectly described the phone as STOPPED_BY_USER on fb563. The current authoritative shared-board receipt is PIPELINE_STATUS #767: installed 8bf44cb50e855a6dba0c91f64f60d8daddcbdc9c; auto-update enabled; Runtime/Dashboard CI_WAIT; last_error NONE. It predates b20e9's green 37/37 CI and does not confirm that b20e9 reached the phone. UPDATE_REQUEST #737 is already queued. No new update request or device action was sent. This PR candidate remains not deployed and REDMI_UNVERIFIED.
+
+
+## Replay-guard hard-bound and concurrency regression — 2026-11-23
+
+- Test commit: 431fff0c92c4f72c42891b84d4770f764b4427d7; test blob: 2665a5badac8e4f28cc7cc9cc8305c21129c87f4.
+- Added real Runtime/Store regression coverage for simultaneous duplicate claims: exactly one caller may claim the same event/packet/receipt; the other observes the persisted claim and rejects.
+- Added a full-capacity negative: 4096 live entries cause fail-closed refusal, with no eviction of unexpired entries.
+- LOCAL_LINUX isolated harness was rerun against the exact bridge module after its receipt-ID validation change: py_compile PASS; 5/5 isolated tests PASS (forged temporal, replay in interrupt/auto/off, packet CAS, concurrent claim, full-capacity refusal). Store/lease/duplex are minimal stubs; this is not full repository Runtime evidence.
+- Exact-head GitHub Actions were re-triggered by the new test commit and remain queued at last poll. No CI PASS is claimed.
+- The current code-bearing implementation SHA remains fea6002c4fa7def9f1dd83f51a8320fc526e4f17; current branch head at this checkpoint is 431fff0c92c4f72c42891b84d4770f764b4427d7. The following handoff-only update will advance the branch head without changing code/tests.
