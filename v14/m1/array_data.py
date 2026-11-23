@@ -295,7 +295,7 @@ class ArrayDataset:
             self.config.input_length * c
             + self.config.horizon * len(self.config.seasonal_lags) * c
             + self.config.horizon * c
-            + self.config.horizon * 4
+            + (self.config.horizon * 4 if self.config.include_calendar else 0)
         )
         estimated_bytes = batch_size * elements_per_window * np.dtype(np.float32).itemsize
         if estimated_bytes > MAX_WINDOW_BATCH_BYTES:
