@@ -237,6 +237,17 @@ class UCIParserTests(unittest.TestCase):
         self.assertEqual(rows[0].values, (4.216, 234.840))
         self.assertIsNone(rows[1].values[0])
 
+    def test_subminute_uci_timestamp_fails_closed(self):
+        payload = (
+            "Date;Time;Global_active_power\\n"
+            "16/12/2006;17:24:30;1,0\\n"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "subminute.txt"
+            path.write_text(payload, encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "whole minute"):
+                parse_uci(path)
+
     def test_truncated_measurement_row_fails_closed(self):
         payload = (
             "Date;Time;Global_active_power;Voltage\\n"
