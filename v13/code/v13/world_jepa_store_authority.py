@@ -17,6 +17,7 @@ _SEAL = object()
 _TERMINAL = {"FINAL", "FAILED", "CANCELLED", "ERROR", "DEADLINE", "INTERRUPTED", "OUTCOME_UNKNOWN", "ABORTED", "REJECTED"}
 _OBSERVED_LEARNING_STATUSES = {"FINAL", "FAILED", "ERROR", "DEADLINE", "REJECTED"}
 MAX_ACTION_OUTCOMES_PER_EVENT = 4096
+MAX_SOURCE_REFS_PER_ACTION = 16
 
 
 def _unique(pairs):
@@ -69,6 +70,8 @@ class Provenance:
     source_char_start: int
     source_char_end: int
     source_modality: str
+    source_refs: tuple
+    selection_sha256: str
     outcome_sha256: str
     created: float
     outcome_created: float
@@ -121,7 +124,10 @@ class VerifiedT8Transition:
     def fingerprint(self):
         return _hash({"action_id": self._proof.action_id, "event_id": self._proof.event_id,
                       "generation_id": self._proof.generation_id, "source_id": self._proof.source_id,
-                      "source_sha256": self._proof.source_sha256, "outcome_sha256": self._proof.outcome_sha256})
+                      "source_sha256": self._proof.source_sha256,
+                      "source_refs": list(self._proof.source_refs),
+                      "selection_sha256": self._proof.selection_sha256,
+                      "outcome_sha256": self._proof.outcome_sha256})
 
     @property
     def source_ref(self):
@@ -137,18 +143,85 @@ class VerifiedT8Transition:
         }
 
     @property
+    def source_refs(self):
+        return [dict(ref) for ref in self._proof.source_refs]
+
+    @property
     def evidence_ref(self):
         return "T8:" + self._proof.action_id + ":" + self._proof.outcome_sha256
 
     def training_row(self):
         if self._seal is not _SEAL:
             raise PermissionError("unissued receipt")
-        return dict(self._row)
+        row = dict(self._row)
+        row["source_refs"] = self.source_refs
+        return row
 
     def public_provenance(self):
         return {"event_id": self._proof.event_id, "generation_id": self._proof.generation_id,
                 "source_id": self._proof.source_id, "source_sha256": self._proof.source_sha256,
+                "source_refs": self.source_refs,
+                "selection_sha256": self._proof.selection_sha256,
                 "outcome_sha256": self._proof.outcome_sha256}
+
+
+def _verified_selection_sources(store, event_id, generation_id, created, primary_ref, route):
+    """Return the committed ActionSelection's complete, source-verified influence set.
+
+    The EventEnvelope still has exactly one ingress source. The ActionSelection
+    provenance may additionally name the bounded Memory/observer/workspace
+    sources that actually influenced the selected action. Until the Core
+    producer supplies those refs, the legacy one-source form remains valid.
+    """
+    rows = store.rows(
+        """SELECT payload,created FROM packets
+           WHERE kind='ActionSelection' AND event_id=? AND generation_id=? AND created<=?
+           ORDER BY created DESC LIMIT 17""",
+        (event_id, generation_id, created),
+    )
+    if type(rows) is not list or len(rows) >= 17:
+        raise ValueError("ActionSelection scan bound")
+    committed = []
+    for raw in rows:
+        item = _mapping(raw, "ActionSelection row")
+        payload = _object(item.get("payload"), "ActionSelection payload")
+        if (payload.get("event_id") != event_id
+                or payload.get("brain_generation_id") != generation_id):
+            raise ValueError("ActionSelection binding")
+        stage = payload.get("stage")
+        if stage not in (None, "PREDICTION", "COMMIT"):
+            raise ValueError("ActionSelection stage")
+        if stage != "PREDICTION":
+            committed.append(payload)
+    if len(committed) != 1:
+        raise ValueError("committed ActionSelection cardinality")
+    selection = committed[0]
+    if selection.get("route_hint") != route:
+        raise ValueError("ActionSelection route mismatch")
+    refs = selection.get("provenance")
+    if (type(refs) is not list or not 1 <= len(refs) <= MAX_SOURCE_REFS_PER_ACTION
+            or refs[0] != primary_ref):
+        raise ValueError("ActionSelection source provenance")
+    normalized, seen = [], set()
+    for ref in refs:
+        if (type(ref) is not dict
+                or set(ref) != {"source_id", "sha256", "char_start", "char_end", "modality"}):
+            raise ValueError("ActionSelection SourceRef shape")
+        source_id, source_sha = ref.get("source_id"), ref.get("sha256")
+        start, end, modality = ref.get("char_start"), ref.get("char_end"), ref.get("modality")
+        if (type(source_id) is not str or not source_id or len(source_id) > 256
+                or type(source_sha) is not str or not _HEX64.fullmatch(source_sha)
+                or type(start) is not int or type(end) is not int or not 0 <= start <= end
+                or type(modality) is not str or not modality):
+            raise ValueError("ActionSelection SourceRef identity")
+        identity = (source_id, source_sha, start, end, modality)
+        if identity in seen:
+            raise ValueError("duplicate ActionSelection SourceRef")
+        seen.add(identity)
+        if type(store.read_source(ref)) is not str:
+            raise ValueError("ActionSelection source read")
+        normalized.append(dict(ref))
+    return tuple(normalized), _hash(selection)
 
 
 def _verify_one(store, row):
@@ -207,6 +280,9 @@ def _verify_one(store, row):
     # Store.read_source verifies source row, blob digest and span; text is discarded.
     if type(store.read_source(source_ref)) is not str:
         raise ValueError("source read")
+    source_refs, selection_sha = _verified_selection_sources(
+        store, meta["event_id"], meta["generation_id"], float(created), source_ref, row["a"]
+    )
     # Scan the complete event history up to a hard bound. A small LIMIT could
     # hide an older duplicate and incorrectly certify the remaining packet as
     # the unique ActionOutcome. Over-bound histories fail closed.
@@ -235,7 +311,7 @@ def _verify_one(store, row):
     if row["y"][1] != (1.0 if status == "FINAL" else 0.0):
         raise ValueError("transition status mismatch")
     proof = Provenance(action_id, meta["event_id"], meta["generation_id"], source_id, source_sha,
-                       source_start, source_end, source_modality,
+                       source_start, source_end, source_modality, source_refs, selection_sha,
                        _hash(outcome_packet), float(created), float(outcome_created), status, actual)
     return VerifiedT8Transition(_SEAL, row, proof)
 
