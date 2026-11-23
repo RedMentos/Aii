@@ -1359,3 +1359,19 @@ The implementation audit found an important distinction: `losses.py` implements 
 **Boundaries:** this is consent-state isolation, not speaker recognition, diarization, calibrated speaker-change decisions, learned embeddings, a microphone provider, or native Android inference. Caller-supplied embedding vectors remain untrusted diagnostics; no identity, learning or action authority is added. FASTDIAR code/weight licensing and actual Android model execution remain separate gates. No weights or model files were downloaded or changed.
 
 **Status:** CODE_PRESENT / REAL_A5_A4_C3_CONSUMER_TEST_ADDED / LOCAL_ISOLATED_7_TESTS_PASS / EXACT_REPOSITORY_CI_STARTUP_BLOCKED / FULL_LOCAL_SUITE_BLOCKED / PR_NOT_CREATED_403 / REDMI_UNVERIFIED / NOT_RELEASED.
+
+
+
+### R-115 handoff / integration checkpoint (2026-11-24)
+
+- Candidate branch: `research-perception/v14-speaker-consent-epoch-20261124-run1`.
+- Latest branch HEAD after this ledger update: `161d3973e15fa98735367111f6407c85836f5efa`.
+- Latest code-bearing HEAD: `4bde0eeed0915f424191730ce3fa485f04d8022e`.
+- Stacked parent: Boss PR #2443 branch `boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean` @ `cdf6b64067ac426ba32194100d3764f6e74c105f`; underlying release-development base remains `gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- Exact code blobs: `audio_speaker_evidence.py=33603864c5b730a302da76572ec5708e837685fd`; `audio_voice_cues.py=075726f5ee3a4bb6da9d073221afa1c90ff4ce1d`; `audio_fastdiar_adapter.py=995d74e3d40103b8787493a54b5397fc909fc1b6`; `test_audio_speaker_evidence.py=7b7c74e58c098a018d35cdc700a7391718cba8d9`; `test_audio_fastdiar_adapter.py=2875c2498cd646109bbe03c6fbe9e20b23230335`; `benchmark_raw_ear_backends.py=afcc8d48f4b5af4580e801ae00f69ebc8a9b1a14`.
+- Local isolated logic: 7/7 PASS; exact repository suite NOT_RUN/BLOCKED. All 13 observed branch push runs through code head `4bde0ee` were `startup_failure` with no jobs. No CI PASS is claimed.
+- PR creation and issue-comment API calls were rejected with GitHub 403 because the authenticated account has no verified email. Branch exists and is read back; PR_NOT_CREATED. A manual compare page is available at `https://github.com/RedMentos/Aii/compare/boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean...research-perception/v14-speaker-consent-epoch-20261124-run1?expand=1`.
+- Integration order after PR/review: Boss #2443 first; then Core rebinds changed audio source hashes in the integrated audio composer and downstream stage/recovery pins; QA runs staged/integrated, revoke, restart and privacy suites. Do not weaken hash gates.
+- Shared work board and `V14_USER_NEXT_ACTION.md` remain Boss/Integrator-owned and were not edited by this lane; this checkpoint is the Perception handoff for that owner.
+- Device/deployment: REDMI_UNVERIFIED / NOT_RELEASED; no microphone provider, Android native test, update request, model/weight change, permission change or device command.
+- Administrative correction: a separate handoff-file creation call unexpectedly landed on default `main` despite the requested branch. The file was immediately deleted in follow-up commit `84f23fe783d9d4136a99a5f3f631f4c4477248e5`; GitHub compare from its pre-incident parent `1bf70b239b68bce105d475a35213d17ab93ca471` reports `ahead_by=2` but `files=[]`, confirming the main tree is restored with no net file/content change. Future new-file writes in this lane will use branch-safe Git data API only.
