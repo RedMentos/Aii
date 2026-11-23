@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T21:10:05.526Z",
+  "updated_at": "2026-11-23T21:11:35.054Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6. Boss candidate code-bearing checkpoint a5e536a96f6dc2a3a515d37b08393f7136e9efff on boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean; documentation-only descendants follow (last PR metadata readback 5166643ac74fbca318511c0918dea06e98a11ff9). QA #2459 and #2460 fast-forward integrated. Candidate PR #2443 remains DRAFT / NOT_RELEASED; full combined exact-head CI incomplete.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "The Boss branch is a candidate only, NOT_RELEASED/NOT_INSTALLED. CI must pass on its exact final head before any release action. Do not restart the explicitly stopped phone runtime or issue a duplicate update request. Keep synthetic, CI, local Linux and real Redmi evidence separate.",
@@ -111,7 +111,7 @@
       "proof_environment": "NOT_RUN_LOCAL; NO_EXACT_HEAD_CI; REDMI_UNVERIFIED",
       "next_step": "Wait for the combined Boss #2443 code head a5e536a to obtain a complete exact-head staged/integrated/optimizer-resume/migration/privacy/deployment matrix. Then rebase JEPA #2454 onto that exact green head (no force-push), rebind JEPA-owned nested pins from read-back bytes, coordinate Core stage/deployer pins, and run temporal + postcommit + staged/integrated + source-forget/restart/rollback on Python 3.13 and 3.14. Production ActionSelection multi-SourceRef producer remains a cross-organ dependency; keep B1/B2 receivers SHADOW.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T21:10:05.526Z",
+      "last_checkpoint": "2026-11-23T21:11:35.054Z",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -172,7 +172,7 @@
         "parent_pr": 2443,
         "parent_head": "cdf6b64067ac426ba32194100d3764f6e74c105f",
         "status": "DRAFT_STACKED_MERGEABLE_FALSE",
-        "compare_to_parent": "10_AHEAD_47_BEHIND",
+        "compare_to_parent": "18_AHEAD_47_BEHIND",
         "ci": "NO_EXACT_HEAD_WORKFLOW_RUNS_OR_COMBINED_STATUSES",
         "local_tests": "NOT_RUN_BLOCKED_NO_AII_CHECKOUT",
         "scope": "Rollback validates prior checkpoint bytes/source/digest before state switch; invalidates same-Store warm readers and warms restored model; adds missing/corrupt fallback controls and warm-cache identity assertions",
@@ -181,7 +181,15 @@
           "native GGUF/body-weight update",
           "trained cross-organ latent coupling",
           "Redmi test or deployment"
-        ]
+        ],
+        "branch_head_before_final_board_refresh": "83475a095072afdd7611f0a5bf2ce60cde97b005",
+        "core_stack": {
+          "pr": 2457,
+          "head": "f8d0427",
+          "merge_base": "bf2913b150d8decbf6e33c43920d21acc83439b3",
+          "compare_to_jeppa_branch": "10_AHEAD_14_BEHIND",
+          "status": "DRAFT_STALE_STACK_REBASE_AFTER_PARENT_GREEN"
+        }
       },
       "collaboration_write_blocker": "GitHub PR comments and PR metadata updates returned HTTP 403 because the linked GitHub account has no verified email. Repository content commits/readbacks succeeded. Optional account email verification would restore PR discussion/metadata writes; no device action is needed."
     },
