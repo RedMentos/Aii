@@ -109,6 +109,16 @@ class ArrayDataset:
         parsed_data_sha256: str,
     ) -> None:
         self.channels = tuple(channels)
+        if not self.channels or len(set(self.channels)) != len(self.channels):
+            raise ValueError("channel names must be non-empty and unique")
+        if config.primary_channel not in self.channels:
+            raise ValueError(f"primary channel {config.primary_channel!r} absent")
+        if values.ndim != 2 or values.shape[1] != len(self.channels):
+            raise ValueError("invalid numeric matrix shape")
+        if minute_ids.shape != (values.shape[0],) or month_ids.shape != (values.shape[0],):
+            raise ValueError("invalid timestamp/month index arrays")
+        if not np.isfinite(values[~np.isnan(values)]).all():
+            raise ValueError("non-finite value in numeric matrix")
         self.config = config
         self.n_rows = int(values.shape[0])
         self.bounds = build_chronological_boundaries(self.n_rows, config)
@@ -149,6 +159,8 @@ class ArrayDataset:
                     f"{(raw.get('Date') or '').strip()} {(raw.get('Time') or '').strip()}",
                     UCI_TIMESTAMP_FORMAT,
                 )
+                if stamp.second != 0 or stamp.microsecond != 0:
+                    raise ValueError(f"timestamp is not aligned to a whole minute at line {line_no}")
                 if previous is not None and stamp - previous != timedelta(minutes=1):
                     raise ValueError(f"non-contiguous minute timestamp at line {line_no}")
                 previous = stamp
@@ -173,7 +185,7 @@ class ArrayDataset:
                     f"{(raw.get('Date') or '').strip()} {(raw.get('Time') or '').strip()}",
                     UCI_TIMESTAMP_FORMAT,
                 )
-                if previous is not None and stamp - previous != __import__("datetime").timedelta(minutes=1):
+                if previous is not None and stamp - previous != timedelta(minutes=1):
                     raise ValueError(f"non-contiguous minute timestamp at line {line_no}")
                 previous = stamp
                 parsed: list[float | None] = []
