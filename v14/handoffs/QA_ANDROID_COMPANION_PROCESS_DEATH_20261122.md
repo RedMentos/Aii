@@ -1,5 +1,19 @@
 # QA & Android — companion process-death acceptance
 
+**Latest QA checkpoint — 2026-11-23 05:15 UTC**
+
+- Branch head (harness): `4e70333ec7ca1c7d02566d127b6a924ed8b957a0`; app/test code head remains `0034b2c45b7c413e3a6610ff59c1ea928b93f5b1`.
+- New workflow run `45116234588`: APK build and emulator setup completed; `android-companion-process-restart` is currently IN_PROGRESS. No process-death result yet.
+- The immediately preceding run `45115319382` failed before APK installation: the emulator action executed each line of its multi-line `script` input in a separate `/usr/bin/sh -c`, so the loop ended with `Syntax error: end of file unexpected (expecting "done")`. This was a QA harness defect, not a companion or Android API failure.
+- Corrective change: move the bounded readiness loop to `android-companion/scripts/wait_for_emulator.sh` and invoke it from the emulator action as one command line under Bash. It checks API 33, boot-complete and `pm path android`, with eight bounded attempts; on failure it emits device/logcat diagnostics and exits before `installDebug`.
+- LOCAL_LINUX container checks: `bash -n` PASS; stubbed ready path PASS; stubbed non-ready path exits 1 after the bounded loop and emits diagnostics PASS. These are shell-harness tests only, not emulator proof.
+- New exact-head Android Gradle/Robolectric job and outcome-adapter Python 3.13/3.14 jobs are PASS; staged-runtime and integrated-regression jobs were still running at last readback.
+- Redmi remains REDMI_UNVERIFIED. No APK installation, pairing, device action, permission change, model/weight change or user-data mutation occurred. The emulator is a GitHub-hosted test device, not the Redmi.
+
+**Next:** poll run `45116234588`. If the readiness gate passes but the process-restart UI still ANRs, retain the bounded System-UI failure and stop changing renderer/wait counts; if it passes, record the exact visible STOPPED-after-force-stop receipt. No user action is required.
+
+---
+
 Date: 2026-11-23  
 Lane: QA & Android / V14-017, V14-019  
 PR: #2356 (OPEN / NOT_RELEASED)  
