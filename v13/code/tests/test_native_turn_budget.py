@@ -172,6 +172,25 @@ class NativeTurnBudgetTests(unittest.TestCase):
         self.assertTrue(d["recovery"])
         self.assertEqual(d["recent_success_streak"],0)
 
+    def test_budget_telemetry_is_registered_without_store_source_changes(self):
+        from v13 import store
+
+        budget.register_store_telemetry()
+        metrics = store.telemetry_metrics({
+            "kind": "native_turn_budget_plan",
+            "preanswer_seconds_available": 1.25,
+            "c3_reserved_seconds": 26.1,
+            "recent_real_prefill_failures": 2,
+            "minimum_role_slice_s": 1.0,
+            "status": "PREANSWER_BUDGETED",
+        })
+        self.assertEqual(metrics["kind"], "native_turn_budget_plan")
+        self.assertEqual(metrics["preanswer_seconds_available"], 1.25)
+        self.assertEqual(metrics["c3_reserved_seconds"], 26.1)
+        self.assertEqual(metrics["recent_real_prefill_failures"], 2)
+        self.assertEqual(metrics["minimum_role_slice_s"], 1.0)
+        self.assertEqual(metrics["status"], "PREANSWER_BUDGETED")
+
     def test_bound_monotonic_inputs_and_conflicting_clock_rejected(self):
         with self.assertRaises(ValueError):
             budget.plan(100,float("nan"),102)
