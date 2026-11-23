@@ -1972,7 +1972,7 @@ def combined_source_forget_guard(store, source_id):
             world_jepa_shadow_checkpoint.load(
                 clean_path, previous["source_sha256"], previous["checkpoint_sha256"]
             )
-        elif not active_uses and active is not None:
+        elif previous_uses and active is not None:
             clean_path = _temporal_checkpoint_path(store, active)
             if clean_path is None:
                 raise ValueError("active temporal checkpoint is missing")
