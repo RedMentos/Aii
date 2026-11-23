@@ -2,6 +2,7 @@
 from array import array
 from contextlib import contextmanager
 import json
+import hashlib
 import math
 import random
 import struct
@@ -34,6 +35,9 @@ def tone(sample_rate=16000, frequency=140, seconds=1.0, amplitude=6000, phase=0.
     return struct.pack("<" + "h" * len(samples), *samples)
 
 
+CHUNK_SHA = hashlib.sha256(tone()).hexdigest()
+
+
 def make_runtime(tmp_path):
     (tmp_path / "data" / "db").mkdir(parents=True)
     store = Store(tmp_path)
@@ -56,7 +60,7 @@ def consent_guard(check):
 
 def speaker_batch(source_id, generation_id, start_ms, end_ms, vector_at,
                   *, revision="fixture-embedding-v1", threshold=0.8,
-                  consent_receipt_ref=RECEIPT):
+                  consent_receipt_ref=RECEIPT, current_chunk_sha256=CHUNK_SHA):
     frames = [
         {"end_ms": end, "vector": list(vector_at(end))}
         for end in range(start_ms + 80, end_ms + 1, 80)
@@ -66,6 +70,7 @@ def speaker_batch(source_id, generation_id, start_ms, end_ms, vector_at,
         "source_id": source_id,
         "generation_id": generation_id,
         "consent_receipt_ref": consent_receipt_ref,
+        "current_chunk_sha256": current_chunk_sha256,
         "model_id": "fixture/three-dim-encoder",
         "model_revision": revision,
         "model_sha256": MODEL_SHA,
@@ -78,17 +83,26 @@ def speaker_batch(source_id, generation_id, start_ms, end_ms, vector_at,
     }
 
 
+def registry_update(registry, **kwargs):
+    """Direct synthetic tests bind the supplied batch to its own declared PCM hash."""
+    embeddings = kwargs.get("embeddings")
+    if type(embeddings) is not dict:
+        raise AssertionError("speaker test requires an embedding batch")
+    kwargs.setdefault("current_chunk_sha256", embeddings.get("current_chunk_sha256"))
+    return registry.update(**kwargs)
+
+
 def test_same_speaker_embedding_remains_unclassified_without_calibration():
     registry = SpeakerChangeEvidenceRegistry()
     warmup = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
-    first = registry.update(
+    first = registry_update(registry,
         source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
         activity_hint="VOICED", embeddings=warmup,
     )
     assert first["status"] == "WARMUP"
 
     batch = speaker_batch(SOURCE, "gen-a", 1100, 2100, lambda _: (1.0, 0.0, 0.0))
-    evidence = registry.update(
+    evidence = registry_update(registry,
         source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=2100,
         activity_hint="VOICED", embeddings=batch,
     )
@@ -119,7 +133,7 @@ def test_same_speaker_embedding_remains_unclassified_without_calibration():
 def test_embedding_shift_remains_similarity_only_until_calibrated():
     registry = SpeakerChangeEvidenceRegistry()
     first = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
-    registry.update(
+    registry_update(registry,
         source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
         activity_hint="VOICED", embeddings=first,
     )
@@ -127,7 +141,7 @@ def test_embedding_shift_remains_similarity_only_until_calibrated():
         SOURCE, "gen-a", 1100, 2100,
         lambda end: (1.0, 0.0, 0.0) if end < 1660 else (0.0, 1.0, 0.0),
     )
-    evidence = registry.update(
+    evidence = registry_update(registry,
         source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=2100,
         activity_hint="VOICED", embeddings=second,
     )
@@ -149,7 +163,7 @@ def test_same_batch_tail_cannot_overwrite_cross_window_change_evidence():
     def run(end_ms):
         registry = SpeakerChangeEvidenceRegistry()
         warmup = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
-        registry.update(
+        registry_update(registry,
             source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
             activity_hint="VOICED", embeddings=warmup,
         )
@@ -157,7 +171,7 @@ def test_same_batch_tail_cannot_overwrite_cross_window_change_evidence():
             SOURCE, "gen-a", 1100, end_ms,
             lambda end: (1.0, 0.0, 0.0) if end < 1660 else (0.0, 1.0, 0.0),
         )
-        return registry.update(
+        return registry_update(registry,
             source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=end_ms,
             activity_hint="VOICED", embeddings=current,
         )
@@ -180,12 +194,12 @@ def test_same_batch_tail_cannot_overwrite_cross_window_change_evidence():
 def test_low_similarity_without_voiced_activity_is_not_speaker_change():
     registry = SpeakerChangeEvidenceRegistry()
     first = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
-    registry.update(
+    registry_update(registry,
         source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
         activity_hint="VOICED", embeddings=first,
     )
     second = speaker_batch(SOURCE, "gen-a", 1100, 2100, lambda _: (0.0, 1.0, 0.0))
-    evidence = registry.update(
+    evidence = registry_update(registry,
         source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=2100,
         activity_hint="UNVOICED_NOISE", embeddings=second,
     )
@@ -199,12 +213,12 @@ def test_low_similarity_without_voiced_activity_is_not_speaker_change():
 def test_missing_threshold_emits_score_without_a_decision():
     registry = SpeakerChangeEvidenceRegistry()
     first = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0), threshold=None)
-    registry.update(
+    registry_update(registry,
         source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
         activity_hint="VOICED", embeddings=first,
     )
     second = speaker_batch(SOURCE, "gen-a", 1100, 2100, lambda _: (0.0, 1.0, 0.0), threshold=None)
-    evidence = registry.update(
+    evidence = registry_update(registry,
         source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=2100,
         activity_hint="VOICED", embeddings=second,
     )
@@ -219,13 +233,13 @@ def test_missing_threshold_emits_score_without_a_decision():
 def test_model_revision_change_resets_history_before_comparison():
     registry = SpeakerChangeEvidenceRegistry()
     first = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
-    registry.update(
+    registry_update(registry,
         source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
         activity_hint="VOICED", embeddings=first,
     )
     second = speaker_batch(SOURCE, "gen-a", 1100, 1340, lambda _: (0.0, 1.0, 0.0),
                           revision="fixture-embedding-v2")
-    evidence = registry.update(
+    evidence = registry_update(registry,
         source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=1340,
         activity_hint="VOICED", embeddings=second,
     )
@@ -246,7 +260,7 @@ def test_invalid_embedding_packets_are_rejected(mutate):
     mutate(batch)
     registry = SpeakerChangeEvidenceRegistry()
     with pytest.raises(SpeakerEvidenceError):
-        registry.update(
+        registry_update(registry,
             source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
             activity_hint="VOICED", embeddings=batch,
         )
@@ -519,12 +533,14 @@ def test_a4_and_c3_receive_explicit_defer_instead_of_false_stability_on_silence(
         assert supported["packet"]["segments"][0]["acoustic"]["speaker_change_decision"] == "DEFER"
         assert supported["speaker_change_evidence"]["decision"] == "DEFER"
 
+        silent_pcm = b"\x00\x00" * 16000
         changed = speaker_batch(
             SOURCE, event["brain_generation_id"], 2100, 3100,
             lambda _: (0.0, 1.0, 0.0),
+            current_chunk_sha256=hashlib.sha256(silent_pcm).hexdigest(),
         )
         silent = consume_pcm16_voice_window(
-            runtime, b"\x00\x00" * 16000, sample_rate=16000, start_ms=2100,
+            runtime, silent_pcm, sample_rate=16000, start_ms=2100,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE, consent_receipt=RECEIPT,
             consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
@@ -546,7 +562,7 @@ def test_a4_and_c3_receive_explicit_defer_instead_of_false_stability_on_silence(
 def test_registry_stores_compact_float32_vectors_in_memory():
     registry = SpeakerChangeEvidenceRegistry()
     batch = speaker_batch(SOURCE, "gen-compact", 100, 1100, lambda _: (1.0, 0.0, 0.0))
-    registry.update(
+    registry_update(registry,
         source_id=SOURCE, generation_id="gen-compact", start_ms=100, end_ms=1100,
         activity_hint="VOICED", embeddings=batch,
     )
@@ -727,7 +743,7 @@ def test_speaker_history_does_not_cross_consent_receipt_epochs():
         SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0),
         consent_receipt_ref="fixture:receipt-a",
     )
-    warmup = registry.update(
+    warmup = registry_update(registry,
         source_id=SOURCE, generation_id="gen-a",
         consent_receipt_ref="fixture:receipt-a",
         start_ms=100, end_ms=1100, activity_hint="VOICED", embeddings=first,
@@ -738,7 +754,7 @@ def test_speaker_history_does_not_cross_consent_receipt_epochs():
         SOURCE, "gen-a", 1100, 2100, lambda _: (0.0, 1.0, 0.0),
         consent_receipt_ref="fixture:receipt-b",
     )
-    evidence = registry.update(
+    evidence = registry_update(registry,
         source_id=SOURCE, generation_id="gen-a",
         consent_receipt_ref="fixture:receipt-b",
         start_ms=1100, end_ms=2100, activity_hint="VOICED", embeddings=renewed,
@@ -749,7 +765,7 @@ def test_speaker_history_does_not_cross_consent_receipt_epochs():
     assert len(registry) == 1
 
 
-def test_speaker_embedding_schema_v2_requires_consent_epoch():
+def test_speaker_embedding_schema_v3_requires_consent_and_chunk_binding():
     assert SCHEMA == "v14.raw-ear-speaker-embeddings/2"
 
 
@@ -758,7 +774,7 @@ def test_speaker_embedding_batch_without_consent_receipt_is_rejected():
     legacy = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
     del legacy["consent_receipt_ref"]
     with pytest.raises(SpeakerEvidenceError, match="schema mismatch"):
-        registry.update(
+        registry_update(registry,
             source_id=SOURCE, generation_id="gen-a",
             consent_receipt_ref=RECEIPT,
             start_ms=100, end_ms=1100, activity_hint="VOICED", embeddings=legacy,
@@ -772,7 +788,7 @@ def test_speaker_embedding_batch_with_another_consent_receipt_is_rejected():
         consent_receipt_ref="fixture:other-receipt",
     )
     with pytest.raises(SpeakerEvidenceError, match="consent receipt mismatch"):
-        registry.update(
+        registry_update(registry,
             source_id=SOURCE, generation_id="gen-a",
             consent_receipt_ref=RECEIPT,
             start_ms=100, end_ms=1100, activity_hint="VOICED", embeddings=forged,
@@ -800,5 +816,112 @@ def test_runtime_consumer_rejects_speaker_embeddings_from_another_receipt(tmp_pa
         assert result["a4"]["speaker_change_decision"] == "DEFER"
         assert result["a4"]["learning_authority"] is False
         assert result["a4"]["action_authority"] is False
+    finally:
+        runtime.store.close()
+
+
+def test_speaker_embedding_batch_must_match_exact_current_pcm_hash():
+    registry = SpeakerChangeEvidenceRegistry()
+    batch = speaker_batch(
+        SOURCE, "gen-hash", 100, 1100, lambda _: (1.0, 0.0, 0.0),
+        current_chunk_sha256="b" * 64,
+    )
+    with pytest.raises(SpeakerEvidenceError, match="current PCM chunk hash mismatch"):
+        registry.update(
+            source_id=SOURCE, generation_id="gen-hash",
+            start_ms=100, end_ms=1100, current_chunk_sha256="a" * 64,
+            activity_hint="VOICED", embeddings=batch,
+            consent_receipt_ref=RECEIPT,
+        )
+
+    missing = dict(batch)
+    missing.pop("current_chunk_sha256")
+    with pytest.raises(SpeakerEvidenceError, match="schema mismatch"):
+        registry.update(
+            source_id=SOURCE, generation_id="gen-hash",
+            start_ms=100, end_ms=1100, current_chunk_sha256="b" * 64,
+            activity_hint="VOICED", embeddings=missing,
+            consent_receipt_ref=RECEIPT,
+        )
+
+
+def test_non_voiced_embeddings_never_seed_or_replace_speaker_history():
+    registry = SpeakerChangeEvidenceRegistry()
+    first = speaker_batch(SOURCE, "gen-voice", 100, 1100, lambda _: (1.0, 0.0, 0.0))
+    warmup = registry_update(
+        registry, source_id=SOURCE, generation_id="gen-voice",
+        start_ms=100, end_ms=1100, activity_hint="VOICED", embeddings=first,
+    )
+    assert warmup["history_frame_count"] == len(first["frames"])
+    before = len(registry._states[(SOURCE, "gen-voice", RECEIPT)].frames)
+
+    noise = speaker_batch(
+        SOURCE, "gen-voice", 1100, 2100, lambda _: (0.0, 1.0, 0.0),
+        current_chunk_sha256="b" * 64,
+    )
+    suppressed = registry_update(
+        registry, source_id=SOURCE, generation_id="gen-voice",
+        start_ms=1100, end_ms=2100, activity_hint="IMPULSIVE", embeddings=noise,
+    )
+    assert suppressed["status"] == "SUPPRESSED_NON_VOICED"
+    assert suppressed["accepted_frame_count"] == 0
+    assert suppressed["history_frame_count"] == before
+    assert len(registry._states[(SOURCE, "gen-voice", RECEIPT)].frames) == before
+
+    next_voice = speaker_batch(
+        SOURCE, "gen-voice", 2100, 3100, lambda _: (0.0, 1.0, 0.0),
+        current_chunk_sha256="c" * 64,
+    )
+    resumed = registry_update(
+        registry, source_id=SOURCE, generation_id="gen-voice",
+        start_ms=2100, end_ms=3100, activity_hint="VOICED", embeddings=next_voice,
+    )
+    retained = [end for end, _ in registry._states[(SOURCE, "gen-voice", RECEIPT)].frames]
+    assert all(not 1180 <= end <= 2100 for end in retained)
+    assert resumed["history_frame_count"] == before + len(next_voice["frames"])
+    assert resumed["accepted_frame_count"] == len(next_voice["frames"])
+
+
+def test_impulsive_non_speech_reaches_a4_novelty_without_speaker_or_interrupt(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    generation = event["brain_generation_id"]
+    captured = {}
+
+    class CapturingAttention:
+        def modulate(self, event_id, sal):
+            captured["sal"] = dict(sal)
+            return {"sal": dict(sal)}
+
+    monkeypatch.setattr(
+        audio_voice_module.attctl,
+        "controller",
+        lambda current_runtime: CapturingAttention(),
+    )
+    try:
+        samples = [0] * 16000
+        samples[8000] = 32767
+        pcm = struct.pack("<" + "h" * len(samples), *samples)
+        pcm_sha256 = hashlib.sha256(pcm).hexdigest()
+        embeddings = speaker_batch(
+            SOURCE, generation, 100, 1100, lambda _: (0.0, 1.0, 0.0),
+            current_chunk_sha256=pcm_sha256,
+        )
+        result = consume_pcm16_voice_window(
+            runtime, pcm, sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=generation,
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL", speaker_embeddings=embeddings,
+        )
+
+        assert result["a4"]["voice_activity_hint"] == "IMPULSIVE"
+        assert result["speaker_change_evidence"]["status"] == "SUPPRESSED_NON_VOICED"
+        assert result["speaker_change_evidence"]["accepted_frame_count"] == 0
+        assert result["speaker_change_evidence"]["history_frame_count"] == 0
+        assert result["a4"]["speaker_change_decision"] == "DEFER"
+        assert captured["sal"]["novelty"] >= 0.35 * result["a4"]["voice_cues"]["activity_score"]
+        assert captured["sal"]["external_interrupt"] < 0.1
+        assert "activity=IMPULSIVE" in result["c3_admission"].selected[0].summary
+        assert '"vector"' not in json.dumps(result["packet"], sort_keys=True)
     finally:
         runtime.store.close()
