@@ -90,7 +90,7 @@ def _ui_frame_receipt(frame):
         "frame_width": 2,
         "frame_height": 2,
         "frame_format": "image/jpeg",
-        "issued_at": 999,
+        "issued_at": 1000,
         "expires_at": 1030,
         "key_storage_status": "ANDROID_KEYSTORE_SOFTWARE_BACKED",
         "key_id": KEY_ID,
