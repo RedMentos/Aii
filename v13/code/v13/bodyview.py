@@ -280,6 +280,8 @@ def _temporal_world_jepa_body_readout(r, e, role):
             "brain_generation_id": e.get("brain_generation_id"),
             "role": role,
             "action_order": list(actions),
+            "learning_intent_ids": matrix.get("learning_intent_ids", {}),
+            "weight_delta_receipt_ids": matrix.get("weight_delta_receipt_ids", {}),
             "supported_action_samples": {
                 action: item.get("support_samples")
                 for action in actions

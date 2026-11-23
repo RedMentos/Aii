@@ -23,9 +23,16 @@ from v13 import world_jepa, world_jepa_shadow_checkpoint, world_model
 from .common import dumps, now
 from .contracts import packet
 from .world_jepa_consumer import (
-    _fit_role_receivers,
     receiver_utility_gate,
     ROLE_TARGETS,
+)
+from .world_jepa_learning_intent import (
+    TARGET_ROLES as LEARNING_INTENT_TARGET_ROLES,
+    create_learning_intents,
+    fit_role_receivers_with_intents,
+    finalize_weight_delta_receipts,
+    validate_learning_intent,
+    validate_weight_delta_receipt,
 )
 from .world_jepa_runtime import permission_state
 from .world_jepa_store_authority import verify_committed_temporal_page, verify_rows
@@ -595,8 +602,14 @@ def _record_valid(record):
         "receiver_heads", "receiver_metrics", "action_support", "retention_holdouts",
         "metrics", "scan_cursor", "fit_steps",
     }
-    if type(record) is not dict or set(record) != required:
+    optional = {"learning_intents", "weight_delta_receipts"}
+    if type(record) is not dict:
         raise ValueError("invalid temporal checkpoint record")
+    record_keys = set(record)
+    if not required <= record_keys or record_keys - required not in (set(), optional):
+        raise ValueError("invalid temporal checkpoint record")
+    if bool(record_keys & optional) and not optional <= record_keys:
+        raise ValueError("incomplete temporal learning-intent record")
     name = record["checkpoint"]
     if type(name) is not str or re.fullmatch(r"jepa-[0-9a-f]{32}\.npz", name) is None:
         raise ValueError("invalid temporal checkpoint name")
@@ -662,6 +675,33 @@ def _record_valid(record):
         _sha(holdout["target_sha256"])
     if type(record["metrics"]) is not dict:
         raise ValueError("temporal metrics")
+    if optional <= record_keys:
+        intents = record["learning_intents"]
+        receipts = record["weight_delta_receipts"]
+        if (
+            type(intents) is not dict or set(intents) != set(LEARNING_INTENT_TARGET_ROLES)
+            or type(receipts) is not dict or set(receipts) != set(LEARNING_INTENT_TARGET_ROLES)
+        ):
+            raise ValueError("temporal learning-intent map")
+        for role in LEARNING_INTENT_TARGET_ROLES:
+            intent = intents[role]
+            receipt = receipts[role]
+            validate_learning_intent(intent)
+            validate_weight_delta_receipt(receipt)
+            if (
+                intent["target_organ"] != role
+                or receipt["target_organ"] != role
+                or receipt["intent_id"] != intent["intent_id"]
+                or receipt["receipt_id"] != intent.get("weight_delta_receipt_id")
+                or receipt["checkpoint_sha256"] != record["checkpoint_sha256"]
+                or intent.get("checkpoint_sha256") != record["checkpoint_sha256"]
+                or receipt["source_provenance_sha256"] != intent["provenance_sha256"]
+                or receipt["new_parameter_sha256"] != intent.get("new_parameter_sha256")
+                or receipt["parameter_delta_norm"] != intent.get("parameter_delta_norm")
+                or receipt["target_adapter_parameters_changed"] != intent["target_adapter_parameters_changed"]
+                or receipt["receiver_utility_pass"] != intent.get("receiver_utility_pass")
+            ):
+                raise ValueError("temporal learning-intent receipt mismatch")
     return True
 
 
@@ -1091,16 +1131,19 @@ class TemporalWorldJEPAStoreConsumer:
                     "collapse": collapse, "scan_cursor": cursor, "has_more": has_more,
                     "checkpoint_committed": False, "native_body_weights_changed": False,
                 }
-            receiver_heads, receiver_metrics = _fit_role_receivers(
-                model, train_arrays, holdout_arrays, train, holdout
+            learning_intents = create_learning_intents(
+                train, holdout, active, gates, modulation
+            )
+            (
+                receiver_heads, receiver_metrics, receiver_gates,
+                learning_intents, receiver_delta_meta,
+            ) = fit_role_receivers_with_intents(
+                learning_intents, model, train_arrays, holdout_arrays,
+                train, holdout, active, modulation,
             )
             action_support = {}
             for window in train:
                 action_support[window["a"]] = action_support.get(window["a"], 0) + 1
-            receiver_gates = {
-                role: receiver_utility_gate(receiver_metrics, role)
-                for role in ROLE_TARGETS
-            }
             old_holdouts = list(active["retention_holdouts"]) if active else []
             retention_holdouts = (old_holdouts + [_pack_holdout(holdout, model)])[-3:]
             source_sha = _source_sha(all_rows)
@@ -1149,6 +1192,10 @@ class TemporalWorldJEPAStoreConsumer:
             })
             receiver_heads = _json_safe(receiver_heads)
             receiver_metrics = _json_safe(receiver_metrics)
+            learning_intents, weight_delta_receipts = finalize_weight_delta_receipts(
+                learning_intents, receiver_delta_meta, receiver_metrics,
+                receiver_gates, checkpoint["sha256"], metrics,
+            )
             record = {
                 "checkpoint": checkpoint_name,
                 "checkpoint_sha256": checkpoint["sha256"],
@@ -1160,6 +1207,8 @@ class TemporalWorldJEPAStoreConsumer:
                 "holdout_window_ids": [window["window_id"] for window in holdout],
                 "receiver_heads": receiver_heads,
                 "receiver_metrics": receiver_metrics,
+                "learning_intents": learning_intents,
+                "weight_delta_receipts": weight_delta_receipts,
                 "action_support": action_support,
                 "retention_holdouts": retention_holdouts,
                 "metrics": metrics,
@@ -1200,6 +1249,16 @@ class TemporalWorldJEPAStoreConsumer:
                 "optimizer_state_persisted": checkpoint["optimizer_state_persisted"],
                 "native_body_consumed": False,
                 "native_body_weights_changed": False,
+                "target_adapter_parameters_changed": {
+                    role: receipt["target_adapter_parameters_changed"]
+                    for role, receipt in weight_delta_receipts.items()
+                },
+                "learning_intent_ids": {
+                    role: intent["intent_id"] for role, intent in learning_intents.items()
+                },
+                "weight_delta_receipt_ids": {
+                    role: receipt["receipt_id"] for role, receipt in weight_delta_receipts.items()
+                },
                 "decision_authority": "NONE",
             }
 
@@ -1594,6 +1653,8 @@ class TemporalWorldJEPAStoreConsumer:
                     "predicted_success_probability": float(np.clip(prediction[1], 0.0, 1.0)),
                     "predicted_output_characters": max(0.0, math.expm1(min(20.0, float(prediction[2]) * 8.0))),
                 }
+            intent = active.get("learning_intents", {}).get(role)
+            receipt = active.get("weight_delta_receipts", {}).get(role)
             return {
                 "status": "SHADOW_READOUT_ONLY",
                 "role": role, "prediction": output,
@@ -1605,6 +1666,9 @@ class TemporalWorldJEPAStoreConsumer:
                 "history_source_sha256s": [row["source_sha256"] for row in history_rows],
                 "support_samples": support,
                 "receiver_utility": utility,
+                "learning_intent_id": intent.get("intent_id") if intent else None,
+                "weight_delta_receipt_id": receipt.get("receipt_id") if receipt else None,
+                "target_adapter_revision": intent.get("target_model_revision") if intent else None,
                 "decision_authority": "NONE",
                 "native_body_consumed": False,
                 "native_body_weights_changed": False,
@@ -1678,12 +1742,24 @@ class TemporalWorldJEPAStoreConsumer:
                 raise ValueError("nonfinite temporal receiver matrix")
             history_action_ids = [row["action_id"] for row in history_rows]
             history_source_sha256s = [row["source_sha256"] for row in history_rows]
+            active_intents = active.get("learning_intents", {})
+            active_receipts = active.get("weight_delta_receipts", {})
+            learning_intent_ids = {
+                role: active_intents[role]["intent_id"]
+                for role in LEARNING_INTENT_TARGET_ROLES if role in active_intents
+            }
+            weight_delta_receipt_ids = {
+                role: active_receipts[role]["receipt_id"]
+                for role in LEARNING_INTENT_TARGET_ROLES if role in active_receipts
+            }
             matrix = {}
             for index, action in enumerate(actions):
                 support = int(active["action_support"].get(action, 0))
                 matrix[action] = {}
                 for role in ROLE_TARGETS:
                     utility = receiver_utility_gate(active["receiver_metrics"], role)
+                    intent = active_intents.get(role)
+                    receipt = active_receipts.get(role)
                     common = {
                         "role": role,
                         "support_samples": support,
@@ -1695,6 +1771,9 @@ class TemporalWorldJEPAStoreConsumer:
                         "history_action_ids": history_action_ids,
                         "history_source_sha256s": history_source_sha256s,
                         "receiver_utility": utility,
+                        "learning_intent_id": intent.get("intent_id") if intent else None,
+                        "weight_delta_receipt_id": receipt.get("receipt_id") if receipt else None,
+                        "target_adapter_revision": intent.get("target_model_revision") if intent else None,
                         "decision_authority": "NONE",
                         "native_body_consumed": False,
                         "native_body_weights_changed": False,
@@ -1760,6 +1839,8 @@ class TemporalWorldJEPAStoreConsumer:
                 "history_source_sha256s": history_source_sha256s,
                 "checkpoint_sha256": active["checkpoint_sha256"],
                 "source_sha256": active["source_sha256"],
+                "learning_intent_ids": learning_intent_ids,
+                "weight_delta_receipt_ids": weight_delta_receipt_ids,
                 "decision_authority": "NONE",
                 "native_body_consumed": False,
                 "native_body_weights_changed": False,

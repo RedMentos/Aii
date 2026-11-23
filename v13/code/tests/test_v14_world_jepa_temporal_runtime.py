@@ -244,6 +244,64 @@ def test_temporal_world_jepa_updates_ema_checkpoint_and_b1_b2_shadow_receivers(t
         assert len(state["active"]["retention_holdouts"]) == 1
         assert state["active"]["fit_steps"] >= 80
 
+        # The WorldJEPA producer now issues typed source-bound LearningIntents
+        # to the B1/B2 float receiver adapters and records exact parameter diffs.
+        from v13.world_jepa_learning_intent import (
+            validate_learning_intent, validate_weight_delta_receipt,
+        )
+        active_record = state["active"]
+        intents = active_record["learning_intents"]
+        receipts = active_record["weight_delta_receipts"]
+        assert set(intents) == {"B1_DETAIL", "B2_GIST"}
+        assert set(receipts) == {"B1_DETAIL", "B2_GIST"}
+        for role in ("B1_DETAIL", "B2_GIST"):
+            intent, receipt = intents[role], receipts[role]
+            assert validate_learning_intent(intent) is True
+            assert validate_weight_delta_receipt(receipt) is True
+            assert intent["producer_organ"] == "WORLD_JEPA_TEMPORAL"
+            assert intent["target_organ"] == role
+            assert intent["target_model_revision"] == "v14-temporal-receiver-adapter-v1"
+            assert intent["target_parameter_scope"] == role + ".temporal_receiver_head.weights+bias"
+            assert intent["objective_revision"] == "v14-temporal-receiver-outcome-mse-v1"
+            assert intent["optimizer_revision"] == "RIDGE_CLOSED_FORM_V1"
+            assert intent["source_ids"] and intent["t8_transition_ids"]
+            assert set(intent["train_cohort_ids"]).isdisjoint(intent["validation_cohort_ids"])
+            assert set(intent["source_sha256s"]).isdisjoint(intent["validation_source_sha256s"])
+            assert intent["consent_snapshot"]["learning_enabled"] is True
+            assert intent["consent_snapshot"]["optimizer_permission"] is True
+            assert intent["eligibility_trace"]["path_id"] == "world_predictor"
+            assert intent["neuromodulation"]["status"] == "READY"
+            assert intent["gradient_budget"]["method"] == "CLOSED_FORM_RIDGE"
+            assert intent["approval_id"] is None
+            assert intent["age_capability"] == "SHADOW_ONLY_NO_NATIVE_BODY_RIGHT"
+            assert intent["authority"] == "NONE"
+            assert intent["native_body_weights_changed"] is False
+            assert intent["target_adapter_parameters_changed"] is True
+            assert intent["status"] == "SHADOW_ADAPTER_UPDATED"
+            assert intent["checkpoint_sha256"] == first["checkpoint_sha256"]
+            assert receipt["intent_id"] == intent["intent_id"]
+            assert receipt["receipt_id"] == intent["weight_delta_receipt_id"]
+            assert receipt["source_provenance_sha256"] == intent["provenance_sha256"]
+            assert receipt["checkpoint_sha256"] == first["checkpoint_sha256"]
+            assert receipt["old_parameter_sha256"] is None
+            assert receipt["new_parameter_sha256"] == intent["new_parameter_sha256"]
+            assert receipt["parameter_delta_norm"] > 0
+            assert receipt["holdout_mse_after"] == pytest.approx(intent["holdout_mse_after"])
+            assert receipt["world_retention_pass"] is True
+            assert receipt["target_adapter_retention"] == "NOT_MEASURED"
+            assert receipt["gradient_measured"] is False
+            assert receipt["native_body_weights_changed"] is False
+            assert receipt["target_adapter_parameters_changed"] is True
+
+        bad_intent = dict(intents["B1_DETAIL"])
+        bad_intent["target_organ"] = "C3_LANGUAGE"
+        with pytest.raises(ValueError, match="learning intent contract"):
+            validate_learning_intent(bad_intent)
+        bad_cohort = dict(intents["B1_DETAIL"])
+        bad_cohort["validation_cohort_ids"] = list(bad_cohort["train_cohort_ids"])
+        with pytest.raises(ValueError, match="learning intent cohort leakage"):
+            validate_learning_intent(bad_cohort)
+
         # Restart must reload the exact same persisted checkpoint and optimizer state.
         restarted = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
         active, _ = store.state(STATE_KEY, None)
@@ -464,6 +522,14 @@ def test_temporal_rollback_restores_previous_checkpoint_and_retries_pending_rows
         first_state, _ = store.state(STATE_KEY, None)
         first_record = first_state["active"]
         first_sha = first_record["checkpoint_sha256"]
+        first_intent_ids = {
+            role: intent["intent_id"]
+            for role, intent in first_record["learning_intents"].items()
+        }
+        first_receipt_ids = {
+            role: receipt["receipt_id"]
+            for role, receipt in first_record["weight_delta_receipts"].items()
+        }
 
         _make_dataset(store, "rollback-B", 32)
         second = learner.update(
@@ -481,9 +547,33 @@ def test_temporal_rollback_restores_previous_checkpoint_and_retries_pending_rows
         restored, _ = store.state(STATE_KEY, None)
         assert restored["active"]["checkpoint_sha256"] == first_sha
         assert restored["active"]["fit_steps"] == first_record["fit_steps"]
+        assert {
+            role: intent["intent_id"]
+            for role, intent in restored["active"]["learning_intents"].items()
+        } == first_intent_ids
+        assert {
+            role: receipt["receipt_id"]
+            for role, receipt in restored["active"]["weight_delta_receipts"].items()
+        } == first_receipt_ids
         assert restored["previous"] is None
         assert len(restored["pending_rows"]) >= 100
         assert not (learner.home / second_record["checkpoint"]).exists()
+
+        # Close and reopen SQLite itself, not merely the learner object. The
+        # source-bound intents and delta receipts must survive the real DB restart.
+        store.close()
+        store = _make_store(home)
+        reopened, _ = store.state(STATE_KEY, None)
+        assert reopened["active"]["checkpoint_sha256"] == first_sha
+        assert {
+            role: intent["intent_id"]
+            for role, intent in reopened["active"]["learning_intents"].items()
+        } == first_intent_ids
+        assert {
+            role: receipt["receipt_id"]
+            for role, receipt in reopened["active"]["weight_delta_receipts"].items()
+        } == first_receipt_ids
+        assert len(reopened["pending_rows"]) >= 100
 
         # Restart must preserve the restored checkpoint and make rolled-back
         # source-verified rows explicitly retryable without requiring a new T8 event.
@@ -503,6 +593,10 @@ def test_temporal_rollback_restores_previous_checkpoint_and_retries_pending_rows
         assert active["active"]["checkpoint_sha256"] == retry["checkpoint_sha256"]
         assert active["previous"]["checkpoint_sha256"] == first_sha
         assert active["pending_rows"] == []
+        assert active["previous"]["learning_intents"] == first_record["learning_intents"]
+        assert active["previous"]["weight_delta_receipts"] == first_record["weight_delta_receipts"]
+        assert active["active"]["learning_intents"] != first_record["learning_intents"]
+        assert active["active"]["weight_delta_receipts"] != first_record["weight_delta_receipts"]
     finally:
         store.close()
 
@@ -652,6 +746,8 @@ def test_temporal_receiver_matrix_batches_bodyview_contract_with_single_readout_
         assert matrix["native_body_consumed"] is False
         assert matrix["native_body_weights_changed"] is False
         assert matrix["decision_authority"] == "NONE"
+        assert set(matrix["learning_intent_ids"]) == {"B1_DETAIL", "B2_GIST"}
+        assert set(matrix["weight_delta_receipt_ids"]) == {"B1_DETAIL", "B2_GIST"}
         assert set(matrix["matrix"]) == set(world_model.ACTIONS)
 
         for action in world_model.ACTIONS:
@@ -674,6 +770,11 @@ def test_temporal_receiver_matrix_batches_bodyview_contract_with_single_readout_
                 assert batched["history_action_ids"] == single["history_action_ids"]
                 assert batched["history_source_sha256s"] == single["history_source_sha256s"]
                 assert batched["receiver_utility"] == single["receiver_utility"]
+                assert batched["learning_intent_id"] == matrix["learning_intent_ids"][role]
+                assert single["learning_intent_id"] == matrix["learning_intent_ids"][role]
+                assert batched["weight_delta_receipt_id"] == matrix["weight_delta_receipt_ids"][role]
+                assert single["weight_delta_receipt_id"] == matrix["weight_delta_receipt_ids"][role]
+                assert batched["target_adapter_revision"] == "v14-temporal-receiver-adapter-v1"
                 assert batched["native_body_consumed"] is False
                 assert batched["native_body_weights_changed"] is False
 
@@ -1176,6 +1277,8 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_mea
             # The QueryPacket plus captured native prompt above is the consumption proof.
             assert audit["body_prompt_consumed"] is False
             assert audit["checkpoint_sha256"] == trained["checkpoint_sha256"]
+            assert audit["learning_intent_ids"][role] == trained["learning_intent_ids"][role]
+            assert audit["weight_delta_receipt_ids"][role] == trained["weight_delta_receipt_ids"][role]
             assert audit["role"] == role
             assert audit["history_length"] == (2 if role == "B1_DETAIL" else 3)
             assert audit["target_semantics"] == (
