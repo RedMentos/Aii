@@ -163,7 +163,7 @@
         "ci": "PR_HEAD_STAGED_249_10SKIP_47_INTEGRATED_424_3SKIP_58_PY313_314_64_EACH; MERGED_PUSH_30_OF_30_SUCCESS",
         "scope": "production Runtime/SleepRuntime Store-backed WorldJEPA numeric consumer with persistent Adam/inverse/RNG optimizer state, gated legacy optimizer bootstrap, per-role held-out-vs-mean/zero/shuffled Planner receiver gate, Android no-clobber renameat2 checkpoint publication"
       },
-      "proof": "#2447 exact head 8be6498 has temporal/combined-online/incremental/privacy/deployment workflows passing but four composition/consumer failures; numeric readouts remain SHADOW and are not native LLM weight updates. No Redmi learning receipt. New JEPA PR #2454 head 32505a33061283522b3bde5597a74a93b12d399b adds a Store-level second-update assertion: both B1/B2 receipts must measure retention on the identical first-update source-disjoint cohort, keep it out of optimizer training, show numeric gradient/parameter deltas, and reload the committed checkpoint. This is a regression assertion only; it has not yet executed. Exact-head workflow/status lookup returned no runs/contexts. No LOCAL_LINUX Aii project suite and no Redmi test.",
+      "proof": "#2447 exact head 8be6498 has temporal/combined-online/incremental/privacy/deployment workflows passing but four composition/consumer failures; numeric readouts remain SHADOW and are not native LLM weight updates. No Redmi learning receipt. New JEPA PR #2454 head 32505a33061283522b3bde5597a74a93b12d399b adds a Store-level second-update assertion: both B1/B2 receipts must measure retention on the identical first-update source-disjoint cohort, keep it out of optimizer training, show numeric gradient/parameter deltas, and reload the committed checkpoint. This is a regression assertion only; it has not yet executed. Exact-head workflow/status lookup returned no runs/contexts. No LOCAL_LINUX Aii project suite and no Redmi test. Code-bearing regression commit is 32505a33061283522b3bde5597a74a93b12d399b; branch head d040c7bbe8dd7157b8a77655deca604bc29da48c was a docs-only descendant at the latest compare.",
       "latest_temporal_pr": {
         "pr": 2454,
         "branch": "jepa-memory/v14-temporal-boss-2443-rebase-20261123-run14",
@@ -172,13 +172,16 @@
         "base_sha": "6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4",
         "current_boss_head": "cdf6b64067ac426ba32194100d3764f6e74c105f",
         "merge_base": "6e9bad8daa9ad9ec97947639600f6c7cdbffb6d4",
-        "ahead_of_boss": 102,
+        "ahead_of_boss": 111,
         "behind_boss": 47,
         "state": "DRAFT_NOT_RELEASED_MERGEABLE_FALSE",
         "latest_change": "Second-update Store integration assertions for fixed B1/B2 receiver cohort, source-disjoint training exclusion, v3 WeightDeltaReceipt MEASURED_PASS, nonzero gradient/delta and checkpoint warm-read after restart.",
         "exact_head_ci": "NO_WORKFLOW_RUN_OR_COMBINED_STATUS_RETURNED_AT_READBACK",
         "local_linux": "BLOCKED_NO_AII_CHECKOUT_AND_GITHUB_DNS_FAILURE",
-        "redmi": "REDMI_UNVERIFIED"
+        "redmi": "REDMI_UNVERIFIED",
+        "code_head_sha": "32505a33061283522b3bde5597a74a93b12d399b",
+        "branch_head_before_final_doc_sync": "d040c7bbe8dd7157b8a77655deca604bc29da48c",
+        "note": "The 32505a33 code-bearing test commit has docs-only descendants; branch head at this readback was d040c7bbe8dd7157b8a77655deca604bc29da48c."
       }
     },
     {
