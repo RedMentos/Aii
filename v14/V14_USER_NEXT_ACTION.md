@@ -1,3 +1,154 @@
+## QA Android-control review — MediaProjection RAW EYE adapter (2026-11-22T20:40:00Z)
+
+Reviewed Perception PR #2375 (`ed22ab8`, DRAFT). The adapter is not a provider or a live Runtime path. Two gates remain before integration:
+
+1. `consume_projected_frame()` trusts any caller-supplied `frame_binding_check` callable returning `True`; it does not enforce provider ownership or verify the companion-signed frame receipt itself. Until Core supplies a provider-owned signed-receipt verifier capability (or verifies the signature in the adapter), the adapter must remain unreachable from production Runtime. QA comment #2375/7085369559.
+2. `_load_local_tile_projector()` opens the final metadata-selected file with `O_RDONLY | O_NOFOLLOW` before `fstat` checks regular-file type. A FIFO in `data/vision` can block in `os.open()` before the check. Add `O_NONBLOCK` to the final open and a `mkfifo` negative test; preserve the existing directory-FD/no-follow chain.
+
+No MediaProjection provider, screen capture, Android permission, or Redmi action was performed. These are DRAFT code-review blockers, not a live-device exploit claim.
+
+---
+
+## QA & Android — Boss audio pin rebind follow-up (2026-11-22T20:35:00Z)
+
+Boss #2370 moved to exact head `7fc6d7e4c94d3ea37a59ced28e52c4c2b2ee46db`. The integrated audio overlay now pins `v13/runtime.py` to Git blob `6e61af07326c5bb11406ee72361a710d5facc9a5`, matching the actual current file. This resolves the specific `30360f40…` vs `6e61af…` mismatch reported on prior head `4d771ed` (QA comment #2370/7085162144).
+
+The new exact-head matrix is queued: 45066702736, 45066702742, 45066702753, 45066702755, 45066702763, 45066702774, 45066702788, 45066702815, 45066702819, 45066702820, 45066702824, 45066702833, 45066702834, 45066702854, 45066702872, 45066702890. No current-head PASS is claimed. Treat the old audio pin failure as historical; inspect any new red logs after the queue starts.
+
+QA #2359 remains blocked pending a stable Boss+JEPA composition and rebase. #2356 exact head 3829465 has Android outcome PASS, Core adapter PASS, staged/integrated PASS, and the emulator process-death job still IN_PROGRESS. No Redmi/APK proof. No user action.
+
+---
+
+## QA security checkpoint — native probe model-byte integrity (2026-11-22T20:32:00Z)
+
+QA found a concrete integrity gap in Core #2367: `native_probe_approval._model_binding()` trusted the manifest SHA-256 string but did not hash the actual on-disk model. `ModelManager.path_for()` checks only existence and size. Same-size sender/receiver tampering could therefore preserve manifest/revision fields and pass the local approval gate.
+
+Draft QA PR #2377 (`qa/v14-native-probe-model-hash-20261122`, current head `335d5017434d7deec9516e167d0403bd588410e3`) streams SHA-256 over both actual model files during arm and consume, uses O_NOFOLLOW, checks regular-file identity and stable metadata, starts the 120-second TTL after arm hashing and rechecks expiry after consume hashing, and adds four same-size tamper negatives (sender/receiver before/after arm). Local isolated helper: original bytes PASS; same-size tamper and symlink REJECTED. Exact native receiver run 45066641859 and staged/integrated run 45066641897 are QUEUED; full Runtime tests have not run. The PR also extends the existing native receiver workflow path/branch triggers. Keep B3 OFF; no model was loaded or changed, no probe or Redmi action occurred.
+
+Next: poll #2377 exact CI and review hash cost on large Android GGUFs. Do not merge without exact tests and Core review.
+
+---
+
+## QA & Android — exact #2356 CI poll (2026-11-22T20:30:00Z)
+
+On exact head `3829465e5180ce237ef98b36181bda6caea601a5`: Android outcome contract `45065638347` PASS; Core companion outcome adapter `45065638341` PASS; staged/integrated `45065638335` IN_PROGRESS; Android Gradle/emulator `45065638333` QUEUED. The emulator job has not yet run on this head. The predecessor's System UI ANR remains a harness issue; no current emulator PASS or Redmi proof.
+
+Boss #2370 exact head `4d771ed` passes the RECORD_ONLY guard but has the shared audio-composer runtime Git-blob mismatch (`30360f40…` expected, `6e61af07…` actual), which blocks Lab-Age, staged owner-read, JEPA resume, staged/integrated, audio/arithmetic and causes migration PARTIAL. QA comment 7085162144 records the exact paths. No user action.
+
+---
+
+## QA & Android — shared composer blocker discovered (2026-11-22T20:23:00Z)
+
+- Boss #2370 exact head `4d771ed8e2d2d839e4acbf4f517a775cfe1c1e05` now passes the RECORD_ONLY controller guard (`45064399584`), but the integrated audio composer fails its source check: `integrated_audio_context_candidate_20261121.py` expects Git blob `30360f40eb784be5ea975ee85e94a57f0b154164` for `v13/runtime.py`; exact current file blob is `6e61af07326c5bb11406ee72361a710d5facc9a5`.
+- This one mismatch propagates into Lab-Age, Python 3.14 staged owner-read, JEPA optimizer-resume Python 3.13/3.14, staged/integrated and audio/arithmetic workflows. Two-checkout migration then reports PARTIAL because activation is refused. It is one shared source-pin blocker, not six independent runtime defects.
+- The audio overlay uses Git blob SHA-1 for this source check; the outer recovery/stage/deployer chain uses separate SHA-256 pins. Do not weaken either check. Boss/Perception must rebind the audio input and all dependent composer/recovery/stage/deployer hashes.
+- QA recorded the exact evidence in Boss PR #2370 comment 7085162144. QA did not edit the Boss-owned guard or shared composer chain. #2356 remains at 3829465 with exact emulator/Gradle/staged checks pending. No user action.
+
+---
+
+## QA & Android — Run 8 emulator acceleration follow-up (2026-11-22T20:18:30Z)
+
+- PR #2356 exact head is now `3829465e5180ce237ef98b36181bda6caea601a5`. The previous API-33 TCG run reached the app's top-resumed MainActivity but Android System UI entered an ANR before the app stop/restart assertions; no product lifecycle result was obtained.
+- The test harness now backs off UIAutomator polling from 2.5 to 5 seconds, uses 4 emulator cores / 4 GB, switches to `-accel auto`, retains `ANDROID_I_WANT_MY_TCG=yes` as fallback and logs `emulator -accel-check`. Local copied helper tests remain 6/6 PASS.
+- Exact-head workflows 45065638333 (Android companion), 45065638347 (Android outcome), 45065638341 (Core adapter) and 45065638335 (staged/integrated) are QUEUED. No current-head CI or emulator pass is claimed.
+- Official Android documentation states that `-accel off` is software emulation and very slow; `auto` uses acceleration when available. Source: https://developer.android.com/studio/run/emulator-commandline. This supports the test-harness change, not a claim that the hosted runner has KVM.
+- No APK or device was installed/changed; no user action. Keep System UI handling fail-closed and never select Close app.
+
+---
+
+## QA & Android — Run 8 exact-head checkpoint (2026-11-22T20:09:08Z)
+
+**No user action.** No Termux command, UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, APK install, permission change, model/weight swap or device mutation was performed.
+
+- **Release/device:** private PIPELINE_STATUS #602 reports the device-reported installed SHA `aed1d2b826290c95c70356b5d8b864b5ef382be4` and updater/runtime/dashboard UP_TO_DATE. The effective last code-bearing runtime payload remains `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; aed1d2 is a documentation-only tip. DIAGNOSTICS #603 repeats a stored FINAL turn: 57.739 s total, 41.627 s TTFT, 38.945 s C3 prefill, 751 prompt tokens, 2 generated tokens; B1/B2 TIME_BUDGET at 53.2/54.2 s. Correctness is UNKNOWN; no new turn or 20-turn acceptance.
+- **Android companion QA PR #2356:** exact head `a03bf59474aaaf5c4025fd2f4807a89a98431ec1`. On predecessor `985c55`, Gradle/Robolectric and staged/integrated checks passed, but the API-33 TCG emulator failed after installing the APK: MainActivity was top-resumed, while System UI raised an ANR and the UI hierarchy exposed no app labels. This is an emulator/harness failure; the product stop/restart assertions were not reached. The harness was changed to back off UIAutomator polling from 2.5 to 5 seconds, and the emulator was increased to 4 cores / 4 GB with SwiftShader. Local copied UI-helper tests: 6/6 PASS. Exact-head workflows 45065108082, 45065108107, 45065108112 and 45065108090 were QUEUED at this checkpoint. No emulator PASS, APK-on-Redmi or companion device action is claimed.
+- **Store/source-lifecycle QA PR #2359:** exact head `661696c9609ba1a54b78649753cc8d1d78b169bf`; static source-pin readback 8/8. Exact CI: Lab-Age, Python 3.14 staged startup and staged/integrated regression fail at inherited RECORD_ONLY semantic pin (`609c9d…` expected, `461650…` actual); two-checkout migration returns PARTIAL because stage activation is refused. A5 and owner-read pass; JEPA and runtime-deploy checks were queued. PR remains DRAFT / NOT_RELEASED. Boss owns the shared guard fix; QA did not edit that chain.
+- **Boss/Core coordination:** Boss PR #2370 is at head `4d771ed8e2d2d839e4acbf4f517a775cfe1c1e05`; its updated semantic pins were read back, but exact matrix was queued, not green. Core #2367 run16 reports native receiver Python 3.13/3.14, pinned Linux API, Android ARM64 cross-compile, local-approval staged path and same-turn B1/B2→C4→C3 workflows green; it remains DRAFT / NOT_RELEASED and has no Redmi or production-B3 proof.
+- **Environment:** no full Aii checkout, Gradle or Android SDK is available in this execution container. Full local repository/Android suite is BLOCKED. The 6/6 helper result is a copied pure-Python test, not a local emulator test.
+
+**Next:** poll the exact #2356 head; keep System UI recovery fail-closed (never select Close app). Wait for Boss #2370 and JEPA #2372 source composition before rebasing #2359; then re-run the exact staged/migration/positive-rollback matrix and expose the independent SleepRuntime postcommit error. Whole-Canon acceptance remains open.
+
+---
+
+# QA & Android — Run 7 current checkpoint (2026-11-22)
+
+**Keine Nutzeraktion erforderlich.** Kein neuer Termux-Befehl, kein doppelter UPDATE_REQUEST, kein CHAT_SEND, keine LOG_PAGE-Abfrage und kein Modell-/Gewichts-/Rechtewechsel.
+
+## Release und authentifizierter Redmi-Status
+
+- Release-Branch `gpt6/v13-private-remote-bridge-20261111`: `aed1d2b826290c95c70356b5d8b864b5ef382be4`, 41/41 exakte Commit-Checks SUCCESS. Dieser Branch-Tip ist dokumentationsbasiert; der letzte code-tragende Release bleibt `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`.
+- Privater PIPELINE_STATUS [#602](https://github.com/RedMentos/Aiiii/issues/602) bestätigt aed1d2 als installiert/UP_TO_DATE, Auto-Update EIN, `last_error=NONE`.
+- DIAGNOSTICS [#603](https://github.com/RedMentos/Aiiii/issues/603): Service/Modellprozess/Dashboard RUNNING; letzter gespeicherter Turn FINAL, 57,739 s gesamt, 41,627 s TTFT, 38,945 s Prefill, 751 Prompt-Tokens, 2 generierte Tokens. B1_DETAIL und B2_GIST TIME_BUDGET nach 53,2/54,2 s; C3 3,1 s. Das ist kein neuer Turn und keine Korrektheitsmessung.
+- Momentane Residency-Abfrage: 0 gemappte Prozesse/0 MiB, aber `UNKNOWN_NO_GROUP_CHILDREN`; kein freier-RAM-Wert und kein Nachweis, dass Modelle gestoppt sind.
+- Official Age 0; Lab-Auswahl X10 angefordert, effektiv implementierte Stufe 5; physische Feature-Ausführung nicht bestätigt; Lern-Commit-Autorität separat SHADOW. Keine Einstellung geändert.
+
+## QA-Code und aktuelle Fehler
+
+### Android Companion — PR #2356
+
+- Head `985c55efbcfaac33a41fc7b094ac76044b5c1377`.
+- Receipt-only recovery: EXECUTING wird signiert zu OUTCOME_UNKNOWN, DENYING zu USER_DENIED; kein erneuter Dispatch. Failure-Injection, Notification-Retention, Datenbank-Reopen und Idempotenz sind abgedeckt.
+- Fünf lokale synthetische UI-Overlay-Tests PASS; vorheriger Android-Gradle/Robolectric-Job PASS. Der Emulator-Prozessrestart scheiterte auf dem Vorgänger-Head, weil `am start -W` unter TCG länger als 25 s wartete. Der aktuelle Head entfernt `-W` und verwendet begrenztes Process-/UI-Warten.
+- Exakter Android-Emulator-Run [45063592256](https://github.com/RedMentos/Aii/actions/runs/45063592256) und Staged/Integrated [45063592215](https://github.com/RedMentos/Aii/actions/runs/45063592215) liefen beim letzten Readback. Noch kein Emulator-PASS, kein APK auf Redmi, kein Companion-Launch oder UI-Action-Beleg.
+
+### Store/JEPA Source-Lifecycle — PR #2359
+
+- Head `1a6d9894dba6fe700154c26de979b0d47f8997ea`; 8/8 statische SHA-/Git-Blob-Kanten wurden nach Readback verifiziert (ContextRecall Store, RECORD_ONLY semantic source, WorldJEPA→ContextRecall, Recovery12, Recovery21, Stage, Deployer).
+- Die exakten Python-3.13/3.14, Staged/Integrated, RECORD_ONLY, Lab-Age, Migration und Deploy-Workflows waren noch queued/in progress. **Kein grüner Exact-Head-Nachweis** und nicht released.
+- Nach erfolgreichem Stage-Build gezielt SleepRuntime postcommit: numerische JEPA/Temporal-Lernung, optimizer resume, positive rollback, restart und negative controls prüfen; keine Promotion.
+
+### Boss-/Core-Integration
+
+- Boss PR #2370 head `809814ffc8468447be80fdffbeb5a5384a2efe0b`: RECORD_ONLY local-error semantic anchor, Lab-Age integrated-builder hash und Migration-PARTIAL sind rot. QA hat die konkrete Ursache in [PR-Kommentar](https://github.com/RedMentos/Aii/pull/2370#issuecomment-7084824119) und im Whole-Canon-Issue #1984 dokumentiert. Boss owns the shared chain; QA schreibt nicht parallel hinein.
+- Core PR #2367 head `06113c60a1d411fd3121fd5bae66c5f42e8b28ba`: 18 relevante Workflows SUCCESS; safe-additive job expected SKIPPED und release-event integration CANCELLED. Draft, kein Redmi-/nativer Latent-Proof.
+
+## Nächste konkrete Arbeit
+
+1. Exakte #2356 Emulator- und Staged/Integrated-Ergebnisse abwarten; bei Rot nur den tatsächlichen neuen Fehler beheben.
+2. Exakte #2359 CI-Ergebnisse abwarten; nach erfolgreichem Stage-Build SleepRuntime/positive Rollback prüfen.
+3. #2370 separat nach Boss-Fix erneut adversarial prüfen.
+4. 20-Turn-Redmi-Korrektheit, TTFT, native PSS/Residency, B1/B2-Quellenverbrauch, Android Companion und Rollback bleiben offene Akzeptanztests.
+
+**Statusgrenze:** GitHub-CI, lokale synthetische Python-Tests, Android-Emulator und echtes Redmi sind vier verschiedene Evidenzklassen. Redmi-Companion und neue Modell-/Gewichtslernwirkung bleiben UNVERIFIED.
+
+---
+
+# QA & Android — aktueller Gesamt-Checkpoint (2026-11-22, Run 7)
+
+**Keine Nutzeraktion erforderlich.** Der vorhandene Updater hat den aktuellen Release-Branch-Stand bereits installiert. Kein Termux-Befehl, kein neuer UPDATE_REQUEST, kein CHAT_SEND, keine LOG_PAGE-Abfrage und kein Modell-/Gewichts-/Rechtewechsel.
+
+## Release und echtes Redmi
+
+- Release-Branch `gpt6/v13-private-remote-bridge-20261111` steht exakt auf `aed1d2b826290c95c70356b5d8b864b5ef382be4`; **41/41 GitHub-Check-Runs SUCCESS**.
+- Authentifizierter privater PIPELINE_STATUS [#602](https://github.com/RedMentos/Aiiii/issues/602) bestätigt genau diesen SHA als installiert, Auto-Update EIN, Runtime/Dashboard `UP_TO_DATE`, `last_error=NONE`.
+- DIAGNOSTICS [#603](https://github.com/RedMentos/Aiiii/issues/603) meldet Service, Modellprozess und Dashboard RUNNING. Der letzte gespeicherte Turn ist FINAL, aber 57,739 s gesamt, 41,627 s TTFT, 38,945 s Prefill, 751 Prompt-Tokens und nur 2 generierte Tokens. Das ist ein wiedergegebener gespeicherter Turn; kein neuer Chat und keine Korrektheitsbewertung.
+- B1_DETAIL und B2_GIST endeten weiterhin mit `TIME_BUDGET` nach 53,2 s bzw. 54,2 s; C3-Probe 3,1 s. Die momentane Residency-Abfrage zeigt 0 gemappte Prozesse/0 MiB PSS/RSS, aber `readability=UNKNOWN_NO_GROUP_CHILDREN`; daraus folgt weder, dass das Modell gestoppt ist, noch ein freier-RAM-Wert.
+- Offizielles Age 0; Lab-Testauswahl X10 angefordert, effektiv implementierte Stufe 5; physische Feature-Ausführung nicht bestätigt; Lern-Commit-Autorität benötigt separat SHADOW. Private HEALTH #608 und LEARNING_STATUS #609 erhielten innerhalb ihrer TTL keine authentifizierte Antwort.
+- Kein neuer Turn, kein Probe-Lauf, keine Geräteaktion und keine Änderung an Modell, Weights, Berechtigungen oder Updater.
+
+## Android Companion QA — PR #2356
+
+- QA-Branch `qa/v14-companion-final-qa-20261122`, aktueller Head `99cc3c351ceb228c154c82340f3cf552bd2a4fec`, PR [#2356](https://github.com/RedMentos/Aii/pull/2356), gestapelt auf `core/v14-android-companion-native-20261121`; **NOT_RELEASED**.
+- Neuer Status-Fix: die Capability-Registry akzeptiert nicht mehr nur gespeicherte Paket-/Digest-Strings. Sie prüft den SHA-256 des aktuell installierten `com.termux`-Signers unter dem Pairing-Trust-Lock. Fehlendes Paket, ungültiger oder geänderter Digest sowie widerrufener Trust-Latch sperren den Caller. MainActivity zeigt nur noch denselben verifizierten Zustand. Regressionen decken Match, Signerwechsel, fehlendes Paket, malformed Digest und widerrufenen Trust ab.
+- Android Gradle/Robolectric war auf dem Vorgänger-Head `128efc8` erfolgreich; der Emulator-Stop/Restart-Test lief noch. Der frühere Emulatorlauf `fcaf355` scheiterte danach ausschließlich am Test-Hilfspfad: `/sdcard/v14-window.xml` war für den Shell-Read nicht zugänglich. Das Skript wurde auf `/data/local/tmp/v14-window.xml` umgestellt (Head `99cc3c3`). Die exakten Workflows für diesen Head laufen; **noch kein Emulator-PASS**.
+- Kein APK wurde installiert, kein Termux-Pairing ausgeführt und keine Android-Aktion autorisiert. Redmi-Companion bleibt UNVERIFIED.
+
+## Store-/JEPA-Source-Lifecycle — PR #2359
+
+- Exakter Head `da0b2dfad72124639f1c8dbf0656246ba55859c4`: **6/13 SUCCESS, 7/13 FAILURE**, DRAFT / NOT_RELEASED.
+- Exakte Logs zeigen stale Pin `world_semantic_evidence_candidate.py`: erwartet `609c9d…`, tatsächlich `461650…`; Context-Recall-Store-Pin erwartet `03cbe…`, tatsächlich `062689…`. Dadurch scheitern staged/integrated, Lab-Age, Optimizer-Resume und Migration.
+- Zusätzlich liefert der synthetische SleepRuntime-Postcommit-Test `status=ERROR` statt `POSTCOMMIT_PROCESSED`; der Test gibt den zugrundeliegenden Fehler noch nicht aus. QA hat die beiden Hash-Abweichungen und den separaten Laufzeitfehler im PR dokumentiert. Keine Pin-Gates wurden gelockert.
+
+## Voll-Canon-Proofgrenze und nächste Schritte
+
+- Der aktuelle Branch-/Installationsbeleg beweist keine korrekte Gehirnantwort. P0 bleibt echte B1/B2→C4→C3-Kooperation, kurze TTFT, korrekte Antworten und ein gemischter 20-Turn-Redmi-Test.
+- B3 gelernte Latent-Kopplung, persistente numerische Weight-Updates mit Retention/Forget/Rollback, vollständige Stimme, Android-UI-/Background-Executor, zwei echte sparse-MoE-Körper, Self-Edit und vollständige Canon-Klausel→Consumer→Test→Plattform→Rollback-Zuordnung bleiben getrennte offene Anforderungen.
+- Nächster QA-Schritt: exakte #2356 Emulator-/Staged-/Integrated-CI abwarten; bei einem roten Lauf den konkreten Fehler beheben. Danach #2359 bottom-up neu binden und den SleepRuntime-Fehler offenlegen, ohne Source-/Learning-Gates zu lockern. Kein Redmi-PASS ohne echte Gerätequittung.
+
+**Nutzeraktion: keine.**
+
+---
+
 # QA & Android — temporal JEPA and source-lifecycle follow-up (2026-11-22)
 
 - JEPA/Memory PR [#2351](https://github.com/RedMentos/Aii/pull/2351), exact head 3df0c8a6a65dd2545bde62db92efc761d143032a, adds dense contiguous T8 temporal windows (history lengths 2/3), explicit censored omissions, unknown-gap breaks, connected session/source split, NumPy WorldJEPA + EMA/Adam/checkpoint persistence, and B1/B2/SELF shadow readouts. It is wired into SleepRuntime post-commit but has no prompt consumer or native body-weight effect. Synthetic Store/T8 fixtures only. Exact CI currently queued; PR is DRAFT / NOT_RELEASED.
