@@ -258,9 +258,9 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
                     type(issued_at) in (int, float)
                     and type(expires_at) in (int, float)
                     and type(receipt_verified_at) in (int, float)
-                    and math.isfinite(float(issued_at))
-                    and math.isfinite(float(expires_at))
-                    and math.isfinite(float(receipt_verified_at))
+                    and (type(issued_at) is int or math.isfinite(issued_at))
+                    and (type(expires_at) is int or math.isfinite(expires_at))
+                    and (type(receipt_verified_at) is int or math.isfinite(receipt_verified_at))
                 )
                 ecdsa_envelope_invalid = (
                     not numeric_times
