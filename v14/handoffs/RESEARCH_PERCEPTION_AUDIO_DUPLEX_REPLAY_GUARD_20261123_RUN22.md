@@ -8,7 +8,7 @@
 - Added adversarial coverage: forged-only temporal onset, replay against a later active turn in both interrupt and auto/CONTINUE modes, and OFF-mode consumption. The workflow now runs when the existing RAW EAR producer changes.
 - Research R-114: FD-VAD (arXiv:2609.35791), FastTurn (arXiv:2604.01897v7), Next-Turn (arXiv:2606.18094). Abstract/metadata-level only; no full-text claim, code import, weights, datasets or dependency.
 - LOCAL_LINUX full repository suite remains BLOCKED: no checkout mounted and git ls-remote fails DNS. No local Runtime integration result is claimed. Exact CI must run on this code head.
-- Redmi: REDMI_UNVERIFIED for this candidate. Last authenticated receipt says installed base fb563d771fe2d493c4ec25abe94280981d24ef5c, runtime STOPPED_BY_USER. No restart, CHAT_SEND, UPDATE_REQUEST, microphone capture or permission/model/weight/data change.
+- Redmi: REDMI_UNVERIFIED for this candidate. Current board receipt PIPELINE_STATUS #767 reports installed 8bf44cb50e855a6dba0c91f64f60d8daddcbdc9c, auto-update enabled, Runtime/Dashboard CI_WAIT, last_error NONE. This receipt predates the b20e9 green release and does not prove b20e9 installed. UPDATE_REQUEST #737 is already QUEUED; no duplicate request. No restart, CHAT_SEND, microphone capture or permission/model/weight/data change.
 - NOT_RELEASED. Boss/QA review and staged/integrated source-pin checks required. Next: exact-head CI, then review Store CAS/Runtime.lock ordering and merge composition with Core/QA; only later test through an explicitly authorized AudioRecord provider.
 
 
@@ -27,3 +27,8 @@
 - The target branch advanced while this PR was open. I merged current release base 8d93236c753f0194224c19edc7411d8d7082b1d6 into this branch with a two-parent merge commit 342fb4f5954c69a29fed9b164c96c76f0146c735. No force-push; the branch was updated with expected-head protection.
 - The base delta was inspected first: only the M1 data workflow/fixtures and QA Android handoff changed, with no overlap against the six files in this PR. The merge tree retained all six PR files and R-114.
 - The code-bearing implementation SHA remains fea6002c4fa7def9f1dd83f51a8320fc526e4f17. The merge commit only synchronizes the release ancestor; this handoff update is documentation-only.
+
+
+## Device-status correction — 2026-11-23
+
+A prior handoff sentence incorrectly described the phone as STOPPED_BY_USER on fb563. The current authoritative shared-board receipt is PIPELINE_STATUS #767: installed 8bf44cb50e855a6dba0c91f64f60d8daddcbdc9c; auto-update enabled; Runtime/Dashboard CI_WAIT; last_error NONE. It predates b20e9's green 37/37 CI and does not confirm that b20e9 reached the phone. UPDATE_REQUEST #737 is already queued. No new update request or device action was sent. This PR candidate remains not deployed and REDMI_UNVERIFIED.
