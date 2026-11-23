@@ -4,7 +4,7 @@
 
 ## New executable Perception function
 
-- PR [#2442](https://github.com/RedMentos/Aii/pull/2442), branch research-perception/v14-vision-lifecycle-current-20261123-run19. Latest branch head: b7fde067040da4292369f953a88c349dcc8b33de; exact code head: 18384cd3113e25d357955c19b38bd01dfbedb528. Later commits are handoff/research documentation only.
+- PR [#2442](https://github.com/RedMentos/Aii/pull/2442), branch research-perception/v14-vision-lifecycle-current-20261123-run19. Latest branch head: eebfd4115949e7206b82e7f3e843486bc6839fc4; exact code head: 18384cd3113e25d357955c19b38bd01dfbedb528. Later commits are handoff/research documentation only.
 - Added a bounded 256-sample median common-mode luminance shift plus per-tile local residual. The original raw frame-difference score and ON/OFF surfaces remain; A4 now prefers local novelty and retains a weak 0.15 global-transition signal. That weight is an uncalibrated BOOT heuristic.
 - Consumer path on the candidate: source-bound A5 frame summaries → temporal visual evidence → existing A4 modulation. No raw image persistence, OCR/object truth, action authority, native latent exchange or body-weight update is claimed.
 
