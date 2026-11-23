@@ -1563,3 +1563,20 @@ JEPA #2396 Temporal WorldJEPA T8 Windows workflow is now SUCCESS. The same exact
 - Exact test commit `3f99bdcc6c133f44a897d59e5ef2a9292176f917`, test blob `a45c711ce7aac12beb5f9c567096c0e406962a08`; branch head after handoff `6dcf1fddd7b68d3cfe9526b764d086090fa054f9`. GitHub readback verified.
 - LOCAL_LINUX CPython 3.13.5: minimal subprocess import-isolation pattern PASS. The full copied-package repository test remains NOT_RUN locally because no Aii checkout is mounted. Exact-head CI is queued/pending; no pass claimed.
 - No code path now requires Teacher Ear for acoustic-only import; if a teacher result is supplied, the active lease and both separate opt-ins remain mandatory before lazy import. No transcript is admitted/persisted if the module is absent.
+
+
+## Research update — resource governor and parallel duplex transcription (2026-11-23T01:14:42.493Z)
+
+### R-102 Orion (arXiv:2605.26473v2; revised 2026-11-02)
+- Full-text design/evaluation/limitations sections reviewed. Orion's URGE controller adapts memory across batch, replay and optimizer components under a hard budget; the reported system is a replay-based supervised OCL extension of Avalanche.
+- Evidence is from five CL benchmarks, four replay algorithms, three backbones, RTX A4500, Jetson AGX Orin 32 GB and an emulated 8 GB budget, three seeds, plus a TurtleBot 3/Endless-Sim case study. The paper reports 9× training speedup on Jetson versus its main fixed baseline and 7.1 GB peak under the emulated 8 GB CORe50-NIC run. The memory watchdog samples every 50 ms.
+- It does not demonstrate Android or 5.84 GB Redmi operation; it excludes NLP, non-replay OCL, infinite streams and unlabeled learning. The authors note static offline tuning can still outperform Orion on some streams and that the decaying threshold hurts the longest stream.
+- No Orion code repository or code license was found. The underlying [Avalanche repository](https://github.com/ContinualAI/avalanche) is maintained and MIT-licensed, but Orion-specific implementation is not thereby licensed.
+- V14 adaptation: borrow the *control separation* only. First instrument real per-organ RSS/peak memory, queue/step latency, replay/batch size and validated retention/plasticity. Then test a hard-capped adaptive budget governor against a fixed baseline with OOM, retention, latency, restart and rollback checks. Do not import Avalanche/PyTorch into the Android app or extrapolate Jetson numbers to Redmi.
+
+### R-103 full-duplex streaming transcription (arXiv:2609.15759v1; submitted 2026-09-14)
+- Full arXiv HTML reviewed. NVIDIA authors add a streaming ASR head parallel to the agent-text head over shared hidden states, with separate user/agent token embeddings and word-level CTC/MMS-FA alignment. Reported 10.21% WER integrated; 431 ms turn-taking latency; 100% barge-in accuracy / 374 ms in the authors' evaluation; standalone variant 7.73% WER at 1.6 s delay.
+- The main integrated model is 9B Nemotron-Nano plus a 600M Parakeet encoder; training includes 16k hours of English ASR data and internal conversations. Code is promised but no released repository was found; the arXiv distribution license is not a code/weight license. Not a Redmi candidate.
+- V14 implication: supports a dedicated transcript output stream separate from agent text, but does not replace timestamped RAW EAR, prosody, speaker or non-speech signals. Keep transcript optional, provenance-bound and separately consented. Future small-model comparison needs causal latency, WER, interruption, barge-in, RSS and language coverage—not just batch ASR quality.
+
+Both findings are research-only: no code/weights imported, no model downloaded, and no Android measurement. Full details and limitations are in R-102/R-103 in the research ledger.
