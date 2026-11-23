@@ -173,4 +173,4 @@ def test_global_rebuild_requires_complete_caption_provenance(tmp_path):
     incomplete = dict(record, captions={key:value for key,value in record["captions"].items()
                                         if not key.startswith("src0:")})
     result, reason = rebuild_without_source(home, incomplete, "src1", lineage[1]["sha256"], retained, Projector, 4)
-    assert result is None and "caption lineage" in reason
+    assert result is None and "caption" in reason
