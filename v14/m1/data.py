@@ -10,7 +10,7 @@ import csv
 import hashlib
 import json
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterable, Mapping, Sequence
 
@@ -112,8 +112,8 @@ def parse_uci(path: str | Path) -> tuple[tuple[str, ...], list[MinuteRow]]:
                 f"{raw['Date'].strip()} {raw['Time'].strip()}",
                 UCI_TIMESTAMP_FORMAT,
             )
-            if previous is not None and timestamp <= previous:
-                raise ValueError(f"timestamps not strictly increasing at line {line_no}")
+            if previous is not None and timestamp - previous != timedelta(minutes=1):
+                raise ValueError(f"non-contiguous minute timestamp at line {line_no}")
             previous = timestamp
             values: list[float | None] = []
             for channel in channels:
@@ -137,8 +137,8 @@ def rows_from_records(
     previous: datetime | None = None
     for timestamp, record in records:
         stamp = datetime.fromisoformat(timestamp) if isinstance(timestamp, str) else timestamp
-        if previous is not None and stamp <= previous:
-            raise ValueError("timestamps must be strictly increasing")
+        if previous is not None and stamp - previous != timedelta(minutes=1):
+            raise ValueError("timestamps must be contiguous at one-minute resolution")
         previous = stamp
         values: list[float | None] = []
         for channel in channels:
@@ -292,8 +292,8 @@ def build_dataset(
 ) -> tuple[dict[str, list[Window]], dict[str, SplitStats], dict[str, object]]:
     if any(len(row.values) != len(channels) for row in rows):
         raise ValueError("row channel count does not match channel names")
-    if any(rows[i].timestamp >= rows[i + 1].timestamp for i in range(len(rows) - 1)):
-        raise ValueError("timestamps must be strictly increasing")
+    if any(rows[i + 1].timestamp - rows[i].timestamp != timedelta(minutes=1) for i in range(len(rows) - 1)):
+        raise ValueError("timestamps must be contiguous at one-minute resolution")
     bounds = build_chronological_boundaries(len(rows), config)
     datasets: dict[str, list[Window]] = {}
     stats: dict[str, SplitStats] = {}
