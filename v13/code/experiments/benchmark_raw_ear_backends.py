@@ -128,6 +128,7 @@ def benchmark_speaker_tracker(iterations):
             "schema": SCHEMA,
             "source_id": "benchmark:raw-ear",
             "generation_id": "benchmark:generation",
+            "consent_receipt_ref": "benchmark:consent-epoch",
             "model_id": "synthetic:192d",
             "model_revision": "fixture-v1",
             "model_sha256": "a" * 64,
@@ -147,6 +148,7 @@ def benchmark_speaker_tracker(iterations):
         result = registry.update(
             source_id="benchmark:raw-ear",
             generation_id="benchmark:generation",
+            consent_receipt_ref="benchmark:consent-epoch",
             start_ms=start_ms,
             end_ms=start_ms + 1000,
             activity_hint="VOICED",
