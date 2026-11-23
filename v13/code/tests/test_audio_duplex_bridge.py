@@ -551,3 +551,173 @@ def test_persisted_audio_receipt_is_rejected_after_runtime_process_epoch_changes
         assert answer(runtime, first)["status"] == "FINAL"
     finally:
         runtime.close()
+
+
+
+def test_audio_interrupt_target_turn_claim_is_first_writer_wins(tmp_path):
+    runtime, _started = make_runtime(tmp_path, "interrupt")
+    first = {
+        "decision": "INTERRUPT", "relation": "AUDIO_BARGE_IN",
+        "from_event": "active-turn", "to_event": "audio-event-one",
+        "at": time.time(), "started": time.monotonic(),
+    }
+    second = {
+        "decision": "INTERRUPT", "relation": "AUDIO_BARGE_IN",
+        "from_event": "active-turn", "to_event": "audio-event-two",
+        "at": time.time(), "started": time.monotonic(),
+    }
+    try:
+        assert duplex.record(runtime, first) is True
+        assert duplex.record(runtime, second) is False
+        state, _version = runtime.store.state(duplex.KEY, None)
+        assert state["pending"]["audio-event-one"]["from_event"] == "active-turn"
+        assert "audio-event-two" not in state["pending"]
+        assert state["interrupted"]["active-turn"]["by"] == "audio-event-one"
+        assert state["counters"]["INTERRUPT"] == 1
+    finally:
+        runtime.close()
+
+
+def test_distinct_audio_receipts_cannot_replace_the_first_active_turn_handoff(tmp_path):
+    runtime, started = make_runtime(tmp_path, "interrupt")
+    release_generation = threading.Event()
+
+    def blocked_generate(messages, cancel, deadline, *args, **kwargs):
+        started.set()
+        assert release_generation.wait(10)
+        if cancel.is_set():
+            raise Cancelled("audio barge-in")
+        yield "finished "
+
+    runtime.pool.get.return_value.generate = blocked_generate
+    first = runtime.submit("Tell me a long story about the history of Canada")
+    assert started.wait(10)
+    try:
+        first_decision = None
+        for index in range(2):
+            _audio_event, generation, pcm, kwargs = make_audio(runtime)
+            temporal_state = TemporalVoiceEvidence()
+            with audio_consent_lease(
+                runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+                temporal_state=temporal_state,
+            ) as lease:
+                result = consume_pcm16_voice_window(
+                    runtime, pcm, consent_lease=lease,
+                    temporal_state=temporal_state, **kwargs,
+                )
+                _persist_temporal_voice_receipt(
+                    runtime, result, lease, temporal_state=temporal_state,
+                )
+                decision = on_audio_input(
+                    runtime, result, lease, temporal_state=temporal_state,
+                )
+            if index == 0:
+                first_decision = decision
+                assert decision["decision"] == "INTERRUPT"
+                assert decision["record_status"] == "RECORDED"
+            else:
+                assert decision is None
+        state, _version = runtime.store.state(duplex.KEY, None)
+        first_to = first_decision["to_event"]
+        assert state["pending"][first_to]["from_event"] == first
+        assert state["interrupted"][first]["by"] == first_to
+        assert state["counters"]["INTERRUPT"] == 1
+    finally:
+        release_generation.set()
+        wait_idle(runtime)
+        runtime.close()
+
+
+def test_audio_handoff_commit_is_visible_before_cancel_and_reader_cannot_win_race(
+    tmp_path, monkeypatch,
+):
+    runtime, started = make_runtime(tmp_path, "interrupt")
+    release_generation = threading.Event()
+    record_committed = threading.Event()
+    release_record = threading.Event()
+    handoff_entered = threading.Event()
+    handoff_results = {}
+    dispatch_results = []
+    dispatch_thread = None
+    original_record = duplex.record
+    original_handoff = duplex.handoff
+
+    def blocked_generate(messages, cancel, deadline, *args, **kwargs):
+        started.set()
+        assert release_generation.wait(10)
+        if cancel.is_set():
+            raise Cancelled("audio barge-in")
+        yield "finished "
+
+    def pause_after_audio_commit(target_runtime, decision):
+        result = original_record(target_runtime, decision)
+        if decision.get("relation") == "AUDIO_BARGE_IN":
+            assert not target_runtime.cancel_event.is_set()
+            record_committed.set()
+            assert release_record.wait(10)
+        return result
+
+    def observe_handoff(target_runtime, event_id):
+        handoff_entered.set()
+        result = original_handoff(target_runtime, event_id)
+        handoff_results[event_id] = result
+        return result
+
+    runtime.pool.get.return_value.generate = blocked_generate
+    first = runtime.submit("Tell me a long story about the history of Australia")
+    assert started.wait(10)
+    audio_event, generation, pcm, kwargs = make_audio(runtime)
+    temporal_state = TemporalVoiceEvidence()
+
+    def dispatch_audio():
+        with audio_consent_lease(
+            runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
+            temporal_state=temporal_state,
+        ) as lease:
+            result = consume_pcm16_voice_window(
+                runtime, pcm, consent_lease=lease,
+                temporal_state=temporal_state, **kwargs,
+            )
+            _persist_temporal_voice_receipt(
+                runtime, result, lease, temporal_state=temporal_state,
+            )
+            dispatch_results.append(on_audio_input(
+                runtime, result, lease, temporal_state=temporal_state,
+            ))
+
+    try:
+        monkeypatch.setattr(duplex, "record", pause_after_audio_commit)
+        monkeypatch.setattr(duplex, "handoff", observe_handoff)
+        dispatch_thread = threading.Thread(target=dispatch_audio)
+        dispatch_thread.start()
+        assert record_committed.wait(10)
+        assert not runtime.cancel_event.is_set()
+
+        # The audio bridge has committed its handoff but has not cancelled the
+        # turn yet. A normal queued turn is allowed to race the worker.
+        runtime.cfg["duplex_mode"] = "auto"
+        second_event = runtime.submit("Follow up after the audio interruption")
+        release_generation.set()
+
+        assert handoff_entered.wait(10)
+        assert runtime.current == "turn"
+        assert runtime.turn_event["event_id"] == second_event
+
+        release_record.set()
+        dispatch_thread.join(timeout=10)
+        assert not dispatch_thread.is_alive()
+        assert dispatch_results[0]["record_status"] == "ROLLED_BACK_TARGET_CHANGED"
+        assert handoff_results.get(second_event) is None
+        wait_idle(runtime)
+        assert answer(runtime, first)["status"] == "FINAL"
+        assert answer(runtime, second_event)["status"] == "FINAL"
+        state, _version = runtime.store.state(duplex.KEY, None)
+        assert audio_event["event_id"] not in state["pending"]
+        assert first not in state["interrupted"]
+        assert state["counters"]["INTERRUPT"] == 0
+    finally:
+        release_generation.set()
+        release_record.set()
+        if dispatch_thread is not None:
+            dispatch_thread.join(timeout=2)
+        runtime.close()
