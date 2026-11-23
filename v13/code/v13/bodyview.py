@@ -218,6 +218,49 @@ def _temporal_world_jepa_body_readout(r, e, role):
         }
         if unsupported:
             context["unsupported_actions"] = unsupported
+
+        episodic = {"status": "UNAVAILABLE", "items": []}
+        try:
+            episodic = learner.episodic_recall(
+                session_id, history_length=history_length, limit=len(actions),
+                nonblocking=True, budget_s=0.05,
+            )
+        except (BlockingIOError, ValueError, TypeError, KeyError, OSError,
+                OverflowError, ArithmeticError, AttributeError):
+            episodic = {"status": "UNAVAILABLE", "items": []}
+        if (episodic.get("checkpoint_sha256") != checkpoint_sha
+                or episodic.get("query_history_action_ids") != history_ids
+                or episodic.get("query_history_source_sha256s") != history_sources):
+            episodic = {"status": "PROVENANCE_MISMATCH", "items": []}
+
+        episodic_rows = []
+        if episodic.get("status") in {"EPISODIC_RECALL_SHADOW", "EPISODIC_RECALL_PARTIAL"}:
+            for item in episodic.get("items", []):
+                outcome = item.get("observed_outcome")
+                distance = item.get("distance")
+                source_sha = item.get("source_sha256")
+                if (not isinstance(outcome, dict)
+                        or type(distance) not in (int, float)
+                        or not math.isfinite(float(distance))
+                        or not _valid_sha256(source_sha)
+                        or item.get("action") not in actions):
+                    continue
+                duration = outcome.get("duration_s")
+                success = outcome.get("success")
+                output_chars = outcome.get("output_characters")
+                if (type(duration) not in (int, float) or not math.isfinite(float(duration))
+                        or type(success) is not bool
+                        or type(output_chars) is not int or output_chars < 0):
+                    continue
+                episodic_rows.append([
+                    item["action"], round(float(distance), 3),
+                    round(min(86400.0, max(0.0, float(duration))), 1),
+                    success, min(1000000, output_chars), source_sha[:8],
+                ])
+        if episodic_rows:
+            context["episodic"] = episodic_rows
+            context["episodic_note"] = "nearest train episode; observed outcome, not forecast"
+
         audit = {
             "schema": "V14_TEMPORAL_WORLDJEPA_BODY_RECEIVER_AUDIT/1",
             "status": "READOUT_CREATED",
@@ -244,6 +287,47 @@ def _temporal_world_jepa_body_readout(r, e, role):
             "native_body_consumed": False,
             "native_body_weights_changed": False,
             "decision_authority": "NONE",
+        }
+        audit["episodic_recall"] = {
+            "status": episodic.get("status", "UNAVAILABLE"),
+            "checkpoint_sha256": episodic.get("checkpoint_sha256"),
+            "training_source_sha256": episodic.get("training_source_sha256"),
+            "history_length": episodic.get("history_length"),
+            "query_history_action_ids": episodic.get("query_history_action_ids", history_ids),
+            "query_history_source_sha256s": episodic.get(
+                "query_history_source_sha256s", history_sources
+            ),
+            "candidate_window_count": episodic.get("candidate_window_count", 0),
+            "train_window_count": episodic.get("train_window_count", 0),
+            "verified_item_count": episodic.get("verified_item_count", 0),
+            "rejected_windows": episodic.get("rejected_windows", 0),
+            "train_split_only": episodic.get("train_split_only") is True,
+            "heldout_used": episodic.get("heldout_used") is True,
+            "source_disjoint_from_query": episodic.get("source_disjoint_from_query") is True,
+            "text_disclosed": episodic.get("text_disclosed") is True,
+            "budget_exhausted": episodic.get("budget_exhausted", False),
+            "items": [
+                {
+                    "action": item["action"],
+                    "distance": item["distance"],
+                    "window_id": item["window_id"],
+                    "action_id": item["action_id"],
+                    "event_id": item["event_id"],
+                    "generation_id": item["generation_id"],
+                    "target_status": item["target_status"],
+                    "source_ref": item["source_ref"],
+                    "source_sha256": item["source_sha256"],
+                    "window_action_ids": item["window_action_ids"],
+                    "window_source_sha256s": item["window_source_sha256s"],
+                    "window_source_refs": item["window_source_refs"],
+                    "observed_outcome": item["observed_outcome"],
+                }
+                for item in episodic.get("items", [])
+            ],
+            "decision_authority": "NONE",
+            "native_memory_consumed": False,
+            "native_body_consumed": False,
+            "native_body_weights_changed": False,
         }
         return context, audit
     except BlockingIOError:
@@ -274,6 +358,15 @@ def body_state(r,e,role,text):
         # Count the exact final prompt envelope, not just the inner view.
         return len(dumps(view|{'authority':'STATE_NOT_FACT','role':role}))
     if prompt_chars()>STATE_CHARS:view['world']['recent']=[]
+    if (prompt_chars()>STATE_CHARS and temporal_context is not None
+            and "episodic" in temporal_context):
+        temporal_context.pop("episodic",None)
+        temporal_context.pop("episodic_note",None)
+        if isinstance(temporal_audit,dict):
+            recall_audit=temporal_audit.get("episodic_recall")
+            if isinstance(recall_audit,dict):
+                recall_audit["status"]="OMITTED_PROMPT_BUDGET"
+                recall_audit["items"]=[]
     if prompt_chars()>STATE_CHARS and temporal_context is not None:
         skills=view.get('skills')
         if isinstance(skills,list) and len(skills)>1:view['skills']=skills[:1]
