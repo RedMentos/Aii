@@ -27,6 +27,18 @@ class EnglishFirstPrompts(unittest.TestCase):
         self.assertEqual(DEFAULTS['answer_language'],'en')
 
 class ConductAndPrivacy(unittest.TestCase):
+    def test_internal_organ_offers_are_private_in_both_languages(self):
+        for lang, markers in (
+            ('en', ('private inputs', 'never quote', 'not for user output')),
+            ('de', ('private Eingaben', 'zitiere sie nicht', 'nicht für die Nutzerantwort')),
+        ):
+            cfg = DEFAULTS | {'answer_language': lang}
+            system = prompts.text(cfg, 'system')
+            hypotheses = prompts.text(cfg, 'hypotheses')
+            for marker in markers[:2]:
+                self.assertIn(marker, system)
+            self.assertIn(markers[2], hypotheses)
+
     def test_conduct_rule_is_harm_based_and_open(self):
         for lang in ('en','de'):
             t=prompts.TEXT[lang]['conduct']
