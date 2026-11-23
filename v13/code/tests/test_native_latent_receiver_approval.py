@@ -666,6 +666,23 @@ def test_operator_keyboard_interrupt_cancels_receiver_before_releasing_lease(tmp
         runtime.close()
 
 
+
+def test_operator_rejects_empty_native_receiver_result(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    _set_empty_native_census(runtime)
+    runtime.resources = lambda: {"mem_available_bytes": 10**12}
+    runtime.cognition.native_receive = lambda *args: None
+    operator = Operator(runtime)
+    try:
+        operator.run(":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+        with pytest.raises(RuntimeError, match="returned no result packet"):
+            operator.run(":callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+        assert runtime.current is None
+        assert runtime.paused is False
+    finally:
+        runtime.close()
+
+
 def test_native_probe_rejects_wrong_exclusive_lease_token_and_keeps_approval(tmp_path):
     runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
     try:
