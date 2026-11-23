@@ -6,6 +6,8 @@ Branch: core/v14-android-capability-registry-current-qa-20261123
 Base branch: qa/v14-companion-final-qa-20261122
 Base SHA: 43975b78659a02ce1ba9520ac5dfae10b2556d37
 Code checkpoint: ef9ab161ac452c6af39a1d340077c7ea936e46a0
+PR: #2394 — https://github.com/RedMentos/Aii/pull/2394
+Current branch head before documentation refresh: 7b4bd0e80d889e612884d1f64dae2dcbcb5de754
 Status: DRAFT / CI PENDING / NOT_RELEASED / REDMI_UNVERIFIED
 
 ## Implemented
@@ -35,8 +37,7 @@ Status: DRAFT / CI PENDING / NOT_RELEASED / REDMI_UNVERIFIED
 
 ## Next exact actions
 
-1. Open a draft PR against qa/v14-companion-final-qa-20261122.
-2. Read back the exact PR head and run its Python 3.13/3.14 companion workflow plus the staged/integrated consumer matrix.
-3. Fix any real regression without weakening the strict schema or OFF gates.
-4. Obtain independent Boss/QA review. Do not merge to the release branch while the parent process-restart UI acceptance is red.
-5. Only after the parent lifecycle gate and integration are accepted should QA consider a separate bounded APK/emulator/Redmi action test. Keep every capability except explicitly consented launch_app OFF until its own provider and OS permission flow are implemented and verified.
+1. PR #2394 is open against qa/v14-companion-final-qa-20261122. Read back its current head and run the Python 3.13/3.14 companion workflow plus the staged/integrated consumer matrix.
+2. Fix any real regression without weakening the strict schema or OFF gates.
+3. Obtain independent Boss/QA review. Do not merge to the release branch while the parent process-restart UI acceptance is red.
+4. Only after the parent lifecycle gate and integration are accepted should QA consider a separate bounded APK/emulator/Redmi action test. Keep every capability except explicitly consented launch_app OFF until its own provider and OS permission flow are implemented and verified.
