@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from typing import Mapping
 
 import numpy as np
+import torch
+from .array_data import ArrayDataset, InputBundle
 
 
 @dataclass(frozen=True)
@@ -13,6 +15,15 @@ class MetricReport:
     mae_at_30: float
     mae_at_60: float
     primary_mae_15_60: float
+
+
+@dataclass(frozen=True)
+class WindowErrorSet:
+    origin_indices: np.ndarray
+    primary_mae: np.ndarray
+    mae_at_15: np.ndarray
+    mae_at_30: np.ndarray
+    mae_at_60: np.ndarray
 
 
 @dataclass(frozen=True)
@@ -126,4 +137,54 @@ def paired_block_bootstrap(
         bootstrap_replicates=n_bootstrap,
         per_seed_differences=tuple(float(value) for value in per_seed),
         seed_difference_std=float(np.std(per_seed, ddof=1)) if per_seed.size > 1 else 0.0,
+    )
+
+
+
+@torch.no_grad()
+def collect_model_errors(
+    model: torch.nn.Module,
+    dataset: ArrayDataset,
+    *,
+    split: str = "validation",
+    batch_size: int = 256,
+    device: str | torch.device = "cpu",
+) -> WindowErrorSet:
+    """Stream model predictions and retain only per-origin errors, not full tensors.
+
+    The test split remains protected: asking for split='test' delegates to
+    ArrayDataset.iter_batches and therefore requires its preregistration gate.
+    """
+    target_device = torch.device(device)
+    model.to(target_device)
+    model.eval()
+    origins: list[np.ndarray] = []
+    primary: list[np.ndarray] = []
+    at15: list[np.ndarray] = []
+    at30: list[np.ndarray] = []
+    at60: list[np.ndarray] = []
+    for batch in dataset.iter_batches(split, batch_size=batch_size):
+        bundle = InputBundle(
+            x=torch.as_tensor(batch.inputs.x, device=target_device, dtype=torch.float32),
+            seasonal=torch.as_tensor(batch.inputs.seasonal, device=target_device, dtype=torch.float32),
+            calendar=torch.as_tensor(batch.inputs.calendar, device=target_device, dtype=torch.float32),
+        )
+        target = torch.as_tensor(batch.target, device=target_device, dtype=torch.float32)
+        prediction = model(bundle)
+        if prediction.shape != target.shape or prediction.shape[1] < 60:
+            raise ValueError("model output must match [batch, horizon>=60, channels] target shape")
+        absolute = torch.abs(prediction - target)
+        origins.append(batch.origin_indices.copy())
+        primary.append(absolute[:, 14:60, :].mean(dim=(1, 2)).cpu().numpy())
+        at15.append(absolute[:, 14, :].mean(dim=1).cpu().numpy())
+        at30.append(absolute[:, 29, :].mean(dim=1).cpu().numpy())
+        at60.append(absolute[:, 59, :].mean(dim=1).cpu().numpy())
+    if not origins:
+        raise ValueError(f"no valid windows available in {split} split")
+    return WindowErrorSet(
+        origin_indices=np.concatenate(origins),
+        primary_mae=np.concatenate(primary),
+        mae_at_15=np.concatenate(at15),
+        mae_at_30=np.concatenate(at30),
+        mae_at_60=np.concatenate(at60),
     )
