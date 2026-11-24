@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T20:45:50.000Z",
+  "updated_at": "2026-11-24T20:48:05.000Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -389,13 +389,14 @@
       "proof_environment": "LOCAL_LINUX isolated audio-lease contract harness PASS (py_compile + 2 concurrency assertions: full iterator and early close); exact repository regression committed; exact-head GitHub Actions QUEUED/PENDING; full local Aii suite BLOCKED/NOT_RUN (no checkout mounted; GitHub DNS resolution failed); TERMUX/REDMI REDMI_UNVERIFIED.",
       "next_step": "Core must wire audio_consent_generation_scope from PR #2472 into the actual Runtime around source-bound PCM/A4/A5, B1/B2/C4 context composition and the complete C3 iterator. Then run the exact repository regression and staged/integrated tests on one exact head. Perception fixes only Perception-owned failures; Core/QA owns the recovery-builder/controller-guard source-pin chain. AudioRecord remains OFF until signed companion/lifecycle/revocation/zeroization gates pass.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T20:45:50Z",
+      "last_checkpoint": "2026-11-24T20:48:05Z",
       "latest_candidate_pr": {
         "pr": 2472,
         "head_sha": "261e1aff67cf45f794d32aff451a35910c310d1c",
         "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
         "ci": "QUEUED_EXACT_HEAD_261E1; NO_PASS_CLAIM",
-        "tested_code_sha": "b08238d53a441aeb2aa650b97c0ac8cbda39b5f8"
+        "tested_code_sha": "b08238d53a441aeb2aa650b97c0ac8cbda39b5f8",
+        "branch_note": "undefined Final evidence/board metadata checkpoint at 2026-11-24T20:48:05Z; consult PR for current branch HEAD."
       },
       "proof": "#2433 head a2662b9 has three failures: path vs path_id assertions on Python 3.13/3.14 and stale record_only_controller_guard attention.py pin. Exact attention.py blob 0c1831f5a0b7aef990e15e3e2842dc445776153a. DRAFT / NOT_RELEASED; no Android microphone evidence. Current-base rebase PR #2472 transplanted the A4 source-bound outcome and RAW EAR speaker/prosody code, tests and workflows from #2433 onto 8d93236. Exact attention.py SHA-256 58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e was added to RECORD_ONLY guard while preserving old pin 0d3c0d00492d809c818874cf83ddd723867e77cfc5c50236dac18eddc8422739. No wildcard or bypass. No AudioRecord provider or Android microphone test. PR #2472 code-bearing SHA 8df6a16 additionally carries monotonic RAW EAR interval-start validation: source blob f5fcab22e5d5463bcc3e1ab1a5ce4a586deb4b3e, test blob 6f16afa97a04d4f0da9ab37a95cad38a25413fce, comparator workflow pin 76389ccba3d68c121c26876a5f5eb6f99f111375. LOCAL_LINUX isolated reproduction 5 assertions PASS; new exact-head CI queued/pending. Full local suite NOT_RUN; REDMI_UNVERIFIED; NOT_RELEASED. Run 18: added audio_consent_generation_scope() to hold one source/generation/receipt-bound provider lease across RAW EAR PCM16, A4/A5, Runtime message composition and the full C3 iterator; iterator closes on context exit/early close/exception. Source commit b08238d; test commit 4b036157; source blob 5d47c484; test blob 1eef3408. Isolated local concurrency harness PASS; exact repository test awaits CI. Core PR #2478 runtime.py blob 7a803bae still does not import/call the scope (line 651 direct runner.generate), so no E2E Runtime effect yet. No phone connection/receipt; no update request or device mutation.",
       "latest_current_base_pr": {
