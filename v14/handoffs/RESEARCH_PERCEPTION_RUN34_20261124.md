@@ -3,7 +3,7 @@
 ## Checkpoint
 
 - Started: 2026-11-24 10:00:47 Europe/Berlin.
-- Last verified tool checkpoint: 2026-11-24 10:05:55 UTC (11:05:55 Europe/Berlin is **not** inferred; the tool timestamp is UTC). Completion time beyond this checkpoint: UNKNOWN.
+- Last verified tool checkpoint: 2026-11-24 09:05:55 UTC (10:05:55 Europe/Berlin). Completion time beyond this checkpoint: UNKNOWN.
 - Release-development base read at start: `8d93236c753f0194224c19edc7411d8d7082b1d6`.
 - Work branch: `research-perception/v14-vision-current-20261124-run33`.
 - Code fix commit: `14d6b6338db5e4d965a27bac9a3d7301576496d6`.
