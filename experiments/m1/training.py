@@ -54,10 +54,6 @@ def _validate_model_dataset(config: JEPAConfig, dataset: ArrayDataset) -> None:
         raise ValueError("model calendar_features does not match dataset")
 
 
-def _steps_per_epoch(dataset: ArrayDataset, batch_size: int) -> int:
-    return sum(1 for _ in dataset.iter_batches("train", batch_size=batch_size))
-
-
 def train_jepa(
     model: JEPAForecaster,
     dataset: ArrayDataset,
@@ -92,10 +88,15 @@ def train_jepa(
         lr=learning_rate,
         weight_decay=weight_decay,
     )
-    steps = _steps_per_epoch(dataset, batch_size)
-    if steps < 1:
+    planned_steps = [
+        sum(1 for _ in dataset.iter_batches(
+            "train", batch_size=batch_size, shuffle=True, seed=seed + epoch
+        ))
+        for epoch in range(epochs)
+    ]
+    if any(steps < 1 for steps in planned_steps):
         raise ValueError("no accepted train batches")
-    total_steps = epochs * steps
+    total_steps = sum(planned_steps)
     global_step = 0
     history: list[dict[str, float]] = []
 
@@ -127,6 +128,8 @@ def train_jepa(
             batches += 1
         if batches == 0:
             raise ValueError("no accepted train batches in epoch")
+        if batches != planned_steps[epoch]:
+            raise RuntimeError("train batch stream changed after EMA schedule planning")
         history.append({
             "epoch": float(epoch + 1),
             **{key: value / windows for key, value in totals.items()},
