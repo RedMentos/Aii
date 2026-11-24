@@ -66,6 +66,8 @@ def train_jepa(
     if torch.cuda.is_available() and str(device).startswith("cuda"):
         torch.cuda.manual_seed_all(seed)
     model.to(device)
+    if not bool(model.scaler.fitted):
+        model.scaler.fit(dataset)
     model.train()
     optimizer = torch.optim.AdamW(
         [parameter for parameter in model.parameters() if parameter.requires_grad],
@@ -136,6 +138,8 @@ def train_direct_mae(
     _validate_model_dataset(model.config, dataset)
     torch.manual_seed(seed)
     model.to(device)
+    if not bool(model.scaler.fitted):
+        model.scaler.fit(dataset)
     model.train()
     optimizer = torch.optim.AdamW(
         model.parameters(), lr=learning_rate, weight_decay=weight_decay
@@ -190,6 +194,8 @@ def train_frozen_probe(
     ]
     if frozen_parameters:
         raise ValueError("frozen probe backbone unexpectedly has trainable parameters")
+    if not bool(model.backbone.scaler.fitted):
+        model.backbone.scaler.fit(dataset)
     trainable = [parameter for parameter in model.parameters() if parameter.requires_grad]
     if not trainable:
         raise ValueError("frozen probe has no trainable readout parameters")
@@ -235,6 +241,10 @@ def evaluate_direct_mae(
 ) -> float:
     _validate_model_dataset(model.config, dataset)
     model.to(device)
+    if hasattr(model, "scaler") and not bool(model.scaler.fitted):
+        raise ValueError("model scaler must be fitted on train before evaluation")
+    if hasattr(model, "backbone") and hasattr(model.backbone, "scaler") and not bool(model.backbone.scaler.fitted):
+        raise ValueError("backbone scaler must be fitted on train before evaluation")
     model.eval()
     absolute_sum = 0.0
     elements = 0
@@ -300,6 +310,8 @@ def evaluate_jepa(
     """Stream latent loss and context/target collapse telemetry without storing all embeddings."""
     _validate_model_dataset(model.config, dataset)
     model.to(device)
+    if not bool(model.scaler.fitted):
+        raise ValueError("JEPA scaler must be fitted on train before evaluation")
     model.eval()
     squared_error = 0.0
     elements = 0
