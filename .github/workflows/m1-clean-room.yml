@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - "experiments/m1/**"
+      - "experiments/.gitignore"
       - ".github/workflows/m1-clean-room.yml"
 concurrency:
   group: m1-clean-room-${{ github.ref_name }}
