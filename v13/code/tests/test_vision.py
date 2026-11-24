@@ -212,6 +212,7 @@ class Vision(unittest.TestCase):
             vision.describe(self.rt, rec, 'g', teacher)
         first = vision.train(self.rt, encoder)
         old_path = self.home / first['path']
+        first_weights = vision.Projector.load(old_path, first['sha256']).W.copy()
         self.assertTrue(old_path.is_file())
         rec = vision.ingest(self.store, png((20, 20, 220), box=(18, 8, 44, 34)))
         vision.describe(self.rt, rec, 'g', teacher)
@@ -226,7 +227,10 @@ class Vision(unittest.TestCase):
         self.assertEqual(second['sha256'], first['sha256'])
         self.assertTrue(old_path.is_file())
         retained = vision.Projector.load(old_path, first['sha256'])
-        self.assertEqual(retained.W.shape, vision.Projector.load(old_path, second['sha256']).W.shape)
+        self.assertTrue(numpy.array_equal(retained.W, first_weights))
+        self.assertTrue(numpy.array_equal(
+            vision.Projector.load(old_path, second['sha256']).W, first_weights
+        ))
 
     def test_retraining_with_changed_encoder_fails_closed_and_keeps_old_artifact(self):
         teacher = FakeTeacher()
