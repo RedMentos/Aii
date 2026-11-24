@@ -371,6 +371,7 @@ class FrozenContextProbe(nn.Module):
         self.encoder = backbone.context_encoder
         self.scaler = backbone.scaler
         self.encoder.requires_grad_(False)
+        self.encoder.eval()
         feature_width = (
             config.d_model
             + config.seasonal_lags * config.input_channels
