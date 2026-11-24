@@ -230,6 +230,22 @@ class ArrayWindowTests(unittest.TestCase):
         self.assertEqual(sorted(first.tolist()), sorted(ordered.tolist()))
         self.assertFalse(np.array_equal(first, ordered))
 
+    def test_candidate_window_universe_is_independent_of_input_length(self):
+        short_config = DataConfig(
+            input_length=3, horizon=2, max_candidate_input_length=8,
+            seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
+        )
+        long_config = DataConfig(
+            input_length=8, horizon=2, max_candidate_input_length=8,
+            seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
+        )
+        short = ArrayDataset(self.rows, self.channels, short_config)
+        long = ArrayDataset(self.rows, self.channels, long_config)
+        self.assertEqual(
+            short.split_stats("train").candidate_windows,
+            long.split_stats("train").candidate_windows,
+        )
+
     def test_batch_size_is_hard_bounded(self):
         with self.assertRaises(ValueError):
             list(self.dataset.iter_batches("train", batch_size=8193))
