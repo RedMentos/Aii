@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from datetime import datetime, timedelta
 from pathlib import Path
+import re
 
 import numpy as np
 import torch
@@ -33,6 +34,7 @@ from experiments.m1.training import (
     evaluate_jepa,
     TorchBatchPredictor,
     build_seeded_model,
+    current_git_commit,
     train_jepa,
 )
 
@@ -66,6 +68,11 @@ class JEPAModelTests(unittest.TestCase):
         torch.manual_seed(3)
         self.dataset = fixture_dataset()
         self.config = model_config()
+
+    def test_current_git_commit_resolves_exact_head(self):
+        repo_root = Path(__file__).resolve().parents[2]
+        commit = current_git_commit(repo_root)
+        self.assertRegex(commit, r"^[0-9a-f]{40}$")
 
     def test_seeded_model_factory_controls_initial_weights(self):
         first = build_seeded_model(JEPAForecaster, self.config, seed=71)
