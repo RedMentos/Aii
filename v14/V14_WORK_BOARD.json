@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T12:44:40Z",
+  "updated_at": "2026-11-24T18:16:30Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -196,10 +196,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Perception: preserve the #2327 RAW EAR FIR anti-alias feature path and its staged A5/A4/C3 regression; do not equate caller-supplied PCM with Android microphone capture. Next, reconcile the signed one-shot consumer with QA's companion provider and measure Android lifecycle/route/silence/revocation only after explicit device permission.",
+      "proof_environment": "LOCAL_LINUX isolated CPython 3.13.5 + exact-branch CI pending; Android AudioRecord provider NOT_IMPLEMENTED/NOT_VERIFIED",
+      "next_step": "Run exact Python 3.13/3.14 CI for PR #2471. Then continue the signed AudioRecord provider only after QA's companion signature, lifecycle, revocation and zeroization chain is integrated. After the A5 source-lifecycle gate, test the V-JEPA-LM change-subspace hypothesis on actual source-disjoint A3 sequences; do not import the 1B–8B models.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-24T18:11:32Z",
       "latest_candidate_pr": {
         "pr": 2312,
         "head_sha": "5221314d3c01ab6d874ecc0a8b8ff72c34e504a2",
@@ -208,7 +208,29 @@
         "scope": "signed one-shot RAW EAR consumer; Android-guaranteed 44.1 kHz mono PCM16; 88,200-byte / 117,600-character one-second cap; exact source/generation/signature/consent/replay checks; no microphone provider or learning/action authority",
         "ci": "RUN_44992975596_PENDING; RUN_44992975599_QUEUED"
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture."
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. New #2471 fixes RAW EAR TemporalVoiceEvidence interval ordering: backward start_ms is rejected even if end_ms advances; equal-start cumulative windows and partial overlap remain valid; rejection preserves the previous interval baseline. LOCAL_LINUX CPython 3.13.5 isolated reproduction PASS; full Aii suite BLOCKED/NOT_RUN (no checkout; GitHub DNS failure); exact CI pending; no Redmi proof. Dedicated exact-source workflow run 2 passed py_compile and 13/13 test_audio_temporal_evidence.py tests on Python 3.13 (0.15 s) and 3.14 (0.10 s). Staged/integrated/privacy/consent/deployment workflows remain pending; no Redmi proof.",
+      "latest_interval_order_pr": {
+        "pr": 2471,
+        "url": "https://github.com/RedMentos/Aii/pull/2471",
+        "code_sha": "e3d93311c4f15320dbccd920163263a64a7aeefd",
+        "test_sha": "7981ef0a559e7064ac1a5f92b44a30da8e12efa6",
+        "state": "OPEN_DRAFT_CI_PENDING",
+        "scope": "RAW EAR temporal interval start monotonicity; caller-supplied PCM only; no Android provider or native model",
+        "local_test": "ISOLATED_CPTHON_3.13.5_PASS",
+        "full_repo_test": "BLOCKED_NO_CHECKOUT_DNS",
+        "device": "REDMI_UNVERIFIED",
+        "workflow": ".github/workflows/v14-audio-temporal-evidence.yml",
+        "ci": "PASS_PYTHON_3.13_AND_3.14_13_TESTS_EACH",
+        "tested_code_sha": "5991977aed9dea7b429df1e6af78ac661e990f54",
+        "workflow_commit_sha": "5991977aed9dea7b429df1e6af78ac661e990f54",
+        "workflow_run_id": 45457019323,
+        "workflow_run_number": 2,
+        "workflow_jobs": {
+          "python_3_13": "SUCCESS_13_OF_13",
+          "python_3_14": "SUCCESS_13_OF_13"
+        },
+        "workflow_run_url": "https://github.com/RedMentos/Aii/actions/runs/45457019323"
+      }
     },
     {
       "id": "V14-007",
