@@ -1439,3 +1439,6 @@ The reported results cover controlled LoopNav, SoundSpaces and AI2-THOR settings
 - `a5-ui-lease`: FAIL on CPython 3.13 and 3.14 (17 passed, 5 skipped, 1 failed). The failing test is `test_staged_store_read_open_is_linearized_with_revocation`; Core's `source_lifecycle_lock_integration_candidate.py:172` rejects `vision.py` because the #2469 base still pins 758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5 while Core PR #2465 has the updated 350573e65eb445b8b83f5517e3bfe07ece04e036055c55fc3e23c79d5b0cc728. This is a stacked Core dependency; #2470 remains draft until the source-lifecycle stack is integrated and retested.
 - Source-lineage 39/39 on Python 3.13 and 39/39 on 3.14 passed on parent checkpoint 9b69aa5; no source-lineage code changed afterward.
 - LOCAL_LINUX project tests NOT_RUN/BLOCKED (no checkout and GitHub DNS failure); REDMI_UNVERIFIED; NOT_RELEASED.
+### Deployment evidence — 2026-11-24
+
+Read-only private owner-relay requests for HEALTH, PIPELINE_STATUS and DIAGNOSTICS expired without a device_status reply. Status: NO_LIVE_RECEIPT. The installed Redmi SHA, current updater health and actual installation state are therefore unknown. No UPDATE_REQUEST, shell command, model change, data access or device action was sent. Mark REDMI_UNVERIFIED / UPDATER_UNVERIFIED / NOT_RELEASED.

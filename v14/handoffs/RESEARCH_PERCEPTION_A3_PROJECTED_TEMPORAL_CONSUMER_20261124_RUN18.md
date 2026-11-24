@@ -50,3 +50,7 @@ This is a diagnostic over the existing trained ridge projector, not a JEPA tempo
 - A separate #2472 blocker remains: the recovery builder expects guard SHA-256 86ad7838d15eb9a038fec629c340936edde78d65d921507e10cec29fed74b9d9 while #2472 changes the guard source. Core/Integrator coordination was posted on #2465 and #2472.
 - Source-lineage tests 39/39 passed on Python 3.13 and 39/39 on 3.14 at parent checkpoint 9b69aa5; those files were not changed in the no-change-control follow-up.
 - LOCAL_LINUX full project tests NOT_RUN/BLOCKED; no repository checkout and github.com DNS unavailable. CI is not local evidence. REDMI_UNVERIFIED; NOT_RELEASED.
+
+## Private device/updater receipt
+
+Read-only private owner-relay requests for HEALTH, PIPELINE_STATUS and DIAGNOSTICS expired without a device_status reply: NO_LIVE_RECEIPT. Installed Redmi SHA, updater health and current installation are unknown. No UPDATE_REQUEST, shell command, model/weight change, permission change or user-data access was attempted. REDMI_UNVERIFIED / UPDATER_UNVERIFIED / NOT_RELEASED.
