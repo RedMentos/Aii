@@ -385,42 +385,44 @@ def _projector_validation_inputs(home,old_record,encoder_name,keys,labels,tile=F
     """
     if old_record is None:
         return None,None
+    row_count=len(keys) if type(keys) in (list,tuple) else 0
     previous=old_record.get('captions') if type(old_record) is dict else None
     lineage=old_record.get('training_sources') if type(old_record) is dict else None
+    if type(keys) not in (list,tuple) or type(labels) not in (list,tuple):
+        return [False]*row_count,None
     if (type(previous) is not dict or type(lineage) is not list or not lineage
-            or type(keys) not in (list,tuple) or type(labels) not in (list,tuple)
             or len(keys)!=len(labels)):
-        return [False]*len(keys),None
+        return [False]*row_count,None
 
     previous_source_ids=set()
     for item in lineage:
         if type(item) is not dict or set(item)!={'source_id','sha256'}:
-            return [False]*len(keys),None
+            return [False]*row_count,None
         source_id,sha256=item.get('source_id'),item.get('sha256')
         if (type(source_id) is not str or not source_id
                 or type(sha256) is not str or not re.fullmatch(r'[0-9a-f]{64}',sha256)
                 or source_id in previous_source_ids):
-            return [False]*len(keys),None
+            return [False]*row_count,None
         previous_source_ids.add(source_id)
 
     caption_source_ids=set()
     for key in previous:
         if type(key) is not str or ':' not in key:
-            return [False]*len(keys),None
+            return [False]*row_count,None
         source_id,region=key.split(':',1)
         if not source_id or not region:
-            return [False]*len(keys),None
+            return [False]*row_count,None
         caption_source_ids.add(source_id)
     if caption_source_ids!=previous_source_ids:
-        return [False]*len(keys),None
+        return [False]*row_count,None
 
     new_source_mask=[]
     for key in keys:
         if type(key) is not str or ':' not in key:
-            return [False]*len(keys),None
+            return [False]*row_count,None
         source_id,region=key.split(':',1)
         if not source_id or not region:
-            return [False]*len(keys),None
+            return [False]*row_count,None
         new_source_mask.append(source_id not in previous_source_ids)
 
     baseline=None

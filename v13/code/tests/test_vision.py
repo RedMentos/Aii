@@ -168,6 +168,11 @@ class Vision(unittest.TestCase):
         state = vision.load(self.store)
         for rec in list(state['images'].values()):
             vision.describe(self.rt, rec, 'g', OppositeTeacher())
+        # Add independent source groups so the old projector is tested only on
+        # images it could not have seen before this update.
+        for i, colour in enumerate([(220, 20, 20), (20, 20, 220), (20, 180, 20), (220, 20, 20)]):
+            rec = vision.ingest(self.store, png(colour, box=(14+i, 12, 42+i, 40)))
+            vision.describe(self.rt, rec, 'g', OppositeTeacher())
         second = vision.train(self.rt, encoder)
         gate = second['update_gate']
         self.assertIn(gate['status'], ('APPLIED', 'REJECTED_RETENTION_REGRESSION'), gate)
@@ -186,6 +191,26 @@ class Vision(unittest.TestCase):
             retained = vision.Projector.load(self.home/second['path'], second['sha256'])
             self.assertTrue(numpy.allclose(first_weights, retained.W))
         self.assertEqual(vision.status(self.rt)['projector']['update_gate']['status'], gate['status'])
+
+    def test_retraining_with_only_changed_seen_sources_is_a_noop(self):
+        teacher = FakeTeacher()
+        encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20)] * 3
+        for i, colour in enumerate(colours):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            vision.describe(self.rt, rec, 'g', teacher)
+        first = vision.train(self.rt, encoder)
+        first_model = vision.Projector.load(self.home/first['path'], first['sha256'])
+        first_weights = first_model.W.copy()
+
+        state = vision.load(self.store)
+        for rec in list(state['images'].values()):
+            vision.describe(self.rt, rec, 'g', OppositeTeacher())
+        second = vision.train(self.rt, encoder)
+        self.assertEqual(second['update_gate']['status'], 'NO_NEW_SOURCE_GROUPS')
+        self.assertEqual(second['sha256'], first['sha256'])
+        retained = vision.Projector.load(self.home/second['path'], second['sha256'])
+        self.assertTrue(numpy.allclose(first_weights, retained.W))
 
     def test_source_disjoint_update_validation_requires_complete_positive_evidence(self):
         good = {'status': 'MEASURED', 'split': 'SOURCE_DISJOINT', 'authority': 'MEASUREMENT_ONLY',
@@ -286,7 +311,7 @@ class Vision(unittest.TestCase):
     def test_changed_caption_on_seen_source_is_not_a_new_source_holdout(self):
         teacher = FakeTeacher()
         encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
-        colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20)]
+        colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20), (220, 20, 20)]
         old_records = []
         for i, colour in enumerate(colours):
             rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
