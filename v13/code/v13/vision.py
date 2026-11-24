@@ -7,7 +7,9 @@
   TEACHER EYE   a frozen small VLM (LFM2.5-VL-450M GGUF + mmproj via llama.cpp `llama-mtmd-cli`). Its captions are
                 REFERENCE_NOT_FACT: a training target and a hint, never a source of truth. Missing teacher fails open.
   ALIGNMENT     the student is fitted (ridge, closed form) to the teacher-caption embedding (EmbeddingGemma when
-                installed, else a deterministic hashed bag of words); measured by held-out caption retrieval.
+                installed, else a deterministic hashed bag of words); measured by source-disjoint retrieval.
+  RETENTION     each later fit is replay-evaluated against the previous projector's exact source/caption set; a
+                parameter-space affine delta is scaled down or rejected before the persistent artifact is replaced.
   RECONSTRUCT   a linear decoder from the student embedding back to an 8x8 luminance thumbnail, used only as a
                 measurement of how much image information the student keeps (relative MSE vs the mean image).
   TILES (WP-T16) alignment per grid tile without tile captions: a tile inside a described region (whole image, half or
@@ -32,7 +34,7 @@ from .common import Unavailable,atomic_write,digest,dumps,uid,now
 from .vision_source_lineage import source_lineage, invalidate_projectors, unlink_projector_artifact, unlink_source_blob
 from .vision_validation import source_disjoint_crossval as _source_disjoint_crossval
 
-KEY='WP_N15_VISION';REVISION='wp-n15-vision-v1';AUTHORITY='REFERENCE_NOT_FACT';STUDENT='STUDENT_ESTIMATE'
+KEY='WP_N15_VISION';REVISION='wp-n15-vision-v2-replay-gated';AUTHORITY='REFERENCE_NOT_FACT';STUDENT='STUDENT_ESTIMATE'
 PROMPT='Describe the image in one sentence: name the main objects, their colours and where they are.'
 DEFAULTS={'grid':4,'tile_px':32,'thumb':8,'max_bytes':20*1024*1024,'max_pixels':40_000_000,'max_images':256,
           'hash_dim':256,'ridge':1.,'min_train':4,'teacher_tokens':64,'teacher_timeout':180,'threads':4}
@@ -229,6 +231,159 @@ def retrieval(Z,Y):
     """Top-1 accuracy of picking the right caption embedding for each image among all captions, plus mean cosine."""
     np=_np();S=np.asarray(Z)@np.asarray(Y).T;n=len(S)
     return {'top1':float((S.argmax(1)==np.arange(n)).mean()) if n else 0.,'chance':1./n if n else 0.,'mean_cosine':float(np.diag(S).mean()) if n else 0.}
+
+
+# A3 replay-gated parameter update. The candidate remains LAB_SHADOW_ONLY.
+A3_UPDATE_SCALES=(1.0,0.5,0.25,0.125,0.0625)
+A3_REPLAY_TOP1_TOLERANCE=0.02
+A3_REPLAY_COSINE_TOLERANCE=0.015
+
+
+def _projector_affine(projector):
+    """Express Projector's standardised linear map in raw-feature affine coordinates."""
+    np=_np()
+    mu=np.asarray(projector.mu,dtype=np.float64);sd=np.asarray(projector.sd,dtype=np.float64)
+    W=np.asarray(projector.W,dtype=np.float64)
+    if (mu.ndim!=1 or sd.shape!=mu.shape or W.ndim!=2 or W.shape[0]!=len(mu)+1
+            or not np.isfinite(mu).all() or not np.isfinite(sd).all() or not np.isfinite(W).all()
+            or np.any(sd<=0)):
+        raise ValueError('invalid projector affine state')
+    A=W[:-1]/sd[:,None]
+    b=W[-1]-(mu/sd)@W[:-1]
+    return A,b
+
+
+def _blend_projectors(old,candidate,scale):
+    """Apply a bounded affine parameter delta; scale=0 and scale=1 reproduce both endpoints."""
+    np=_np()
+    if type(scale) not in (int,float) or not math.isfinite(float(scale)) or not 0.<=float(scale)<=1.:
+        raise ValueError('projector update scale must be finite and in [0,1]')
+    A0,b0=_projector_affine(old);A1,b1=_projector_affine(candidate)
+    if A0.shape!=A1.shape or b0.shape!=b1.shape:
+        raise ValueError('projector feature/embedding dimensions changed')
+    p=Projector(candidate.ridge)
+    p.mu=np.zeros_like(np.asarray(old.mu,dtype=np.float64))
+    p.sd=np.ones_like(np.asarray(old.sd,dtype=np.float64))
+    scale=float(scale)
+    p.W=np.vstack([A0+scale*(A1-A0),b0+scale*(b1-b0)])
+    p.n=candidate.n
+    return p
+
+
+def _replay_dataset(store,state,record,cfg,*,tile=False):
+    """Rebuild the previous projector's exact source/caption replay set from live immutable image regions."""
+    np=_np()
+    captions=record.get('captions')
+    lineage=record.get('training_sources')
+    if type(captions) is not dict or not captions or type(lineage) is not list or not lineage:
+        raise ValueError('previous projector has no replay lineage')
+    source_hashes={}
+    for item in lineage:
+        if type(item) is not dict or set(item)!={'source_id','sha256'}:
+            raise ValueError('invalid previous projector source lineage')
+        sid,sha=item['source_id'],item['sha256']
+        if (type(sid) is not str or not sid or sid in source_hashes or type(sha) is not str
+                or not re.fullmatch(r'[0-9a-f]{64}',sha)):
+            raise ValueError('invalid previous projector source digest')
+        source_hashes[sid]=sha
+    X=[];labels=[];keys=[]
+    for key,label in sorted(captions.items()):
+        if type(key) is not str or ':' not in key or type(label) is not str or not label:
+            raise ValueError('invalid previous projector replay caption')
+        sid,region_id=key.split(':',1)
+        if sid not in source_hashes:
+            raise ValueError('replay caption is outside previous training lineage')
+        rec=state.get('images',{}).get(sid)
+        ref=rec.get('ref') if type(rec) is dict else None
+        if type(ref) is not dict or ref.get('sha256')!=source_hashes[sid]:
+            raise ValueError('previous replay source is no longer live')
+        region=next((r for r in rec.get('regions',[]) if r.get('region_id')==region_id),None)
+        if type(region) is not dict:
+            raise ValueError('previous replay region is unavailable')
+        crop=read_image(store,region_ref(ref,region),cfg)
+        X.append(tile_features(crop,cfg['tile_px']) if tile else features(crop,cfg))
+        labels.append(label);keys.append(key)
+    if not X:
+        raise ValueError('previous projector replay set is empty')
+    return np.asarray(X,dtype=np.float64),labels,keys
+
+
+def _label_retrieval(projector,X,Y,labels):
+    """Replay retrieval that treats duplicate caption strings as the same target class."""
+    np=_np()
+    Y=np.asarray(Y,dtype=np.float64)
+    if Y.ndim!=2 or len(Y)!=len(labels) or len(X)!=len(labels) or not np.isfinite(Y).all():
+        raise ValueError('invalid replay embedding batch')
+    scores=projector(X)@Y.T
+    pred=scores.argmax(1)
+    target=np.asarray(labels,dtype=object)
+    return {'top1':float(np.mean(target[pred]==target)),
+            'mean_cosine':float(np.diag(scores).mean())}
+
+
+def _projector_artifact_path(home,record,*,tile=False):
+    relative=record.get('path') if type(record) is dict else None
+    if type(relative) is not str:
+        raise ValueError('previous projector path is missing')
+    rel=Path(relative)
+    prefix='tiles-' if tile else 'projector-'
+    if (rel.is_absolute() or len(rel.parts)!=3 or rel.parts[:2]!=('data','vision')
+            or not rel.name.startswith(prefix) or not rel.name.endswith('.npz')):
+        raise ValueError('previous projector path is outside the vision artifact directory')
+    sha=record.get('sha256')
+    if type(sha) is not str or not re.fullmatch(r'[0-9a-f]{64}',sha):
+        raise ValueError('previous projector digest is invalid')
+    return Path(home)/rel
+
+
+def _gate_projector_update(store,home,state,old_record,candidate,encoder_name,encoder,cfg,*,tile=False):
+    """Measure a proposed A3 update on the previous exact replay set and scale/reject it."""
+    if old_record is None:
+        return candidate,{'version':1,'status':'INITIAL','scale':1.0,'replay_n':0,'authority':'LAB_SHADOW_ONLY'}
+    if type(old_record) is not dict:
+        return None,{'version':1,'status':'MALFORMED_ACTIVE_PROJECTOR','scale':0.0,'authority':'LAB_SHADOW_ONLY'}
+    if old_record.get('encoder')!=encoder_name:
+        return None,{'version':1,'status':'ENCODER_MISMATCH','scale':0.0,'authority':'LAB_SHADOW_ONLY'}
+    try:
+        old=Projector.load(_projector_artifact_path(home,old_record,tile=tile),old_record['sha256'])
+    except (OSError,ValueError,KeyError,TypeError):
+        return None,{'version':1,'status':'OLD_ARTIFACT_INVALID','scale':0.0,'authority':'LAB_SHADOW_ONLY'}
+    try:
+        replay_X,replay_labels,replay_keys=_replay_dataset(store,state,old_record,cfg,tile=tile)
+        replay_Y=np.asarray(encoder(replay_labels),dtype=np.float64)
+    except (OSError,ValueError,KeyError,TypeError):
+        return None,{'version':1,'status':'REPLAY_UNAVAILABLE','scale':0.0,'authority':'LAB_SHADOW_ONLY'}
+    replay_sources=len({key.split(':',1)[0] for key in replay_keys})
+    if len(replay_X)<2 or replay_sources<2:
+        return None,{'version':1,'status':'INSUFFICIENT_REPLAY','scale':0.0,
+                     'replay_n':len(replay_X),'replay_sources':replay_sources,'authority':'LAB_SHADOW_ONLY'}
+    try:
+        old_A,old_b=_projector_affine(old);new_A,new_b=_projector_affine(candidate)
+        if old_A.shape!=new_A.shape or old_b.shape!=new_b.shape or replay_Y.shape[1]!=old.W.shape[1]:
+            return None,{'version':1,'status':'DIMENSION_MISMATCH','scale':0.0,
+                         'replay_n':len(replay_X),'replay_sources':replay_sources,'authority':'LAB_SHADOW_ONLY'}
+        before=_label_retrieval(old,replay_X,replay_Y,replay_labels)
+        full=_label_retrieval(candidate,replay_X,replay_Y,replay_labels)
+    except (ValueError,TypeError,IndexError):
+        return None,{'version':1,'status':'REPLAY_INVALID','scale':0.0,
+                     'replay_n':len(replay_X),'replay_sources':replay_sources,'authority':'LAB_SHADOW_ONLY'}
+    tested=[]
+    for scale in A3_UPDATE_SCALES:
+        blended=_blend_projectors(old,candidate,scale)
+        after=_label_retrieval(blended,replay_X,replay_Y,replay_labels)
+        tested.append({'scale':scale,'top1':after['top1'],'mean_cosine':after['mean_cosine']})
+        if (after['top1']>=before['top1']-A3_REPLAY_TOP1_TOLERANCE
+                and after['mean_cosine']>=before['mean_cosine']-A3_REPLAY_COSINE_TOLERANCE):
+            return blended,{
+                'version':1,'status':'APPLIED','scale':scale,'replay_n':len(replay_X),
+                'replay_sources':replay_sources,'before':before,'candidate':full,'after':after,
+                'scales_tested':tested,'tolerances':{'top1':A3_REPLAY_TOP1_TOLERANCE,
+                'mean_cosine':A3_REPLAY_COSINE_TOLERANCE},'authority':'LAB_SHADOW_ONLY'}
+    return None,{
+        'version':1,'status':'REJECTED_RETENTION_REGRESSION','scale':0.0,'replay_n':len(replay_X),
+        'replay_sources':replay_sources,'before':before,'candidate':full,'after':full,
+        'scales_tested':tested,'tolerances':{'top1':A3_REPLAY_TOP1_TOLERANCE,
+        'mean_cosine':A3_REPLAY_COSINE_TOLERANCE},'authority':'LAB_SHADOW_ONLY'}
 
 def crossval(X,Y,thumbs=None,folds=4,ridge=1.):
     """Row-wise K-fold diagnostic only; regions from one image may leak across folds."""
@@ -458,17 +613,31 @@ def train(runtime,encoder=None,cfg=DEFAULTS):
     groups=[key.split(':',1)[0] for key in ids]
     cv=source_disjoint_crossval(X,Y,groups,caps,thumbs=T,ridge=cfg['ridge'])
     st=load(runtime.store);training_sources=source_lineage(st['images'],ids);old=st.get('projector')
-    p=Projector(cfg['ridge']).fit(X,Y);path=runtime.home/'data/vision'/('projector-'+uid('vis')[4:]+'.npz');sha=p.save(path)
-    st['projector']={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,'metrics':cv,'created':now(),
-                     'captions':{sid:c for sid,c in zip(ids,caps)},'training_sources':training_sources,'authority':'LAB_SHADOW_ONLY'}
+    candidate=Projector(cfg['ridge']).fit(X,Y)
+    p,gate=_gate_projector_update(runtime.store,runtime.home,st,old,candidate,name,enc,cfg,tile=False)
+    if p is None:
+        if type(old) is not dict:
+            return {'status':'REJECTED','update_gate':gate,'authority':'LAB_SHADOW_ONLY'}
+        st['projector']=dict(old);st['projector']['update_gate']=gate
+        save(runtime.store,st)
+        runtime.store.log('vision',None,{'action':'train','accepted':False,'update_gate':gate,
+            'validation_status':cv['status'],'validation_split':cv['split']})
+        return st['projector']
+    path=runtime.home/'data/vision'/('projector-'+uid('vis')[4:]+'.npz');sha=p.save(path)
+    record={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,'metrics':cv,'created':now(),
+            'captions':{sid:c for sid,c in zip(ids,caps)},'training_sources':training_sources,
+            'authority':'LAB_SHADOW_ONLY','update_gate':gate}
+    st['projector']=record
     try:
         save(runtime.store,st)
     except Exception:
-        unlink_projector_artifact(runtime.home, st['projector'])
+        unlink_projector_artifact(runtime.home,record)
         raise
-    if old and old.get('path')!=st['projector']['path']:
-        unlink_projector_artifact(runtime.home, old)
-    log={'action':'train','n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow','validation_status':cv['status'],'validation_split':cv['split'],'utility_status':cv.get('utility_status')}
+    if type(old) is dict and old.get('path')!=record['path']:
+        unlink_projector_artifact(runtime.home,old)
+    log={'action':'train','accepted':True,'n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow',
+         'validation_status':cv['status'],'validation_split':cv['split'],'utility_status':cv.get('utility_status'),
+         'update_gate':gate}
     if cv.get('held_out_top1') is not None:log['held_out_top1']=round(cv['held_out_top1'],4);log['chance']=round(cv['chance'],4)
     runtime.store.log('vision',None,log)
     return st['projector']
@@ -512,17 +681,31 @@ def train_tiles(runtime,encoder=None,cfg=DEFAULTS):
     groups=[key.split(':',1)[0] for key in keys]
     cv=source_disjoint_crossval(X,Y,groups,texts,ridge=cfg['ridge'])
     st=load(runtime.store);training_sources=source_lineage(st['images'],keys);old=st.get('tile_projector')
-    p=Projector(cfg['ridge']).fit(X,Y);path=runtime.home/'data/vision'/('tiles-'+uid('vis')[4:]+'.npz');sha=p.save(path)
-    st['tile_projector']={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,'created':now(),
-                          'salient_tiles':sum(t!=BACKGROUND for t in texts),'metrics':cv,'training_sources':training_sources,'authority':'LAB_SHADOW_ONLY'}
+    candidate=Projector(cfg['ridge']).fit(X,Y)
+    p,gate=_gate_projector_update(runtime.store,runtime.home,st,old,candidate,name,enc,cfg,tile=True)
+    if p is None:
+        if type(old) is not dict:
+            return {'status':'REJECTED','update_gate':gate,'authority':'LAB_SHADOW_ONLY'}
+        st['tile_projector']=dict(old);st['tile_projector']['update_gate']=gate
+        save(runtime.store,st)
+        runtime.store.log('vision',None,{'action':'train_tiles','accepted':False,'update_gate':gate,
+            'validation_status':cv['status'],'validation_split':cv['split']})
+        return st['tile_projector']
+    path=runtime.home/'data/vision'/('tiles-'+uid('vis')[4:]+'.npz');sha=p.save(path)
+    record={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,'created':now(),
+            'salient_tiles':sum(t!=BACKGROUND for t in texts),'metrics':cv,'training_sources':training_sources,
+            'captions':dict(zip(keys,texts)),'authority':'LAB_SHADOW_ONLY','update_gate':gate}
+    st['tile_projector']=record
     try:
         save(runtime.store,st)
     except Exception:
-        unlink_projector_artifact(runtime.home, st['tile_projector'])
+        unlink_projector_artifact(runtime.home,record)
         raise
-    if old and old.get('path')!=st['tile_projector']['path']:
-        unlink_projector_artifact(runtime.home, old)
-    log={'action':'train_tiles','n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow','validation_status':cv['status'],'validation_split':cv['split'],'utility_status':cv.get('utility_status')}
+    if type(old) is dict and old.get('path')!=record['path']:
+        unlink_projector_artifact(runtime.home,old)
+    log={'action':'train_tiles','accepted':True,'n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow',
+         'validation_status':cv['status'],'validation_split':cv['split'],'utility_status':cv.get('utility_status'),
+         'update_gate':gate}
     if cv.get('held_out_top1') is not None:log['held_out_top1']=round(cv['held_out_top1'],4);log['chance']=round(cv['chance'],4)
     runtime.store.log('vision',None,log)
     return st['tile_projector']
@@ -622,8 +805,8 @@ def status(runtime):
     st=load(runtime.store);t=Teacher(runtime.home,runtime.models);ok,missing=t.available();pj=st.get('projector');tp=st.get('tile_projector')
     return {'revision':REVISION,'scope':'LAB_SHADOW_ONLY (Age-0-Kern bleibt Text)','images':len(st['images']),
             'described':sum(1 for r in st['images'].values() if r['captions']),'teacher':{'available':ok,'missing':missing,'authority':AUTHORITY,'removed':bool(st.get('teacher_removed'))},
-            'projector':{k:pj[k] for k in ('n','encoder','metrics','created')} if pj else None,
-            'tile_projector':({k:tp[k] for k in ('n','salient_tiles','encoder','created')}|{'metrics':tp.get('metrics')}) if tp else None}
+            'projector':({k:pj[k] for k in ('n','encoder','metrics','created')}|{'update_gate':pj.get('update_gate')}) if pj else None,
+            'tile_projector':({k:tp[k] for k in ('n','salient_tiles','encoder','created')}|{'metrics':tp.get('metrics'),'update_gate':tp.get('update_gate')}) if tp else None}
 
 def operator_command(runtime,args):
     """:image [status|add <Pfad> [Label]|list|describe [id|last] [g|rIJ|hl|hr|ht|hb|qtl|qtr|qbl|qbr]|train|tiles|look [id|last]|locate <id|last> <Text>|find <id|last> <Text>|teacher on|off|forget <id>]"""
