@@ -1852,3 +1852,22 @@ R-109 reviews the official Android MediaProjection guide (updated 2026-11-19). A
 **Research:** R-133 reviews Geras & Sutton, “Multiple-source cross-validation,” ICML 2013/PMLR 28:1292–1300. The full paper supports source-level holdouts as a better estimate of out-of-source generalization than row-wise splits under source shift; its Amazon review-domain experiments are not an image or Android study. No code, dataset, weights or dependency were imported. Next research: near-duplicate image/source grouping and source-level uncertainty; do not treat distinct IDs as automatically independent.
 
 **Next internal action:** Boss/Integrator must recompose the exact current Perception source closure and strict pins, then rerun staged/integrated/consumer/migration. User action: NONE; preserve STOPPED_BY_USER and do not issue a manual Termux command.
+
+## Research & Perception checkpoint — 2026-11-24
+
+- A3 source-scoped ridge deletion candidate: [PR #2477](https://github.com/RedMentos/Aii/pull/2477), draft and stacked on Core's source-lifecycle PR #2465. It adds a source-hash-bound exact rebuild path for the A3 global/tile ridge heads after explicit image forget; scaled replay updates deliberately fall back to conservative invalidation.
+- LOCAL_LINUX: 750 synthetic algebra comparisons on CPython 3.13.5 / NumPy 2.3.5 matched a fresh standardized ridge fit to max relative parameter error 2.84e-10. This is not a full repository test. Exact Python 3.13/3.14 CI is pending.
+- A separate LOCAL_LINUX isolated helper harness also passed production-Projector equivalence, source-order invariance, tamper rejection, source-cap fallback and symlinked-directory rejection (relative W error 1.55e-10). It used a faithful transcription of the helper with only digest/unlink dependencies stubbed, not a byte-for-byte full-repository test.
+- Core must include the new v13/code/v13/vision_projector_stats.py (SHA-256 ea13bc756e4846cfd6fb200ee16330a01a295ae7320c8e4d788f09e9ae3eaf5a) in its materialized source closure and rebind the exact changed vision.py hash. No hash check is bypassed.
+- Redmi/Termux: REDMI_UNVERIFIED. No device receipt, updater call, model/weight change, permission change or user-data action was made. No release/deployment is claimed.
+- User action: **none**. No model download/swap or manual Termux command is requested.
+- Next internal action: read back exact-head CI, then coordinate Core/QA's composer dependency closure and rerun staged/integrated/migration tests.
+- Follow-up research: the full-read 2026-09-15 Information paper on multilevel near-duplicate diagram detection and a local shared-template dHash stress probe show hash-only source grouping is unsafe (threshold 2: TPR 0.704 / FPR 0.53; threshold 5: TPR 0.922 / FPR 0.92). Do not automatically merge A3 source IDs from perceptual hashes; next step is a calibrated multi-signal candidate signal with hard-negative tests.
+
+## RAW EAR / A4 checkpoint — 2026-11-24
+
+- Current Perception branch [PR #2472](https://github.com/RedMentos/Aii/pull/2472): FASTDIAR diagnostic 92/92 on Python 3.13 and 92/92 on Python 3.14; A4 source-bound outcomes, optional RAW EAR NumPy backend, consent-revocation and privacy scan pass.
+- The controller record-only guard still fails before feature assertions because the Core recovery builder pins an older exact guard SHA. The audio composer also needs the current audio_temporal_evidence.py pin. These are Core/Boss-owned dependency rebinds; no source hash gate should be weakened.
+- No AudioRecord provider or live microphone capture is present. Android audio and Redmi remain unverified; no update or device action was performed.
+- User action: **none**. Keep microphone capture OFF and do not issue a manual Termux command.
+- Next internal action: Core/QA rebind the exact controller-guard hash in recovery/stage/deployer; Core/Boss rebind the audio temporal module; rerun staged/integrated and migration tests before considering an Android provider.

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T13:50:07+01:00",
+  "updated_at": "2026-11-24T20:07:47Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -196,11 +196,24 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "LOCAL_LINUX isolated helper harness; CI synthetic Store/vision consumer; staged runtime BLOCKED by Boss source-lifecycle composer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Boss/Integrator PR #2443 must rebind the exact current vision.py SHA-256 350573e65eb445b8b83f5517e3bfe07ece04e036055c55fc3e23c79d5b0cc728 and compose the complete imported dependency closure (vision_source_lineage.py, vision_validation.py, vision_temporal_evidence.py, vision_temporal_adaptation.py, vision_ui_frame_ingress.py); then rerun staged-runtime, integrated-regression, both consumers and migration. Keep source-forget and strict hash checks; do not bypass the composer. Perception next researches near-duplicate source grouping and source-level uncertainty after integration.",
+      "proof_environment": "LOCAL_LINUX isolated helper harness PASS (faithful transcription + production Projector; digest/unlink stubbed) and 750 algebra comparisons; exact source CI PENDING; staged composer dependency closure requires Core rebind; REDMI_UNVERIFIED",
+      "next_step": "Core/QA: include v13/code/v13/vision_projector_stats.py in the materialized source closure, rebind exact vision.py SHA-256 e51e409a2fa2145e2cb9b9b1a3c80c5f5a67cc69d98054f8e46bd21f16f1b71e, pin helper SHA-256 ea13bc756e4846cfd6fb200ee16330a01a295ae7320c8e4d788f09e9ae3eaf5a, then rerun staged-runtime/integrated-regression/consumer/migration. Perception: read back exact-head Python 3.13/3.14 tests and retain conservative invalidation for any non-full-fit update.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T13:50:07+01:00",
+      "last_checkpoint": "2026-11-24T20:07:47Z",
       "latest_candidate_pr": {
+        "pr": 2477,
+        "head_sha": "b610b83f6262344ba25e5fae5a4bbcf891f61602",
+        "tested_code_sha": "0ea5653125babb39f8715963983001ee4ec39b34",
+        "base_sha": "c2fdfab67983cf58c96c89a653122f521eb69429",
+        "state": "OPEN_DRAFT_EXACT_CI_PENDING_CORE_COMPOSER_REBIND_REQUIRED",
+        "ci": "PENDING_EXACT_HEAD_PY313_PY314",
+        "scope": "A3 source-hash-bound fp64 sufficient-stat artifacts; exact global/tile ridge rebuild on image forget only for full-fit scale=1; conservative invalidation for scaled/malformed/unavailable stats",
+        "workflow_commit_sha": "70a7321d4d56f1b49ae08e6d886c1814c49cec81",
+        "handoff": "v14/handoffs/RESEARCH_PERCEPTION_RUN05_20261124.md",
+        "test_commit_sha": "20fb384b7f370b4c73c0a3e2e25eaf21a668ce9e"
+      },
+      "proof": "A3 global and tile projector update gates now evaluate the previous projector only on source IDs absent from its exact training_sources lineage. Changed captions for previously trained source IDs remain candidate-training data but are excluded from the baseline holdout. Missing/malformed/mismatched prior lineage or no new source groups fails closed to NO_NEW_SOURCE_GROUPS and retains the old artifact. Exact CI on head 2fc06a7: vision/source-lineage 39/39 on Python 3.13 and 3.14; frame ingress 39/39 on both; py_compile passed; offline, privacy, offline-bridge-security and same-repo guard passed. Staged/integrated/consumer still fail at source_lifecycle_lock_integration_candidate.py:172 with unsupported lifecycle source: vision.py. Synthetic Store fixtures only; not neural JEPA/latent coupling, not Redmi proof. Latest private V13OBS #115 snapshot: installed base 8d93236, auto-update enabled/UP_TO_DATE/no error, but STOPPED_BY_USER, model process STOPPED, native residency unavailable; no update request or device action.\n\nA3 exact source-forget follow-up PR #2477 (stacked on Core #2465): adds bounded per-source fp64 sufficient stats for global/tile ridge heads; only full-fit gate scale=1 is eligible. LOCAL_LINUX CPython 3.13.5/NumPy 2.3.5 method reproduction: 750 synthetic delete/rebuild comparisons, max relative W error 2.84e-10 versus fresh fit. Exact source CI pending; full checkout local tests not run (no checkout/DNS). Core composer must add vision_projector_stats.py (SHA-256 ea13bc756e4846cfd6fb200ee16330a01a295ae7320c8e4d788f09e9ae3eaf5a) and rebind vision.py SHA-256 e51e409a2fa2145e2cb9b9b1a3c80c5f5a67cc69d98054f8e46bd21f16f1b71e. Only A3 ridge-head unlearning; feature extractor/teacher/encoder remain untouched; metrics marked stale after forget. No Redmi proof, no deployment, no user action.\n\nRun 5 handoff: v14/handoffs/RESEARCH_PERCEPTION_RUN05_20261124.md. Exact CI was queued at last readback; do not mark PASS until Python 3.13/3.14 results are retrieved.\n\nAdditional negative control on code/test head 20fb384: a legacy projector with valid source lineage but no source-stat artifacts now falls back to conservative invalidation. Exact CI remains queued/pending.\n\nLocal helper harness PASS on Python 3.13.5 / NumPy 2.3.5: production Projector equivalence, source-order invariance, tamper rejection, source-cap fallback and symlinked-directory rejection; relative W error 1.55e-10. Harness used a faithful transcription of the helper plus production Projector and stubbed only digest/unlink; not byte-for-byte full-repo execution. Exact CI remains pending.\n\nLatest evidence readback at branch head 4f6163248f6d8811e8edf81746e20223e0eec5f5. Exact-head CI still QUEUED/PENDING; local isolated helper harness PASS with stated stubs; no repository-wide local PASS or Redmi proof.\n\nR-140 reviewed full Information 17(9), 897 (2026-09-15), DOI 10.3390/info17090897. LOCAL_LINUX synthetic 64-bit dHash probe: 500 near-duplicate transforms + 100 shared-template hard negatives; threshold 2 TPR 0.704/FPR 0.53, threshold 5 TPR 0.922/FPR 0.92. Hash-only grouping is unsafe; next research step is calibrated multi-signal candidate grouping with hard negatives, not automatic merging.\n\nRun 5 research checkpoint R-140 is persisted in V14_RESEARCH_LEDGER.md and the handoff; hash-only near-duplicate grouping is explicitly rejected pending hard-negative calibration.",
+      "previous_candidate_pr": {
         "pr": 2463,
         "head_sha": "2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d",
         "tested_code_sha": "2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d",
@@ -213,7 +226,14 @@
         "docs_checkpoint_parent_sha": "1b9acc408d104ca9503e5234b5f9730085bd3890",
         "branch_head_at_readback": "1b9acc408d104ca9503e5234b5f9730085bd3890"
       },
-      "proof": "A3 global and tile projector update gates now evaluate the previous projector only on source IDs absent from its exact training_sources lineage. Changed captions for previously trained source IDs remain candidate-training data but are excluded from the baseline holdout. Missing/malformed/mismatched prior lineage or no new source groups fails closed to NO_NEW_SOURCE_GROUPS and retains the old artifact. Exact CI on head 2fc06a7: vision/source-lineage 39/39 on Python 3.13 and 3.14; frame ingress 39/39 on both; py_compile passed; offline, privacy, offline-bridge-security and same-repo guard passed. Staged/integrated/consumer still fail at source_lifecycle_lock_integration_candidate.py:172 with unsupported lifecycle source: vision.py. Synthetic Store fixtures only; not neural JEPA/latent coupling, not Redmi proof. Latest private V13OBS #115 snapshot: installed base 8d93236, auto-update enabled/UP_TO_DATE/no error, but STOPPED_BY_USER, model process STOPPED, native residency unavailable; no update request or device action."
+      "related_prs": [
+        1984,
+        2463,
+        2465,
+        2470,
+        2477
+      ],
+      "next_research": "After Core composer integration: near-duplicate source grouping for A3 source-disjoint validation. Full-read paper: Information 17(9), 897 (2026-09-15), DOI 10.3390/info17090897. Local synthetic dHash probe: threshold 2 TPR 0.704 / FPR 0.53; threshold 5 TPR 0.922 / FPR 0.92 on shared-template hard negatives. Do not auto-group from hashes; add hard-negative challenge and treat perceptual similarity as uncertainty/candidate only."
     },
     {
       "id": "V14-007",
@@ -391,18 +411,34 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "LOCAL_LINUX isolated + CI; no Android timing",
-      "next_step": "Repair #2433 without relaxing source pins: assert canonical ModulatorPacket path_id, rebind record-only controller guard and dependent recovery/stage/deployer pins to exact attention.py bytes, then rerun Python 3.13/3.14, staged/integrated, migration and consent-revocation. No AudioRecord or Android capture claim.",
+      "proof_environment": "LOCAL_LINUX isolated temporal assertions; CI focused FASTDIAR/A4/NumPy/consent/privacy PASS; controller recovery pin FAIL; staged/integrated blocked; no Android microphone",
+      "next_step": "Core/QA: rebind the exact record_only_controller_guard_20261116.py SHA in termux_runtime_recovery_candidate_20261112.py and dependent stage/deployer pins; Core/Boss: rebind audio_temporal_evidence.py in the audio composer chain. Rerun controller guard, staged/integrated and migration without relaxing hashes. Keep AudioRecord OFF until companion verifier, consent/revocation and zeroization pass.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:07:22.216Z",
+      "last_checkpoint": "2026-11-24T20:07:47Z",
       "latest_candidate_pr": {
+        "pr": 2472,
+        "head_sha": "d77b06bc23837c52c52cffa98a4c61b2bf5b4ae9",
+        "tested_code_sha": "8df6a16fd5dced71a2643eae141f9f204fc66855",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "state": "OPEN_DRAFT_FOCUSED_CI_PASS_CONTROLLER_AND_STAGED_PIN_BLOCKED",
+        "ci": "FASTDIAR_PY313_92_OF_92_PY314_92_OF_92; A4_SOURCE_BOUND_PASS; RAW_EAR_NUMPY_PASS; CONSENT_REVOCATION_PASS; PRIVACY_CLEAN; CONTROLLER_GUARD_FAIL_RECOVERY_PIN_MISMATCH; STAGED_INTEGRATED_BLOCKED",
+        "scope": "A4 source-bound attention outcomes plus RAW EAR speaker-change/prosody evidence and monotonic audio interval-start ordering; caller-supplied PCM only"
+      },
+      "proof": "#2433 head a2662b9 has three failures: path vs path_id assertions on Python 3.13/3.14 and stale record_only_controller_guard attention.py pin. Exact attention.py blob 0c1831f5a0b7aef990e15e3e2842dc445776153a. DRAFT / NOT_RELEASED; no Android microphone evidence.\n\nCurrent Perception PR #2472 exact-head checkpoint: code SHA 8df6a16fd5dced71a2643eae141f9f204fc66855, PR head d77b06bc23837c52c52cffa98a4c61b2bf5b4ae9, base 8d93236c753f0194224c19edc7411d8d7082b1d6. FASTDIAR diagnostic 92/92 on Python 3.13 and 92/92 on Python 3.14; A4 source-bound outcomes, RAW EAR NumPy, consent-revocation and privacy scan pass. Controller record-only guard fails before feature tests because recovery builder expects guard SHA 86ad7838d15eb9a038fec629c340936edde78d65 but current guard is 9c901c4e5e3d3fd17c113a8e9458bcb32a30646593483202f1f472763435fa96. Audio temporal composer still needs exact pin rebind. No microphone capture, no device update, no Redmi proof.",
+      "previous_candidate_pr": {
         "pr": 2275,
         "head_sha": "b19ff77cc769e670a46b6467798fba94a6d19046",
         "base_sha": "34eb645357d65bdd5ac69b9fb2c834d043086dac",
         "ci": "FAIL_RAW_EAR_44958073016_STAGED_44958072992",
         "tested_code_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c"
       },
-      "proof": "#2433 head a2662b9 has three failures: path vs path_id assertions on Python 3.13/3.14 and stale record_only_controller_guard attention.py pin. Exact attention.py blob 0c1831f5a0b7aef990e15e3e2842dc445776153a. DRAFT / NOT_RELEASED; no Android microphone evidence."
+      "related_prs": [
+        1984,
+        2433,
+        2443,
+        2462,
+        2472
+      ]
     },
     {
       "id": "V14-019",
