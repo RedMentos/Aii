@@ -28,6 +28,7 @@
 - #2451 guarded native receiver probe: 21/22 SUCCESS, 1 SKIPPED, no failures; probe not run and production B3 OFF.
 - #2450 Android ActionIntent/ActionOutcome: 11/12 SUCCESS; Android process-restart check still fails. QA #2427's ActivityScenario harness is green only on a separate stack; combined port/rebase remains pending.
 - First trigger the exact current #2462 pull-request matrix and inspect the loader/guard diagnostics. Repair only exact measured pins; keep B1 and B2, C4/C3 receipts and the C3 reserve. Once the fair path is green, coordinate Boss integration with #2464/#2451 and the QA-owned #2450 harness. Then continue the next unblocked whole-Canon path.
+- **Voice path (partial, not full voice learning):** the release branch already contains `speech_intent.py`, `speech_output.py` and the TTY-only `:voice status|on|off|speak` operator route. `:voice on` only enables the Termux system-TTS fallback; playback still requires explicit `:voice speak`. The path persists typed `ActionIntent`/`ActionOutcome`, reports `audibility_verified=false`, records no microphone data and uses no trainable vocoder. New PR #2479 adds a real Runtime/SQLite/Operator test with a fake local TTS executable; its 5 exact-head checks are QUEUED. Redmi audibility, trainable speech decoder/vocoder, raw acoustic learning and full-duplex/barging-in remain OPEN.
 - **User action:** NONE. No manual Termux command, restart, model/weight swap or permission change is requested.
 
 ---
