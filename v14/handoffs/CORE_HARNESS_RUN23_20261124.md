@@ -30,6 +30,11 @@
 - #2450 Android ActionIntent/ActionOutcome: 11/12 SUCCESS; Android process-restart failure remains. QA #2427's ActivityScenario process-death harness is green only on a separate stack; combined port/rebase is still pending.
 - Boss owns cross-lane integration. Do not cherry-pick #2464/#2451 blindly; recompose their exact source pins with this branch only after exact CI and independent review. QA owns the #2450 process-death harness.
 
+## Voice I/O status
+
+- Existing `speech_intent.py` / `speech_output.py` / `Operator :voice` provide a source-bound, explicit Termux system-TTS fallback. It requires `:voice on` plus explicit `:voice speak`, persists ActionIntent/ActionOutcome, does not capture microphone audio, does not auto-play, and leaves `audibility_verified=false`.
+- PR #2479 adds a real Runtime/SQLite/Operator test with a fake TTS executable; exact head `bcc99e8f9620c7162aae218324a611e2fdf7730c` has 5/5 checks queued. This is not native audio proof. Redmi audibility, trainable decoder/vocoder, raw acoustic learning and full duplex remain open.
+
 ## Next executable steps
 
 1. Obtain a fresh exact PR synchronize matrix for #2462 and inspect staged-runtime/integrated-regression first.
