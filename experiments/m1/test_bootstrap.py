@@ -56,6 +56,9 @@ class PairedBlockBootstrapTests(unittest.TestCase):
             reference_model="reference", block_days=7, n_resamples=200, seed=4,
         )
         self.assertAlmostEqual(result["models"]["reference"]["mae"], 1.5)
+        self.assertEqual(result["block_len_minutes"], 7 * 1440)
+        self.assertEqual(result["block_anchor_minute_id"], int(origins[0]))
+        self.assertEqual(result["n_blocks"], 2)
 
     def test_results_are_deterministic_for_fixed_seed(self):
         first = paired_block_bootstrap(self._series(), reference_model="reference", n_resamples=50, seed=8)
