@@ -283,6 +283,7 @@ def test_voice_cues_flow_to_real_a4_and_c3_without_raw_pcm_or_identity(tmp_path,
         )
         segment = result["packet"]["segments"][0]
         cues = segment["acoustic"]["voice_cues"]
+        assert segment["acoustic"]["temporal_voice"] == result["a4"]["temporal_voice"]
         assert result["status"] == "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION"
         assert result["a4"]["voice_activity_hint"] == "VOICED"
         assert result["a4"]["prosody_change_score"] == cues["prosody_change_score"]
