@@ -7,7 +7,7 @@
 - Repo: RedMentos/Aii.
 - Development base: Core branch `core/v14-vision-source-lifecycle-current-20261124-run2`, base SHA `c2fdfab67983cf58c96c89a653122f521eb69429`.
 - Perception PR: [#2477](https://github.com/RedMentos/Aii/pull/2477), DRAFT / OPEN / NOT_RELEASED; branch `research-perception/v14-a3-exact-source-forget-core-stack-20261124-run19`.
-- Branch head at final evidence readback: `aeeffa7f1208052633d985dd18c109971d5664bf`.
+- Branch head is updated as handoff/board evidence is appended; use PR #2477 for the current ref. The code-bearing and test commits below are immutable.
 - Code-bearing commits: vision runtime `0ea5653125babb39f8715963983001ee4ec39b34`; helper `3b16ad1f4f2bcee4e00fa8861be44e76704e0048`; focused tests `0acc44dca3df4436b24120756ff178ec4f8a4ad2`; Runtime integration tests `8e75fbdcc7260ddf8569187330c21f328d2c69c7`; legacy-no-stats fallback test `20fb384b7f370b4c73c0a3e2e25eaf21a668ce9e`; existing source-lineage workflow extension `70a7321d4d56f1b49ae08e6d886c1814c49cec81`.
 - Exact current source hashes: `vision.py` Git blob `53c3b5067a1198eeecea833e7f8347a22c4b4c7b`, SHA-256 `e51e409a2fa2145e2cb9b9b1a3c80c5f5a67cc69d98054f8e46bd21f16f1b71e`; `vision_projector_stats.py` Git blob `137d60dc78278031a2918ef6babc1862759d5d65`, SHA-256 `ea13bc756e4846cfd6fb200ee16330a01a295ae7320c8e4d788f09e9ae3eaf5a`.
 - Earlier wrong-base PR #2475 was closed as superseded; no merge or release.
@@ -28,6 +28,7 @@
 - Additional LOCAL_LINUX isolated helper harness PASS: faithful transcription of the source-stat helper plus the production Projector class, with only digest/unlink dependencies stubbed. Production-fit equivalence, source-order invariance, tamper rejection, source-cap fallback and symlinked-directory rejection all passed; relative W error 1.55e-10. This is not byte-for-byte full-repository execution.
 - Full local Aii checkout: BLOCKED / NOT_RUN. No checkout is mounted; `git ls-remote https://github.com/RedMentos/Aii.git` failed because github.com DNS could not resolve.
 - Exact-head GitHub Actions for code commit `190e9356dae8893d4ccb5ea9be40bab842a9ef25`: queued at last readback. Source-lineage run `45480359189`, jobs `138751511342` (Python 3.13) and `138751512073` (Python 3.14) were both QUEUED. Other queued runs: staged/integrated `45480359187`, RAW EYE frame ingress `45480359178`, Core lifecycle composition `45480359190`, runtime deployment integrity `45480359184`. A runtime negative control was added after the initial queue: a pre-stats projector with valid lineage but no stats falls back to invalidation. No CI PASS is claimed yet.
+- After the legacy-no-stats test commit `20fb384b7f370b4c73c0a3e2e25eaf21a668ce9e`, a second exact-head set was also queued: source-lineage `45480838221` (Python 3.13/3.14 jobs queued), staged/integrated `45480838213`, RAW EYE `45480838440`, Core lifecycle `45480838191`, runtime deployment integrity `45480838205`. The queue remained pending at the latest readback; no CI PASS is claimed.
 - The existing source-lineage workflow was extended to compile/run the new helper and Runtime regressions and print both exact SHA-256 values. A redundant new workflow was removed.
 
 ## Cross-agent integration required
