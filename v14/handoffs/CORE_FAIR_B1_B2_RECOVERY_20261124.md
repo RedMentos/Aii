@@ -1,3 +1,13 @@
+## Latest exact-head CI follow-up - 2026-11-24T05:16:34Z
+
+- Direct same-turn Runtime B1/B2-to-C4-to-C3 consumer step: **PASS on Python 3.13 and 3.14**. Both runs verify both selected body summaries in the synthetic C3 system context, C4/template OfferPacket ID equality and tamper rejection.
+- The same-turn workflow as a whole remains **FAIL** on both Python versions at the final staged-composition step.
+- Staged-runtime: **FAIL**, 32 failed / 243 passed / 10 skipped / 2 errors / 37 subtests. Integrated-regression: **FAIL**, one selected stage test fails at the same integrated_online_world Runtime hash mismatch.
+- Owner-read test job: **PASS**. Python 3.14 staged installer self-test: **FAIL** at the same immutable source pin.
+- This supersedes the previous 05:14 note that Python 3.14 was pending. No source pin was relaxed. PR #2462 remains OPEN / NOT_RELEASED; Redmi remains REDMI_UNVERIFIED and no device action was taken.
+
+---
+
 ## Exact current checkpoint - 2026-11-24T05:14:43Z
 
 PR #2462 code/test SHA: 58f1587c7e8cbd5cb63c8c46afbd1c645c3e6c0f. Base: 8d93236c753f0194224c19edc7411d8d7082b1d6. State: OPEN / DRAFT / NOT_RELEASED.
