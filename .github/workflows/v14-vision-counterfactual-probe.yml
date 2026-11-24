@@ -6,14 +6,14 @@ on:
       - "research-perception/**"
     paths:
       - "v14/experiments/vision_counterfactual_probe.py"
-      - "v14/experiments/test_vision_counterfactual_probe.py"
-      - "v14/experiments/test_a3_projector_integration.py"
+      - "v14/experiments/probe_vision_counterfactual.py"
+      - "v14/experiments/probe_a3_projector_integration.py"
       - ".github/workflows/v14-vision-counterfactual-probe.yml"
   pull_request:
     paths:
       - "v14/experiments/vision_counterfactual_probe.py"
-      - "v14/experiments/test_vision_counterfactual_probe.py"
-      - "v14/experiments/test_a3_projector_integration.py"
+      - "v14/experiments/probe_vision_counterfactual.py"
+      - "v14/experiments/probe_a3_projector_integration.py"
       - ".github/workflows/v14-vision-counterfactual-probe.yml"
 
 permissions:
@@ -41,9 +41,9 @@ jobs:
       - name: Install NumPy
         run: python -m pip install --disable-pip-version-check numpy==2.3.5
       - name: Compile probe and tests
-        run: python -m py_compile v14/experiments/vision_counterfactual_probe.py v14/experiments/test_vision_counterfactual_probe.py v14/experiments/test_a3_projector_integration.py
+        run: python -m py_compile v14/experiments/vision_counterfactual_probe.py v14/experiments/probe_vision_counterfactual.py v14/experiments/probe_a3_projector_integration.py
       - name: Run counterfactual feature, source-disjoint and negative controls
         working-directory: v14/experiments
         env:
           PYTHONPATH: ../../v13/code
-        run: python -m unittest test_vision_counterfactual_probe test_a3_projector_integration -v
+        run: python -m unittest probe_vision_counterfactual probe_a3_projector_integration -v

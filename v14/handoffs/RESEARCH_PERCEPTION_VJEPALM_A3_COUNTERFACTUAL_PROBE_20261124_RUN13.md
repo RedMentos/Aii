@@ -29,8 +29,8 @@ The smallest paper model is 1.55B total parameters (Llama 3.2 1B plus V-JEPA 2.1
   - Computes common/change components, relative change energy r_d, top-k content overlap rho, shared-direction consistency kappa, and source-disjoint change/content linear probes plus a small-sample prototype.
   - audit_a3_projector() calls an arbitrary frame projector, so it can directly audit the existing v13.vision.Projector without copying or replacing A3.
   - It stores no raw frames, feature arrays or fitted probe weights. All results are DIAGNOSTIC_ONLY.
-- test_vision_counterfactual_probe.py: six synthetic controls for shared-change recovery, aligned framewise-reversal zero-change, shuffled-label negative control, group separation, projector subspace removal and malformed/non-finite inputs.
-- test_a3_projector_integration.py: imports the actual repository v13.vision.Projector and verifies the audit detects a deliberately removed feature direction.
+- probe_vision_counterfactual.py: six synthetic controls for shared-change recovery, aligned framewise-reversal zero-change, shuffled-label negative control, group separation, projector subspace removal and malformed/non-finite inputs.
+- probe_a3_projector_integration.py: imports the actual repository v13.vision.Projector and verifies the audit detects a deliberately removed feature direction.
 - .github/workflows/v14-vision-counterfactual-probe.yml: Python 3.13/3.14 compile and test matrix.
 
 This is an executable research diagnostic, not a production Runtime feature, not a V-JEPA implementation, not trained latent coupling and not a persistent weight update.
@@ -39,7 +39,7 @@ This is an executable research diagnostic, not a production Runtime feature, not
 
 Environment: LOCAL_LINUX, CPython 3.13.5, NumPy 2.3.5.
 - py_compile of the probe and both test files: PASS.
-- python -m unittest -v test_vision_counterfactual_probe: 6/6 PASS.
+- python -m unittest -v probe_vision_counterfactual: 6/6 PASS.
 - Positive synthetic control: kappa > 0.90 and change-probe accuracy > 0.95; content probe remains below 0.70.
 - Aligned framewise-reversal negative control: r_d < 1e-10 and kappa = 0.
 - Shuffled-label negative control: kappa < 0.03 and change-probe accuracy < 0.70.
