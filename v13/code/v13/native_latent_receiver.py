@@ -135,13 +135,17 @@ def _validate_token_metrics(value, rows, decoded):
             raise NativeReceiverError("dimension mismatch cannot report receiver token effects")
         return
     for name in id_fields:
+        if name == "row_shuffle_control_next_token_id" and rows < 2:
+            if value.get(name) is not None:
+                raise NativeReceiverError("LatentReceiverPacket row-shuffle token control must be not applicable")
+            continue
         token_id = value.get(name)
         if type(token_id) is not int or not 0 <= token_id < vocab_size:
             raise NativeReceiverError("LatentReceiverPacket token ID outside receiver vocabulary: " + name)
     if rows >= 2:
         if value.get("row_shuffle_control_next_token_id") is None:
             raise NativeReceiverError("LatentReceiverPacket row-shuffle token control missing")
-    elif value.get("row_shuffle_control_next_token_id") is not None or value.get("next_token_changed_vs_row_shuffle") is not False:
+    elif value.get("next_token_changed_vs_row_shuffle") is not False:
         raise NativeReceiverError("LatentReceiverPacket row-shuffle token control must be not applicable")
     for name in ("receiver_next_token_margin", "logit_effect_rms"):
         metric = value.get(name)
