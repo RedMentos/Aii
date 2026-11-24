@@ -6,7 +6,7 @@ import sys
 import tempfile
 import unittest
 
-from scripts import stage_integrated_candidate
+from scripts import stage_integrated_candidate, record_only_controller_guard_20261116 as record_only_guard
 
 CODE = Path(__file__).resolve().parents[1]
 
@@ -165,6 +165,20 @@ class ControllerGuard(unittest.TestCase):
 
 if __name__=='__main__':unittest.main()
 '''
+
+
+class GuardSourceChecks(unittest.TestCase):
+    def test_attention_digest_import_and_outcome_guard_are_applied(self):
+        staged = record_only_guard.apply_sources(CODE, {})
+        attention = staged['v13/attention.py']
+        gate = b'from .record_only_gate import updates_allowed,blocked_status\n'
+        self.assertEqual(attention.count(gate), 1)
+        self.assertIn(b"        if not updates_allowed(self.s):return {'key':key,'n':0,'mean':0.,'status':blocked_status(self.s)}\n", attention)
+        compile(attention, 'v13/attention.py', 'exec')
+
+    def test_attention_source_pin_rejects_unreviewed_bytes(self):
+        with self.assertRaisesRegex(ValueError, 'controller guard source changed: v13/attention.py'):
+            record_only_guard.apply_sources(CODE, {'v13/attention.py': b'# unreviewed source\n'})
 
 
 class StageControllerChecks(unittest.TestCase):
