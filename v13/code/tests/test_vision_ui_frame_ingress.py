@@ -1117,7 +1117,11 @@ def test_a3_projected_change_runs_through_the_real_raw_eye_student_consumer(monk
         source_id="ui-a3-frame-0002", receipt_ref="frame-a3-receipt-0002",
         session_receipt_ref=session_receipt, start_ms=1033, end_ms=1066,
     )
-    first, second = image_buffer(), image_buffer_variant()
+    third_obs = observation(
+        source_id="ui-a3-frame-0003", receipt_ref="frame-a3-receipt-0003",
+        session_receipt_ref=session_receipt, start_ms=1066, end_ms=1099,
+    )
+    first, second, third = image_buffer(), image_buffer_variant(), image_buffer_variant()
 
     with lease_for(runtime, first_obs, lock=runtime.store.mutex) as lease:
         first_result = consume_with_provider_verifier(
@@ -1129,9 +1133,15 @@ def test_a3_projected_change_runs_through_the_real_raw_eye_student_consumer(monk
             runtime, second_obs, second, consent_lease=lease,
             current_source="Observe the screen change.", goal="red panel",
         )
+    with lease_for(runtime, third_obs, lock=runtime.store.mutex) as lease:
+        third_result = consume_with_provider_verifier(
+            runtime, third_obs, third, consent_lease=lease,
+            current_source="Observe the screen change.", goal="red panel",
+        )
 
     first_change = first_result["a3_projected_change"]
     second_change = second_result["a3_projected_change"]
+    third_change = third_result["a3_projected_change"]
     assert first_result["student_projector_used"] is True
     assert first_change["status"] == "WARMUP"
     assert first_change["projector_sha256"] == projector_sha
@@ -1145,18 +1155,24 @@ def test_a3_projected_change_runs_through_the_real_raw_eye_student_consumer(monk
     assert second_change["source_ref"] == second_result["frame_source_ref"]
     assert second_result["packet"]["temporal_visual_evidence"]["a3_projected_change"] == second_change
     assert second_result["a4"]["temporal_visual_evidence"]["a3_projected_change"] == second_change
+    assert third_result["student_projector_used"] is True
+    assert third_change["status"] == "MEASURED"
+    assert third_change["change_score"] == 0.0
+    assert third_change["changed_tile_ids"] == []
+    assert third_change["previous_source_ref"] == second_result["frame_source_ref"]
+    assert third_change["source_ref"] == third_result["frame_source_ref"]
     assert second_change["authority"] == "DIAGNOSTIC_ONLY"
     assert second_change["learning_authority"] is False
     assert second_change["action_authority"] is False
     assert "embeddings" not in second_change and "vectors" not in second_change
     assert second_result["packet"]["learning_authority"] is False
     assert second_result["packet"]["action_authority"] is False
-    assert not any(first) and not any(second)
+    assert not any(first) and not any(second) and not any(third)
 
     cleanup = temporal_visual_revocation_callback(
         runtime, capture_session_id=first_obs["capture_session_id"],
     )
-    cleanup(second_obs["source_id"])
+    cleanup(third_obs["source_id"])
     assert len(runtime._a5_temporal_visual_registry) == 0
 
 

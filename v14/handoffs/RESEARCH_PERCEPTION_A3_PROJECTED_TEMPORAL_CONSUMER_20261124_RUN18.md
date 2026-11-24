@@ -29,3 +29,15 @@ This is a diagnostic over the existing trained ridge projector, not a JEPA tempo
 
 - API defaults now infer NO_PROJECTOR only when A3 embeddings are absent, so callers supplying valid embeddings need not override a default status.
 - The live ingress skips only the A3 temporal readout (without failing RAW EYE/A5) when any projected tile vector is zero; the negative test rejects zero vectors at the registry boundary.
+
+
+## CI readback and falsification controls
+
+- Exact head 9b69aa5a86fe7f4b3a50dd3ac33fae997e30de2e: GitHub Actions PASS for v14-vision-ui-frame-ingress on Python 3.13 and 3.14 (54 tests each); v14-vision-source-lineage on Python 3.13 and 3.14 (39 tests each); v14-privacy-regression PASS; offline-bridge-security PASS. The frame-ingress jobs included the A3 WARMUP→MEASURED, projector-change/missing-projector, malformed source and zero-vector tests.
+- The follow-up adds a third identical frame as an explicit no-change control; its CI is pending on the next exact head. Do not count that new assertion as passed until its run completes.
+- LOCAL_LINUX project tests remain NOT_RUN/BLOCKED because this execution has no checkout and github.com DNS is unavailable. CI is not a local measurement.
+
+## Research additions
+
+- MotionJEPA/DISReg full paper reviewed (arXiv:2609.23881v1, 2026-09-20, CC BY 4.0). Its dynamic-difference prediction is a training-only anti-feature-suppression objective; its ViT-Tiny/10M-episode CUDA training is not an Android implementation. The root OSS repo has no license; only its separate planning submodule is MIT.
+- engramBNN full APL Machine Learning paper reviewed (published 2026-11-06, CC BY 4.0). Sparse context-dependent stochastic gates plus metaplastic updates are a promising small-adapter experiment, not a direct B1/B2 replacement. The author code is AGPL-3.0 and stale relative to the 2026 paper; no code or weights were reused.
