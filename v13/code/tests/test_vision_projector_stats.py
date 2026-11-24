@@ -46,6 +46,21 @@ def test_first_use_creates_private_stats_directories_without_following_symlinks(
     assert all((tmp_path/item["path"]).stat().st_mode & 0o777 == 0o600 for item in records)
 
 
+def test_existing_permissive_stats_directories_are_hardened(tmp_path):
+    data_dir = tmp_path/"data"
+    vision_dir = data_dir/"vision"
+    vision_dir.mkdir(parents=True)
+    data_dir.chmod(0o755)
+    vision_dir.chmod(0o755)
+    X, Y, keys, lineage, _ = _fixture(sources=4)
+    records, mode = _build(tmp_path, X, Y, keys, lineage)
+    assert mode == SOURCE_STATS_MODE
+    assert len(records) == 4
+    assert data_dir.stat().st_mode & 0o777 == 0o700
+    assert vision_dir.stat().st_mode & 0o777 == 0o700
+    assert all((tmp_path/item["path"]).stat().st_mode & 0o777 == 0o600 for item in records)
+
+
 def test_delete_rebuild_matches_fresh_production_ridge_fit(tmp_path):
     home = _home(tmp_path)
     X, Y, keys, lineage, images = _fixture()
