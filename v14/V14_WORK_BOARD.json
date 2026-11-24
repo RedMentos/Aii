@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T13:50:07+01:00",
-  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
+  "updated_at": "2026-11-24T18:50:21.690+01:00",
+  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 remains 8d93236c753f0194224c19edc7411d8d7082b1d6. V14-006 records Perception #2469 A5 interval-ordering follow-up (focused code/test head 9844efaf66c13b1e5562397ae1bc62ed7926c862 PASS; PR remains stacked/not released). V14-018 records #2433 RAW EAR/A4 focused CI PASS with staged/integrated blocked by Core attention.py controller guard and stale base. Latest available private V13OBS #115 snapshot is historical (2026-11-24 09:28 UTC): auto-update enabled/UP_TO_DATE at 8d93236, AI STOPPED_BY_USER, zero valid B1/B2 offers; no fresh relay receipt.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -196,10 +196,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "LOCAL_LINUX isolated helper harness; CI synthetic Store/vision consumer; staged runtime BLOCKED by Boss source-lifecycle composer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Boss/Integrator PR #2443 must rebind the exact current vision.py SHA-256 350573e65eb445b8b83f5517e3bfe07ece04e036055c55fc3e23c79d5b0cc728 and compose the complete imported dependency closure (vision_source_lineage.py, vision_validation.py, vision_temporal_evidence.py, vision_temporal_adaptation.py, vision_ui_frame_ingress.py); then rerun staged-runtime, integrated-regression, both consumers and migration. Keep source-forget and strict hash checks; do not bypass the composer. Perception next researches near-duplicate source grouping and source-level uncertainty after integration.",
+      "proof_environment": "LOCAL_LINUX minimal timestamp-order reproduction PASS; exact CI frame-ingress and vision-source-lineage PASS on Python 3.13/3.14; A5 lease/staged/integrated BLOCKED by Core source-lifecycle chain; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
+      "next_step": "Core/Boss must finish PR #2465's source-lifecycle and nested memory/world builder pin chain without weakening hashes. #2465 head e8044b7 advances past the vision pin but staged-runtime still fails at integrated_feedback_bootstrap_candidate_20261111.py:34 (memory/world builder source changed) plus a nested SHA mismatch. After Core acceptance, rebase/integrate #2469 on that accepted head and rerun A5 lease, staged-runtime, integrated-regression and migration. Perception's next V14-006 implementation after integration is near-duplicate source grouping and source-level uncertainty for A3 projector train/holdout.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T13:50:07+01:00",
+      "last_checkpoint": "2026-11-24T18:50:21.690+01:00",
       "latest_candidate_pr": {
         "pr": 2463,
         "head_sha": "2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d",
@@ -213,7 +213,23 @@
         "docs_checkpoint_parent_sha": "1b9acc408d104ca9503e5234b5f9730085bd3890",
         "branch_head_at_readback": "1b9acc408d104ca9503e5234b5f9730085bd3890"
       },
-      "proof": "A3 global and tile projector update gates now evaluate the previous projector only on source IDs absent from its exact training_sources lineage. Changed captions for previously trained source IDs remain candidate-training data but are excluded from the baseline holdout. Missing/malformed/mismatched prior lineage or no new source groups fails closed to NO_NEW_SOURCE_GROUPS and retains the old artifact. Exact CI on head 2fc06a7: vision/source-lineage 39/39 on Python 3.13 and 3.14; frame ingress 39/39 on both; py_compile passed; offline, privacy, offline-bridge-security and same-repo guard passed. Staged/integrated/consumer still fail at source_lifecycle_lock_integration_candidate.py:172 with unsupported lifecycle source: vision.py. Synthetic Store fixtures only; not neural JEPA/latent coupling, not Redmi proof. Latest private V13OBS #115 snapshot: installed base 8d93236, auto-update enabled/UP_TO_DATE/no error, but STOPPED_BY_USER, model process STOPPED, native residency unavailable; no update request or device action."
+      "proof": "A3 source-disjoint projector gates remain from #2463. Perception follow-up #2469 adds a temporal interval-order guard: reject backward start_ms even when end_ms advances, allow equal starts for overlapping windows, and retain the last valid baseline after rejection. Code b09f731224f71da0fdb19e81f511540329b6c2cf; regression 9844efaf66c13b1e5562397ae1bc62ed7926c862; tested code/test head 9844efaf66c13b1e5562397ae1bc62ed7926c862; current branch head after docs/board sync acba8ddc9fe729e6dcb595a55892310965d3d13d. Exact CI: frame-ingress 52/52 on Python 3.13 and 3.14; vision-source-lineage 39/39 on both; offline-bridge-security PASS. A5 lease fails on both versions and staged/integrated fail because this branch excludes Core #2465's composer (unsupported lifecycle source: vision.py). LOCAL_LINUX minimal repro 4 assertions PASS; full local Aii suite BLOCKED/NOT_RUN. Synthetic/fixture CI only; no native JEPA/latent, weight update, Android provider or Redmi proof. Latest available private V13OBS #115 snapshot (09:28 UTC, not a fresh receipt) still shows installed 8d93236/auto-update enabled but AI STOPPED_BY_USER, model process STOPPED, zero managed native processes and zero valid B1/B2 offers; #2469 is not installed.",
+      "latest_followup_pr": {
+        "pr": 2469,
+        "branch": "research-perception/v14-ui-session-temporal-20261124-run11",
+        "code_commit_sha": "b09f731224f71da0fdb19e81f511540329b6c2cf",
+        "regression_commit_sha": "9844efaf66c13b1e5562397ae1bc62ed7926c862",
+        "state": "OPEN_NOT_RELEASED_STACKED_ON_2463",
+        "ci": "FRAME_INGRESS_52_OF_52_PY313_AND_314; VISION_SOURCE_LINEAGE_39_OF_39_PY313_AND_314; OFFLINE_BRIDGE_SECURITY_PASS; A5_UI_LEASE_FAILS_SOURCE_LIFECYCLE_VISION_PIN; STAGED_19_FAILED_234_PASSED_10_SKIPPED_2_ERRORS_41_SUBTESTS; INTEGRATED_ONE_SETUP_FAILURE",
+        "local_linux": "MINIMAL_TIMESTAMP_ORDER_REPRO_PASS_4_ASSERTIONS; FULL_AII_SUITE_BLOCKED_NO_CHECKOUT_DNS",
+        "device": "REDMI_UNVERIFIED_FOR_2469; latest available private V13OBS #115 snapshot 2026-11-24 09:28 UTC reports installed 8d93236 / auto-update enabled and UP_TO_DATE, but AI STOPPED_BY_USER, model process STOPPED, zero managed native processes and zero valid B1/B2 offers; no live receipt for this run; #2469 NOT_INSTALLED; no update request.",
+        "next_action": "Wait for Core #2465 source-lifecycle and nested memory/world builder pin chain; then rebase #2469 and rerun full matrix.",
+        "tested_code_sha": "9844efaf66c13b1e5562397ae1bc62ed7926c862",
+        "docs_board_sync_sha": "acba8ddc9fe729e6dcb595a55892310965d3d13d",
+        "code_test_sha": "9844efaf66c13b1e5562397ae1bc62ed7926c862",
+        "docs_handoff_ledger_next_action_and_board_are_committed_in_same_pr": true,
+        "branch_head_before_latest_board_sync_sha": "2d07f8b8d267ae2731f20ef047bc3ac8d35e7c65"
+      }
     },
     {
       "id": "V14-007",
@@ -391,18 +407,21 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "LOCAL_LINUX isolated + CI; no Android timing",
-      "next_step": "Repair #2433 without relaxing source pins: assert canonical ModulatorPacket path_id, rebind record-only controller guard and dependent recovery/stage/deployer pins to exact attention.py bytes, then rerun Python 3.13/3.14, staged/integrated, migration and consent-revocation. No AudioRecord or Android capture claim.",
+      "proof_environment": "CI exact head #2433 acc68d6113eb320d283cfa0150230b40273d6e96: focused A4/RAW EAR/consent/privacy suites PASS on Python 3.13/3.14; staged/integrated FAIL at Core-owned controller guard; local isolated SQLite contract reproduction PASS; full local Aii suite BLOCKED; REDMI_UNVERIFIED",
+      "next_step": "Core/Boss must rebind record_only_controller_guard_20261116.py and dependent recovery/stager/deployer pins to the exact current attention.py bytes, then complete the nested source-lifecycle chain. Do not weaken hash checks. After that, rebase #2433 from its stale base dfa3945 onto the current release-development branch gpt6 HEAD 8d93236 (or the then-current accepted release head), rerun Python 3.13/3.14 focused A4/RAW EAR/consent/privacy, staged/integrated, migration and runtime deployment. Perception then runs the source-disjoint A4 outcome/retention ablation; no microphone/Android claim before authorized device proof.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:07:22.216Z",
+      "last_checkpoint": "2026-11-24T18:50:21.690+01:00",
       "latest_candidate_pr": {
-        "pr": 2275,
-        "head_sha": "b19ff77cc769e670a46b6467798fba94a6d19046",
-        "base_sha": "34eb645357d65bdd5ac69b9fb2c834d043086dac",
-        "ci": "FAIL_RAW_EAR_44958073016_STAGED_44958072992",
-        "tested_code_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c"
+        "pr": 2433,
+        "head_sha": "acc68d6113eb320d283cfa0150230b40273d6e96",
+        "base_sha": "dfa3945b2bbfdb65d932db74e02f402435494e84",
+        "base_branch": "gpt6/v13-private-remote-bridge-20261111",
+        "ci": "A4_SOURCE_BOUND_OUTCOMES_PASS_PY313_PY314; RAW_EAR_PROSODY_PASS; OPTIONAL_NUMPY_BACKEND_PASS; FASTDIAR_ADAPTER_PASS; CONSENT_REVOCATION_PASS; PRIVACY_SCAN_PASS; STAGED_AND_INTEGRATED_FAIL_CONTROLLER_GUARD_SOURCE_CHANGED_ATTENTION_PY",
+        "local": "ISOLATED_SQLITE_ATOMICITY_REPRO_PASS; FULL_AII_SUITE_BLOCKED_NO_CHECKOUT_DNS",
+        "device": "REDMI_UNVERIFIED; LATEST_AVAILABLE_PRIVATE_V13OBS_2026-11-24_09:28Z_INSTALLED_8d93236_AUTO_UPDATE_ENABLED_AI_STOPPED_BY_USER_ZERO_B1_B2_OFFERS; NO_FRESH_RECEIPT",
+        "state": "DRAFT_OPEN_NOT_RELEASED_REBASE_REQUIRED"
       },
-      "proof": "#2433 head a2662b9 has three failures: path vs path_id assertions on Python 3.13/3.14 and stale record_only_controller_guard attention.py pin. Exact attention.py blob 0c1831f5a0b7aef990e15e3e2842dc445776153a. DRAFT / NOT_RELEASED; no Android microphone evidence."
+      "proof": "Latest exact PR #2433 head acc68d6113eb320d283cfa0150230b40273d6e96 (42 commits, 18 files) has A4 source-bound attention outcomes, RAW EAR prosody-to-attention, optional NumPy backend, FASTDIAR adapter, consent-revocation and privacy-scan workflows PASS; the A4 outcomes job passed on Python 3.13 and 3.14. The earlier path vs path_id assertion failures are no longer present at this head. Staged consumer and integrated regression still fail before the consumers run because the Core-owned record_only_controller_guard_20261116.py rejects the exact v13/attention.py SHA (controller guard source changed). The PR base snapshot dfa3945 is stale relative to current release-development HEAD 8d93236, so rebase is required after Core accepts the guard/dependency chain. Isolated SQLite atomicity reproduction PASS; full local repository suite NOT_RUN (no checkout/DNS). No AudioRecord provider, microphone capture, native diarization inference, trained latent exchange or Redmi proof."
     },
     {
       "id": "V14-019",

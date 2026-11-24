@@ -93,25 +93,31 @@ def make_runtime(monkeypatch, with_store=False):
     return runtime
 
 
-def observation(finality="FINAL", method="MEDIA_PROJECTION", event_kind="SCREEN_FRAME_AVAILABLE"):
+def observation(
+    finality="FINAL", method="MEDIA_PROJECTION", event_kind="SCREEN_FRAME_AVAILABLE",
+    *, source_id="ui-frame-source-0001", receipt_ref="receipt-frame-0001",
+    session_receipt_ref=None, start_ms=1000, end_ms=1033,
+):
     value = {
         "schema": "v14.a5.ui-observation/1",
         "modality": "ui",
-        "source_id": "ui-frame-source-0001",
+        "source_id": source_id,
         "capture_session_id": "ui-frame-session-0001",
-        "consent_receipt_ref": "receipt-frame-0001",
+        "consent_receipt_ref": receipt_ref,
         "capture_method": method,
         "capture_scope": "FULL_DISPLAY" if method == "MEDIA_PROJECTION" else "ACCESSIBILITY_TREE",
         "api_level": 34,
         "clock": "ELAPSED_REALTIME",
         "event_kind": event_kind,
-        "start_ms": 1000,
-        "end_ms": 1033,
+        "start_ms": start_ms,
+        "end_ms": end_ms,
         "finality": finality,
         "action_authority": False,
         "learning_authority": False,
         "raw_capture_persisted": False,
     }
+    if session_receipt_ref is not None:
+        value["session_consent_receipt_ref"] = session_receipt_ref
     if method == "ACCESSIBILITY_ASSISTIVE":
         value["accessibility_purpose"] = "DISABILITY_ASSISTANCE"
     return value
@@ -254,7 +260,7 @@ def lease_for(runtime, obs, callbacks=None, lock=None, revoke_callback=None):
         with lock:
             yield True
 
-    def subscribe(source_id, receipt, session, request_cancel, on_revoked):
+    def subscribe(source_id, receipt, session, request_cancel, on_revoked, **_kwargs):
         if callbacks is not None:
             callbacks[source_id] = (request_cancel, on_revoked)
         def unsubscribe():
@@ -725,6 +731,102 @@ def test_provider_verifier_is_bound_to_session_and_one_shot(monkeypatch):
         assert calls == []
 
 
+
+def test_provider_verifier_binds_the_stable_session_consent_receipt(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation(session_receipt_ref="session-consent-0001")
+    frame = image_buffer()
+    frame_sha = hashlib.sha256(frame).hexdigest()
+    with lease_for(runtime, obs) as lease:
+        verifier = provider_verifier(lease, obs, frame)
+        forged = dict(obs, session_consent_receipt_ref="session-consent-forged")
+        assert verifier.verify(runtime, lease, forged, frame_sha, len(frame)) is False
+        assert verifier.verify(runtime, lease, obs, frame_sha, len(frame)) is False
+
+    from v13.a5_ui_admission_bridge import validate_ui_observation
+    with pytest.raises(PermissionError, match="session-level"):
+        validate_ui_observation(dict(obs, session_consent_receipt_ref="not a receipt"))
+
+
+def test_session_receipt_is_bound_to_provider_checks_guard_and_revocation(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation(session_receipt_ref="session-consent-0001")
+    expected = obs["session_consent_receipt_ref"]
+    seen = {}
+
+    def check(*args):
+        seen["check"] = args
+        return len(args) == 8 and args[-1] == expected
+
+    @contextmanager
+    def guard(*args):
+        seen["guard"] = args
+        yield len(args) == 8 and args[-1] == expected
+
+    def subscribe(source_id, receipt, session, request_cancel, on_revoked,
+                  *, session_consent_receipt_ref):
+        seen["subscribe"] = (source_id, receipt, session, session_consent_receipt_ref)
+        return lambda: None
+
+    with ui_observation_lease(
+        runtime, obs, runtime.turn_event["brain_generation_id"],
+        check, guard, subscribe,
+    ) as lease:
+        assert lease.session_receipt_ref == expected
+
+    assert seen["check"][-1] == expected
+    assert seen["guard"][-1] == expected
+    assert seen["subscribe"] == (
+        obs["source_id"], obs["consent_receipt_ref"],
+        obs["capture_session_id"], expected,
+    )
+
+
+def test_session_receipt_fails_closed_when_provider_cannot_subscribe_to_it(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation(session_receipt_ref="session-consent-0001")
+
+    def check(*_args):
+        return True
+
+    @contextmanager
+    def guard(*_args):
+        yield True
+
+    def legacy_subscribe(source_id, receipt, session, request_cancel, on_revoked):
+        return lambda: None
+
+    with pytest.raises(PermissionError, match="two-phase UI revocation subscription is unavailable"):
+        with ui_observation_lease(
+            runtime, obs, runtime.turn_event["brain_generation_id"],
+            check, guard, legacy_subscribe,
+        ):
+            pytest.fail("a provider that ignores the session receipt must not acquire a lease")
+
+
+def test_legacy_one_shot_provider_callback_arity_is_unchanged(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation()
+
+    def check(source_id, receipt, session, purpose, method, scope, api_level):
+        assert source_id == obs["source_id"]
+        assert receipt == obs["consent_receipt_ref"]
+        return True
+
+    @contextmanager
+    def guard(source_id, receipt, session, purpose, method, scope, api_level):
+        yield True
+
+    def subscribe(source_id, receipt, session, request_cancel, on_revoked):
+        return lambda: None
+
+    with ui_observation_lease(
+        runtime, obs, runtime.turn_event["brain_generation_id"],
+        check, guard, subscribe,
+    ) as lease:
+        assert lease.session_receipt_ref == obs["consent_receipt_ref"]
+
+
 def test_fifo_tile_projector_is_rejected_without_blocking(monkeypatch, tmp_path):
     if not hasattr(os, "mkfifo"):
         pytest.skip("POSIX FIFO support is unavailable")
@@ -961,6 +1063,48 @@ def test_temporal_visual_evidence_is_source_session_bound_and_drives_a4(monkeypa
     assert not any(first) and not any(second)
 
 
+
+def test_temporal_visual_evidence_accumulates_across_frame_receipts_under_one_session_consent(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    session_receipt = "session-consent-0001"
+    first_obs = observation(
+        source_id="ui-frame-source-0001", receipt_ref="frame-receipt-0001",
+        session_receipt_ref=session_receipt, start_ms=1000, end_ms=1033,
+    )
+    second_obs = observation(
+        source_id="ui-frame-source-0002", receipt_ref="frame-receipt-0002",
+        session_receipt_ref=session_receipt, start_ms=1033, end_ms=1066,
+    )
+    first, second = image_buffer(), image_buffer_variant()
+
+    with lease_for(runtime, first_obs) as first_lease:
+        first_result = consume_with_provider_verifier(
+            runtime, first_obs, first, consent_lease=first_lease,
+            current_source="Observe this screen session.",
+        )
+    with lease_for(runtime, second_obs) as second_lease:
+        second_result = consume_with_provider_verifier(
+            runtime, second_obs, second, consent_lease=second_lease,
+            current_source="Observe this screen session.",
+        )
+
+    assert first_result["temporal_visual_evidence"]["status"] == "WARMUP"
+    assert second_result["temporal_visual_evidence"]["status"] == "MEASURED"
+    assert second_result["packet"]["consent_receipt_ref"] == "frame-receipt-0002"
+    assert second_result["packet"]["session_consent_receipt_ref"] == session_receipt
+    assert second_result["temporal_visual_evidence"]["consent_receipt_ref"] == "frame-receipt-0002"
+    assert second_result["temporal_visual_evidence"]["session_consent_receipt_ref"] == session_receipt
+    assert second_result["temporal_visual_evidence"]["source_ref"]["source_id"].startswith("ui_frame_")
+    assert len(runtime._a5_temporal_visual_registry) == 1
+    assert not any(first) and not any(second)
+
+    cleanup = temporal_visual_revocation_callback(
+        runtime, capture_session_id=first_obs["capture_session_id"],
+    )
+    cleanup(second_obs["source_id"])
+    assert len(runtime._a5_temporal_visual_registry) == 0
+
+
 def test_temporal_visual_evidence_registry_resets_on_receipt_and_session_end():
     from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidenceRegistry
 
@@ -980,6 +1124,113 @@ def test_temporal_visual_evidence_registry_resets_on_receipt_and_session_end():
     assert len(registry) == 0
 
 
+
+def test_temporal_visual_registry_keeps_history_only_for_stable_session_receipt():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidenceRegistry
+
+    registry = TemporalVisualEvidenceRegistry()
+    base = {tile: [0.1] * 16 for tile in TILE_IDS}
+    changed = {tile: [0.8] * 16 for tile in TILE_IDS}
+    common = dict(
+        capture_session_id="session-a", generation_id="gen-a",
+        session_consent_receipt_ref="session-consent-a",
+        start_ms=1000, end_ms=1033, tile_luminance=base,
+    )
+    assert registry.update(consent_receipt_ref="frame-a", **common)["status"] == "WARMUP"
+    next_frame = dict(common, start_ms=1033, end_ms=1066, tile_luminance=changed)
+    assert registry.update(consent_receipt_ref="frame-b", **next_frame)["status"] == "MEASURED"
+
+    # A changed session-level receipt is a new authority lineage and must warm up.
+    next_session = dict(
+        common, session_consent_receipt_ref="session-consent-b",
+        start_ms=1066, end_ms=1099,
+    )
+    assert registry.update(consent_receipt_ref="frame-c", **next_session)["status"] == "WARMUP"
+    assert registry.reset(capture_session_id="session-a") == 1
+    assert len(registry) == 0
+
+
+def test_temporal_visual_registry_prepare_is_non_mutating_and_stale_ticket_fails_closed():
+    from v13.vision_temporal_evidence import TILE_IDS, TemporalVisualEvidenceRegistry
+
+    registry = TemporalVisualEvidenceRegistry()
+    base = {tile: [0.1] * 16 for tile in TILE_IDS}
+    changed = {tile: [0.8] * 16 for tile in TILE_IDS}
+    common = dict(
+        capture_session_id="session-atomic", generation_id="generation-a",
+        consent_receipt_ref="frame-a", session_consent_receipt_ref="session-consent-atomic",
+        start_ms=1000, end_ms=1033,
+        tile_luminance=base,
+    )
+
+    first = registry.prepare_update(**common)
+    stale = registry.prepare_update(**common)
+    assert first.result["status"] == "WARMUP"
+    assert len(registry) == 0  # prepare never mutates committed history
+    assert registry.commit_update(first) is True
+    assert registry.commit_update(stale) is False  # same-session stale ticket cannot overwrite
+
+    next_frame = registry.prepare_update(**dict(
+        common, consent_receipt_ref="frame-b", start_ms=1033, end_ms=1066,
+        tile_luminance=changed,
+    ))
+    assert next_frame.result["status"] == "MEASURED"
+    assert registry.commit_update(next_frame) is True
+
+    # A revocation/reset must also invalidate a prepared first frame that has
+    # no committed stream entry yet.
+    pending_after_revoke = registry.prepare_update(**dict(
+        common, capture_session_id="session-revoked", consent_receipt_ref="frame-revoked",
+    ))
+    assert registry.reset(capture_session_id="session-revoked") == 0
+    assert registry.commit_update(pending_after_revoke) is False
+    assert len(registry) == 1
+
+
+def test_failed_context_delivery_does_not_commit_temporal_state_or_a4(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    first_obs = observation(
+        source_id="ui-frame-source-failed", receipt_ref="frame-receipt-failed",
+        session_receipt_ref="session-consent-atomic", start_ms=1000, end_ms=1033,
+    )
+    first_frame = image_buffer()
+
+    original_context = A5UIRuntimeAdapter.context
+
+    def fail_context(_adapter, *_args, **_kwargs):
+        raise RuntimeError("injected A5 context delivery failure")
+
+    monkeypatch.setattr(A5UIRuntimeAdapter, "context", fail_context)
+    with lease_for(runtime, first_obs) as lease:
+        with pytest.raises(RuntimeError, match="injected A5 context delivery failure"):
+            consume_with_provider_verifier(
+                runtime, first_obs, first_frame, consent_lease=lease,
+                current_source="Observe this screen session.",
+            )
+
+    assert len(runtime._a5_temporal_visual_registry) == 0
+    assert first_obs["source_id"] not in runtime._a5_ui_context_cache
+    assert getattr(runtime, "attention", None) is None
+    assert not any(first_frame)
+
+    monkeypatch.setattr(A5UIRuntimeAdapter, "context", original_context)
+    second_obs = observation(
+        source_id="ui-frame-source-after-failure", receipt_ref="frame-receipt-after-failure",
+        session_receipt_ref="session-consent-atomic", start_ms=1033, end_ms=1066,
+    )
+    second_frame = image_buffer_variant()
+    with lease_for(runtime, second_obs) as lease:
+        result = consume_with_provider_verifier(
+            runtime, second_obs, second_frame, consent_lease=lease,
+            current_source="Observe this screen session.",
+        )
+
+    assert result["temporal_visual_evidence"]["status"] == "WARMUP"
+    assert result["temporal_visual_modulation"] is None
+    assert len(runtime._a5_temporal_visual_registry) == 1
+    assert not any(second_frame)
+
+
 def test_temporal_visual_evidence_rejects_out_of_order_and_malformed_tiles():
     from v13.vision_temporal_evidence import (
         TILE_IDS, TemporalVisualEvidence, TemporalVisualEvidenceError,
@@ -996,6 +1247,25 @@ def test_temporal_visual_evidence_rejects_out_of_order_and_malformed_tiles():
         state.update(start_ms=133, end_ms=166, tile_luminance=malformed)
     # The rejected frame did not replace the previous valid baseline.
     result = state.update(start_ms=133, end_ms=166, tile_luminance=frame)
+    assert result["status"] == "MEASURED"
+    assert result["change_score"] == 0.0
+
+
+def test_temporal_visual_evidence_rejects_backward_start_when_end_advances():
+    from v13.vision_temporal_evidence import (
+        TILE_IDS, TemporalVisualEvidence, TemporalVisualEvidenceError,
+    )
+
+    state = TemporalVisualEvidence()
+    frame = {tile: [0.1] * 16 for tile in TILE_IDS}
+    state.update(start_ms=100, end_ms=133, tile_luminance=frame)
+    # Equal starts remain valid for overlapping/cumulative observation windows.
+    state.update(start_ms=100, end_ms=166, tile_luminance=frame)
+    with pytest.raises(TemporalVisualEvidenceError, match="start timestamps"):
+        # The old end-only monotonicity check accepted this reordered interval.
+        state.update(start_ms=90, end_ms=199, tile_luminance=frame)
+    # Rejection must not replace the last valid baseline.
+    result = state.update(start_ms=166, end_ms=199, tile_luminance=frame)
     assert result["status"] == "MEASURED"
     assert result["change_score"] == 0.0
 

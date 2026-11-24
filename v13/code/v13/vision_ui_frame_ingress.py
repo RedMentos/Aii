@@ -89,9 +89,11 @@ def reset_temporal_visual_evidence(runtime, *, capture_session_id: str) -> int:
 
 
 def temporal_visual_revocation_callback(runtime, *, capture_session_id: str):
-    """Create a provider post-lock callback that clears this capture session's temporal state.
+    """Create a provider post-lock callback that clears one capture session's temporal state.
 
-    Pass the returned callback as revoke_callback to ui_observation_lease.
+    This is a SESSION-END callback, not a per-frame callback when multiple frame
+    receipts share the same capture session. Pass it only to the provider's
+    session-revocation path, or set end_of_stream=True on the final frame.
     It preserves standard A5 source tombstone/cache cleanup while erasing
     frame-derived luminance history when the provider revokes the grant.
     """
@@ -194,12 +196,14 @@ class ProviderFrameVerifier:
     """One-shot provider capability bound to one active UIObservationLease.
 
     The Android companion must construct this only after verifying the
-    companion-signed receipt and binding its exact frame digest/length. This
-    Python object is an injection contract, not the hard OS security boundary.
+    companion-signed frame receipt and binding its exact frame digest/length.
+    If session_consent_receipt_ref is present, the provider verifier must also
+    authenticate that stable session receipt as part of the signed observation.
+    This Python object is an injection contract, not the hard OS security boundary.
     """
     __slots__ = (
         "_runtime", "_lease", "_generation_id", "_source_id",
-        "_capture_session_id", "_receipt", "_capture_method",
+        "_capture_session_id", "_receipt", "_session_receipt", "_capture_method",
         "_event_kind", "_verify", "_used",
     )
 
@@ -214,6 +218,9 @@ class ProviderFrameVerifier:
         self._source_id = observation["source_id"]
         self._capture_session_id = observation["capture_session_id"]
         self._receipt = observation["consent_receipt_ref"]
+        self._session_receipt = observation.get(
+            "session_consent_receipt_ref", observation["consent_receipt_ref"],
+        )
         self._capture_method = observation["capture_method"]
         self._event_kind = observation["event_kind"]
         self._verify = verify_fn
@@ -232,6 +239,7 @@ class ProviderFrameVerifier:
             or observation.get("source_id") != self._source_id
             or observation.get("capture_session_id") != self._capture_session_id
             or observation.get("consent_receipt_ref") != self._receipt
+            or observation.get("session_consent_receipt_ref", observation.get("consent_receipt_ref")) != self._session_receipt
             or observation.get("capture_method") != self._capture_method
             or observation.get("event_kind") != self._event_kind
             or self._capture_method != "MEDIA_PROJECTION"
@@ -700,15 +708,21 @@ def consume_projected_frame(
             for region, _box, features, _salience in region_records
             if region["region_id"].startswith("r")
         }
-        temporal_visual = _runtime_temporal_visual_registry(runtime).update(
+        session_consent_receipt_ref = observation.get(
+            "session_consent_receipt_ref", observation["consent_receipt_ref"],
+        )
+        temporal_registry = _runtime_temporal_visual_registry(runtime)
+        temporal_update = temporal_registry.prepare_update(
             capture_session_id=observation["capture_session_id"],
             generation_id=generation_id,
             consent_receipt_ref=observation["consent_receipt_ref"],
+            session_consent_receipt_ref=session_consent_receipt_ref,
             start_ms=observation["start_ms"],
             end_ms=observation["end_ms"],
             tile_luminance=tile_luminance,
             tile_features=tile_features,
         )
+        temporal_visual = temporal_update.result
         attention_novelty = float(temporal_visual["attention_novelty"])
         temporal_visual_packet = dict(temporal_visual)
         temporal_visual_packet["attention_novelty"] = round(attention_novelty, 6)
@@ -716,6 +730,7 @@ def consume_projected_frame(
             "source_ref": dict(frame_ref),
             "capture_session_id": observation["capture_session_id"],
             "consent_receipt_ref": observation["consent_receipt_ref"],
+            "session_consent_receipt_ref": session_consent_receipt_ref,
             "clock": observation["clock"],
             "start_ms": observation["start_ms"],
             "end_ms": observation["end_ms"],
@@ -738,8 +753,80 @@ def consume_projected_frame(
                 segment["temporal_multichannel_change"] = multichannel_delta
                 segment["temporal_multichannel_method"] = temporal_visual["method"]
 
-        attention = attention_module.controller(runtime)
         temporal_modulation = None
+        a4 = None
+        admission = admit(percepts, token_budget, max_items=12)
+        context_items = [
+            A5Item(
+                source_id=item.source_id,
+                summary=item.summary,
+                consent=item.consent,
+                final=item.final,
+                priority=item.priority,
+            )
+            for item in admission.selected
+        ]
+        envelope = admit_a5(
+            current_source,
+            context_items,
+            budget_chars=context_budget_chars,
+        )
+        percept_packet = make_packet(
+            "PerceptPacket", "A5_RAW_EYE_UI", event["event_id"], generation_id,
+            [ui_ref, frame_ref], source_ref=ui_ref, segments=segments, modality="ui",
+            capture_session_id=observation["capture_session_id"],
+            consent_receipt_ref=observation["consent_receipt_ref"],
+            session_consent_receipt_ref=session_consent_receipt_ref,
+            capture_method=observation["capture_method"],
+            capture_scope=observation["capture_scope"], clock=observation["clock"],
+            finality=observation["finality"], frame_sha256=frame_sha256,
+            frame_size=[width, height],
+            feature_method="HANDCRAFTED_RAW_EYE_V1", feature_revision=REVISION,
+            temporal_visual_evidence=temporal_visual_packet,
+            frame_binding_status="PROVIDER_CALLBACK_ACCEPTED",
+            raw_capture_persisted=False, derived_packet_persisted=False,
+            teacher_used=False, student_projector_used=bool(student_scores),
+            student_estimate={
+                "status": student_status,
+                "authority": "STUDENT_ESTIMATE" if student_scores else "NONE",
+                "encoder": student.get("encoder") if student_scores else None,
+                "projector_sha256": student.get("sha256") if student_scores else None,
+                "goal_margin_by_region": {key: round(value, 4) for key, value in student_scores.items()},
+            },
+            learning_authority=False, action_authority=False, truth_authority=0,
+        )
+        validate("PerceptPacket", percept_packet)
+        if not consent_lease.active_for(runtime, generation_id):
+            raise PermissionError("UI observation was cancelled or revoked before context caching")
+
+        adapter = A5UIRuntimeAdapter(runtime)
+        cache = runtime._a5_ui_context_cache
+        cache[observation["source_id"]] = percept_packet
+        while len(cache) > 64:
+            cache.pop(next(iter(cache)))
+        try:
+            context_packets = adapter.context(event["event_id"], consent_lease)
+            if observation["finality"] == "FINAL" and percept_packet not in context_packets:
+                raise RuntimeError("final RAW EYE packet did not reach the active UI context consumer")
+            if not consent_lease.active_for(runtime, generation_id):
+                raise PermissionError("UI observation was revoked before temporal commit")
+            if not temporal_registry.commit_update(temporal_update):
+                raise RuntimeError("RAW EYE temporal state changed during frame admission; retry the frame")
+        except Exception:
+            cache.pop(observation["source_id"], None)
+            raise
+
+        if not consent_lease.active_for(runtime, generation_id):
+            cache.pop(observation["source_id"], None)
+            reset_temporal_visual_evidence(
+                runtime, capture_session_id=observation["capture_session_id"],
+            )
+            raise PermissionError("UI observation was revoked before A4 attention")
+
+        # A4 writes attention requests and gain state. Defer those side effects
+        # until the source-bound packet has passed validation and reached the
+        # active context consumer; failed frames must not train/prime attention.
+        attention = attention_module.controller(runtime)
         if temporal_visual["status"] == "MEASURED" and attention_novelty > 0.0:
             temporal_modulation = attention.modulate(
                 event["event_id"], sal={"novelty": attention_novelty},
@@ -769,58 +856,6 @@ def consume_projected_frame(
             "truth_authority": 0,
         }
         a4["temporal_visual_modulation"] = temporal_modulation
-        admission = admit(percepts, token_budget, max_items=12)
-        context_items = [
-            A5Item(
-                source_id=item.source_id,
-                summary=item.summary,
-                consent=item.consent,
-                final=item.final,
-                priority=item.priority,
-            )
-            for item in admission.selected
-        ]
-        envelope = admit_a5(
-            current_source,
-            context_items,
-            budget_chars=context_budget_chars,
-        )
-        percept_packet = make_packet(
-            "PerceptPacket", "A5_RAW_EYE_UI", event["event_id"], generation_id,
-            [ui_ref, frame_ref], source_ref=ui_ref, segments=segments, modality="ui",
-            capture_session_id=observation["capture_session_id"],
-            consent_receipt_ref=observation["consent_receipt_ref"],
-            capture_method=observation["capture_method"],
-            capture_scope=observation["capture_scope"], clock=observation["clock"],
-            finality=observation["finality"], frame_sha256=frame_sha256,
-            frame_size=[width, height],
-            feature_method="HANDCRAFTED_RAW_EYE_V1", feature_revision=REVISION,
-            temporal_visual_evidence=temporal_visual_packet,
-            frame_binding_status="PROVIDER_CALLBACK_ACCEPTED",
-            raw_capture_persisted=False, derived_packet_persisted=False,
-            teacher_used=False, student_projector_used=bool(student_scores),
-            student_estimate={
-                "status": student_status,
-                "authority": "STUDENT_ESTIMATE" if student_scores else "NONE",
-                "encoder": student.get("encoder") if student_scores else None,
-                "projector_sha256": student.get("sha256") if student_scores else None,
-                "goal_margin_by_region": {key: round(value, 4) for key, value in student_scores.items()},
-            },
-            learning_authority=False, action_authority=False, truth_authority=0,
-        )
-        validate("PerceptPacket", percept_packet)
-        if not consent_lease.active_for(runtime, generation_id):
-            raise PermissionError("UI observation was cancelled or revoked before context caching")
-
-        adapter = A5UIRuntimeAdapter(runtime)
-        cache = runtime._a5_ui_context_cache
-        cache[observation["source_id"]] = percept_packet
-        while len(cache) > 64:
-            cache.pop(next(iter(cache)))
-        context_packets = adapter.context(event["event_id"], consent_lease)
-        if observation["finality"] == "FINAL" and percept_packet not in context_packets:
-            cache.pop(observation["source_id"], None)
-            raise RuntimeError("final RAW EYE packet did not reach the active UI context consumer")
 
         return {
             "status": "WIRED_SYNTHETIC",
