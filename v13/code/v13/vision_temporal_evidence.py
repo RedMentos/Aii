@@ -296,14 +296,20 @@ class TemporalVisualEvidenceRegistry:
 
     def update(self, *, capture_session_id: str, generation_id: str,
                consent_receipt_ref: str, start_ms: int, end_ms: int,
-               tile_luminance: dict, tile_features: dict | None = None) -> dict:
+               tile_luminance: dict, tile_features: dict | None = None,
+               session_consent_receipt_ref: str | None = None) -> dict:
         session = _identity(capture_session_id, "capture_session_id")
         generation = _identity(generation_id, "generation_id")
         receipt = _identity(consent_receipt_ref, "consent_receipt_ref")
-        key = (session, generation, receipt)
+        session_receipt = _identity(
+            session_consent_receipt_ref if session_consent_receipt_ref is not None else receipt,
+            "session_consent_receipt_ref",
+        )
+        key = (session, generation, session_receipt)
         with self._lock:
             # A session must not carry history into a new generation or
-            # consent receipt, even when the opaque session ID is reused.
+            # session-level consent lineage, even when the opaque session ID is reused.
+            # Per-frame receipts may rotate inside one verified session lineage.
             for old_key in tuple(self._states):
                 if old_key[0] == session and old_key != key:
                     del self._states[old_key]
