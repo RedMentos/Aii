@@ -75,6 +75,11 @@ def speaker_batch(source_id, generation_id, start_ms, end_ms, vector_at,
         "model_id": "fixture/three-dim-encoder",
         "model_revision": revision,
         "model_sha256": MODEL_SHA,
+        "model_license_id": "SYNTHETIC-NO-WEIGHTS",
+        "model_language": "fixture",
+        "encoder_id": "fixture-encoder",
+        "encoder_revision": "fixture-v1",
+        "embedding_unit": "FRAME",
         "embedding_dim": 3,
         "frame_step_ms": frame_step_ms,
         "lookback_frames": lookback_frames,
@@ -767,8 +772,8 @@ def test_speaker_history_does_not_cross_consent_receipt_epochs():
     assert len(registry) == 1
 
 
-def test_speaker_embedding_schema_v3_requires_consent_and_chunk_binding():
-    assert SCHEMA == "v14.raw-ear-speaker-embeddings/3"
+def test_speaker_embedding_schema_v4_requires_model_and_encoder_provenance():
+    assert SCHEMA == "v14.raw-ear-speaker-embeddings/4"
 
 
 def test_speaker_embedding_batch_without_consent_receipt_is_rejected():
