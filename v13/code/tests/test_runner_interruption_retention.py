@@ -128,3 +128,63 @@ def test_deadline_unloads_when_model_lifecycle_changed(tmp_path, monkeypatch):
     assert runner.unload.call_count == 1
     runner._json.assert_not_called()
     assert runner.last_metrics["warm_process_retained"] is False
+
+
+
+def test_retained_c3_runner_is_reused_by_pool_on_the_next_turn(tmp_path, monkeypatch):
+    model_path = tmp_path / "models" / "c3.gguf"
+    models = SimpleNamespace(path_for=lambda role: model_path)
+    pool = runners.RunnerPool(
+        tmp_path, models, {"answer_tokens": 8, "temperature": 0.1}
+    )
+    runner = pool.get("C3_LANGUAGE")
+    runner.proc = AliveProcess()
+    runner._loaded_stamp = "fixture-stamp"
+    runner._lifecycle_stamp = lambda: "fixture-stamp"
+    runner.unload = Mock(return_value={"process_reaped": True})
+    monkeypatch.setattr(
+        runners,
+        "process_memory",
+        lambda pid: {"rss_bytes": 1024, "pss_bytes": 512},
+    )
+
+    slot_reads = []
+
+    def idle_slots(method, path, payload, deadline, timeout_cap=3.0):
+        slot_reads.append((method, path))
+        return [{"is_processing": False, "prompt": "PRIVATE_DO_NOT_STORE"}]
+
+    runner._json = idle_slots
+    generation_calls = 0
+
+    def interrupted_then_warm(messages, cancel, deadline, *args, **kwargs):
+        nonlocal generation_calls
+        generation_calls += 1
+        if generation_calls == 1:
+            raise Limits("deadline")
+        runner.load(cancel, deadline)
+        yield "warm"
+
+    runner._generate = interrupted_then_warm
+    pid_before = runner.proc.pid
+
+    with pytest.raises(Limits):
+        list(runner.generate([], threading.Event(), time.monotonic() - 0.01))
+
+    first_metrics = dict(runner.last_metrics)
+    assert first_metrics["status"] == "DEADLINE"
+    assert first_metrics["warm_process_retained"] is True
+    assert first_metrics["interruption_unload"]["reason"] == "SERVER_IDLE"
+    assert slot_reads == [("GET", "/slots")]
+    assert runner.unload.call_count == 0
+    assert runner.proc.pid == pid_before
+
+    # The real Runtime asks RunnerPool for the same C3 role on the next turn.
+    reused = pool.get("C3_LANGUAGE")
+    assert reused is runner
+    assert reused.proc.pid == pid_before
+    assert list(reused.generate([], threading.Event(), time.monotonic() + 5)) == ["warm"]
+    assert generation_calls == 2
+    assert reused.proc.pid == pid_before
+    assert reused.unload.call_count == 0
+    assert "PRIVATE_DO_NOT_STORE" not in repr(first_metrics)
