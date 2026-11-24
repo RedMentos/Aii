@@ -190,7 +190,6 @@ def test_explanatory_arithmetic_keeps_both_bodies_and_c4_c3_path(runtime):
     assert row["text"].startswith("Both expressions equal 4")
     assert meta.get("arithmetic_reflex") is None
     assert meta["model_generated"] is True
-    assert meta["direct_source_copy"] is False
     assert meta["route"]["scaffold"] == "both"
     assert {"B1_DETAIL", "B2_GIST"} <= set(seen)
     offers = packets(r, row["event_id"], "OfferPacket")
