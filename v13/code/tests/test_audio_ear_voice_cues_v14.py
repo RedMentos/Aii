@@ -70,7 +70,7 @@ def make_runtime(tmp_path):
     store.ensure_generation_snapshot({}, {})
     session = store.new_session("RAW EAR voice cue test")
     event = store.event(session, "bounded synthetic acoustic fixture")
-    return SimpleNamespace(home=tmp_path, store=store), event
+    return SimpleNamespace(home=tmp_path, store=store, session=session), event
 
 
 def consent_ok(source_id, receipt):
@@ -1245,7 +1245,7 @@ def test_sustained_silence_candidate_reaches_a4_and_c3_without_floor_transfer(tm
         )
         assert voiced["a4"]["temporal_voice"]["turn_candidates"]["speech_candidate"] is True
 
-        silence_event = runtime.store.event(event["session_id"], "synthetic silence window")
+        silence_event = runtime.store.event(runtime.session, "synthetic silence window")
         silent = consume_pcm16_voice_window(
             runtime, bytes(2 * 16000), sample_rate=16000, start_ms=1100,
             event_id=silence_event["event_id"],
