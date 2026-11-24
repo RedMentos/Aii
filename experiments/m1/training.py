@@ -17,6 +17,17 @@ from .jepa import DirectMAEForecaster, JEPAConfig, JEPAForecaster, jepa_loss
 
 
 
+
+def build_seeded_model(model_factory, config, seed: int, **kwargs):
+    """Construct a model with deterministic CPU initialization without leaking RNG state."""
+    if type(seed) is not int:
+        raise ValueError("seed must be an integer")
+    with torch.random.fork_rng(devices=[]):
+        torch.manual_seed(seed)
+        return model_factory(config, **kwargs)
+
+
+
 def current_git_commit(repo_root: str | Path | None = None) -> str:
     """Resolve the executing repository HEAD; never read the expected hash from preregistration."""
     result = subprocess.run(
@@ -66,6 +77,7 @@ def train_jepa(
     device: str = "cpu",
     max_grad_norm: float = 1.0,
 ) -> list[dict[str, float]]:
+    """Train a preconstructed model; use build_seeded_model to seed its initialization."""
     if type(epochs) is not int or epochs < 1:
         raise ValueError("epochs must be a positive integer")
     if type(batch_size) is not int or batch_size < 2:
