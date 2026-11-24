@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T05:14:43Z",
+  "updated_at": "2026-11-24T05:16:34Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at 8d93236c753f0194224c19edc7411d8d7082b1d6. Core PR #2462 is DRAFT / OPEN / NOT_RELEASED at latest branch HEAD ca269493a380232ef88ffa095ab5b82eaec7fce3 (code head d0a30b18cc629d7498373e01985f89df00fa7461; later commits are documentation-only). Fair B1/B2 slices plus late-watch budget/idempotent telemetry fixes exist; exact staged/same-turn/owner-read CI remains blocked by stale Runtime composition pins. Full local Aii suite NOT_RUN; Redmi branch proof unavailable and phone runtime is STOPPED_BY_USER.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -14,11 +14,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "LOCAL_LINUX_ISOLATED_CONTRACT_PASS; CI_PY313_DIRECT_RUNTIME_SAME_TURN_PASS; CI_PY314_PENDING; STAGED_RUNTIME_FAIL_SOURCE_PINS; INTEGRATED_PENDING; REDMI_UNVERIFIED",
-      "next_step": "Boss/Integrator: recompose integrated_online_world, postcommit_observer, record_only_online_guard and integrated_observer_fair_budget against the exact Core Runtime bytes, then rebind downstream recovery/stage/deployer inputs without relaxing hashes. QA: rerun exact Python 3.13/3.14 same-turn, staged, integrated, owner-read and two-checkout migration. Do not trigger Redmi tests while the user-stopped service remains OFF.",
+      "proof_environment": "LOCAL_LINUX_ISOLATED_CONTRACT_PASS; CI_PY313_AND_PY314_DIRECT_RUNTIME_SAME_TURN_PASS; STAGED_RUNTIME_FAIL_SOURCE_PINS; INTEGRATED_FAIL_SOURCE_PIN; OWNER_READ_PASS; PY314_INSTALLER_STAGE_FAIL; REDMI_UNVERIFIED",
+      "next_step": "Boss/Integrator: recompose integrated_online_world, postcommit_observer, record_only_online_guard and integrated_observer_fair_budget against the exact Core Runtime bytes, then rebind downstream recovery/stage/deployer inputs without relaxing hashes. QA: rerun exact Python 3.13/3.14 staged, integrated, owner-read and two-checkout migration. Do not trigger Redmi tests while the user-stopped service remains OFF.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T05:14:43Z",
-      "proof": "PR #2462 code/test SHA 58f1587c7e8cbd5cb63c8c46afbd1c645c3e6c0f adds the C4 c4_offer_context_ready receipt before C3 context assembly. Python 3.13 direct Runtime same-turn test PASS: both B1/B2 selected into the same C4 coalition, both summaries delivered into synthetic C3 system context, C4 IDs match the template receipt, and the tamper negative control rejects. Python 3.14 pending. Overall same-turn workflow and staged/integrated chain remain blocked by immutable Runtime source pins in four shared composers; staged-runtime 32 failed / 243 passed / 10 skipped / 2 errors. Runtime SHA-256 7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186; consumers still expect a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38. No hash gate relaxed. Local full suite blocked by no checkout/DNS. Last stored device observation STOPPED_BY_USER/autostart OFF; no fresh read/action; REDMI_UNVERIFIED.",
+      "last_checkpoint": "2026-11-24T05:16:34Z",
+      "proof": "PR #2462 code/test SHA 58f1587c7e8cbd5cb63c8c46afbd1c645c3e6c0f adds the C4 c4_offer_context_ready receipt before C3 context assembly. Direct Runtime same-turn B1/B2-to-C4-to-C3 consumer step PASS on Python 3.13 and 3.14: both summaries reach synthetic C3 context, C4 IDs match template receipt, tamper negative control rejects. Overall same-turn workflows FAIL at final staged composition. Staged-runtime 32 failed / 243 passed / 10 skipped / 2 errors / 37 subtests; integrated-regression one selected stage test fails at the same integrated_online_world Runtime pin. Owner-read test job PASS; Python 3.14 staged installer self-test FAILs at the same pin. Runtime SHA-256 7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186; consumers still expect a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38. No hash gate relaxed. Full local suite blocked by no checkout/DNS. Last stored device observation STOPPED_BY_USER/autostart OFF; no fresh read/action; REDMI_UNVERIFIED.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -129,7 +129,7 @@
         "branch_head": "ca269493a380232ef88ffa095ab5b82eaec7fce3"
       },
       "core_run20_checkpoint": {
-        "date": "2026-11-24T05:14:43Z",
+        "date": "2026-11-24T05:16:34Z",
         "owner": "Core & Harness",
         "branch": "core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1",
         "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
@@ -144,9 +144,9 @@
           "local_linux_isolated": "PASS: telemetry sanitization and C4/template ID match plus tamper negative controls",
           "full_repository_local": "BLOCKED: no checkout mounted; git ls-remote GitHub DNS failure",
           "ci_py313": "PASS: direct Runtime same-turn consumer step; overall workflow FAIL at final staged composition",
-          "ci_py314": "PENDING at last poll during focused dependency installation",
-          "staged_integrated": "FAIL/BLOCKED: staged-runtime 32 failed, 243 passed, 10 skipped, 2 errors; integrated-regression pending at last poll; shared Runtime source pins remain stale",
-          "other_ci": "PASS: runtime deploy integrity, native tap provenance, combined online JEPA, JEPA transactional update, JEPA receipt integrity, release-event integration; safe-additive policy-skipped"
+          "ci_py314": "PASS: direct Runtime same-turn consumer step; overall workflow FAIL at final staged composition",
+          "staged_integrated": "FAIL/BLOCKED: staged-runtime 32 failed, 243 passed, 10 skipped, 2 errors, 37 subtests; integrated-regression 1 selected stage test failed at the same integrated_online_world Runtime pin; owner-read unit job PASS; Python 3.14 installer stage FAIL at the same pin",
+          "other_ci": "PASS: runtime deploy integrity, native tap provenance, combined online JEPA, JEPA transactional update, JEPA receipt integrity, release-event integration; owner-read unit job PASS; safe-additive policy-skipped"
         },
         "device": "REDMI_UNVERIFIED; last stored private observation STOPPED_BY_USER/autostart OFF; no fresh device read or action",
         "next_action": "Boss/Integrator recompose four Runtime source consumers and downstream stage/deployer; QA reruns exact Python 3.13/3.14 staged/integrated/same-turn/owner-read/migration matrix",
