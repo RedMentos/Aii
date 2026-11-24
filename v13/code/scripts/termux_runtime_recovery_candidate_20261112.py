@@ -258,7 +258,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             raise ValueError('LateWatch output changed')
         result['v13/latewatch.py'] = late
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
-                             'd9cdc101e34c7df535bc7cf08dde1e61215dbc952ad5f7254f4ce89ccf29f6a8')
+                             'c1564362d10cb2870662c4cee1ab7f103f4e47856b7b72a3f60102cef65cba31')
         result = control_guard.apply_sources(code_dir, result)
         # The guard rewrites the semantic module and its local-error consumer as
         # one reviewed generation. Snapshot that exact pair before Store overlays.
@@ -281,7 +281,7 @@ def build_sources(code_dir, *, include_postcommit=True):
     focal_overlay_blob = hashlib.sha1(
         b'blob ' + str(len(focal_overlay_raw)).encode('ascii') + b'\0' + focal_overlay_raw
     ).hexdigest()
-    if focal_overlay_blob != 'd0fa3ac60e672574824d601f192f2fa35a14e036':
+    if focal_overlay_blob != '665f91caf90355d10638566d9fa0639d2748c3bf':
         raise ValueError('C4 source-span overlay source changed')
     focal_overlay_ns = {
         '__name__': 'v14_checked_focal_scale_overlay',
