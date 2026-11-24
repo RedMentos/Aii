@@ -119,6 +119,49 @@ def test_active_image_prevents_shared_source_from_being_archived(runtime, monkey
     assert vision.read_image(runtime.store, records[0]['ref']).size == (16, 16)
 
 
+def test_vision_forget_invalidates_only_projectors_using_that_image(runtime):
+    image_a = 'P3\\n16 16\\n255\\n' + '255 0 0\\n' * (16 * 16)
+    image_b = 'P3\\n16 16\\n255\\n' + '0 0 255\\n' * (16 * 16)
+    rec_a = vision.ingest(runtime.store, image_a.encode())
+    rec_b = vision.ingest(runtime.store, image_b.encode())
+    sid_a, sha_a = rec_a['ref']['source_id'], rec_a['ref']['sha256']
+    sid_b, sha_b = rec_b['ref']['source_id'], rec_b['ref']['sha256']
+
+    vision_dir = runtime.home / 'data/vision'
+    vision_dir.mkdir(parents=True, exist_ok=True)
+    projector_path = vision_dir / 'projector-source-a.npz'
+    tile_path = vision_dir / 'tiles-source-b.npz'
+    projector_path.write_bytes(b'global projector artifact')
+    tile_path.write_bytes(b'disjoint tile projector artifact')
+
+    state = vision.load(runtime.store)
+    state['projector'] = {
+        'path': 'data/vision/projector-source-a.npz',
+        'sha256': 'a' * 64,
+        'captions': {sid_a + ':g': 'source A caption'},
+        'training_sources': [{'source_id': sid_a, 'sha256': sha_a}],
+        'authority': 'LAB_SHADOW_ONLY',
+    }
+    state['tile_projector'] = {
+        'path': 'data/vision/tiles-source-b.npz',
+        'sha256': 'b' * 64,
+        'captions': {sid_b + ':r00': 'source B tile caption'},
+        'training_sources': [{'source_id': sid_b, 'sha256': sha_b}],
+        'authority': 'LAB_SHADOW_ONLY',
+    }
+    vision.save(runtime.store, state)
+
+    result = vision.forget(runtime.store, rec_a)
+    after = vision.load(runtime.store)
+
+    assert after['projector'] is None
+    assert after['tile_projector'] is not None
+    assert result['invalidated_projectors'] == ['projector']
+    assert result['projector_files_deleted'] == {'projector': True}
+    assert not projector_path.exists()
+    assert tile_path.read_bytes() == b'disjoint tile projector artifact'
+
+
 def test_vision_forget_reaps_only_matching_pending_blob_names(runtime):
     text = 'P3\\n16 16\\n255\\n' + '0 0 0\\n' * (16 * 16)
     rec = vision.ingest(runtime.store, text.encode())
