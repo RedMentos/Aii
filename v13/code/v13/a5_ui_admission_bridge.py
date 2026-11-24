@@ -46,7 +46,7 @@ _REQUIRED = {
     "capture_method", "capture_scope", "api_level", "clock", "event_kind", "start_ms", "end_ms",
     "finality", "action_authority", "learning_authority", "raw_capture_persisted",
 }
-_OPTIONAL = {"accessibility_purpose"}
+_OPTIONAL = {"accessibility_purpose", "session_consent_receipt_ref"}
 _UI_LEASE_TOKEN = object()
 _RUNTIME_CACHE_INIT_LOCK = threading.Lock()
 
@@ -67,6 +67,10 @@ def validate_ui_observation(observation: dict) -> dict:
     receipt = observation.get("consent_receipt_ref")
     if type(receipt) is not str or not _RECEIPT.fullmatch(receipt):
         raise PermissionError("opaque current observe_ui receipt required")
+    if "session_consent_receipt_ref" in observation:
+        session_receipt = observation.get("session_consent_receipt_ref")
+        if type(session_receipt) is not str or not _RECEIPT.fullmatch(session_receipt):
+            raise PermissionError("opaque session-level observe_ui receipt required")
     method = observation.get("capture_method")
     scope = observation.get("capture_scope")
     event_kind = observation.get("event_kind")
@@ -130,7 +134,7 @@ class UIObservationLease:
     """Ephemeral thread-bound handle for one OS-issued UI observation grant."""
     __slots__ = (
         "_token", "runtime", "source_id", "generation_id", "receipt",
-        "capture_session_id", "capture_method", "capture_scope", "api_level",
+        "capture_session_id", "session_receipt_ref", "capture_method", "capture_scope", "api_level",
         "_active", "_thread_id",
     )
 
@@ -143,6 +147,9 @@ class UIObservationLease:
         self.generation_id = generation_id
         self.receipt = observation["consent_receipt_ref"]
         self.capture_session_id = observation["capture_session_id"]
+        self.session_receipt_ref = observation.get(
+            "session_consent_receipt_ref", observation["consent_receipt_ref"],
+        )
         self.capture_method = observation["capture_method"]
         self.capture_scope = observation["capture_scope"]
         self.api_level = observation["api_level"]
@@ -175,6 +182,9 @@ class UIObservationLease:
             self.active_for(runtime, generation_id)
             and self.source_id == observation.get("source_id")
             and self.receipt == observation.get("consent_receipt_ref")
+            and self.session_receipt_ref == observation.get(
+                "session_consent_receipt_ref", observation.get("consent_receipt_ref"),
+            )
             and self.capture_session_id == observation.get("capture_session_id")
             and self.capture_method == observation.get("capture_method")
             and self.capture_scope == observation.get("capture_scope")
