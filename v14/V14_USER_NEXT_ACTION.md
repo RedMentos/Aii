@@ -1,3 +1,12 @@
+## Core #2462 exact-head follow-up - 2026-11-24T05:16:34Z
+
+- The direct Runtime same-turn B1/B2-to-C4-to-C3 consumer step now PASSes on both Python 3.13 and 3.14. Each run confirms both body summaries reach the synthetic C3 context, C4-selected IDs match the template receipt, and tampered IDs are rejected.
+- Both same-turn workflow jobs still FAIL overall at the separate final staged-composition step. The staged-runtime job fails on the same immutable Runtime source pins; integrated-regression fails its single selected stage test for the same integrated_online_world Runtime pin mismatch.
+- Staged-runtime exact result: 32 failed, 243 passed, 10 skipped, 2 errors, 37 subtests. Integrated-regression: 1 selected test failed at the same pin. Owner-read tests PASS; the Python 3.14 staged installer self-test FAILs at the same source pin.
+- This supersedes the earlier 05:14 note that Python 3.14 was still pending. No pin was relaxed; no Redmi test or device action occurred. PR #2462 remains OPEN / NOT_RELEASED; Redmi remains REDMI_UNVERIFIED.
+
+---
+
 # Core & Harness - C4-to-C3 receipt checkpoint (2026-11-24T05:14:43Z)
 
 **Current code/test checkpoint:** PR #2462, branch core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1, code/test SHA 58f1587c7e8cbd5cb63c8c46afbd1c645c3e6c0f, based on release-development 8d93236c753f0194224c19edc7411d8d7082b1d6. The PR is DRAFT / OPEN / NOT_RELEASED.
