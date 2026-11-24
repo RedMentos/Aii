@@ -68,3 +68,12 @@ Boss/Integrator: rebind the exact source-lifecycle pin, compose this branch with
 **Integration handoff:** current vision.py is already an atomic/versioned Perception implementation: ingest serializes source/blob publication in store.tx; forget atomically tombstones the image source, invalidates affected global/tile projectors, and safely removes unshared artifacts; load/save use a Store-version CAS. Core's old lifecycle composer still expects the obsolete unversioned VISION_OLD, VISION_FORGET_OLD and VISION_STATE_OLD anchors. Updating only its pin will therefore not be sufficient: Core/Integrator must remove/rework those obsolete vision replacements, pin the exact SHA above, and include the Perception lineage/validation/RAW EYE modules in the staged source set. Keep the source pin fail-closed; do not bypass it.
 
 **Next:** Core/Boss rebind the source-lifecycle composer to this exact Perception implementation; QA reruns staged, integrated, migration and source-forget/restart checks on one exact integration SHA. PR #2463 remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.
+
+
+## Final exact-head poll — board checkpoint 5a2cd1f252f36f7220def2369be142fdcbb16916
+
+- The V14 work board now records PR #2463 under Research & Perception ticket V14-006 and the A5 UI-ingress evidence under shared ticket V14-009. The V14-006 status remains IN_PROGRESS_PARTIAL; no Canon acceptance was promoted.
+- On this exact board checkpoint: vision source-lineage workflow 45350475598 PASS on Python 3.13/3.14; MediaProjection RAW EYE ingress 45350475533 PASS on both; Perception privacy 45350475626 PASS; runtime deployment integrity 45350475751 PASS.
+- Staged/integrated workflow 45350475519 FAIL on both staged-runtime and integrated-regression. The exact failure remains unsupported lifecycle source: vision.py; staged suite reports 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests. Core same-turn workflow 45350475641: Python 3.13 consumer job FAIL (3 failed / 2 passed) because the same source-lifecycle builder refuses vision.py; Python 3.14 consumer job was still IN_PROGRESS at last poll.
+- The final board checkpoint does not change the tested code bytes: vision.py SHA-256 remains 23243f6a8e8d3ac79a40644aab186fcb4cff7a5e7d56f9b67bcae7cda2a1f8ae; code/test SHA remains 776dee972b92f0ac76afcdf4e9b0be7e408b1f5c. PR #2463 is OPEN / DRAFT / NOT_RELEASED.
+- This confirms the remaining block is shared source-composition integration, not a green end-to-end runtime. No merge, release, auto-update, model swap or device action was performed.
