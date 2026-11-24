@@ -35,7 +35,10 @@ def _nonnegative_count(value):
 def _finite_nonnegative(value):
     if type(value) not in (int, float) or isinstance(value, bool):
         return None
-    number = float(value)
+    try:
+        number = float(value)
+    except (OverflowError, TypeError, ValueError):
+        return None
     return round(number, 4) if math.isfinite(number) and number >= 0 else None
 
 
