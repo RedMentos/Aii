@@ -105,7 +105,7 @@ def evaluate_suite(
     primary_start: int = 15,
     primary_end: int = 60,
     report_horizons: Sequence[int] = (15, 30, 60),
-    block_days: int = 7,
+    block_len_minutes: int = 10080,
     n_resamples: int = 2000,
     bootstrap_seed: int = 17,
     batch_size: int = 256,
@@ -127,7 +127,7 @@ def evaluate_suite(
         error_series.append(errors)
     bootstrap = paired_block_bootstrap(
         error_series, reference_model=reference_model,
-        block_days=block_days, n_resamples=n_resamples, seed=bootstrap_seed,
+        block_len_minutes=block_len_minutes, n_resamples=n_resamples, seed=bootstrap_seed,
     )
     return {
         "schema": "m1.clean-room.experiment-result.v1",
