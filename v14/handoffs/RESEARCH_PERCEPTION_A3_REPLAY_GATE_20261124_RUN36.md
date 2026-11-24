@@ -46,3 +46,25 @@ REDMI_UNVERIFIED: no Redmi-side A3 training, screen-frame capture, native embedd
 ## Next concrete action
 
 Boss/Integrator: rebind the exact source-lifecycle pin, compose this branch with the audio/vision source composers, then run staged-runtime and integrated-regression on the resulting exact integration SHA. QA: exercise add → describe → train → look/find → forget → restart with source lineage intact. Only after that, request an authorized Redmi UI-frame/A3 test; do not deploy this branch as-is.
+
+
+## A3 snapshot-consistency follow-up — 2026-11-24
+
+**Concrete defect:** global and tile A3 training previously read the dataset from one vision-state snapshot, then loaded a newer state/version only after validation. If a teacher caption was updated between those steps, the candidate trained on stale captions could be committed against the newer Store version. The existing CAS therefore did not detect this particular stale-training window.
+
+**Change on exact branch head 776dee972b92f0ac76afcdf4e9b0be7e408b1f5c:**
+- dataset() and tile_dataset() now accept and validate a Store-bound _VersionedVisionState snapshot.
+- train() and train_tiles() capture that snapshot before reading rows and use it for captions, source lineage, previous projector and final CAS publication.
+- If a concurrent describe() changes a caption while cross-validation is running, final publication fails with Stale state write; the candidate artifact is removed, the newer caption remains, and no stale projector is committed.
+- Added separate global and tile concurrency regressions using an interleaved opposite-caption update. This is persistent Store-snapshot consistency, not a neural gradient/JEPA learning claim.
+
+**Exact CI evidence at 776dee972b92f0ac76afcdf4e9b0be7e408b1f5c:**
+- Vision source-lineage workflow 45349128200: Python 3.13 33 passed, Python 3.14 33 passed; py_compile PASS on both. Exact vision.py SHA-256 from CI: 23243f6a8e8d3ac79a40644aab186fcb4cff7a5e7d56f9b67bcae7cda2a1f8ae.
+- MediaProjection RAW EYE ingress workflow 45349128231: Python 3.13 39 passed, Python 3.14 39 passed.
+- Perception privacy scan 45349128338: PASS.
+- Staged Runtime workflow 45349128416: FAIL — 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests. Exact root error remains ValueError: unsupported lifecycle source: vision.py in scripts/source_lifecycle_lock_integration_candidate.py:172; migration cases report PARTIAL rather than UPDATED. This is the integration-owner source pin/composer mismatch, not a failure in the focused A3 tests. Integrated-regression was still running at the last poll; no pass is claimed.
+- Full LOCAL_LINUX Aii checkout is not mounted; full local suite NOT_RUN/BLOCKED. No Redmi test, model, weight, permission, data or deployment change.
+
+**Integration handoff:** current vision.py is already an atomic/versioned Perception implementation: ingest serializes source/blob publication in store.tx; forget atomically tombstones the image source, invalidates affected global/tile projectors, and safely removes unshared artifacts; load/save use a Store-version CAS. Core's old lifecycle composer still expects the obsolete unversioned VISION_OLD, VISION_FORGET_OLD and VISION_STATE_OLD anchors. Updating only its pin will therefore not be sufficient: Core/Integrator must remove/rework those obsolete vision replacements, pin the exact SHA above, and include the Perception lineage/validation/RAW EYE modules in the staged source set. Keep the source pin fail-closed; do not bypass it.
+
+**Next:** Core/Boss rebind the source-lifecycle composer to this exact Perception implementation; QA reruns staged, integrated, migration and source-forget/restart checks on one exact integration SHA. PR #2463 remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.
