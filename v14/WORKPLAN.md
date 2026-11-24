@@ -20,7 +20,7 @@ The code was selectively copied from the immutable pre-reset snapshot after insp
 
 ## Next implementation order
 
-1. Run and inspect the new Raw-Window-Probe/Raw-Window-MLP tests on Python 3.13 and 3.14. Fix any failures before treating the controls as verified. Check exact input parity, train-only fitting, deterministic seeds, bounded batches and parameter counts.
+1. Run and inspect the new Raw-Window-Probe/Raw-Window-MLP and paired block-bootstrap tests on Python 3.13 and 3.14. Fix any failures before treating the controls as verified. Check exact input parity, train-only fitting, deterministic seeds, bounded batches and parameter counts.
 2. Add the experiment runner and common metric/statistics layer: multi-output horizons 15/30/60, primary average MAE over 15–60, per-horizon/per-channel metrics, paired temporal block bootstrap over days/weeks, same blocks across models and seeds, seed variance reported separately.
 3. Implement the direct-MAE model and JEPA representation path with the same data bundle, target horizon, training/validation protocol and probe capacity. Keep Random-Encoder-Probe and raw controls; include effective-rank/collapse telemetry.
 4. Complete M1a at T=1 first: backpropagation, baselines, collapse checks, reload/persistence and exact input parity. No test-year access before preregistration hash enforcement.
