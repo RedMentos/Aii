@@ -11,6 +11,7 @@ import torch
 
 from experiments.m1.array_data import ArrayDataset
 from experiments.m1.data import DataConfig, MinuteRow
+from experiments.m1.gru import RawGRUForecaster
 from experiments.m1.jepa import (
     DirectMAEForecaster,
     FrozenContextProbe,
@@ -190,6 +191,20 @@ class JEPAModelTests(unittest.TestCase):
         prediction = predictor.predict(batch)
         self.assertEqual(prediction.shape, batch.target.shape)
         self.assertTrue(np.isfinite(prediction).all())
+
+    def test_raw_gru_uses_common_inputs_and_trains(self):
+        model = RawGRUForecaster(self.config, hidden_size=12, num_layers=1)
+        history = train_direct_mae(
+            model, self.dataset, epochs=1, batch_size=32, seed=27
+        )
+        self.assertTrue(np.isfinite(history[0]["mae"]))
+        batch = next(self.dataset.iter_batches("validation", batch_size=8))
+        prediction = model(
+            torch.as_tensor(batch.inputs.x),
+            torch.as_tensor(batch.inputs.seasonal),
+            torch.as_tensor(batch.inputs.calendar),
+        )
+        self.assertEqual(prediction.shape, batch.target.shape)
 
     def test_direct_mae_training_and_forecast_shape(self):
         model = DirectMAEForecaster(self.config)
