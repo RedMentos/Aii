@@ -1510,3 +1510,30 @@ Read-only private owner-relay requests for HEALTH, PIPELINE_STATUS and DIAGNOSTI
 **V14 consequence:** The streaming/segmented feature-extraction idea may inform a future bounded A0 RAW EAR path, but must preserve timestamps, prosody, speaker and non-speech cues; it is not an ASR replacement and does not satisfy the full voice architecture. Do not port the CNN or claim Redmi suitability without ARM/Linux and actual Redmi RSS/latency/quality measurements. No code or weights reused.
 
 **Status:** FULL_PEER_REVIEWED_ARTICLE / CC-BY-4.0-PAPER / NO_CODE_REUSE / RESEARCH_ONLY / REDMI_UNVERIFIED.
+
+
+## R-144 — Continual-learning rules shape representational drift (2026-11-25)
+
+**Primary paper read in full:** Yikai Si & Shanshan Qin, *Continual-learning rules shape representational drift*, arXiv:2608.16141, submitted 2026-08-17; preprint, no peer-reviewed venue identified in the paper. Full HTML text, experiments, methods, code availability and limitations were reviewed: https://arxiv.org/abs/2608.16141.
+
+**Evidence:** The CNN experiment used ResNet-18-GN/WS trained end-to-end on the first 100 ImageNet-1k classes as 20 sequential five-class tasks, with the same task-1 probe set evaluated at every checkpoint. Replay used 300 examples per class. Replay preserved earlier-task performance while individual probe representations drifted with task separation; later visual stages drifted faster than early stages while coarse class geometry remained more stable. LwF produced intermediate drift. Strong EWC (λ=5×10^5) nearly froze representations but acquired later tasks poorly; directly anchoring task-1 activations during replay also suppressed drift and impaired later acquisition. The RNN track used 18 cognitive tasks and replay; EWC/LwF did not yield sufficiently reliable RNN continual-learning performance for an interpretable comparison.
+
+**Limitations:** The CNN protocol was task-incremental with task identity available at evaluation; EWC was a freezing reference, not a performance-matched control; RNN evidence is only naive-vs-replay; task order was not varied. These are ImageNet/controlled cognitive-task experiments, not mobile or multimodal Android measurements.
+
+**OSS/license:** Reproduction code is at https://github.com/yksi2023/cl-drift, latest inspected commit `236cda6aff92030d43dd61c585259742a8aff181` (2026-08-15). README says CUDA GPU required for training and ImageNet is required for CNN experiments. No LICENSE file was found (404); no code/data/weights reused.
+
+**V14 consequence:** For future genuinely trainable organs, evaluate functional retention and new-task acquisition alongside layer-/organ-wise representation drift on a fixed, source-disjoint probe set. Drift is not automatically failure; zero drift is not a valid universal objective. Keep this separate from the current A3 linear ridge head, which is not a deep representation learner. Do not freeze teacher/target weights permanently on this basis.
+
+**Status:** FULL_PREPRINT_REVIEWED / OSS_LICENSE_UNVERIFIED_NO_REUSE / RESEARCH_ONLY / NO_ANDROID_MEASUREMENT.
+
+## R-145 — FlyGCL: brain-inspired hierarchical modularity for general continual learning (2026-11-25)
+
+**Primary paper read in full:** Hongwei Yan et al., *Brain-inspired hierarchical modularity for general continual learning*, arXiv:2609.25146, submitted 2026-09-21; preprint. Full HTML paper, methods, experiments and limitations/open directions were reviewed: https://arxiv.org/abs/2609.25146.
+
+**Method/evidence:** FlyGCL combines sparse/random expansion for instance-level expert routing (specialization) with spatially and temporally diversified prediction heads (ensemble integration) over pretrained representations. It evaluates online, blurry streams across visual recognition, vision-language, ego-exo video and vision-language-action. The paper reports >49 percentage-point improvements over the strongest replay-free baselines on LIBERO Spatial/Object in its setup; this is benchmark-specific, not an Android result. The biological-mechanism package uses a fixed 50-D odor input → 1,300 ORNs → 50 PNs → 2,000 KCs (top 5%) → spatial experts → one/three temporal heads; only downstream bias-free linear heads train, and the experiment reports no replay. The broader vision/VLM/VLA packages use ViT-B/16, CLIP ViT-B/16 and a DiT flow-matching policy.
+
+**OSS/license/revision:** Official implementation https://github.com/THU-NeuroML/FlyGCL, MIT License (LICENSE blob `c2db55a05f6698337940722954d3fe277bad56c9`), latest inspected commit `f099faca684799e75f67f9f7fe6b6ee728167652` (2026-11-23). Packages are deliberately separate; biological demo requirements include NumPy/SciPy/PyTorch, visual recognition pins PyTorch 2.5.1, torchvision/torchaudio 0.20.1, timm, OpenCV, scikit-learn, pandas, matplotlib and W&B. The README's ~15 s CPU demo was measured on Apple M4 Pro, Python 3.12, two CPU threads; it is not a Redmi benchmark. No code, weights or datasets were imported.
+
+**V14 consequence:** This is a useful research reference for coordinating specialization and multi-timescale integration rather than treating MoE and ensemble learning as isolated alternatives. It does not supply trained B1/B2 bodies, true cross-organ latent coupling, or a mobile-ready implementation. Keep as a candidate for a later bounded B1/B2 synthetic/CPU ablation only after dependency and memory costs are measured; no direct port or model swap.
+
+**Status:** FULL_PREPRINT_REVIEWED / OSS_MIT_VERIFIED / RESEARCH_ONLY / NO_ANDROID_MEASUREMENT.
