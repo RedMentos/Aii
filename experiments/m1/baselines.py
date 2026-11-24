@@ -123,6 +123,7 @@ class _LinearARBase:
         self.feature_scale: np.ndarray | None = None
         self.weights: np.ndarray | None = None
         self.n_train_windows = 0
+        self.n_scaler_windows = 0
         self.selected_ar_lags: tuple[int, ...] = ()
 
     def _raw_features(self, batch: WindowBatch) -> np.ndarray:
@@ -132,7 +133,8 @@ class _LinearARBase:
     def _fit_scaler(self, dataset: ArrayDataset, batch_size: int) -> None:
         total = total_sq = None
         count = 0
-        for batch in dataset.iter_batches("train", batch_size=batch_size):
+        full_batch_iterator = getattr(dataset, "iter_full_batches", dataset.iter_batches)
+        for batch in full_batch_iterator("train", batch_size=batch_size):
             x = self._raw_features(batch)
             if total is None:
                 total = np.zeros(x.shape[1], dtype=np.float64)
@@ -147,7 +149,7 @@ class _LinearARBase:
         scale = np.sqrt(variance)
         self.feature_mean = mean
         self.feature_scale = scale
-        self.n_train_windows = count
+        self.n_scaler_windows = count
 
     def _design(self, batch: WindowBatch) -> np.ndarray:
         if self.feature_mean is None or self.feature_scale is None:
@@ -172,9 +174,12 @@ class RidgeARBaseline(_LinearARBase):
     name = "ridge_ar_l2"
 
     def fit(self, dataset: ArrayDataset, *, batch_size: int = 256) -> "RidgeARBaseline":
+        self.n_train_windows = 0
         self._fit_scaler(dataset, batch_size)
         gram = cross = None
+        fit_windows = 0
         for batch in dataset.iter_batches("train", batch_size=batch_size):
+            fit_windows += len(batch.origin_indices)
             design = self._design(batch)
             target = batch.target.reshape(len(design), -1).astype(np.float64)
             if gram is None:
@@ -187,6 +192,7 @@ class RidgeARBaseline(_LinearARBase):
         penalty = np.eye(gram.shape[0], dtype=np.float64) * self.alpha
         penalty[0, 0] = 0.0
         self.weights = np.linalg.solve(gram + penalty, cross)
+        self.n_train_windows = fit_windows
         return self
 
 
@@ -218,6 +224,7 @@ class LADARBaseline(_LinearARBase):
 
     def fit(self, dataset: ArrayDataset, *, batch_size: int = 256) -> "LADARBaseline":
         self.epoch_losses = []
+        self.n_train_windows = 0
         self._fit_scaler(dataset, batch_size)
         weights = None
         first_moment = second_moment = None
@@ -225,9 +232,11 @@ class LADARBaseline(_LinearARBase):
         for epoch in range(self.epochs):
             absolute_sum = 0.0
             element_count = 0
+            fit_windows = 0
             for batch in dataset.iter_batches(
                 "train", batch_size=batch_size, shuffle=True, seed=self.seed + epoch
             ):
+                fit_windows += len(batch.origin_indices)
                 design = self._design(batch)
                 target = batch.target.reshape(len(design), -1).astype(np.float64)
                 if weights is None:
@@ -249,6 +258,7 @@ class LADARBaseline(_LinearARBase):
                 raise ValueError("no accepted training windows for LAD AR")
             penalty_value = 0.5 * self.alpha * float(np.square(weights[1:]).sum())
             self.epoch_losses.append(absolute_sum / element_count + penalty_value)
+            self.n_train_windows = fit_windows
         self.weights = weights
         return self
 
