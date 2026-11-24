@@ -1857,7 +1857,7 @@ R-109 reviews the official Android MediaProjection guide (updated 2026-11-19). A
 
 - A3 source-scoped ridge deletion candidate: [PR #2477](https://github.com/RedMentos/Aii/pull/2477), draft and stacked on Core's source-lifecycle PR #2465. It adds a source-hash-bound exact rebuild path for the A3 global/tile ridge heads after explicit image forget; scaled replay updates deliberately fall back to conservative invalidation.
 - LOCAL_LINUX: 750 synthetic algebra comparisons on CPython 3.13.5 / NumPy 2.3.5 matched a fresh standardized ridge fit to max relative parameter error 2.84e-10. This is not a full repository test. Exact Python 3.13/3.14 CI is pending.
-- Core must include the new v13/code/v13/vision_projector_stats.py in its materialized source closure and rebind the exact changed vision.py hash. No hash check is bypassed.
+- Core must include the new v13/code/v13/vision_projector_stats.py (SHA-256 ea13bc756e4846cfd6fb200ee16330a01a295ae7320c8e4d788f09e9ae3eaf5a) in its materialized source closure and rebind the exact changed vision.py hash. No hash check is bypassed.
 - Redmi/Termux: REDMI_UNVERIFIED. No device receipt, updater call, model/weight change, permission change or user-data action was made. No release/deployment is claimed.
 - User action: **none**. No model download/swap or manual Termux command is requested.
 - Next internal action: read back exact-head CI, then coordinate Core/QA's composer dependency closure and rerun staged/integrated/migration tests.
