@@ -71,8 +71,9 @@ class DataConfig:
             raise ValueError("validation_start and test_start must be set together")
         if self.validation_start is not None:
             v, t = datetime.fromisoformat(self.validation_start), datetime.fromisoformat(self.test_start)
-            if v >= t or v.second or v.microsecond or t.second or t.microsecond:
-                raise ValueError("calendar split timestamps must be ordered and minute-aligned")
+            if (v.tzinfo is not None or t.tzinfo is not None or v >= t
+                    or v.second or v.microsecond or t.second or t.microsecond):
+                raise ValueError("calendar split timestamps must be naive, ordered and minute-aligned")
 
     @property
     def required_gap(self) -> int:
