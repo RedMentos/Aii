@@ -4,7 +4,7 @@
 
 - Release-development base: `gpt6/v13-private-remote-bridge-20261111` at `8d93236c753f0194224c19edc7411d8d7082b1d6`.
 - Current Perception PR: [#2472](https://github.com/RedMentos/Aii/pull/2472), branch `research-perception/v14-a4-audio-source-outcomes-current-20261124-run16`.
-- Exact PR head after this checkpoint: `8df6a16fd5dced71a2643eae141f9f204fc66855`.
+- Code-bearing checkpoint SHA: `8df6a16fd5dced71a2643eae141f9f204fc66855`. Subsequent branch commits in this run only updated handoff/workplan/board documentation.
 - Commits: source `c5a68bafed30365eec7719c56f190b76f9061ea9`; regression `87dc1cc8a2a27fb74188a3c1ef66559e87830ac3`; comparator source-pin update `8df6a16fd5dced71a2643eae141f9f204fc66855`.
 - Exact readback blobs: `audio_temporal_evidence.py=f5fcab22e5d5463bcc3e1ab1a5ce4a586deb4b3e`; `test_audio_temporal_evidence.py=6f16afa97a04d4f0da9ab37a95cad38a25413fce`; `v14-raw-ear-vad-comparison.yml=76389ccba3d68c121c26876a5f5eb6f99f111375`.
 
