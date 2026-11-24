@@ -37,3 +37,8 @@ Exact GitHub Actions for this follow-up are pending until the branch is pushed. 
 Core/QA still owns the materialized source-lifecycle composer. It must include vision_projector_stats.py with its exact SHA and rebind the changed vision.py source pin before the staged consumer can pass. Do not relax source hashes.
 
 No Android/Termux/Redmi, microphone, native model, model/weight update, user-data mutation, permission change, or deployment was performed. **REDMI_UNVERIFIED / NOT_RELEASED.** No user action is required.
+
+
+## Exact PR trigger coverage
+
+The existing vision/source-lineage workflow's push path filter already included the helper and helper tests, but its pull_request path filter omitted both. PR #2484 therefore extends that filter and the compile step so the exact fresh-root regression runs as a required PR-triggered check, not merely on branch push. The Python 3.13/3.14 workflow remains the same bounded test environment.
