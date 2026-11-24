@@ -1904,3 +1904,17 @@ R-109 reviews the official Android MediaProjection guide (updated 2026-11-19). A
 ### PR head reconciliation
 
 - PR #2484 latest exact metadata readback: head dbf9221e1abc579ab298441020fdc28a24cfa737, DRAFT and mergeable. Last functional code commit is 621f42db8953acf7a512d8a4164341bc9bbc7683; subsequent commits only updated handoff/board evidence. No PR-triggered workflow runs are returned for the exact PR head, so CI remains unverified.
+
+
+## Research & Perception — run 21, 2026-11-25
+
+**PR [#2484](https://github.com/RedMentos/Aii/pull/2484), branch `research-perception/v14-a3-source-stats-dirfd-create-20261124-run20`, exact code/test commit `8d0861188a61290366cd2aa377edcfac0c625610` (NOT_RELEASED).**
+
+- A3 source-stat bootstrap now also hardens pre-existing `data/` and `data/vision/` directories. It verifies the opened inode is a directory owned by the effective user, applies `fchmod(0700)` through the already-open descriptor, and verifies the resulting mode. This closes the legacy-directory case where a previous Projector save may have left a 0755 directory; no path-based chmod or symlink following is used.
+- Added `test_existing_permissive_stats_directories_are_hardened`: starts with both directories at 0755, runs the production source-stat builder, and requires 0700 directories plus 0600 artifacts.
+- **LOCAL_LINUX, CPython 3.13.5:** isolated dir-fd helper harness PASS 4/4: fresh directory creation/modes, legacy 0755 hardening, first-level `data` symlink rejection, and second-level `vision` symlink rejection. This executes the exact helper logic in an isolated harness, not the full Aii package. Full repository pytest/py_compile remains NOT_RUN because no local Aii checkout is mounted.
+- **GitHub exact-head readback:** PR #2484 is OPEN/DRAFT/MERGEABLE at `8d0861188a61290366cd2aa377edcfac0c625610`, based on #2477 `dd7e841a4047072dd9bc7dc33d7ad34bb94bf867`. Four relevant workflows were observed IN_PROGRESS: vision source-lineage run 45506945163, staged context/integrated regression 45506945574, runtime deployment integrity 45506945185, and MediaProjection RAW EYE ingress 45506945923. No CI PASS is claimed until exact results are read back.
+- **Consumer:** `vision.train()` / `train_tiles()` → `build_source_statistics()` → descriptor-relative A3 stats storage. The files remain local-only; Runtime status exposes only bounded count/mode fields. This is A3 ridge-head deletion support, not feature-extractor or model-weight unlearning.
+- **Integration:** #2484 remains stacked on #2477, then Core #2465. Core/QA still owns the materialized source closure and exact hash rebinds; do not relax pins or merge this stack before staged/integrated/consumer/migration checks pass.
+- **Device/release:** REDMI_UNVERIFIED; no connected phone receipt, Termux test, model/weight/permission change, UPDATE_REQUEST, or deployment. The latest available private device evidence remains the 2026-11-24 metadata-only snapshot; current release-development SHA 8d93236 is not confirmed installed.
+- **User action:** none. No manual Termux command or model download/swap is required.
