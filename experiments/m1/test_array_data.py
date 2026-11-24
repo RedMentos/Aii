@@ -67,7 +67,7 @@ class DirectUCIArrayTests(unittest.TestCase):
                 input_length=5, horizon=2, max_candidate_input_length=5,
                 seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
             )
-            dataset = ArrayDataset.from_uci(path, config)
+            dataset = ArrayDataset.from_uci(path, config, allow_fractional_split=True)
             self.assertEqual(dataset.channels, channels)
             self.assertEqual(dataset.dataset_sha256, dataset_sha256(rows, channels))
             self.assertEqual(dataset.split_sha256, split_boundaries_sha256(rows, config))
@@ -76,6 +76,17 @@ class DirectUCIArrayTests(unittest.TestCase):
             batch = next(dataset.iter_batches("train", batch_size=16))
             # The missing row at index 12 rejects origins 10..16; only 9 of the first 16 candidates survive.
             self.assertEqual(batch.inputs.x.shape, (9, 5, 2))
+
+    def test_uci_loader_rejects_fraction_split_without_explicit_fixture_override(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "uci.txt"
+            self._write_uci(path)
+            config = DataConfig(
+                input_length=5, horizon=2, max_candidate_input_length=5,
+                seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
+            )
+            with self.assertRaisesRegex(ValueError, "fixed calendar split dates"):
+                ArrayDataset.from_uci(path, config)
 
     def test_two_pass_array_loader_rejects_nonfinite_values(self):
         with tempfile.TemporaryDirectory() as directory:
