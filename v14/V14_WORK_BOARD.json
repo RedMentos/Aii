@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T09:18:00Z",
+  "updated_at": "2026-11-24T13:47:10+01:00",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -196,19 +196,22 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Perception code commit 14d6b6338db5e4d965a27bac9a3d7301576496d6 adds explicit first-frame status=WARMUP; existing A5 ingress regression now passes. Exact focused CI: frame ingress 39/39 and vision source-lineage 29/29 on Python 3.13 and 3.14. Staged/integrated/consumer still FAIL because Boss-owned source_lifecycle_lock_integration_candidate.py:172 rejects current vision.py; staged summary 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests, consumer 3 failed / 2 passed on both Python versions, migration PARTIAL. Current Perception vision.py Git blob 3cb25adff1fa917ca87ca00190a70c8c3b838140; Boss/Integrator PR #2443 must recompose the implementation and source-forget path, not only swap the hash, then rebind downstream pins and rerun exact matrix. R-117 is appended branch-locally; reconcile R-108–R-116 on integration. Keep Android capture and model/weight changes OFF; no Redmi test. User action NONE. Final exact-head 01889a readback: 8 SUCCESS / 4 FAILURE / 1 policy SKIPPED / 0 pending; all four failures converge on the same unsupported vision.py lifecycle source. No merge/release.",
+      "proof_environment": "LOCAL_LINUX isolated helper harness; CI synthetic Store/vision consumer; staged runtime BLOCKED by Boss source-lifecycle composer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
+      "next_step": "Boss/Integrator PR #2443 must rebind the exact current vision.py SHA-256 350573e65eb445b8b83f5517e3bfe07ece04e036055c55fc3e23c79d5b0cc728 and compose the complete imported dependency closure (vision_source_lineage.py, vision_validation.py, vision_temporal_evidence.py, vision_temporal_adaptation.py, vision_ui_frame_ingress.py); then rerun staged-runtime, integrated-regression, both consumers and migration. Keep source-forget and strict hash checks; do not bypass the composer. Perception next researches near-duplicate source grouping and source-level uncertainty after integration.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T10:18:00+01:00",
+      "last_checkpoint": "2026-11-24T13:47:10+01:00",
       "latest_candidate_pr": {
         "pr": 2463,
-        "head_sha": "01889a6a76e4283eda9f21421b2a3be72ee45c7d",
-        "tested_code_sha": "14d6b6338db5e4d965a27bac9a3d7301576496d6",
+        "head_sha": "2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d",
+        "tested_code_sha": "2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d",
         "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
-        "state": "OPEN_DRAFT_NOT_RELEASED_EXACT_HEAD_CI_8_SUCCESS_4_FAILURE_1_SKIPPED",
-        "ci": "EXACT_HEAD_01889A: 8_SUCCESS_4_FAILURE_1_POLICY_SKIPPED_0_PENDING; FRAME_INGRESS_39_OF_39_PY313_AND_314; VISION_SOURCE_LINEAGE_29_OF_29_PY313_AND_314; OFFLINE_PRIVACY_SECURITY_PASS; STAGED_19_FAILED_234_PASSED_10_SKIPPED_2_ERRORS; INTEGRATED_1_FAILURE; CONSUMER_3_FAILED_2_PASSED_ON_PY313_AND_314; ROOT_UNSUPPORTED_LIFECYCLE_SOURCE_VISION_PY"
+        "state": "OPEN_DRAFT_FOCUSED_CI_PASS_STAGED_COMPOSER_BLOCKED",
+        "ci": "EXACT_HEAD_2FC: VISION_SOURCE_LINEAGE_39_OF_39_PY313_AND_314; FRAME_INGRESS_39_OF_39_PY313_AND_314; OFFLINE_3.11_AND_3.14_PASS; PRIVACY_PASS; OFFLINE_BRIDGE_SECURITY_PASS; SAME_REPO_GUARD_PASS; STAGED_19_FAILED_234_PASSED_10_SKIPPED_2_ERRORS_41_SUBTESTS; INTEGRATED_1_FAILURE; CONSUMER_PY313_3_FAILED_2_PASSED; CONSUMER_PY314_IN_PROGRESS_AT_LAST_POLL; ROOT_UNSUPPORTED_LIFECYCLE_SOURCE_VISION_PY",
+        "code_commit_sha": "12f4e70113cc117087960c5b137e1afbc62dd14b",
+        "regression_commit_sha": "3767112e63e9d4e66fdc2ebcddd3555bcd9affdb",
+        "workflow_commit_sha": "2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d"
       },
-      "proof": "First-frame A5 UI ingress returns explicit WARMUP instead of raising KeyError; later frames can produce MEASURED temporal evidence. CI synthetic consumer only. A3 global/tile source-bound ridge projector and Store snapshot/CAS lineage remain in PR #2463. No Android MediaProjection provider, no real handset frame, no native model, no Redmi latency/RSS, no persistent body-weight update or trained latent coupling."
+      "proof": "A3 global and tile projector update gates now evaluate the previous projector only on source IDs absent from its exact training_sources lineage. Changed captions for previously trained source IDs remain candidate-training data but are excluded from the baseline holdout. Missing/malformed/mismatched prior lineage or no new source groups fails closed to NO_NEW_SOURCE_GROUPS and retains the old artifact. Exact CI on head 2fc06a7: vision/source-lineage 39/39 on Python 3.13 and 3.14; frame ingress 39/39 on both; py_compile passed; offline, privacy, offline-bridge-security and same-repo guard passed. Staged/integrated still fail at source_lifecycle_lock_integration_candidate.py:172 with unsupported lifecycle source: vision.py. Synthetic Store fixtures only; not neural JEPA/latent coupling, not Redmi proof. Latest private V13OBS #115 snapshot: installed base 8d93236, auto-update enabled/UP_TO_DATE/no error, but STOPPED_BY_USER, model process STOPPED, native residency unavailable; no update request or device action."
     },
     {
       "id": "V14-007",

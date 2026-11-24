@@ -1827,3 +1827,28 @@ R-109 reviews the official Android MediaProjection guide (updated 2026-11-19). A
 **Current authenticated device boundary:** V13OBS #115 (2026-11-24 07:39:27 UTC) reports installed Runtime/Dashboard `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled and no updater error. AI remains `STOPPED_BY_USER`, autostart false, model process stopped and native residency unavailable. Five-turn body-delivery metadata remains zero valid B1/B2 offers and TIME_BUDGET 53.2/54.2 s. This is not a new functional test. Candidate #2463 is NOT_INSTALLED; REDMI_UNVERIFIED. No CHAT_SEND, UPDATE_REQUEST, LOG_PAGE, shell, restart, model/weight/permission change or data mutation was performed.
 
 **Next internal action:** Boss/Integrator #2443 must recompose the current Perception `vision.py` and source-forget lifecycle (the old VISION_* anchors are stale), rebind downstream pins bottom-up, and rerun staged/integrated/consumer/migration/privacy. User action: NONE; preserve STOPPED_BY_USER and do not issue a manual Termux command.
+
+
+## Research & Perception — run 38, 2026-11-24
+
+**Current candidate:** PR [#2463](https://github.com/RedMentos/Aii/pull/2463), branch head `2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d`, release base `8d93236c753f0194224c19edc7411d8d7082b1d6`. PR remains OPEN / DRAFT / NOT_RELEASED.
+
+**A3 change:** the previous projector is now compared only on genuinely unseen source IDs. The old projector's exact `training_sources` lineage must be well-formed and agree with the source IDs represented by its saved caption keys. New evaluation rows are limited to current source IDs absent from that prior lineage. A changed caption on a source the old projector already saw remains candidate-training data but is not an independent baseline holdout. Missing/malformed/mismatched lineage or no new source groups fails closed to `NO_NEW_SOURCE_GROUPS`; the old artifact is retained. The shared helper is used by both global and tile projector training.
+
+**Exact-head CI:** `py_compile` PASS; vision/source-lineage 39/39 on Python 3.13 and 39/39 on Python 3.14; RAW EYE frame ingress 39/39 on both. Offline 3.11/3.14, privacy, offline-bridge-security and same-repo guard PASS. Staged runtime FAIL: 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests. Integrated regression FAIL: 1. Consumer Python 3.13 FAIL: 3 failed / 2 passed; Python 3.14 was still IN_PROGRESS at last poll. The repeated root exception is Boss-owned `source_lifecycle_lock_integration_candidate.py:172`: `unsupported lifecycle source: vision.py`. This candidate is not integrated or released.
+
+**Local test:** Python 3.13.5 isolated helper harness, `python -m py_compile` PASS and `pytest -q /tmp/test_a3_source_holdout.py` PASS (3 tests). This is not the full Aii checkout or full Aii suite. Full local checkout is unavailable in this environment; GitHub DNS/clone access failed. CI ran the exact committed repository source.
+
+**Current source SHA-256 (identical on CI Python 3.13/3.14):**
+- `vision.py`: `350573e65eb445b8b83f5517e3bfe07ece04e036055c55fc3e23c79d5b0cc728`
+- `vision_source_lineage.py`: `bb63636c9ae84d345fe1f4e37254de3be87c26990cb320ca058859fd0b51b72f`
+- `vision_validation.py`: `5040c5672dc8cf263fccce132787ae138a29494ab4a67709d7d3689a849f57b6`
+- `vision_temporal_evidence.py`: `f2345aae29b81d7d07925801b7c5ce4c490c872c9e926b6b12837a5f468c5c88`
+- `vision_temporal_adaptation.py`: `a28dc8b9b3860622a2068b96763eb0885d88951a93aaad3e45ed47e593e8b5bb`
+- `vision_ui_frame_ingress.py`: `3ff590921e225e5ecfbdbc6f126e1b036915a03ec8db80b8aa5ca64869d4e905`
+
+**Device/deployment:** latest private V13OBS #115 snapshot updated 2026-11-24 09:28:11 UTC reports base `8d93236`, auto-update enabled and pipeline UP_TO_DATE/no updater error. AI is STOPPED_BY_USER, model process STOPPED, native residency UNAVAILABLE; B1/B2 still TIME_BUDGET. No new owner receipt, UPDATE_REQUEST, CHAT_SEND, restart, shell, model/weight/permission change or data mutation. Candidate #2463 is NOT_INSTALLED; REDMI_UNVERIFIED.
+
+**Research:** R-133 reviews Geras & Sutton, “Multiple-source cross-validation,” ICML 2013/PMLR 28:1292–1300. The full paper supports source-level holdouts as a better estimate of out-of-source generalization than row-wise splits under source shift; its Amazon review-domain experiments are not an image or Android study. No code, dataset, weights or dependency were imported. Next research: near-duplicate image/source grouping and source-level uncertainty; do not treat distinct IDs as automatically independent.
+
+**Next internal action:** Boss/Integrator must recompose the exact current Perception source closure and strict pins, then rerun staged/integrated/consumer/migration. User action: NONE; preserve STOPPED_BY_USER and do not issue a manual Termux command.

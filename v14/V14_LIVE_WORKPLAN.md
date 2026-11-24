@@ -1328,3 +1328,14 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - Research ledger now carries R-084 and R-090–R-107 append-only. R-096 engram gate is synthetic and has no old-task retention win; not sparse MoE. R-107 FAR is a preprint and sony/far is CC BY-NC 4.0 with CUDA 12.8 / 14 GB GPU environment; conceptual only, no code/weights reused.
 - Next: wait for later PIPELINE_STATUS; recompose fair B1/B2→C4→C3; wire production ActionSelection context SourceRefs; rebase temporal/episodic JEPA; continue voice, Android agency, B3, sparse MoE, self-optimization and all Canon families.
 - **User action required: NONE.** Auto-updater enabled; no manual command or duplicate UPDATE_REQUEST.
+
+
+## Research & Perception — run 38, 2026-11-24
+
+A3 source-disjoint baseline integrity fix is now on PR #2463, head `2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d` (base `8d93236`). The global and tile projector update paths share `_projector_validation_inputs`: prior `training_sources` must exactly match prior caption-key source IDs; only current source IDs absent from that lineage form the baseline holdout. Changed captions on seen sources remain training inputs but are not test rows. No new source group or unverifiable lineage means `NO_NEW_SOURCE_GROUPS` and old-artifact retention.
+
+Exact CI on this head: vision/source-lineage 39/39 on Python 3.13 and 3.14; RAW EYE frame ingress 39/39 on both; py_compile, offline 3.11/3.14, privacy, offline-bridge-security and same-repo guard PASS. Staged-runtime 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests; integrated-regression 1 failure; consumer 3.13 3 failed / 2 passed; consumer 3.14 was still running at last poll. All observed integrated failures remain the Boss-owned strict source-lifecycle composer rejecting `vision.py`, not a failure in the focused Perception suites.
+
+Local Linux Python 3.13.5 isolated helper harness: 3/3 PASS. Full Aii checkout/suite not run locally; GitHub DNS/clone access unavailable. This is a synthetic Store/CI result, not a neural JEPA update, trained latent transfer, Android capture or Redmi test. The latest private V13OBS #115 snapshot still says STOPPED_BY_USER and model process STOPPED; auto-update is enabled on installed base `8d93236`, but candidate #2463 is not installed. No device command or update request.
+
+Next: Boss/Integrator rebind the current exact source hashes and include the full imported dependency closure, then rerun staged/integrated/consumer/migration. Perception then measures near-duplicate source grouping and source-level uncertainty. User action: NONE.
