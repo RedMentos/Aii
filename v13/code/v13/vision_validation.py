@@ -75,7 +75,7 @@ def source_disjoint_crossval(projector_cls, X, Y, groups, labels, *, thumbs=None
         }
     if len(eval_groups) < 2:
         return {
-            "status": "INSUFFICIENT_EVALUATION_SOURCE_GROUPS",
+            "status": "INSUFFICIENT_SOURCE_GROUPS" if evaluation_scope == "ALL_SOURCES" else "INSUFFICIENT_EVALUATION_SOURCE_GROUPS",
             "split": "SOURCE_DISJOINT",
             "authority": "MEASUREMENT_ONLY",
             "evaluation_scope": evaluation_scope,
