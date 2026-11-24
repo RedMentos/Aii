@@ -47,8 +47,10 @@ The change prevents reordered A5 frame intervals from becoming false temporal de
 - A5 temporal consumer: code present and exact synthetic/fixture CI passing.
 - Android MediaProjection/provider and real UI frame feed: NOT_VERIFIED.
 - Native A3/V-JEPA inference and cross-organ learned latent exchange: NOT_VERIFIED.
-- Redmi/Termux: REDMI_UNVERIFIED; no handset was connected for this run.
-- Deployment: NOT_RELEASED. A GitHub push is not a device deployment. No model, weights, permissions, user data, or updater settings were changed.
+- Latest available private V13OBS #115 snapshot (2026-11-24 09:28 UTC; historical, not a fresh receipt for this run): Runtime/Dashboard UP_TO_DATE at `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled; AI `STOPPED_BY_USER`, autostart false, model process STOPPED, zero managed native model processes and native residency unavailable. This does not show PR #2469 installed.
+- The same stored metadata reports zero valid B1/B2 offers and TIME_BUDGET aggregates of 53.2/54.2 s. A short stored C3 turn (358 admitted tokens, 7 generated, ~2.05 s TTFT, ~6.30 s total) is not a new test and correctness remains UNKNOWN.
+- New read-only relay requests returned NO_LIVE_RECEIPT at this checkpoint. No CHAT_SEND, UPDATE_REQUEST, LOG_PAGE, shell, process restart or device mutation was performed.
+- Redmi/Termux: REDMI_UNVERIFIED for this PR. Deployment: NOT_RELEASED. No model, weights, permissions, user data or updater settings were changed.
 
 ## 4. Research update — SigLIP 2
 
