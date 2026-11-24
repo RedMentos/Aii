@@ -194,7 +194,7 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
-      "proof_environment": "CI_AND_ANDROID_ARM64_CROSS_COMPILE_ONLY; NO_NATIVE_REDM I_RECEIVER_PROBE",
+      "proof_environment": "CI_AND_ANDROID_ARM64_CROSS_COMPILE_ONLY; NO_NATIVE_REDMI_RECEIVER_PROBE",
       "next_step": "After Boss #2443 and JEPA #2454 are reviewed/integrated, rebase Core #2457 onto current JEPA head 28386778a04bf77802f84de5c5a5dee4dcb19329, rerun exact native-receiver/approval/overlay/staged/deployer CI, and keep production B3 OFF. A real probe still requires a separate local TTY one-shot approval on an installed verified release.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-24T05:14:43Z",
@@ -481,7 +481,7 @@
       "priority": "P0",
       "status": "IN_PROGRESS_PARTIAL",
       "last_checkpoint": "2026-11-24T05:14:43Z",
-      "proof_environment": "CI_AND_ANDROID_ARM64_CROSS_COMPILE_ONLY; NO_NATIVE_REDM I_RECEIVER_PROBE",
+      "proof_environment": "CI_AND_ANDROID_ARM64_CROSS_COMPILE_ONLY; NO_NATIVE_REDMI_RECEIVER_PROBE",
       "proof": "Core PR #2451 exact head 19257bf678b01055d82d7f2ad54e69132ce37ba6 has the local TTY-approved one-shot native-probe overlay and exact-head CI PASS for native receiver, staged/integrated, same-turn, runtime deploy, Lab-Age, owner-read and migration workflows. Stacked successor #2457 head fdc0107b6318025ceedfabcd2f86261a05923ec7 has only a startup_failure run (no jobs) and is based on JEPA branch SHA a8bba75481812b2344d4ae237acfa9bc57078d29, while current JEPA PR #2454 head is 28386778a04bf77802f84de5c5a5dee4dcb19329; #2457 is stale. No native probe, trained receiver utility or Redmi evidence.",
       "next_step": "After Boss #2443 and JEPA #2454 are reviewed/integrated, rebase Core #2457 onto current JEPA head 28386778a04bf77802f84de5c5a5dee4dcb19329, rerun exact native-receiver/approval/overlay/staged/deployer CI, and keep production B3 OFF. A real probe still requires a separate local TTY one-shot approval on an installed verified release.",
       "core_run15_checkpoint": {
