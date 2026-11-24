@@ -17,9 +17,14 @@ import math
 SCHEMA = "v13.native-turn-budget/1"
 MAX_RECENT = 6
 RECOVERY_MAX_DEADLINE_S = 50
-NATIVE_FIRST_RESERVE_FRACTION = .87
 DEFAULT_PREANSWER_FRACTION = .45
-MIN_ROLE_SLICE_S = 1.0
+C3_RESERVE_DEFAULT_S = 10.0
+C3_RESERVE_MIN_S = 6.0
+C3_RESERVE_MAX_S = 22.0
+C3_RESERVE_MAX_FRACTION = .70
+C3_RESERVE_MARGIN = 1.35
+C3_RESERVE_PADDING_S = 1.0
+MIN_ROLE_SLICE_S = 2.0
 RECOVERY_FOCAL_RESERVE_S = 1.0
 
 
@@ -33,6 +38,9 @@ def register_store_telemetry():
         "c3_reserved_seconds",
         "recent_real_prefill_failures",
         "minimum_role_slice_s",
+        "c3_reserve_estimate_seconds",
+        "c3_reserve_source",
+        "c3_reserve_capped",
     })
     store.TELEMETRY_ENUMS.update({
         "PREANSWER_BUDGETED",
@@ -41,6 +49,8 @@ def register_store_telemetry():
         "native_turn_budget_unavailable",
         "native_body_budgeted_for_c3",
         "native_body_deferred_for_c3",
+        "RECENT_SUCCESS_MAX",
+        "FALLBACK_DEFAULT",
     })
 
 
@@ -49,16 +59,23 @@ def register_store_telemetry():
 register_store_telemetry()
 
 
-def zero_token_prefill_failure(row):
-    """Source-blind, strict evidence from a completed real assistant turn."""
-    if not isinstance(row, dict) or row.get("status") != "DEADLINE":
-        return False
+def _metadata(row):
+    if not isinstance(row, dict):
+        return None
     data = row.get("metadata")
     if isinstance(data, str):
         try:
             data = json.loads(data)
         except (ValueError, TypeError):
-            return False
+            return None
+    return data if isinstance(data, dict) else None
+
+
+def zero_token_prefill_failure(row):
+    """Source-blind, strict evidence from a completed real assistant turn."""
+    if not isinstance(row, dict) or row.get("status") != "DEADLINE":
+        return False
+    data = _metadata(row)
     if not isinstance(data, dict):
         return False
     native = data.get("runner")
@@ -67,6 +84,30 @@ def zero_token_prefill_failure(row):
             and type(native.get("generated_tokens")) is int
             and native.get("generated_tokens") == 0
             and native.get("last_phase") in {"load", "template", "prefill"})
+
+
+def recent_c3_success_durations(rows):
+    """Recent completed C3 wall times; never reads or exports prompt/output text."""
+    durations = []
+    for row in list(rows)[:MAX_RECENT]:
+        if not isinstance(row, dict) or row.get("status") != "FINAL":
+            continue
+        data = _metadata(row)
+        native = data.get("runner") if isinstance(data, dict) else None
+        if (not isinstance(native, dict)
+                or native.get("role") != "C3_LANGUAGE"
+                or type(native.get("generated_tokens")) is not int
+                or native.get("generated_tokens") <= 0):
+            continue
+        duration = native.get("duration_s")
+        if (type(duration) not in (int, float)
+                or not math.isfinite(float(duration))
+                or not 0 < float(duration) <= 120):
+            continue
+        durations.append(float(duration))
+        if len(durations) == 3:
+            break
+    return durations
 
 
 def recent_proof(store):
@@ -95,17 +136,20 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
     ordinary_end = start+DEFAULT_PREANSWER_FRACTION*total
     bounded = list(recent)[:MAX_RECENT]
     failures = sum(zero_token_prefill_failure(row) for row in bounded)
+    durations = recent_c3_success_durations(bounded)
+    if durations:
+        reserve_estimate = max(C3_RESERVE_MIN_S,
+                               max(durations) * C3_RESERVE_MARGIN + C3_RESERVE_PADDING_S)
+        reserve_source = "RECENT_SUCCESS_MAX"
+    else:
+        reserve_estimate = C3_RESERVE_DEFAULT_S
+        reserve_source = "FALLBACK_DEFAULT"
     recent_good = 0
     for row in bounded:
         if not isinstance(row, dict):
             break
         status=row.get("status")
-        data=row.get("metadata")
-        if isinstance(data, str):
-            try:
-                data=json.loads(data)
-            except (ValueError, TypeError):
-                data=None
+        data=_metadata(row)
         native=data.get("runner") if isinstance(data, dict) else None
         if (status == "FINAL" and isinstance(native, dict)
                 and native.get("role") == "C3_LANGUAGE"
@@ -116,15 +160,27 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
             break
         if recent_good == 2:
             break
+    minimum_recovery_window = (
+        C3_RESERVE_MIN_S + 2 * MIN_ROLE_SLICE_S + RECOVERY_FOCAL_RESERVE_S
+    )
     recover = (
         not direct and background_enabled is True
-        and total <= RECOVERY_MAX_DEADLINE_S and total >= 5
+        and total <= RECOVERY_MAX_DEADLINE_S and total >= minimum_recovery_window
         and failures >= 2 and recent_good < 2
     )
+    reserve_capped = False
     if recover:
-        reserve = min(total*NATIVE_FIRST_RESERVE_FRACTION,
-                      max(26.0,total*.80))
-        allotted = min(ordinary_end,deadline-reserve)
+        # Use recent measured C3 completion time, not a fixed 26-second reserve.
+        # Preserve a minimum attempt for each body plus the focal-selection slice.
+        maximum_reserve = min(
+            C3_RESERVE_MAX_S,
+            total * C3_RESERVE_MAX_FRACTION,
+            max(0.0, total - (2 * MIN_ROLE_SLICE_S + RECOVERY_FOCAL_RESERVE_S)),
+        )
+        requested_reserve = max(C3_RESERVE_MIN_S, reserve_estimate)
+        reserve = min(maximum_reserve, requested_reserve)
+        reserve_capped = reserve + 1e-9 < requested_reserve
+        allotted = deadline - reserve
         reason="RECENT_C3_ZERO_TOKEN_PREFILL_TIMEOUTS"
     else:
         reserve=deadline-ordinary_end
@@ -151,6 +207,9 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
         "focal_reserved_seconds": round(focal_reserve,3),
         "preanswer_seconds_available": round(remaining,3),
         "c3_reserved_seconds": round(reserve,3),
+        "c3_reserve_estimate_seconds": round(reserve_estimate,3),
+        "c3_reserve_source": reserve_source,
+        "c3_reserve_capped": reserve_capped,
         "recent_real_prefill_failures": failures,
         "recent_success_streak": recent_good,
         "postcommit_body_eligible": recover and remaining < MIN_ROLE_SLICE_S,
