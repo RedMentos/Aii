@@ -1,3 +1,21 @@
+# Research & Perception — latest verified checkpoint (2026-11-24 18:00 UTC)
+
+A real RAW EAR temporal-ordering bug is fixed on branch research-perception/v14-audio-temporal-interval-order-20261124-run15 (base 8d93236c753f0194224c19edc7411d8d7082b1d6): TemporalVoiceEvidence now rejects an interval whose start moves backwards even if its end advances. Equal-start cumulative windows and partial overlaps remain supported; a rejected interval cannot replace the previous ordering baseline.
+
+- Code SHA: e3d93311c4f15320dbccd920163263a64a7aeefd
+- Regression-test SHA: 7981ef0a559e7064ac1a5f92b44a30da8e12efa6
+- LOCAL_LINUX CPython 3.13.5 isolated reproduction: PASS (overlap, equal-start, backward-start negative, retained baseline, recovery, end-order negative).
+- Full local Aii pytest: BLOCKED / NOT_RUN (no checkout; GitHub DNS failure). Exact branch CI: pending. No Redmi test; REDMI_UNVERIFIED. No release SHA.
+
+Latest available consented private V13OBS #115 receipt: 2026-11-24 09:28:11 UTC. It reports auto-update enabled and Runtime/Dashboard UP_TO_DATE at 8d93236; AI STOPPED_BY_USER and model process STOPPED. B1/B2 still show TIME_BUDGET failures (53.2/54.2 s) and zero valid offers. The receipt predates this branch, so this change is not installed. No UPDATE_REQUEST, CHAT_SEND, restart, shell, model/weight/permission change or user-data mutation was made.
+
+Research R-108: full-text review of V-JEPA-LM (arXiv:2611.17831v1, 2026-11-13) plus official repository/license audit. The useful next experiment is a source-disjoint change-subspace probe on actual A3 sequences after source-lifecycle integration. The 1B–8B video models and H100-scale training are not Android candidates.
+
+**Next:** exact Python 3.13/3.14 CI; then integrate the signed AudioRecord provider only after QA's consent/lifecycle/revocation/zeroization chain is verified. No model swap or device update is requested.
+
+**No user action is required.**
+
+---
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
