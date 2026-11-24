@@ -63,6 +63,14 @@ def _seconds(value):
     return round(float(value), 4)
 
 
+def _sha256(value):
+    if type(value) is not str or len(value) != 64:
+        return None
+    if any(char not in "0123456789abcdef" for char in value):
+        return None
+    return value
+
+
 def _latest_native_evidence(r):
     """Read the last persisted runner/receipt summary; never return chat text."""
     try:
@@ -105,6 +113,12 @@ def _latest_native_evidence(r):
     c4_accepted = bool(c4_recorded and c4_metrics.get("status") == "PASS"
                        and c4_metrics.get("role") == "C3_LANGUAGE")
     ids_match = bool(c4_accepted and c4_ids and native_ids and set(c4_ids) == set(native_ids))
+    native_prompt_sha256 = _sha256(receipt.get("native_prompt_sha256"))
+    native_token_ids_sha256 = _sha256(receipt.get("native_token_ids_sha256"))
+    native_prompt_tokens = _count(receipt.get("native_prompt_tokens"))
+    native_prefill_observed = receipt.get("native_prefill_observed") is True
+    native_prefill_verified = receipt.get("native_prompt_prefill_verified") is True
+    native_generation_completed = receipt.get("native_generation_completed") is True
 
     synthetic = runner.get("synthetic") is True or receipt.get("synthetic") is True
     native_submitted = receipt.get("native_template_submitted") is True
@@ -114,7 +128,12 @@ def _latest_native_evidence(r):
     if not receipt:
         flow_status = "OFFER_RECEIPT_UNAVAILABLE"
     elif submitted and c4_recorded and ids_match:
-        flow_status = prefix + "TEMPLATE_SUBMITTED_MATCHED_C4"
+        if not synthetic and native_prefill_verified and native_generation_completed:
+            flow_status = "NATIVE_PREFILL_VERIFIED_AND_GENERATION_COMPLETED_MATCHED_C4"
+        elif not synthetic and native_prefill_observed and native_generation_completed:
+            flow_status = "NATIVE_PREFILL_OBSERVED_AND_GENERATION_COMPLETED_MATCHED_C4"
+        else:
+            flow_status = prefix + "TEMPLATE_SUBMITTED_MATCHED_C4"
     elif submitted and c4_recorded:
         flow_status = prefix + "TEMPLATE_SUBMITTED_C4_ID_MISMATCH"
     elif submitted:
@@ -143,12 +162,21 @@ def _latest_native_evidence(r):
         "duration_s": _seconds(runner.get("duration_s")),
         "sampled_peak_pss_bytes": _count(runner.get("sampled_peak_pss_bytes")),
         "evidence_environment": "SYNTHETIC" if synthetic else "RUNNER_REPORTED",
+        "native_prompt_sha256": native_prompt_sha256 if not synthetic else None,
+        "native_token_ids_sha256": native_token_ids_sha256 if not synthetic else None,
+        "native_prompt_tokens": native_prompt_tokens if not synthetic else None,
         "offer_flow": {
             "status": flow_status,
             "native_receipt_status": receipt.get("status"),
             "native_completion_http_200": receipt.get("native_completion_http_200") is True,
-            "native_prompt_prefill_verified": receipt.get("native_prompt_prefill_verified") is True,
+            "native_prompt_prefill_verified": native_prefill_verified,
+            "native_prefill_observed": native_prefill_observed,
             "native_stream_completed": receipt.get("native_stream_completed") is True,
+            "native_generation_completed": native_generation_completed,
+            "native_prompt_sha256": native_prompt_sha256 if not synthetic else None,
+            "native_token_ids_sha256": native_token_ids_sha256 if not synthetic else None,
+            "native_prompt_tokens": native_prompt_tokens if not synthetic else None,
+            "native_tokenizer": receipt.get("native_tokenizer") if not synthetic and receipt.get("native_tokenizer") == "LLAMA_SERVER_TOKENIZE" else None,
             "native_template_submitted": native_submitted,
             "template_submitted": submitted,
             "c4_receipt_status": c4_metrics.get("status") if c4_recorded else "NOT_RECORDED",
