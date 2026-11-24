@@ -1479,3 +1479,34 @@ Read-only private owner-relay requests for HEALTH, PIPELINE_STATUS and DIAGNOSTI
 **Mobile implication:** DINOv2-style pairwise inference is not an acceptable default for the Redmi budget without a real on-device benchmark. A cheap hash can be a retrieval prefilter, not a final duplicate verdict. The next implementation should compare CPU cost, RSS and false-positive/false-negative rates against actual user-consented image fixtures before changing the A3 source-disjoint split.
 
 **Status:** RESEARCH_REVIEWED / SYNTHETIC_HASH_PROBE_PASS / NO_RUNTIME_CHANGE / REDMI_UNVERIFIED.
+
+
+## R-141 — Quantized Sufficient Statistics: exact deletion beyond linear ridge (2026-11-24)
+
+**Primary paper read in full:** Ami Tavory, Shripad Gade, Tal Sarig, Noam Touitou & Ido Guy, *Exact Unlearning via Quantized Sufficient Statistics*, arXiv:2610.07197, submitted 2026-10-05; accepted at NeurIPS 2026 (as stated by the paper). Full HTML paper, main method, proofs, experiments, limitations and code pointer were reviewed.
+
+**Method and evidence:** QSS separates a retained schema (base model + frozen residual-quantization codebook) from additive content statistics. QSS-E gives exact instance deletion for content examples; deletion of a retained-schema example still requires rebuilding. QSS-L gives exact label deletion only: the unlabelled input remains in the codebook. QSS-DP adds label-level DP to published cell means, not instance DP. On 15 datasets with n >= 50K and retained fraction rho=0.5%, QSS-L is within 2 percentage points of SISA on 11 tasks and reports 4–483x lower expected deletion latency on low-class-count tasks; high-class-count ImageNet is a stated outlier. The reported maximum accumulator storage is 51 MB on ImageNet. These are paper benchmarks, not Redmi measurements.
+
+**V14 consequence:** Keep the current A3 source-scoped fp64 ridge statistics for modest fixed feature dimensions: they are simpler and have an exact fresh-ridge-rebuild equivalence target. QSS is a future candidate only if A3 needs a nonlinear local residual correction beyond the linear head; compare memory, codebook stability, deletion exactness, rebuild probability and prediction quality before adoption. The paper's code pointer is https://github.com/atavory/rqu, but the public repository has no LICENSE file (LICENSE fetch returned 404), and algs/qss.py contains a Meta Platforms copyright header stating 'Confidential and proprietary'. README dependencies include numpy, scipy, faiss-cpu, scikit-learn and lightgbm; source also imports torch. **No code, weights or data reused; no reuse authorized absent a clear license.**
+
+**Status:** FULL_PAPER_REVIEWED / RESEARCH_ONLY / NO_CODE_REUSE / NO_ANDROID_MEASUREMENT.
+
+## R-142 — Exact ridge deletion state can leak through repeated model broadcasts (2026-11-24)
+
+**Primary paper read in full:** Yijun Quan & Giovanni Montana, *Client-Side Probing of Deleted Ridge Statistics in Federated Unlearning*, arXiv:2609.04475v1, 2026-09-03. Preprint; no peer-reviewed venue identified in the paper. Full HTML paper, threat model, derivations, experiments and limitations were reviewed.
+
+**Evidence and threat model:** A malicious federated client that can submit chosen/additive updates and receive the complete high-precision ridge classifier after each update can identify hidden sufficient statistics, compare states across an isolated deletion, recover deleted sample/class/client aggregates, and potentially replay them. The designed float64 attack recovered all 2,220 tested states; 52 logical responses were sufficient for d=512,c=10 in the unrestricted probe construction. Attacker-data probes needed 104 responses per state in the evaluated setup. Float32 sharply reduced some sample-level recovery but did not uniformly protect aggregates; the paper reports 92/100 MNIST and 100/100 CIFAR-10 sample labels in one designed float32 setting. The attack requires the stated active-client/full-head-broadcast/quiet-interval assumptions; it is not a passive local-file attack.
+
+**V14 consequence:** A3 sufficient-stat artifacts and full head deltas are derived sensitive state. Keep them local; do not put matrices, per-source artifact paths/hashes, classifier weights or deletion deltas into telemetry, public GitHub, PR bodies, private relay responses, or chat. Ownership checks, duplicate rejection and authenticated replay matter if a future cross-device/federated lane is ever introduced. The current A3 status endpoint already exposes only a bounded count/mode summary. A new full Runtime regression in test_vision.py asserts that status does not contain source_stats, paths, hashes or artifact identifiers; this is a negative control, not a privacy proof.
+
+**Status:** FULL_PREPRINT_REVIEWED / PRIVACY_REQUIREMENT_ADDED / REGRESSION_ADDED / CI_PENDING / REDMI_UNVERIFIED.
+
+## R-143 — Peak-memory-aware CNN design for constrained vision/audio perception (2026-11-24)
+
+**Primary paper read in full:** Yoel Park, Jaewook Lee & Seulki Lee, *Designing Extremely Memory-Efficient CNNs for On-device Vision and Audio Tasks*, International Journal of Computer Vision 134(3), article 91; version of record 2026-01-29; DOI https://doi.org/10.1007/s11263-025-02688-w. Open access CC BY 4.0. Full article, methods, ablations, device experiments and limitations were reviewed.
+
+**Evidence:** Input segmentation, independent patch tunnels, bottleneck reordering, quantized BatchNorm/ReLU6 integration and element-wise requantization accumulation reduce peak activation memory. The paper reports 63 KB peak memory and 61.58% ImageNet top-1, 65 KB and 50.7% PASCAL-VOC mAP, and 42 KB / 79.1% UrbanSound8K accuracy. Audio experiments use 32 kHz and sequential Mel-spectrogram extraction; shortening the input reduces peak memory but also degrades accuracy. The paper reports 3.34M parameters for its ImageNet model, so peak activation reduction is not equivalent to a smaller model. The physical target was an STM32H7, not an Android phone. No maintained code repository was linked or located.
+
+**V14 consequence:** The streaming/segmented feature-extraction idea may inform a future bounded A0 RAW EAR path, but must preserve timestamps, prosody, speaker and non-speech cues; it is not an ASR replacement and does not satisfy the full voice architecture. Do not port the CNN or claim Redmi suitability without ARM/Linux and actual Redmi RSS/latency/quality measurements. No code or weights reused.
+
+**Status:** FULL_PEER_REVIEWED_ARTICLE / CC-BY-4.0-PAPER / NO_CODE_REUSE / RESEARCH_ONLY / REDMI_UNVERIFIED.
