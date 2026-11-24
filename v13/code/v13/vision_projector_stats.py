@@ -55,6 +55,29 @@ def sufficient_statistics(X, Y):
     }
 
 
+def _open_or_create_dir(parent_fd, name, flags):
+    """Open one child directory without following links, creating it safely if absent."""
+    try:
+        fd = os.open(name, flags | os.O_NOFOLLOW, dir_fd=parent_fd)
+    except FileNotFoundError:
+        if os.mkdir not in getattr(os, "supports_dir_fd", set()):
+            raise OSError("descriptor-relative mkdir unavailable")
+        try:
+            os.mkdir(name, 0o700, dir_fd=parent_fd)
+        except FileExistsError:
+            # Another creator may have won the race; the no-follow open below
+            # still rejects a symlink or non-directory replacement.
+            pass
+        fd = os.open(name, flags | os.O_NOFOLLOW, dir_fd=parent_fd)
+    try:
+        if not stat.S_ISDIR(os.fstat(fd).st_mode):
+            raise OSError("A3 statistics path is not a directory")
+        return fd
+    except Exception:
+        os.close(fd)
+        raise
+
+
 def _vision_dir_fd(home):
     if not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "O_DIRECTORY"):
         raise OSError("no-follow directory operations unavailable")
@@ -65,8 +88,10 @@ def _vision_dir_fd(home):
     root_fd = os.open(str(root), flags)
     data_fd = vision_fd = None
     try:
-        data_fd = os.open("data", flags | os.O_NOFOLLOW, dir_fd=root_fd)
-        vision_fd = os.open("vision", flags | os.O_NOFOLLOW, dir_fd=data_fd)
+        # Training writes source statistics before Projector.save() creates
+        # data/vision. Create both missing levels through dir-fd operations.
+        data_fd = _open_or_create_dir(root_fd, "data", flags)
+        vision_fd = _open_or_create_dir(data_fd, "vision", flags)
         return root_fd, data_fd, vision_fd
     except Exception:
         if vision_fd is not None:
