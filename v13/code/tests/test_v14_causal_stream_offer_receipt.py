@@ -290,6 +290,31 @@ def test_native_completion_receipt_separates_prefill_from_completed_stream():
     assert rejected["native_completion_completed"] is False
 
 
+
+def test_native_completion_receipt_uses_initial_prefill_for_output_adapter():
+    witness = {"status": "RENDERED_WITH_QUOTES", "offers": []}
+    metrics = {
+        "prompt_tokens": 120,
+        # The continuation request includes the already generated first token.
+        "timings": {"prompt_n": 1, "cache_n": 120, "prompt_ms": 8.0},
+        "output_adapter_native_first_step": {
+            "token_ids": [7], "remaining_positions_unbiased": True,
+            "timings": {"prompt_n": 80, "cache_n": 40, "prompt_ms": 600.0},
+        },
+        "native_stream_completed": True,
+    }
+    receipt = native_completion_receipt(witness, http_200=True, status="FINAL", metrics=metrics)
+    assert receipt["native_prompt_prefill_verified"] is True
+    assert receipt["native_prompt_prefill"]["server_total_prompt_tokens"] == 120
+    assert receipt["native_prompt_prefill"]["prompt_ms"] == 600.0
+
+    # A continuation timing must not stand in for a missing initial prefill witness.
+    metrics["output_adapter_native_first_step"].pop("timings")
+    missing = native_completion_receipt(witness, http_200=True, status="FINAL", metrics=metrics)
+    assert missing["native_prompt_prefill_verified"] is False
+    assert missing["native_prompt_prefill"]["status"] == "UNVERIFIED"
+
+
 def test_brain_panel_exposes_sanitized_native_prefill_and_c4_join():
     witness = {
         "revision": "v13.native-offer-prompt-receipt/1",
