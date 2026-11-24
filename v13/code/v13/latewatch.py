@@ -81,7 +81,7 @@ class Watcher:
     """One late body offer per turn. check() runs in the token loop and must stay cheap."""
     def __init__(self,r,e,meta,m,role=None,status='OFF'):
         self.r=r;self.e=e;self.meta=meta;self.mode=m;self.role=role;self.status=status
-        self.offer=None;self.error=None;self.thread=None;self.done=threading.Event();self.decided=False;self.cut=None
+        self.offer=None;self.error=None;self.thread=None;self.done=threading.Event();self.decided=False;self.cut=None;self.recorded=False
         self.info=meta.setdefault('late_watch',{'mode':m,'status':status,**({'role':role} if role else {})})
     def _run(self,version,offer_deadline,valid_until):
         try:self.offer=self.r.cognition.offer(self.role,self.e,version,offer_deadline,None,valid_until=valid_until)
@@ -93,7 +93,10 @@ class Watcher:
     def check(self,output):
         """True = stop the stream now (ACTIVE and a disagreeing offer arrived)."""
         if self.decided or self.thread is None or not self.done.is_set():return False
-        if self.offer is None:self.decided=True;return False
+        if self.offer is None:
+            self.decided=True;self._close('NO_OFFER',len(output))
+            if self.error:self.info['error']=self.error
+            return False
         reason=disagreement(self.offer,output,self.r.store.read_source(self.e['source_ref']))
         if reason is None:
             if len(output)<REENTRY_CHARS:return False  # too early to judge: look again when more text exists
@@ -104,6 +107,11 @@ class Watcher:
     def _close(self,status,at_char,reason=None):
         self.status=status;self.info.update(status=status,at_char=at_char,**({'reason':reason} if reason else {}))
         if self.offer:self.info['offer_id']=self.offer.get('packet_id')
+        if not self.recorded:
+            _record(self.r.store,{'event_id':self.e['event_id'],'status':status,'mode':self.mode,
+                                  'role':self.role,'at_char':at_char,**({'reason':reason} if reason else {}),
+                                  **({'offer_id':self.offer.get('packet_id')} if self.offer else {})})
+            self.recorded=True
     def finish(self,runner,messages,output,deadline,mid):
         """After the stream. ACTIVE cut: C3 continues with the late finding (appended, returned). Otherwise an offer that
         arrived too late for the stream goes the old post-commit way (gated self-message, answer kept)."""
