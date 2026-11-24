@@ -210,13 +210,61 @@ def test_same_causal_stream_receipt_requires_exact_native_prefill_binding(tmp_pa
     latest = brain_status(runtime)["latest_turn"]
     assert latest["evidence_environment"] == "SYNTHETIC"
     assert latest["offer_flow"]["status"] == "SYNTHETIC_TEMPLATE_SUBMITTED_MATCHED_C4"
-    assert latest["offer_flow"]["native_prompt_prefill_verified"] is True
-    assert latest["offer_flow"]["native_prompt_prefill"]["status"] == "VERIFIED"
+    assert latest["offer_flow"]["native_prompt_prefill_verified"] is False
+    assert latest["offer_flow"]["synthetic_prompt_prefill_verified"] is True
+    assert latest["offer_flow"]["native_prompt_prefill"]["status"] == "SYNTHETIC_VERIFIED"
+    assert latest["offer_flow"]["native_prompt_prefill"]["verified"] is False
+    assert latest["offer_flow"]["native_prompt_prefill"]["synthetic_verified"] is True
     assert latest["offer_flow"]["native_prompt_prefill"]["method"] == "EXACT_SAME_CAUSAL_PREFILL_TOKEN_IDS"
-    assert latest["offer_flow"]["native_stream_completed"] is True
+    assert latest["offer_flow"]["native_stream_completed"] is False
+    assert latest["offer_flow"]["synthetic_stream_completed"] is True
+    assert latest["offer_flow"]["native_template_submitted"] is False
+    assert latest["offer_flow"]["synthetic_template_submitted"] is True
+    assert latest["offer_flow"]["c4_native_offer_ids_match"] is False
+    assert latest["offer_flow"]["c4_synthetic_offer_ids_match"] is True
     assert latest["offer_flow"]["native_completion_http_200"] is False
     assert latest["offer_flow"]["native_completion_completed"] is False
+    assert latest["offer_flow"]["synthetic_completion_completed"] is True
     assert latest["offer_flow"]["semantic_use_proven"] is False
+
+
+def test_unaccepted_native_prefill_is_not_reported_as_verified_or_matched():
+    witness = {
+        "revision": "v13.native-offer-prompt-receipt/1",
+        "status": "RENDERED_WITH_QUOTES",
+        "offers": [
+            {"role": "B1_DETAIL", "packet_id": "b1", "rendered_quote_count": 1},
+            {"role": "B2_GIST", "packet_id": "b2", "rendered_quote_count": 1},
+        ],
+        "native_semantic_use_proven": False,
+    }
+    metrics = {
+        "role": "C3_LANGUAGE",
+        "status": "ERROR",
+        "actual_model": "c3-test",
+        "prompt_tokens": 120,
+        "generated_tokens": 0,
+        "native_stream_completed": False,
+        "timings": {"prompt_n": 80, "cache_n": 40, "prompt_ms": 600.0},
+    }
+    receipt = native_completion_receipt(
+        witness, http_200=False, status="ERROR", metrics=metrics
+    )
+    metrics["native_offer_prompt_receipt"] = receipt
+    runtime = SimpleNamespace(
+        cfg={"learning_mode": "RECORD_ONLY"},
+        current=None,
+        store=EvidenceStore({"runner": metrics}, selected_ids=("b1", "b2")),
+    )
+    flow = brain_status(runtime)["latest_turn"]["offer_flow"]
+    assert flow["status"] == "TEMPLATE_RENDERED_NOT_SUBMITTED"
+    assert flow["native_template_submitted"] is False
+    assert flow["template_submitted"] is False
+    assert flow["native_prompt_prefill_verified"] is False
+    assert flow["native_prompt_prefill"]["status"] == "UNVERIFIED"
+    assert flow["native_prompt_prefill"]["verified"] is False
+    assert flow["c4_native_offer_ids_match"] is False
+    assert flow["c4_synthetic_offer_ids_match"] is False
 
 
 def test_same_causal_stream_rejects_prompt_token_mismatch(tmp_path):
@@ -343,10 +391,16 @@ def test_brain_panel_exposes_sanitized_native_prefill_and_c4_join():
     flow = latest["offer_flow"]
     assert latest["evidence_environment"] == "RUNNER_REPORTED"
     assert flow["native_completion_completed"] is True
+    assert flow["native_template_submitted"] is True
+    assert flow["synthetic_template_submitted"] is False
     assert flow["native_prompt_prefill_verified"] is True
+    assert flow["synthetic_prompt_prefill_verified"] is False
+    assert flow["native_prompt_prefill"]["verified"] is True
+    assert flow["native_prompt_prefill"]["synthetic_verified"] is False
     assert flow["native_prompt_prefill"]["status"] == "VERIFIED"
     assert flow["native_prompt_prefill"]["server_total_prompt_tokens"] == 120
     assert flow["c4_native_offer_ids_match"] is True
+    assert flow["c4_synthetic_offer_ids_match"] is False
     assert flow["semantic_use_proven"] is False
     assert SECRET not in json.dumps(latest)
 
