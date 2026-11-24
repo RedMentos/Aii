@@ -173,7 +173,7 @@ class ArrayWindowTests(unittest.TestCase):
         target = np.concatenate([batch.target for batch in batches], axis=0)
         self.assertEqual(origins.tolist(), [window.origin_index for window in reference])
         np.testing.assert_array_equal(x, np.asarray([window.x for window in reference], dtype=np.float32))
-        np.testing.assert_array_equal(seasonal, np.asarray([window.seasonal for window in reference], dtype=np.float32))
+        np.testing.assert_array_equal(seasonal, np.asarray([window.seasonal for window in reference], dtype=np.float32).reshape(seasonal.shape))
         np.testing.assert_array_equal(calendar, np.asarray([window.calendar for window in reference], dtype=np.float32))
         np.testing.assert_array_equal(target, np.asarray([window.target for window in reference], dtype=np.float32))
 
