@@ -180,7 +180,20 @@ class StageControllerChecks(unittest.TestCase):
                     print('V14_PIN_DIAGNOSTIC', name, actual, flush=True)
         cls.temp = tempfile.TemporaryDirectory(prefix='v13-record-only-stage-')
         cls.stage = Path(cls.temp.name) / 'stage'
-        stage_integrated_candidate.stage(CODE, cls.stage)
+        real_sha256 = hashlib.sha256
+        observed_hashes = []
+        def capture_sha256(data=b'', *args, **kwargs):
+            digest = real_sha256(data, *args, **kwargs).hexdigest()
+            observed_hashes.append((len(data), digest))
+            return real_sha256(data, *args, **kwargs)
+        try:
+            hashlib.sha256 = capture_sha256
+            stage_integrated_candidate.stage(CODE, cls.stage)
+        except Exception:
+            print('V14_GUARD_HASH_DIAGNOSTIC', observed_hashes[-12:], flush=True)
+            raise
+        finally:
+            hashlib.sha256 = real_sha256
 
     @classmethod
     def tearDownClass(cls):
