@@ -1612,3 +1612,43 @@ Chen Henry Wu, Thomas Zhang and Aditi Raghunathan, **Off-Policy Merging Beats On
 - Full local Aii checkout remains blocked by unavailable GitHub DNS. Android microphone, AudioRecord, native VAD/model and Redmi timing remain `REDMI_UNVERIFIED`.
 
 **Research basis already recorded in R-128:** Patamia et al., arXiv:2611.19484 (https://arxiv.org/abs/2611.19484), and Mathur & Manocha, MultiPartyTurnBench, arXiv:2610.20172 (https://arxiv.org/abs/2610.20172). Both motivate separating candidate discovery, EOT and INT verification; neither calibrates this 400 ms heuristic.
+
+
+## R-131 — Temporal onset gating for non-speech A4 salience (2026-11-24)
+
+### Product hypothesis and change
+The previous A4 path used the absolute activity_score on every UNVOICED_NOISE / IMPULSIVE window and allowed absolute ZCR/RMS to dominate salience. With overlapping windows, a continuous noise bed could repeatedly recruit attention even though no new event had occurred. This was a salience bug, not a speech-recognition or semantic-classification problem.
+
+- TemporalVoiceEvidence now keeps a bounded non-speech episode state: active kind, score, onset and offset. State is isolated by the existing source/generation/consent key; short gaps decay it, long unobserved gaps reset it, SILENCE/VOICED end an episode, and UNCERTAIN decays it.
+- A4 receives non-speech novelty only on a new episode or a kind transition. Absolute RMS/ZCR remain available as raw cues but are low-gain BOOT background inputs (0.15 multiplier); sustained noise no longer repeatedly dominates novelty.
+- Non-speech novelty is deliberately not passed into external_interrupt. It can attract perception without authorizing barge-in or response cancellation.
+- A4 exposes a small non_speech_event record (kind/active/onset/offset/novelty). No semantic event label is inferred.
+
+### Verification
+- LOCAL_LINUX isolated temporal-state harness: 4/4 PASS (persistent noise emits one onset; silence rearms an impulse; uncertain/gap decay rearms; source/consent boundary resets). This harness exercises the algorithm, not a full repository checkout.
+- Exact GitHub Actions on the current code/test lineage: raw-ear-prosody 81 passed on Python 3.13 and 81 passed on Python 3.14; raw-ear-fastpath PASS on 3.13 and 3.14; compare PASS on 3.13 and 3.14 after refreshing the exact source blob pin; offline 3.11/3.14, privacy, consent-revocation, same-repository integration and offline-bridge-security PASS.
+- At the last poll, staged-runtime and consumer (3.13) failed because the Boss-owned integrated_audio_context_candidate_20261121.py still pins the older audio_voice_cues.py blob; integrated-regression and some consumer/audio-duplex jobs were still running. This is an explicit integration dependency, not a reason to relax hash verification.
+- Full LOCAL_LINUX Aii suite: BLOCKED / NOT_RUN; no mounted checkout and git ls-remote failed because GitHub DNS was unavailable. Android/Redmi: REDMI_UNVERIFIED.
+
+### Scope and acceptance boundary
+This is a source-bound, synthetic A4 salience improvement (WIRED_SYNTHETIC), not a learned event detector, calibrated VAD, model inference, real microphone capture, full-duplex floor transfer, or accepted voice path. No external code, model weights or dataset were imported; no new runtime dependency or license obligation was introduced.
+
+Code/test lineage: PR #2448, code/test commit 6d650a7d0a1fbf4d6ab43e32a272f31919a976ec; comparator pin correction a5294d08aa4ffbe9da5fbc4c697019fa31ad56ab. PR remains DRAFT / NOT_RELEASED.
+
+## R-132 — Duration-aware endpoint and progressive acoustic-event research (2026-11-24)
+
+### Next-Turn — abstract-only
+Tristan Tsoi et al., Next-Turn: Duration-Aware Streaming Endpoint Detection via Time-to-Next-Speech-Onset Prediction, arXiv:2606.18094, v1 dated 2026-06-16. The arXiv abstract reports a time-to-next-speech-onset objective derived from speech timestamps and a 25.9 percentage-point absolute improvement in endpoint accuracy within 320 ms over the strongest baseline, with gains from joint duration-aware and binary objectives as pause counts increase.
+
+- Evidence status: abstract/metadata only in this run; the full paper and official proceedings were not inspected. DBLP indexes an Interspeech 2026 record, but that is not treated here as independent proceedings verification.
+- V14 relevance: candidate future auxiliary head for time-to-next-onset, separate from the current RAW EAR acoustic EOT heuristic. Targets can be generated from consented, source-bound aligned speech timestamps; evaluation must be source/session-disjoint and report early-interruption rate, endpoint accuracy and added latency.
+- Limits: no cross-language or Redmi result verified here; the arXiv abstract does not establish mobile runtime cost. No code, dataset or weights reused; no model download.
+
+### PCL-AED — abstract-only
+Chen & Huang, PCL-AED: progressive acoustic event detection based on contrastive learning, Journal on Audio, Speech, and Music Processing, published 2026-02-23, DOI 10.1186/s13636-026-00447-4. The accessible abstract describes LTSRR spectral augmentation, segment-level progressive classification and temporal contrastive loss, evaluated on DCASE2018 and DCASE2021 Task 4.
+
+- Evidence status: publisher abstract/metadata only; full text could not be retrieved in this run. Official code, checkpoint and weight license were not verified.
+- V14 relevance: a candidate for a later non-speech event-boundary learner; it does not justify semantic sound labels in the present heuristic.
+- Limits: no Android/RAM/latency evidence; no code or weights reused.
+
+Primary records: https://arxiv.org/abs/2606.18094 ; https://doi.org/10.1186/s13636-026-00447-4
