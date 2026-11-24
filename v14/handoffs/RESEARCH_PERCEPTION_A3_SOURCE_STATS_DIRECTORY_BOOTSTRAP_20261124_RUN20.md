@@ -70,3 +70,19 @@ The existing vision/source-lineage workflow's push path filter already included 
 - **Device:** REDMI_UNVERIFIED. No device receipt, microphone capture, model/weight/permission change, update request or deployment.
 - **Next:** read back all four exact-head workflows; if source-lineage passes, Core/QA must integrate the helper into the materialized source closure and rebind pins, then rerun staged/integrated/consumer/migration tests. Do not merge/release before that.
 - **User action:** none.
+
+
+## Research & Perception — run 22 exact-head readback (2026-11-25)
+
+**Current code/test head:** `177f72364440519f6d38cecdb7dca7629ae2304b` on PR [#2484](https://github.com/RedMentos/Aii/pull/2484), still OPEN/DRAFT/NOT_RELEASED.
+
+- The source-stat helper hardens both fresh and pre-existing `data/` + `data/vision/` directories: owner check, descriptor-relative `fchmod(0700)`, post-change mode verification; artifacts remain 0600. The added regression starts with 0755 directories and verifies 0700 after the production builder.
+- **LOCAL_LINUX CPython 3.13.5 isolated helper harness:** PASS 4/4 (fresh creation, legacy 0755 hardening, `data` symlink rejection, `vision` symlink rejection). Full local Aii checkout pytest/py_compile was NOT_RUN because this worker has no repository checkout.
+- **CI exact head:** source-lineage + A3 forget suite PASS 51/51 on Python 3.13 and 51/51 on Python 3.14; exact compile step passed. RAW EYE frame-ingress PASS on 3.13 and 3.14. Runtime deployment-integrity offline checks PASS on 3.11 and 3.14.
+- **Integration remains blocked:** staged-runtime FAIL: 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests; integrated-regression FAIL: 1 failed. Both stop at `scripts/source_lifecycle_lock_integration_candidate.py:179` with `unsupported lifecycle source: vision.py`. Core PR #2465 currently pins `vision.py` to `350573e65eb445b8b83f5517e3bfe07ece04e036055c55fc3e23c79d5b0cc728` and does not include `vision_projector_stats.py`; the exact #2484 source workflow reports `vision.py` SHA-256 `329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d` and helper SHA-256 `5db10a4fefa0e5d40d67b242ba18858972b499283e1e00f6d13d3e5d2760032f`. Core/Integrator was given this exact evidence in a comment on #2465. No hash check was weakened.
+- **Runtime consumer:** A3 `vision.train()` / `train_tiles()` → source-stat builder → local secure storage; explicit source forget rebuilds only exact full-fit ridge heads. It does not unlearn the image feature extractor, teacher or other organs.
+- **Device/release:** REDMI_UNVERIFIED; no phone receipt, Termux test, model/weight/permission change, UPDATE_REQUEST or deployment. Last available private updater receipt is older than the current release-development HEAD, so current installation remains unverified.
+- **Research:** R-144 full preprint review (replay can preserve function while representations drift; don't make zero drift a universal objective; no code reuse due absent license). R-145 full FlyGCL preprint and MIT OSS audit (hierarchical expert specialization + temporal integration; full visual/VLA stacks are heavyweight; no port or code/weights imported).
+- **User action:** none. No manual Termux command or model download/swap.
+- **Next internal step:** Core/Integrator updates the strict source-lifecycle composer to include the helper and pin exact current bytes, then reruns staged/integrated/consumer/migration. Perception should not edit Core-owned composer files.
+
