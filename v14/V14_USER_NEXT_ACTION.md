@@ -2,7 +2,7 @@
 
 **Current base:** release-development `gpt6/v13-private-remote-bridge-20261111` at `8d93236c753f0194224c19edc7411d8d7082b1d6`.
 
-**Current Perception candidate:** [PR #2472](https://github.com/RedMentos/Aii/pull/2472), branch `research-perception/v14-a4-audio-source-outcomes-current-20261124-run16`, exact head `8df6a16fd5dced71a2643eae141f9f204fc66855`, base `8d93236c753f0194224c19edc7411d8d7082b1d6`. This remains OPEN / DRAFT / NOT_RELEASED.
+**Current Perception candidate:** [PR #2472](https://github.com/RedMentos/Aii/pull/2472), branch `research-perception/v14-a4-audio-source-outcomes-current-20261124-run16`, code-bearing SHA `8df6a16fd5dced71a2643eae141f9f204fc66855` (subsequent branch commits are documentation/handoff only), base `8d93236c753f0194224c19edc7411d8d7082b1d6`. This remains OPEN / DRAFT / NOT_RELEASED.
 
 - A4 source-bound outcome and RAW EAR speaker/prosody work remain on #2472. The exact attention.py SHA-256 is pinned in the RECORD_ONLY guard while the previous pin is preserved.
 - The RAW EAR temporal filter now also rejects backwards interval starts, not just non-advancing ends. Equal-start cumulative windows and ordinary overlap remain valid. Rejected input leaves the previous ordering baseline unchanged. Source blob: `f5fcab22e5d5463bcc3e1ab1a5ce4a586deb4b3e`; regression test blob: `6f16afa97a04d4f0da9ab37a95cad38a25413fce`; comparator workflow is pinned to that exact blob.
