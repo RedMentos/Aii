@@ -845,5 +845,29 @@ class Vision(unittest.TestCase):
         self.assertIsNone(vision.load(self.store)['projector'])
 
 
+
+    def test_legacy_projector_without_source_stats_falls_back_to_invalidation(self):
+        t = FakeTeacher()
+        enc = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        records = []
+        for i, colour in enumerate([(220, 20, 20), (20, 20, 220), (20, 180, 20),
+                                    (220, 180, 20), (180, 20, 180)]):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            vision.describe(self.rt, rec, 'g', t)
+            records.append(rec)
+        projector = vision.train(self.rt, enc)
+        vision.remove_source_statistics(self.home, projector.get('source_stats', []))
+        state = vision.load(self.store)
+        state['projector'].pop('source_stats', None)
+        state['projector'].pop('source_stats_mode', None)
+        vision.save(self.store, state)
+
+        result = vision.forget(self.store, records[-1])
+        self.assertIn('projector', result['invalidated_projectors'])
+        self.assertNotIn('projector', result['recomputed_projectors'])
+        self.assertIsNone(vision.load(self.store)['projector'])
+        self.assertIn('projector', result['rebuild_fallbacks'])
+
+
 if __name__ == '__main__':
     unittest.main()
