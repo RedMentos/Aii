@@ -24,7 +24,7 @@ import math
 import re
 import time
 from .common import dumps,now
-from .contracts import packet,offer_is_fresh,SLOT_FIELDS
+from .contracts import packet,offer_is_fresh,validate,SLOT_FIELDS
 from .memory import relevance,terms
 from .attention import GAIN as ATT_BASE
 
@@ -370,10 +370,9 @@ class FocalLoop:
     def _candidates(self,e,goal,offers,memories,retained,sig,version):
         fresh=[p for p in offers if offer_is_fresh(p,e['event_id'],e['brain_generation_id'],version)];cands=[]
         for p in fresh:
-            refs=list({dumps(r):r for r in list(p.get('provenance') or [])+list(p.get('evidence_refs') or [])}.values())
             text=p['offer'].get('summary','')+' '+' '.join(self.s.read_source(r) for r in p['evidence_refs'])
             need=sig.get('detail_need' if p['role']=='B1_DETAIL' else 'gist_need',.5)
-            cands.append(item(p['role'],p['packet_id'],refs,p['offer'].get('summary',''),e['event_id'],
+            cands.append(item(p['role'],p['packet_id'],p['evidence_refs'] or p['provenance'][:1],p['offer'].get('summary',''),e['event_id'],
                 uncertainty=offer_uncertainty(p),salience=sig.get('salience',0.),goal=clip(3*relevance(goal,text)),utility=self._utility(p,max(.3,need),goal),sq=source_quality(p),goal_ids=[e['event_id']],
                 created=p['created_wall_time'],bounds=boundary(self.s,p['evidence_refs'] or p['provenance'][:1])))
         for m in memories:
@@ -587,6 +586,15 @@ class ActionGate:
             if not isinstance(origin,str):raise ValueError('ActionSelection context origin missing')
             origin_row=self.s.one('SELECT session_id FROM events WHERE id=?',(origin,))
             if not origin_row or origin_row['session_id']!=event_row['session_id']:raise ValueError('ActionSelection context crosses session boundary')
+            if item.get('source_kind') in BODY:
+                offer_row=self.s.one("SELECT payload FROM packets WHERE id=? AND kind='OfferPacket'",(item.get('item_id'),))
+                if not offer_row:raise ValueError('ActionSelection body OfferPacket missing')
+                try:offer=validate('OfferPacket',json.loads(offer_row['payload']))
+                except (ValueError,TypeError,KeyError,json.JSONDecodeError) as exc:raise ValueError('ActionSelection body OfferPacket invalid') from exc
+                if offer['packet_id']!=item.get('item_id') or offer['role']!=item.get('source_kind') or offer['event_id']!=origin or offer['brain_generation_id']!=e['brain_generation_id']:
+                    raise ValueError('ActionSelection body OfferPacket binding mismatch')
+                item_refs.extend(offer.get('provenance') or [])
+                item_refs.extend(offer.get('evidence_refs') or [])
             for ref in item_refs:
                 if not isinstance(ref,dict):raise ValueError('ActionSelection SourceRef shape invalid')
                 try:self.s.read_source(ref)
