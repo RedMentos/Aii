@@ -20,6 +20,15 @@ except ImportError:
 def png(colour, box=(10, 10, 40, 40), size=(64, 48)):
     im = Image.new('RGB', size, 'white'); ImageDraw.Draw(im).rectangle(box, fill=colour); b = io.BytesIO(); im.save(b, 'PNG'); return b.getvalue()
 
+def png_pair(marker):
+    """Two independent coloured regions in one source; the marker makes each source ID unique."""
+    im = Image.new('RGB', (64, 48), 'white')
+    draw = ImageDraw.Draw(im)
+    draw.rectangle((0, 0, 15, 11), fill=(220, 20, 20))
+    draw.rectangle((16, 0, 31, 11), fill=(20, 20, 220))
+    draw.rectangle((48, 36, 50 + marker, 38), fill=(20, 180, 20))
+    b = io.BytesIO(); im.save(b, 'PNG'); return b.getvalue()
+
 class FakeTeacher:
     def __init__(self): self.calls = []
     def describe(self, im, prompt=vision.PROMPT, cancel=None):
@@ -170,9 +179,10 @@ class Vision(unittest.TestCase):
             vision.describe(self.rt, rec, 'g', OppositeTeacher())
         # Add independent source groups so the old projector is tested only on
         # images it could not have seen before this update.
-        for i, colour in enumerate([(220, 20, 20), (20, 20, 220), (20, 180, 20), (220, 20, 20)]):
-            rec = vision.ingest(self.store, png(colour, box=(14+i, 12, 42+i, 40)))
-            vision.describe(self.rt, rec, 'g', OppositeTeacher())
+        for i in range(4):
+            rec = vision.ingest(self.store, png_pair(i + 1))
+            vision.describe(self.rt, rec, 'r00', OppositeTeacher())
+            vision.describe(self.rt, rec, 'r01', OppositeTeacher())
         second = vision.train(self.rt, encoder)
         gate = second['update_gate']
         self.assertIn(gate['status'], ('APPLIED', 'REJECTED_RETENTION_REGRESSION'), gate)
