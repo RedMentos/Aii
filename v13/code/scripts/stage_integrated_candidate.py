@@ -13,7 +13,7 @@ import shutil
 import tempfile
 
 BUILDER = 'scripts/termux_runtime_recovery_candidate_20261121.py'
-BUILDER_SHA = 'f8635d867452c3682f44e7438d418fa20b60b50bd70731a78f5f1a2b9c9c10c3'
+BUILDER_SHA = 'a3ec9eb0eab9bca48dcb3c350c4f7a70548b92402d1f312d058dc6db1d46568c'
 ARITHMETIC_OVERLAY = 'scripts/integrated_arithmetic_guard_candidate_20261121.py'
 ARITHMETIC_OVERLAY_GIT_BLOB = '88c179a71387c5caba7bbd645f868a7cccf39d30'
 NATIVE_PROBE_OVERLAY = 'scripts/integrated_native_probe_approval_overlay_20261123.py'
