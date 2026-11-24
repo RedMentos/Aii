@@ -84,9 +84,17 @@ class Watcher:
         self.offer=None;self.error=None;self.thread=None;self.done=threading.Event();self.decided=False;self.cut=None;self.recorded=False
         self.info=meta.setdefault('late_watch',{'mode':m,'status':status,**({'role':role} if role else {})})
     def _run(self,version,offer_deadline,valid_until):
-        try:self.offer=self.r.cognition.offer(self.role,self.e,version,offer_deadline,None,valid_until=valid_until)
+        # This is a post-answer-start late-watch pass, not a pre-answer body slice.
+        # Explicitly opt out of the recovery pre-answer budget so a completed
+        # C3 recovery reservation cannot suppress the late offer as already expired.
+        try:self.offer=self.r.cognition.offer(self.role,self.e,version,offer_deadline,None,valid_until=valid_until,preanswer_budgeted=False)
         except BaseException as exc:self.error=type(exc).__name__
         finally:self.done.set()
+
+    def _record_once(self,row):
+        if self.recorded:return
+        _record(self.r.store,row)
+        self.recorded=True
     def start(self,version,offer_deadline,valid_until):
         self.thread=threading.Thread(target=self._run,args=(version,offer_deadline,valid_until),daemon=True,name='latewatch')
         self.status=self.info['status']='RUNNING';self.info['offered']=self.role;self.thread.start();return self
@@ -107,17 +115,16 @@ class Watcher:
     def _close(self,status,at_char,reason=None):
         self.status=status;self.info.update(status=status,at_char=at_char,**({'reason':reason} if reason else {}))
         if self.offer:self.info['offer_id']=self.offer.get('packet_id')
-        if not self.recorded:
-            _record(self.r.store,{'event_id':self.e['event_id'],'status':status,'mode':self.mode,
-                                  'role':self.role,'at_char':at_char,**({'reason':reason} if reason else {}),
-                                  **({'offer_id':self.offer.get('packet_id')} if self.offer else {})})
-            self.recorded=True
+        self._record_once({'event_id':self.e['event_id'],'status':status,'mode':self.mode,
+                           'role':self.role,'at_char':at_char,**({'reason':reason} if reason else {}),
+                           **({'offer_id':self.offer.get('packet_id')} if self.offer else {})})
     def finish(self,runner,messages,output,deadline,mid):
         """After the stream. ACTIVE cut: C3 continues with the late finding (appended, returned). Otherwise an offer that
         arrived too late for the stream goes the old post-commit way (gated self-message, answer kept)."""
         extra=''
         if self.thread is None:
-            _record(self.r.store,{'event_id':self.e['event_id'],'status':self.status,'mode':self.mode,'ts':time.time()});return extra
+            self._record_once({'event_id':self.e['event_id'],'status':self.status,'mode':self.mode,'ts':time.time()})
+            return extra
         if not self.decided:
             self.done.wait(max(0.,min(JOIN_S,deadline-time.monotonic())))
             if self.offer is not None and not self.decided:
@@ -145,8 +152,8 @@ class Watcher:
                     self.r.store.append_message(mid,clean);extra+=clean
             except Exception as exc:self.info['revision_error']=type(exc).__name__
             self.info.update(provisional_chars=self.cut['at_char'],revision_chars=len(extra))
-        _record(self.r.store,{'event_id':self.e['event_id'],'status':self.status,'mode':self.mode,'role':self.role,'ts':time.time(),
-                              **{k:self.info[k] for k in ('at_char','reason','offer_id','provisional_chars','revision_chars') if k in self.info}})
+        self._record_once({'event_id':self.e['event_id'],'status':self.status,'mode':self.mode,'role':self.role,'ts':time.time(),
+                           **{k:self.info[k] for k in ('at_char','reason','offer_id','provisional_chars','revision_chars') if k in self.info}})
         return extra
 
 def postcommit_consumed(meta,role):
