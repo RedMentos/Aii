@@ -41,15 +41,16 @@ Core tests/data path: numpy. Model training: PyTorch CPU or CUDA.
     python -m pip install -r experiments/m1/requirements-ml.txt --index-url https://download.pytorch.org/whl/cpu
 
 ## Verification status
-- Earlier core suite: 62 synthetic tests passed on Python 3.12, 3.13 and 3.14 at commit 016239ff53b5de227b8b987cf1f39873a975f252 (historical; subsequent calendar/loader changes are awaiting the latest CI run).
-- Earlier torch suite: passed on Python 3.12/3.13/3.14 before the later scaler/probe changes; current torch suite is awaiting CI.
+- **Current core CI:** 70 tests PASS on Python 3.12, 3.13 and 3.14 at commit `3a118e1ba27f59a10ce52483fbc822d9148781cf` (GitHub Actions run `45331033269`). Includes calendar splits, preregistration gates, NumPy/list parity with missing rows/NaNs, baselines, bootstrap and data integrity.
+- **Current torch CI:** 21 tests PASS on Python 3.12, 3.13 and 3.14 at commit `653536e22ea8d5097ed0d94c4e787436eb4bf23d` (run `45330944235`). Includes JEPA, Direct-MAE, Raw-GRU, DLinear, checkpoint and synthetic end-to-end evaluation.
+- **LOCAL_PYTHON isolated checks:** DLinear forward/sensitivity/shape-negative/parameter-update checks PASS on Python 3.13.5 + PyTorch 2.10.0+cpu; missing-row list/array origin parity PASS (680/680 synthetic origins). The full repository suite was not run locally because no checkout is mounted in this execution environment.
 - No real UCI evaluation has been run in this workspace.
 - No test-year windows have been opened.
 - No hyperparameter set or preregistration has been locked.
 
 ## Next gates
-1. Get the current core and torch CI green on Python 3.12/3.13/3.14.
-2. Finish the baseline/statistical review and confirm the synthetic end-to-end training/validation test passes.
+1. Keep the current core and torch CI green on Python 3.12/3.13/3.14 as changes continue.
+2. Finish the baseline/statistical review; current synthetic end-to-end training/validation passes, but no real-cohort utility claim is available.
 3. Lock patch size/stride, model dimensions, EMA schedule, anti-collapse weights, optimizer, epochs, seeds and promotion thresholds.
 4. Run train/validation only on the real UCI data; benchmark ingestion and batch throughput.
 5. Hash-lock the preregistration and executing commit before any test access.

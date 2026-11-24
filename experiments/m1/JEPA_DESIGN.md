@@ -1,6 +1,6 @@
 # M1a model contract — clean-room design
 
-Status: [BOOT] — model classes and training loops now exist in code; current CI is pending. No real UCI training or test-year access has occurred. This file remains the design contract.
+Status: [BOOT] — model classes and training loops exist; core CI (70 tests) and torch CI (21 tests) pass on Python 3.12/3.13/3.14 at the documented commits. No real UCI training or test-year access has occurred. This file remains the design contract.
 
 ## 1. Task and information boundary
 
