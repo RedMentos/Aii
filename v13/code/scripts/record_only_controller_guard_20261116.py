@@ -142,8 +142,10 @@ def apply_sources(code_dir, sources):
     checked[name] = raw
 
     name = 'v13/actionlearn.py'
+    # Identify the exact unmodified source variant before injecting the gate import.
+    # The guarded output hash is checked separately against action_pin below.
+    source_action_pin = hashlib.sha256(result[name]).hexdigest()
     raw = checked[name]
-    source_action_pin = hashlib.sha256(raw).hexdigest()
     raw = _replace(raw, b"        sc=step(self.n,'c5_action_selection')  # WP-U6 \xc2\xa712.7\n",
         b"        if not updates_allowed(self.s):return {'n':0,'mods':{},'status':blocked_status(self.s)}\n"
         b"        sc=step(self.n,'c5_action_selection')  # WP-U6 \xc2\xa712.7\n", 'c5 learn')
