@@ -228,6 +228,7 @@ def test_immediate_android_receipt_context_rejects_tampered_provenance_and_obser
     outcome = packet(
         "ActionOutcome", "C5_ANDROID_COMPANION",
         event["event_id"], event["brain_generation_id"], [event["source_ref"]],
+        action_id="act_test_android_receipt",
         status="COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
         actual={
             "outcome_kind": "ANDROID_COMPANION_RECEIPT",
