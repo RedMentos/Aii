@@ -17,8 +17,14 @@ BUILDERS = {
 
 def load(code_dir, relative, expected):
     path = code_dir / relative
-    if path.is_symlink() or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
-        raise ValueError('Termux recovery builder source changed: ' + relative)
+    symlink = path.is_symlink()
+    actual = hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() and not symlink else None
+    if symlink or not path.is_file() or actual != expected:
+        raise ValueError(
+            'Termux recovery builder source changed: ' + relative
+            + ' expected=' + expected + ' actual=' + str(actual)
+            + ' symlink=' + str(symlink)
+        )
     spec = importlib.util.spec_from_file_location('recovery_' + path.stem, path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
