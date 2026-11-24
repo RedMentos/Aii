@@ -370,43 +370,6 @@ class FrozenContextProbe(nn.Module):
         return F.l1_loss(prediction, target)
 
 
-class FrozenLatentProbe(nn.Module):
-    """Linear value decoder over a frozen JEPA or randomly initialized backbone."""
-
-    def __init__(self, backbone: JEPAForecaster, config: JEPAConfig):
-        super().__init__()
-        if backbone.config != config:
-            raise ValueError("probe config must match frozen backbone config")
-        self.config = config
-        self.backbone = backbone
-        self.backbone.requires_grad_(False)
-        self.backbone.eval()
-        self.value_head = nn.Linear(
-            config.d_model, config.patch_size * config.input_channels
-        )
-
-    def train(self, mode: bool = True):
-        super().train(mode)
-        self.backbone.eval()
-        return self
-
-    def forward(
-        self, x: torch.Tensor, seasonal: torch.Tensor, calendar: torch.Tensor
-    ) -> torch.Tensor:
-        with torch.no_grad():
-            predicted_latents, _ = self.backbone.predict_latents(x, seasonal, calendar)
-        patches = self.value_head(predicted_latents)
-        return unpatchify(
-            patches, self.config.patch_size, self.config.input_channels,
-            seasonal.shape[1],
-        )
-
-    def loss(self, prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
-        if prediction.shape != target.shape:
-            raise ValueError("frozen-probe prediction and target shapes differ")
-        return F.l1_loss(prediction, target)
-
-
 def trainable_parameter_count(model: nn.Module) -> int:
     return sum(parameter.numel() for parameter in model.parameters() if parameter.requires_grad)
 
