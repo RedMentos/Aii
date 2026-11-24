@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T00:18:00Z",
+  "updated_at": "2026-11-24T00:18:53Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -1517,5 +1517,37 @@
     "user_action_required": "NONE. Do not run a manual Termux command. Existing updater is enabled; #519 is already queued. No model/weight/permission/microphone change or device action requested.",
     "active_agents": "Exactly five active V14 roles: Boss & Integration, QA & Android, JEPA & Memory, Research & Perception, Core & Harness.",
     "documentation_pr2333": "DRAFT documentation/evidence synchronization PR #2333, branch boss/v14-run12-whole-system-handoff-20261122; base b3b92. Updates board/workplan/next-action/append-only coverage only; no runtime code."
+  },
+  "p0_issue_1904": {
+    "status": "OPEN_BLOCKING",
+    "latest_sanitized_receipt": "public issue #1904 comment 7108089370",
+    "installed_base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+    "auto_update": "ENABLED",
+    "pipeline": "runtime=CI_WAIT; last_result=PARTIAL; last_error=NONE",
+    "runtime_state": "STOPPED_BY_USER; autostart=false; model_process=STOPPED",
+    "last_stored_turn": {
+      "result": "2+2 returned 2 (incorrect)",
+      "total_s": 6.295,
+      "ttft_s": 2.046,
+      "c3_prefill_s": 3.1,
+      "prompt_tokens": 358,
+      "generated_tokens": 7
+    },
+    "b1_b2": {
+      "status": "TIME_BUDGET",
+      "b1_s": 53.2,
+      "b2_s": 54.2
+    },
+    "boss_candidate_pr2433": {
+      "number": 2443,
+      "head_sha": "88ba1cc5096ffbd10d3300dffe7134d6be098415",
+      "status": "DRAFT_NOT_GREEN_NOT_MERGED_NOT_RELEASED_NOT_INSTALLED",
+      "checks": {
+        "completed_success": 5,
+        "in_progress": 2,
+        "queued": 30
+      }
+    },
+    "action": "No CHAT_SEND, UPDATE_REQUEST, restart, shell or LOG_PAGE. Preserve STOPPED_BY_USER. Do not treat CI or auto-update-enabled as installation or correctness proof."
   }
 }
