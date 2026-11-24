@@ -11,8 +11,10 @@ on:
       - "v13/code/v13/audio_teacher_ear.py"
       - "v13/code/v13/audio_temporal_evidence.py"
       - "v13/code/v13/audio_speaker_evidence.py"
+      - "v13/code/v13/audio_speaker_model.py"
       - "v13/code/tests/test_audio_temporal_evidence.py"
       - "v13/code/tests/test_audio_speaker_evidence.py"
+      - "v13/code/tests/test_audio_speaker_model.py"
       - "v13/code/tests/test_audio_ear_voice_cues_v14.py"
       - "v13/code/tests/test_audio_duplex_bridge.py"
       - "v13/code/tests/test_audio_teacher_ear.py"
@@ -28,8 +30,10 @@ on:
       - "v13/code/v13/audio_teacher_ear.py"
       - "v13/code/v13/audio_temporal_evidence.py"
       - "v13/code/v13/audio_speaker_evidence.py"
+      - "v13/code/v13/audio_speaker_model.py"
       - "v13/code/tests/test_audio_temporal_evidence.py"
       - "v13/code/tests/test_audio_speaker_evidence.py"
+      - "v13/code/tests/test_audio_speaker_model.py"
       - "v13/code/tests/test_audio_ear_voice_cues_v14.py"
       - "v13/code/tests/test_audio_duplex_bridge.py"
       - "v13/code/tests/test_audio_teacher_ear.py"
@@ -63,8 +67,10 @@ jobs:
             v13/code/v13/audio_voice_cues.py \
             v13/code/v13/audio_temporal_evidence.py \
             v13/code/v13/audio_speaker_evidence.py \
+            v13/code/v13/audio_speaker_model.py \
             v13/code/tests/test_audio_temporal_evidence.py \
             v13/code/tests/test_audio_speaker_evidence.py \
+            v13/code/tests/test_audio_speaker_model.py \
             v13/code/tests/test_audio_ear_voice_cues_v14.py \
             v13/code/tests/test_audio_duplex_bridge.py \
             v13/code/tests/test_audio_teacher_ear.py \
@@ -77,6 +83,7 @@ jobs:
             v13/code/tests/test_audio_duplex_bridge.py \
             v13/code/tests/test_audio_temporal_evidence.py \
             v13/code/tests/test_audio_speaker_evidence.py \
+            v13/code/tests/test_audio_speaker_model.py \
             v13/code/tests/test_audio_ear_voice_cues_v14.py \
             v13/code/tests/test_audio_teacher_ear.py \
             v13/code/tests/test_audio_teacher_ear_runtime_integration.py
