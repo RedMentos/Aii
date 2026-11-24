@@ -1934,3 +1934,13 @@ R-109 reviews the official Android MediaProjection guide (updated 2026-11-19). A
 - **User action:** none. No manual Termux command or model download/swap.
 - **Next internal step:** Core/Integrator updates the strict source-lifecycle composer to include the helper and pin exact current bytes, then reruns staged/integrated/consumer/migration. Perception should not edit Core-owned composer files.
 
+
+
+## Run 23 — latest private updater/device metadata (2026-11-25)
+
+- Latest available private metadata snapshot was updated 2026-11-24 09:28:11Z. Its pipeline reports `auto_enabled=true`, `runtime=UP_TO_DATE`, `dashboard=UP_TO_DATE`, `last_error=NONE`, and `updated_commit=8d93236c753f0194224c19edc7411d8d7082b1d6`. Thus the **existing base release** is reported installed/up to date; this does not include or deploy PR #2484.
+- The AI service is running, but the model process is `STOPPED`, AI state is `STOPPED_BY_USER`, autostart is false, and native-residency telemetry is unavailable because no verified model supervisor is present.
+- Latest recorded turn: C3 generated 7 tokens from a 358-token admitted prompt; TTFT 2.046 s and total turn 6.295 s. B1 and B2 each had 2 native attempts, both failed with TIME_BUDGET (53.2 s / 54.2 s); valid offers 0 for both. No semantic-use or native latent-exchange proof.
+- New read-only owner-relay requests for HEALTH / PIPELINE_STATUS / DIAGNOSTICS have not returned a device_status receipt yet: NO_LIVE_RECEIPT. No LOG_PAGE, CHAT_SEND, UPDATE_REQUEST, shell, or device action.
+- **Deployment:** updater is available and reports the current base release up to date, but #2484 is still an unmerged draft and its staged/integrated CI fails on the Core source-lifecycle pin. No update request is appropriate. PR-specific Redmi behavior remains REDMI_UNVERIFIED.
+- **User action:** none. Do not start the stopped model or change settings solely for this A3 storage PR.
