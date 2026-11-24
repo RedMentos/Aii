@@ -131,10 +131,13 @@ class Vision(unittest.TestCase):
         self.assertEqual(guess['authority'], 'STUDENT_ESTIMATE'); self.assertIn('blue', guess['nearest'][0]['caption'])
         sha = rec['ref']['sha256']; projector_path = self.home/pj['path']
         forgotten = vision.forget(self.store, rec)
-        self.assertIn('projector', forgotten['invalidated_projectors'])
+        self.assertIn('projector', forgotten['recomputed_projectors'])
+        self.assertEqual(forgotten['invalidated_projectors'], [])
         self.assertTrue(forgotten['projector_files_deleted']['projector'])
         self.assertFalse(projector_path.exists())
-        self.assertIsNone(vision.load(self.store)['projector'])
+        retained_projector = vision.load(self.store)['projector']
+        self.assertIsNotNone(retained_projector)
+        self.assertNotIn(rec['ref']['source_id'], {item['source_id'] for item in retained_projector['training_sources']})
         self.assertTrue(forgotten['blob_deleted'])
         self.assertFalse((self.home/'data/blobs'/sha).exists())
         with self.assertRaises(ValueError): vision.read_image(self.store, rec['ref'])
@@ -154,9 +157,12 @@ class Vision(unittest.TestCase):
         with self.assertRaises(ValueError): vision.locate(self.rt, new, ' ', enc)
         old_projector_path = self.home/pj['path']
         forgotten = vision.forget(self.store, rec)
-        self.assertIn('projector', forgotten['invalidated_projectors'])
+        self.assertIn('projector', forgotten['recomputed_projectors'])
+        self.assertEqual(forgotten['invalidated_projectors'], [])
         self.assertFalse(old_projector_path.exists())
-        self.assertIsNone(vision.load(self.store)['projector'])
+        retained_projector = vision.load(self.store)['projector']
+        self.assertIsNotNone(retained_projector)
+        self.assertNotIn(rec['ref']['source_id'], {item['source_id'] for item in retained_projector['training_sources']})
         rebuilt = vision.train(self.rt, enc)
         self.assertNotIn(rec['ref']['source_id'], {item['source_id'] for item in rebuilt['training_sources']})
 
@@ -781,7 +787,7 @@ class Vision(unittest.TestCase):
         self.assertEqual(set(result['recomputed_projectors']), {'projector', 'tile_projector'})
 
         X, caps, _, _ = vision.dataset(self.store)
-        expected = vision.Projector(vision.DEFAULTS['ridge']).fit(X, enc(caps))
+        expected = vision.Projector(vision.DEFAULTS['ridge']).fit(X, enc[1](caps))
         actual_record = vision.load(self.store)['projector']
         actual = vision.Projector.load(self.home/actual_record['path'], actual_record['sha256'])
         rel = numpy.linalg.norm(actual.W-expected.W)/max(1e-12, numpy.linalg.norm(expected.W))
@@ -790,7 +796,7 @@ class Vision(unittest.TestCase):
         self.assertEqual(actual_record['metrics_status'], 'NOT_RECOMPUTED_AFTER_SOURCE_DELETE')
 
         TX, texts, _ = vision.tile_dataset(self.store)
-        unique = sorted(set(texts)); vectors = dict(zip(unique, enc(unique)))
+        unique = sorted(set(texts)); vectors = dict(zip(unique, enc[1](unique)))
         TY = numpy.stack([vectors[text] for text in texts])
         expected_tiles = vision.Projector(vision.DEFAULTS['ridge']).fit(TX, TY)
         tile_record = vision.load(self.store)['tile_projector']
