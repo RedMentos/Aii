@@ -1,3 +1,9 @@
+> **SUPERSEDED — 2026-11-24 run 31.** The A4/N10 code port described below was temporarily placed on PR #2448, then reverted to avoid duplicating the already-owned Boss integration in PR #2443. Current PR #2448 no longer contains the A4/N10 files or dedicated workflow. The same reviewed bytes are already present on Boss branch `boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean`: `attention.py` blob `ecaf39b1b8ea0edad7f4a39774230b3cbed1d5eb`, `neuromod.py` blob `fbb02147cbcfff10896736a20838fbce08d7409b`, receipt test blob `200085b88497af331beb49eaf061944ad30542de`, workflow blob `05718e823aa2d5d78aa93a0fe57e8ff2f4dc2c57`; Core's guard blob `ecdbdfa6dc2df7e2cfd0764bdeded8dc9f4911cc` contains the new attention SHA-256 allowlist. PR #2443 is still OPEN / DRAFT / NOT_MERGED, with zero check-runs and current workflow records `startup_failure`/zero jobs; no acceptance or deployment is claimed. This file below is historical evidence of the attempted port, not current PR #2448 contents.
+
+**PR #2448 reversion commits:** attention.py restored `ee08a65644958780c64fd9f6fc1dfb7e972252d5`; neuromod.py restored `214157e7d90ded915087d8e9d6e158ebe7a06b0b`; test_attention.py restored `9fdbfa4e5eb42639d52beeb3f5c3382df42b3c43`; duplicate receipt test deleted `1ddd5109596a3a42ee815e3a67baf7a46a5a7634`; duplicate workflow deleted `3b0416862c75c780b0a3de46d73fce6db72bb010`. PR #2448 continues to own only its RAW EAR/Teacher Ear/duplex changes in this area.
+
+---
+
 # Research & Perception — A4 source-bound outcome → N10 transactional feedback (2026-11-24 run 30)
 
 ## Ported functional slice
