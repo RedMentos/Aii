@@ -81,3 +81,36 @@ Run exact-head Python 3.13/3.14 Core and staged Runtime CI, fix any failures, th
 - GitHub Status at the time of inspection reports **All Systems Operational**, Actions Operational, and no incident reported on Nov 23. This does not identify the cause; the observed failure is specific to this repository/run association or account path unless further evidence appears.
 - The workflow YAML was parsed locally with PyYAML 6.0.3 and the job graph is present; this rules out only basic YAML syntax, not GitHub's server-side workflow resolution or repository policy.
 - Do not keep rewriting workflow files or creating probe workflows without new evidence. The failure occurs before job creation and exposes no job logs; preserve run IDs for GitHub support/repository-owner investigation.
+
+
+## Run 6 — 2026-11-24, receipt-only recovery after action TTL and SQLite failure
+
+**Candidate head at code checkpoint:** `083a4ae9a6611454cfe1467a3bb1e26b63b8b120` (PR #2450, still OPEN / NOT_RELEASED, stacked on `qa/v14-companion-final-qa-20261122`).
+
+### Code changes
+- `android_control.py`: a row already in `RECEIPT_CONSUMED` is not expired on restart merely because the original dispatch TTL passed. An unconsumed `DISPATCHED`/`SUBMIT_UNCERTAIN` row still expires.
+- `consume_dispatched`: TTL bypass applies only to the already-consumed receipt path. It does not admit a new or repeated dispatch.
+- For consumed actions whose sensitive `args_json` was deliberately omitted, restart reconstructs an empty argument map plus persisted capability/digest/event/source metadata. Raw text remains absent.
+- `android_outcomes.accept_and_persist_companion_receipt`: absent an explicit caller clock, use the verifier's clock for `receipt_verified_at`; the Runtime controller now passes its clock explicitly.
+- Tests: expiry negative control for unconsumed dispatch; consumed sensitive action survives TTL without restoring raw args; Python persisted timestamp assertion; Android SQLite trigger failure after signing for both EXECUTING and DENYING, DB reopen, receipt-only recovery and no redispatch.
+
+### Exact-head CI evidence observed
+- V14 Core Companion Outcome: Python 3.13 **63/63 PASS**, Python 3.14 **63/63 PASS**.
+- V13 Android control broker + CLI: **15/15 PASS**.
+- V13 Android outcome contract: **39/39 PASS**.
+- V13 Android local sandbox replay integration: **39/39 PASS**.
+- Staged runtime: **240 passed, 10 skipped, 47 subtests passed**; recovery shell `bash -n` PASS.
+- Android companion isolated build and `:app:testDebugUnitTest`: **BUILD SUCCESSFUL**, APK assembled.
+- Simulation: **42 passed, 37 subtests passed**.
+- Integrated regression and Android emulator process-death remain IN_PROGRESS at this checkpoint. Do not claim their acceptance until exact-head jobs finish.
+
+### Environment and device boundary
+- LOCAL_LINUX full checkout is unavailable because GitHub DNS resolution failed; no local full-suite run.
+- Emulator CI is not physical Redmi proof. Current PR base still uses the older UIAutomator process-restart harness; QA PR #2427 has a newer ActivityScenario harness but is not integrated into this base.
+- REDMI_UNVERIFIED / NOT_INSTALLED / NOT_RELEASED. No device update, restart, model/weight change, permission change, shell action, CHAT_SEND or user-data mutation.
+- Last documented owner-verified phone receipt in #1984 (07:39:27 UTC): runtime/dashboard at `8d93236`, AI `STOPPED_BY_USER`, autostart false, model process stopped, zero valid B1/B2 offers. Fresh private PIPELINE_STATUS relay request produced no reply at last poll: NO_LIVE_RECEIPT.
+
+### Next
+1. Finish exact-head integrated-regression and Android process-death CI; fix only failures owned by Core.
+2. QA/Integrator must reconcile the newer ActivityScenario harness with the QA base before claiming emulator process-death acceptance.
+3. Resume Core V14-003 local one-shot native-probe approval integration after the active Boss/QA recovery/stage/deployer pin chain (#2443/#2455) is stable. No model or device action is authorized by this checkpoint.
