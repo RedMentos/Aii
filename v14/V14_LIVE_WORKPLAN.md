@@ -1328,3 +1328,12 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - Research ledger now carries R-084 and R-090–R-107 append-only. R-096 engram gate is synthetic and has no old-task retention win; not sparse MoE. R-107 FAR is a preprint and sony/far is CC BY-NC 4.0 with CUDA 12.8 / 14 GB GPU environment; conceptual only, no code/weights reused.
 - Next: wait for later PIPELINE_STATUS; recompose fair B1/B2→C4→C3; wire production ActionSelection context SourceRefs; rebase temporal/episodic JEPA; continue voice, Android agency, B3, sparse MoE, self-optimization and all Canon families.
 - **User action required: NONE.** Auto-updater enabled; no manual command or duplicate UPDATE_REQUEST.
+
+## Research & Perception — run 16: current-base A4 / RAW EAR rebase (2026-11-24 18:23 UTC)
+
+- PR #2472 is a current-base rebase of #2433 onto gpt6 HEAD 8d93236c753f0194224c19edc7411d8d7082b1d6. The old #2433 head was 43 ahead / 82 behind; its stale V14 docs were not transplanted.
+- Transplanted A4 source-bound outcome, RAW EAR voice/speaker evidence, optional FASTDIAR adapter, tests and three targeted workflows. No AudioRecord provider, raw PCM persistence, speaker identity, model swap or learning-authority change.
+- RECORD_ONLY guard now allows the exact current attention.py SHA-256 58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e while preserving the old pin. No hash bypass.
+- Full local Aii pytest BLOCKED / NOT_RUN (no checkout; GitHub DNS failure). Prior #2433 focused passes are historical only. Exact #2472 CI pending; no Redmi test.
+- #2433 stays open temporarily; do not merge it. Close as superseded only after #2472 current-base CI and independent review are green.
+- Next: exact Python 3.13/3.14, controller guard, A4, FASTDIAR, RAW EAR, consent/privacy, deployment and staged/integrated checks; then signed Android provider only after QA consent/revocation/zeroization gates.
