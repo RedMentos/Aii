@@ -16,6 +16,7 @@ BASE_PINS = {
 }
 NATIVE_FILES = {
     "v13/native_latent_receiver.py": "6ec80446feec4a0f709992db15e0b1b9986f4b4f5fe1f85106e95c0dbb203056",
+    "v13/native_latent_pairing.py": "3f93ffe23ae2825aa606639c7445dae2fe5a27c6518b3cebdce44b0fe5ba1d36",
     "v13/native/latent_receiver/CMakeLists.txt": "265cbba812499257fe559c761ca0e9410f2049fdc4a3fe30359a148c765dc30a",
     "v13/native/latent_receiver/native_latent_receiver.cpp": "4aafc21483d156f122b2edcd3eb2990cdecb744538aa6b783e6556604e6fbc08",
     "v13/native/latent_receiver/README.md": "18da3596d6f9da5f932fe7aa7cfde2d14b40ee5a04fce18a1514f993868644f0"
@@ -26,6 +27,7 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
         from .models import model_key
         from .common import file_hash
         from .native_latent_receiver import POSITION_MODE, probe as native_probe, register_packet_contract, validate_packet
+        from .native_latent_pairing import pair_taps
         register_packet_contract()
         if sender_role not in {"B1_DETAIL","B2_GIST"} or receiver_role not in {"B1_DETAIL","B2_GIST","C3_LANGUAGE"} or sender_role==receiver_role:
             raise ValueError("Native receiver roles must be distinct B1/B2 -> B1/B2/C3")
@@ -89,6 +91,21 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
         main=installed.get("files",{}).get(installed.get("main_file"))
         if not isinstance(main,dict) or not isinstance(main.get("sha256"),str):
             raise ValueError("Receiver model manifest hash is missing")
+        pair_packet=None
+        if sender_role=="B1_DETAIL" and receiver_role=="C3_LANGUAGE":
+            try:
+                now=__import__("time").monotonic()
+                pair_deadline=min(deadline-20.0,now+45.0)
+                if pair_deadline>now:
+                    receiver_tap=self.tap(receiver_role,e,source_ref,pair_deadline)
+                    self.r.pool.unload()
+                    pair_packet=pair_taps(self,tap,receiver_tap,sender_model_sha256,main["sha256"])
+                else:
+                    self.s.log("native_latent_tap_pair_unavailable",e["event_id"],{"stage":"budget_reserve","error":"INSUFFICIENT_REMAINING_BUDGET"})
+            except (ValueError,RuntimeError,OSError,TypeError) as exc:
+                self.s.log("native_latent_tap_pair_unavailable",e["event_id"],{"stage":"receiver_tap_pair","error":type(exc).__name__})
+            finally:
+                self.r.pool.unload()
         receipt=native_probe(
             home=self.r.home,model_path=model_path,expected_model_sha256=main["sha256"],
             sender_role=sender_role,receiver_role=receiver_role,
@@ -113,6 +130,8 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
             "decode_status":p["decode_status"],"native_input_consumed":p["native_input_consumed"],
             "input_effect_detected":p["input_effect_detected"],"production_route":False,
             "semantic_use_proven":False,"training_authority":0,"native_receiver_authority":0,
+            "tap_pair_packet_id":pair_packet["packet_id"] if pair_packet else None,
+            "tap_pair_status":pair_packet["status"] if pair_packet else "UNAVAILABLE_OR_NOT_APPLICABLE",
         })
         return p'''
 NATIVE_PROBE_METHOD = r'''    def native_receiver_probe(self):
@@ -121,6 +140,14 @@ NATIVE_PROBE_METHOD = r'''    def native_receiver_probe(self):
         try:
             from .native_latent_receiver import validate_packet
             q=validate_packet(json.loads(row['payload']))
+            pair_row=self.s.one("SELECT payload FROM packets WHERE kind='LatentTapPairPacket' AND event_id=? ORDER BY rowid DESC LIMIT 1",(q['event_id'],))
+            pair_summary=None
+            if pair_row:
+                from .native_latent_pairing import validate_pair_packet
+                pair=validate_pair_packet(json.loads(pair_row['payload']))
+                pair_summary={k:pair.get(k) for k in ('packet_id','status','alignment','sender_role','receiver_role',
+                    'sender_model_revision','receiver_model_revision','sender_shape','receiver_shape',
+                    'token_count','pair_sha256','training_authority','native_receiver_authority','production_route')}
             return {k:q.get(k) for k in ('sender_role','receiver_role','sender_tap_packet_id','sender_tap_id',
                 'sender_model_revision','sender_model_sha256','tokenizer_revision',
                 'receiver_model_revision','receiver_model_sha256','runner_revision','llama_version',
@@ -134,7 +161,8 @@ NATIVE_PROBE_METHOD = r'''    def native_receiver_probe(self):
                 'row_shuffle_control_applicable','row_shuffle_control_cosine',
                 'native_input_consumed','input_effect_detected')} | {
                 'production_route':False,'semantic_use_proven':False,
-                'training_authority':0,'native_receiver_authority':0}
+                'training_authority':0,'native_receiver_authority':0,
+                'tap_pair':pair_summary}
         except (ValueError,TypeError,KeyError,RuntimeError):
             return {'status':'INVALID_STORED_RECEIPT'}
 
