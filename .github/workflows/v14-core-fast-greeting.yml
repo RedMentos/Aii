@@ -8,9 +8,23 @@ on:
       - "v13/code/scripts/integrated_greeting_fastpath_candidate_20261123.py"
       - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
       - "v13/code/tests/test_fast_greeting.py"
+      - "v13/code/tests/test_stage_integrated_candidate.py"
+      - "v13/code/tests/test_termux_runtime_recovery_stage.py"
+      - "v13/code/scripts/stage_integrated_candidate.py"
+      - "v13/code/v13/runtime_deploy.py"
   push:
     branches:
       - "core/v14-native-prefill-receipt-20261124-run1"
+    paths:
+      - ".github/workflows/v14-core-fast-greeting.yml"
+      - "v13/code/v13/fast_greeting.py"
+      - "v13/code/scripts/integrated_greeting_fastpath_candidate_20261123.py"
+      - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
+      - "v13/code/scripts/stage_integrated_candidate.py"
+      - "v13/code/v13/runtime_deploy.py"
+      - "v13/code/tests/test_fast_greeting.py"
+      - "v13/code/tests/test_stage_integrated_candidate.py"
+      - "v13/code/tests/test_termux_runtime_recovery_stage.py"
 
 permissions:
   contents: read
@@ -29,7 +43,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install focused test dependency
-        run: python -m pip install --disable-pip-version-check pytest
+        run: python -m pip install --disable-pip-version-check pytest numpy psutil pyyaml
       - name: Compile exact matcher, overlay and tests
         env:
           PYTHONPATH: v13/code
@@ -38,7 +52,9 @@ jobs:
           v13/code/v13/fast_greeting.py
           v13/code/scripts/integrated_greeting_fastpath_candidate_20261123.py
           v13/code/tests/test_fast_greeting.py
+          v13/code/tests/test_stage_integrated_candidate.py
+          v13/code/tests/test_termux_runtime_recovery_stage.py
       - name: Test exact greeting matcher and bounded worker-learning guard
         env:
           PYTHONPATH: v13/code
-        run: python -m pytest -q v13/code/tests/test_fast_greeting.py
+        run: python -m pytest -q v13/code/tests/test_fast_greeting.py v13/code/tests/test_stage_integrated_candidate.py v13/code/tests/test_termux_runtime_recovery_stage.py
