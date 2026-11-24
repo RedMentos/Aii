@@ -158,6 +158,12 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
     promoted = dict(packet, production_route=True)
     with pytest.raises(native.NativeReceiverError, match="cannot grant"):
         native.validate_packet(promoted)
+    bad_token = dict(packet, receiver_next_token_id=packet["receiver_vocab_size"])
+    with pytest.raises(native.NativeReceiverError, match="outside receiver vocabulary"):
+        native.validate_packet(bad_token)
+    bad_effect = dict(packet, next_token_effect_detected=False)
+    with pytest.raises(native.NativeReceiverError, match="next-token effect threshold"):
+        native.validate_packet(bad_effect)
     runtime.close()
 
 

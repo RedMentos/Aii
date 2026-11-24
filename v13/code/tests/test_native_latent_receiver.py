@@ -181,6 +181,24 @@ def test_receiver_token_id_outside_vocabulary_is_rejected(tmp_path):
         run_probe(home, model, binary, digest)
 
 
+def test_next_token_effect_flag_must_match_logit_delta(tmp_path):
+    home, model, binary, digest = fixture(tmp_path)
+    script = binary.read_text(encoding="utf-8").replace('"next_token_effect_detected": True', '"next_token_effect_detected": False')
+    binary.write_text(script, encoding="utf-8")
+    binary.chmod(0o755)
+    with pytest.raises(NativeReceiverError, match="next-token effect threshold"):
+        run_probe(home, model, binary, digest)
+
+
+def test_control_token_ids_must_match_reported_change_flags(tmp_path):
+    home, model, binary, digest = fixture(tmp_path)
+    script = binary.read_text(encoding="utf-8").replace('"next_token_changed_vs_zero": True', '"next_token_changed_vs_zero": False')
+    binary.write_text(script, encoding="utf-8")
+    binary.chmod(0o755)
+    with pytest.raises(NativeReceiverError, match="token control mismatch"):
+        run_probe(home, model, binary, digest)
+
+
 def test_zero_input_effect_does_not_claim_input_effect(tmp_path):
     home, model, binary, digest = fixture(tmp_path, effect=0.0)
     receipt = run_probe(home, model, binary, digest)
