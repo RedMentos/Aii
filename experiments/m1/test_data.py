@@ -158,7 +158,7 @@ class WindowTests(unittest.TestCase):
 
 
     def test_test_split_is_not_materialized_by_default(self):
-        datasets, stats, manifest = build_dataset(self.rows, self.channels, self.cfg)
+        datasets, stats, manifest = build_dataset(self.rows, self.channels, self.cfg, allow_fractional_split=True)
         self.assertEqual(set(datasets), {"train", "validation"})
         self.assertNotIn("test", stats)
         self.assertNotIn("test", manifest["split_stats"])
@@ -194,6 +194,27 @@ class WindowTests(unittest.TestCase):
             events = log_path.read_text(encoding="utf-8").splitlines()
             self.assertEqual(len(events), 1)
             self.assertEqual(json.loads(events[0])["preregistration_sha256"], digest)
+
+    def test_test_loader_rejects_preregistration_for_different_commit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            prereg = {**PREREG_PARAMS,
+                "code_commit": "b" * 40,
+                "data_config_sha256": data_config_sha256(self.cfg),
+                "split_boundaries_sha256": split_boundaries_sha256(self.rows, self.cfg),
+                "dataset_sha256": dataset_sha256(self.rows, self.channels),
+            }
+            raw = json.dumps(prereg, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            path = root / "prereg.json"
+            path.write_bytes(raw)
+            with self.assertRaisesRegex(PermissionError, "does not match executing commit"):
+                load_test_split(
+                    self.rows, self.channels, self.cfg,
+                    preregistration_path=path,
+                    preregistration_sha256=hashlib.sha256(raw).hexdigest(),
+                    access_log_path=root / "access.jsonl",
+                )
+            self.assertFalse((root / "access.jsonl").exists())
 
     def test_test_loader_fails_closed_when_access_log_cannot_be_written(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -241,7 +262,7 @@ class WindowTests(unittest.TestCase):
                 )
 
     def test_manifest_hash_is_stable(self):
-        _, _, manifest = build_dataset(self.rows, self.channels, self.cfg)
+        _, _, manifest = build_dataset(self.rows, self.channels, self.cfg, allow_fractional_split=True)
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "manifest.json"
             first = write_manifest(manifest, path)
