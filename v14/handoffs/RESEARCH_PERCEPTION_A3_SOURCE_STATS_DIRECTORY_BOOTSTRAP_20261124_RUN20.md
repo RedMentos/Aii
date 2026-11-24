@@ -32,7 +32,7 @@ test_vision_projector_stats.py adds a fresh-root regression that verifies both d
 
 ## Acceptance and integration boundary
 
-Exact GitHub Actions for this follow-up are pending until the branch is pushed. Required checks: source-stat helper + full test_vision.py + source-lineage on Python 3.13 and 3.14; staged/integrated and Core source-lifecycle workflows. The existing #2477 failures are not reclassified as passes.
+The branch and PR are pushed. The available PR-triggered workflow-run readback returned no runs for the exact head after the pull_request path filter was extended; no CI PASS is claimed. Required checks: source-stat helper + full test_vision.py + source-lineage on Python 3.13 and 3.14; staged/integrated and Core source-lifecycle workflows. The existing #2477 failures are not reclassified as passes.
 
 Core/QA still owns the materialized source-lifecycle composer. It must include vision_projector_stats.py with its exact SHA and rebind the changed vision.py source pin before the staged consumer can pass. Do not relax source hashes.
 
