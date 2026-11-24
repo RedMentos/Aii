@@ -1,6 +1,6 @@
 # V14 M1 — forecasting experiment
 
-**Status:** [ENTWURF]. DATA has synthetic CI coverage; BASE is partial; PROBE is not implemented. No real UCI result or test-year evaluation is claimed.
+**Status:** [ENTWURF]. DATA and the current baseline set have synthetic CI coverage from the pre-reset snapshot. Raw-window controls are now added on the clean branch but have not yet been executed by CI. JEPA/direct-MAE PROBE is not implemented. No real UCI result or test-year evaluation is claimed.
 
 ## Files
 
@@ -8,7 +8,8 @@
 - `array_data.py`: bounded-memory NumPy `ArrayDataset`, two-pass UCI ingestion, direct float32 matrix, lazy window batches, common `InputBundle(X, S, calendar)`, batch memory ceiling and audit-first test gate.
 - `baselines.py`: Persistence, Seasonal Persistence, Train Mean/Median, Ridge-AR, LAD/L1-AR and streaming MAE evaluation.
 - `test_*.py`: synthetic regression tests for DATA, array ingestion and current BASE.
-- **Still missing:** Raw-Window-Probe, Raw-Window-MLP, experiment runner/statistics, direct-MAE, JEPA encoder/predictor, random-encoder probe, collapse metrics and M1b/M1c.
+- `raw_probes.py`: newly added Raw-Window-Probe (linear MAE readout) and Raw-Window-MLP (one-hidden-layer nonlinear control), both using the common flattened X/S/calendar bundle and train-only fitting. Synthetic tests are present; exact CI has not yet run on this branch.
+- **Still missing:** experiment runner/statistics, direct-MAE, JEPA encoder/predictor, random-encoder probe, collapse metrics and M1b/M1c.
 
 ## Real-data path
 
