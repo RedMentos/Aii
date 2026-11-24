@@ -212,7 +212,6 @@
       "latest_interval_order_pr": {
         "pr": 2471,
         "url": "https://github.com/RedMentos/Aii/pull/2471",
-        "head_sha": "5991977aed9dea7b429df1e6af78ac661e990f54",
         "code_sha": "e3d93311c4f15320dbccd920163263a64a7aeefd",
         "test_sha": "7981ef0a559e7064ac1a5f92b44a30da8e12efa6",
         "state": "OPEN_DRAFT_CI_PENDING",
@@ -221,7 +220,9 @@
         "full_repo_test": "BLOCKED_NO_CHECKOUT_DNS",
         "device": "REDMI_UNVERIFIED",
         "workflow": ".github/workflows/v14-audio-temporal-evidence.yml",
-        "ci": "WORKFLOW_ADDED_AWAITING_RUN"
+        "ci": "WORKFLOW_ADDED_AWAITING_RUN",
+        "tested_code_sha": "5991977aed9dea7b429df1e6af78ac661e990f54",
+        "workflow_commit_sha": "5991977aed9dea7b429df1e6af78ac661e990f54"
       }
     },
     {
