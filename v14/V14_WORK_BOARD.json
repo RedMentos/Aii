@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T20:26:03.098Z",
+  "updated_at": "2026-11-24T20:54:27Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6. Boss candidate code-bearing checkpoint a5e536a96f6dc2a3a515d37b08393f7136e9efff on boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean; documentation-only descendants follow (last PR metadata readback 5166643ac74fbca318511c0918dea06e98a11ff9). QA #2459 and #2460 fast-forward integrated. Candidate PR #2443 remains DRAFT / NOT_RELEASED; full combined exact-head CI incomplete.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "The Boss branch is a candidate only, NOT_RELEASED/NOT_INSTALLED. CI must pass on its exact final head before any release action. Do not restart the explicitly stopped phone runtime or issue a duplicate update request. Keep synthetic, CI, local Linux and real Redmi evidence separate.",
@@ -14,11 +14,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "CI exact-head staged/integrated PENDING after source-pin recompose; prior diagnostic runs identified exact Runtime/loader pin mismatches; LOCAL_LINUX full repository BLOCKED/NOT_RUN; REDMI_UNVERIFIED",
-      "next_step": "Core: active exact-head PR #2478 has 58 check-runs registered (56 QUEUED, 2 SKIPPED, 0 completed at last poll). Poll staged-runtime/integrated-regression, Python 3.13/3.14 consumers, source-contracts, owner-read, metadata, migration and Android arm64 cross-compile. Preserve both B1/B2 opportunities, C4 source-bound offers and C3 reserve. After exact green evidence, Boss reviews/integrates with #2464/#2451. QA owns the #2427 process-death harness port into #2450. No Redmi action while AI is STOPPED_BY_USER.",
+      "proof_environment": "LOCAL_LINUX_ISOLATED helper compile + 5 targeted tests PASS; full repository LOCAL_LINUX BLOCKED/NOT_RUN (no checkout, GitHub DNS failure). PR #2478 exact head 93173: 27 checks registered, 1 SKIPPED/26 QUEUED. PR #2480 exact head 0b5e: 8 QUEUED after fixing one test-fixture ID-length failure. PR #2481 exact head 95dd: Android build + Core Python matrices + offline security SUCCESS; Android emulator process-death IN_PROGRESS. REDMI_UNVERIFIED.",
+      "next_step": "Poll exact-head CI for #2478 and #2480; fix any failures. Poll #2481 Android emulator process-death job. If green, obtain independent review and integrate against the newest compatible branch. Use the new per-role token/TTFT/PSS and C4/C3 receipt joins to calibrate fair B1/B2 slices without removing either body or the C3 reserve. No Redmi action while AI remains STOPPED_BY_USER.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T20:22:36.292Z",
-      "proof": "Active code PR #2478 is based on release 8d93236 and uses head 4fb95610c5593803419b5dbaaa82fc6e709d6543. C4 focal anchor now validates the bounded arithmetic/C5 direct_action shape; fair-slice regression asserts B1 expiry -> B2 pre-answer slice -> C3 with no duplicate postcommit B2 offer. Controller guard pins exact composed Runtime SHA c60d04eba1d7a7b3ca16ddc0e2595dd5f49e1be15f8dde25ab2f6e3a92fe7b65 and reports rejected hashes. Recovery loader diagnostics report expected/actual hash and symlink state; loader regression verifies mismatch and symlink rejection. Guard SHA-256 f667722d693d3535183a9ee773cd761938d9fd33e56dc381b77e309bf794f93d; recovery-12 blob e949631f88892dc8815e5e06eaa6d4b21e153093; wrapper SHA-256 ff4e487ac967a7ac30351692642723f5692f28a5ef744a5f121a4aa6503388b5; stage SHA-256 f4db8fa4e99dd3205808d4ebd9f3a5087593fed0a3cb76145b709c0cce21efcc. Exact-head CI has 58 check-runs: 56 QUEUED, 2 SKIPPED, 0 completed SUCCESS/FAIL at last poll. Full LOCAL_LINUX Aii suite NOT_RUN (no checkout/DNS); Redmi REDMI_UNVERIFIED, last receipt AI STOPPED_BY_USER; no device action.",
+      "last_checkpoint": "2026-11-24T20:54:27Z",
+      "proof": "Active code PR #2478 is based on release 8d93236 and uses head 4fb95610c5593803419b5dbaaa82fc6e709d6543. C4 focal anchor now validates the bounded arithmetic/C5 direct_action shape; fair-slice regression asserts B1 expiry -> B2 pre-answer slice -> C3 with no duplicate postcommit B2 offer. Controller guard pins exact composed Runtime SHA c60d04eba1d7a7b3ca16ddc0e2595dd5f49e1be15f8dde25ab2f6e3a92fe7b65 and reports rejected hashes. Recovery loader diagnostics report expected/actual hash and symlink state; loader regression verifies mismatch and symlink rejection. Guard SHA-256 f667722d693d3535183a9ee773cd761938d9fd33e56dc381b77e309bf794f93d; recovery-12 blob e949631f88892dc8815e5e06eaa6d4b21e153093; wrapper SHA-256 ff4e487ac967a7ac30351692642723f5692f28a5ef744a5f121a4aa6503388b5; stage SHA-256 f4db8fa4e99dd3205808d4ebd9f3a5087593fed0a3cb76145b709c0cce21efcc. Exact-head CI has 58 check-runs: 56 QUEUED, 2 SKIPPED, 0 completed SUCCESS/FAIL at last poll. Full LOCAL_LINUX Aii suite NOT_RUN (no checkout/DNS); Redmi REDMI_UNVERIFIED, last receipt AI STOPPED_BY_USER; no device action.\n\nRun24 (2026-11-24T20:54:27Z): PR #2478 head 93173a839c3142a42a94e3666d5127957a75f148 adds the reviewed feedback-shadow ActionLearn source variant to the exact RecordOnly guard allowlist while retaining updates_allowed, and corrects attempt-status telemetry so stale runner FINAL cannot mask DEADLINE; postcommit observer now excludes deadline/cancelled/interrupted roles. Raw guard SHA256 4abc789470ede189afc7efb73c64b669c66a76374642e285bb680e296255c289; postcommit builder SHA256 766b9ab50bc31bcfc44c3496833c462a6c3eb8ced1fb408c1f8574bc91c77624; recovery-12 blob fe5fa2618c2a8e531af10691caed44e1d3d7cdbf; recovery-21 raw SHA256 d35fd61ad86016ab87c25078af32ade9da8ffe499efed0b9fde99085da11ee3d; stage builder pin rebound to that raw SHA. Exact CI remains queued.\nPR #2480 head 0b5e2fe5fee5d05589ebab57fae6fe9e12b352c7 adds sanitized per-body attempt → delivered packet → C4 selection → C3 prompt receipt evidence in brain_panel.status. First CI exposed a test fixture constructing an overlong packet ID; corrected by using one 32-hex suffix. New exact CI queued.\nPR #2481 head 95dd586a84dff5700b79ba6871d7e8615d23764f ports QA #2427's Espresso/ActivityScenario process-death harness onto the Core ActionOutcome stack. Core Python matrices and Android build pass; emulator process-death job still in progress. Parent #2450's old UIAutomator hierarchy timeout remains a historical FAIL, not a pass.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -1498,14 +1498,73 @@
     }
   },
   "latest_core_checkpoint": {
-    "timestamp": "2026-11-24T20:18:58.353Z",
+    "timestamp": "2026-11-24T20:54:27Z",
     "owner": "Core & Harness",
     "primary_runtime_pr": 2478,
     "primary_runtime_branch": "core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run2",
-    "primary_runtime_head": "4fb95610c5593803419b5dbaaa82fc6e709d6543",
-    "primary_runtime_status": "DRAFT_EXACT_HEAD_CI_QUEUED_NOT_RELEASED",
+    "primary_runtime_head": "93173a839c3142a42a94e3666d5127957a75f148",
+    "primary_runtime_status": "DRAFT_EXACT_HEAD_CI_QUEUED_AFTER_GUARD_AND_DEADLINE_FIX_NOT_RELEASED",
+    "evidence_followup_pr": 2480,
+    "evidence_followup_head": "0b5e2fe5fee5d05589ebab57fae6fe9e12b352c7",
+    "evidence_followup_status": "DRAFT_EXACT_HEAD_CI_QUEUED_NOT_RELEASED",
+    "android_action_followup_pr": 2481,
+    "android_action_followup_head": "95dd586a84dff5700b79ba6871d7e8615d23764f",
+    "android_action_followup_status": "DRAFT_ANDROID_EMULATOR_IN_PROGRESS_CORE_MATRICES_SUCCESS_NOT_RELEASED",
     "full_repository_local": "BLOCKED_NO_CHECKOUT_DNS_FAILURE",
+    "local_isolated_tests": "PASS_CP313_5_TARGETED_HELPER_TESTS",
     "redmi": "STOPPED_BY_USER_LAST_RECEIPT_REDMI_UNVERIFIED",
-    "next_action": "Run exact staged/integrated/consumer/owner-read/migration matrix on the re-composed fair B1/B2 branch; then coordinate Boss integration with #2464/#2451."
+    "next_action": "Poll exact-head CI for #2478/#2480 and the Android process-death emulator for #2481; fix failures before review/integration. Calibrate B1/B2 slices from measured per-role counters; no model swap or device action."
+  },
+  "core_run24_checkpoint": {
+    "timestamp": "2026-11-24T20:54:27Z",
+    "owner": "Core & Harness",
+    "release_base_branch": "gpt6/v13-private-remote-bridge-20261111",
+    "release_base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+    "primary_runtime": {
+      "pull_request": 2478,
+      "branch": "core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run2",
+      "head": "93173a839c3142a42a94e3666d5127957a75f148",
+      "status": "DRAFT_EXACT_HEAD_CI_QUEUED_NOT_RELEASED"
+    },
+    "evidence_followup": {
+      "pull_request": 2480,
+      "branch": "core/v14-body-offer-native-evidence-20261124-run1",
+      "head": "0b5e2fe5fee5d05589ebab57fae6fe9e12b352c7",
+      "status": "DRAFT_EXACT_HEAD_CI_QUEUED_NOT_RELEASED"
+    },
+    "android_action_followup": {
+      "pull_request": 2481,
+      "branch": "core/v14-android-action-journal-instrumented-restart-20261124-run1",
+      "head": "95dd586a84dff5700b79ba6871d7e8615d23764f",
+      "status": "DRAFT_ANDROID_EMULATOR_IN_PROGRESS_CORE_MATRICES_SUCCESS_NOT_RELEASED"
+    },
+    "changes": [
+      "Cognition body_offer_attempt status now records the attempt boundary; stale runner.last_metrics status cannot override a deadline/cancel.",
+      "Postcommit observer skips a body whose same-turn attempt ended DEADLINE/CANCELLED/INTERRUPTED; existing timeout regression now asserts the logged DEADLINE status.",
+      "RecordOnly guard accepts the exact base ActionLearn source and reviewed feedback-shadow CLI-only source, applies updates_allowed to both, and rebinds the semantic consumer to the guarded output.",
+      "Per-body status consumer joins prompt/generated tokens, TTFT, duration, sampled PSS and delivered OfferPacket IDs to C4 selected IDs and the C3 native prompt receipt; raw text is not returned and semantic use is not claimed.",
+      "QA-owned Espresso/ActivityScenario process-death harness ported to Core ActionOutcome stack; UIAutomator hierarchy timeout is retained as historical failure, not relabeled."
+    ],
+    "pins": {
+      "actionlearn_feedback_candidate_sha256": "eff43a5f6590130b478d5c288debaa548b01ac1133d4b46ba500ec63beee546e",
+      "guarded_feedback_actionlearn_sha256": "417b1995c22d639689b7f3da092e6788b2b8c76ca3767410712b15d32ee20a62",
+      "controller_guard_sha256": "4abc789470ede189afc7efb73c64b669c66a76374642e285bb680e296255c289",
+      "postcommit_observer_sha256": "766b9ab50bc31bcfc44c3496833c462a6c3eb8ced1fb408c1f8574bc91c77624",
+      "recovery12_blob_sha1": "fe5fa2618c2a8e531af10691caed44e1d3d7cdbf",
+      "recovery21_sha256": "d35fd61ad86016ab87c25078af32ade9da8ffe499efed0b9fde99085da11ee3d"
+    },
+    "tests": {
+      "local_linux_isolated": "PASS: CPython 3.13.5 helper compile + 5 targeted tests",
+      "full_repository_local": "BLOCKED_NOT_RUN: no checkout; git ls-remote DNS failure",
+      "pr2478_exact_head": "27 checks: 1 SKIPPED, 26 QUEUED at last poll; no PASS/FAIL yet",
+      "pr2480_exact_head": "8 checks QUEUED after correcting test fixture ID length; no PASS/FAIL yet",
+      "pr2481_exact_head": "Android build, Core Python 3.13/3.14 and offline security SUCCESS; Android process-death emulator IN_PROGRESS",
+      "qa_source_pr2427": "5/5 SUCCESS on QA-owned source branch",
+      "parent_pr2464": "31/32 SUCCESS, 1 SKIPPED",
+      "parent_pr2450": "11/12 SUCCESS, old UIAutomator process-restart failure"
+    },
+    "device": "REDMI_UNVERIFIED; last shared receipt says AI STOPPED_BY_USER. No private relay, CHAT_SEND, UPDATE_REQUEST, LOG_PAGE, shell, restart, model/weight change or permission change.",
+    "deployment": "NOT_DEPLOYED; updater not invoked or verified on device.",
+    "next_action": "Poll #2478/#2480 exact-head CI and #2481 Android process-death emulator. Fix observed failures; then independent review and integration. Use measured per-role counters for fair-slice calibration. No user action required."
   }
 }
