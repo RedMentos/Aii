@@ -31,7 +31,9 @@ import time
 import zlib
 from pathlib import Path
 from .common import Unavailable,atomic_write,digest,dumps,uid,now
-from .vision_source_lineage import source_lineage, invalidate_projectors, unlink_projector_artifact, unlink_source_blob
+from .vision_source_lineage import source_lineage, projector_uses_source, unlink_projector_artifact, unlink_source_blob
+from .vision_projector_stats import (SOURCE_STATS_MODE, MAX_SOURCE_STATS, build_source_statistics,
+                                     rebuild_without_source, remove_source_statistics)
 from .vision_validation import source_disjoint_crossval as _source_disjoint_crossval
 
 KEY='WP_N15_VISION';REVISION='wp-n15-vision-v2-replay-gated';AUTHORITY='REFERENCE_NOT_FACT';STUDENT='STUDENT_ESTIMATE'
@@ -633,10 +635,13 @@ def _validate_state_sources(conn, state, allow_malformed_projectors=False):
                     raise ValueError('vision projector caption references a non-live source')
         lineage = projector.get('training_sources')
         if lineage in (None, []):
+            if projector.get('source_stats_mode') == SOURCE_STATS_MODE:
+                raise ValueError('A3 source statistics require complete projector lineage')
             continue  # legacy/unknown lineage is retained only until explicit forget invalidates it
         if type(lineage) is not list:
             raise ValueError('invalid vision projector source lineage')
         seen = set()
+        lineage_map = {}
         for item in lineage:
             if type(item) is not dict or set(item) != {'source_id', 'sha256'}:
                 raise ValueError('invalid vision projector source lineage item')
@@ -648,6 +653,43 @@ def _validate_state_sources(conn, state, allow_malformed_projectors=False):
                     or type(image_ref) is not dict or image_ref.get('sha256') != source_sha):
                 raise ValueError('vision projector lineage references a non-live source')
             seen.add(source_id)
+            lineage_map[source_id] = source_sha
+
+        stats = projector.get('source_stats')
+        stats_mode = projector.get('source_stats_mode')
+        if stats is not None:
+            if type(stats) is not list or len(stats) > MAX_SOURCE_STATS:
+                raise ValueError('invalid or unbounded A3 source statistics')
+            if stats_mode == SOURCE_STATS_MODE:
+                if not stats:
+                    raise ValueError('A3 source statistics are empty')
+                prefix = 'projector-stats-' if key == 'projector' else 'tiles-stats-'
+                stats_by_source = {}
+                for item in stats:
+                    if type(item) is not dict or set(item) != {'source_id', 'source_sha256', 'path', 'sha256', 'n'}:
+                        raise ValueError('invalid A3 source statistics index')
+                    source_id = item['source_id']
+                    source_sha = item['source_sha256']
+                    artifact_sha = item['sha256']
+                    relative = Path(item['path']) if type(item['path']) is str else None
+                    if (type(source_id) is not str or not source_id or source_id in stats_by_source
+                            or type(source_sha) is not str or not re.fullmatch(r'[0-9a-f]{64}', source_sha)
+                            or type(artifact_sha) is not str or not re.fullmatch(r'[0-9a-f]{64}', artifact_sha)
+                            or relative is None or relative.is_absolute() or len(relative.parts) != 3
+                            or relative.parts[:2] != ('data', 'vision')
+                            or not relative.name.startswith(prefix) or not relative.name.endswith('.npz')
+                            or type(item['n']) is not int or item['n'] < 1):
+                        raise ValueError('malformed A3 source statistics index')
+                    stats_by_source[source_id] = source_sha
+                if set(stats_by_source) != seen:
+                    raise ValueError('A3 source statistics do not cover projector lineage')
+                if any(stats_by_source[source_id] != source_sha
+                       for source_id, source_sha in lineage_map.items()):
+                    raise ValueError('A3 source statistics digest differs from projector lineage')
+            elif stats:
+                raise ValueError('A3 source statistics present without exact mode')
+        elif stats_mode == SOURCE_STATS_MODE:
+            raise ValueError('A3 exact source-stat mode has no index')
 
 
 def load(store):
@@ -719,11 +761,11 @@ def dataset(store,cfg=DEFAULTS,*,state=None):
     return np.asarray(X),caps,np.asarray(T),ids
 
 def train(runtime,encoder=None,cfg=DEFAULTS):
-    # Capture captions, source refs and the Store version before reading training rows.
-    # A concurrent describe/forget must make publication fail its versioned CAS.
+    # One versioned snapshot binds every feature row, caption and source digest.
     st=load(runtime.store)
     X,caps,T,ids=dataset(runtime.store,cfg,state=st)
-    if len(X)<cfg['min_train']:raise ValueError('Zu wenig beschriebene Bilder (%d < %d); erst :image describe'%(len(X),cfg['min_train']))
+    if len(X)<cfg['min_train']:
+        raise ValueError('Zu wenig beschriebene Bilder (%d < %d); erst :image describe'%(len(X),cfg['min_train']))
     name,enc=encoder or text_encoder(runtime,cfg);Y=enc(caps)
     groups=[key.split(':',1)[0] for key in ids]
     training_sources=source_lineage(st['images'],ids);old=st.get('projector')
@@ -740,25 +782,38 @@ def train(runtime,encoder=None,cfg=DEFAULTS):
         runtime.store.log('vision',None,{'action':'train','accepted':False,'update_gate':gate,
             'validation_status':cv['status'],'validation_split':cv['split']})
         return st['projector']
-    path=runtime.home/'data/vision'/('projector-'+uid('vis')[4:]+'.npz');sha=p.save(path)
-    record={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,'metrics':cv,'created':now(),
+
+    feature_schema=REVISION+':global'
+    source_stats,stats_mode=build_source_statistics(
+        runtime.home,'projector',X,Y,ids,training_sources,feature_schema,name,cfg['ridge'])
+    path=runtime.home/'data/vision'/('projector-'+uid('vis')[4:]+'.npz')
+    try:
+        sha=p.save(path)
+    except Exception:
+        remove_source_statistics(runtime.home,source_stats)
+        raise
+    record={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,
+            'ridge':cfg['ridge'],'feature_schema':feature_schema,'metrics':cv,'created':now(),
             'captions':{sid:c for sid,c in zip(ids,caps)},'training_sources':training_sources,
+            'source_stats':source_stats,'source_stats_mode':stats_mode,
             'authority':'LAB_SHADOW_ONLY','update_gate':gate}
     st['projector']=record
     try:
         save(runtime.store,st)
     except Exception:
         unlink_projector_artifact(runtime.home,record)
+        remove_source_statistics(runtime.home,source_stats)
         raise
     if type(old) is dict and old.get('path')!=record['path']:
         unlink_projector_artifact(runtime.home,old)
+        remove_source_statistics(runtime.home,old.get('source_stats',[]))
     log={'action':'train','accepted':True,'n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow',
          'validation_status':cv['status'],'validation_split':cv['split'],'utility_status':cv.get('utility_status'),
-         'update_gate':gate}
-    if cv.get('held_out_top1') is not None:log['held_out_top1']=round(cv['held_out_top1'],4);log['chance']=round(cv['chance'],4)
+         'source_stats_mode':stats_mode,'source_stats_count':len(source_stats),'update_gate':gate}
+    if cv.get('held_out_top1') is not None:
+        log['held_out_top1']=round(cv['held_out_top1'],4);log['chance']=round(cv['chance'],4)
     runtime.store.log('vision',None,log)
     return st['projector']
-
 def look(runtime,rec,encoder=None,cfg=DEFAULTS,k=3):
     """Student guess: nearest known teacher captions for this image by the projector alone (no teacher call)."""
     np=_np();st=load(runtime.store);pj=st.get('projector')
@@ -797,7 +852,8 @@ def tile_dataset(store,cfg=DEFAULTS,*,state=None):
 def train_tiles(runtime,encoder=None,cfg=DEFAULTS):
     st=load(runtime.store)
     X,texts,keys=tile_dataset(runtime.store,cfg,state=st)
-    if len(set(texts)-{BACKGROUND})<2 or len(X)<cfg['min_train']:raise ValueError('Zu wenig beschriebene Bildbereiche für Kacheln; erst :image describe (g, Hälften, Quadranten)')
+    if len(set(texts)-{BACKGROUND})<2 or len(X)<cfg['min_train']:
+        raise ValueError('Zu wenig beschriebene Bildbereiche für Kacheln; erst :image describe (g, Hälften, Quadranten)')
     name,enc=encoder or text_encoder(runtime,cfg);uniq=sorted(set(texts));E=dict(zip(uniq,enc(uniq)));Y=_np().stack([E[t] for t in texts])
     groups=[key.split(':',1)[0] for key in keys]
     training_sources=source_lineage(st['images'],keys);old=st.get('tile_projector')
@@ -814,25 +870,40 @@ def train_tiles(runtime,encoder=None,cfg=DEFAULTS):
         runtime.store.log('vision',None,{'action':'train_tiles','accepted':False,'update_gate':gate,
             'validation_status':cv['status'],'validation_split':cv['split']})
         return st['tile_projector']
-    path=runtime.home/'data/vision'/('tiles-'+uid('vis')[4:]+'.npz');sha=p.save(path)
-    record={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,'created':now(),
-            'salient_tiles':sum(t!=BACKGROUND for t in texts),'metrics':cv,'training_sources':training_sources,
-            'captions':dict(zip(keys,texts)),'authority':'LAB_SHADOW_ONLY','update_gate':gate}
+
+    feature_schema=REVISION+':tiles'
+    source_stats,stats_mode=build_source_statistics(
+        runtime.home,'tiles',X,Y,keys,training_sources,feature_schema,name,cfg['ridge'])
+    path=runtime.home/'data/vision'/('tiles-'+uid('vis')[4:]+'.npz')
+    try:
+        sha=p.save(path)
+    except Exception:
+        remove_source_statistics(runtime.home,source_stats)
+        raise
+    record={'path':str(path.relative_to(runtime.home)),'sha256':sha,'n':len(X),'encoder':name,
+            'ridge':cfg['ridge'],'feature_schema':feature_schema,'created':now(),
+            'salient_tiles':sum(t!=BACKGROUND for t in texts),'metrics':cv,
+            'training_sources':training_sources,'captions':dict(zip(keys,texts)),
+            'source_stats':source_stats,'source_stats_mode':stats_mode,
+            'authority':'LAB_SHADOW_ONLY','update_gate':gate}
     st['tile_projector']=record
     try:
         save(runtime.store,st)
     except Exception:
         unlink_projector_artifact(runtime.home,record)
+        remove_source_statistics(runtime.home,source_stats)
         raise
     if type(old) is dict and old.get('path')!=record['path']:
         unlink_projector_artifact(runtime.home,old)
-    log={'action':'train_tiles','accepted':True,'n':len(X),'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow',
+        remove_source_statistics(runtime.home,old.get('source_stats',[]))
+    log={'action':'train_tiles','accepted':True,'n':len(X),
+         'encoder':'embedding' if name.startswith('embedding') else 'hashed_bow',
          'validation_status':cv['status'],'validation_split':cv['split'],'utility_status':cv.get('utility_status'),
-         'update_gate':gate}
-    if cv.get('held_out_top1') is not None:log['held_out_top1']=round(cv['held_out_top1'],4);log['chance']=round(cv['chance'],4)
+         'source_stats_mode':stats_mode,'source_stats_count':len(source_stats),'update_gate':gate}
+    if cv.get('held_out_top1') is not None:
+        log['held_out_top1']=round(cv['held_out_top1'],4);log['chance']=round(cv['chance'],4)
     runtime.store.log('vision',None,log)
     return st['tile_projector']
-
 def tile_scores(p,im,regions,query_vec,background_vec,cfg=DEFAULTS):
     """Per tile: cosine to the query minus cosine to BACKGROUND (a tile must look more like the query than like nothing)."""
     np=_np();tiles=[r for r in regions if r['region_id'][0]=='r']
@@ -855,81 +926,152 @@ def teacher_switch(store,on):
     st=load(store);st['teacher_removed']=not on;save(store,st);return {'teacher':'on' if on else 'removed'}
 
 def forget(store,rec):
-    """Atomically revoke source-derived projectors and serialize last-blob cleanup with ingest."""
-    ref = rec.get('ref') if type(rec) is dict else None
-    sid = ref.get('source_id') if type(ref) is dict else None
-    sha = ref.get('sha256') if type(ref) is dict else None
+    """Forget one IMAGE source; rebuild only the exact A3 ridge heads when sufficient statistics permit."""
+    ref=rec.get('ref') if type(rec) is dict else None
+    sid=ref.get('source_id') if type(ref) is dict else None
+    sha=ref.get('sha256') if type(ref) is dict else None
     if (type(sid) is not str or not sid or type(sha) is not str
-            or not re.fullmatch(r'[0-9a-f]{64}', sha)):
+            or not re.fullmatch(r'[0-9a-f]{64}',sha)):
         raise ValueError('invalid image source reference')
 
-    invalidated = []
-    with store.tx() as conn:
-        state, version = _read_state_conn(conn)
-        _validate_state_sources(conn, state, allow_malformed_projectors=True)
-        current = state['images'].get(sid)
-        current_ref = current.get('ref') if type(current) is dict else None
-        if type(current_ref) is not dict or current_ref.get('sha256') != sha:
-            raise ValueError('Image source is missing or changed; refusing stale forget request')
-        source = conn.execute(
-            'SELECT hash,kind,deleted FROM sources WHERE id=?', (sid,)
-        ).fetchone()
-        if (source is None or source['hash'] != sha or source['kind'] != 'IMAGE'
-                or source['deleted'] != 0):
-            raise ValueError('image source is not live or does not match')
-        state['images'].pop(sid, None)
-        invalidated = invalidate_projectors(state, sid)
-        for key in ('projector', 'tile_projector'):
-            record = state.get(key)
-            if record is not None and type(record) is not dict:
-                state[key] = None
-                invalidated.append((key, record))
-        changed = conn.execute(
-            'UPDATE sources SET deleted=1 WHERE id=? AND deleted=0', (sid,)
-        )
-        if changed.rowcount != 1:
-            raise ValueError('image source changed during forget')
-        _validate_state_sources(conn, state)
-        _write_state_conn(conn, state, version)
+    invalidated=[];recomputed=[];rebuild_fallbacks={}
+    old_projectors=[];stats_to_delete=[];new_artifacts=[]
+    try:
+        with store.tx() as conn:
+            state,version=_read_state_conn(conn)
+            _validate_state_sources(conn,state,allow_malformed_projectors=True)
+            current=state['images'].get(sid)
+            current_ref=current.get('ref') if type(current) is dict else None
+            if type(current_ref) is not dict or current_ref.get('sha256')!=sha:
+                raise ValueError('Image source is missing or changed; refusing stale forget request')
+            source=conn.execute('SELECT hash,kind,deleted FROM sources WHERE id=?',(sid,)).fetchone()
+            if source is None or source['hash']!=sha or source['kind']!='IMAGE' or source['deleted']!=0:
+                raise ValueError('image source is not live or does not match')
+            state['images'].pop(sid,None)
 
-    # Check references and unlink while holding the same Store write lock used
-    # by ingest. A concurrent re-ingest can only run before or after this block.
+            for key in ('projector','tile_projector'):
+                record=state.get(key)
+                if record is None:
+                    continue
+                if type(record) is not dict:
+                    state[key]=None;invalidated.append((key,record));old_projectors.append((key,record))
+                    continue
+                if not projector_uses_source(record,sid):
+                    continue
+                rebuilt,reason=rebuild_without_source(
+                    store.home,record,sid,sha,state['images'],Projector,DEFAULTS['min_train'])
+                if rebuilt is not None:
+                    p=rebuilt['projector']
+                    prefix='projector-' if key=='projector' else 'tiles-'
+                    path=store.home/'data/vision'/(prefix+uid('vis')[4:]+'.npz')
+                    candidate={'path':str(path.relative_to(store.home))}
+                    try:
+                        new_sha=p.save(path)
+                    except Exception as exc:
+                        unlink_projector_artifact(store.home,candidate)
+                        rebuilt=None
+                        reason=type(exc).__name__+': projector artifact save failed'
+                    else:
+                        new_record=dict(record)
+                        new_record.update({
+                            'path':candidate['path'],'sha256':new_sha,'n':rebuilt['n'],
+                            'encoder':rebuilt['encoder'],'ridge':rebuilt['ridge'],
+                            'feature_schema':rebuilt['feature_schema'],
+                            'training_sources':rebuilt['training_sources'],
+                            'source_stats':rebuilt['remaining_stats'],
+                            'source_stats_mode':SOURCE_STATS_MODE,
+                            'metrics':None,'metrics_status':'NOT_RECOMPUTED_AFTER_SOURCE_DELETE',
+                            'created':now(),
+                            'update_gate':{'status':'NOT_RECOMPUTED_AFTER_SOURCE_DELETE',
+                                           'previous':record.get('update_gate')},
+                        })
+                        captions=record.get('captions')
+                        if type(captions) is dict:
+                            new_record['captions']={
+                                key_name:value for key_name,value in captions.items()
+                                if type(key_name) is str and not key_name.startswith(sid+':')
+                            }
+                        if key=='tile_projector':
+                            new_record['salient_tiles']=None
+                            new_record['salient_tiles_status']='NOT_RECOMPUTED_AFTER_SOURCE_DELETE'
+                        state[key]=new_record
+                        new_artifacts.append(new_record)
+                        recomputed.append(key)
+                        old_projectors.append((key,record))
+                        for stat_record in rebuilt['removed_stats']:
+                            stats_to_delete.append((key,stat_record))
+                if rebuilt is None:
+                    state[key]=None
+                    invalidated.append((key,record))
+                    old_projectors.append((key,record))
+                    for stat_record in record.get('source_stats',[]) if type(record.get('source_stats')) is list else []:
+                        stats_to_delete.append((key,stat_record))
+                    rebuild_fallbacks[key]=reason or 'exact source statistics unavailable'
+
+            changed=conn.execute('UPDATE sources SET deleted=1 WHERE id=? AND deleted=0',(sid,))
+            if changed.rowcount!=1:
+                raise ValueError('image source changed during forget')
+            _validate_state_sources(conn,state)
+            _write_state_conn(conn,state,version)
+    except Exception:
+        for artifact in new_artifacts:
+            unlink_projector_artifact(store.home,artifact)
+        raise
+
     with store.tx() as conn:
-        shared = conn.execute(
-            "SELECT id FROM sources WHERE hash=? AND kind='IMAGE' AND deleted=0 LIMIT 1",
-            (sha,),
+        shared=conn.execute(
+            "SELECT id FROM sources WHERE hash=? AND kind='IMAGE' AND deleted=0 LIMIT 1",(sha,)
         ).fetchone()
-        blob_retained_shared = bool(shared)
-        blob_deleted = False
+        blob_retained_shared=bool(shared)
+        blob_deleted=False
         if not shared:
-            blob_deleted = unlink_source_blob(store.home, sha)
+            blob_deleted=unlink_source_blob(store.home,sha)
 
-    cleanup_failed = []
+    cleanup_failed=[]
     if not shared and not blob_deleted:
         cleanup_failed.append('image_blob')
-    projector_files_deleted = {}
-    for key, record in invalidated:
-        deleted = unlink_projector_artifact(store.home, record)
-        projector_files_deleted[key] = deleted
+    projector_files_deleted={}
+    for key,record in old_projectors:
+        deleted=unlink_projector_artifact(store.home,record)
+        projector_files_deleted[key]=deleted
         if not deleted:
-            cleanup_failed.append(key + '_artifact')
+            cleanup_failed.append(key+'_artifact')
+    stats_files_deleted=[]
+    for key,stat_record in stats_to_delete:
+        deleted=remove_source_statistics(store.home,[stat_record])==[]
+        source_id=stat_record.get('source_id') if type(stat_record) is dict else None
+        stats_files_deleted.append({'projector':key,'source_id':source_id,'deleted':deleted})
+        if not deleted:
+            cleanup_failed.append(key+'_stats_artifact')
 
+    store.log('vision',None,{'action':'forget','recomputed_projectors':recomputed,
+                             'invalidated_projectors':[key for key,_ in invalidated],
+                             'source_stats_files_deleted':len(stats_files_deleted),
+                             'cleanup_failed_count':len(cleanup_failed)})
     return {
-        'forgotten': sid,
-        'invalidated_projectors': [key for key, _ in invalidated],
-        'projector_files_deleted': projector_files_deleted,
-        'blob_deleted': blob_deleted,
-        'blob_retained_shared': blob_retained_shared,
-        'retrain_required': [key for key, _ in invalidated],
-        'cleanup_failed': cleanup_failed,
+        'forgotten':sid,'recomputed_projectors':recomputed,
+        'invalidated_projectors':[key for key,_ in invalidated],
+        'rebuild_fallbacks':rebuild_fallbacks,
+        'projector_files_deleted':projector_files_deleted,
+        'source_stats_files_deleted':stats_files_deleted,
+        'blob_deleted':blob_deleted,'blob_retained_shared':blob_retained_shared,
+        'retrain_required':[key for key,_ in invalidated],
+        'cleanup_failed':cleanup_failed,
     }
-
 def status(runtime):
     st=load(runtime.store);t=Teacher(runtime.home,runtime.models);ok,missing=t.available();pj=st.get('projector');tp=st.get('tile_projector')
+    def projector_status(record,*,tile=False):
+        if type(record) is not dict:return None
+        keys=('n','encoder','metrics','created','metrics_status')
+        if tile:keys=('n','salient_tiles','encoder','created','metrics','metrics_status')
+        return ({key:record.get(key) for key in keys}
+                | {'update_gate':record.get('update_gate'),
+                   'source_stats_mode':record.get('source_stats_mode'),
+                   'source_stats_count':len(record.get('source_stats')) if type(record.get('source_stats')) is list else 0})
     return {'revision':REVISION,'scope':'LAB_SHADOW_ONLY (Age-0-Kern bleibt Text)','images':len(st['images']),
             'described':sum(1 for r in st['images'].values() if r['captions']),'teacher':{'available':ok,'missing':missing,'authority':AUTHORITY,'removed':bool(st.get('teacher_removed'))},
-            'projector':({k:pj[k] for k in ('n','encoder','metrics','created')}|{'update_gate':pj.get('update_gate')}) if pj else None,
-            'tile_projector':({k:tp[k] for k in ('n','salient_tiles','encoder','created')}|{'metrics':tp.get('metrics'),'update_gate':tp.get('update_gate')}) if tp else None}
+            'projector':projector_status(pj),
+            'tile_projector':projector_status(tp,tile=True)}
 
 def operator_command(runtime,args):
     """:image [status|add <Pfad> [Label]|list|describe [id|last] [g|rIJ|hl|hr|ht|hb|qtl|qtr|qbl|qbr]|train|tiles|look [id|last]|locate <id|last> <Text>|find <id|last> <Text>|teacher on|off|forget <id>]"""
