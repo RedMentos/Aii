@@ -1,3 +1,37 @@
+# Latest Core & Harness checkpoint — 2026-11-24T20:18:58.353Z
+
+- **Repository:** `RedMentos/Aii`
+- **Release base:** `gpt6/v13-private-remote-bridge-20261111` @ `8d93236c753f0194224c19edc7411d8d7082b1d6`
+- **Core P0 PR:** [#2462](https://github.com/RedMentos/Aii/pull/2462), branch `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1`, current head `d5aa910c0dd8253fe74d2baf0694ba1bdcca6d07`, DRAFT / NOT_RELEASED.
+- **New stacked repair:** the branch was recomposed in-place with exact source hashes; the prior temporary repair PR #2474 is superseded by the fast-forwarded #2462 branch.
+
+## Code changes now present on #2462
+
+1. `integrated_focal_scale_diversity_candidate_20261121.py` validates the current bounded arithmetic/C5 `direct_action` shape instead of the obsolete pre-arithmetic `SOURCE_COPY` line. The original Focal source blob pin remains strict.
+2. The post-commit regression now reflects the fair sequential schedule: B1 may expire, B2 receives its own bounded pre-answer slice, and a B2 offer already produced there is not duplicated post-commit.
+3. `record_only_controller_guard_20261116.py` reports the exact rejected Runtime SHA and pins the measured composed Runtime output `c60d04eba1d7a7b3ca16ddc0e2595dd5f49e1be15f8dde25ab2f6e3a92fe7b65`. No controller guard was bypassed.
+4. Recovery-loader diagnostics now report expected/actual SHA and symlink state. Its guard-file pin is `f667722d693d3535183a9ee773cd761938d9fd33e56dc381b77e309bf794f93d`.
+5. Downstream pins were rebound bottom-up: recovery-12 blob `e949631f88892dc8815e5e06eaa6d4b21e153093`; recovery-21 wrapper SHA-256 `ff4e487ac967a7ac30351692642723f5692f28a5ef744a5f121a4aa6503388b5`; integrated-stage SHA-256 `f4db8fa4e99dd3205808d4ebd9f3a5087593fed0a3cb76145b709c0cce21efcc`; RuntimeDeploy pins that exact stage.
+
+## Verification — do not overstate
+
+- Diagnostic PR run on earlier head `6747a26`: FAIL at controller guard, and it exposed the exact composed Runtime SHA above.
+- Intermediate PR run on `c39d42a`: its verify job failed at the recovery loader because the expected guard hash was stale (`38584…)); the loader now prints both hashes and its pin has been rebound to the current exact guard bytes. This run is stale relative to the current tree.
+- Current code head `d5aa910c0dd8253fe74d2baf0694ba1bdcca6d07`: no PR check-runs had appeared at the last readback. Push-only checks on the identical tree at `5a838dd` were queued (consumer Python 3.13/3.14 and offline-bridge-security); the earlier staged/integrated PR run `45478352959` was still running on the stale `c39d42a` head. Exact current staged/integrated acceptance is therefore **PENDING / NOT_VERIFIED**.
+- LOCAL_LINUX full repository suite: **BLOCKED / NOT_RUN**; no checkout is mounted and `git ls-remote` failed DNS resolution.
+- Redmi: **REDMI_UNVERIFIED**. The latest shared receipt remains AI `STOPPED_BY_USER`, autostart OFF, release `8d93236` installed; no fresh private receipt was obtained and no device action was taken.
+- Release: **NOT_RELEASED**. A GitHub push is not deployment.
+
+## Cross-lane state and next executable work
+
+- #2464 C3 prefill/C4 receipt/warm retention/exact greeting fastpath: 31/32 check-runs SUCCESS, 1 SKIPPED, no failures; DRAFT / NOT_RELEASED.
+- #2451 guarded native receiver probe: 21/22 SUCCESS, 1 SKIPPED, no failures; probe not run and production B3 OFF.
+- #2450 Android ActionIntent/ActionOutcome: 11/12 SUCCESS; Android process-restart check still fails. QA #2427's ActivityScenario harness is green only on a separate stack; combined port/rebase remains pending.
+- First trigger the exact current #2462 pull-request matrix and inspect the loader/guard diagnostics. Repair only exact measured pins; keep B1 and B2, C4/C3 receipts and the C3 reserve. Once the fair path is green, coordinate Boss integration with #2464/#2451 and the QA-owned #2450 harness. Then continue the next unblocked whole-Canon path.
+- **User action:** NONE. No manual Termux command, restart, model/weight swap or permission change is requested.
+
+---
+
 # CURRENT USER ACTION / RELEASE STATUS — Core & Harness run 22 (2026-11-24 19:24 UTC)
 
 **No user action is required. No manual Termux command, restart, CHAT_SEND, UPDATE_REQUEST, LOG_PAGE, shell access, model/weight swap or permission change is requested.** Preserve the Redmi AI runtime in `STOPPED_BY_USER`.
