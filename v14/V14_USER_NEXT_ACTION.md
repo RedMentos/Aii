@@ -1861,3 +1861,11 @@ R-109 reviews the official Android MediaProjection guide (updated 2026-11-19). A
 - Redmi/Termux: REDMI_UNVERIFIED. No device receipt, updater call, model/weight change, permission change or user-data action was made. No release/deployment is claimed.
 - User action: **none**. No model download/swap or manual Termux command is requested.
 - Next internal action: read back exact-head CI, then coordinate Core/QA's composer dependency closure and rerun staged/integrated/migration tests.
+
+## RAW EAR / A4 checkpoint — 2026-11-24
+
+- Current Perception branch [PR #2472](https://github.com/RedMentos/Aii/pull/2472): FASTDIAR diagnostic 92/92 on Python 3.13 and 92/92 on Python 3.14; A4 source-bound outcomes, optional RAW EAR NumPy backend, consent-revocation and privacy scan pass.
+- The controller record-only guard still fails before feature assertions because the Core recovery builder pins an older exact guard SHA. The audio composer also needs the current audio_temporal_evidence.py pin. These are Core/Boss-owned dependency rebinds; no source hash gate should be weakened.
+- No AudioRecord provider or live microphone capture is present. Android audio and Redmi remain unverified; no update or device action was performed.
+- User action: **none**. Keep microphone capture OFF and do not issue a manual Termux command.
+- Next internal action: Core/QA rebind the exact controller-guard hash in recovery/stage/deployer; Core/Boss rebind the audio temporal module; rerun staged/integrated and migration tests before considering an Android provider.
