@@ -385,6 +385,17 @@ class Runtime:
                 raise Limits('Ressourcenlimit: zu wenig freier RAM oder zu heiß; :resources')
             from .output_policy import match
             mark('policy_check');fixed_policy=match(self.store,text)
+            if fixed_policy is None:
+                try:  # exact single-expression arithmetic only; all other queries keep the full multi-organ path
+                    from .arithmetic_fastpath import match as arithmetic_match
+                    arithmetic=arithmetic_match(text,event=e)
+                    if arithmetic is not None:
+                        answer_ref=self.store.source(arithmetic['reply'],'BUILTIN_ARITHMETIC_EXACT')
+                        fixed_policy={'kind':'FIXED_EXACT','rule_id':arithmetic['rule_id'],'rule_version':'builtin-v1',
+                                      'query_ref':e['source_ref'],'answer_ref':answer_ref,'answer':arithmetic['reply']}
+                        meta['arithmetic_fastpath']={k:arithmetic[k] for k in ('rule_id','scope','expression','result','exact')}|{'answer_ref':answer_ref,'native_models_invoked':False}
+                        self.store.log('arithmetic_fastpath',eid,{'rule_id':arithmetic['rule_id'],'expression':arithmetic['expression'],'result':arithmetic['result'],'exact':True})
+                except Exception as exc:self.store.log('arithmetic_fastpath_unavailable',eid,{'error':type(exc).__name__})
             mark('perception_and_state')
             if fixed_policy:
                 self.store.add_packet('PerceptPacket',packet('PerceptPacket','A5_PERCEPT',eid,g,[e['source_ref']],source_ref=e['source_ref'],segments=segments(text,e['source_ref'],240,percept_mode(self.cfg)),modality='text'))
