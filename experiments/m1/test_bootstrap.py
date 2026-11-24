@@ -48,6 +48,15 @@ class PairedBlockBootstrapTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             paired_block_bootstrap(items, reference_model="reference", n_resamples=10)
 
+    def test_partial_temporal_blocks_are_weighted_by_window_count(self):
+        origins = np.arange(8 * 24, dtype=np.int64) * 60
+        errors = np.concatenate((np.ones(7 * 24), np.full(24, 5.0)))
+        result = paired_block_bootstrap(
+            [WindowErrorSeries("reference", 1, origins, errors)],
+            reference_model="reference", block_days=7, n_resamples=200, seed=4,
+        )
+        self.assertAlmostEqual(result["models"]["reference"]["mae"], 1.5)
+
     def test_results_are_deterministic_for_fixed_seed(self):
         first = paired_block_bootstrap(self._series(), reference_model="reference", n_resamples=50, seed=8)
         second = paired_block_bootstrap(self._series(), reference_model="reference", n_resamples=50, seed=8)
