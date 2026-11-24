@@ -89,9 +89,11 @@ def reset_temporal_visual_evidence(runtime, *, capture_session_id: str) -> int:
 
 
 def temporal_visual_revocation_callback(runtime, *, capture_session_id: str):
-    """Create a provider post-lock callback that clears this capture session's temporal state.
+    """Create a provider post-lock callback that clears one capture session's temporal state.
 
-    Pass the returned callback as revoke_callback to ui_observation_lease.
+    This is a SESSION-END callback, not a per-frame callback when multiple frame
+    receipts share the same capture session. Pass it only to the provider's
+    session-revocation path, or set end_of_stream=True on the final frame.
     It preserves standard A5 source tombstone/cache cleanup while erasing
     frame-derived luminance history when the provider revokes the grant.
     """
@@ -194,12 +196,14 @@ class ProviderFrameVerifier:
     """One-shot provider capability bound to one active UIObservationLease.
 
     The Android companion must construct this only after verifying the
-    companion-signed receipt and binding its exact frame digest/length. This
-    Python object is an injection contract, not the hard OS security boundary.
+    companion-signed frame receipt and binding its exact frame digest/length.
+    If session_consent_receipt_ref is present, the provider verifier must also
+    authenticate that stable session receipt as part of the signed observation.
+    This Python object is an injection contract, not the hard OS security boundary.
     """
     __slots__ = (
         "_runtime", "_lease", "_generation_id", "_source_id",
-        "_capture_session_id", "_receipt", "_capture_method",
+        "_capture_session_id", "_receipt", "_session_receipt", "_capture_method",
         "_event_kind", "_verify", "_used",
     )
 
@@ -214,6 +218,9 @@ class ProviderFrameVerifier:
         self._source_id = observation["source_id"]
         self._capture_session_id = observation["capture_session_id"]
         self._receipt = observation["consent_receipt_ref"]
+        self._session_receipt = observation.get(
+            "session_consent_receipt_ref", observation["consent_receipt_ref"],
+        )
         self._capture_method = observation["capture_method"]
         self._event_kind = observation["event_kind"]
         self._verify = verify_fn
@@ -232,6 +239,7 @@ class ProviderFrameVerifier:
             or observation.get("source_id") != self._source_id
             or observation.get("capture_session_id") != self._capture_session_id
             or observation.get("consent_receipt_ref") != self._receipt
+            or observation.get("session_consent_receipt_ref", observation.get("consent_receipt_ref")) != self._session_receipt
             or observation.get("capture_method") != self._capture_method
             or observation.get("event_kind") != self._event_kind
             or self._capture_method != "MEDIA_PROJECTION"
@@ -700,10 +708,14 @@ def consume_projected_frame(
             for region, _box, features, _salience in region_records
             if region["region_id"].startswith("r")
         }
+        session_consent_receipt_ref = observation.get(
+            "session_consent_receipt_ref", observation["consent_receipt_ref"],
+        )
         temporal_visual = _runtime_temporal_visual_registry(runtime).update(
             capture_session_id=observation["capture_session_id"],
             generation_id=generation_id,
             consent_receipt_ref=observation["consent_receipt_ref"],
+            session_consent_receipt_ref=session_consent_receipt_ref,
             start_ms=observation["start_ms"],
             end_ms=observation["end_ms"],
             tile_luminance=tile_luminance,
@@ -716,6 +728,7 @@ def consume_projected_frame(
             "source_ref": dict(frame_ref),
             "capture_session_id": observation["capture_session_id"],
             "consent_receipt_ref": observation["consent_receipt_ref"],
+            "session_consent_receipt_ref": session_consent_receipt_ref,
             "clock": observation["clock"],
             "start_ms": observation["start_ms"],
             "end_ms": observation["end_ms"],
@@ -790,6 +803,7 @@ def consume_projected_frame(
             [ui_ref, frame_ref], source_ref=ui_ref, segments=segments, modality="ui",
             capture_session_id=observation["capture_session_id"],
             consent_receipt_ref=observation["consent_receipt_ref"],
+            session_consent_receipt_ref=session_consent_receipt_ref,
             capture_method=observation["capture_method"],
             capture_scope=observation["capture_scope"], clock=observation["clock"],
             finality=observation["finality"], frame_sha256=frame_sha256,
