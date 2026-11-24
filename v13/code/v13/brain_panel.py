@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 
 ORGANS = (
     ("sinne", ("input", "wahrnehmung", "perception", "a"), "Sinne und Wahrnehmung",
@@ -63,7 +64,131 @@ def _seconds(value):
     return round(float(value), 4)
 
 
+_ID = re.compile(
+    r"(?:[a-f0-9]{40}|[a-f0-9]{64}|(?:pkt|evt|gen|mem|src|upd|req|rule|fixed|chat|exp|consolidation)_[a-f0-9]{28,32})\\Z",
+    re.ASCII,
+)
+_BODY_ROLES = {"B1_DETAIL", "B2_GIST"}
+_BODY_STATUSES = {"FINAL", "DEADLINE", "ERROR", "CANCELLED", "INTERRUPTED"}
+
+
+def _identifier(value):
+    return value if type(value) is str and len(value) <= 160 and _ID.fullmatch(value) else None
+
+
+def _body_offer_evidence(
+    store, event_id, *, c4_ids=(), c4_accepted=False,
+    template_ids=(), template_submitted=False, synthetic=False,
+    native_prefill_verified=False, synthetic_prefill_verified=False,
+    native_completion_completed=False, synthetic_completion_completed=False,
+):
+    """Join bounded B1/B2 runner metrics to the C4 selection and C3 prompt receipts.
+
+    Only numeric timings/counts, role enums and packet IDs leave the telemetry
+    store. Raw prompt, summary, quotes and exception text are never returned.
+    """
+    if type(event_id) is not str or not event_id:
+        return []
+    try:
+        rows = store.rows(
+            "SELECT kind,metrics FROM telemetry WHERE event_id=? "
+            "AND kind IN ('body_offer_attempt','body_offer_delivered') "
+            "ORDER BY id ASC LIMIT 17",
+            (event_id,),
+        )
+    except Exception:
+        return []
+    if type(rows) is not list:
+        return []
+    truncated = len(rows) > 16
+    rows = rows[:16]
+    c4_ids = {value for value in c4_ids if _identifier(value)}
+    template_ids = {value for value in template_ids if _identifier(value)}
+    by_query = {}
+    for row in rows:
+        if type(row) is not dict:
+            continue
+        metrics = _mapping(row.get("metrics"))
+        role = metrics.get("role")
+        query_id = _identifier(metrics.get("query_packet_id"))
+        kind = row.get("kind")
+        if role not in _BODY_ROLES or not query_id or kind not in {
+            "body_offer_attempt", "body_offer_delivered"
+        }:
+            continue
+        packet_id = _identifier(metrics.get("packet_id")) if kind == "body_offer_delivered" else None
+        if kind == "body_offer_delivered" and not packet_id:
+            continue
+        item = by_query.setdefault(query_id, {
+            "role": role,
+            "attempt_status": "UNAVAILABLE",
+            "delivered": False,
+            "prompt_tokens": None,
+            "generated_tokens": None,
+            "ttft_s": None,
+            "duration_s": None,
+            "sampled_peak_pss_bytes": None,
+            "evidence_environment": "UNAVAILABLE",
+            "packet_id": None,
+            "verified_source_span_count": None,
+            "delivery_duration_s": None,
+            "selected_by_c4": None,
+            "included_in_c3_template": None,
+            "consumption_state": "ATTEMPT_NOT_DELIVERED",
+            "semantic_use_proven": False,
+        })
+        if item["role"] != role:
+            continue
+        if kind == "body_offer_attempt":
+            runner = _mapping(metrics.get("runner"))
+            status = metrics.get("status")
+            item["attempt_status"] = status if status in _BODY_STATUSES else "UNKNOWN"
+            item["prompt_tokens"] = _count(runner.get("prompt_tokens"))
+            item["generated_tokens"] = _count(runner.get("generated_tokens"))
+            item["ttft_s"] = _seconds(runner.get("ttft_s"))
+            item["duration_s"] = _seconds(runner.get("duration_s"))
+            item["sampled_peak_pss_bytes"] = _count(runner.get("sampled_peak_pss_bytes"))
+            item["evidence_environment"] = (
+                "SYNTHETIC" if synthetic or runner.get("synthetic") is True
+                else "RUNNER_REPORTED"
+            )
+        else:
+            item["delivered"] = True
+            item["packet_id"] = packet_id
+            item["verified_source_span_count"] = _count(metrics.get("count"))
+            item["delivery_duration_s"] = _seconds(metrics.get("duration_s"))
+            item["selected_by_c4"] = packet_id in c4_ids if c4_accepted else None
+            item["included_in_c3_template"] = packet_id in template_ids if template_submitted else None
+            path_synthetic = synthetic or item["evidence_environment"] == "SYNTHETIC"
+            if not c4_accepted:
+                state = "C4_RECEIPT_NOT_ACCEPTED"
+            elif packet_id not in c4_ids:
+                state = "DELIVERED_NOT_SELECTED_BY_C4"
+            elif not template_submitted:
+                state = "C4_SELECTED_C3_TEMPLATE_NOT_SUBMITTED"
+            elif packet_id not in template_ids:
+                state = "C4_C3_PACKET_ID_MISMATCH"
+            elif path_synthetic:
+                state = (
+                    "SYNTHETIC_PREFILL_AND_GENERATION_VERIFIED"
+                    if synthetic_prefill_verified and synthetic_completion_completed
+                    else "SYNTHETIC_TEMPLATE_INCLUDED_ONLY"
+                )
+            elif native_prefill_verified and native_completion_completed:
+                state = "NATIVE_PREFILL_AND_GENERATION_VERIFIED"
+            elif native_prefill_verified:
+                state = "NATIVE_PREFILL_VERIFIED_GENERATION_INCOMPLETE"
+            else:
+                state = "TEMPLATE_INCLUDED_PREFILL_UNVERIFIED"
+            item["consumption_state"] = state
+    result = list(by_query.values())
+    if truncated and result:
+        result[0] = dict(result[0], telemetry_truncated=True)
+    return result
+
+
 def _latest_native_evidence(r):
+
     """Read the last persisted runner/receipt summary; never return chat text."""
     try:
         row = r.store.one(
@@ -200,6 +325,19 @@ def _latest_native_evidence(r):
         receipt.get("native_completion_completed") is True
         or (row.get("status") == "FINAL" and raw_stream_completed)
     )
+    body_attempts = _body_offer_evidence(
+        r.store,
+        event_id,
+        c4_ids=c4_ids,
+        c4_accepted=c4_accepted,
+        template_ids=native_ids,
+        template_submitted=submitted,
+        synthetic=synthetic,
+        native_prefill_verified=native_prefill_verified,
+        synthetic_prefill_verified=synthetic_prefill_verified,
+        native_completion_completed=native_completion_completed,
+        synthetic_completion_completed=synthetic_completion_completed,
+    )
 
     return {
         "turn_status": row.get("status"),
@@ -243,6 +381,7 @@ def _latest_native_evidence(r):
             "c4_native_offer_ids_match": c4_native_ids_match if c4_recorded else None,
             "c4_synthetic_offer_ids_match": c4_synthetic_ids_match if c4_recorded else None,
             "offers": offers,
+            "body_attempts": body_attempts,
             "semantic_use_proven": False,
         },
     }
