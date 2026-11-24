@@ -179,8 +179,10 @@ def test_streaming_teacher_session_reaches_real_audio_packet_and_c3_delta_consum
     try:
         first_event = runtime.store.event(runtime.session, "synthetic audio window one")
         second_event = runtime.store.event(runtime.session, "synthetic audio window two")
+        third_event = runtime.store.event(runtime.session, "synthetic audio window three")
         generation = first_event["brain_generation_id"]
         assert second_event["brain_generation_id"] == generation
+        assert third_event["brain_generation_id"] == generation
         with audio_consent_lease(
             runtime, SOURCE, generation, RECEIPT, consent_ok, consent_guard,
             temporal_state=temporal_state,
@@ -199,7 +201,7 @@ def test_streaming_teacher_session_reaches_real_audio_packet_and_c3_delta_consum
                 finality="PROVISIONAL", consent_lease=lease,
                 temporal_state=temporal_state, token_budget=512,
                 teacher_ear=session, teacher_asr_opt_in=True,
-                transcript_persist_opt_in=False,
+                transcript_persist_opt_in=True,
             )
             recognizer.text = "hello world"
             second = consume_pcm16_voice_window(
@@ -207,10 +209,24 @@ def test_streaming_teacher_session_reaches_real_audio_packet_and_c3_delta_consum
                 event_id=second_event["event_id"], generation_id=generation,
                 source_id=SOURCE, consent_receipt=RECEIPT,
                 consent_check=consent_ok, consent_guard=consent_guard,
+                finality="PROVISIONAL", consent_lease=lease,
+                temporal_state=temporal_state, token_budget=512,
+                teacher_ear=session, teacher_asr_opt_in=True,
+                transcript_persist_opt_in=True,
+            )
+            # A streaming recognizer may revise already emitted words. The
+            # replacement must reach C3 as an explicit untrusted revision,
+            # not disappear because its delta is empty.
+            recognizer.text = "hello there"
+            third = consume_pcm16_voice_window(
+                runtime, tone(seconds=0.5), sample_rate=16000, start_ms=1100,
+                event_id=third_event["event_id"], generation_id=generation,
+                source_id=SOURCE, consent_receipt=RECEIPT,
+                consent_check=consent_ok, consent_guard=consent_guard,
                 finality="FINAL", consent_lease=lease,
                 temporal_state=temporal_state, token_budget=512,
                 teacher_ear=session, teacher_asr_opt_in=True,
-                transcript_persist_opt_in=False,
+                transcript_persist_opt_in=True,
             )
 
         assert first["teacher_ear"]["processing_mode"] == "CONTIGUOUS_STREAM"
@@ -220,15 +236,23 @@ def test_streaming_teacher_session_reaches_real_audio_packet_and_c3_delta_consum
         assert second["teacher_ear"]["stream_ref"]["chunk_count"] == 2
         assert second["teacher_ear"]["stream_ref"]["start_ms"] == 100
         assert second["teacher_ear"]["stream_ref"]["end_ms"] == 1100
+        assert third["teacher_ear"]["segments"][0]["text"] == ""
+        assert third["teacher_ear"]["segments"][0]["revision"] is True
+        assert third["teacher_ear"]["cumulative_hypothesis"] == "hello there"
+        assert third["teacher_ear"]["stream_ref"]["chunk_count"] == 3
+        assert third["teacher_ear"]["stream_ref"]["end_ms"] == 1600
         assert first["teacher_ear"]["source_ref"]["source_sha256"] == first["packet"]["source_ref"]["sha256"]
         assert second["teacher_ear"]["source_ref"]["source_sha256"] == second["packet"]["source_ref"]["sha256"]
-        assert "hello" in first["c3_admission"].selected[0].summary
-        assert "world" in second["c3_admission"].selected[0].summary
+        assert third["teacher_ear"]["source_ref"]["source_sha256"] == third["packet"]["source_ref"]["sha256"]
+        assert "asr_hypothesis_untrusted=hello" in first["c3_admission"].selected[0].summary
+        assert "asr_hypothesis_untrusted=world" in second["c3_admission"].selected[0].summary
         assert "hello world" not in second["c3_admission"].selected[0].summary
+        assert "asr_revision_untrusted=hello there" in third["c3_admission"].selected[0].summary
+        assert "hello there" not in third["teacher_ear"]["segments"][0]["text"]
         assert session.closed
         assert ear._active_streams == 0
         assert recognizer.create_stream_calls == 1
-        assert len(recognizer.stream.waveforms) == 3  # two chunks + one final-only tail
+        assert len(recognizer.stream.waveforms) == 4  # three chunks + one final-only tail
         assert recognizer.stream.input_finished_calls == 1
     finally:
         runtime.close()
