@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T19:24:35Z",
+  "updated_at": "2026-11-24T20:18:58.353Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6. Boss candidate code-bearing checkpoint a5e536a96f6dc2a3a515d37b08393f7136e9efff on boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean; documentation-only descendants follow (last PR metadata readback 5166643ac74fbca318511c0918dea06e98a11ff9). QA #2459 and #2460 fast-forward integrated. Candidate PR #2443 remains DRAFT / NOT_RELEASED; full combined exact-head CI incomplete.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "The Boss branch is a candidate only, NOT_RELEASED/NOT_INSTALLED. CI must pass on its exact final head before any release action. Do not restart the explicitly stopped phone runtime or issue a duplicate update request. Keep synthetic, CI, local Linux and real Redmi evidence separate.",
@@ -14,11 +14,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "CI + authenticated ANDROID_DEVICE metadata; no correct-answer/native-organ acceptance",
-      "next_step": "Core: #2464 exact head 97ffc6db has 31/32 check-runs SUCCESS (1 SKIPPED, 0 failures): same-context C3 prefill, source-bound C4 offer inclusion receipt, deadline-only warm runner retention, and exact standalone greeting fastpath. Keep DRAFT / NOT_RELEASED until Boss review. The fair B1/B2 candidate #2462 head 2f2c69 has 16/29 failures; recompose its source-pin/staged chain against exact release 8d932, preserving both eligible bodies and C3 reserve. No Redmi test while AI is STOPPED_BY_USER.",
+      "proof_environment": "CI exact-head staged/integrated PENDING after source-pin recompose; prior diagnostic runs identified exact Runtime/loader pin mismatches; LOCAL_LINUX full repository BLOCKED/NOT_RUN; REDMI_UNVERIFIED",
+      "next_step": "Core: poll the exact current #2462 pull-request matrix after the guard and downstream recovery/stage/deployer pins were rebound. Preserve both B1/B2 slices, C4 source-bound offer receipts and C3 reserve. Once exact staged/integrated/consumer/owner-read/migration checks are green, request Boss integration with #2464/#2451. QA: port the green #2427 ActivityScenario process-death harness into #2450's exact combined base. No Redmi action while AI is STOPPED_BY_USER.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T19:24:35Z",
-      "proof": "#2464: 31/32 exact-head checks SUCCESS, 1 SKIPPED; staged, consumer, audio/arithmetic, same-turn, runner-retention, greeting and native receiver workflows pass. This proves software/CI integration only, not semantic attention, trained latent coupling or Redmi performance. #2462: 12/29 SUCCESS, 16 FAILURE, 1 SKIPPED. Latest authenticated phone snapshot remains 8d932 installed, AI STOPPED_BY_USER, B1/B2 TIME_BUDGET and correctness UNKNOWN.",
+      "last_checkpoint": "2026-11-24T20:18:58.353Z",
+      "proof": "PR #2462 current head d5aa910c0dd8253fe74d2baf0694ba1bdcca6d07, based on release 8d93236. Core repaired the C4 focal overlay anchor for the bounded arithmetic/C5 direct_action candidate, updated the fair-slice postcommit regression (B1 expires -> B2 gets its own pre-answer slice -> C3; no duplicate post-commit B2 offer), and added fail-closed expected/actual hash diagnostics. Exact composed Runtime SHA c60d04eba1d7a7b3ca16ddc0e2595dd5f49e1be15f8dde25ab2f6e3a92fe7b65 is pinned; guard file SHA-256 f667722d693d3535183a9ee773cd761938d9fd33e56dc381b77e309bf794f93d. Recovery-12 builder blob e949631f88892dc8815e5e06eaa6d4b21e153093; wrapper SHA-256 ff4e487ac967a7ac30351692642723f5692f28a5ef744a5f121a4aa6503388b5; stage SHA-256 f4db8fa4e99dd3205808d4ebd9f3a5087593fed0a3cb76145b709c0cce21efcc. Current exact PR matrix has not yet produced results; earlier c39d42 loader failure is stale and the diagnostic/pin were corrected afterward. Full local Aii suite NOT_RUN (no checkout/DNS); Redmi REDMI_UNVERIFIED, AI STOPPED_BY_USER; no device action.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -1454,5 +1454,48 @@
     },
     "next_action": "Finish the #2462 fair B1/B2 source-pin recompose against 8d932; obtain Boss review of #2464 and #2451; port QA #2427 process-death harness into #2450. Keep B3 OFF and all device capabilities OFF; do not send an update or restart while the Redmi runtime is STOPPED_BY_USER.",
     "user_action_required": "NONE"
+  },
+  "core_run23_checkpoint": {
+    "timestamp": "2026-11-24T20:18:58.353Z",
+    "owner": "Core & Harness",
+    "release_base_branch": "gpt6/v13-private-remote-bridge-20261111",
+    "release_base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+    "branch": "core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1",
+    "head_sha": "d5aa910c0dd8253fe74d2baf0694ba1bdcca6d07",
+    "pull_request": 2462,
+    "status": "DRAFT_NOT_RELEASED_EXACT_PR_CI_PENDING",
+    "changes": [
+      "C4 focal scale-diversity overlay now validates the bounded arithmetic/C5 direct_action output while retaining the exact original Focal blob pin",
+      "fair-slice postcommit regression now asserts B1 expiry, B2 bounded pre-answer attempt, C3 output, and no duplicate postcommit retry for an already-produced B2 offer",
+      "controller guard exposes exact rejected Runtime SHA and pins the measured composed Runtime output c60d04eba1d7a7b3ca16ddc0e2595dd5f49e1be15f8dde25ab2f6e3a92fe7b65",
+      "recovery loader reports expected/actual SHA and symlink status; guard file pin rebound to f667722d693d3535183a9ee773cd761938d9fd33e56dc381b77e309bf794f93d",
+      "recovery-12, recovery-21, stage and RuntimeDeploy hashes rebound bottom-up"
+    ],
+    "pins": {
+      "controller_guard_sha256": "f667722d693d3535183a9ee773cd761938d9fd33e56dc381b77e309bf794f93d",
+      "composed_runtime_sha256": "c60d04eba1d7a7b3ca16ddc0e2595dd5f49e1be15f8dde25ab2f6e3a92fe7b65",
+      "recovery12_blob": "e949631f88892dc8815e5e06eaa6d4b21e153093",
+      "recovery21_sha256": "ff4e487ac967a7ac30351692642723f5692f28a5ef744a5f121a4aa6503388b5",
+      "stage_sha256": "f4db8fa4e99dd3205808d4ebd9f3a5087593fed0a3cb76145b709c0cce21efcc"
+    },
+    "tests": {
+      "local_linux_full_repository": "BLOCKED_NOT_MOUNTED; git ls-remote DNS failure; full pytest/compile NOT_RUN",
+      "previous_head_6747a26": "FAIL: controller guard exposed exact composed Runtime SHA; this was used to add the exact pin",
+      "intermediate_head_c39d42a": "FAIL: recovery loader had stale expected guard SHA 38584…; diagnostic added and pin rebound afterward; stale result",
+      "current_head_d5aa910": "NO_EXACT_PR_CHECK_RUNS_AT_READBACK; push-only consumer Python 3.13/3.14 and offline-bridge-security queued on identical tree 5a838dd; previous staged/integrated PR run still in progress on c39d42a"
+    },
+    "device": "REDMI_UNVERIFIED; last shared authenticated receipt reports release 8d932 installed, AI STOPPED_BY_USER, autostart OFF; no fresh relay and no device action",
+    "next_action": "Obtain exact current PR synchronize matrix; inspect staged/integrated/consumer/owner-read/two-checkout migration. Rebind only exact measured hashes. After green, Boss integrates with #2464/#2451; QA ports #2427 ActivityScenario harness into #2450."
+  },
+  "latest_core_checkpoint": {
+    "timestamp": "2026-11-24T20:18:58.353Z",
+    "owner": "Core & Harness",
+    "primary_runtime_pr": 2462,
+    "primary_runtime_branch": "core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1",
+    "primary_runtime_head": "d5aa910c0dd8253fe74d2baf0694ba1bdcca6d07",
+    "primary_runtime_status": "DRAFT_NOT_RELEASED_EXACT_PR_CI_PENDING",
+    "full_repository_local": "BLOCKED_NO_CHECKOUT_DNS_FAILURE",
+    "redmi": "STOPPED_BY_USER_LAST_RECEIPT_REDMI_UNVERIFIED",
+    "next_action": "Run exact staged/integrated/consumer/owner-read/migration matrix on the re-composed fair B1/B2 branch; then coordinate Boss integration with #2464/#2451."
   }
 }
