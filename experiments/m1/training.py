@@ -4,8 +4,6 @@ from __future__ import annotations
 import json
 import math
 import os
-import re
-import subprocess
 import tempfile
 from pathlib import Path
 
@@ -14,6 +12,7 @@ import torch
 
 from .array_data import ArrayDataset
 from .jepa import DirectMAEForecaster, JEPAConfig, JEPAForecaster, jepa_loss
+from .provenance import current_git_commit
 
 
 
@@ -26,30 +25,6 @@ def build_seeded_model(model_factory, config, seed: int, **kwargs):
         torch.manual_seed(seed)
         return model_factory(config, **kwargs)
 
-
-
-def current_git_commit(repo_root: str | Path | None = None) -> str:
-    """Resolve the executing repository HEAD; never read the expected hash from preregistration."""
-    status = subprocess.run(
-        ["git", "status", "--porcelain", "--untracked-files=all"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    if status.stdout.strip():
-        raise RuntimeError("executing repository must have a clean working tree for preregistration")
-    result = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=repo_root,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    commit = result.stdout.strip()
-    if not re.fullmatch(r"[0-9a-f]{40}", commit):
-        raise RuntimeError("git rev-parse HEAD did not return a full lowercase commit SHA")
-    return commit
 
 
 
