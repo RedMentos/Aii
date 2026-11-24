@@ -4,6 +4,7 @@ import importlib.util
 import os
 from pathlib import Path
 import subprocess
+import pytest
 import sys
 
 CODE = Path(__file__).resolve().parents[1]
@@ -89,3 +90,34 @@ finally:
     assert result.returncode == 0, result.stdout + result.stderr
     for name, expected in before.items():
         assert hashlib.sha256((CODE / 'v13' / name).read_bytes()).hexdigest() == expected
+
+
+def test_recovery_loader_reports_expected_actual_and_symlink_state(tmp_path):
+    spec = importlib.util.spec_from_file_location(
+        'recovery_loader_diagnostics',
+        CODE / 'scripts/termux_runtime_recovery_candidate_20261112.py',
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    scripts = tmp_path / 'scripts'
+    scripts.mkdir()
+    target = scripts / 'changed.py'
+    target.write_text('changed source', encoding='utf-8')
+    expected = '0' * 64
+    with pytest.raises(ValueError) as mismatch:
+        module.load(tmp_path, 'scripts/changed.py', expected)
+    message = str(mismatch.value)
+    assert f'expected={expected}' in message
+    assert f"actual={hashlib.sha256(b'changed source').hexdigest()}" in message
+    assert 'symlink=False' in message
+
+    link = scripts / 'linked.py'
+    try:
+        link.symlink_to(target)
+    except (OSError, NotImplementedError):
+        return
+    with pytest.raises(ValueError) as linked:
+        module.load(tmp_path, 'scripts/linked.py', hashlib.sha256(b'changed source').hexdigest())
+    assert 'actual=None' in str(linked.value)
+    assert 'symlink=True' in str(linked.value)
