@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T00:18:53Z",
+  "updated_at": "2026-11-24T00:21:00Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -196,22 +196,22 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "CODE_PRESENT + existing Runtime source_outcome call site; synthetic Store/SQLite regression tests ADDED_NOT_RUN; LOCAL_LINUX checkout BLOCKED; exact-head CI startup_failure/zero jobs; REDMI_UNVERIFIED",
-      "next_step": "Core: update record_only_controller_guard_20261116.py from old attention.py SHA-256 0d3c0d00492d809c818874cf83ddd723867e77cfc5c50236dac18eddc8422739 to current 58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e and recompute guard/recovery/stage/deployer pins bottom-up. Restore exact-head Actions. QA/Boss: review the source-bound A4 receipt + atomic N10 signed-error path and the Teacher Ear/duplex changes together. Perception: continue 1s/2s speaker-history invariance and real consumer tests. Keep microphone/model load OFF; preserve STOPPED_BY_USER.",
+      "proof_environment": "A4/N10 source-bound outcome code is owned by Boss PR #2443, not Perception PR #2448. Boss branch contains exact attention/neuromod/receipt-test/workflow bytes and Core guard allowlist; PR #2443 OPEN/DRAFT, current API zero check-runs, pending status, startup_failure/zero jobs. No local full checkout; no Redmi proof.",
+      "next_step": "Boss/QA: run and review the A4/N10 source-bound receipt + transactional N10 path on exact #2443 head, with Core guard/recovery/stage/deployer pins and privacy/migration. Perception has reverted the duplicate A4/N10 files from #2448; do not duplicate. Keep #2448 focused on RAW EAR/Teacher Ear/duplex; after Actions is runnable, execute the audio and speaker-history regression matrix on Python 3.13/3.14. No microphone/model load until provider consent and Android tests.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T00:12:48Z",
+      "last_checkpoint": "2026-11-24T00:21:00Z",
       "latest_candidate_pr": {
-        "pr": 2448,
-        "code_head_sha": "c708f7970d1757889435516e27370003ae83a6d6",
+        "owner_pr": 2443,
+        "owner_branch": "boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean",
+        "owner_head_sha": "cdf6b64067ac426ba32194100d3764f6e74c105f",
         "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
         "attention_blob_sha": "ecaf39b1b8ea0edad7f4a39774230b3cbed1d5eb",
-        "attention_sha256": "58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e",
         "neuromod_blob_sha": "fbb02147cbcfff10896736a20838fbce08d7409b",
-        "neuromod_sha256": "e01f541874f401bf2996603d79e0cf24463aa16ed5c3902534f37678c1c72ce0",
-        "outcome_test_blob_sha": "200085b88497af331beb49eaf061944ad30542de",
+        "receipt_test_blob_sha": "200085b88497af331beb49eaf061944ad30542de",
         "workflow_blob_sha": "05718e823aa2d5d78aa93a0fe57e8ff2f4dc2c57",
-        "ci": "STARTUP_FAILURE_NO_JOBS",
-        "local_test": "BLOCKED_NO_CHECKOUT_DNS",
+        "core_guard_blob_sha": "ecdbdfa6dc2df7e2cfd0764bdeded8dc9f4911cc",
+        "ci": "STARTUP_FAILURE_ZERO_JOBS",
+        "local_test": "NOT_RUN",
         "release": "NOT_RELEASED"
       },
       "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture.\n\n2026-11-24 Perception checkpoint on PR #2448 (branch research-perception/v14-audio-duplex-bridge-20261123-run21, head 61a8b9d40a82f9aa647d9ea8a8653b499de5eb36; release base 8d93236c753f0194224c19edc7411d8d7082b1d6): duplex.handoff now prepares prior-event/message/packet and partial-output SourceRef before CAS-consuming the pending row; read/parse/source failures leave it retryable. Regression tests cover missing event, missing user message, malformed packet, source-write failure plus successful retry and one-use success. Workflow now includes duplex.py in path filters and explicit compile. LOCAL_LINUX isolated fake-Store state-machine reproduction: old code lost pending in 3/3 injected failures; new ordering preserved 3/3; simulated one-time CAS conflict retried and source was published once. This is not full repository pytest. Exact-head Actions run 45291585143 (code/test/workflow checkpoint) and later handoff run 45291932247 both ended startup_failure with no jobs; GitHub refused retry (403). No new CI PASS. Full local Aii checkout/pytest BLOCKED: no mounted checkout and github.com DNS unavailable. Latest #1904 receipt comment 7108089370: installed base 8d93236, auto-update enabled, AI runtime STOPPED_BY_USER/autostart false, native residency unavailable. Candidate is NOT_DEPLOYED / REDMI_UNVERIFIED; no restart, UPDATE_REQUEST, CHAT_SEND, microphone permission or model/weight change.",
@@ -260,6 +260,44 @@
         "device": "Base 8d93236 installed per #1904 comment 7108089370; auto-update enabled; Runtime CI_WAIT; separate diagnostics STOPPED_BY_USER/autostart false",
         "release": "NOT_RELEASED",
         "next_action": "Core pin-chain repair; restore Actions; exact Python 3.13/3.14, staged/integrated/migration/privacy/revocation; independent QA/Boss review",
+        "user_action_required": false,
+        "handoff_path": "v14/handoffs/RESEARCH_PERCEPTION_A4_N10_SOURCE_BOUND_OUTCOME_20261124_RUN30.md",
+        "status": "SUPERSEDED_DUPLICATE_REVERTED_FROM_PR2448",
+        "current_owner_pr": 2443,
+        "current_owner_head": "cdf6b64067ac426ba32194100d3764f6e74c105f",
+        "current_owner_guard_blob": "ecdbdfa6dc2df7e2cfd0764bdeded8dc9f4911cc",
+        "reverted_from_pr2448": [
+          "attention.py restored ee08a65644958780c64fd9f6fc1dfb7e972252d5",
+          "neuromod.py restored 214157e7d90ded915087d8e9d6e158ebe7a06b0b",
+          "test_attention.py restored 9fdbfa4e5eb42639d52beeb3f5c3382df42b3c43",
+          "test_attention_outcome_receipt_v14.py deleted 1ddd5109596a3a42ee815e3a67baf7a46a5a7634",
+          "v14-attention-source-bound-outcomes.yml deleted 3b0416862c75c780b0a3de46d73fce6db72bb010"
+        ]
+      },
+      "run31_checkpoint": {
+        "branch": "research-perception/v14-audio-duplex-bridge-20261123-run21",
+        "reason": "Current Boss PR #2443 already contains byte-identical A4/N10 implementation, tests, workflow and Core guard pin. Perception removed the duplicate from #2448 to keep one owner.",
+        "owner_pr": 2443,
+        "owner_head": "cdf6b64067ac426ba32194100d3764f6e74c105f",
+        "owner_status": "OPEN_DRAFT_NOT_MERGED",
+        "owner_ci": "ZERO_CHECK_RUNS; COMMIT_STATUS_PENDING; LATEST_WORKFLOW_STARTUP_FAILURE_ZERO_JOBS",
+        "perception_pr": 2448,
+        "perception_scope": "RAW EAR / speaker evidence / Teacher Ear / audio duplex only",
+        "perception_code_preserved": [
+          "d0c0f4ca366b97dcc1334d0a20f21bea94f5b9b6",
+          "2dd5c4990a84f88c9ad96dfcf37539bf25649df8",
+          "dd409b8e19960e62826a281cd4a85de5459cb44c"
+        ],
+        "reverted_duplicate_commits": [
+          "ee08a65644958780c64fd9f6fc1dfb7e972252d5",
+          "214157e7d90ded915087d8e9d6e158ebe7a06b0b",
+          "9fdbfa4e5eb42639d52beeb3f5c3382df42b3c43",
+          "1ddd5109596a3a42ee815e3a67baf7a46a5a7634",
+          "3b0416862c75c780b0a3de46d73fce6db72bb010"
+        ],
+        "tests": "A4/N10 tests remain in #2443 and are NOT_RUN; audio tests remain in #2448 and are NOT_RUN",
+        "device": "Base 8d93236 installed; auto-update enabled; Runtime CI_WAIT/PARTIAL; STOPPED_BY_USER/autostart false; 2+2 returned 2; B1/B2 TIME_BUDGET 53.2/54.2 s",
+        "release": "NOT_RELEASED",
         "user_action_required": false,
         "handoff_path": "v14/handoffs/RESEARCH_PERCEPTION_A4_N10_SOURCE_BOUND_OUTCOME_20261124_RUN30.md"
       }
@@ -1547,15 +1585,7 @@
       "check_runs": 0,
       "commit_status": "PENDING",
       "latest_workflow_runs": "startup_failure_zero_jobs",
-      "prior_owner_receipt": {
-        "head_sha": "88ba1cc5096ffbd10d3300dffe7134d6be098415",
-        "reported_checks": {
-          "completed_success": 5,
-          "in_progress": 2,
-          "queued": 30
-        }
-      },
-      "scope": "A3/vision composition candidate; not accepted or installed"
+      "scope": "A3/vision + A4/N10 integration candidate; not accepted or installed"
     },
     "perception_pr2448_current_head": {
       "head_sha": "38f7830dea60970272919d93cd7e9665ae5564af",
