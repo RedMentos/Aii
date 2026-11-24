@@ -6,6 +6,7 @@ import unittest
 from datetime import datetime, timedelta
 from pathlib import Path
 import re
+import subprocess
 
 import numpy as np
 import torch
@@ -73,6 +74,20 @@ class JEPAModelTests(unittest.TestCase):
         repo_root = Path(__file__).resolve().parents[2]
         commit = current_git_commit(repo_root)
         self.assertRegex(commit, r"^[0-9a-f]{40}$")
+
+    def test_current_git_commit_rejects_dirty_worktree(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            subprocess.run(["git", "init"], cwd=root, check=True, capture_output=True)
+            subprocess.run(["git", "config", "user.email", "m1-test@example.invalid"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.name", "M1 Test"], cwd=root, check=True)
+            (root / "tracked.txt").write_text("locked", encoding="utf-8")
+            subprocess.run(["git", "add", "tracked.txt"], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-m", "test"], cwd=root, check=True, capture_output=True)
+            self.assertRegex(current_git_commit(root), r"^[0-9a-f]{40}$")
+            (root / "untracked.py").write_text("print('dirty')", encoding="utf-8")
+            with self.assertRaisesRegex(RuntimeError, "clean working tree"):
+                current_git_commit(root)
 
     def test_seeded_model_factory_controls_initial_weights(self):
         first = build_seeded_model(JEPAForecaster, self.config, seed=71)
