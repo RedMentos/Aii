@@ -16,7 +16,7 @@ BASE_PINS = {
 }
 NATIVE_FILES = {
     "v13/native_latent_receiver.py": "6ec80446feec4a0f709992db15e0b1b9986f4b4f5fe1f85106e95c0dbb203056",
-    "v13/native_latent_pairing.py": "3f93ffe23ae2825aa606639c7445dae2fe5a27c6518b3cebdce44b0fe5ba1d36",
+    "v13/native_latent_pairing.py": "1a21a3e85eed4c069caf809a7cc5155722bb4ba692fb1e24414aad616bfe8336",
     "v13/native/latent_receiver/CMakeLists.txt": "265cbba812499257fe559c761ca0e9410f2049fdc4a3fe30359a148c765dc30a",
     "v13/native/latent_receiver/native_latent_receiver.cpp": "4aafc21483d156f122b2edcd3eb2990cdecb744538aa6b783e6556604e6fbc08",
     "v13/native/latent_receiver/README.md": "18da3596d6f9da5f932fe7aa7cfde2d14b40ee5a04fce18a1514f993868644f0"
@@ -166,9 +166,22 @@ NATIVE_PROBE_METHOD = r'''    def native_receiver_probe(self):
         except (ValueError,TypeError,KeyError,RuntimeError):
             return {'status':'INVALID_STORED_RECEIPT'}
 
+    def native_latent_tap_pair(self):
+        row=self.s.one("SELECT payload FROM packets WHERE kind='LatentTapPairPacket' ORDER BY rowid DESC LIMIT 1")
+        if not row:return None
+        try:
+            from .native_latent_pairing import validate_pair_packet
+            pair=validate_pair_packet(json.loads(row['payload']))
+            return {k:pair.get(k) for k in ('packet_id','event_id','source_ref','status','alignment',
+                'sender_role','receiver_role','sender_model_revision','receiver_model_revision',
+                'sender_shape','receiver_shape','token_count','pair_sha256',
+                'training_authority','native_receiver_authority','production_route')}
+        except (ValueError,TypeError,KeyError,RuntimeError):
+            return {'status':'INVALID_STORED_PAIR'}
+
 '''
 REPORT_PROBE_OLD = """        return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),\n"""
-REPORT_PROBE_NEW = """        return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),'native_receiver_probe':self.native_receiver_probe(),\n"""
+REPORT_PROBE_NEW = """        return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),'native_receiver_probe':self.native_receiver_probe(),'native_latent_tap_pair':self.native_latent_tap_pair(),\n"""
 REPORT_GATE_OLD = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (no native L1 receiver path yet)','claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'}\n"""
 REPORT_GATE_NEW = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked for production; native probe is separate-context and non-authoritative','claim_limit':'Native input effect is not trained cross-model alignment, semantic utility or production latent exchange'}\n"""
 OPERATOR_HELP_OLD = '''    """:callosum [status|shadow|active|degrade|promote <direction>]"""\n'''
