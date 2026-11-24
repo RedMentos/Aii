@@ -209,7 +209,7 @@ def test_low_similarity_without_voiced_activity_is_not_speaker_change():
     assert evidence["speaker_change_candidate"] is None
     assert evidence["peak_speaker_change_candidate"] is None
     assert evidence["candidate_count"] == 0
-    assert evidence["interpretation"] == "SIMILARITY_ONLY_UNCALIBRATED"
+    assert evidence["interpretation"] == "NON_VOICED_FRAMES_NOT_USED_AS_SPEAKER_REFERENCE"
 
 
 def test_missing_threshold_emits_score_without_a_decision():
@@ -568,7 +568,7 @@ def test_registry_stores_compact_float32_vectors_in_memory():
         source_id=SOURCE, generation_id="gen-compact", start_ms=100, end_ms=1100,
         activity_hint="VOICED", embeddings=batch,
     )
-    stored = registry._states[(SOURCE, "gen-compact")].frames[0][1]
+    stored = registry._states[(SOURCE, "gen-compact", RECEIPT)].frames[0][1]
     assert isinstance(stored, array)
     assert stored.typecode == "f"
     assert stored.itemsize == 4
@@ -768,7 +768,7 @@ def test_speaker_history_does_not_cross_consent_receipt_epochs():
 
 
 def test_speaker_embedding_schema_v3_requires_consent_and_chunk_binding():
-    assert SCHEMA == "v14.raw-ear-speaker-embeddings/2"
+    assert SCHEMA == "v14.raw-ear-speaker-embeddings/3"
 
 
 def test_speaker_embedding_batch_without_consent_receipt_is_rejected():
