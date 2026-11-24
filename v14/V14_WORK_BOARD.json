@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T13:50:07+01:00",
+  "updated_at": "2026-11-24T20:07:47Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -196,11 +196,21 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "LOCAL_LINUX isolated helper harness; CI synthetic Store/vision consumer; staged runtime BLOCKED by Boss source-lifecycle composer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Boss/Integrator PR #2443 must rebind the exact current vision.py SHA-256 350573e65eb445b8b83f5517e3bfe07ece04e036055c55fc3e23c79d5b0cc728 and compose the complete imported dependency closure (vision_source_lineage.py, vision_validation.py, vision_temporal_evidence.py, vision_temporal_adaptation.py, vision_ui_frame_ingress.py); then rerun staged-runtime, integrated-regression, both consumers and migration. Keep source-forget and strict hash checks; do not bypass the composer. Perception next researches near-duplicate source grouping and source-level uncertainty after integration.",
+      "proof_environment": "LOCAL_LINUX synthetic algebra reproduction; exact source CI PENDING; staged composer dependency closure requires Core rebind; REDMI_UNVERIFIED",
+      "next_step": "Core/QA: include v13/code/v13/vision_projector_stats.py in the materialized source closure, rebind exact vision.py SHA-256 329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d, pin the helper module, then rerun staged-runtime/integrated-regression/consumer/migration. Perception: read back exact-head Python 3.13/3.14 tests and retain conservative invalidation for any non-full-fit update.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T13:50:07+01:00",
+      "last_checkpoint": "2026-11-24T20:07:47Z",
       "latest_candidate_pr": {
+        "pr": 2477,
+        "head_sha": "98b2e9e0d1b8b1d643aa5571ef7734c22ec862a9",
+        "tested_code_sha": "0ea5653125babb39f8715963983001ee4ec39b34",
+        "base_sha": "c2fdfab67983cf58c96c89a653122f521eb69429",
+        "state": "OPEN_DRAFT_EXACT_CI_PENDING_CORE_COMPOSER_REBIND_REQUIRED",
+        "ci": "PENDING_EXACT_HEAD_PY313_PY314",
+        "scope": "A3 source-hash-bound fp64 sufficient-stat artifacts; exact global/tile ridge rebuild on image forget only for full-fit scale=1; conservative invalidation for scaled/malformed/unavailable stats"
+      },
+      "proof": "A3 global and tile projector update gates now evaluate the previous projector only on source IDs absent from its exact training_sources lineage. Changed captions for previously trained source IDs remain candidate-training data but are excluded from the baseline holdout. Missing/malformed/mismatched prior lineage or no new source groups fails closed to NO_NEW_SOURCE_GROUPS and retains the old artifact. Exact CI on head 2fc06a7: vision/source-lineage 39/39 on Python 3.13 and 3.14; frame ingress 39/39 on both; py_compile passed; offline, privacy, offline-bridge-security and same-repo guard passed. Staged/integrated/consumer still fail at source_lifecycle_lock_integration_candidate.py:172 with unsupported lifecycle source: vision.py. Synthetic Store fixtures only; not neural JEPA/latent coupling, not Redmi proof. Latest private V13OBS #115 snapshot: installed base 8d93236, auto-update enabled/UP_TO_DATE/no error, but STOPPED_BY_USER, model process STOPPED, native residency unavailable; no update request or device action.\n\nA3 exact source-forget follow-up PR #2477 (stacked on Core #2465): adds bounded per-source fp64 sufficient stats for global/tile ridge heads; only full-fit gate scale=1 is eligible. LOCAL_LINUX CPython 3.13.5/NumPy 2.3.5 method reproduction: 750 synthetic delete/rebuild comparisons, max relative W error 2.84e-10 versus fresh fit. Exact source CI pending; full checkout local tests not run (no checkout/DNS). Core composer must add vision_projector_stats.py and rebind vision.py SHA-256 329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d. Only A3 ridge-head unlearning; feature extractor/teacher/encoder remain untouched; metrics marked stale after forget. No Redmi proof, no deployment, no user action.",
+      "previous_candidate_pr": {
         "pr": 2463,
         "head_sha": "2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d",
         "tested_code_sha": "2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d",
@@ -213,7 +223,13 @@
         "docs_checkpoint_parent_sha": "1b9acc408d104ca9503e5234b5f9730085bd3890",
         "branch_head_at_readback": "1b9acc408d104ca9503e5234b5f9730085bd3890"
       },
-      "proof": "A3 global and tile projector update gates now evaluate the previous projector only on source IDs absent from its exact training_sources lineage. Changed captions for previously trained source IDs remain candidate-training data but are excluded from the baseline holdout. Missing/malformed/mismatched prior lineage or no new source groups fails closed to NO_NEW_SOURCE_GROUPS and retains the old artifact. Exact CI on head 2fc06a7: vision/source-lineage 39/39 on Python 3.13 and 3.14; frame ingress 39/39 on both; py_compile passed; offline, privacy, offline-bridge-security and same-repo guard passed. Staged/integrated/consumer still fail at source_lifecycle_lock_integration_candidate.py:172 with unsupported lifecycle source: vision.py. Synthetic Store fixtures only; not neural JEPA/latent coupling, not Redmi proof. Latest private V13OBS #115 snapshot: installed base 8d93236, auto-update enabled/UP_TO_DATE/no error, but STOPPED_BY_USER, model process STOPPED, native residency unavailable; no update request or device action."
+      "related_prs": [
+        1984,
+        2463,
+        2465,
+        2470,
+        2477
+      ]
     },
     {
       "id": "V14-007",
