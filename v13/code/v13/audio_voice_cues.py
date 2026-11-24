@@ -1021,7 +1021,14 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                     summary += " asr_hypothesis_untrusted=" + teacher_text[:64]
         # The structured packet retains every cue; reserve the bounded C3
         # summary tail for the speaker score/kind and explicit three-state decision.
-        decision_suffix = f" spk_dec={speaker_change_decision}"
+        turn_candidates = temporal_voice["turn_candidates"]
+        turn_suffix = (
+            f" turn=s{int(turn_candidates['speech_candidate'])}"
+            f"e{int(turn_candidates['eot_candidate'])}"
+            f"i{int(turn_candidates['interrupt_candidate'])}"
+            f" floor_transfer={turn_candidates['floor_transfer_status']}"
+        )
+        decision_suffix = turn_suffix + f" spk_dec={speaker_change_decision}"
         summary = summary[:256-len(decision_suffix)] + decision_suffix
         candidate = Percept(
             candidate.source_id, candidate.modality, candidate.start_ms, candidate.end_ms,
