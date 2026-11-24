@@ -1339,3 +1339,16 @@ Exact CI on this head: vision/source-lineage 39/39 on Python 3.13 and 3.14; RAW 
 Local Linux Python 3.13.5 isolated helper harness: 3/3 PASS. Full Aii checkout/suite not run locally; GitHub DNS/clone access unavailable. This is a synthetic Store/CI result, not a neural JEPA update, trained latent transfer, Android capture or Redmi test. The latest private V13OBS #115 snapshot still says STOPPED_BY_USER and model process STOPPED; auto-update is enabled on installed base `8d93236`, but candidate #2463 is not installed. No device command or update request.
 
 Next: Boss/Integrator rebind the current exact source hashes and include the full imported dependency closure, then rerun staged/integrated/consumer/migration. Perception then measures near-duplicate source grouping and source-level uncertainty. User action: NONE.
+
+
+## Research & Perception — run 39, 2026-11-24
+
+A5 temporal interval ordering is now hardened on Perception PR #2469. `TemporalVisualEvidence` previously checked only increasing `end_ms`, which allowed a later interval to start before the prior interval when its end still advanced. It now tracks the last accepted start timestamp, rejects backward starts, preserves equal starts for overlapping windows, and retains the previous baseline after rejection.
+
+- Code: `b09f731224f71da0fdb19e81f511540329b6c2cf`; regression test: `9844efaf66c13b1e5562397ae1bc62ed7926c862`. Current live PR head is available from #2469 metadata; later commits on this branch are handoff/ledger/board/workplan/coverage documentation only.
+- Exact CI: frame-ingress 52/52 on Python 3.13 and 3.14; vision-source-lineage 39/39 on both; offline-bridge-security PASS. A5 lease fails on both versions because this stack does not yet contain Core #2465's source-lifecycle composer (`unsupported lifecycle source: vision.py`). Staged-runtime 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests; integrated-regression one setup failure from the same dependency.
+- Core #2465's current head advances past the vision pin but still has a separate deeper memory/world-builder source mismatch and nested SHA mismatch. Do not weaken pins. Rebase #2469 only after Core/Boss accepts the complete dependency chain.
+- LOCAL_LINUX CPython 3.13.5 minimal timestamp-order reproduction PASS (4 assertions); full Aii checkout/suite BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS fails. REDMI_UNVERIFIED; no Android provider/capture, native visual model, learned latent or weight update is claimed. NOT_RELEASED.
+- Research R-135 reviews SigLIP 2 as a possible static A3 feature comparator, but the official README and Hugging Face checkpoint metadata conflict on the weight license; keep it unadopted pending clarification. No model was downloaded.
+- Next: Core/Boss resolves #2465's complete source-lifecycle + memory/world pin chain; then integrate/rebase #2469 and rerun the full matrix. Perception next implements the already-ledgered near-duplicate source grouping/source-level uncertainty experiment for A3 after that source-composer integration. No user action is required.
+
