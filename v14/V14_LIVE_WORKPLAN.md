@@ -1357,3 +1357,12 @@ Next: Boss/Integrator rebind the current exact source hashes and include the ful
 - Staged runtime FAIL (19 failed, 234 passed, 10 skipped, 2 errors, 41 subtests); integrated regression FAIL (1 test). Both root at Core-owned `source_lifecycle_lock_integration_candidate.py:179`, strict `vision.py` pin mismatch. Exact CI hashes: `vision.py` 329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d; helper `vision_projector_stats.py` 5db10a4fefa0e5d40d67b242ba18858972b499283e1e00f6d13d3e5d2760032f. Core #2465 has been given these values and must include the helper in the staged source closure; no hash bypass.
 - #2484 remains DRAFT/NOT_RELEASED. REDMI_UNVERIFIED; no current-head installation receipt or device action.
 - Research R-144/R-145 are fully reviewed and recorded in the ledger; no code/weights imported from FlyGCL or cl-drift.
+
+
+### Research & Perception — run 23 device/updater readback (2026-11-25)
+
+- Private metadata snapshot (2026-11-24 09:28:11Z): auto-update enabled; runtime/dashboard UP_TO_DATE at base release `8d93236c753f0194224c19edc7411d8d7082b1d6`; no updater error.
+- The AI service is running but model process STOPPED / STOPPED_BY_USER; autostart false; native residency unavailable.
+- Latest recorded turn: C3 7 tokens, prompt 358, TTFT 2.046 s, total 6.295 s. B1/B2 each 2 native attempts, both TIME_BUDGET failures (53.2 s / 54.2 s), 0 valid offers; no semantic-use or native latent proof.
+- New HEALTH/PIPELINE_STATUS/DIAGNOSTICS owner-read requests returned no device_status at last readback (NO_LIVE_RECEIPT). No logs or chat data retrieved.
+- Existing updater is reported up-to-date for the base release; #2484 is not integrated, so no UPDATE_REQUEST. PR-specific Redmi test remains REDMI_UNVERIFIED.
