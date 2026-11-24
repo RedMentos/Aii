@@ -336,11 +336,40 @@ def _projector_artifact_path(home,record,*,tile=False):
     return Path(home)/rel
 
 
-def _gate_projector_update(store,home,state,old_record,candidate,encoder_name,encoder,cfg,*,tile=False):
+def _source_disjoint_update_validation(validation):
+    """Require complete source-disjoint evidence before replacing an existing A3 projector."""
+    if type(validation) is not dict or validation.get('split')!='SOURCE_DISJOINT' or validation.get('status')!='MEASURED':
+        return {'status':'SOURCE_DISJOINT_VALIDATION_UNAVAILABLE'}
+    folds_used=validation.get('folds_used');folds_requested=validation.get('folds_requested')
+    groups=validation.get('source_groups')
+    if (type(folds_used) is not int or type(folds_requested) is not int or folds_used<2
+            or folds_used!=folds_requested or type(groups) is not int or groups<2
+            or validation.get('authority')!='MEASUREMENT_ONLY'):
+        return {'status':'SOURCE_DISJOINT_VALIDATION_UNAVAILABLE'}
+    gain=validation.get('held_out_gain_over_chance')
+    top1=validation.get('held_out_top1');chance=validation.get('chance')
+    if any(type(value) not in (int,float) or not math.isfinite(float(value)) for value in (gain,top1,chance)):
+        return {'status':'SOURCE_DISJOINT_VALIDATION_UNAVAILABLE'}
+    summary={'status':'PASS','split':'SOURCE_DISJOINT','source_groups':groups,
+             'folds_used':folds_used,'folds_requested':folds_requested,
+             'held_out_top1':float(top1),'chance':float(chance),
+             'held_out_gain_over_chance':float(gain),
+             'utility_status':validation.get('utility_status')}
+    if gain<=0.0 or validation.get('utility_status')!='ABOVE_CHANCE':
+        summary['status']='NO_HELDOUT_UTILITY_GAIN'
+    return summary
+
+
+def _gate_projector_update(store,home,state,old_record,candidate,encoder_name,encoder,cfg,*,tile=False,validation=None):
     """Measure a proposed A3 update on the previous exact replay set and scale/reject it."""
     np=_np()
+    validation_gate=_source_disjoint_update_validation(validation)
     if old_record is None:
-        return candidate,{'version':1,'status':'INITIAL','scale':1.0,'replay_n':0,'authority':'LAB_SHADOW_ONLY'}
+        return candidate,{'version':1,'status':'INITIAL','scale':1.0,'replay_n':0,
+                          'validation':validation_gate,'authority':'LAB_SHADOW_ONLY'}
+    if validation_gate['status']!='PASS':
+        return None,{'version':1,'status':validation_gate['status'],'scale':0.0,'replay_n':0,
+                     'validation':validation_gate,'authority':'LAB_SHADOW_ONLY'}
     if type(old_record) is not dict:
         return None,{'version':1,'status':'MALFORMED_ACTIVE_PROJECTOR','scale':0.0,'authority':'LAB_SHADOW_ONLY'}
     if old_record.get('encoder')!=encoder_name:
@@ -378,12 +407,13 @@ def _gate_projector_update(store,home,state,old_record,candidate,encoder_name,en
             return blended,{
                 'version':1,'status':'APPLIED','scale':scale,'replay_n':len(replay_X),
                 'replay_sources':replay_sources,'before':before,'candidate':full,'after':after,
-                'scales_tested':tested,'tolerances':{'top1':A3_REPLAY_TOP1_TOLERANCE,
+                'scales_tested':tested,'validation':validation_gate,
+                'tolerances':{'top1':A3_REPLAY_TOP1_TOLERANCE,
                 'mean_cosine':A3_REPLAY_COSINE_TOLERANCE},'authority':'LAB_SHADOW_ONLY'}
     return None,{
         'version':1,'status':'REJECTED_RETENTION_REGRESSION','scale':0.0,'replay_n':len(replay_X),
         'replay_sources':replay_sources,'before':before,'candidate':full,'after':full,
-        'scales_tested':tested,'tolerances':{'top1':A3_REPLAY_TOP1_TOLERANCE,
+        'validation':validation_gate,'scales_tested':tested,'tolerances':{'top1':A3_REPLAY_TOP1_TOLERANCE,
         'mean_cosine':A3_REPLAY_COSINE_TOLERANCE},'authority':'LAB_SHADOW_ONLY'}
 
 def crossval(X,Y,thumbs=None,folds=4,ridge=1.):
@@ -620,7 +650,7 @@ def train(runtime,encoder=None,cfg=DEFAULTS):
     cv=source_disjoint_crossval(X,Y,groups,caps,thumbs=T,ridge=cfg['ridge'])
     training_sources=source_lineage(st['images'],ids);old=st.get('projector')
     candidate=Projector(cfg['ridge']).fit(X,Y)
-    p,gate=_gate_projector_update(runtime.store,runtime.home,st,old,candidate,name,enc,cfg,tile=False)
+    p,gate=_gate_projector_update(runtime.store,runtime.home,st,old,candidate,name,enc,cfg,tile=False,validation=cv)
     if p is None:
         if type(old) is not dict:
             return {'status':'REJECTED','update_gate':gate,'authority':'LAB_SHADOW_ONLY'}
@@ -692,7 +722,7 @@ def train_tiles(runtime,encoder=None,cfg=DEFAULTS):
     cv=source_disjoint_crossval(X,Y,groups,texts,ridge=cfg['ridge'])
     training_sources=source_lineage(st['images'],keys);old=st.get('tile_projector')
     candidate=Projector(cfg['ridge']).fit(X,Y)
-    p,gate=_gate_projector_update(runtime.store,runtime.home,st,old,candidate,name,enc,cfg,tile=True)
+    p,gate=_gate_projector_update(runtime.store,runtime.home,st,old,candidate,name,enc,cfg,tile=True,validation=cv)
     if p is None:
         if type(old) is not dict:
             return {'status':'REJECTED','update_gate':gate,'authority':'LAB_SHADOW_ONLY'}
