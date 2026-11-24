@@ -1520,3 +1520,44 @@ audio_voice_cues.consume_pcm16_voice_window now invokes the adapter only with a 
 
 **Primary sources:** https://arxiv.org/abs/2606.25225 ; https://github.com/facebookresearch/MJEPA
 
+
+
+## R-128 — Separate candidate discovery from floor-transfer verification (2026-11-24)
+
+### Primary paper 1 — full paper read
+Rutherford A. Patamia, Ming Liu, Wei Luo, Favour Ekong, Rehan Mohammed, Gang Liu and Akan Cosgun, **“Leveraging Dual-Process Theory for Multimodal Multiparty Turn-Taking Prediction,”** arXiv:2611.19484v1, submitted 2026-11-14 (preprint; no peer-reviewed venue verified in the arXiv record). Full 13-page PDF inspected, including methods, results, ablations and limitations.
+
+- The paper separates three tasks that should not be collapsed: (A) SHIFT/HOLD at supplied decision points, (B) verification of automatically generated candidates, and (C) continuous candidate discovery + verification + temporal localisation.
+- System 1 is recall-oriented candidate discovery (WavLM representation, 4.0 s candidate-centred windows, 0.10 s hop). System 2 is invoked only for candidates and combines acoustic, linguistic, speaker, future-activity and local-ranking evidence. Future activity is a training target, not a test-time oracle.
+- On VoxConverse Task C, the reported event F1 is 0.552 at ±0.50 s (precision 0.536, recall 0.569); candidate coverage is 0.96 and the system generates 30.63 candidates/minute, reducing verifier calls by 94.9% versus dense 10-Hz verification. Reported proposer RTF 0.232 and temporal-verifier cost 0.0113 ms/candidate exclude the expensive diarization, ASR, embedding and language components; the executed pipeline uses offline-precomputed diarization/ASR/embeddings and bounded post-candidate look-ahead. It is **not** a strict causal end-to-end streaming latency result.
+- Multi-TPC's original group-disjoint held-out Task C F1 is 0.445 at ±1.0 s. In the post-hoc seven-group analysis no paired method comparison survives Holm correction; modality contributions are descriptive and group-dependent.
+- VoxConverse turn labels are derived from diarization rather than native turn-action annotations. A 300-clip audit agrees on fine-grained actions 75.3% (226/300) and on coarse transfer/non-transfer 86.0%; event timing was not independently audited. Incoming-speaker identification uses post-boundary query speech and is not pre-transition next-speaker prediction.
+- The paper cites a project repository at https://github.com/Ruddy202/DualTurn, but that exact repository was not retrievable in this search; no code license, checkpoint or weight license was verified. No code or weights were reused.
+
+### Primary paper 2 — full paper read
+Puneet Mathur and Dinesh Manocha, **“MultiPartyTurnBench: Benchmarking Floor Control in Multi-Party Spoken Dialogue,”** arXiv:2610.20172v1, submitted 2026-10-14 (preprint). Full 31-page PDF and official project/repository/dataset documentation inspected.
+
+- MPTB contains 240 synthetic channel-separated conversations, 2–5 speakers, six interaction styles, 6.89 h, with 48 development and 192 test conversations and disjoint TTS voice inventories. It defines separate End-of-Turn (EOT) and Interruption (INT) tasks; hard negatives include mid-turn holds, backchannels and non-content vocalizations.
+- EOT and INT are materially asymmetric. At qualified operating points the paper reports 82.5–92.6% EOT recall at 4.3–11.8% FPR, while the strongest INT detector reaches only 56.2% recall. VAD systems can show high recall only with prohibitive FPR (e.g. Silero 97.2% EOT recall / 93.5% FPR and 85.4% INT recall / 89.2% FPR).
+- In five full-duplex agents, turn-entry balanced accuracy is 86.1–95.8%, but selective STOP/yield balanced accuracy is only 46.9–54.7%. The paper's barge-in instrumentation shows that one agent's apparent yielding is provider-VAD cancellation rather than model discrimination; this is exactly why V14 must distinguish provider-triggered cancellation from model-verified floor transfer.
+- The corpus is synthetic TTS with controlled event orchestration, not natural conversational ground truth; 24 voices are split between dev/test. It is a diagnostic benchmark, not evidence of safe or natural floor-control behavior.
+- Official benchmark code license: MIT. Dataset card declares CC BY 4.0 and requires gated Hugging Face access; archive size is about 2.46 GB. No dataset or code was downloaded or imported.
+
+### V14 implementation mapping (hypothesis, not a demonstrated learned policy)
+- Keep A5/A4 speaker-change, VAD, prosody and non-speech evidence as candidate/evidence signals. Do not treat speaker change, voice onset or ASR sentence completion as proof that the conversational floor changed.
+- Preserve separate outputs for candidate discovery, EOT/hold evidence, successful floor-transfer verification and event localisation. C/duplex may consume a verified floor-transfer signal only after a separately evaluated policy; the current explicit `duplex_mode=interrupt` remains a provider-voice-onset barge-in option and must be reported as such, not as learned selective yielding.
+- Add event-level EOT/INT hard-negative evaluation after the current audio + vision lifecycle integration is composed. Candidate baselines: acoustic/prosodic-only, candidate-only, candidate+speaker evidence, candidate+temporal/semantic verifier, and no-verifier negative control. Freeze thresholds on development data; report FPR, false interruptions, missed true interruptions and signed latency separately.
+- The present A4 `identity_authority=False` fix is only an explicit authority boundary. It does not implement floor-transfer verification, speaker identity calibration, cross-organ latent learning or a trained turn-taking head.
+- Follow-up: source-bound, session-disjoint event dataset and replay; include same-speaker holds, backchannels, laughter, brief interjections, overlap, successful/unsuccessful claims and non-speech negatives. Keep any new model in SHADOW until held-out utility, latency, retention, restart and Android resource tests pass.
+
+**Status:** FULL_PAPER_READ (both papers) / PREPRINT / OSS_LICENSE_VERIFIED_ONLY_FOR_MPTB_CODE_AND_DATA / NO_REUSE / NO_DATA_DOWNLOAD / NO_ANDROID_PROOF.
+
+**Primary sources:**
+- https://arxiv.org/abs/2611.19484
+- https://arxiv.org/pdf/2611.19484
+- https://arxiv.org/abs/2610.20172
+- https://arxiv.org/pdf/2610.20172
+- https://multiparty-turnbench.github.io/
+- https://github.com/multiparty-turnbench/multiparty-turnbench
+- https://huggingface.co/datasets/multiparty-turnbench/MultiPartyTurnBench
+

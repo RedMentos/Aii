@@ -1,3 +1,19 @@
+## Research & Perception run 35 — 2026-11-24 (checkpoint 2026-11-24T06:05:32.755Z)
+
+- Perception PR #2448 advanced on its current release-development base `8d93236c753f0194224c19edc7411d8d7082b1d6` to code commit `825ecfbd1a530fdba3ba830b0087cd35933ef464`.
+- Fixed the A4 packet contract: `identity_authority=False` is now explicit alongside `learning_authority=False` and `action_authority=False`. This is a non-identity authority declaration, not speaker identification or floor-transfer proof.
+- Refreshed the Perception-owned RAW EAR/WebRTC comparator workflow to the exact new Git blob for `audio_voice_cues.py`: `5be9e12fd2a51dfccc1d58c8aa784695cc7b0ac3`. The workflow's exact-head comparison now passes.
+- Exact GitHub Actions on `825ecfbd`: audio duplex 189/189 PASS on Python 3.13 and 3.14 (run 45336790279); RAW EAR optional NumPy/speaker path 128/128 PASS on 3.13/3.14 (45336790251); WebRTC/libfvad comparator 72/72 PASS on 3.13/3.14 (45336790325); prosody-to-attention 72/72 PASS on 3.11/3.13 (45336790459); consent revocation, privacy scan and runtime-deployment integrity PASS (45336790416, 45336790269, 45336790259).
+- **Still FAIL:** staged/integrated run 45336790400 and Core same-turn run 45336790334 fail on both Python 3.13/3.14 at the Core-owned `integrated_audio_context_candidate_20261121.py` stale `audio_voice_cues.py` source pin. Staged matrix: 16 failed, 237 passed, 10 skipped, 2 errors, 47 subtests; migration subtests also report PARTIAL instead of UPDATED. Perception did not edit the Core composer. Exact current source blobs and the matching vision lifecycle gap were posted to Core PR #2462 comment 7123452298.
+- LOCAL_LINUX full Aii checkout/test suite remains BLOCKED: no checkout is mounted and `git ls-remote https://github.com/RedMentos/Aii.git` fails because github.com DNS cannot resolve. An isolated local A4 authority-contract syntax/assertion reproduction passed; it is not a full module or repository test.
+- PR #2463 remains OPEN/DRAFT: focused vision source-lineage (29/29) and RAW EYE provider-frame ingress (39/39) pass on Python 3.13/3.14; staged/integrated still fails because Core's lifecycle composer rejects `vision.py`. No MediaProjection or Android device test.
+- Last authenticated phone receipt #832 reported base `8d93236` installed and auto-update enabled; it predates both open Perception PRs. No new UPDATE_REQUEST was sent. REDMI_UNVERIFIED for #2448/#2463; RELEASE NOT_RELEASED.
+- Research R-128 was appended: full-paper review of Patamia et al. (arXiv:2611.19484, 2026-11-14) and Mathur & Manocha (arXiv:2610.20172, 2026-10-14). Their main transferable point is to separate candidate discovery, floor-transfer verification and event localisation; speaker change/voice activity alone is not a floor transfer. MPTB code is MIT, dataset CC BY 4.0 / 2.46 GB and gated; nothing was downloaded.
+- Next: Core/Integrator must recompose audio pins against the current combined source set; Core/JEPA must add `vision.py` source-lifecycle/source-forget mapping. After one combined staged/integrated/same-turn pass, Perception continues with source-disjoint A4 outcome/retention and model-bound speaker calibration. No user action is required.
+- Detailed handoff: `v14/handoffs/RESEARCH_PERCEPTION_RUN35_20261124.md`.
+
+---
+
 ## M1 DATA audit-first and direct-array checkpoint — 2026-11-23 12:44 UTC
 
 - `ArrayDataset.from_uci()` validates/counts the source on pass one, fills a float32 matrix and computes the exact parsed-data fingerprint on pass two, and rejects file changes between passes. It does not allocate Python `MinuteRow` objects for the real cohort.

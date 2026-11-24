@@ -1861,3 +1861,18 @@ Current Perception branch head after the Run 34 documentation checkpoint: 086a2b
 
 No change to the user decision: no manual command, model download/swap, device update or permission change. REDMI_UNVERIFIED for these candidate heads; last known installed base remains 8d93236.
 
+
+
+### Research & Perception — run 35 — 2026-11-24
+
+**No user action is required.** No manual Termux command, update request, model download/swap or permission change is needed.
+
+- PR #2448 remains OPEN/DRAFT/NOT_RELEASED on `research-perception/v14-audio-duplex-bridge-20261123-run21`, exact head `825ecfbd1a530fdba3ba830b0087cd35933ef464`, base `8d93236c753f0194224c19edc7411d8d7082b1d6`. A4 now explicitly marks `identity_authority=False`; the comparator workflow pin is refreshed to the exact source blob.
+- Exact-head CI passes: audio duplex 189/189 on Python 3.13 and 3.14; RAW EAR optional NumPy/speaker path 128/128 on both; WebRTC/libfvad comparator 72/72 on both; prosody-to-attention 72/72 on Python 3.11/3.13; consent revocation, public privacy scan and deployment integrity pass.
+- Staged/integrated and Core same-turn still fail on both Python versions at the Core-owned stale `audio_voice_cues.py` source pin. The exact new Perception audio blob is `5be9e12fd2a51dfccc1d58c8aa784695cc7b0ac3`; current speaker/temporal blobs are `14a6d8d79d361e6c89c3770d372a3f9824f13afb` and `e258f5dfecbf79d6f1a9d3adbfaf60631bb9d140`. Core handoff comment: https://github.com/RedMentos/Aii/pull/2462#issuecomment-7123452298.
+- PR #2463 remains OPEN/DRAFT. Focused vision source-lineage 29/29 and RAW EYE provider-frame ingress 39/39 pass on Python 3.13/3.14; staged/integrated fails because Core's lifecycle composer rejects `vision.py`. No Redmi MediaProjection test exists.
+- Local full Aii checkout is still blocked by unavailable GitHub DNS. A small isolated local A4 contract reproduction passed, but it is not a repository test. The last authenticated phone receipt #832 reports base `8d93236` installed and auto-update enabled; it predates these open PRs. REDMI_UNVERIFIED for both candidate PRs.
+- R-128 records two full-paper reviews: Patamia et al. (arXiv:2611.19484) and Mathur & Manocha (arXiv:2610.20172 / MultiPartyTurnBench). The key new point is that voice activity and speaker change are not floor transfer; candidate discovery, EOT and successful interruption must be evaluated separately. MPTB code is MIT; data CC BY 4.0 / gated / ~2.46 GB. Nothing was downloaded.
+
+**Next internal action:** Core/Integrator rebinds the exact audio source pins; Core/JEPA adds the reviewed `vision.py` lifecycle/source-forget mapping. After one combined staged/integrated/same-turn pass, Perception continues with source-disjoint A4 outcome/retention and model-bound speaker calibration. No user action is required.
+
