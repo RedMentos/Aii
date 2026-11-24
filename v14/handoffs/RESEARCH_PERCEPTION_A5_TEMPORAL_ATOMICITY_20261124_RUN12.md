@@ -24,3 +24,11 @@ Hypothesis: prepare temporal evidence against a private copy, commit it only aft
 - Parent Perception session-receipt contract: PR #2469.
 - A3/source lifecycle composition remains Core-owned in PR #2465. Its branch currently targets #2463 rather than #2469; rebase/compose it with this session-receipt descendant before the combined staged/integrated matrix. Preserve the exact vision source hash and the optional authenticated session receipt.
 - Whole-system epic: #1984.
+
+
+## Research note R-134 and exact CI feedback
+
+- Full-text review and OSS/license audit recorded append-only as R-134 in V14_RESEARCH_LEDGER.md: V-JEPA 2.1's dense context-token loss and 80M distilled ViT-B are a possible future A3 feature-extractor benchmark, not an approved model swap. No weights or dependencies were downloaded.
+- On prior exact head ff69ee44, frame-ingress CI on Python 3.13 and 3.14 each reported 50 passed / 1 failed. The only failure was the new registry test using per-frame receipt identity where the test intended one stable session-consent receipt; fixed by adding session_consent_receipt_ref to the fixture in commit 72dad941f0065a3308fcb48cda38207c66e0a258.
+- On ff69ee44, vision-source-lineage passed on Python 3.13 and 3.14. The A5 UI lease jobs failed on the Core-owned staged source-lifecycle candidate at source_lifecycle_lock_integration_candidate.py:172: unsupported lifecycle source: vision.py. This is not a frame-ingress test failure and remains a Core integration blocker.
+- The exact 72dad941 head has a new full PR matrix queued/in progress at this checkpoint; no new PASS is claimed until readback completes.
