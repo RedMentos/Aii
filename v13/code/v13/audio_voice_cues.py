@@ -226,6 +226,62 @@ def _anti_alias_decimate(samples, sample_rate: int, factor: int) -> tuple[list[f
         output.append(filtered)
     return output, sample_rate / factor
 
+
+def _anti_alias_decimate_numpy(samples, sample_rate: int, factor: int, numpy_module) -> tuple[list[float], float]:
+    """Vectorized equivalent of the bounded Python FIR decimator.
+
+    The outer loop retains the reference filter's exact symmetric-pair summation
+    order; NumPy only vectorizes independent output samples. Endpoint reflection
+    and output length match _anti_alias_decimate, including short-window edges.
+    This path is opt-in through backend="numpy"; it adds no mandatory dependency.
+    """
+    if type(factor) is not int or factor < 1:
+        raise ValueError("RAW EAR decimation factor must be a positive integer")
+    values = numpy_module.asarray(samples, dtype=numpy_module.float64)
+    if factor == 1:
+        return values.tolist(), float(sample_rate)
+    coefficients = _voice_decimator_coefficients(sample_rate, factor)
+    half = len(coefficients) // 2
+    sample_count = int(values.size)
+    centers = numpy_module.arange(sample_count // factor, dtype=numpy_module.int64) * factor
+    filtered = numpy_module.zeros(centers.shape, dtype=numpy_module.float64)
+
+    def reflected(indices):
+        result = numpy_module.empty(indices.shape, dtype=numpy_module.float64)
+        inside = (indices >= 0) & (indices < sample_count)
+        if numpy_module.any(inside):
+            result[inside] = values[indices[inside]]
+        outside = ~inside
+        if numpy_module.any(outside):
+            outside_indices = indices[outside]
+            if sample_count <= half:
+                result[outside] = numpy_module.where(
+                    outside_indices < 0, values[0], values[-1]
+                )
+            else:
+                edge_values = numpy_module.empty(
+                    outside_indices.shape, dtype=numpy_module.float64
+                )
+                left = outside_indices < 0
+                if numpy_module.any(left):
+                    edge_values[left] = (
+                        2.0 * values[0] - values[-outside_indices[left]]
+                    )
+                right = ~left
+                if numpy_module.any(right):
+                    mirror = 2 * sample_count - 2 - outside_indices[right]
+                    edge_values[right] = 2.0 * values[-1] - values[mirror]
+                result[outside] = edge_values
+        return result
+
+    for offset in range(1, half + 1):
+        left_values = reflected(centers - offset)
+        right_values = reflected(centers + offset)
+        filtered += coefficients[half - offset] * (left_values + right_values)
+    filtered += coefficients[half] * values[centers]
+    return filtered.tolist(), sample_rate / factor
+
+
 def _percentile(values: list[float], fraction: float) -> float | None:
     """Return a linearly interpolated percentile for a small bounded frame list."""
     if not values:
@@ -319,7 +375,12 @@ def extract_voice_cues(pcm: bytes, sample_rate: int, *, backend: str = "python")
     # pitch band. Keep RAW EAR self-contained and bounded with a small cached
     # centered FIR before integer decimation. This is not a model resampler.
     factor = max(1, int(sample_rate // 8000))
-    low_rate, effective_rate = _anti_alias_decimate(samples, sample_rate, factor)
+    if numpy_module is None:
+        low_rate, effective_rate = _anti_alias_decimate(samples, sample_rate, factor)
+    else:
+        low_rate, effective_rate = _anti_alias_decimate_numpy(
+            samples, sample_rate, factor, numpy_module
+        )
     frame_ms, hop_ms = 40, 20
     frame_size = max(32, int(round(effective_rate * frame_ms / 1000.0)))
     hop_size = max(1, int(round(effective_rate * hop_ms / 1000.0)))

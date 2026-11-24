@@ -14,6 +14,8 @@ import numpy as np
 from v13 import audio_voice_cues as audio_voice_cues_module
 from v13.audio_silero_vad import SileroVADStream
 from v13.audio_voice_cues import (
+    _anti_alias_decimate,
+    _anti_alias_decimate_numpy,
     consume_pcm16_voice_window,
     extract_voice_cues,
     reset_runtime_temporal_voice_states,
@@ -176,6 +178,17 @@ def test_numpy_pitch_backend_matches_python_for_synthetic_controls(sample_rate):
         assert extract_voice_cues(pcm, sample_rate, backend="numpy") == extract_voice_cues(
             pcm, sample_rate, backend="python"
         )
+
+
+@pytest.mark.parametrize("sample_rate", (8000, 12000, 16000, 44100, 48000))
+@pytest.mark.parametrize("sample_count", (1, 2, 3, 10, 11, 12, 13, 24, 25, 26, 100, 1000))
+def test_numpy_fir_decimator_matches_python_at_boundary_lengths(sample_rate, sample_count):
+    factor = max(1, int(sample_rate // 8000))
+    rng = random.Random(sample_rate * 10000 + sample_count)
+    samples = tuple(rng.randint(-32768, 32767) for _ in range(sample_count))
+    assert _anti_alias_decimate_numpy(
+        samples, sample_rate, factor, np
+    ) == _anti_alias_decimate(samples, sample_rate, factor)
 
 
 def test_numpy_backend_is_explicit_and_falls_back_without_changing_python(monkeypatch):

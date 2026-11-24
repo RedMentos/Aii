@@ -27,7 +27,11 @@ CODE_ROOT = Path(__file__).resolve().parents[1]
 if str(CODE_ROOT) not in sys.path:
     sys.path.insert(0, str(CODE_ROOT))
 
-from v13.audio_voice_cues import extract_voice_cues
+from v13.audio_voice_cues import (
+    _anti_alias_decimate,
+    _anti_alias_decimate_numpy,
+    extract_voice_cues,
+)
 from v13.audio_speaker_evidence import SCHEMA, SpeakerChangeEvidenceRegistry
 
 
@@ -89,6 +93,32 @@ def measure(function, iterations):
         "p95_ms": round(ordered[min(len(ordered) - 1, int(0.95 * (len(ordered) - 1)))], 4),
         "max_ms": round(max(ordered), 4),
         "iterations": iterations,
+    }
+
+
+def benchmark_decimator(sample_rate, iterations):
+    """Compare the exact Python and optional NumPy FIR paths on synthetic PCM16 samples."""
+    import numpy as np
+
+    factor = max(1, int(sample_rate // 8000))
+    rng = random.Random(20261124 + sample_rate)
+    samples = [rng.randint(-32768, 32767) for _ in range(sample_rate)]
+    python_result = _anti_alias_decimate(samples, sample_rate, factor)
+    numpy_result = _anti_alias_decimate_numpy(samples, sample_rate, factor, np)
+    if numpy_result != python_result:
+        raise SystemExit(f"decimator parity failure at {sample_rate} Hz")
+
+    return {
+        "sample_rate_hz": sample_rate,
+        "decimation_factor": factor,
+        "sample_count": len(samples),
+        "python": measure(
+            lambda: _anti_alias_decimate(samples, sample_rate, factor), iterations
+        ),
+        "numpy": measure(
+            lambda: _anti_alias_decimate_numpy(samples, sample_rate, factor, np), iterations
+        ),
+        "outputs_equal": True,
     }
 
 
@@ -206,6 +236,11 @@ def main():
     except ImportError:
         report["numpy_version"] = None
         raise SystemExit("NumPy is required for this opt-in benchmark")
+
+    report["decimator"] = {
+        str(rate): benchmark_decimator(rate, args.iterations)
+        for rate in (16000, 44100, 48000)
+    }
 
     for name, pcm in fixtures.items():
         python_result = extract_voice_cues(pcm, SAMPLE_RATE, backend="python")
