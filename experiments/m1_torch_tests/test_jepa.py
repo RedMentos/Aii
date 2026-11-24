@@ -28,6 +28,7 @@ from experiments.m1.training import (
     save_checkpoint_atomic,
     train_direct_mae,
     train_frozen_probe,
+    train_raw_gru,
     evaluate_jepa,
     TorchBatchPredictor,
     train_jepa,
@@ -194,7 +195,7 @@ class JEPAModelTests(unittest.TestCase):
 
     def test_raw_gru_uses_common_inputs_and_trains(self):
         model = RawGRUForecaster(self.config, hidden_size=12, num_layers=1)
-        history = train_direct_mae(
+        history = train_raw_gru(
             model, self.dataset, epochs=1, batch_size=32, seed=27
         )
         self.assertTrue(np.isfinite(history[0]["mae"]))
