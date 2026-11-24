@@ -1561,3 +1561,37 @@ Puneet Mathur and Dinesh Manocha, **“MultiPartyTurnBench: Benchmarking Floor C
 - https://github.com/multiparty-turnbench/multiparty-turnbench
 - https://huggingface.co/datasets/multiparty-turnbench/MultiPartyTurnBench
 
+
+
+## R-129 — Replay-gated A3 projector updates (2026-11-24)
+
+### Primary paper 1 — main paper, method, results and limitations read
+**MANGO: Meta-Adaptive Network Gradient Optimization for Online Continual Learning**, arXiv:2605.19080, submitted 2026-05-18 (preprint; no peer-reviewed venue or official code repository verified).
+
+- MANGO gates each parameter gradient by a sigmoid of the parameter magnitude normalized by its layer's parameter standard deviation, then uses a virtual update on replay samples to meta-update six layer-wise stability coefficients. Replay is therefore a feedback signal for the effect of a proposed update, not only a source of training examples.
+- Evaluation: ResNet-18, Split CIFAR-100 (20 tasks), Split Tiny-ImageNet (10 tasks) and CLEAR-10 (10 domains); single pass, three glances per minibatch, online/replay batches 32/64, replay buffers 2k/4k, five seeds, PyTorch/CUDA.
+- Reported 2k-buffer results: CIFAR-100 Acc 19.72±1.01%, AAA 31.53±0.37%, WC-Acc 12.69±0.55%; Tiny-ImageNet Acc 25.15±1.32%, AAA 23.45±1.13%, WC-Acc 17.44±0.84%; CLEAR-10 Acc 66.91±1.20%, AAA 66.35±1.05%, WC-Acc 55.0±1.1%, BWT +15.12±3.3%.
+- Ablation: removing meta-learned lambda lowers CIFAR-100 accuracy 19.72→18.79 and Tiny-ImageNet 25.46→18.50; replay-only ER is materially weaker. Important caveat: reported CIL BWT remains negative (e.g. -38.17 CIFAR-100 at 2k), even while the paper prioritizes anytime/worst-case accuracy. The paper explicitly assumes well-defined task/domain boundaries and lists task-free/blurry-boundary learning as future work.
+- No official code, checkpoint or weight license was found in the inspected paper record. No code or weights reused.
+
+### Primary paper 2 — full paper and official implementation inspected
+Chen Henry Wu, Thomas Zhang and Aditi Raghunathan, **Off-Policy Merging Beats On-Policy Self-Distillation for Continual Learning**, arXiv:2610.05872, submitted 2026-10-05 (preprint; no peer-reviewed venue verified).
+
+- Grafting trains a delta on an earlier donor checkpoint, then applies a scaled delta to a post-trained model; an optional diagonal/KFAC Fisher projection removes the most retention-sensitive directions. The paper tests expert traces, STaR, Pedagogical RL and synthetic knowledge injection.
+- Models/evidence: Qwen3-1.7B/8B and OLMo-3-7B; held-out hard math plus AIME 2024/2025 and HMMT 2025 retention suites. Grafting generally dominates direct SFT and OPSD on the reported old/new task frontier. The authors report that sampling is about 90% of an OPSD step and grafting is about 10× faster in their Qwen3-8B setup. Knowledge injection uses a synthetic closed world (200 invented entities, 1,125 facts, 9,000 QA phrasings), not an open-world knowledge benchmark.
+- Official reference implementation: https://github.com/AR-FORUM/grafting — MIT. The repository requires Torch, Transformers, Safetensors, Pandas, PyArrow and math-verify; optional training/evaluation dependencies include verl, flash-attn, vLLM and datasets. This is a GPU/Hugging-Face training stack, not a plausible direct Redmi/Termux dependency.
+- Qwen3/OLMo model weights and training datasets have separate rights; they were not imported or downloaded. No implementation code or weights reused. The transferable idea here is measuring/scaling a parameter delta, not importing the full donor/Fisher pipeline.
+
+### V14 implementation mapping — A3 replay gate, not a reproduction
+- The existing A3 vision.Projector and tile projector were replaced by a newly fitted ridge artifact on every :image train / :image train_tiles call, without comparing the candidate against the prior projector's learned source/caption set. That could silently overwrite useful A3 behaviour.
+- On research-perception/v14-vision-current-20261124-run33, PR #2463 now reconstructs the previous projector's exact replay set from its immutable image-region source references and stored caption targets. It compares old and candidate retrieval on the same encoder space, then searches affine parameter-delta scales {1, 0.5, 0.25, 0.125, 0.0625}. The largest scale is accepted only if replay top-1 stays within 0.02 and mean cosine within 0.015 of the old projector. Missing/invalid replay, encoder changes, insufficient source groups and dimension mismatches fail closed; rejected candidates do not replace the active artifact.
+- The same gate is applied to global and tile projectors. Tile training now persists its exact tile-caption replay labels so later updates can be evaluated against the same source-bound targets. status() exposes the gate result. The artifact remains LAB_SHADOW_ONLY; this is not a B1/B2 update, native JEPA, a gradient-trained neural adapter, or MANGO's meta-learned predictor.
+- This is a deliberately small A3-specific step toward the V14 update-effect predictor: a directly measured replay effect and affine delta scale search. It should later be compared against no gate, full candidate replacement and a learned predictor on source-disjoint new data plus replay, with restart/forget/rollback tests. Do not promote without independent review.
+
+### Verification and limitations
+- LOCAL_LINUX/SYNTHETIC: isolated NumPy test exercised affine endpoints (scale 0 reproduces old; scale 1 reproduces candidate), a replay-preserving scaled update, full-scale no-regression and a destructive-update rejection; PASS. This was not a full local Aii checkout.
+- CI on PR #2463 head 8a541d06a45d13401969a983c8bc2174607e3722: py_compile plus tests/test_vision.py and tests/test_vision_source_lineage.py passed on Python 3.13 (31 passed) and 3.14 (31 passed); frame-ingress tests passed on both (39 passed each). Integrated/staged runtime gates were still pending at this ledger write; update after their final result.
+- The CI run reports vision.py SHA-256 bb63636c9ae84d345fe1f4e37254de3be87c26990cb320ca058859fd0b51b72f; Core/Integrator must rebind the exact source-lifecycle pin before integration.
+- Android/Redmi: REDMI_UNVERIFIED. No device-side A3 model training, frame capture, native embedding, memory or latency measurement is claimed.
+
+**Primary sources:** https://arxiv.org/abs/2605.19080 ; https://arxiv.org/abs/2610.05872 ; https://github.com/AR-FORUM/grafting
