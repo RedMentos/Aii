@@ -1,3 +1,19 @@
+# Core & Harness — fair B1/B2 recovery checkpoint (2026-11-24 03:42 UTC)
+
+**PR #2462** is open on `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1`, exact HEAD `201bd5419613e3f997ba9c58b7d2b97c3576d3df`, based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`. It preserves sequential B1_DETAIL/B2_GIST pre-answer slices and the C3/Focal reserves, and changes post-commit observer suppression so a failed late-watch NO_OFFER can be retried instead of being treated as delivered.
+
+**Current evidence:** Runtime file Git blob `80eddec84f7a5ef06c1c72007ca08c44b694ace0`, exact UTF-8 SHA-256 `7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186`. CI at the prior code head `23863dbe8fa84f51cba99914aa9eb80e777dbfc9` still failed: staged-runtime 33 failed / 240 passed / 10 skipped / 2 errors; integrated-regression failed; same-turn consumer Python 3.13 failed; Python 3.14 was still running at the last poll. Combined online JEPA, JEPA receipt integrity, JEPA Runtime transaction, runtime deployment integrity and Core native-tap provenance passed. Owner-read bootstrap failed. The new diagnostic-only test commit `201bd...` had its exact-head workflows queued/in progress at this checkpoint; no pass is claimed.
+
+**Blocking integration:** four exact consumers still pin the prior Runtime SHA `a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38`: `integrated_online_world_candidate_20261110.py`, `postcommit_observer_candidate_20261116.py`, `record_only_online_guard_candidate_20261116.py`, and `integrated_observer_fair_budget_candidate_20261116.py`. The current two-checkout migration result is PARTIAL because staging fails. Boss/Integrator must recompose these source-pinned consumers and downstream recovery/stage/deployer pins against the exact Core Runtime bytes; no hash gate may be relaxed. QA #2455 rebinds the Memory/Context/JEPA chain on an older Boss base and does not yet contain this Core Runtime delta.
+
+**Still open:** the missing-peer Runtime regression failed at `23863...` because the B2 post-commit retry was not observed. Commit `201bd...` adds diagnostic state to that assertion; exact-head CI is pending. Full local Aii tests are BLOCKED because no checkout is mounted and GitHub DNS resolution fails. Redmi remains **REDMI_UNVERIFIED**; no private relay, device action, updater request, model/weight/permission change or deployment was performed.
+
+**Next:** poll exact-head CI for `201bd...`; use the diagnostic state to repair the Core-owned retry path; coordinate the four Runtime pin rebinds with Boss/Integrator; rerun Python 3.13/3.14 staged, integrated, same-turn and migration checks. Continue with the next unblocked Core E2E path after the checkpoint. **User action: none.** No model swap is proposed without measured comparison.
+
+Detailed handoff: [CORE_FAIR_B1_B2_RECOVERY_20261124.md](handoffs/CORE_FAIR_B1_B2_RECOVERY_20261124.md).
+
+---
+
 # Core & Harness — failed late-watch peer retry checkpoint (2026-11-24T03:18:51.264Z)
 
 **Candidate:** [PR #2462](https://github.com/RedMentos/Aii/pull/2462), branch `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1`, current code/test head `ad89ad5c64fac8b1cefd97b3b50b0c2c3886ed16`, based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`. It is the clean replacement for draft PR #2458, which is now closed as superseded.
