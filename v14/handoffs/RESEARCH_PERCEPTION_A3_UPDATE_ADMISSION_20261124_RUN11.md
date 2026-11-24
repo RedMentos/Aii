@@ -103,3 +103,13 @@ The earlier limitation about not comparing against the old projector is supersed
 - Staged-runtime #45355527120 and integrated-regression were still IN_PROGRESS at the last poll; Core same-turn #45355527204 had Python 3.13 FAIL at the unchanged source-lifecycle composer and Python 3.14 still running. No combined integration pass is claimed.
 
 The current source-lifecycle composer still needs the exact four-file hashes above. The integration blocker remains Core-owned; Perception did not edit it.
+
+
+## Final staged/integrated readback for code/test SHA aa57c9a
+
+- Vision source-lineage #45355527288: PASS, 36/36 on Python 3.13 and 36/36 on Python 3.14; exact `vision.py` SHA-256 is `7be279230d50b8e96199dbc7523813ff1ecab8abce9f77700feaea00bce9e5fc`, and `vision_validation.py` is `996d53e938942adefac53e461726ad34b1ce78e76e42e6acb6c4f68bde55d59c`.
+- RAW EYE frame ingress #45355527149: PASS on Python 3.13/3.14. Privacy scan and deployment integrity: PASS.
+- Staged runtime #45355527120: FAIL, 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests. All composition failures are `ValueError: unsupported lifecycle source: vision.py` from Boss/Integrator-owned `source_lifecycle_lock_integration_candidate.py`; the two phone-migration tests return PARTIAL instead of UPDATED as a consequence.
+- Integrated regression #45355527120: FAIL at the same `unsupported lifecycle source: vision.py` boundary.
+- Core same-turn #45355527204: Python 3.13 FAIL (3 failed / 2 passed) at the same source-lifecycle boundary; Python 3.14 remained IN_PROGRESS at last readback.
+- This is a composition/allowlist/pin failure, not a focused A3 regression. Do not relax the source hash gate or claim integration. PR #2463 remains DRAFT / NOT_RELEASED; REDMI_UNVERIFIED.
