@@ -441,3 +441,22 @@ def test_teacher_stream_rejects_second_session_and_cross_thread_use(tmp_path):
     assert errors and isinstance(errors[0], PermissionError)
     assert session.closed
     assert teacher._active_streams == 0
+
+def test_teacher_close_waits_for_streams_then_releases_pinned_files(tmp_path):
+    teacher = SherpaOnlineTeacher(
+        make_manifest(tmp_path), recognizer=Recognizer(), numpy_module=FakeNumpy(),
+    )
+    pinned = teacher.manifest.verified_files()
+    teacher._verified = pinned
+    pinned_path = pinned["encoder"]
+    teacher._active_streams = 1
+
+    with pytest.raises(TeacherEarError, match="stream is active"):
+        teacher.close()
+    assert pinned_path.read_bytes() == b"encoder-fixture"
+
+    teacher._active_streams = 0
+    teacher.close()
+    teacher.close()
+    with pytest.raises(FileNotFoundError):
+        pinned_path.read_bytes()
