@@ -27,7 +27,7 @@ _PREFIXES = (
     "compute ",
     "berechne ",
 )
-_ALLOWED = re.compile(r"[0-9\\s()+\\-*/%.]+\\Z")
+_ALLOWED = re.compile(r"[0-9\s()+\-*/%.]+\Z")
 
 
 def is_text_only_event(event: object) -> bool:
@@ -46,7 +46,7 @@ def _extract_expression(text: object) -> str | None:
     if type(text) is not str or not 1 <= len(text) <= MAX_TEXT_CHARS:
         return None
     value = unicodedata.normalize("NFKC", text).strip().casefold()
-    value = re.sub(r"[?.!…]+\\Z", "", value).strip()
+    value = re.sub(r"[?.!…]+\Z", "", value).strip()
     for prefix in _PREFIXES:
         if value.startswith(prefix):
             value = value[len(prefix):].strip()
