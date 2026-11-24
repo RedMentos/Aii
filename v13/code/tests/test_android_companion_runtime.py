@@ -184,15 +184,28 @@ def test_pair_pin_launch_and_signed_receipt_are_tty_driven_and_non_authoritative
     event_row = runtime.store.one(
         "SELECT session_id,packet FROM events WHERE id=?", (pending["source_event_id"],))
     space = EnlightenedSpace(runtime.store, event_row["session_id"])
-    followup = runtime.store.event(runtime.session, "Did the Android app launch?")
-    view = space.consume(followup, "C3_LANGUAGE", query="Did the Android app launch?")
-    assert view["representation"] == "SYMBOLIC_MESSAGE_SPACE_NOT_NATIVE_JEPA"
-    assert view["trained_latent"] is False
-    assert any(
-        item["from"] == "C5_ACTION" and item["authority"] == "CONTROL_ONLY"
-        and "not independently observed" in item["semantic_cue_not_fact"]
-        for item in view["messages"]
-    )
+    # A short pronoun follow-up has no lexical overlap with "launch_app".
+    # The signed receipt must still reach the real B1/B2/C3 shared-space readers
+    # for exactly the immediately following event, as CONTROL_ONLY context.
+    followup = runtime.store.event(runtime.session, "Did it work?")
+    for receiver, budget in (("B1_DETAIL", 2), ("B2_GIST", 2), ("C3_LANGUAGE", 5)):
+        view = space.consume(followup, receiver, query="Did it work?",
+                             max_messages=budget)
+        assert view["representation"] == "SYMBOLIC_MESSAGE_SPACE_NOT_NATIVE_JEPA"
+        assert view["trained_latent"] is False
+        assert any(
+            item["from"] == "C5_ACTION" and item["authority"] == "CONTROL_ONLY"
+            and "not independently observed" in item["semantic_cue_not_fact"]
+            for item in view["messages"]
+        )
+
+    # It is not a sticky fact: after one intervening user event, an unrelated
+    # query must not receive the old action receipt merely because it exists.
+    later = runtime.store.event(runtime.session, "What is my favorite color?")
+    later_view = space.consume(later, "C3_LANGUAGE",
+                               query="What is my favorite color?")
+    assert not any(item["from"] == "C5_ACTION"
+                   for item in later_view["messages"])
     jef_view = jefbridge.controller(runtime).publish_android_action_outcome(
         recorded["packet_id"], expected_session=runtime.session)
     assert jef_view["status"] == "ALREADY_PRESENT"
