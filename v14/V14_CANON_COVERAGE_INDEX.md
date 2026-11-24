@@ -7,6 +7,14 @@
 
 **Default pro Eintrag:** `CANON_REQUIREMENT / IMPLEMENTATION_UNVERIFIED / COVERAGE_REVIEW_PENDING`. Eine Zuordnung oder `DONE` verlangt konkrete Datei/Funktionspfad + Consumer + Test + Evidenz und kompatible Nutzerentscheidung. Ein Quellabschnitt kann mehrere atomare Anforderungen enthalten und später aufgeteilt werden.
 
+## Current P0 evidence overlay — Core fair B1/B2 recovery (2026-11-24)
+
+- PR #2462 / head `d0a30b18cc629d7498373e01985f89df00fa7461` adds fair sequential B1/B2 slices plus two corrections to late-watch: post-answer work is not charged to the pre-answer budget, and a closed status is counted once.
+- Status remains **P0 FAIL / NOT_ACCEPTED**. Exact staged, integrated, same-turn and owner-read acceptance is blocked by stale Runtime pins/anchors in the source-composition chain. The candidate is not released.
+- LOCAL_LINUX evidence is limited to an isolated CPython 3.13.5 contract test (2/2 PASS); full repository tests are NOT_RUN. No native Linux model or Redmi benchmark was performed.
+- Latest private device observation: runtime STOPPED_BY_USER, autostart OFF, and no valid B1/B2 offers in the last diagnostic. The branch has no installation receipt.
+- Required acceptance is unchanged: correct final output with useful source-bound B1/B2 contributions actually consumed through C4/C3, exact staged/runtime CI, and real Redmi evidence. No Canon requirement is removed or promoted.
+
 ## Historische Quellblöcke
 
 - HISTORICAL: **1** Überschriften
