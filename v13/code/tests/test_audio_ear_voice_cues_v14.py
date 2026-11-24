@@ -288,6 +288,12 @@ def test_voice_cues_flow_to_real_a4_and_c3_without_raw_pcm_or_identity(tmp_path,
         assert result["a4"]["prosody_change_score"] == cues["prosody_change_score"]
         assert result["a4"]["learning_authority"] is False
         assert result["a4"]["action_authority"] is False
+        turn = result["a4"]["temporal_voice"]["turn_candidates"]
+        assert turn["speech_candidate"] is True
+        assert turn["interrupt_candidate"] is True
+        assert turn["eot_candidate"] is False
+        assert turn["floor_transfer_verified"] is False
+        assert turn["floor_transfer_status"] == "UNVERIFIED"
         assert result["c3_admission"].status == "ADMITTED"
         summary = result["c3_admission"].selected[0].summary
         assert "activity=VOICED" in summary and "f0_med_hz=" in summary
@@ -1220,5 +1226,43 @@ def test_invalid_audio_consent_receipt_fails_before_vad_or_store_side_effects(tm
         assert session.calls == []
         assert packet_count(runtime.store, event["event_id"]) == 0
         assert attention_count(runtime.store, event["event_id"]) == 0
+    finally:
+        runtime.store.close()
+
+
+
+def test_sustained_silence_candidate_reaches_a4_and_c3_without_floor_transfer(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    silence_event = None
+    try:
+        voiced = consume_pcm16_voice_window(
+            runtime, tone(140), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok),
+            finality="FINAL", token_budget=512,
+        )
+        assert voiced["a4"]["temporal_voice"]["turn_candidates"]["speech_candidate"] is True
+
+        silence_event = runtime.store.event(event["session_id"], "synthetic silence window")
+        silent = consume_pcm16_voice_window(
+            runtime, bytes(2 * 16000), sample_rate=16000, start_ms=1100,
+            event_id=silence_event["event_id"],
+            generation_id=silence_event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok),
+            finality="FINAL", token_budget=512,
+        )
+        turn = silent["a4"]["temporal_voice"]["turn_candidates"]
+        assert turn["speech_candidate"] is False
+        assert turn["eot_candidate"] is True
+        assert turn["interrupt_candidate"] is False
+        assert turn["floor_transfer_verified"] is False
+        assert turn["floor_transfer_status"] == "UNVERIFIED"
+        assert turn["observed_silence_ms"] == 1000
+        assert silent["c3_admission"].status == "ADMITTED"
+        summary = silent["c3_admission"].selected[0].summary
+        assert "turn=s0e1i0" in summary
+        assert "floor_transfer=UNVERIFIED" in summary
     finally:
         runtime.store.close()
