@@ -92,12 +92,22 @@ def apply_source(raw):
     if source_hash not in SOURCE_SHA256:
         raise ValueError('postcommit observer runtime hash mismatch')
     for before, after in REPLACEMENTS:
-        # The reviewed #1990 stage already adds per-role deadline support.
-        # Preserve that signature while adding foreground-attempt tracking.
-        if (source_hash == 'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2'
-                and before == "                def ask(role,focus=None,use_peer=True):\n"):
-            before = before.replace('use_peer=True)', 'use_peer=True,role_end=None)')
-            after = after.replace('use_peer=True)', 'use_peer=True,role_end=None)')
+        # Preserve any already-reviewed per-role deadline/preanswer parameters
+        # while adding foreground-attempt tracking. SOURCE_SHA256 above still
+        # restricts this patch to known Runtime source variants.
+        if before == "                def ask(role,focus=None,use_peer=True):\n":
+            variants = (
+                before,
+                "                def ask(role,focus=None,use_peer=True,role_end=None):\n",
+                "                def ask(role,focus=None,use_peer=True,role_end=None,preanswer=False):\n",
+            )
+            counts = [raw.count(item.encode('utf-8')) for item in variants]
+            if sum(counts) != 1:
+                raise ValueError('postcommit observer ask signature mismatch')
+            selected = variants[counts.index(1)]
+            if selected != before:
+                after = after.replace(before, selected, 1)
+                before = selected
         old, new = before.encode('utf-8'), after.encode('utf-8')
         if raw.count(old) != 1:
             raise ValueError('postcommit observer anchor mismatch')
