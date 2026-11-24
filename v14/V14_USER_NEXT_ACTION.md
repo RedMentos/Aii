@@ -1849,3 +1849,15 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - Supersession coordination comment: https://github.com/RedMentos/Aii/pull/2433#issuecomment-7121856464.
 - **No user action is required.** No model download, device update, permission change or manual Termux command.
 
+
+
+
+### Exact-head readback — 2026-11-24 04:20 UTC
+
+Current Perception branch head after the Run 34 documentation checkpoint: 086a2bc1d5f13dadfaa18faa8f866da8ea91c13d. Exact-head CI now confirms:
+- PASS: audio duplex 45325275479 (Python 3.13/3.14); RAW EAR optional NumPy/speaker path 45325275490 (Python 3.13/3.14); prosody-to-attention 45325275396 (Python 3.11/3.13); consent revocation 45325275190; privacy 45325275257; runtime deployment integrity 45325275898.
+- FAIL: staged/integrated 45325276067, still at Core-owned stale audio_voice_cues.py source pin; 16 failed, 237 passed, 10 skipped, 2 errors, 47 subtests. Core same-turn 45325275254 has Python 3.13 failing at the same pin; Python 3.14 was in progress at readback.
+- Latest coordination comments: #2462 comment 7121937670 and #2448 comment 7121938175.
+
+No change to the user decision: no manual command, model download/swap, device update or permission change. REDMI_UNVERIFIED for these candidate heads; last known installed base remains 8d93236.
+
