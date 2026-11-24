@@ -19,6 +19,7 @@ def _trees(tmp_path):
         (root / "v13").mkdir(parents=True)
         shutil.copy2(CODE / "v13/operator.py", root / "v13/operator.py")
         shutil.copy2(CODE / "v13/native_probe_approval.py", root / "v13/native_probe_approval.py")
+        shutil.copy2(CODE / "v13/native_probe_matrix.py", root / "v13/native_probe_matrix.py")
     return code_dir, staging
 
 
@@ -41,7 +42,10 @@ def test_overlay_changes_only_staged_operator_and_preserves_source(tmp_path):
     assert (code_dir / "v13/operator.py").read_bytes() == source_before
     assert staged != source_before
     assert b"arm-probe <sender> <receiver>" in staged
+    assert b"arm-probe-matrix --last-source --confirm" in staged
+    assert b"from .native_probe_matrix import operator_command as matrix_operator_command" in staged
     assert b"from .native_probe_approval import operator_command as probe_operator_command" in staged
+    assert staged.index(b"matrix_operator_command") < staged.index(b"probe_operator_command")
     assert staged.index(b"probe_operator_command") < staged.index(OVERLAY.DISPATCH_OLD)
     compile(staged.decode("utf-8"), str(staging / "v13/operator.py"), "exec")
 
@@ -74,4 +78,20 @@ def test_overlay_rejects_duplicate_help_insertion_point(tmp_path, monkeypatch):
         OVERLAY._git_blob_sha1(raw),
     )
     with pytest.raises(ValueError, match="operator help expected exactly one"):
+        _apply(code_dir, staging)
+
+
+def test_overlay_rejects_matrix_module_drift(tmp_path):
+    code_dir, staging = _trees(tmp_path)
+    path = code_dir / "v13/native_probe_matrix.py"
+    path.write_bytes(path.read_bytes() + b"\\n# tampered matrix module\\n")
+    with pytest.raises(ValueError, match="native pair-matrix module source pin mismatch"):
+        _apply(code_dir, staging)
+
+
+def test_overlay_rejects_staged_matrix_module_drift(tmp_path):
+    code_dir, staging = _trees(tmp_path)
+    path = staging / "v13/native_probe_matrix.py"
+    path.write_bytes(path.read_bytes() + b"\\n# tampered staged matrix module\\n")
+    with pytest.raises(ValueError, match="staged native pair-matrix module source pin mismatch"):
         _apply(code_dir, staging)
