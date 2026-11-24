@@ -124,7 +124,16 @@ class Store(unittest.TestCase):
         loop=focal.FocalLoop(self.r);loop.memo={}
         fresh,candidates=loop._candidates(self.e,'budget',[offer],[],[],{},1)
         self.assertEqual([x['packet_id'] for x in fresh],[offer['packet_id']])
-        self.assertEqual(candidates[0]['source_refs'],[event_ref,observer_ref,evidence_ref])
+        # Keep the narrow evidence span used by Focal admission; C5 expands the
+        # admitted item's lineage from the authoritative OfferPacket itself.
+        self.assertEqual(candidates[0]['source_refs'],[evidence_ref])
+        self.s.add_packet('OfferPacket',offer)
+        active,rest=focal.admit(candidates,2,.1)
+        self.assertEqual(len(active),1)
+        focal.ActionGate(self.s).select(self.e,route='detail',direct=False,resource_state='NORMAL',coalition=active)
+        payload=json.loads(self.s.one("SELECT payload FROM packets WHERE kind='ActionSelection' ORDER BY rowid DESC LIMIT 1")['payload'])
+        for ref in (event_ref,observer_ref,evidence_ref):
+            self.assertIn(ref,payload['provenance'])
 
     def test_inquisition_age0_forced_p1_p2_and_age2_modes(self):
         inq=focal.Inquisition(self.s)
