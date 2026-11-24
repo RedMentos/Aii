@@ -119,6 +119,22 @@ def test_active_image_prevents_shared_source_from_being_archived(runtime, monkey
     assert vision.read_image(runtime.store, records[0]['ref']).size == (16, 16)
 
 
+def test_vision_forget_reaps_only_matching_pending_blob_names(runtime):
+    text = 'P3\\n16 16\\n255\\n' + '0 0 0\\n' * (16 * 16)
+    rec = vision.ingest(runtime.store, text.encode())
+    key = rec['ref']['sha256']
+    blob_dir = runtime.home / 'data/blobs'
+    pending = blob_dir / ('.v13-pending-' + key + '-' + 'a' * 24)
+    unrelated = blob_dir / ('.v13-pending-' + 'f' * 64 + '-' + 'b' * 24)
+    pending.write_bytes(b'abandoned partial image')
+    unrelated.write_bytes(b'unrelated pending data')
+
+    vision.forget(runtime.store, rec)
+
+    assert not pending.exists()
+    assert unrelated.exists()
+
+
 def test_final_image_forget_removes_both_plain_and_shared_text_archive(runtime):
     text = 'P3\n16 16\n255\n' + '0 0 0\n' * (16 * 16)
     mid, row = old_fact(runtime, text)
