@@ -1,6 +1,6 @@
 # M1a model contract — clean-room design
 
-Status: [DESIGN] — architecture contract for implementation and review; not implemented evidence.
+Status: [BOOT] — model classes and training loops now exist in code; current CI is pending. No real UCI training or test-year access has occurred. This file remains the design contract.
 
 ## 1. Task and information boundary
 
