@@ -100,9 +100,9 @@ def recent_c3_success_durations(rows):
                 or native.get("generated_tokens") <= 0):
             continue
         duration = native.get("duration_s")
-        if (type(duration) not in (int, float)
-                or not math.isfinite(float(duration))
-                or not 0 < float(duration) <= 120):
+        if type(duration) not in (int, float) or duration <= 0 or duration > 120:
+            continue
+        if type(duration) is float and not math.isfinite(duration):
             continue
         durations.append(float(duration))
         if len(durations) == 3:
