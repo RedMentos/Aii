@@ -1,7 +1,7 @@
 """Source-bound paired native taps for a future JEPA-owned latent learner.
 
-This records aligned B1->C3 activation observations only. It does not train,
-inject, authorize B3, or promote the pair to a world fact.
+This records exact-token B1/B2 cross-body and B1/B2-to-C3 observations. It
+does not train, inject, authorize B3, or promote a pair to a world fact.
 """
 import hashlib
 import math
@@ -12,6 +12,12 @@ from .contracts import FIELDS, packet, validate
 MAX_TOKENS = 64
 MAX_DIM = 8192
 MAX_ELEMENTS = 262144
+PAIR_ALLOWED = frozenset({
+    ("B1_DETAIL", "B2_GIST"),
+    ("B2_GIST", "B1_DETAIL"),
+    ("B1_DETAIL", "C3_LANGUAGE"),
+    ("B2_GIST", "C3_LANGUAGE"),
+})
 PAIR_FIELDS = {
     "sender_role": str,
     "receiver_role": str,
@@ -20,6 +26,7 @@ PAIR_FIELDS = {
     "receiver_tap_packet_id": str,
     "sender_tap_id": str,
     "receiver_tap_id": str,
+    "tokenizer_revision": str,
     "sender_model_revision": str,
     "receiver_model_revision": str,
     "sender_model_sha256": str,
@@ -89,6 +96,9 @@ def _tap_data(cognition, tap_packet, expected_role):
             if (not isinstance(item, (int, float)) or isinstance(item, bool)
                     or not math.isfinite(float(item)) or abs(float(item)) > 1.0e6):
                 raise NativeTapPairError("tap contains non-finite or unbounded values")
+    tokenizer_revision = tap_packet.get("tokenizer_revision")
+    if not isinstance(tokenizer_revision, str) or not tokenizer_revision:
+        raise NativeTapPairError("tap tokenizer revision is missing")
     _digest(tap_packet.get("feature_sha256"), "tap feature hash")
     if not isinstance(tap_packet.get("tap_id"), str) or not tap_packet["tap_id"]:
         raise NativeTapPairError("tap identity is missing")
@@ -108,6 +118,7 @@ def _binding(value):
         "receiver_tap_packet_id": value["receiver_tap_packet_id"],
         "sender_tap_id": value["sender_tap_id"],
         "receiver_tap_id": value["receiver_tap_id"],
+        "tokenizer_revision": value["tokenizer_revision"],
         "sender_model_revision": value["sender_model_revision"],
         "receiver_model_revision": value["receiver_model_revision"],
         "sender_model_sha256": value["sender_model_sha256"],
@@ -125,11 +136,17 @@ def _binding(value):
 def validate_pair_packet(value):
     register_packet_contract()
     validate("LatentTapPairPacket", value)
-    if (value["sender_role"] != "B1_DETAIL"
-            or value["receiver_role"] != "C3_LANGUAGE"
+    if ((value["sender_role"], value["receiver_role"]) not in PAIR_ALLOWED
             or value["status"] != "PAIRED_READ_ONLY"
             or value["alignment"] != "TOKEN_IDS_EXACT"):
         raise NativeTapPairError("tap-pair role/alignment/status")
+    if (not isinstance(value["tokenizer_revision"], str)
+            or not value["tokenizer_revision"]):
+        raise NativeTapPairError("tap-pair tokenizer revision")
+    for name in ("sender_tap_id", "receiver_tap_id",
+                 "sender_model_revision", "receiver_model_revision"):
+        if not isinstance(value[name], str) or not value[name]:
+            raise NativeTapPairError("tap-pair " + name)
     if (value["training_authority"] != 0
             or value["native_receiver_authority"] != 0
             or value["production_route"] is not False):
@@ -157,11 +174,12 @@ def validate_pair_packet(value):
 
 def pair_taps(cognition, sender_packet, receiver_packet,
               sender_model_sha256, receiver_model_sha256):
-    """Persist one exact-token B1->C3 pair; source and features remain local."""
+    """Persist one exact-token B1/B2 cross-body or B1/B2->C3 pair."""
     register_packet_contract()
-    if (sender_packet.get("role") != "B1_DETAIL"
-            or receiver_packet.get("role") != "C3_LANGUAGE"):
-        raise NativeTapPairError("only B1_DETAIL -> C3_LANGUAGE pairs are currently aligned")
+    sender_role = sender_packet.get("role")
+    receiver_role = receiver_packet.get("role")
+    if (sender_role, receiver_role) not in PAIR_ALLOWED:
+        raise NativeTapPairError("unsupported native tap pair roles")
     if (sender_packet.get("event_id") != receiver_packet.get("event_id")
             or sender_packet.get("brain_generation_id") != receiver_packet.get("brain_generation_id")
             or sender_packet.get("source_ref") != receiver_packet.get("source_ref")):
@@ -171,20 +189,25 @@ def pair_taps(cognition, sender_packet, receiver_packet,
             or source_ref not in sender_packet.get("provenance", [])
             or source_ref not in receiver_packet.get("provenance", [])):
         raise NativeTapPairError("tap SourceRef is not provenance-bound")
-    if (sender_packet.get("tap_id") != receiver_packet.get("tap_id")
-            or sender_packet.get("tokenizer_revision") != receiver_packet.get("tokenizer_revision")):
-        raise NativeTapPairError("tap identity/tokenizer revisions differ")
-    sender_data = _tap_data(cognition, sender_packet, "B1_DETAIL")
-    receiver_data = _tap_data(cognition, receiver_packet, "C3_LANGUAGE")
+    sender_tokenizer = sender_packet.get("tokenizer_revision")
+    receiver_tokenizer = receiver_packet.get("tokenizer_revision")
+    if (not isinstance(sender_tokenizer, str) or not sender_tokenizer
+            or sender_tokenizer != receiver_tokenizer):
+        raise NativeTapPairError("tokenizer revisions are missing or differ")
+    # Tap IDs are model-specific extraction points; exact tokenizer identity
+    # and token IDs, not identical layer names, define this read-only pairing.
+    sender_data = _tap_data(cognition, sender_packet, sender_role)
+    receiver_data = _tap_data(cognition, receiver_packet, receiver_role)
     if sender_data["token_ids"] != receiver_data["token_ids"]:
         raise NativeTapPairError("tokenizer output differs; no exact token alignment")
     sender_model_sha256 = _digest(sender_model_sha256, "sender model hash")
     receiver_model_sha256 = _digest(receiver_model_sha256, "receiver model hash")
     token_ids_sha256 = hashlib.sha256(dumps(sender_data["token_ids"]).encode("utf-8")).hexdigest()
     payload = {
-        "sender_role": "B1_DETAIL",
-        "receiver_role": "C3_LANGUAGE",
+        "sender_role": sender_role,
+        "receiver_role": receiver_role,
         "source_ref": source_ref,
+        "tokenizer_revision": sender_tokenizer,
         "sender_tap_packet_id": sender_packet["packet_id"],
         "receiver_tap_packet_id": receiver_packet["packet_id"],
         "sender_tap_id": sender_packet["tap_id"],
