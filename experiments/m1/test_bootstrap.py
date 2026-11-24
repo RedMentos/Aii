@@ -53,7 +53,7 @@ class PairedBlockBootstrapTests(unittest.TestCase):
         errors = np.concatenate((np.ones(7 * 24), np.full(24, 5.0)))
         result = paired_block_bootstrap(
             [WindowErrorSeries("reference", 1, origins, errors)],
-            reference_model="reference", block_days=7, n_resamples=200, seed=4,
+            reference_model="reference", block_len_minutes=7 * 1440, n_resamples=200, seed=4,
         )
         self.assertAlmostEqual(result["models"]["reference"]["mae"], 1.5)
         self.assertEqual(result["block_len_minutes"], 7 * 1440)
