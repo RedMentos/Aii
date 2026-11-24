@@ -87,6 +87,8 @@ class DirectUCIArrayTests(unittest.TestCase):
             )
             with self.assertRaisesRegex(ValueError, "fixed calendar split dates"):
                 ArrayDataset.from_uci(path, config)
+            with self.assertRaisesRegex(ValueError, "must be a boolean"):
+                ArrayDataset.from_uci(path, config, allow_fractional_split="yes")
 
     def test_two_pass_array_loader_rejects_nonfinite_values(self):
         with tempfile.TemporaryDirectory() as directory:
