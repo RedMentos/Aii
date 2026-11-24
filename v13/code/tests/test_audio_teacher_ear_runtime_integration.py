@@ -170,7 +170,7 @@ def test_teacher_object_without_asr_opt_in_fails_before_packet_persistence(tmp_p
 
 
 
-def test_streaming_teacher_session_reaches_real_audio_packet_and_c3_delta_consumer(tmp_path):
+def test_streaming_teacher_session_reaches_real_audio_packet_and_c3_final_revision_consumer(tmp_path):
     runtime = Runtime(Path(tmp_path))
     runtime.sleep.cycle.set_policy("enabled", "off")
     temporal_state = TemporalVoiceEvidence()
@@ -244,9 +244,11 @@ def test_streaming_teacher_session_reaches_real_audio_packet_and_c3_delta_consum
         assert first["teacher_ear"]["source_ref"]["source_sha256"] == first["packet"]["source_ref"]["sha256"]
         assert second["teacher_ear"]["source_ref"]["source_sha256"] == second["packet"]["source_ref"]["sha256"]
         assert third["teacher_ear"]["source_ref"]["source_sha256"] == third["packet"]["source_ref"]["sha256"]
-        assert "asr_hypothesis_untrusted=hello" in first["c3_admission"].selected[0].summary
-        assert "asr_hypothesis_untrusted=world" in second["c3_admission"].selected[0].summary
-        assert "hello world" not in second["c3_admission"].selected[0].summary
+        # Provisional windows remain source-bound in the packet but are not
+        # admitted to C3. Only the final corrected hypothesis crosses the gate.
+        assert first["c3_admission"].selected == ()
+        assert second["c3_admission"].selected == ()
+        assert len(third["c3_admission"].selected) == 1
         assert "asr_revision_untrusted=hello there" in third["c3_admission"].selected[0].summary
         assert "hello there" not in third["teacher_ear"]["segments"][0]["text"]
         assert session.closed
