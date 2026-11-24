@@ -1871,3 +1871,16 @@ R-109 reviews the official Android MediaProjection guide (updated 2026-11-19). A
 - No AudioRecord provider or live microphone capture is present. Android audio and Redmi remain unverified; no update or device action was performed.
 - User action: **none**. Keep microphone capture OFF and do not issue a manual Termux command.
 - Next internal action: Core/QA rebind the exact controller-guard hash in recovery/stage/deployer; Core/Boss rebind the audio temporal module; rerun staged/integrated and migration tests before considering an Android provider.
+
+
+## Research & Perception — run 20, 2026-11-24
+
+**PR [#2484](https://github.com/RedMentos/Aii/pull/2484)** is a draft follow-up stacked on A3 source-forget PR #2477 and Core source-lifecycle PR #2465.
+
+- Exact #2477 vision/source-lineage CI on Python 3.13 and 3.14 exposed four failures: fresh Store training writes per-source statistics before Projector.save() creates data/vision, so the writer returned UNAVAILABLE_STORAGE and the A3 global/tile forget/rebuild path had no statistics.
+- The fix uses descriptor-relative mkdir/open for missing data/ and data/vision, O_NOFOLLOW, O_DIRECTORY, fstat checks, 0700 directories, 0600 files, fsync and atomic rename. A new exact helper test verifies first-use creation and file/directory modes; existing symlink/tamper tests remain.
+- LOCAL_LINUX CPython 3.13.5 isolated reproduction: old FileNotFoundError reproduced; new dir-fd harness PASS for directory creation, 0700/0600 modes, fsync and symlink rejection. This is not the full Aii package.
+- Exact #2484 CI is pending after PR creation. Full local Aii pytest remains BLOCKED/NOT_RUN (no checkout mounted; prior GitHub DNS failure).
+- Core/QA still must add vision_projector_stats.py to the materialized source closure and rebind exact vision.py/helper pins before staged/integrated consumers pass. #2477/#2484 remain NOT_RELEASED.
+- Redmi/Termux remains REDMI_UNVERIFIED. No device action, update request, model/weight/permission change, microphone capture or deployment occurred.
+- User action: **none**. No manual Termux command or model download/swap is required.
