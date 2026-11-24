@@ -271,7 +271,7 @@ def _make_split(
 
     # Split membership is defined by the complete target interval. No target
     # may cross a split boundary; historical covariates may use earlier rows.
-    for origin in range(max(config.input_length - 1, start), end - config.horizon):
+    for origin in range(max(config.max_candidate_input_length - 1, start), end - config.horizon):
         target_end = origin + config.horizon + 1
         if target_end > end:
             continue
