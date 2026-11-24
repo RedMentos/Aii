@@ -1471,3 +1471,5 @@ The linked `alikayyam/sticky_moe` repository README declares MIT, but the root `
 - Full LOCAL_LINUX Aii suite: BLOCKED / NOT_RUN (no checkout; DNS failure). Redmi: REDMI_UNVERIFIED; last shared receipt says AI STOPPED_BY_USER, no device action. Release: NOT_RELEASED.
 - Next: trigger and inspect the exact current PR matrix; fix only measured remaining pins/anchors. Then Boss integrates #2462 with green #2464/#2451 candidates; QA owns porting #2427's ActivityScenario process-death harness into #2450.
 - User action: NONE.
+
+- Voice I/O evidence: `speech_intent.py` + `speech_output.py` + `Operator :voice` already provide an explicit Termux system-TTS fallback with source-bound FINAL text, ActionIntent/ActionOutcome persistence, no automatic playback and `audibility_verified=false`. PR #2479 adds a real Runtime/SQLite/Operator test using a fake TTS CLI; 5/5 exact-head checks are QUEUED. This is WIRED_SYNTHETIC only; Redmi audibility, trainable decoder/vocoder, raw acoustic learning and full-duplex remain OPEN.
