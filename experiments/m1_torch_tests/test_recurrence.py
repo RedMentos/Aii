@@ -21,7 +21,12 @@ from experiments.m1.jepa import (
 )
 from experiments.m1.recurrence import run_recurrence_ablation
 from experiments.m1.runner import PilotConfig
-from experiments.m1.training import train_direct_mae, train_jepa
+from experiments.m1.training import (
+    load_checkpoint,
+    save_checkpoint_atomic,
+    train_direct_mae,
+    train_jepa,
+)
 
 
 def synthetic_dataset():
@@ -135,6 +140,40 @@ class SharedRecurrenceModelTests(unittest.TestCase):
         probe = make_random_recurrent_context_probe(model_config(4), seed=23)
         self.assertEqual(probe.encoder.recurrent_steps, 4)
         self.assertTrue(all(not p.requires_grad for p in probe.encoder.parameters()))
+
+    def test_checkpoint_roundtrip_binds_recurrence_depth(self):
+        config_t2 = model_config(2)
+        original = RecurrentJEPAForecaster(config_t2)
+        code_commit = "a" * 40
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "recurrent-t2.pt"
+            digest = save_checkpoint_atomic(
+                original,
+                config_t2,
+                path,
+                code_commit=code_commit,
+                metadata={"recurrent_steps": 2, "role": "test"},
+            )
+            restored = RecurrentJEPAForecaster(config_t2)
+            metadata = load_checkpoint(
+                restored,
+                config_t2,
+                path,
+                expected_code_commit=code_commit,
+            )
+            self.assertEqual(len(digest), 64)
+            self.assertEqual(metadata["recurrent_steps"], 2)
+            for left, right in zip(original.parameters(), restored.parameters()):
+                self.assertTrue(torch.equal(left, right))
+
+            wrong_depth = RecurrentJEPAForecaster(model_config(4))
+            with self.assertRaisesRegex(ValueError, "config mismatch"):
+                load_checkpoint(
+                    wrong_depth,
+                    model_config(4),
+                    path,
+                    expected_code_commit=code_commit,
+                )
 
 
 class RecurrenceRunnerTests(unittest.TestCase):
