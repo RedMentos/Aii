@@ -1,6 +1,6 @@
 # V14 M1 — forecasting experiment
 
-**Status:** [ENTWURF]. DATA and the current baseline set have synthetic CI coverage from the pre-reset snapshot. Raw-window controls and paired temporal-block bootstrap code/tests are now added on the clean branch; their exact CI run is pending. JEPA/direct-MAE PROBE is not implemented. No real UCI result or test-year evaluation is claimed.
+**Status:** [ENTWURF]. DATA and the current baseline set have synthetic CI coverage from the pre-reset snapshot. Raw-window controls and paired temporal-block bootstrap code/tests are present. Exact synthetic CI passed on Python 3.13 and 3.14 in run 45311246210. JEPA/direct-MAE PROBE is not implemented. No real UCI result or test-year evaluation is claimed.
 
 ## Files
 
@@ -10,7 +10,7 @@
 - `test_*.py`: synthetic regression tests for DATA, array ingestion and current BASE.
 - `raw_probes.py`: Raw-Window-Probe (linear MAE readout) and Raw-Window-MLP (one-hidden-layer nonlinear control), both using the common flattened X/S/calendar bundle and train-only fitting.
 - `bootstrap.py`: per-window primary MAE collection and paired day/week block bootstrap. It resamples the same temporal blocks across models and seeds, computes per-seed paired differences before averaging over seeds, and reports seed variance separately.
-- `test_raw_probes.py` and `test_bootstrap.py`: synthetic controls for output shape, determinism, train-only fitting, paired block differences and origin parity.
+- `test_raw_probes.py` and `test_bootstrap.py`: synthetic controls for output shape, determinism, train-only fitting, paired block differences and origin parity. Both Python-version jobs passed.
 - **Still missing:** full experiment runner, direct-MAE, JEPA encoder/predictor, random-encoder probe, collapse metrics and M1b/M1c.
 
 ## Real-data path
