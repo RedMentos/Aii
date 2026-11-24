@@ -1,6 +1,6 @@
 ## Core fair B1/B2 recovery follow-up — 2026-11-24T04:38:22Z
 
-- PR #2462 exact head `d0a30b18cc629d7498373e01985f89df00fa7461` adds two runtime corrections: late-watch offers explicitly bypass the pre-answer recovery budget, and one late-watch event/status is recorded once even when `check()` closes it before `finish()`.
+- PR #2462 code head `d0a30b18cc629d7498373e01985f89df00fa7461` (latest docs/handoff branch HEAD `ca269493a380232ef88ffa095ab5b82eaec7fce3`) adds two runtime corrections: late-watch offers explicitly bypass the pre-answer recovery budget, and one late-watch event/status is recorded once even when `check()` closes it before `finish()`.
 - Added a focused late-watch regression and corrected the Runtime test double for `preanswer_budgeted`.
 - LOCAL_LINUX / CPython 3.13.5 isolated contract test: `py_compile` PASS, 2/2 assertions PASS. Full local Aii suite NOT_RUN because the full checkout is unavailable and GitHub DNS resolution failed.
 - Exact-head CI remains FAIL in the same-turn, staged/integrated, and owner-read bootstrap workflows. Six other workflows pass and one is skipped. The common failure is stale/overlapping Runtime composition in `integrated_online_world`, `observer_fair_budget`, `postcommit_observer`, and `record_only_online_guard`; runtime deployment and migration fail downstream. No hash gate was relaxed.
