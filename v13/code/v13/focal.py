@@ -639,7 +639,9 @@ class ActionGate:
                         or query.get("event_id")!=offer.get("event_id")
                         or query.get("brain_generation_id")!=offer.get("brain_generation_id")
                         or query.get("target_role")!=kind
-                        or query.get("based_on_state_version")!=offer.get("based_on_state_version")):
+                        or query.get("based_on_state_version")!=offer.get("based_on_state_version")
+                        or query.get("context_source_refs",[])!=offer.get("context_source_refs",[])
+                        or query.get("enlightened_source_refs",[])!=offer.get("enlightened_source_refs",[])):
                     raise ValueError("ActionSelection query binding")
                 for field in ("provenance","source_refs","context_source_refs","enlightened_source_refs"):
                     values=query.get(field,[])
