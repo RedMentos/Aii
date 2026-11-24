@@ -26,6 +26,8 @@ The first experiment fixes H=60 and reports prefix MAE at 15/30/60 plus the prim
 
 The predictor may use all known future queries jointly because S and calendar values are known at the forecast origin. No future target values are available to it.
 
+JEPA pretraining produces latent predictions, not a raw-unit forecast. Its latent MSE and collapse telemetry are separate self-supervised outcomes and must not be ranked against forecast MAE. Forecast utility of the learned representation is measured by the separately trained frozen-context probe.
+
 ## 3. Matched controls
 
 - Direct-MAE: same context encoder and future-query predictor geometry; apply the train-only input scaler to X/S, replace latent prediction head with a value-space head and train with raw-unit L1/MAE on Y. No EMA target encoder.
@@ -60,6 +62,7 @@ Do not infer collapse-free behavior from a finite loss alone. A collapse gate ne
 - Bootstrap paired per-origin primary MAE by non-overlapping temporal blocks; use the same sampled blocks for every model and seed. The preregistered bootstrap_block_len is in minute rows; current default is 10,080 (7 days), anchored to the first accepted origin. Aggregate block sums/counts so short edge blocks do not receive the same weight as full blocks.
 - Report seed variance separately from temporal uncertainty.
 - Test-year access remains gated by exact config/split/data hashes, complete preregistration and exact executing commit SHA, plus a durable access event.
+- The validation-only runner evaluates all forecast predictors on the full shared validation origins. Its optional window cap applies only to model-fitting batches; train-only scalers still use all raw train rows. The default one-seed pilot is exploratory and is not a preregistration or promotion result.
 
 ## 6. Implementation choices to lock before training
 
@@ -90,3 +93,10 @@ The M1 design above is adapted to this dataset's X/S/calendar information contra
 The DLinear and NLinear controls are based on the methods in Zeng et al., *Are Transformers Effective for Time Series Forecasting?* (AAAI 2023; arXiv:2205.13504). The official implementation is `cure-lab/LTSF-Linear`, Apache-2.0, reviewed at commit `0c113668a3b88c4c4ee586b8c5ec3e539c4de5a6`. No upstream code was copied; the M1 module independently implements replicate-edge moving-average decomposition, last-value centering, and time-axis linear heads.
 
 The original DLinear and NLinear implementations consume historical X only. M1 adds a separate linear projection over known future seasonal covariates and calendar features so both controls, Direct-MAE, Raw-GRU and JEPA receive the same permitted information. This changes both models from exact reproductions into matched-information adaptations. Results from the original nine-dataset benchmark do not establish performance on this UCI cohort.
+
+
+## 9. Runner/evaluation boundary
+
+`experiments.m1.runner` treats `jepa_pretrain` as a training dependency and telemetry source, not an entry in the raw-unit forecast leaderboard. If `frozen_context_probe` is selected, JEPA is trained first for that seed, then the frozen encoder/readout is trained on train windows and evaluated in the common MAE suite. The random-context probe uses the same readout geometry without JEPA pretraining.
+
+The runner records each model's trainable and total parameter counts, training history, train-window cap, fit time and checkpoint hash. It records the exact clean Git HEAD and both raw-file and parsed-data hashes. It only iterates `train` and `validation`; it does not call the test-split gate. Existing result/checkpoint destinations are refused rather than overwritten.
