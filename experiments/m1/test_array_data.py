@@ -312,6 +312,7 @@ class ArrayWindowTests(unittest.TestCase):
             root = Path(directory)
             prereg = {
                 **PREREG_PARAMS,
+                "code_commit": "b" * 40,
                 "data_config_sha256": data_config_sha256(self.config),
                 "split_boundaries_sha256": split_boundaries_sha256(self.rows, self.config),
                 "dataset_sha256": dataset_sha256(self.rows, self.channels),
