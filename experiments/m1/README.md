@@ -42,7 +42,7 @@ Core tests/data path: numpy. Model training: PyTorch CPU or CUDA.
 
 ## Verification status
 - **Current core CI:** 70 tests PASS on Python 3.12, 3.13 and 3.14 at commit `3a118e1ba27f59a10ce52483fbc822d9148781cf` (GitHub Actions run `45331033269`). Includes calendar splits, preregistration gates, NumPy/list parity with missing rows/NaNs, baselines, bootstrap and data integrity.
-- **Current torch CI:** 24 tests PASS on Python 3.12, 3.13 and 3.14 at commit `653536e22ea8d5097ed0d94c4e787436eb4bf23d` (run `45330944235`). Includes JEPA, Direct-MAE, Raw-GRU, DLinear, NLinear, checkpoint and synthetic end-to-end evaluation.
+- **Current torch CI:** 24 tests PASS on Python 3.12, 3.13 and 3.14 at commit `617eb036e8a87579df836d38eae003da5fa22fe9` (run `45331625783`). Includes JEPA, Direct-MAE, Raw-GRU, DLinear, NLinear, checkpoint and synthetic end-to-end evaluation.
 - **LOCAL_PYTHON isolated checks:** DLinear forward/sensitivity/shape-negative/parameter-update checks PASS on Python 3.13.5 + PyTorch 2.10.0+cpu; missing-row list/array origin parity PASS (680/680 synthetic origins). The full repository suite was not run locally because no checkout is mounted in this execution environment.
 - No real UCI evaluation has been run in this workspace.
 - No test-year windows have been opened.
