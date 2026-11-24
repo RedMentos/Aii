@@ -192,6 +192,47 @@ class ArrayWindowTests(unittest.TestCase):
         np.testing.assert_array_equal(calendar, np.asarray([window.calendar for window in reference], dtype=np.float32))
         np.testing.assert_array_equal(target, np.asarray([window.target for window in reference], dtype=np.float32))
 
+    def test_array_windows_match_reference_with_missing_rows_and_nan_storage(self):
+        rows = rows_for(1000, {51, 200, 777})
+        dataset = ArrayDataset(rows, self.channels, self.config)
+        bounds = build_chronological_boundaries(len(rows), self.config)
+        reference, _ = make_split(
+            rows, self.channels, self.config, "train", bounds["train"]
+        )
+        batches = list(dataset.iter_batches("train", batch_size=37))
+        origins = np.concatenate([batch.origin_indices for batch in batches])
+        x = np.concatenate([batch.inputs.x for batch in batches], axis=0)
+        seasonal = np.concatenate([batch.inputs.seasonal for batch in batches], axis=0)
+        calendar = np.concatenate([batch.inputs.calendar for batch in batches], axis=0)
+        target = np.concatenate([batch.target for batch in batches], axis=0)
+
+        self.assertEqual(origins.tolist(), [window.origin_index for window in reference])
+        np.testing.assert_array_equal(
+            x, np.asarray([window.x for window in reference], dtype=np.float32)
+        )
+        np.testing.assert_array_equal(
+            seasonal,
+            np.asarray([window.seasonal for window in reference], dtype=np.float32).reshape(seasonal.shape),
+        )
+        np.testing.assert_array_equal(
+            calendar, np.asarray([window.calendar for window in reference], dtype=np.float32)
+        )
+        np.testing.assert_array_equal(
+            target, np.asarray([window.target for window in reference], dtype=np.float32)
+        )
+        self.assertTrue(np.isfinite(x).all())
+        self.assertNotIn(50, origins.tolist())
+
+        train_end = dataset.bounds["train"][1]
+        expected_matrix = np.asarray(
+            [[np.nan if value is None else value for value in row.values]
+             for row in rows[:train_end]],
+            dtype=np.float32,
+        )
+        # Same-position NaNs are intentional missing-value markers, not unequal values.
+        np.testing.assert_array_equal(dataset.train_values(), expected_matrix)
+        self.assertTrue(np.isnan(dataset.train_values()[51, 0]))
+
     def test_missing_seasonal_source_is_rejected_without_materializing_windows(self):
         config = DataConfig(
             input_length=5, horizon=2, max_candidate_input_length=5,
