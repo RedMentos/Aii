@@ -138,6 +138,36 @@ def test_overlapping_windows_only_advance_newly_observed_suffix():
     assert resumed["voice_onset"] is False
 
 
+def test_backward_start_with_later_end_is_rejected_without_replacing_baseline():
+    state = TemporalVoiceEvidence()
+    state.update(
+        source_id="mic-a", generation_id="g1", start_ms=100, end_ms=140,
+        cues=cue("VOICED"),
+    )
+
+    # Equal starts are valid for cumulative windows; only the new suffix advances.
+    cumulative = state.update(
+        source_id="mic-a", generation_id="g1", start_ms=100, end_ms=160,
+        cues=cue("VOICED"),
+    )
+    assert cumulative["observed_ms"] == 20
+
+    with pytest.raises(ValueError, match="advance monotonically"):
+        state.update(
+            source_id="mic-a", generation_id="g1", start_ms=90, end_ms=180,
+            cues=cue("VOICED"),
+        )
+
+    # Rejected input must not replace either ordering baseline.
+    assert state._last_start_ms == 100
+    assert state._last_end_ms == 160
+    accepted = state.update(
+        source_id="mic-a", generation_id="g1", start_ms=120, end_ms=180,
+        cues=cue("VOICED"),
+    )
+    assert accepted["observed_ms"] == 20
+
+
 def test_gap_beyond_reset_threshold_does_not_infer_an_offset():
     state = TemporalVoiceEvidence()
     state.update(source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40, cues=cue("VOICED"))
