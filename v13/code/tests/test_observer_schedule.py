@@ -245,6 +245,7 @@ class Turn(unittest.TestCase):
             until=time.monotonic()+15
             while not self.r.idle() and time.monotonic()<until:
                 time.sleep(.005)
+        meta=json.loads(self.r.last_answer()["metadata"])
         self.assertTrue(any(role=="B1_DETAIL" and pre for role,pre,_,_,_ in self.calls))
         self.assertTrue(any(role=="B2_GIST" and pre for role,pre,_,_,_ in self.calls))
         self.assertTrue(any(role=="B2_GIST" and not pre and thread!="latewatch" and not valid and status=="FINAL"
