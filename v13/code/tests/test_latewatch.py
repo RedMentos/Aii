@@ -34,6 +34,23 @@ class Pure(unittest.TestCase):
         self.assertEqual(lw.disagreement(off,'The result is 1,300, because I added them',src),'RESULT_CONFLICT')
         self.assertIsNone(lw.disagreement(OFFER,'The answer is 10',  'What is 46 plus 62?'))  # number still streaming
         self.assertIsNone(lw.disagreement(OFFER,'Well, the answer to it is 10','What is 46 plus 62?'))
+    def test_completed_empty_watcher_closes_no_offer_and_records_it(self):
+        class Store:
+            def __init__(self):self.value=None;self.version=0
+            def state(self,key,default=None):return self.value,self.version
+            def set_state(self,key,value,expected=None):
+                if expected!=self.version:raise ValueError('state version changed')
+                self.value=value;self.version+=1
+            def log(self,*args):pass
+        store=Store();meta={};r=SimpleNamespace(store=store)
+        watcher=lw.Watcher(r,{'event_id':'evt-1'},meta,'shadow',role='B2_GIST',status='RUNNING')
+        watcher.thread=object();watcher.done.set()
+        self.assertFalse(watcher.check('C3 answer has finished'))
+        self.assertTrue(watcher.decided)
+        self.assertEqual(meta['late_watch']['status'],'NO_OFFER')
+        self.assertFalse(meta['late_watch'].get('offer_id'))
+        self.assertEqual(store.value['counts']['NO_OFFER'],1)
+
     def test_postcommit_retry_only_skips_delivered_or_still_running_late_offer(self):
         failed={'late_watch':{'offered':'B2_GIST','status':'NO_OFFER','error':'Limits'}}
         delivered={'late_watch':{'offered':'B2_GIST','status':'AFTER_OUTPUT','offer_id':'pkt_b2'}}
