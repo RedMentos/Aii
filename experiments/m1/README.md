@@ -69,7 +69,7 @@ python -m experiments.m1.runner \
   --output experiments/results/m1-validation-pilot.json
 ```
 
-The default is an **exploratory pilot**, not a locked experiment: one seed, one epoch, and at most 4,096 accepted training windows per epoch for models that learn weights. Train-only scaling still uses the complete train rows; Train Mean/Median use all accepted train target timestamps. Every forecast model is evaluated on the full validation split and identical accepted origins. Increase seeds, epochs and the training-window cap through a JSON `PilotConfig` override only after reviewing the compute budget.
+The default is an **exploratory pilot**, not a locked experiment: one seed, one epoch, and at most 4,096 accepted training windows per epoch for models that learn weights. Neural channel scalers use all raw train rows; raw-window and AR feature scalers use all accepted train windows; the cap limits optimizer/linear-fit windows only. Train Mean/Median use all accepted train target timestamps. Every forecast model is evaluated on the full validation split and identical accepted origins. Increase seeds, epochs and the training-window cap through a JSON `PilotConfig` override only after reviewing the compute budget.
 
 The runner writes the canonical result JSON and a separate `*.checkpoints/` directory beside it. It refuses to overwrite an existing result or checkpoint directory. The result records the raw-file and parsed-data hashes, split statistics, code SHA, model parameter counts, training histories, checkpoint hashes, per-origin paired block-bootstrap intervals and the explicit `test_split_accessed=false` gate.
 
