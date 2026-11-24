@@ -69,20 +69,20 @@ The runner writes the canonical result JSON and a separate `*.checkpoints/` dire
 JEPA is a latent pretraining objective, not a raw-unit forecast head. Its latent loss and collapse telemetry are recorded separately; forecast MAE is measured through the trained frozen-context probe, Direct-MAE, DLinear/NLinear, Raw-GRU and the other raw/baseline controls. Do not rank the JEPA latent loss against forecast MAE.
 
 ## Verification status
-- **Current core CI:** 70 tests PASS on Python 3.12, 3.13 and 3.14 at commit `3a118e1ba27f59a10ce52483fbc822d9148781cf` (GitHub Actions run `45331033269`). Includes calendar splits, preregistration gates, NumPy/list parity with missing rows/NaNs, baselines, bootstrap and data integrity.
-- **Current torch CI:** 24 tests PASS on Python 3.12, 3.13 and 3.14 at commit `617eb036e8a87579df836d38eae003da5fa22fe9` (run `45331625783`). Includes JEPA, Direct-MAE, Raw-GRU, DLinear, NLinear, checkpoint and synthetic end-to-end evaluation.
-- **LOCAL_PYTHON isolated checks:** DLinear forward/sensitivity/shape-negative/parameter-update checks PASS on Python 3.13.5 + PyTorch 2.10.0+cpu; missing-row list/array origin parity PASS (680/680 synthetic origins). The full repository suite was not run locally because no checkout is mounted in this execution environment.
-- No real UCI evaluation has been run in this workspace.
-- No test-year windows have been opened.
-- No hyperparameter set or preregistration has been locked.
+- **Core CI:** 70 tests PASS on Python 3.12, 3.13 and 3.14 at commit `cf61abadf387557bba0f9b51323ee1f9658d7fc6` (run [45383285505](https://github.com/RedMentos/Aii/actions/runs/45383285505)). Includes the NumPy data path, fixed splits, preregistration gates, baselines, paired bootstrap, metrics and integrity checks.
+- **Torch/runner CI:** 27 tests PASS on Python 3.12, 3.13 and 3.14 at code commit `85ec5707db0c5f11c69370d5c44ef88bb9f1dd7b` (run [45383148140](https://github.com/RedMentos/Aii/actions/runs/45383148140)). Includes the full synthetic runner across all model families, checkpoint writes, same-origin validation, JEPA-pretrain separation, DLinear/NLinear, Raw-GRU and existing JEPA regressions. Later commits changed only README/design documentation.
+- **Earlier runner regression:** the first runner CI exposed that JEPA latent pretraining was incorrectly sent through a raw forecast adapter. The failed run [45382620774](https://github.com/RedMentos/Aii/actions/runs/45382620774) was corrected by treating JEPA as a training/telemetry dependency and evaluating its frozen-context probe for raw-unit MAE. The exact updated runner passed in run 45383148140.
+- **LOCAL_PYTHON:** isolated train-window-cap helper smoke PASS on Python 3.13.5 / NumPy 2.3.5 (37 training windows capped as 16+16+5; validation remained uncapped at 23 windows). The full repository suite was not run locally because no checkout is mounted in this execution environment.
+- **Real UCI train/validation:** NOT_RUN. The raw file is not present in the local runtime or Library; the attempted official archive download did not complete.
+- **Test-year access:** LOCKED; no test windows have been opened.
+- **Hyperparameters/preregistration:** NOT_LOCKED. The runner defaults are explicitly exploratory and are not promotion evidence.
 
 ## Next gates
-1. Keep the current core and torch CI green on Python 3.12/3.13/3.14 as changes continue.
-2. Finish the baseline/statistical review; current synthetic end-to-end training/validation passes, but no real-cohort utility claim is available.
-3. Lock patch size/stride, model dimensions, EMA schedule, anti-collapse weights, optimizer, epochs, seeds and promotion thresholds.
-4. Run train/validation only on the real UCI data; benchmark ingestion and batch throughput.
-5. Hash-lock the preregistration and executing commit before any test access.
-
+1. Obtain the official UCI file locally, verify its raw SHA-256, and run the validation-only pilot on the real train/validation cohort.
+2. Inspect accepted/rejected windows by month, missingness, full-validation baseline metrics, paired temporal-block intervals and per-seed variance before changing the model contract.
+3. Benchmark ingestion, fit time, peak RSS and evaluation throughput on the real file; adjust the exploratory cap/batch sizes without touching test-year data.
+4. Only after reviewing pilot evidence, lock architecture/optimizer/EMA/anti-collapse settings, seeds and numeric promotion criteria in a separate preregistration.
+5. Open test windows only through the existing exact hash/clean-HEAD preregistration gate and durable audit event.
 
 ## DLinear source and adaptation
 
