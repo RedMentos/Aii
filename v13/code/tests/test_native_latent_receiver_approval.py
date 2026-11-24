@@ -915,3 +915,136 @@ def test_arm_rejects_non_interactive_stdin(tmp_path, monkeypatch):
         assert record is None
     finally:
         runtime.close()
+
+
+def test_operator_native_probe_runs_staged_receiver_with_source_bound_tap(tmp_path, monkeypatch):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    if not callable(getattr(runtime.cognition, "native_receive", None)):
+        runtime.close()
+        pytest.skip("native_receive is installed by the exact staged Runtime composer")
+
+    from v13 import native_latent_receiver as native
+
+    sender_digest = hashlib.sha256(sender_path.read_bytes()).hexdigest()
+    receiver_digest = hashlib.sha256(receiver_path.read_bytes()).hexdigest()
+    vectors = [[0.25, -0.5], [1.0, 0.75]]
+    tap_packet = {
+        "packet_id": "tap-packet-e2e",
+        "event_id": event["event_id"],
+        "brain_generation_id": event["brain_generation_id"],
+        "source_ref": event["source_ref"],
+        "role": "B2_GIST",
+        "tap_id": "qwen35.result_norm.final.v1",
+        "model_revision": "sender-r1",
+        "tokenizer_revision": None,
+        "metrics": {
+            "whole_sequence_prefill": True,
+            "pooling": "none",
+            "prompt_tokens": 2,
+        },
+    }
+    tap_calls = []
+    unload_calls = []
+    probe_calls = []
+
+    def fake_tap(role, current_event, source_ref, deadline):
+        tap_calls.append((role, current_event["event_id"], source_ref["source_id"]))
+        assert role == "B2_GIST"
+        assert current_event["event_id"] == event["event_id"]
+        assert source_ref == event["source_ref"]
+        return tap_packet
+
+    def fake_probe(**kwargs):
+        probe_calls.append(kwargs)
+        assert Path(kwargs["home"]).resolve() == runtime.home.resolve()
+        assert Path(kwargs["model_path"]).resolve() == receiver_path.resolve()
+        assert kwargs["expected_model_sha256"] == receiver_digest
+        assert kwargs["sender_model_sha256"] == sender_digest
+        assert kwargs["sender_tap_id"] == tap_packet["tap_id"]
+        assert kwargs["sender_model_revision"] == tap_packet["model_revision"]
+        assert kwargs["tokenizer_revision"] is None
+        assert kwargs["source_id"] == event["source_ref"]["source_id"]
+        assert kwargs["generation_id"] == event["brain_generation_id"]
+        assert kwargs["vectors"] == vectors
+        assert kwargs["position_ids"] == [0, 1]
+        assert kwargs["position_mode"] == native.POSITION_MODE
+        assert 1 <= kwargs["threads"] <= 2
+        assert kwargs["cancel_event"] is runtime.cancel_event
+        return {
+            "sender_role": "B2_GIST",
+            "receiver_role": "C3_LANGUAGE",
+            "sender_tap_id": tap_packet["tap_id"],
+            "sender_model_revision": "sender-r1",
+            "sender_model_sha256": sender_digest,
+            "tokenizer_revision": None,
+            "receiver_model_revision": "receiver-r1",
+            "receiver_model_sha256": receiver_digest,
+            "runner_revision": native.PINNED_LLAMA_REVISION,
+            "llama_version": "b10964",
+            "input_rows": 2,
+            "input_dim": 2,
+            "position_ids": [0, 1],
+            "position_mode": native.POSITION_MODE,
+            "receiver_input_dim": 2,
+            "output_dim": 4,
+            "input_sha256": "a" * 64,
+            "decode_status": 0,
+            "output_norm": 1.25,
+            "input_effect_rms": 0.5,
+            "zero_control_cosine": 0.2,
+            "shuffle_control_cosine": 0.1,
+            "row_shuffle_control_cosine": 0.05,
+            "row_shuffle_control_applicable": True,
+            "repeat_cosine": 1.0,
+            "native_input_consumed": True,
+            "input_effect_detected": True,
+            "status": "NATIVE_INPUT_EFFECT",
+        }
+
+    runtime.cognition.tap = fake_tap
+    runtime.cognition.read_tap = lambda packet: {
+        "token_ids": [101, 202],
+        "vectors": vectors,
+    }
+    runtime.pool.unload = lambda: unload_calls.append("unload")
+    monkeypatch.setattr(native, "probe", fake_probe)
+    operator = Operator(runtime)
+    command = ":callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm"
+    try:
+        armed = json.loads(operator.run(
+            ":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm"
+        ))
+        assert armed["status"] == "ARMED"
+
+        result = json.loads(operator.run(command))
+        assert result["status"] == "NATIVE_INPUT_EFFECT"
+        assert result["local_approval_consumed"] is True
+        assert result["sender_tap_packet_id"] == tap_packet["packet_id"]
+        assert result["source_ref"] == event["source_ref"]
+        assert result["provenance"] == [event["source_ref"]]
+        assert result["input_rows"] == 2
+        assert result["input_dim"] == 2
+        assert result["receiver_input_dim"] == 2
+        assert result["native_input_consumed"] is True
+        assert result["input_effect_detected"] is True
+        assert result["production_route"] is False
+        assert result["semantic_use_proven"] is False
+        assert result["training_authority"] == 0
+        assert result["native_receiver_authority"] == 0
+        assert tap_calls == [("B2_GIST", event["event_id"], event["source_ref"]["source_id"])]
+        assert len(probe_calls) == 1
+        assert len(unload_calls) >= 2
+
+        stored = json.loads(runtime.store.one(
+            "SELECT payload FROM packets WHERE kind='LatentReceiverPacket' ORDER BY rowid DESC LIMIT 1"
+        )["payload"])
+        assert stored["sender_tap_packet_id"] == tap_packet["packet_id"]
+        assert stored["source_ref"] == event["source_ref"]
+        assert stored["native_input_consumed"] is True
+        assert stored["production_route"] is False
+
+        report = callosum.controller(runtime).report(runtime.cfg)
+        assert report["native_receiver_probe"]["status"] == "NATIVE_INPUT_EFFECT"
+        assert report["native_receiver_probe"]["production_route"] is False
+    finally:
+        runtime.close()

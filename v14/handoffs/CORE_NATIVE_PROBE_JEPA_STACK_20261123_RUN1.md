@@ -44,3 +44,14 @@ The current #2454 base head `bf2913b150d8decbf6e33c43920d21acc83439b3` has a sep
 3. Only after reviewed release integration and a separate authenticated install receipt should a distinct user decision be requested for any one-shot Redmi native probe. Production B3 stays OFF until held-out utility and all parity/zero/shuffle/OOD controls pass.
 
 User action: none.
+
+
+## Run 3 — exact operator-to-native-receiver integration (2026-11-24)
+
+- Reproduced the current branch's workflow dispatch defect: the workflow push list included run1 but omitted this exact run2 branch. Exact-head GitHub runs ended at startup_failure with zero jobs; no compile/test/native build had executed.
+- Added this branch to the workflow push filter so the Python staged-runtime suite, pinned Linux llama.cpp receiver build/selftest, and Android arm64 cross-compile can execute on this branch.
+- Added a staged-runtime operator E2E regression. It keeps the real staged Cognition.native_receive and :callosum arm-probe → :callosum native-probe approval/lease path; only the final C++ process boundary is replaced by a deterministic receipt. It verifies exact source/event/generation, sender tap IDs/vectors, model hashes/revisions, position IDs, receiver dimensions, persisted LatentReceiverPacket, native-input-effect metrics, and zero production/training authority.
+- Direct source-tree invocation skips this one test because native_receive is intentionally installed by the verified stage composer; the existing stage integration test reruns it against the composed Runtime. This avoids pretending the uncomposed source tree already contains the method.
+- LOCAL_LINUX full Aii checkout: BLOCKED (no checkout mounted; git ls-remote cannot resolve github.com). The exact branch workflow is the executable verification path; results remain pending until GitHub readback.
+- Native receiver scope remains diagnostic only: llama_batch.embd consumption is measured; no trained cross-model alignment, semantic usefulness, production B3 routing, weight learning, or Redmi behavior is claimed.
+- Next: read back exact-head Python/Linux/Android workflow results, fix any real failures, then coordinate integration with the current JEPA base and Boss source-lifecycle branch. Redmi remains REDMI_UNVERIFIED.

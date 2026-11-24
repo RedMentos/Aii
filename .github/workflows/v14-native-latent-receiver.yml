@@ -6,6 +6,7 @@ on:
       - core/v14-native-receiver-release-rebase-20261122-run14
       - core/v14-native-probe-jepa-stack-20261123-run1
       - core/v14-native-probe-jepa-stack-20261123-run2
+      - core/v14-native-probe-jepa-stack-20261123-run2
   pull_request:
     branches:
       - boss/v14-recall-store-pin-rebind-20261122
