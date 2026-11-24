@@ -224,7 +224,7 @@ def test_body_telemetry_is_bounded_and_invalid_store_shapes_fail_closed():
     event_id = _id("evt", "e")
     rows = []
     for index in range(17):
-        query_id = _id("pkt", format(index, "032x")[-32:])
+        query_id = "pkt_" + format(index, "032x")[-32:]
         rows.append({
             "kind": "body_offer_attempt",
             "metrics": json.dumps({
