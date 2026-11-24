@@ -338,6 +338,7 @@ def _projector_artifact_path(home,record,*,tile=False):
 
 def _gate_projector_update(store,home,state,old_record,candidate,encoder_name,encoder,cfg,*,tile=False):
     """Measure a proposed A3 update on the previous exact replay set and scale/reject it."""
+    np=_np()
     if old_record is None:
         return candidate,{'version':1,'status':'INITIAL','scale':1.0,'replay_n':0,'authority':'LAB_SHADOW_ONLY'}
     if type(old_record) is not dict:
