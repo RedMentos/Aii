@@ -8,19 +8,20 @@ import pytest
 
 from v13.runtime import Runtime
 from v13.models import model_key
-from v13.contracts import validate
+from v13.common import atomic_write, dumps, file_hash, uid
+from v13.contracts import packet, validate
 from v13.callosum import controller, operator_command
 from v13 import native_latent_receiver as native
 
 
-def receipt(model_sha, sender_sha):
+def receipt(model_sha, sender_sha, tokenizer_revision=None):
     return {
         "sender_role": "B2_GIST",
         "receiver_role": "C3_LANGUAGE",
         "sender_tap_id": "qwen35.result_norm.final.v1",
         "sender_model_revision": "qwen35-r1",
         "sender_model_sha256": sender_sha,
-        "tokenizer_revision": None,
+        "tokenizer_revision": tokenizer_revision,
         "receiver_model_revision": "lfm2-r1",
         "receiver_model_sha256": model_sha,
         "runner_revision": native.PINNED_LLAMA_REVISION,
@@ -170,6 +171,84 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
     bad_effect = dict(packet, next_token_effect_detected=False)
     with pytest.raises(native.NativeReceiverError, match="next-token effect threshold"):
         native.validate_packet(bad_effect)
+    runtime.close()
+
+
+
+
+def test_native_receive_persists_b2_to_c3_pair_when_tokenizer_is_pinned(
+    tmp_path, monkeypatch
+):
+    runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
+    token_ids = [101, 202]
+    tokenizer_revision = "shared-lfm2-tokenizer-r1"
+    taps = {}
+
+    def stored_tap(role, revision, tap_id, dimension, vectors):
+        path = runtime.home / "data" / "blobs" / (uid("tap") + ".json")
+        atomic_write(path, dumps({"token_ids": token_ids, "vectors": vectors}))
+        tap_packet = packet(
+            "LatentTapPacket", role, event["event_id"], event["brain_generation_id"],
+            [event["source_ref"]],
+            role=role, source_ref=event["source_ref"], tap_id=tap_id,
+            model_revision=revision, tokenizer_revision=tokenizer_revision,
+            token_ids=token_ids, feature_path=str(path.relative_to(runtime.home)),
+            feature_sha256=file_hash(path), shape=[len(token_ids), dimension],
+            role_state="INDEPENDENT_READ_ONLY_PREFILL",
+            receiver_read_authority=0, receiver_injection_authority=0,
+            body_learning_authority=0,
+            metrics={"whole_sequence_prefill": True, "pooling": "none",
+                     "prompt_tokens": len(token_ids)},
+        )
+        runtime.store.add_packet("LatentTapPacket", tap_packet)
+        return tap_packet
+
+    taps["B2_GIST"] = stored_tap(
+        "B2_GIST", "qwen35-r1", "qwen35.layer12.final.v1", 2,
+        [[0.25, -0.5], [1.0, 0.75]],
+    )
+    taps["C3_LANGUAGE"] = stored_tap(
+        "C3_LANGUAGE", "lfm2-r1", "lfm2.layer8.final.v1", 3,
+        [[0.5, -0.25, 0.75], [-0.5, 0.25, -0.75]],
+    )
+    runtime.cognition.tap = lambda role, *args: taps[role]
+    runtime.pool.unload = lambda: None
+
+    def fake_probe(**kwargs):
+        assert kwargs["sender_role"] == "B2_GIST"
+        assert kwargs["receiver_role"] == "C3_LANGUAGE"
+        assert kwargs["tokenizer_revision"] == tokenizer_revision
+        return receipt(digest, sender_digest, tokenizer_revision)
+
+    monkeypatch.setattr(native, "probe", fake_probe)
+    packet_result = runtime.cognition.native_receive(
+        "B2_GIST", "C3_LANGUAGE", event, event["source_ref"],
+        time.monotonic() + 30,
+    )
+    assert packet_result["status"] == "NATIVE_INPUT_EFFECT"
+    pair_row = runtime.store.one(
+        "SELECT payload FROM packets WHERE kind='LatentTapPairPacket' "
+        "AND event_id=? ORDER BY rowid DESC LIMIT 1",
+        (event["event_id"],),
+    )
+    assert pair_row is not None
+    pair = json.loads(pair_row["payload"])
+    assert pair["sender_role"] == "B2_GIST"
+    assert pair["receiver_role"] == "C3_LANGUAGE"
+    assert pair["sender_tap_id"] != pair["receiver_tap_id"]
+    assert pair["tokenizer_revision"] == tokenizer_revision
+    assert pair["alignment"] == "TOKEN_IDS_EXACT"
+    assert pair["status"] == "PAIRED_READ_ONLY"
+    assert pair["training_authority"] == 0
+    assert pair["native_receiver_authority"] == 0
+    assert pair["production_route"] is False
+    assert "private source text stays local" not in json.dumps(pair)
+    assert "0.25" not in json.dumps(pair)
+    status = controller(runtime).report(runtime.cfg)
+    assert status["native_receiver_probe"]["tap_pair"]["status"] == "PAIRED_READ_ONLY"
+    assert status["native_receiver_probe"]["tap_pair"]["tokenizer_revision"] == tokenizer_revision
+    assert status["native_latent_tap_pair"]["sender_role"] == "B2_GIST"
+    assert status["native_latent_tap_pair"]["receiver_role"] == "C3_LANGUAGE"
     runtime.close()
 
 
