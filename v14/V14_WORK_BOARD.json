@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T12:44:40Z",
+  "updated_at": "2026-11-24T17:44:54.284Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -34,6 +34,28 @@
         },
         "device": "REDMI_UNVERIFIED; private receipt #505 predates merge c2e7 and reports installed c03ff0a",
         "next_action": "Poll exact #2325 CI, fix measured failures, coordinate QA #2324 rebase, then continue Android companion operator/CLI integration"
+      },
+      "core_checkpoint_20261124": {
+        "owner": "Core & Harness",
+        "branch": "core/v14-native-prefill-receipt-20261124-run1",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "pull_request": 2464,
+        "code_test_sha": "525e8944d0855b1bddfb3d7173208475843e70fa",
+        "latest_branch_handoff_sha": "7cd61d28b3998905bae78a4bec85b1a4a5fceb84",
+        "status": "DRAFT_CI_PENDING_EXACT_HEAD_NOT_RELEASED",
+        "change": "C3 deadline retention now has a RunnerPool next-turn reuse regression and multi-slot busy-to-idle control; PR #2464 also carries native prefill/offer receipt and fail-closed warm-retention implementation.",
+        "tests": {
+          "exact_previous_code_sha": "27aec17b57abde002de7625c588fc4d8412059bb",
+          "previous_exact_ci_run": 45451187762,
+          "previous_exact_ci": "PYTHON_3_13_AND_3_14_PASS",
+          "new_test_sha": "525e8944d0855b1bddfb3d7173208475843e70fa",
+          "new_exact_ci": "NOT_RETURNED",
+          "local_linux_isolated": "PASS_SYNTHETIC_RUNNERPOOL_SAME_PID_NEXT_TURN_REPRODUCTION",
+          "full_repository_local": "BLOCKED_NO_CHECKOUT_AND_GITHUB_DNS"
+        },
+        "device": "REDMI_UNVERIFIED",
+        "release": "NOT_RELEASED",
+        "next": "Obtain exact-head CI for 525e894; independent Boss/QA review; after integration and a separate authorized Redmi test, measure PID continuity, cold/warm load, prefill, TTFT and RSS/PSS."
       }
     },
     {
@@ -364,6 +386,17 @@
         },
         "device": "REDMI_UNVERIFIED; private receipt #505 predates merge c2e7 and reports installed c03ff0a",
         "next_action": "Poll exact #2325 CI, fix measured failures, coordinate QA #2324 rebase, then continue Android companion operator/CLI integration"
+      },
+      "core_checkpoint_20261124": {
+        "owner": "Core & Harness",
+        "branch": "core/v14-native-probe-staged-overlay-20261123-run2",
+        "code_sha": "9e28234d19a677e9dd44dc4a1ecf54964791b2d7",
+        "pull_request": 2451,
+        "status": "DRAFT_CI_GREEN_NOT_RELEASED",
+        "tests": "Exact-head workflows observed SUCCESS for native receiver Python 3.13/3.14, pinned Linux native build/selftest, Android ARM64 cross-compile, staged Runtime and integrated regression.",
+        "device": "REDMI_UNVERIFIED; no native probe run",
+        "authority": "diagnostic-only; production B3 OFF; no trained latent coupling or receiver utility claim",
+        "next": "Rebase/recompose against the current source-pin chain, then add bounded pair-matrix/consumed-signal evidence without activating production B3."
       }
     },
     {
@@ -375,7 +408,26 @@
       "last_checkpoint": "2026-11-22T11:38:04.785Z",
       "proof_environment": "CI only; no Android APK/device proof",
       "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance.",
-      "next_step": "Core/QA: integrate the checked pairing persistence leaf after independent review; before APK/device tests, add idempotent receipt-only recovery for claimed EXECUTING/DENYING rows after signing/SQLite failure (EXECUTING must reconcile conservatively to a signed unknown outcome, never redispatch; DENYING can reconcile to signed denial), and failure-injection/restart tests. Keep companion default-OFF and all other providers OFF."
+      "next_step": "Core/QA: integrate the checked pairing persistence leaf after independent review; before APK/device tests, add idempotent receipt-only recovery for claimed EXECUTING/DENYING rows after signing/SQLite failure (EXECUTING must reconcile conservatively to a signed unknown outcome, never redispatch; DENYING can reconcile to signed denial), and failure-injection/restart tests. Keep companion default-OFF and all other providers OFF.",
+      "core_checkpoint_20261124": {
+        "owner": "Core & Harness",
+        "branch": "core/v14-android-action-journal-qa-rebase-20261123-run1",
+        "code_sha": "523c04eb1e96d0e01e1cdda0c9832632360de044",
+        "pull_request": 2450,
+        "base_branch": "qa/v14-companion-final-qa-20261122",
+        "base_sha": "6dab323f1b59663682d0af65ffbd75c5de489578",
+        "status": "OPEN_NOT_RELEASED",
+        "tests": {
+          "core_outcome_python_313_314": "PASS",
+          "android_outcome_contract": "PASS",
+          "android_control_broker": "PASS",
+          "staged_integrated_regression": "PASS",
+          "android_companion_process_restart": "FAIL_SYSTEM_UI_ANR_ON_OLD_QA_HARNESS"
+        },
+        "separate_qa_candidate": "PR #2427 exact head ae56dd1e54b3b78161f226d7735ed919879ea6cf reports emulator process-death SUCCESS, but it is on a separate QA stack and is not integrated into #2450.",
+        "device": "REDMI_UNVERIFIED; no APK install/pairing/action",
+        "next": "QA/Integrator reconcile the ActivityScenario harness from #2427 with the #2356 base; then rebase the Core journal, rerun exact CI, obtain independent review and only later device acceptance."
+      }
     },
     {
       "id": "V14-018",
@@ -1294,6 +1346,29 @@
         "learning_status": "LEARNING_STATUS_552_UNAVAILABLE",
         "boss_pr2343": "CURRENT_HEAD_023E56D_29_AHEAD_0_BEHIND; substantive exact CI queued. Recovery12 and some Store/Runtime pins corrected; stage/deployer, recovery21, archive stream preimage, record-only Runtime pin and fair-observer ask anchor still mismatch. Previous 70c6a5 migration failed; not current-head result."
       }
+    },
+    "core_run_20261124": {
+      "timestamp": "2026-11-24T17:44:54.284Z",
+      "base_branch": "gpt6/v13-private-remote-bridge-20261111",
+      "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+      "runner_retention_pr": 2464,
+      "runner_retention_code_sha": "525e8944d0855b1bddfb3d7173208475843e70fa",
+      "runner_retention_latest_branch_sha": "7cd61d28b3998905bae78a4bec85b1a4a5fceb84",
+      "runner_retention_exact_new_test_ci": "NOT_RETURNED",
+      "runner_retention_prior_sha_ci": "45451187762_PYTHON_3_13_AND_3_14_SUCCESS",
+      "android_action_journal_pr": 2450,
+      "android_action_journal_sha": "523c04eb1e96d0e01e1cdda0c9832632360de044",
+      "android_action_journal_ci": "5_SUCCESS_1_FAILURE_ANDROID_COMPANION_PROCESS_RESTART",
+      "android_qa_process_death_pr": 2427,
+      "android_qa_process_death_sha": "ae56dd1e54b3b78161f226d7735ed919879ea6cf",
+      "android_qa_process_death": "EMULATOR_SUCCESS_ON_SEPARATE_STACK_NOT_INTEGRATED",
+      "native_receiver_pr": 2451,
+      "native_receiver_sha": "9e28234d19a677e9dd44dc4a1ecf54964791b2d7",
+      "native_receiver_ci": "EXACT_HEAD_WORKFLOWS_SUCCESS",
+      "local_full_checkout": "BLOCKED_NO_MOUNTED_AII_CHECKOUT_GITHUB_DNS_FAILURE",
+      "redmi": "REDMI_UNVERIFIED",
+      "release": "NO_NEW_RELEASE_NO_DEVICE_UPDATE",
+      "user_action_required": "NONE"
     }
   },
   "qa_latest_checkpoint": {

@@ -1,0 +1,60 @@
+name: V14 Core exact greeting fastpath
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/v14-core-fast-greeting.yml"
+      - "v13/code/v13/fast_greeting.py"
+      - "v13/code/scripts/integrated_greeting_fastpath_candidate_20261123.py"
+      - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
+      - "v13/code/tests/test_fast_greeting.py"
+      - "v13/code/tests/test_stage_integrated_candidate.py"
+      - "v13/code/tests/test_termux_runtime_recovery_stage.py"
+      - "v13/code/scripts/stage_integrated_candidate.py"
+      - "v13/code/v13/runtime_deploy.py"
+  push:
+    branches:
+      - "core/v14-native-prefill-receipt-20261124-run1"
+    paths:
+      - ".github/workflows/v14-core-fast-greeting.yml"
+      - "v13/code/v13/fast_greeting.py"
+      - "v13/code/scripts/integrated_greeting_fastpath_candidate_20261123.py"
+      - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
+      - "v13/code/scripts/stage_integrated_candidate.py"
+      - "v13/code/v13/runtime_deploy.py"
+      - "v13/code/tests/test_fast_greeting.py"
+      - "v13/code/tests/test_stage_integrated_candidate.py"
+      - "v13/code/tests/test_termux_runtime_recovery_stage.py"
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install focused test dependency
+        run: python -m pip install --disable-pip-version-check pytest numpy psutil pyyaml
+      - name: Compile exact matcher, overlay and tests
+        env:
+          PYTHONPATH: v13/code
+        run: >-
+          python -m py_compile
+          v13/code/v13/fast_greeting.py
+          v13/code/scripts/integrated_greeting_fastpath_candidate_20261123.py
+          v13/code/tests/test_fast_greeting.py
+          v13/code/tests/test_stage_integrated_candidate.py
+          v13/code/tests/test_termux_runtime_recovery_stage.py
+      - name: Test exact greeting matcher and bounded worker-learning guard
+        env:
+          PYTHONPATH: v13/code
+        run: python -m pytest -q v13/code/tests/test_fast_greeting.py v13/code/tests/test_stage_integrated_candidate.py v13/code/tests/test_termux_runtime_recovery_stage.py

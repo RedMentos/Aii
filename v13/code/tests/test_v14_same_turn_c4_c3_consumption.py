@@ -216,7 +216,9 @@ def test_two_recent_c3_prefill_failures_still_reach_same_turn_c4_and_c3(tmp_path
         assert latest["offer_flow"]["native_template_submitted"] is False
         assert latest["offer_flow"]["template_submitted"] is True
         assert latest["offer_flow"]["native_completion_http_200"] is False
-        assert latest["offer_flow"]["c4_native_offer_ids_match"] is True
+        assert latest["offer_flow"]["c4_native_offer_ids_match"] is False
+        assert latest["offer_flow"]["c4_synthetic_offer_ids_match"] is True
+        assert latest["offer_flow"]["synthetic_prompt_prefill_verified"] is False
         assert {item["role"] for item in latest["offer_flow"]["offers"]} == {
             "B1_DETAIL", "B2_GIST"
         }
@@ -301,6 +303,7 @@ def test_brain_status_refuses_mismatched_c4_and_native_offer_ids():
     }
     message = {"event_id": "event-1", "status": "FINAL", "metadata": json.dumps(metadata)}
     telemetry = {"metrics": json.dumps({
+        "role": "C3_LANGUAGE",
         "status": "PASS", "count": 2, "selected_offer_ids": ["offer-1", "tampered"]
     })}
     runtime = SimpleNamespace(

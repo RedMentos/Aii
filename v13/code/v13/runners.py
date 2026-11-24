@@ -105,6 +105,36 @@ class LlamaRunner:
         if self._asset_snapshot is not None:shutil.rmtree(self._asset_snapshot,ignore_errors=True)
         self._asset_snapshot=None;self._launch_assets={};self._asset_snapshot_hashes={};self._approved_asset_paths=[]
         return {"before":before,"process_reaped":True}
+    def _retain_after_deadline(self):
+        """Retain a warm child only after its local llama-server slots report idle."""
+        proc=self.proc
+        if proc is None or proc.poll() is not None:
+            result=self.unload()
+            return result | {"retained_warm":False,"reason":"PROCESS_NOT_ALIVE"}
+        try:
+            if self._loaded_stamp is None or self._loaded_stamp!=self._lifecycle_stamp():
+                raise ValueError("runner lifecycle changed")
+            end=time.monotonic()+.35
+            while time.monotonic()<end:
+                remaining=end-time.monotonic()
+                slots=self._json("GET","/slots",None,end,timeout_cap=min(.12,remaining))
+                if not isinstance(slots,list) or not slots:
+                    raise ValueError("runner slots state unavailable")
+                states=[]
+                for slot in slots:
+                    if not isinstance(slot,dict) or type(slot.get("is_processing")) is not bool:
+                        raise ValueError("runner slot state malformed")
+                    states.append(slot["is_processing"])
+                if not any(states):
+                    if (self.proc is proc and proc.poll() is None
+                            and self._loaded_stamp==self._lifecycle_stamp()):
+                        # Never persist the /slots response: it can contain prompt text.
+                        return {"process_reaped":False,"retained_warm":True,"reason":"SERVER_IDLE"}
+                time.sleep(min(.05,max(0.,end-time.monotonic())))
+        except Exception:
+            pass
+        result=self.unload()
+        return result | {"retained_warm":False,"reason":"SERVER_NOT_IDLE_OR_UNVERIFIED"}
     def _json(self,method,path,payload,deadline,timeout_cap=3.):
         remaining=deadline-time.monotonic()
         if remaining<=0:raise Limits('Zeitbudget erreicht')
@@ -383,13 +413,10 @@ class LlamaRunner:
             if self.role == 'C3_LANGUAGE' and type(self._prompt_admission) is dict:
                 witnessed=self._prompt_admission.get('offer_template_witness')
                 if type(witnessed) is dict:
-                    self.last_metrics['native_offer_prompt_receipt']={
-                        **witnessed,
-                        'native_completion_http_200':self._native_completion_http_200,
-                        'native_template_submitted':bool(
-                            self._native_completion_http_200
-                            and witnessed.get('status')=='RENDERED_WITH_QUOTES'),
-                        'native_attention_or_semantic_use_proven':False}
+                    from .native_offer_prompt_receipt import native_completion_receipt
+                    self.last_metrics['native_offer_prompt_receipt']=native_completion_receipt(
+                        witnessed,http_200=self._native_completion_http_200,
+                        status=status,metrics=self.last_metrics)
             # A synchronous check may beat the watchdog. Do not stop its watcher
             # and leave the old native request running after declaring idle.
             if audit_locked:
@@ -397,7 +424,10 @@ class LlamaRunner:
                     observed=self._audit_finish_window(status)
                     if observed is not None:self.last_metrics['native_memory_firing']=observed
                 finally:self._audit_lock.release()
-            if status!='FINAL':self.last_metrics['interruption_unload']=self.unload()
+            if status!='FINAL':
+                recovery=self._retain_after_deadline() if status=='DEADLINE' else self.unload()
+                self.last_metrics['interruption_unload']=recovery
+                self.last_metrics['warm_process_retained']=recovery.get('retained_warm') is True
     def completion_one(self,payload,cancel,deadline):
         """One real native decoder step with cancellation, not a text substitute."""
         self.load(cancel,deadline);check(cancel,deadline)
@@ -405,7 +435,8 @@ class LlamaRunner:
         def watchdog():
             while not done.wait(.05):
                 if cancel.is_set() or time.monotonic()>=deadline:
-                    kill_process(self.proc)
+                    # Closing the request is the first cancellation attempt. The
+                    # outer generate() keeps the child only if /slots confirms idle.
                     with contextlib.suppress(Exception):conn.close()
                     return
         watcher=threading.Thread(target=watchdog,daemon=True);watcher.start()
@@ -413,11 +444,12 @@ class LlamaRunner:
             conn.request('POST','/completion',wire_json(payload|{'n_predict':1,'stream':False,'return_tokens':True}).encode(),{'Authorization':'Bearer '+self.key,'Content-Type':'application/json'})
             response=conn.getresponse();raw=response.read();check(cancel,deadline)
             if response.status!=200:raise Unavailable('Native output step HTTP '+str(response.status))
+            self._native_completion_http_200=True
             result=json.loads(raw)
             if result.get('error'):raise Unavailable('Native output step failed')
             return result
         except (OSError,http.client.HTTPException):
-            check(cancel,deadline);self.unload();raise Unavailable('Native output step interrupted')
+            check(cancel,deadline);raise Unavailable('Native output step interrupted')
         finally:done.set();conn.close();watcher.join(.2)
     def _generate(self,messages,cancel,deadline,max_tokens=None,schema=None,seed=13,first_token_bias=None,confidence_field='summary'):
         started=time.monotonic();self.load(cancel,deadline);self.stage_times['load_s']=time.monotonic()-started
@@ -444,14 +476,15 @@ class LlamaRunner:
             if first_step.get('content'):
                 self.stage_times['prefill_to_first_token_s']=time.monotonic()-self.phase_started;self.phase_started=time.monotonic();self.phase='stream';yield first_step['content']
             if cap==1 or not ids or first_step.get('stop_type') in {'eos','word'}:
-                self.last_metrics={'generated_tokens':first_tokens,'prompt_tokens':n,'history_trimmed':truncated,'timings':first_step.get('timings',{}),'output_adapter_native_first_step':{'token_ids':ids,'bias':first_token_bias,'remaining_positions_unbiased':True},'ttft_s':time.monotonic()-started}
+                self.last_metrics={'generated_tokens':first_tokens,'prompt_tokens':n,'history_trimmed':truncated,'timings':first_step.get('timings',{}),'output_adapter_native_first_step':{'token_ids':ids,'bias':first_token_bias,'remaining_positions_unbiased':True,'timings':first_step.get('timings',{})},'ttft_s':time.monotonic()-started}
                 return
             payload['prompt']=native_prompt+ids;payload['n_predict']=cap-1
         conn=http.client.HTTPConnection("127.0.0.1",self.port,timeout=max(1,deadline-time.monotonic()));stop_watch=threading.Event()
         def watchdog():
             while not stop_watch.wait(.05):
                 if cancel.is_set() or time.monotonic()>=deadline:
-                    kill_process(self.proc)
+                    # Closing the request is the first cancellation attempt. The
+                    # outer generate() keeps the child only if /slots confirms idle.
                     with contextlib.suppress(Exception):conn.close()
                     return
         watcher=threading.Thread(target=watchdog,daemon=True);watcher.start();first=time.monotonic() if first_step and first_step.get('content') else None;tokens=first_tokens;timings={};peak=None;native_stop=False
@@ -484,11 +517,11 @@ class LlamaRunner:
             if not native_stop:
                 raise Unavailable('Native stream ended without completion marker')
         except (OSError,http.client.HTTPException):
-            check(cancel,deadline);self.unload();raise Unavailable("Native Inferenz unterbrochen")
+            check(cancel,deadline);raise Unavailable("Native Inferenz unterbrochen")
         finally:
             stop_watch.set();conn.close();watcher.join(timeout=2);end=time.monotonic();mem=process_memory(self.proc.pid) if self.proc and self.proc.poll() is None else {}
             rss_values=[v for v in (peak,mem.get('rss_bytes')) if v is not None]
-            self.last_metrics={"role":self.role,"duration_s":end-started,"ttft_s":None if first is None else first-started,"generated_tokens":tokens,"prompt_tokens":n,"history_trimmed":truncated,"timings":timings,"sampled_peak_rss_bytes":max(rss_values) if rss_values else None,"memory":mem,"actual_model":self.model.name,"CAN_LATENT_TAP":False,"CAN_LATENT_INJECT":False,"CAN_TRAIN_BODY":False}
+            self.last_metrics={"role":self.role,"duration_s":end-started,"ttft_s":None if first is None else first-started,"generated_tokens":tokens,"prompt_tokens":n,"history_trimmed":truncated,"timings":timings,"native_stream_completed":native_stop,"sampled_peak_rss_bytes":max(rss_values) if rss_values else None,"memory":mem,"actual_model":self.model.name,"CAN_LATENT_TAP":False,"CAN_LATENT_INJECT":False,"CAN_TRAIN_BODY":False}
             if first_step:self.last_metrics['output_adapter_native_first_step']={'token_ids':first_step.get('tokens',[]),'bias':first_token_bias,'remaining_positions_unbiased':True,'timings':first_step.get('timings',{})}
             if lp_pairs:
                 from .focal import token_confidence
