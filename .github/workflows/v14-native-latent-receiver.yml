@@ -82,7 +82,7 @@ jobs:
           close_start = recovery_text.index(close_needle) + len(close_needle)
           close_pin = recovery_text[close_start:close_start + 40]
           close_raw = close_overlay_path.read_bytes()
-          close_blob = hashlib.sha1(b"blob " + str(len(close_raw)).encode("ascii") + b"\\0" + close_raw).hexdigest()
+          close_blob = hashlib.sha1(b"blob " + str(len(close_raw)).encode("ascii") + bytes([0]) + close_raw).hexdigest()
           assert close_pin == close_blob
           print("PASS: deployer -> stage builder -> recovery -> Runtime-close overlay -> operator/module pins")
           PY
