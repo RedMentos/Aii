@@ -1804,3 +1804,10 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - This is a Core/JEPA source-lifecycle integration gap, not a reason to bypass A3 source-forget protections. The exact failure was posted to Core PR #2462 (comment 7121367604). No cross-owner composer edit was made, and #2442 was not transplanted/rebased in this checkpoint.
 - Next visual step: after Core adds a reviewed `vision.py` lifecycle source contract and source-forget regression, cleanly rebase the 12 Perception code/workflow files from #2442 onto the current release head, then rerun focused, staged and integrated CI. No MediaProjection/Redmi hardware proof exists.
 
+
+
+### A3 visual model research — R-125 (2026-11-24)
+
+- Full MobileCLIP2 paper read (arXiv:2508.20691, TMLR 2025 Featured). MobileCLIP2-S0 reports 11.4M image + 63.4M text parameters and 1.5 ms / 3.3 ms image/text encoder latency on iPhone 12 Pro Max; this is not Redmi evidence. Its official model-weight license is restricted to non-commercial scientific research and excludes product development, so do not use those weights in the V14 product path.
+- More permissive small-backbone candidate: Kornia TinyViT-5M; its model card lists MIT and Kornia's export matrix reports TinyViT-5M ONNX support. It is an image-classification backbone, not image-text alignment; it could feed a separate trainable A3 projector/JEPA student, not replace the A3 learning contract. Dataset provenance still needs review.
+- No model was downloaded or loaded. No Android/Redmi latency or RSS was measured. Candidate experiment remains opt-in and requires separate approval for experimental download and productive swap.
