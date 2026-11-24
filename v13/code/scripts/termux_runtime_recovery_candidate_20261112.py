@@ -70,7 +70,7 @@ def build_sources(code_dir, *, include_postcommit=True):
     result.update(chat.apply_sources(composed))
     result = idle.apply_sources(code_dir, result)
     arithmetic = load(code_dir, 'scripts/integrated_arithmetic_candidate_20261116.py',
-                      '1bc838137d8c20e558b5d843b88c9fd058c545a5ad3b5ebc0b5ec9667c45134d')
+                      '80ffb934db131f7102f712960a4aabfb8cb0a959008744d64b6a58e960997ceb')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
                               '6d0707cddac9480415767e6c9ecf99c7f3d16e666e79296fed5d866c8ac6928b')
@@ -258,7 +258,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             raise ValueError('LateWatch output changed')
         result['v13/latewatch.py'] = late
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
-                             '86ad7838d15eb9a038fec629c340936edde78d65d921507e10cec29fed74b9d9')
+                             '254f1f0c0fe03e3ba22d2cdb1982460dbf31f7dbcd049122ff47356cd1acdcc1')
         result = control_guard.apply_sources(code_dir, result)
         # The guard rewrites the semantic module and its local-error consumer as
         # one reviewed generation. Snapshot that exact pair before Store overlays.
