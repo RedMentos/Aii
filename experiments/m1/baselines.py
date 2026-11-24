@@ -202,14 +202,18 @@ class LADARBaseline(_LinearARBase):
         ar_lags: Sequence[int] | None = None,
         epochs: int = 5,
         learning_rate: float = 0.02,
+        seed: int = 17,
     ):
         super().__init__(alpha=alpha, ar_lags=ar_lags)
         if type(epochs) is not int or epochs < 1 or epochs > 100:
             raise ValueError("epochs must be an integer in [1, 100]")
         if not np.isfinite(learning_rate) or learning_rate <= 0:
             raise ValueError("learning_rate must be finite and positive")
+        if type(seed) is not int:
+            raise ValueError("seed must be an integer")
         self.epochs = epochs
         self.learning_rate = float(learning_rate)
+        self.seed = seed
         self.epoch_losses: list[float] = []
 
     def fit(self, dataset: ArrayDataset, *, batch_size: int = 256) -> "LADARBaseline":
@@ -220,7 +224,9 @@ class LADARBaseline(_LinearARBase):
         for epoch in range(self.epochs):
             absolute_sum = 0.0
             element_count = 0
-            for batch in dataset.iter_batches("train", batch_size=batch_size):
+            for batch in dataset.iter_batches(
+                "train", batch_size=batch_size, shuffle=True, seed=self.seed + epoch
+            ):
                 design = self._design(batch)
                 target = batch.target.reshape(len(design), -1).astype(np.float64)
                 if weights is None:
