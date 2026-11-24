@@ -206,7 +206,10 @@ class Turn(unittest.TestCase):
         self.assertGreaterEqual(len(pre),2)
         self.assertEqual([x[0] for x in pre[:2]],BOTH)
         for _,role_deadline,turn_deadline,called_at in pre[:2]:
-            self.assertLessEqual(role_deadline,turn_deadline-41.0)
+            self.assertLessEqual(role_deadline,turn_deadline-41.0,
+                msg=repr({'role':_,'role_deadline':role_deadline,'turn_deadline':turn_deadline,
+                          'called_at':called_at,'deadline_seconds':self.r.cfg['deadline_seconds'],
+                          'budget_logs':[(kind,metrics) for kind,metrics in logs if kind=='native_turn_budget_plan']}))
             self.assertGreaterEqual(role_deadline-called_at,.99)
         decision_row=self.r.store.one("SELECT payload FROM packets WHERE kind='EffortDecision' ORDER BY rowid DESC LIMIT 1")
         decision=json.loads(decision_row['payload'])
