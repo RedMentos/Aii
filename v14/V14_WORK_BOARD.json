@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T03:18:51.264Z",
-  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
+  "updated_at": "2026-11-24T03:42:36Z",
+  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at 8d93236c753f0194224c19edc7411d8d7082b1d6. Core PR #2462 is OPEN / NOT_RELEASED at 201bd5419613e3f997ba9c58b7d2b97c3576d3df. B1/B2 retry candidate exists, but exact staged/integrated CI is still blocked by downstream Runtime SHA pins and the missing-peer regression; Redmi remains REDMI_UNVERIFIED.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -14,11 +14,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "CI + authenticated ANDROID_DEVICE metadata; no correct-answer/native-organ acceptance",
-      "next_step": "PR #2462 / head ad89ad5 adds retry after a failed late-watch B2 attempt while preserving fair B1/B2 recovery slices and the C3/C4 reserve. The prior exact-head staged job on 1c6df failed because immutable nested Runtime pins reject the changed runtime bytes; migration returned PARTIAL as a consequence. The missing-peer test fixture is now deterministic (explicit unlearned wake + controlled late-watch residency) and awaits exact-head rerun. Boss/Integrator must recompose the nested pin chain bottom-up; QA must rerun Python 3.13/3.14 staged, integrated and two-checkout migration. Redmi remains STOPPED_BY_USER / REDMI_UNVERIFIED; no device action.",
+      "proof_environment": "CI (exact previous head FAIL; new diagnostic head pending) + LOCAL_LINUX full repository BLOCKED + REDMI_UNVERIFIED",
+      "next_step": "Poll exact-head CI for Core #2462 head 201bd5419613e3f997ba9c58b7d2b97c3576d3df; inspect the missing-peer diagnostic state and repair the Core-owned Runtime/test path. Boss/Integrator must then recompose integrated_online_world, postcommit_observer, record_only_online_guard, integrated_observer_fair_budget and downstream recovery/stage/deployer pins against Runtime SHA-256 7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186; rerun exact Python 3.13/3.14 staged, integrated, same-turn and migration checks. Do not weaken pins or claim Redmi deployment.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T03:18:51.264Z",
-      "proof": "PR #2462 branch core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1, code checkpoint 1c6df9d9ab70e17d1e28c41564e243eaf7b43cc4, deterministic test follow-up ad89ad5c64fac8b1cefd97b3b50b0c2c3886ed16. LOCAL_LINUX CPython 3.13.5 isolated helper compile + six-case metadata retry matrix PASS. Full repo pytest NOT_RUN due GitHub DNS/no checkout. Prior exact-head staged CI: 33 failed, 240 passed, 10 skipped, 2 errors; dominant source-pin mismatch, plus missing-peer fixture failure now corrected but not rerun. Other exact workflows: JEPA transactional update PASS, JEPA receipt integrity PASS, role-specific tap provenance 3.11/3.13 PASS; no full CI pass. No Redmi proof.",
+      "last_checkpoint": "2026-11-24T03:42:36Z",
+      "proof": "Core PR #2462 OPEN / NOT_RELEASED, branch core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1, HEAD 201bd5419613e3f997ba9c58b7d2b97c3576d3df, base 8d93236c753f0194224c19edc7411d8d7082b1d6. Runtime blob 80eddec84f7a5ef06c1c72007ca08c44b694ace0; SHA-256 7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186. At previous code head 23863: staged-runtime 33 failed/240 passed/10 skipped/2 errors; integrated-regression failed; same-turn consumer Python 3.13 failed; 3.14 pending. Combined online JEPA, JEPA receipt, JEPA Runtime transaction, runtime deploy integrity and Core native tap provenance passed; owner-read failed. Four nested Runtime consumers still expect old SHA a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38. Migration returns PARTIAL because staging fails. Exact-head CI for 201bd is pending. Full local Aii tests NOT_RUN/BLOCKED (no checkout; GitHub DNS failure). Redmi REDMI_UNVERIFIED; no device action or deployment.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -36,26 +36,22 @@
         "next_action": "Poll exact #2325 CI, fix measured failures, coordinate QA #2324 rebase, then continue Android companion operator/CLI integration"
       },
       "core_run16_checkpoint": {
-        "date": "2026-11-23",
+        "date": "2026-11-24T03:42:36Z",
         "owner": "Core & Harness",
-        "branch": "core/v14-fair-b1-b2-preanswer-budget-20261123-run1",
+        "branch": "core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1",
         "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
-        "code_commit": "f714a29e3900da7d355033bd4b3865f393092941",
-        "handoff_commit": "8878c5e1b35dee8845d3f2e81a7dcb43d9668771",
-        "pull_request": 2458,
-        "status": "DRAFT_CI_STARTUP_FAILURE_PIN_REBIND_PENDING",
+        "head_sha": "201bd5419613e3f997ba9c58b7d2b97c3576d3df",
+        "pull_request": 2462,
+        "status": "OPEN_CI_PENDING_NOT_RELEASED",
+        "runtime_file_sha256": "7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186",
         "tests": {
-          "exact_native_turn_budget_py_compile": "PASS",
-          "exact_native_turn_budget_import_telemetry_stub": "PASS",
-          "budget_1_5s_window_case": "PASS",
-          "first_stub_attempt": "FAIL_FIXTURE_MISSING_BASE_KIND_STATUS_ALLOWLIST; corrected stub then PASS",
-          "full_local_repository": "BLOCKED_NO_CHECKOUT_NO_GITHUB_DNS",
-          "exact_head_ci": "STARTUP_FAILURE_NO_JOBS_RUN_45260798204"
+          "local_linux_full_repository": "BLOCKED: no checkout; git ls-remote DNS failure",
+          "prior_exact_head_23863": "FAIL: staged 33 failed/240 passed/10 skipped/2 errors; integrated FAIL; same-turn Python 3.13 FAIL; 3.14 pending at last poll",
+          "other_ci": "PASS: combined online JEPA, JEPA receipt integrity, JEPA Runtime transactional update, runtime deployment integrity, Core native tap provenance",
+          "latest_exact_head_201bd": "QUEUED/IN_PROGRESS at 2026-11-24 03:42 UTC; no result claimed"
         },
-        "device": "REDMI_STOPPED_BY_USER_RECEIPT_826; REDMI_UNVERIFIED; no action",
-        "store_blob": "f347e1c960076e06e284369549275bc39a4195cb (matches base)",
-        "runtime_sha256": "720342eb75a9cf3e38e43fa046dd38f6d37817c427d743f89b086da3d666eba3",
-        "next_action": "Boss rebinds JEPA/integrated-online-world and postcommit Runtime source pins; QA reruns A5 Store lifecycle; then exact CI and independent review"
+        "device": "REDMI_UNVERIFIED; no private relay or device action",
+        "next_action": "Inspect exact-head diagnostic and coordinate downstream source-pin rebind with Boss/Integrator."
       },
       "core_run17_checkpoint": {
         "date": "2026-11-23",
