@@ -31,6 +31,7 @@ No real UCI file was available in this execution environment: the Library search
 - gru.py: supervised Raw-GRU using the same X/S/calendar information.
 - training.py: seeded model construction, training loops, validation telemetry, exact Git HEAD resolution and atomic checkpoints.
 - runner.py: validation-only multi-model pilot; applies a per-epoch train-window cap only to fitting, evaluates every model on the full shared validation origins, saves model checkpoints and writes one provenance-bound result JSON. JEPA pretraining is recorded separately from raw-unit forecast predictors.
+- download_uci.py: explicit official-host-only dataset downloader; checks ZIP CRC, path traversal, archive/member sizes and overwrite policy, then writes a SHA-256 provenance sidecar. It is never invoked automatically by the runner.
 
 ## Model contract
 - JEPA context encoder sees standardized historical X.
@@ -53,8 +54,14 @@ Core tests/data path: numpy. Model training: PyTorch CPU or CUDA.
 
 The runner turns the model modules into one repeatable experiment. It does not download data automatically and never opens the test year.
 
-1. Download the official UCI file from the [UCI dataset page](https://archive.ics.uci.edu/dataset/235/individual%2Bhousehold%2Belectric%2Bpower%2Bconsumption) and keep `household_power_consumption.txt` under the ignored `experiments/datasets/` directory.
-2. Run from a clean Git checkout so the runner can record the exact executing HEAD:
+1. Explicitly download the official UCI archive. The downloader only accepts HTTPS on `archive.ics.uci.edu`, verifies the ZIP and extracts only the expected data member:
+
+```bash
+python -m experiments.m1.download_uci --output-dir experiments/datasets
+```
+
+2. Keep the raw file and its generated `.provenance.json` sidecar under the ignored `experiments/datasets/` directory; never commit either. Existing files are not overwritten unless `--force` is explicitly supplied.
+3. Run from a clean Git checkout so the runner can record the exact executing HEAD:
 
 ```bash
 python -m experiments.m1.runner \
