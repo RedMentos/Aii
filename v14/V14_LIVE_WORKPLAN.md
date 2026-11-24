@@ -1,3 +1,15 @@
+## Core fair B1/B2 recovery follow-up — 2026-11-24T04:38:22Z
+
+- PR #2462 exact head `d0a30b18cc629d7498373e01985f89df00fa7461` adds two runtime corrections: late-watch offers explicitly bypass the pre-answer recovery budget, and one late-watch event/status is recorded once even when `check()` closes it before `finish()`.
+- Added a focused late-watch regression and corrected the Runtime test double for `preanswer_budgeted`.
+- LOCAL_LINUX / CPython 3.13.5 isolated contract test: `py_compile` PASS, 2/2 assertions PASS. Full local Aii suite NOT_RUN because the full checkout is unavailable and GitHub DNS resolution failed.
+- Exact-head CI remains FAIL in the same-turn, staged/integrated, and owner-read bootstrap workflows. Six other workflows pass and one is skipped. The common failure is stale/overlapping Runtime composition in `integrated_online_world`, `observer_fair_budget`, `postcommit_observer`, and `record_only_online_guard`; runtime deployment and migration fail downstream. No hash gate was relaxed.
+- Coordination finding posted to Boss PR #2443; Core did not edit Boss/QA lifecycle/audio composer files. #2462 remains OPEN / NOT_RELEASED.
+- Latest private device observation: AI runtime STOPPED_BY_USER, autostart OFF, and no valid B1/B2 offers in the last diagnostic. Latest authenticated updater receipt is older (2026-11-23 19:32 UTC), reports auto-update enabled and runtime/dashboard at `8d93236c`; no newer installation receipt exists. No device action was taken.
+- Next: Boss/Integrator recompose the shared pinned stage against current Runtime; then rerun exact Python 3.13/3.14 staged, integrated, same-turn, owner-read and migration checks. Redmi remains unverified until a user-authorized service run.
+
+---
+
 ## Core runtime checkpoint — failed late-watch peer retry — 2026-11-24T03:18:51.264Z
 
 - PR #2462 / `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1` preserves fair sequential B1/B2 pre-answer slices, the C3 reserve and the separate C4/Focal reserve, and fixes the post-commit starvation case where a failed late-watch attempt was treated as a completed body observation.
