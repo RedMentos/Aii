@@ -1,3 +1,33 @@
+# Core & Harness — fair B1/B2 recovery follow-up (2026-11-24 04:38 UTC)
+
+**PR #2462** remains OPEN / NOT_RELEASED on `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1`, exact head `d0a30b18cc629d7498373e01985f89df00fa7461`, based on release-development `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+
+## New code on this head
+
+- `latewatch.py` explicitly marks post-answer-start offers as `preanswer_budgeted=False`; they are not charged against the already-finished C3 pre-answer window.
+- `Watcher._record_once()` makes status telemetry idempotent across `check()` and `finish()`, fixing the duplicate `WOULD_INTERRUPT: 2` count.
+- `test_latewatch.py` now covers the late-watch budget contract; `test_effort.py`'s Runtime test double accepts the explicit pre-answer flag.
+
+## Evidence and blockers
+
+- **LOCAL_LINUX / CPython 3.13.5:** isolated contract script `py_compile` PASS; 2/2 behavior assertions PASS. This is an isolated contract check, not the full Aii suite.
+- **Full local Aii suite:** NOT_RUN / BLOCKED. `git ls-remote` still fails DNS resolution for GitHub; no full checkout is available.
+- **Exact-head CI:** same-turn consumer FAIL, staged/integrated regression FAIL, private owner-read bootstrap FAIL. Six other workflows SUCCESS and one is SKIPPED. The remaining failures are the shared staged-source chain: `integrated_online_world`, `observer_fair_budget`, `postcommit_observer`, and `record_only_online_guard` still reject the Core Runtime bytes/anchors. Runtime deployment and two-checkout migration consequently fail at staging. Do not weaken any hash gate.
+- The shared source-composition finding is posted on Boss PR #2443 (comment 7122336075); Core has not edited Boss/QA lifecycle or audio composer files. The #2462 PR also records the exact state in its own discussion (comment 7122338229).
+
+## Redmi / deployment
+
+- Latest private V13 observation says the AI runtime is **STOPPED_BY_USER** and autostart is OFF. The last recorded turn was FINAL, but the latest diagnostic still showed zero valid B1/B2 offers; no new turn was triggered by this run.
+- The latest authenticated updater receipt (2026-11-23 19:32 UTC) reported auto-update enabled and runtime/dashboard UP_TO_DATE at `8d93236c`. A newer read request has no receipt. PR #2462 is not installed; REDMI_UNVERIFIED for this branch.
+- No manual Termux command, update request, service restart, model/weight change, or permission change was made.
+
+## Next executable step
+
+Boss/Integrator must recompose the shared source-pinned builder chain against the current Core Runtime without relaxing pins or reapplying already-present fair-slice code. Then rerun exact Python 3.13/3.14 staged-runtime, integrated-regression, same-turn, owner-read and two-checkout migration tests. Only after the exact release path is green and the user has restarted the device service should Redmi E2E be attempted.
+
+**User action: none required.** Do not restart the stopped phone service or run a manual Termux command.
+---
+
 # Core & Harness — fair B1/B2 recovery checkpoint (2026-11-24 03:42 UTC)
 
 **PR #2462** is open on `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1`, exact HEAD `201bd5419613e3f997ba9c58b7d2b97c3576d3df`, based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`. It preserves sequential B1_DETAIL/B2_GIST pre-answer slices and the C3/Focal reserves, and changes post-commit observer suppression so a failed late-watch NO_OFFER can be retried instead of being treated as delivered.
