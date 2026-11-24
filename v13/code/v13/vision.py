@@ -336,8 +336,8 @@ def _projector_artifact_path(home,record,*,tile=False):
     return Path(home)/rel
 
 
-def _source_disjoint_update_validation(validation):
-    """Require complete source-disjoint evidence before replacing an existing A3 projector."""
+def _source_disjoint_update_validation(validation, *, require_baseline=False):
+    """Require held-out update utility and, for retraining, gain over the previous projector."""
     if type(validation) is not dict or validation.get('split')!='SOURCE_DISJOINT' or validation.get('status')!='MEASURED':
         return {'status':'SOURCE_DISJOINT_VALIDATION_UNAVAILABLE'}
     folds_used=validation.get('folds_used');folds_requested=validation.get('folds_requested')
@@ -350,30 +350,64 @@ def _source_disjoint_update_validation(validation):
     top1=validation.get('held_out_top1');chance=validation.get('chance')
     if any(type(value) not in (int,float) or not math.isfinite(float(value)) for value in (gain,top1,chance)):
         return {'status':'SOURCE_DISJOINT_VALIDATION_UNAVAILABLE'}
-    summary={'status':'PASS','split':'SOURCE_DISJOINT','source_groups':groups,
-             'folds_used':folds_used,'folds_requested':folds_requested,
+    summary={'status':'PASS','split':'SOURCE_DISJOINT','evaluation_scope':validation.get('evaluation_scope'),
+             'source_groups':groups,'folds_used':folds_used,'folds_requested':folds_requested,
              'held_out_top1':float(top1),'chance':float(chance),
              'held_out_gain_over_chance':float(gain),
              'utility_status':validation.get('utility_status')}
     if gain<=0.0 or validation.get('utility_status')!='ABOVE_CHANCE':
         summary['status']='NO_HELDOUT_UTILITY_GAIN'
+        return summary
+    if require_baseline:
+        baseline_status=validation.get('baseline_status')
+        baseline_top1=validation.get('baseline_held_out_top1')
+        baseline_gain=validation.get('held_out_gain_over_baseline')
+        if (validation.get('evaluation_scope')!='CHANGED_OR_NEW_CAPTIONS' or baseline_status!='MEASURED'
+                or type(baseline_top1) not in (int,float) or not math.isfinite(float(baseline_top1))
+                or type(baseline_gain) not in (int,float) or not math.isfinite(float(baseline_gain))):
+            summary['status']='SOURCE_DISJOINT_BASELINE_UNAVAILABLE'
+            return summary
+        summary['baseline_status']=baseline_status
+        summary['baseline_held_out_top1']=float(baseline_top1)
+        summary['held_out_gain_over_baseline']=float(baseline_gain)
+        summary['baseline_utility_status']=validation.get('baseline_utility_status')
+        if baseline_gain<=0.0:
+            summary['status']='NO_CANDIDATE_GAIN_OVER_BASELINE'
     return summary
+
+
+def _projector_validation_inputs(home,old_record,encoder_name,keys,labels,tile=False):
+    """Return changed/new caption rows and the exact previous projector as a CV baseline."""
+    if old_record is None:
+        return None,None
+    previous=old_record.get('captions') if type(old_record) is dict else None
+    if type(previous) is not dict:
+        return [False]*len(keys),None
+    evaluation_mask=[previous.get(key)!=label for key,label in zip(keys,labels)]
+    baseline=None
+    if old_record.get('encoder')==encoder_name:
+        try:
+            baseline=Projector.load(_projector_artifact_path(home,old_record,tile=tile),old_record['sha256'])
+        except (OSError,ValueError,KeyError,TypeError):
+            baseline=None
+    return evaluation_mask,baseline
 
 
 def _gate_projector_update(store,home,state,old_record,candidate,encoder_name,encoder,cfg,*,tile=False,validation=None):
     """Measure a proposed A3 update on the previous exact replay set and scale/reject it."""
     np=_np()
-    validation_gate=_source_disjoint_update_validation(validation)
     if old_record is None:
+        validation_gate=_source_disjoint_update_validation(validation)
         return candidate,{'version':1,'status':'INITIAL','scale':1.0,'replay_n':0,
                           'validation':validation_gate,'authority':'LAB_SHADOW_ONLY'}
-    if validation_gate['status']!='PASS':
-        return None,{'version':1,'status':validation_gate['status'],'scale':0.0,'replay_n':0,
-                     'validation':validation_gate,'authority':'LAB_SHADOW_ONLY'}
     if type(old_record) is not dict:
         return None,{'version':1,'status':'MALFORMED_ACTIVE_PROJECTOR','scale':0.0,'authority':'LAB_SHADOW_ONLY'}
     if old_record.get('encoder')!=encoder_name:
         return None,{'version':1,'status':'ENCODER_MISMATCH','scale':0.0,'authority':'LAB_SHADOW_ONLY'}
+    validation_gate=_source_disjoint_update_validation(validation,require_baseline=True)
+    if validation_gate['status']!='PASS':
+        return None,{'version':1,'status':validation_gate['status'],'scale':0.0,'replay_n':0,
+                     'validation':validation_gate,'authority':'LAB_SHADOW_ONLY'}
     try:
         old=Projector.load(_projector_artifact_path(home,old_record,tile=tile),old_record['sha256'])
     except (OSError,ValueError,KeyError,TypeError):
@@ -431,10 +465,12 @@ def crossval(X,Y,thumbs=None,folds=4,ridge=1.):
     if rec:out['reconstruction']={'mse':sum(rec)/n,'mean_image_mse':sum(base)/n,'ratio':(sum(rec)/max(1e-12,sum(base))),'authority':'MEASUREMENT_ONLY'}
     return out
 
-def source_disjoint_crossval(X,Y,groups,labels,thumbs=None,folds=4,ridge=1.):
+def source_disjoint_crossval(X,Y,groups,labels,thumbs=None,folds=4,ridge=1.,
+                            baseline_predictor=None,evaluation_mask=None):
     """Source-image-disjoint A3 validation; row-wise crossval is diagnostic only."""
     return _source_disjoint_crossval(
-        Projector, X, Y, groups, labels, thumbs=thumbs, folds=folds, ridge=ridge
+        Projector, X, Y, groups, labels, thumbs=thumbs, folds=folds, ridge=ridge,
+        baseline_predictor=baseline_predictor, evaluation_mask=evaluation_mask
     )
 
 # ---------------------------------------------------------------- TEACHER EYE
@@ -647,8 +683,10 @@ def train(runtime,encoder=None,cfg=DEFAULTS):
     if len(X)<cfg['min_train']:raise ValueError('Zu wenig beschriebene Bilder (%d < %d); erst :image describe'%(len(X),cfg['min_train']))
     name,enc=encoder or text_encoder(runtime,cfg);Y=enc(caps)
     groups=[key.split(':',1)[0] for key in ids]
-    cv=source_disjoint_crossval(X,Y,groups,caps,thumbs=T,ridge=cfg['ridge'])
     training_sources=source_lineage(st['images'],ids);old=st.get('projector')
+    evaluation_mask,baseline=_projector_validation_inputs(runtime.home,old,name,ids,caps,tile=False)
+    cv=source_disjoint_crossval(X,Y,groups,caps,thumbs=T,ridge=cfg['ridge'],
+                                baseline_predictor=baseline,evaluation_mask=evaluation_mask)
     candidate=Projector(cfg['ridge']).fit(X,Y)
     p,gate=_gate_projector_update(runtime.store,runtime.home,st,old,candidate,name,enc,cfg,tile=False,validation=cv)
     if p is None:
@@ -719,8 +757,10 @@ def train_tiles(runtime,encoder=None,cfg=DEFAULTS):
     if len(set(texts)-{BACKGROUND})<2 or len(X)<cfg['min_train']:raise ValueError('Zu wenig beschriebene Bildbereiche für Kacheln; erst :image describe (g, Hälften, Quadranten)')
     name,enc=encoder or text_encoder(runtime,cfg);uniq=sorted(set(texts));E=dict(zip(uniq,enc(uniq)));Y=_np().stack([E[t] for t in texts])
     groups=[key.split(':',1)[0] for key in keys]
-    cv=source_disjoint_crossval(X,Y,groups,texts,ridge=cfg['ridge'])
     training_sources=source_lineage(st['images'],keys);old=st.get('tile_projector')
+    evaluation_mask,baseline=_projector_validation_inputs(runtime.home,old,name,keys,texts,tile=True)
+    cv=source_disjoint_crossval(X,Y,groups,texts,ridge=cfg['ridge'],
+                                baseline_predictor=baseline,evaluation_mask=evaluation_mask)
     candidate=Projector(cfg['ridge']).fit(X,Y)
     p,gate=_gate_projector_update(runtime.store,runtime.home,st,old,candidate,name,enc,cfg,tile=True,validation=cv)
     if p is None:
