@@ -12,7 +12,7 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-SOURCE_FOCAL_GIT_BLOB = "a0588a768cc91266ef02243bcfda2e631860d8ad"
+SOURCE_FOCAL_GIT_BLOB = "41c850b4a4b6de356a7e1049a9df56b085f76f9f"
 CROSS_SCALE_RULE = "DISJOINT_SAME_SOURCE_SPANS_AND_LOW_LEXICAL_OVERLAP"
 
 BODY_MARKER = b"BODY=('B1_DETAIL','B2_GIST')\n"
@@ -36,7 +36,7 @@ def apply_staged_focal(code_dir: Path, raw: bytes) -> bytes:
         raise ValueError("frozen focal.py missing or unsafe")
     if git_blob_sha1(source.read_bytes()) != SOURCE_FOCAL_GIT_BLOB:
         raise ValueError("frozen focal.py source changed; review a new overlay")
-    if b"direct_action='SOURCE_COPY'" not in raw:
+    if b"add('SOURCE_COPY',1.,0.,'local_text_only',1.,'EXACT_RENDER')" not in raw:
         raise ValueError("base stage is not the reviewed arithmetic/C5 candidate")
     if raw.count(BODY_MARKER) != 1 or raw.count(REDUNDANCY_LINE) != 1:
         raise ValueError("focal scale-diversity anchors changed")

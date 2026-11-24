@@ -13,6 +13,7 @@ SOURCE_SHA256 = {
     # Exact release, reviewed World builder, and reviewed Termux builder output.
     'a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38',
     '1a0f36bc7d560550cc8bce69ba57902ea39116a5632275887f8034a60714cc47',
+    '7447240c5ebb98e9bb5c33f7ffe6c9f4a154766de346c5c4af1ee135855f13c7',
     'a217e50b6a821675e2b799d1d4de8c957708aa04aabc95a2e34da9b24c0c215b',
     '0196f880576a1f1f95840ef12eb0b35928f3f442715f3d86f17dc38c4c22305d',
     'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2',
@@ -60,9 +61,10 @@ REPLACEMENTS = (
         "            background_attempts=0\n",
     ),
     (
-        "                if role==(meta.get('late_watch') or {}).get('offered'):continue  # WP-U3: this body already ran during the output\n"
+        "                if latewatch.postcommit_consumed(meta,role):continue  # WP-U3: retry failed late-watch offers; avoid duplicate or concurrent body work\n"
         "                if self.guard.update(self.resources())!='NORMAL' or not rmodes.policy(self.guard.mode)['background_observers']:break\n"
         "                if not self.jobs.empty() or self.cancel_event.is_set():break\n",
+        "                if latewatch.postcommit_consumed(meta,role):continue  # WP-U3: retry failed late-watch offers; avoid duplicate or concurrent body work\n"
         "                # Re-evaluate the live cap after *each* attempt. A switch\n"
         "                # from GREEN to YELLOW stops after one, including failure.\n"
         "                if self.guard.update(self.resources())!='NORMAL':break\n"
