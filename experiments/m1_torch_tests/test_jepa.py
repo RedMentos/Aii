@@ -175,6 +175,7 @@ class JEPAModelTests(unittest.TestCase):
 
     def test_streaming_validation_collapse_telemetry(self):
         model = JEPAForecaster(self.config)
+        model.scaler.fit(self.dataset)
         result = evaluate_jepa(model, self.dataset, batch_size=64)
         self.assertGreater(result["n_windows"], 0)
         self.assertTrue(np.isfinite(result["latent_mse"]))
@@ -183,6 +184,7 @@ class JEPAModelTests(unittest.TestCase):
 
     def test_torch_batch_adapter_returns_numpy_forecasts(self):
         model = DirectMAEForecaster(self.config)
+        model.scaler.fit(self.dataset)
         predictor = TorchBatchPredictor(model, name="direct_mae")
         batch = next(self.dataset.iter_batches("validation", batch_size=8))
         prediction = predictor.predict(batch)
