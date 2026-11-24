@@ -246,3 +246,76 @@ def test_registry_starts_fresh_for_a_new_consent_receipt():
     assert renewed["voice_evidence"] == 0.0
     assert renewed["voice_active"] is False
     assert len(registry) == 1
+
+
+def test_turn_candidates_separate_speech_onset_eot_and_unverified_floor_transfer():
+    state = TemporalVoiceEvidence()
+    first = step(state, 0, "VOICED")
+    second = step(state, 40, "VOICED")
+    first_candidates = second["turn_candidates"]
+    assert first["turn_candidates"]["speech_candidate"] is False
+    assert first_candidates["speech_candidate"] is True
+    assert first_candidates["interrupt_candidate"] is True
+    assert first_candidates["eot_candidate"] is False
+    assert first_candidates["floor_transfer_verified"] is False
+    assert first_candidates["floor_transfer_status"] == "UNVERIFIED"
+
+    for t in range(80, 440, 40):
+        result = step(state, t, "SILENCE")
+        assert result["turn_candidates"]["eot_candidate"] is False
+    final = step(state, 440, "SILENCE")
+    candidates = final["turn_candidates"]
+    assert candidates["eot_candidate"] is True
+    assert candidates["speech_candidate"] is False
+    assert candidates["interrupt_candidate"] is False
+    assert candidates["observed_silence_ms"] == 400
+    assert candidates["minimum_silence_ms"] == 400
+    assert candidates["floor_transfer_verified"] is False
+    assert step(state, 480, "SILENCE")["turn_candidates"]["eot_candidate"] is False
+
+
+def test_turn_candidates_require_sustained_voice_and_do_not_count_noise_as_silence():
+    short = TemporalVoiceEvidence()
+    step(short, 0, "VOICED")
+    for t in range(40, 440, 40):
+        result = step(short, t, "SILENCE")
+        assert result["turn_candidates"]["eot_candidate"] is False
+
+    noisy = TemporalVoiceEvidence()
+    step(noisy, 0, "VOICED")
+    step(noisy, 40, "VOICED")
+    for index, t in enumerate(range(80, 480, 40)):
+        hint = "UNVOICED_NOISE" if index % 2 == 0 else "IMPULSIVE"
+        result = step(noisy, t, hint)
+        assert result["turn_candidates"]["eot_candidate"] is False
+        assert result["turn_candidates"]["observed_silence_ms"] == 0
+    final = None
+    for t in range(480, 880, 40):
+        final = step(noisy, t, "SILENCE")
+    assert final["turn_candidates"]["eot_candidate"] is True
+    assert final["turn_candidates"]["floor_transfer_verified"] is False
+
+
+def test_turn_candidate_silence_clock_counts_only_new_window_suffix():
+    state = TemporalVoiceEvidence()
+    step(state, 0, "VOICED")
+    step(state, 40, "VOICED")
+    first = step(state, 80, "SILENCE")
+    assert first["turn_candidates"]["observed_silence_ms"] == 40
+    overlap = state.update(
+        source_id="mic-a",
+        generation_id="g1",
+        start_ms=100,
+        end_ms=140,
+        cues=cue("SILENCE"),
+    )
+    assert overlap["observed_ms"] == 20
+    assert overlap["turn_candidates"]["observed_silence_ms"] == 60
+    assert overlap["turn_candidates"]["eot_candidate"] is False
+
+
+def test_turn_candidate_config_rejects_unbounded_or_boolean_eot_thresholds():
+    with pytest.raises(ValueError, match="eot_silence_ms"):
+        TemporalVoiceEvidence(eot_silence_ms=0)
+    with pytest.raises(ValueError, match="eot_silence_ms"):
+        TemporalVoiceEvidence(eot_silence_ms=True)
