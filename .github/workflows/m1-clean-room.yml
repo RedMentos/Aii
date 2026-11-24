@@ -9,7 +9,7 @@ on:
       - "experiments/m1/**"
       - ".github/workflows/m1-clean-room.yml"
 concurrency:
-  group: m1-clean-room-${{ github.ref }}
+  group: m1-clean-room-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
