@@ -1459,3 +1459,15 @@ The linked `alikayyam/sticky_moe` repository README declares MIT, but the root `
 - JEPA temporal PR #2447 remains DRAFT at `8be6498`: temporal T8, combined online JEPA, incremental WorldJEPA, privacy, deployment-integrity and some owner-read checks pass, but optimizer-resume, owner-read staged, Core same-turn consumer and staged/integrated workflows fail. Its B1/B2 readouts remain SHADOW adapters, not native body-weight updates. Stacked Boss rebase #2454 is currently mergeable=false with no workflow runs; Core native-probe stack #2457 has one deployment workflow success and five failures, including staged/JEPA consumers. Production B3 stays OFF; no native probe was run.
 - M1 #2452 current exact head `2104f72` has a failing M1 test workflow. M1 #2453 `f7f7520` has a passing DATA workflow only. Neither is a real UCI cohort, model training, weight update or Redmi result. Preserve all Ridge-AR, Raw-Window-Probe, persistence, train-mean and direct-MAE/JEPA controls.
 - These open branches are reviewed but not silently integrated: no exact current-base CI/consumer proof justifies merging them into the Boss candidate. Keep file ownership with Core, QA, JEPA/Memory and Perception; Boss owns only cross-lane integration and synchronized handoff/coverage.
+
+
+## Core & Harness — run 23 — 2026-11-24T20:18:58.353Z
+
+- Release base remains `8d93236c753f0194224c19edc7411d8d7082b1d6`; PR #2462 current branch head is `d5aa910c0dd8253fe74d2baf0694ba1bdcca6d07` (DRAFT / NOT_RELEASED).
+- Repaired the exact C4 focal overlay anchor for the bounded arithmetic/C5 `direct_action` output; updated the postcommit regression to reflect the fair B1-expire → B2 pre-answer slice → C3 order and prevent duplicate postcommit delivery of an already-produced B2 offer.
+- The controller guard now emits the rejected SHA-256 and pins the exact composed Runtime output `c60d04eba1d7a7b3ca16ddc0e2595dd5f49e1be15f8dde25ab2f6e3a92fe7b65`. The recovery loader now reports expected/actual hash and symlink status; its exact guard file SHA-256 is `f667722d693d3535183a9ee773cd761938d9fd33e56dc381b77e309bf794f93d`.
+- Recovery-12 blob `e949631f88892dc8815e5e06eaa6d4b21e153093`, Recovery-21 SHA-256 `ff4e487ac967a7ac30351692642723f5692f28a5ef744a5f121a4aa6503388b5`, stage SHA-256 `f4db8fa4e99dd3205808d4ebd9f3a5087593fed0a3cb76145b709c0cce21efcc`; RuntimeDeploy is rebound to that exact stage.
+- Exact PR CI on the current tree is not yet verified. The earlier c39d42 run failed on a stale guard-loader hash and is superseded by the diagnostic and rebind. Push-only consumer/offline workflows were queued on the identical pre-checkpoint tree; no staged/integrated success is claimed.
+- Full LOCAL_LINUX Aii suite: BLOCKED / NOT_RUN (no checkout; DNS failure). Redmi: REDMI_UNVERIFIED; last shared receipt says AI STOPPED_BY_USER, no device action. Release: NOT_RELEASED.
+- Next: trigger and inspect the exact current PR matrix; fix only measured remaining pins/anchors. Then Boss integrates #2462 with green #2464/#2451 candidates; QA owns porting #2427's ActivityScenario process-death harness into #2450.
+- User action: NONE.
