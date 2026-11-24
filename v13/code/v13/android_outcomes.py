@@ -362,9 +362,17 @@ def accept_and_persist_companion_receipt(
     receipt: dict,
     *,
     on_outcome: Callable[[ActionOutcome], None] | None = None,
-    clock: Callable[[], float] = time.time,
+    clock: Callable[[], float] | None = None,
 ):
-    """One C5 receipt-consumer call: authenticate, persist, then notify downstream."""
+    """One C5 receipt-consumer call: authenticate, persist, then notify downstream.
+
+    When the caller does not supply a clock, reuse the verifier's clock so
+    signature validity and the persisted verification timestamp share one
+    time source (important for deterministic clocks and bounded receipt windows).
+    """
+    if clock is None:
+        verifier_clock = getattr(verifier, "clock", None)
+        clock = verifier_clock if callable(verifier_clock) else time.time
     outcome = accept_companion_receipt(
         broker, verifier, action_id, receipt, on_outcome=None, clock=clock,
         finalize_broker=False,
