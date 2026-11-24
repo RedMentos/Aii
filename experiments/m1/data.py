@@ -358,8 +358,17 @@ def build_dataset(
     rows: Sequence[MinuteRow],
     channels: Sequence[str],
     config: DataConfig,
+    *,
+    allow_fractional_split: bool = False,
 ) -> tuple[dict[str, list[Window]], dict[str, SplitStats], dict[str, object]]:
     _validate_rows(rows, channels)
+    if type(allow_fractional_split) is not bool:
+        raise ValueError("allow_fractional_split must be a boolean")
+    if config.validation_start is None and not allow_fractional_split:
+        raise ValueError(
+            "dataset building requires fixed calendar split dates; "
+            "set validation_start/test_start or explicitly allow_fractional_split for fixtures"
+        )
     bounds = build_chronological_boundaries(len(rows), config, rows[0].timestamp)
     datasets: dict[str, list[Window]] = {}
     stats: dict[str, SplitStats] = {}
