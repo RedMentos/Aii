@@ -153,7 +153,7 @@ def train_jepa(
 
 
 def train_direct_mae(
-    model: DirectMAEForecaster,
+    model,
     dataset: ArrayDataset,
     *,
     epochs: int = 5,
