@@ -141,6 +141,22 @@ class Watcher:
                               **{k:self.info[k] for k in ('at_char','reason','offer_id','provisional_chars','revision_chars') if k in self.info}})
         return extra
 
+def postcommit_consumed(meta,role):
+    """Skip post-commit only when late-watch delivered the role or is still running it.
+
+    A failed late-watch attempt has no offer_id and must not suppress the normal
+    post-commit retry. STILL_RUNNING is kept exclusive to avoid concurrent
+    native generations of the same body.
+    """
+    info=meta.get('late_watch') if isinstance(meta,dict) else None
+    if not isinstance(info,dict) or info.get('offered')!=role:
+        return False
+    offer_id=info.get('offer_id')
+    if isinstance(offer_id,str) and offer_id:
+        return True
+    return info.get('status')=='STILL_RUNNING'
+
+
 def start(r,e,version,offers,deadline,meta,runner,eligible=True):
     """Called right before the C3 token loop. Never raises; always returns a Watcher (inert unless a body runs)."""
     try:
