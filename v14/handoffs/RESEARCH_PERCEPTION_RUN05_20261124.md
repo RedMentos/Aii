@@ -47,7 +47,8 @@
 ## Research and next useful step
 
 - No new paper is claimed as read in this run. The implementation reuses the full R-101 review: Quan, Wu & Montana, *Exact Federated Continual Unlearning for Ridge Heads on Frozen Foundation Models*, arXiv:2603.12977v3 / ECML PKDD 2026, DOI 10.1007/978-3-032-37673-2_7.
-- Next Perception research/implementation: near-duplicate image/source grouping and source-level uncertainty for A3 source-disjoint validation. Distinct SourceRefs are not automatically independent; add perceptual/session grouping and a negative control before claiming out-of-source generalization.
+- Full-read research added as R-140: *A Multilevel Visual and Textual Framework for Near-Duplicate Diagram Detection in Electronic Documents*, Information 17(9), 897 (2026-09-15), DOI https://doi.org/10.3390/info17090897, CC BY 4.0. Its 25-pair hard-negative challenge shows high DINOv2 false positives on shared layouts; the paper's diagram-domain GPU timings are not Redmi evidence.
+- LOCAL_LINUX synthetic dHash stress probe: 100 generated diagrams, 500 near-duplicate transforms and 100 shared-template hard negatives. Threshold 2 yielded TPR 0.704 / FPR 0.53; threshold 5 yielded TPR 0.922 / FPR 0.92. Adding a simple RGB histogram gate did not reduce FPR. Do not auto-group A3 sources by perceptual hash; treat it only as a candidate/uncertainty signal and add hard-negative controls before any split change.
 - Keep the larger V14 gaps open: real multimodal Android input, audio provider, A/B/C consumer path, native latent exchange, true JEPA/gradient learning, B1/B2 response quality, sleep/replay and verified updater.
 
 ## Device and user action
