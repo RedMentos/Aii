@@ -174,6 +174,8 @@ class StageControllerChecks(unittest.TestCase):
         from scripts import record_only_controller_guard_20261116 as guard
         guard_file = CODE / 'scripts/record_only_controller_guard_20261116.py'
         print('V14_GUARD_SHA256', hashlib.sha256(guard_file.read_bytes()).hexdigest(), flush=True)
+        postcommit_file = CODE / 'scripts/postcommit_observer_candidate_20261116.py'
+        print('V14_POSTCOMMIT_SHA256', hashlib.sha256(postcommit_file.read_bytes()).hexdigest(), flush=True)
         for name, allowed in guard.PINS.items():
             source = CODE / name
             if source.is_file() and not source.is_symlink():
