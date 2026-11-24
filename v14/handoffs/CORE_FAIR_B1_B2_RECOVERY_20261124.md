@@ -1,3 +1,30 @@
+## Exact current checkpoint - 2026-11-24T05:14:43Z
+
+PR #2462 code/test SHA: 58f1587c7e8cbd5cb63c8c46afbd1c645c3e6c0f. Base: 8d93236c753f0194224c19edc7411d8d7082b1d6. State: OPEN / DRAFT / NOT_RELEASED.
+
+### Added C4-to-C3 receipt
+
+FocalLoop.run() now records c4_offer_context_ready after source/freshness-checked coalition selection and before C3 prompt assembly. It stores selected OfferPacket IDs, role, status and count. The Python 3.13 same-turn Runtime test passes: both body offers are selected into the same C4 coalition, both summaries enter C3 context, C4 IDs match the synthetic template receipt, and a tampered offer is rejected without a second receipt. This is synthetic Runtime evidence, not native model execution or semantic attention.
+
+### Exact-head evidence
+
+- LOCAL_LINUX isolated Python telemetry sanitization and C4/template ID match/tamper checks: PASS.
+- Full local Aii suite: BLOCKED / NOT_RUN. No checkout is mounted and GitHub DNS fails.
+- CI direct same-turn Runtime consumer, Python 3.13: PASS. The overall same-turn job fails at the separate staged-composition step.
+- Python 3.14 same-turn: focused dependency installation still in progress at last poll.
+- Staged-runtime: FAIL, 32 failed / 243 passed / 10 skipped / 2 errors / 37 subtests. Integrated-regression was still running at last poll. Owner-read test passed, but Python 3.14 staged bootstrap failed at the same immutable Runtime pin.
+- Runtime deploy integrity, native tap provenance, combined online JEPA, JEPA transactional update, JEPA receipt integrity and release-event integration: PASS. Safe-additive workflow: policy-skipped.
+- Runtime Git blob 80eddec84f7a5ef06c1c72007ca08c44b694ace0; SHA-256 7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186. Four source consumers still pin old SHA a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38. No gate was weakened.
+- Boss coordination: #2443 comment 7122728300. QA coordination: #2455 comment 7122728809. Core did not edit their pin files.
+
+### Device and next step
+
+Last stored private observation: runtime STOPPED_BY_USER / autostart OFF. No fresh device receipt, update request, service restart, shell, model/weight/permission change or data mutation in this run. Redmi remains REDMI_UNVERIFIED; PR is NOT_RELEASED.
+
+Next: Boss/Integrator recompose the four pinned Runtime consumers and downstream recovery/stage/deployer chain; QA reruns exact Python 3.13/3.14 same-turn, staged, integrated, owner-read and migration checks. After a verified release and separately authorized service run, measure per-role cold/warm load, prefill, TTFT, tokens and PSS. No user action now.
+
+---
+
 # Core & Harness — fair B1/B2 recovery and failed late-watch retry
 
 **Checkpoint:** 2026-11-24T03:42:36Z  
