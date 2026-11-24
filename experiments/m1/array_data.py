@@ -248,7 +248,7 @@ class ArrayDataset:
         if split == "test" and not self._test_authorized:
             raise PermissionError("test split is locked until hash-bound preregistration is verified")
         start, end = self.bounds[split]
-        return range(max(self.config.input_length - 1, start), end - self.config.horizon)
+        return range(max(self.config.max_candidate_input_length - 1, start), end - self.config.horizon)
 
     def _valid_mask(self, origins: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         cfg = self.config
