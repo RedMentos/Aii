@@ -38,7 +38,7 @@ Core tests/data path: numpy. Model training: PyTorch CPU or CUDA.
     python -m pip install -r experiments/m1/requirements-ml.txt --index-url https://download.pytorch.org/whl/cpu
 
 ## Verification status
-- Earlier core suite: 62 synthetic tests passed on Python 3.12, 3.13 and 3.14 at commit 0162b7d8d... (historical; subsequent calendar/loader changes are awaiting the latest CI run).
+- Earlier core suite: 62 synthetic tests passed on Python 3.12, 3.13 and 3.14 at commit 016239ff53b5de227b8b987cf1f39873a975f252 (historical; subsequent calendar/loader changes are awaiting the latest CI run).
 - Earlier torch suite: passed on Python 3.12/3.13/3.14 before the later scaler/probe changes; current torch suite is awaiting CI.
 - No real UCI evaluation has been run in this workspace.
 - No test-year windows have been opened.
