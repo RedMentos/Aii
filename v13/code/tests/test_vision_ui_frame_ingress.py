@@ -1158,7 +1158,8 @@ def test_temporal_visual_registry_prepare_is_non_mutating_and_stale_ticket_fails
     changed = {tile: [0.8] * 16 for tile in TILE_IDS}
     common = dict(
         capture_session_id="session-atomic", generation_id="generation-a",
-        consent_receipt_ref="frame-a", start_ms=1000, end_ms=1033,
+        consent_receipt_ref="frame-a", session_consent_receipt_ref="session-consent-atomic",
+        start_ms=1000, end_ms=1033,
         tile_luminance=base,
     )
 
