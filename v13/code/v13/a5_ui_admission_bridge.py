@@ -123,11 +123,17 @@ def _summary(observation: dict) -> str:
 
 
 def _provider_args(observation: dict) -> tuple:
-    return (
+    # Preserve the seven-argument legacy provider contract for one-shot grants.
+    # A session-scoped receipt is an additional authority input, not metadata:
+    # every provider check and guard must receive the exact signed session value.
+    args = (
         observation["source_id"], observation["consent_receipt_ref"],
         observation["capture_session_id"], "observe_ui", observation["capture_method"],
         observation["capture_scope"], observation["api_level"],
     )
+    if "session_consent_receipt_ref" in observation:
+        return args + (observation["session_consent_receipt_ref"],)
+    return args
 
 
 class UIObservationLease:
@@ -233,9 +239,13 @@ def ui_observation_lease(runtime, observation, generation_id, consent_check,
         registry lock; this callback tombstones the source and clears caches.
 
     consent_guard shares its synchronization primitive with revocation and
-    yields literal True only while the OS grant is active. The lease stays held
-    through downstream reads/generation; pre-lock cancellation lets C3 exit
-    before the provider can acquire the guard and run post-lock cleanup.
+    yields literal True only while the OS grant is active. For an observation
+    carrying session_consent_receipt_ref, that exact value is appended to both
+    consent_check/consent_guard arguments and passed by keyword to
+    revocation_subscribe. A provider that cannot authenticate and revoke this
+    stable session lineage fails closed; legacy one-shot observations retain
+    their original callback arity. The lease stays held through downstream
+    reads/generation; pre-lock cancellation lets C3 exit before post-lock cleanup.
     """
     observation = validate_ui_observation(observation)
     if type(generation_id) is not str or not generation_id:
@@ -262,10 +272,19 @@ def ui_observation_lease(runtime, observation, generation_id, consent_check,
         return (revoke_callback or (lambda sid: revoke_ui_observation(runtime, sid)))(observation["source_id"])
 
     try:
-        unsubscribe = revocation_subscribe(
-            observation["source_id"], observation["consent_receipt_ref"],
-            observation["capture_session_id"], request_cancel, cleanup,
-        )
+        if "session_consent_receipt_ref" in observation:
+            # Session end/revocation must be subscribed against the same stable
+            # authority lineage that permits temporal history across frame receipts.
+            unsubscribe = revocation_subscribe(
+                observation["source_id"], observation["consent_receipt_ref"],
+                observation["capture_session_id"], request_cancel, cleanup,
+                session_consent_receipt_ref=observation["session_consent_receipt_ref"],
+            )
+        else:
+            unsubscribe = revocation_subscribe(
+                observation["source_id"], observation["consent_receipt_ref"],
+                observation["capture_session_id"], request_cancel, cleanup,
+            )
     except Exception:
         raise PermissionError("two-phase UI revocation subscription is unavailable") from None
     if not callable(unsubscribe):
