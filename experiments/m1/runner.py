@@ -17,6 +17,7 @@ from dataclasses import asdict, dataclass, fields
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterator
+from urllib.parse import urlsplit
 
 import numpy as np
 import torch
@@ -31,6 +32,7 @@ from .baselines import (
     TrainMedianBaseline,
 )
 from .data import DataConfig
+from .download_uci import DATASET_DOI, DATASET_LICENSE, EXPECTED_MEMBER
 from .dlinear import MatchedDLinearForecaster, MatchedNLinearForecaster
 from .gru import RawGRUForecaster
 from .jepa import (
@@ -311,6 +313,30 @@ def _sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _load_download_manifest(source: Path, raw_file_sha256: str) -> dict | None:
+    """Bind an optional UCI download sidecar to the exact bytes being loaded."""
+    sidecar = source.with_name(source.name + ".provenance.json")
+    if not sidecar.is_file():
+        return None
+    manifest = json.loads(sidecar.read_text(encoding="utf-8"))
+    if not isinstance(manifest, dict):
+        raise ValueError("UCI download provenance sidecar must contain an object")
+    if manifest.get("schema") != "m1.uci-download-provenance.v1":
+        raise ValueError("unsupported UCI download provenance schema")
+    if manifest.get("file_sha256") != raw_file_sha256:
+        raise ValueError("UCI sidecar file SHA-256 does not match the loaded source")
+    if manifest.get("file_size_bytes") != source.stat().st_size:
+        raise ValueError("UCI sidecar file size does not match the loaded source")
+    if manifest.get("doi") != DATASET_DOI or manifest.get("license") != DATASET_LICENSE:
+        raise ValueError("UCI sidecar DOI/license does not match the registered dataset")
+    if Path(str(manifest.get("member_name", ""))).name != EXPECTED_MEMBER:
+        raise ValueError("UCI sidecar member name does not match the expected dataset file")
+    source_url = urlsplit(str(manifest.get("source_url", "")))
+    if source_url.scheme != "https" or source_url.hostname != "archive.ics.uci.edu":
+        raise ValueError("UCI sidecar source URL is not the official HTTPS host")
+    return manifest
+
+
 def _count_train_windows(dataset: TrainingWindowView, batch_size: int) -> int:
     return sum(
         len(batch.origin_indices)
@@ -519,10 +545,13 @@ def run_validation_experiment(
     output_path: str | Path,
     raw_file_sha256: str | None = None,
     raw_file_size_bytes: int | None = None,
+    source_manifest: dict | None = None,
 ) -> tuple[dict, str]:
     """Train selected models on train only and compare them on full validation only."""
     if dataset.config != config.data_config():
         raise ValueError("pilot data config does not match loaded dataset config")
+    if source_manifest is not None and source_manifest.get("file_sha256") != raw_file_sha256:
+        raise ValueError("download sidecar is not bound to the raw file hash")
     if config.device.startswith("cuda") and not torch.cuda.is_available():
         raise RuntimeError("CUDA was requested but is not available")
     if "jepa_pretrain" in config.models and config.batch_size < 2:
@@ -621,6 +650,7 @@ def run_validation_experiment(
         "citation": "Hebrail, G. & Berard, A. (2006). Individual Household Electric Power Consumption [Dataset]. UCI Machine Learning Repository.",
         "raw_file_sha256": raw_file_sha256,
         "raw_file_size_bytes": raw_file_size_bytes,
+        "download_manifest": source_manifest,
         "parsed_dataset_sha256": dataset.dataset_sha256,
         "data_config_sha256": dataset.config_sha256,
         "split_boundaries_sha256": dataset.split_sha256,
@@ -655,12 +685,14 @@ def run_uci_validation(
         after.st_size, after.st_mtime_ns, after.st_ino
     ):
         raise ValueError("UCI file changed while the runner computed provenance")
+    source_manifest = _load_download_manifest(source, raw_hash)
     return run_validation_experiment(
         dataset,
         config,
         output_path=output_path,
         raw_file_sha256=raw_hash,
         raw_file_size_bytes=after.st_size,
+        source_manifest=source_manifest,
     )
 
 
