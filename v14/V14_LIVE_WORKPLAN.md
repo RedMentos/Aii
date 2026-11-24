@@ -1,6 +1,6 @@
 ## Research & Perception — run 17: RAW EAR interval ordering and semantic endpoint research (2026-11-24)
 
-- Current-base PR #2472 is at exact head `8df6a16fd5dced71a2643eae141f9f204fc66855`, based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- Current-base PR #2472 is at code-bearing SHA `8df6a16fd5dced71a2643eae141f9f204fc66855` (later commits on the branch are documentation/handoff only), based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`.
 - Added a source-local ordering baseline for RAW EAR intervals: start_ms cannot move backwards within a source/generation even if end_ms advances; equal-start cumulative windows and ordinary overlap remain valid. Rejected windows do not mutate the accepted ordering baseline. The comparator workflow now pins the exact updated source blob `f5fcab22e5d5463bcc3e1ab1a5ce4a586deb4b3e`.
 - Exact source/test/workflow commits: `c5a68bafed30365eec7719c56f190b76f9061ea9`, `87dc1cc8a2a27fb74188a3c1ef66559e87830ac3`, `8df6a16fd5dced71a2643eae141f9f204fc66855`.
 - LOCAL_LINUX isolated reproduction: 5 assertions PASS. Full local Aii suite BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS previously failed.
