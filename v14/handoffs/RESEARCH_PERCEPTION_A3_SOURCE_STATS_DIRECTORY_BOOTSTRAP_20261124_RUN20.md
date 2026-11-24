@@ -58,3 +58,15 @@ The existing vision/source-lineage workflow's push path filter already included 
 - Latest private device metadata snapshot (2026-11-24 09:28:11Z): 5 turns, zero valid B1/B2 offers, two failed native attempts for each role, no semantic-use proof and no native latent exchange; two later C3 prefill phases were 33–37 seconds. No transcript or device identifier copied.
 - Last authenticated updater receipt (2026-11-23 14:24Z) reports auto-update enabled and runtime/dashboard UP_TO_DATE at fb563d771fe2d493c4ec25abe94280981d24ef5c. Current development HEAD 8d93236c753f0194224c19edc7411d8d7082b1d6 is newer and is not verified installed. New read-only requests expired without device_status: NO_LIVE_RECEIPT.
 - No UPDATE_REQUEST, shell, LOG_PAGE, CHAT_SEND, model/weight/permission change, user-data mutation or deployment.
+
+
+## Run 21 follow-up — 2026-11-25
+
+- **Code/test commit:** `8d0861188a61290366cd2aa377edcfac0c625610` on this branch; PR #2484 remains DRAFT/NOT_RELEASED.
+- **Hardening:** the helper now checks directory ownership and uses descriptor-relative `fchmod(0700)` for both existing and newly created `data/` and `data/vision/`; this addresses permissive legacy directories without following symlinks. Added a production-builder regression starting from 0755 directories.
+- **LOCAL_LINUX CPython 3.13.5 isolated harness:** PASS 4/4 for fresh creation, 0755→0700 hardening, `data` symlink rejection and `vision` symlink rejection. This is not full package pytest. Full local checkout tests remain NOT_RUN.
+- **Exact GitHub head:** 8d0861188a61290366cd2aa377edcfac0c625610. Workflow runs 45506945163 (vision source-lineage), 45506945574 (staged/integrated), 45506945185 (runtime deployment integrity), 45506945923 (MediaProjection ingress) were IN_PROGRESS at readback; no CI PASS claimed.
+- **Research:** R-144 (Si & Qin, arXiv:2608.16141) supports tracking representation drift alongside retention/new learning instead of treating all drift as failure; the reproduction repository has no LICENSE. R-145 (Yan et al., arXiv:2609.25146) documents hierarchical sparse expert routing plus multi-timescale integration; official FlyGCL code is MIT, but its full visual/VLA stacks use ViT/CLIP/DiT and multiple heavyweight packages, so no direct Android port or code reuse.
+- **Device:** REDMI_UNVERIFIED. No device receipt, microphone capture, model/weight/permission change, update request or deployment.
+- **Next:** read back all four exact-head workflows; if source-lineage passes, Core/QA must integrate the helper into the materialized source closure and rebind pins, then rerun staged/integrated/consumer/migration tests. Do not merge/release before that.
+- **User action:** none.
