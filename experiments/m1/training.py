@@ -30,6 +30,15 @@ def build_seeded_model(model_factory, config, seed: int, **kwargs):
 
 def current_git_commit(repo_root: str | Path | None = None) -> str:
     """Resolve the executing repository HEAD; never read the expected hash from preregistration."""
+    status = subprocess.run(
+        ["git", "status", "--porcelain", "--untracked-files=all"],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    if status.stdout.strip():
+        raise RuntimeError("executing repository must have a clean working tree for preregistration")
     result = subprocess.run(
         ["git", "rev-parse", "HEAD"],
         cwd=repo_root,
