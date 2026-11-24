@@ -30,7 +30,7 @@ This is a small replay-measured A3 update-effect gate. It is not MANGO's meta-le
 - LOCAL_LINUX/SYNTHETIC: isolated NumPy script passed affine endpoint equivalence, a replay-preserving scaled update, full-scale no-regression and destructive-update rejection. This is a helper-level experiment, not a full local Aii checkout.
 - CI / Python 3.13: py_compile + tests/test_vision.py + tests/test_vision_source_lineage.py — 31 passed; frame-ingress suite — 39 passed.
 - CI / Python 3.14: same targeted suites — 31 passed and 39 passed.
-- Integrated/staged runtime gates were still pending at the time of this handoff; do not call the PR integration-complete until those checks finish.
+- Integrated-regression and staged-runtime FAILED because scripts/source_lifecycle_lock_integration_candidate.py rejects the current vision.py with `unsupported lifecycle source: vision.py`. The integrated-regression job failed while staging; the broader staged-runtime suite reported 19 failed, 234 passed, 10 skipped, 2 errors and 41 subtests, with the failures cascading from the same source-lifecycle pin mismatch (including two-checkout migration reporting PARTIAL instead of UPDATED). This is an integration-owner rebind dependency, not a failure in the targeted A3/vision suites. The PR is NOT integration-complete.
 - No native model, gradient, Android microphone or Android screen-capture test is claimed.
 
 ## Integration dependency
