@@ -7,6 +7,7 @@ attention, semantic use or native latent exchange. HTTP transport is separate.
 from __future__ import annotations
 
 import json
+import math
 import re
 
 REVISION = "v13.native-offer-prompt-receipt/1"
@@ -25,6 +26,77 @@ def _result(status, offers=()):
             "source_span_revalidated_here": False,
             "native_semantic_use_proven": False,
             "learned_latent_exchange_proven": False}
+
+
+def _nonnegative_count(value):
+    return value if type(value) is int and value >= 0 else None
+
+
+def _finite_nonnegative(value):
+    if type(value) not in (int, float) or isinstance(value, bool):
+        return None
+    number = float(value)
+    return round(number, 4) if math.isfinite(number) and number >= 0 else None
+
+
+def native_prefill_evidence(prompt_tokens, timings):
+    """Compare /tokenize's prompt length with llama.cpp's processed + cached counts.
+
+    A missing timing field is UNVERIFIED, never a guessed zero. This proves
+    native prefill accounting only; it does not prove semantic attention.
+    """
+    tokenized = _nonnegative_count(prompt_tokens)
+    base = {
+        "revision": "v13.native-prefill-timing/1",
+        "status": "UNVERIFIED",
+        "verified": False,
+        "method": "LLAMA_CPP_TIMINGS_PROMPT_PLUS_CACHE_EQUALS_TOKENIZE",
+        "tokenized_prompt_tokens": tokenized,
+        "server_processed_prompt_tokens": None,
+        "server_cached_prompt_tokens": None,
+        "server_total_prompt_tokens": None,
+        "prompt_ms": None,
+        "prompt_per_second": None,
+    }
+    if type(timings) is not dict:
+        return base
+    processed = _nonnegative_count(timings.get("prompt_n"))
+    cached = _nonnegative_count(timings.get("cache_n"))
+    base.update(
+        server_processed_prompt_tokens=processed,
+        server_cached_prompt_tokens=cached,
+        prompt_ms=_finite_nonnegative(timings.get("prompt_ms")),
+        prompt_per_second=_finite_nonnegative(timings.get("prompt_per_second")),
+    )
+    if tokenized is None or tokenized == 0 or processed is None or cached is None:
+        return base
+    total = processed + cached
+    verified = total == tokenized
+    base.update(
+        status="VERIFIED" if verified else "MISMATCH",
+        verified=verified,
+        server_total_prompt_tokens=total,
+    )
+    return base
+
+
+def native_completion_receipt(witness, *, http_200, status, metrics):
+    """Join the source-bound C3 prompt witness to native server completion evidence."""
+    result = dict(witness) if type(witness) is dict else _result("RECEIPT_UNAVAILABLE")
+    metrics = metrics if type(metrics) is dict else {}
+    accepted = http_200 is True
+    prefill = native_prefill_evidence(metrics.get("prompt_tokens"), metrics.get("timings"))
+    completed = status == "FINAL" and accepted
+    result.update(
+        native_completion_http_200=accepted,
+        native_completion_completed=completed,
+        native_template_submitted=accepted and result.get("status") == "RENDERED_WITH_QUOTES",
+        native_prompt_prefill_verified=accepted and prefill.get("verified") is True,
+        native_prompt_prefill=prefill,
+        native_stream_completed=completed and metrics.get("native_stream_completed") is True,
+        native_attention_or_semantic_use_proven=False,
+    )
+    return result
 
 
 def inspect(messages, rendered_prompt, hypothesis_heading):
