@@ -276,6 +276,8 @@ class Turn(unittest.TestCase):
         self.assertEqual(meta["late_watch"].get("status"),"NO_OFFER",
                          msg=f"calls={self.calls!r}; notices={notices!r}; late_watch={meta.get('late_watch')!r}")
         self.assertFalse(meta["late_watch"].get("offer_id"))
+        late_report=json.loads(Operator(self.r).run(":latewatch"))
+        self.assertGreaterEqual(late_report["counts"].get("NO_OFFER",0),1)
         self.assertTrue(any(role=="B2_GIST" and not pre and thread!="latewatch" and not valid and status=="FINAL"
                             for role,pre,thread,valid,status in self.calls),
                         msg=f"calls={self.calls!r}; late_watch={meta.get('late_watch')!r}; notices={notices!r}")
