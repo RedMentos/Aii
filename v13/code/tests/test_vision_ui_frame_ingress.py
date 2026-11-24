@@ -1177,6 +1177,15 @@ def test_temporal_visual_registry_prepare_is_non_mutating_and_stale_ticket_fails
     assert next_frame.result["status"] == "MEASURED"
     assert registry.commit_update(next_frame) is True
 
+    # A revocation/reset must also invalidate a prepared first frame that has
+    # no committed stream entry yet.
+    pending_after_revoke = registry.prepare_update(**dict(
+        common, capture_session_id="session-revoked", consent_receipt_ref="frame-revoked",
+    ))
+    assert registry.reset(capture_session_id="session-revoked") == 0
+    assert registry.commit_update(pending_after_revoke) is False
+    assert len(registry) == 1
+
 
 def test_failed_context_delivery_does_not_commit_temporal_state_or_a4(monkeypatch):
     runtime = make_runtime(monkeypatch)
