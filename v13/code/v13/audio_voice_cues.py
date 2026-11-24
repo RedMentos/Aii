@@ -968,9 +968,17 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         # when the separate transcript-persistence/admission opt-in is active.
         if (transcript_persist_opt_in and teacher_result is not None
                 and teacher_result.get("status") == "MEASURED"):
-            teacher_text = teacher_result["segments"][0]["text"]
-            if teacher_text:
-                summary += " asr_hypothesis_untrusted=" + teacher_text[:64]
+            teacher_segment = teacher_result["segments"][0]
+            if teacher_segment.get("revision") is True:
+                # A revised streaming hypothesis replaces the earlier cumulative
+                # text; an empty delta alone would hide the correction from C3.
+                teacher_text = teacher_result.get("cumulative_hypothesis", "")
+                if teacher_text:
+                    summary += " asr_revision_untrusted=" + teacher_text[:64]
+            else:
+                teacher_text = teacher_segment.get("text", "")
+                if teacher_text:
+                    summary += " asr_hypothesis_untrusted=" + teacher_text[:64]
         # The structured packet retains every cue; reserve the bounded C3
         # summary tail for the speaker score/kind and explicit three-state decision.
         decision_suffix = f" spk_dec={speaker_change_decision}"
