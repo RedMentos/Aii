@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T12:44:40Z",
-  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
+  "updated_at": "2026-11-24T17:56:17.425Z",
+  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at 8d93236c753f0194224c19edc7411d8d7082b1d6. Core native-probe candidate PR #2451 code-tested at ea7535e8ad83f16cdbf7f5df626b96123ad309f6; exact staged/runtime, native receiver, audio/arithmetic and same-turn consumer CI passed. No local full Aii suite or Redmi proof. M1 DATA remains an isolated experimental lane.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -14,11 +14,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "CI + authenticated ANDROID_DEVICE metadata; no correct-answer/native-organ acceptance",
-      "next_step": "Recompose a fresh fair B1/B2→C4→C3 slice on b20e9; do not merge stale #2370. Its 30 s fixture leaves ~1.95 s per body, far below the last 53.2/54.2 s phone failures. Require useful source-bound OfferPacket delivery and explicit C4/C3 consumption; preserve both bodies and nontrivial-query depth.",
+      "proof_environment": "CI staged/integrated Runtime regression PASS; native B1/B2 and correct-answer acceptance OPEN; REDMI_UNVERIFIED",
+      "next_step": "Core: recompose the fair sequential B1/B2 pre-answer slice on current release HEAD 8d93236 while retaining C3 reserve and same-turn C4/C3 source-bound consumption. Do not merge stale #2370 (193 ahead / 117 behind) or #2338 (4 ahead / 118 behind). Measure delivered and consumed offers separately; no native answer claim without a fresh authorized Redmi receipt.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T11:07:22.216Z",
-      "proof": "IH-H12 output commit/C7 gate #2434 merged at 69e77bc (39/39 checks SUCCESS); #2429 source-forget merged at b20e9b1f3dd53af472055adb43da628785494ec4 (37/37 SUCCESS). Latest phone receipt #767 still reports 8bf44cb / CI_WAIT; no post-green device receipt. Correct answer UNKNOWN.",
+      "last_checkpoint": "2026-11-23T18:23:01.047Z",
+      "proof": "IH-H12 output commit/C7 gate #2434 merged at 69e77bc (39/39 checks SUCCESS); #2429 source-forget merged at b20e9b1f3dd53af472055adb43da628785494ec4 (37/37 SUCCESS). Latest phone receipt #767 still reports 8bf44cb / CI_WAIT; no post-green device receipt. Correct answer UNKNOWN. Current PR #2451 same-turn B1/B2→C4→C3 consumer matrix run 45236111088 passed on Python 3.13/3.14 (5+12+3+2 focused tests per version). This is synthetic/Store-backed consumer evidence only; it does not prove native B1/B2 offers or answer correctness. Release HEAD remains 8d93236; no fresh Redmi receipt.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -77,11 +77,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
-      "proof_environment": "CI synthetic + Android ARM64 cross-compile only; no Redmi native receiver proof",
-      "next_step": "Core: add a dedicated local :callosum native-probe handler bound to trusted last-source tap and exact installed model manifests, with bounded deadline/cancellation and a separate local one-shot approval. Add real operator-dispatch end-to-end and no-local-approval negative tests. Only after exact CI and installed release may a separate user decision authorize one probe; production B3 remains OFF until held-out utility/parity/zero/shuffle/OOD controls pass.",
+      "proof_environment": "LOCAL_LINUX_ISOLATED overlay PASS; exact Python 3.13/3.14 CI PASS; Linux pinned API PASS; Android ARM64 cross-compile PASS; full local Aii NOT_RUN; REDMI_UNVERIFIED",
+      "next_step": "Verify exact-head PR #2451 native receiver workflow and matrix tests; fix any failure and obtain independent Boss/QA review. The fixed four-pair matrix remains diagnostic-only; production B3 stays OFF until trained projection, source-disjoint held-out utility, exact/no-message baselines, zero/shuffle/OOD controls and retention are measured.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T11:28:06.923Z",
-      "proof": "Core #2323 remains diagnostic-only and production B3 OFF/SYMBOLIC. PR #2332's remote owner-read allowlist checks are not a runnable native probe: independent exact-source readback at candidate 198a490e confirms operator.py dispatches to callosum.operator_command, which still rejects native-probe; no local source-bound tap/model consumer or distinct local one-shot approval exists. Boss and QA recorded the blocker on #2332. No CHAT_OPERATOR or probe was sent.",
+      "last_checkpoint": "2026-11-24T17:56:17.425Z",
+      "proof": "Draft PR #2451 code-tested SHA ea7535e8ad83f16cdbf7f5df626b96123ad309f6. Post-composition overlay keeps canonical operator.py byte-pinned and patches only staged operator dispatch; one-shot local TTY approval binds FINAL text SourceRef/session/generation, installed sender/receiver revisions, model manifest digest/path/inode, then consumes atomically under exclusive idle Runtime lease. Native receiver workflow #45236111168: Python 3.13/3.14 12 tests each, Linux pinned API and Android ARM64 cross-compile PASS. Staged/integrated workflow #45236111273: 255 passed/10 skipped/47 subtests and 424 passed/3 skipped/58 subtests. Audio/arithmetic #45236111290: 52 passed/26 subtests on each Python version. Same-turn consumer #45236111088 passed both Python versions. Exact deployer/stage/overlay/operator/module pins verified. Diagnostic only; no trained latent projector, receiver utility, production B3, model/weight changes or Android proof.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -97,6 +97,88 @@
         },
         "device": "REDMI_UNVERIFIED; private receipt #505 predates merge c2e7 and reports installed c03ff0a",
         "next_action": "Poll exact #2325 CI, fix measured failures, coordinate QA #2324 rebase, then continue Android companion operator/CLI integration"
+      },
+      "core_run2_checkpoint": {
+        "date": "2026-11-23",
+        "owner": "Core & Harness",
+        "branch": "core/v14-native-probe-staged-overlay-20261123-run2",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "code_commit": "8d4c0678cfad1f0fce995c9b7df22d1f21d8da77",
+        "pull_request": 2451,
+        "status": "DRAFT_CI_PENDING",
+        "tests": {
+          "local_linux_isolated": "PASS: staged-only patch, compile, source immutability, staged tamper rejection, duplicate-anchor rejection",
+          "full_repository_local": "BLOCKED/NOT_RUN: no mounted Aii checkout; git ls-remote failed DNS",
+          "exact_head_ci": "PENDING: no exact-head workflow result observed at checkpoint"
+        },
+        "device": "REDMI_UNVERIFIED; no device probe, Termux command or update request",
+        "next_action": "Poll exact #2451 CI, fix measured failures, obtain independent review and Boss integration; only then consider a separately authorized one-shot Redmi probe"
+      },
+      "latest_candidate_pr": {
+        "pr": 2451,
+        "branch": "core/v14-native-probe-staged-overlay-20261123-run2",
+        "code_tested_sha": "ea7535e8ad83f16cdbf7f5df626b96123ad309f6",
+        "status": "DRAFT_CI_GREEN_REVIEW_PENDING_NOT_RELEASED",
+        "ci_runs": [
+          45236111168,
+          45236111273,
+          45236111290,
+          45236111088
+        ],
+        "redmi": "REDMI_UNVERIFIED"
+      },
+      "core_run4_checkpoint": {
+        "date": "2026-11-24",
+        "owner": "Core & Harness",
+        "branch": "core/v14-native-probe-staged-overlay-20261123-run2",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "code_test_sha": "07a6180a0b9fe340970dd9151fa363b17667809b",
+        "pull_request": 2451,
+        "status": "DRAFT_CI_PENDING_NOT_RELEASED",
+        "matrix": {
+          "fixed_pairs": [
+            [
+              "B1_DETAIL",
+              "B2_GIST"
+            ],
+            [
+              "B1_DETAIL",
+              "C3_LANGUAGE"
+            ],
+            [
+              "B2_GIST",
+              "B1_DETAIL"
+            ],
+            [
+              "B2_GIST",
+              "C3_LANGUAGE"
+            ]
+          ],
+          "approval": "ONE_LOCAL_TTY_APPROVAL_BOUND_TO_FINAL_SOURCE_SESSION_GENERATION_AND_ALL_THREE_INSTALLED_MODEL_HASH_PATH_INODE_IDENTITIES",
+          "resource_preflight": "ALL_THREE_MODELS_HEADROOM_AND_KNOWN_PROCESS_CENSUS",
+          "runtime": "EXCLUSIVE_SERIAL_LEASE_240S_TOTAL_60S_PER_PAIR",
+          "controls": "ZERO_SHUFFLE_ROW_SHUFFLE_REPEAT_FROM_NATIVE_RECEIVER_PACKET",
+          "production_route": false,
+          "training_authority": 0,
+          "semantic_use_proven": false
+        },
+        "tests": {
+          "exact_previous_head": "9e28234d19a677e9dd44dc4a1ecf54964791b2d7",
+          "previous_exact_ci": "PASS_NATIVE_PYTHON_313_314_LINUX_PINNED_BUILD_ANDROID_ARM64_CROSS_COMPILE_STAGED_RUNTIME",
+          "new_matrix_exact_ci": "QUEUED_NOT_VERIFIED",
+          "local_full_repository": "BLOCKED_NO_CHECKOUT_AND_GITHUB_DNS",
+          "local_isolated": "NOT_RUN_FOR_MATRIX"
+        },
+        "pin_chain": {
+          "matrix_module_git_blob": "5fd7f6b4dc83001ef8948bb8d0c52d07c02e31fb",
+          "overlay_git_blob": "57c81ed44ade07dcaee98f80b5584cf477ef5c8b",
+          "stage_builder_git_blob": "898c6a7d0974273538e5825602de5b0f62953d80",
+          "runtime_deploy_stage_sha256": "88f164586dc9199f3aace3dd7a6d59effc250964baa74cd02631c77d62395bb8",
+          "readback": "MATCHED"
+        },
+        "device": "REDMI_UNVERIFIED; matrix not armed or executed",
+        "release": "NOT_RELEASED",
+        "next_action": "Verify exact-head native receiver workflow and matrix tests; fix failures; request independent Boss/QA review; only after reviewed integration and verified updater ask for separate user approval before a physical matrix probe."
       }
     },
     {
@@ -345,10 +427,10 @@
       "owner": "Core & Harness + Boss",
       "priority": "P0",
       "status": "IN_PROGRESS_PARTIAL",
-      "last_checkpoint": "2026-11-22T11:28:06.923Z",
-      "proof_environment": "CI candidate only; no native tap/gradient proof",
-      "proof": "Core #2323 remains diagnostic-only and production B3 OFF/SYMBOLIC. PR #2332's remote owner-read allowlist checks are not a runnable native probe: independent exact-source readback at candidate 198a490e confirms operator.py dispatches to callosum.operator_command, which still rejects native-probe; no local source-bound tap/model consumer or distinct local one-shot approval exists. Boss and QA recorded the blocker on #2332. No CHAT_OPERATOR or probe was sent.",
-      "next_step": "Core: add a dedicated local :callosum native-probe handler bound to trusted last-source tap and exact installed model manifests, with bounded deadline/cancellation and a separate local one-shot approval. Add real operator-dispatch end-to-end and no-local-approval negative tests. Only after exact CI and installed release may a separate user decision authorize one probe; production B3 remains OFF until held-out utility/parity/zero/shuffle/OOD controls pass.",
+      "last_checkpoint": "2026-11-24T17:56:17.425Z",
+      "proof_environment": "LOCAL_LINUX_ISOLATED overlay PASS; exact Python 3.13/3.14 CI PASS; Linux pinned API PASS; Android ARM64 cross-compile PASS; full local Aii NOT_RUN; REDMI_UNVERIFIED",
+      "proof": "Draft PR #2451 code-tested SHA ea7535e8ad83f16cdbf7f5df626b96123ad309f6. Post-composition overlay keeps canonical operator.py byte-pinned and patches only staged operator dispatch; one-shot local TTY approval binds FINAL text SourceRef/session/generation, installed sender/receiver revisions, model manifest digest/path/inode, then consumes atomically under exclusive idle Runtime lease. Native receiver workflow #45236111168: Python 3.13/3.14 12 tests each, Linux pinned API and Android ARM64 cross-compile PASS. Staged/integrated workflow #45236111273: 255 passed/10 skipped/47 subtests and 424 passed/3 skipped/58 subtests. Audio/arithmetic #45236111290: 52 passed/26 subtests on each Python version. Same-turn consumer #45236111088 passed both Python versions. Exact deployer/stage/overlay/operator/module pins verified. Diagnostic only; no trained latent projector, receiver utility, production B3, model/weight changes or Android proof.",
+      "next_step": "Verify exact-head PR #2451 native receiver workflow and matrix tests; fix any failure and obtain independent Boss/QA review. The fixed four-pair matrix remains diagnostic-only; production B3 stays OFF until trained projection, source-disjoint held-out utility, exact/no-message baselines, zero/shuffle/OOD controls and retention are measured.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -364,6 +446,89 @@
         },
         "device": "REDMI_UNVERIFIED; private receipt #505 predates merge c2e7 and reports installed c03ff0a",
         "next_action": "Poll exact #2325 CI, fix measured failures, coordinate QA #2324 rebase, then continue Android companion operator/CLI integration"
+      },
+      "user_action_required": false,
+      "core_run2_checkpoint": {
+        "date": "2026-11-23",
+        "owner": "Core & Harness",
+        "branch": "core/v14-native-probe-staged-overlay-20261123-run2",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "code_commit": "8d4c0678cfad1f0fce995c9b7df22d1f21d8da77",
+        "pull_request": 2451,
+        "status": "DRAFT_CI_PENDING",
+        "tests": {
+          "local_linux_isolated": "PASS: staged-only patch, compile, source immutability, staged tamper rejection, duplicate-anchor rejection",
+          "full_repository_local": "BLOCKED/NOT_RUN: no mounted Aii checkout; git ls-remote failed DNS",
+          "exact_head_ci": "PENDING: no exact-head workflow result observed at checkpoint"
+        },
+        "device": "REDMI_UNVERIFIED; no device probe, Termux command or update request",
+        "next_action": "Poll exact #2451 CI, fix measured failures, obtain independent review and Boss integration; only then consider a separately authorized one-shot Redmi probe"
+      },
+      "latest_candidate_pr": {
+        "pr": 2451,
+        "branch": "core/v14-native-probe-staged-overlay-20261123-run2",
+        "code_tested_sha": "ea7535e8ad83f16cdbf7f5df626b96123ad309f6",
+        "status": "DRAFT_CI_GREEN_REVIEW_PENDING_NOT_RELEASED",
+        "ci_runs": [
+          45236111168,
+          45236111273,
+          45236111290,
+          45236111088
+        ],
+        "redmi": "REDMI_UNVERIFIED"
+      },
+      "core_run4_checkpoint": {
+        "date": "2026-11-24",
+        "owner": "Core & Harness",
+        "branch": "core/v14-native-probe-staged-overlay-20261123-run2",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "code_test_sha": "07a6180a0b9fe340970dd9151fa363b17667809b",
+        "pull_request": 2451,
+        "status": "DRAFT_CI_PENDING_NOT_RELEASED",
+        "matrix": {
+          "fixed_pairs": [
+            [
+              "B1_DETAIL",
+              "B2_GIST"
+            ],
+            [
+              "B1_DETAIL",
+              "C3_LANGUAGE"
+            ],
+            [
+              "B2_GIST",
+              "B1_DETAIL"
+            ],
+            [
+              "B2_GIST",
+              "C3_LANGUAGE"
+            ]
+          ],
+          "approval": "ONE_LOCAL_TTY_APPROVAL_BOUND_TO_FINAL_SOURCE_SESSION_GENERATION_AND_ALL_THREE_INSTALLED_MODEL_HASH_PATH_INODE_IDENTITIES",
+          "resource_preflight": "ALL_THREE_MODELS_HEADROOM_AND_KNOWN_PROCESS_CENSUS",
+          "runtime": "EXCLUSIVE_SERIAL_LEASE_240S_TOTAL_60S_PER_PAIR",
+          "controls": "ZERO_SHUFFLE_ROW_SHUFFLE_REPEAT_FROM_NATIVE_RECEIVER_PACKET",
+          "production_route": false,
+          "training_authority": 0,
+          "semantic_use_proven": false
+        },
+        "tests": {
+          "exact_previous_head": "9e28234d19a677e9dd44dc4a1ecf54964791b2d7",
+          "previous_exact_ci": "PASS_NATIVE_PYTHON_313_314_LINUX_PINNED_BUILD_ANDROID_ARM64_CROSS_COMPILE_STAGED_RUNTIME",
+          "new_matrix_exact_ci": "QUEUED_NOT_VERIFIED",
+          "local_full_repository": "BLOCKED_NO_CHECKOUT_AND_GITHUB_DNS",
+          "local_isolated": "NOT_RUN_FOR_MATRIX"
+        },
+        "pin_chain": {
+          "matrix_module_git_blob": "5fd7f6b4dc83001ef8948bb8d0c52d07c02e31fb",
+          "overlay_git_blob": "57c81ed44ade07dcaee98f80b5584cf477ef5c8b",
+          "stage_builder_git_blob": "898c6a7d0974273538e5825602de5b0f62953d80",
+          "runtime_deploy_stage_sha256": "88f164586dc9199f3aace3dd7a6d59effc250964baa74cd02631c77d62395bb8",
+          "readback": "MATCHED"
+        },
+        "device": "REDMI_UNVERIFIED; matrix not armed or executed",
+        "release": "NOT_RELEASED",
+        "next_action": "Verify exact-head native receiver workflow and matrix tests; fix failures; request independent Boss/QA review; only after reviewed integration and verified updater ask for separate user approval before a physical matrix probe."
       }
     },
     {
@@ -1294,6 +1459,18 @@
         "learning_status": "LEARNING_STATUS_552_UNAVAILABLE",
         "boss_pr2343": "CURRENT_HEAD_023E56D_29_AHEAD_0_BEHIND; substantive exact CI queued. Recovery12 and some Store/Runtime pins corrected; stage/deployer, recovery21, archive stream preimage, record-only Runtime pin and fair-observer ask anchor still mismatch. Previous 70c6a5 migration failed; not current-head result."
       }
+    },
+    "core_native_matrix_20261124": {
+      "timestamp": "2026-11-24T17:56:17.425Z",
+      "pr": 2451,
+      "branch": "core/v14-native-probe-staged-overlay-20261123-run2",
+      "code_test_sha": "07a6180a0b9fe340970dd9151fa363b17667809b",
+      "status": "DRAFT_CI_PENDING_NOT_RELEASED",
+      "exact_new_matrix_ci": "NOT_YET_VERIFIED",
+      "previous_exact_ci": "9e28234_NATIVE_LINUX_BUILD_AND_ANDROID_ARM64_CROSS_COMPILE_SUCCESS",
+      "local_full_suite": "BLOCKED_NO_CHECKOUT_DNS",
+      "redmi": "REDMI_UNVERIFIED",
+      "production_b3": "OFF"
     }
   },
   "qa_latest_checkpoint": {

@@ -26,6 +26,7 @@ constexpr int kMaxPosition = 131072;
 constexpr const char * kPositionMode = "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL";
 constexpr std::size_t kMaxElements = 262144;
 constexpr double kEffectEpsilon = 1.0e-7;
+constexpr double kLogitEffectEpsilon = 1.0e-6;
 
 bool valid_batch(int rows, int dim, const std::vector<float> & values) {
     if (rows < 1 || rows > kMaxRows || dim < 1 || dim > kMaxDim) return false;
@@ -118,6 +119,32 @@ bool all_finite(const std::vector<float> & values) {
     return std::all_of(values.begin(), values.end(), [](float value) { return std::isfinite(value); });
 }
 
+struct TokenSummary {
+    int token_id = -1;
+    double margin = 0.0;
+};
+
+bool summarize_logits(const std::vector<float> & logits, TokenSummary & result) {
+    if (logits.size() < 2 || !all_finite(logits)) return false;
+    float top1 = -std::numeric_limits<float>::infinity();
+    float top2 = -std::numeric_limits<float>::infinity();
+    int top1_id = -1;
+    for (std::size_t i = 0; i < logits.size(); ++i) {
+        const float value = logits[i];
+        if (value > top1) {
+            top2 = top1;
+            top1 = value;
+            top1_id = static_cast<int>(i);
+        } else if (value > top2) {
+            top2 = value;
+        }
+    }
+    if (top1_id < 0 || !std::isfinite(top1) || !std::isfinite(top2) || top1 < top2) return false;
+    result.token_id = top1_id;
+    result.margin = static_cast<double>(top1) - static_cast<double>(top2);
+    return std::isfinite(result.margin) && result.margin >= 0.0;
+}
+
 std::string number(double value) {
     if (!std::isfinite(value)) return "null";
     std::ostringstream out;
@@ -190,6 +217,10 @@ int selftest() {
     if (valid_positions(2, std::vector<int>{0, 0}, 64)) return 15;
     if (valid_positions(2, std::vector<int>{0, 64}, 64)) return 16;
     if (reverse_rows(input, 2, 2) == input) return 17;
+    TokenSummary token_summary;
+    if (!summarize_logits(std::vector<float>{1.0f, 3.0f, 2.0f}, token_summary)) return 18;
+    if (token_summary.token_id != 1 || std::abs(token_summary.margin - 1.0) > 1.0e-12) return 19;
+    if (summarize_logits(std::vector<float>{1.0f, std::numeric_limits<float>::quiet_NaN()}, token_summary)) return 20;
     std::cout << "PASS\n";
     return 0;
 }
@@ -215,9 +246,23 @@ struct BatchGuard {
     ~BatchGuard() { if (active) llama_batch_free(value); }
 };
 
+struct TokenProbe {
+    std::vector<float> logits;
+    v14::TokenSummary summary;
+};
+
+bool capture_next_token(llama_context * ctx, int vocab_size, TokenProbe & probe) {
+    if (vocab_size < 2) return false;
+    float * logits = llama_get_logits_ith(ctx, -1);
+    if (!logits) return false;
+    probe.logits.assign(logits, logits + vocab_size);
+    return v14::summarize_logits(probe.logits, probe.summary);
+}
+
 bool decode_embeddings(llama_context * ctx, int rows, int input_dim, int output_dim,
-                       const std::vector<int> & positions, const std::vector<float> & input,
-                       std::vector<float> & output, int & decode_status) {
+                       int vocab_size, const std::vector<int> & positions,
+                       const std::vector<float> & input, std::vector<float> & output,
+                       int & decode_status, TokenProbe & token_probe) {
     if (!v14::valid_batch(rows, input_dim, input) || !v14::valid_positions(rows, positions, v14::kMaxPosition)) return false;
     llama_memory_clear(llama_get_memory(ctx), true);
     BatchGuard batch;
@@ -236,7 +281,7 @@ bool decode_embeddings(llama_context * ctx, int rows, int input_dim, int output_
         batch.value.logits[row] = 1;
     }
     decode_status = llama_decode(ctx, batch.value);
-    if (decode_status != 0) return false;
+    if (decode_status != 0 || !capture_next_token(ctx, vocab_size, token_probe)) return false;
     output.clear();
     output.reserve(static_cast<std::size_t>(rows) * output_dim);
     for (int row = 0; row < rows; ++row) {
@@ -249,7 +294,7 @@ bool decode_embeddings(llama_context * ctx, int rows, int input_dim, int output_
 
 void print_version() {
     const char * version = llama_version();
-    std::cout << "{\"schema\":\"v14.native-latent-receiver/2\",\"runner_revision\":\""
+    std::cout << "{\"schema\":\"v14.native-latent-receiver/3\",\"runner_revision\":\""
               << V14_LLAMA_REVISION << "\",\"llama_version\":\""
               << v14::json_escape(version ? version : "unknown") << "\"}\n";
 }
@@ -280,12 +325,13 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
     if (receiver_input_dim <= 0) receiver_input_dim = llama_model_n_embd(model.value);
     int output_dim = llama_model_n_embd_out(model.value);
     if (output_dim <= 0) output_dim = llama_model_n_embd(model.value);
-    if (receiver_input_dim <= 0 || output_dim <= 0) {
+    const int vocab_size = llama_n_vocab(llama_model_get_vocab(model.value));
+    if (receiver_input_dim <= 0 || output_dim <= 0 || vocab_size < 2) {
         std::cerr << "invalid model embedding dimensions\n";
         return 4;
     }
     if (receiver_input_dim != input_dim) {
-        std::cout << "{\"schema\":\"v14.native-latent-receiver/2\",\"runner_revision\":\""
+        std::cout << "{\"schema\":\"v14.native-latent-receiver/3\",\"runner_revision\":\""
                   << V14_LLAMA_REVISION << "\",\"llama_version\":\""
                   << v14::json_escape(llama_version() ? llama_version() : "unknown")
                   << "\",\"status\":\"DIMENSION_MISMATCH\",\"input_rows\":" << rows
@@ -294,6 +340,14 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
                   << ",\"position_ids\":" << v14::positions_json(positions)
                   << ",\"position_mode\":\"" << v14::kPositionMode << "\""
                   << ",\"row_shuffle_control_applicable\":false,\"row_shuffle_control_cosine\":null"
+                  << ",\"receiver_vocab_size\":" << vocab_size
+                  << ",\"receiver_next_token_id\":null,\"zero_control_next_token_id\":null"
+                  << ",\"shuffle_control_next_token_id\":null,\"row_shuffle_control_next_token_id\":null"
+                  << ",\"repeat_next_token_id\":null,\"receiver_next_token_margin\":null"
+                  << ",\"logit_effect_rms\":null,\"logit_cosine\":null"
+                  << ",\"next_token_effect_detected\":false,\"next_token_changed_vs_zero\":false"
+                  << ",\"next_token_changed_vs_shuffle\":false,\"next_token_changed_vs_row_shuffle\":false"
+                  << ",\"repeat_next_token_stable\":false"
                   << ",\"decode_status\":-100,\"finite_output\":false}\n";
         return 0;
     }
@@ -317,20 +371,24 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
     const auto shuffled = v14::shuffle_control(input, rows, input_dim);
     const auto row_shuffled = v14::reverse_rows(input, rows, input_dim);
     std::vector<float> positive_out, zero_out, shuffled_out, row_shuffled_out, repeat_out;
+    TokenProbe positive_token, zero_token, shuffled_token, row_shuffled_token, repeat_token;
     int positive_status = -999, zero_status = -999, shuffle_status = -999, row_shuffle_status = -999, repeat_status = -999;
     const bool row_shuffle_applicable = rows >= 2;
-    if (!decode_embeddings(context.value, rows, input_dim, output_dim, positions, input, positive_out, positive_status) ||
-        !decode_embeddings(context.value, rows, input_dim, output_dim, positions, zero, zero_out, zero_status) ||
-        !decode_embeddings(context.value, rows, input_dim, output_dim, positions, shuffled, shuffled_out, shuffle_status) ||
-        (row_shuffle_applicable && !decode_embeddings(context.value, rows, input_dim, output_dim, positions, row_shuffled, row_shuffled_out, row_shuffle_status)) ||
-        !decode_embeddings(context.value, rows, input_dim, output_dim, positions, input, repeat_out, repeat_status)) {
+    if (!decode_embeddings(context.value, rows, input_dim, output_dim, vocab_size, positions, input, positive_out, positive_status, positive_token) ||
+        !decode_embeddings(context.value, rows, input_dim, output_dim, vocab_size, positions, zero, zero_out, zero_status, zero_token) ||
+        !decode_embeddings(context.value, rows, input_dim, output_dim, vocab_size, positions, shuffled, shuffled_out, shuffle_status, shuffled_token) ||
+        (row_shuffle_applicable && !decode_embeddings(context.value, rows, input_dim, output_dim, vocab_size, positions, row_shuffled, row_shuffled_out, row_shuffle_status, row_shuffled_token)) ||
+        !decode_embeddings(context.value, rows, input_dim, output_dim, vocab_size, positions, input, repeat_out, repeat_status, repeat_token)) {
         std::cerr << "native decode or output embedding failed\n";
         return 6;
     }
 
     const double output_norm = v14::l2_norm(positive_out);
     const double input_effect = v14::rms_delta(positive_out, zero_out);
-    std::cout << "{\"schema\":\"v14.native-latent-receiver/2\",\"runner_revision\":\""
+    const double logit_effect = v14::rms_delta(positive_token.logits, zero_token.logits);
+    const double logit_similarity = v14::cosine(positive_token.logits, zero_token.logits);
+    const bool next_token_effect = logit_effect > v14::kLogitEffectEpsilon;
+    std::cout << "{\"schema\":\"v14.native-latent-receiver/3\",\"runner_revision\":\""
               << V14_LLAMA_REVISION << "\",\"llama_version\":\""
               << v14::json_escape(llama_version() ? llama_version() : "unknown")
               << "\",\"status\":\"DECODED\",\"input_rows\":" << rows
@@ -346,6 +404,21 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
               << ",\"row_shuffle_control_applicable\":" << (row_shuffle_applicable ? "true" : "false")
               << ",\"row_shuffle_control_cosine\":" << v14::number(row_shuffle_applicable ? v14::cosine(positive_out, row_shuffled_out) : std::numeric_limits<double>::quiet_NaN())
               << ",\"repeat_cosine\":" << v14::number(v14::cosine(positive_out, repeat_out))
+              << ",\"receiver_vocab_size\":" << vocab_size
+              << ",\"receiver_next_token_id\":" << positive_token.summary.token_id
+              << ",\"zero_control_next_token_id\":" << zero_token.summary.token_id
+              << ",\"shuffle_control_next_token_id\":" << shuffled_token.summary.token_id
+              << ",\"row_shuffle_control_next_token_id\":"
+              << (row_shuffle_applicable ? std::to_string(row_shuffled_token.summary.token_id) : "null")
+              << ",\"repeat_next_token_id\":" << repeat_token.summary.token_id
+              << ",\"receiver_next_token_margin\":" << v14::number(positive_token.summary.margin)
+              << ",\"logit_effect_rms\":" << v14::number(logit_effect)
+              << ",\"logit_cosine\":" << v14::number(logit_similarity)
+              << ",\"next_token_effect_detected\":" << (next_token_effect ? "true" : "false")
+              << ",\"next_token_changed_vs_zero\":" << (positive_token.summary.token_id != zero_token.summary.token_id ? "true" : "false")
+              << ",\"next_token_changed_vs_shuffle\":" << (positive_token.summary.token_id != shuffled_token.summary.token_id ? "true" : "false")
+              << ",\"next_token_changed_vs_row_shuffle\":" << (row_shuffle_applicable && positive_token.summary.token_id != row_shuffled_token.summary.token_id ? "true" : "false")
+              << ",\"repeat_next_token_stable\":" << (positive_token.summary.token_id == repeat_token.summary.token_id ? "true" : "false")
               << ",\"finite_output\":" << (v14::all_finite(positive_out) ? "true" : "false") << "}\n";
     return 0;
 }
@@ -393,7 +466,7 @@ int main(int argc, char ** argv) {
     return run_native(model_path, rows, input_dim, threads, positions, input);
 #else
     if (argc == 2 && std::string(argv[1]) == "--version") {
-        std::cout << "{\"schema\":\"v14.native-latent-receiver/2\",\"runner_revision\":\""
+        std::cout << "{\"schema\":\"v14.native-latent-receiver/3\",\"runner_revision\":\""
                   << V14_LLAMA_REVISION << "\",\"llama_version\":\"LOCAL_CORE_ONLY\"}\n";
         return 0;
     }

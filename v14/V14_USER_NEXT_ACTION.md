@@ -1,3 +1,32 @@
+# Core & Harness — latest verified checkpoint (2026-11-23T18:23:01.047Z)
+
+**No user action is required. Do not run a manual Termux command or send an update request.** PR #2451 is a draft candidate, not released or installed.
+
+- **Code-tested SHA:** `ea7535e8ad83f16cdbf7f5df626b96123ad309f6`, branch `core/v14-native-probe-staged-overlay-20261123-run2`, based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- **New fix:** the exact staged Runtime CI exposed three failures in `test_stage_integrated_candidate.py`: temporary stage fixtures omitted the now-required native-probe overlay, canonical operator and approval module. The fixture now copies the exact pinned source files and real overlay, asserts staged-only operator replacement/manifest status, and includes the new artifacts in the stage inventory. The production missing-overlay check remains fail-closed.
+- **Exact CI:** native receiver run `45236111168` — Python 3.13 and 3.14 (12 tests each), Linux pinned API and Android ARM64 cross-compile PASS. Staged/integrated run `45236111273` — staged Runtime **255 passed, 10 skipped, 47 subtests**; integrated regression **424 passed, 3 skipped, 58 subtests**. Audio/arithmetic run `45236111290` — **52 passed, 26 subtests** on each Python version. Same-turn B1/B2→C4→C3 consumer run `45236111088` — Python 3.13/3.14 PASS. Deployer integrity, Lab-Age, owner-read bootstrap and two-checkout migration workflows also PASS. The first Python 3.13 native-receiver attempt hit a transient package-download connection reset; the targeted rerun passed.
+- **Local environment:** full Aii checkout/pytest remains **BLOCKED / NOT_RUN** because no checkout is mounted and `git ls-remote` cannot resolve GitHub DNS. Earlier isolated overlay harness PASS is separate from the exact CI results.
+- **User-visible effect:** the staged Runtime now has a source/model-bound local one-shot native receiver diagnostic command. It does not enter normal chat routing, train a projector, establish receiver utility or activate B3. Same-turn consumer CI is synthetic/Store-backed, not native B1/B2 proof.
+- **Redmi:** `REDMI_UNVERIFIED`; no connected device test, no new receipt, no probe, no update request, no Termux command, no APK/model/weight/permission/data change. GitHub push is not deployment.
+- **Review/integration:** independent Boss/QA review is still required; PR #2451 remains DRAFT / NOT_RELEASED. PR #2449 remains blocked/superseded because it directly edits pinned canonical `operator.py`.
+- **Next:** obtain independent review and integrate the diagnostic overlay on the current release base. In parallel, the P0 normal-turn gap remains fair B1/B2 pre-answer time and useful same-turn OfferPacket→C4→C3 consumption; stale #2370/#2338 must be recomposed, not merged. Production B3 stays OFF until paired activations, trained projection, held-out utility and negative controls pass.
+
+---
+# Core & Harness — latest verified checkpoint (2026-11-23T17:16:41.602Z)
+
+**No user action is required. Do not run a manual Termux command or send an update request.** This candidate is not released and has not been tested on the Redmi.
+
+- Draft PR [#2451](https://github.com/RedMentos/Aii/pull/2451), branch `core/v14-native-probe-staged-overlay-20261123-run2`, code checkpoint commit `8d4c0678cfad1f0fce995c9b7df22d1f21d8da77` (later handoff/board sync commits are on the same PR branch; PR #2451 is the authoritative current head), based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- The local native-probe helper is now connected through a **post-composition staged overlay**, not a direct edit to canonical `operator.py`. Exact operator/module Git-blob pins are checked; only staged `v13/operator.py` is patched after the existing recovery/native-receiver/arithmetic builders. The stage manifest records the diagnostic-only authority boundary; `runtime_deploy.py` is rebound to the exact stage-builder SHA-256.
+- Local isolated overlay harness: **PASS** for staged-only replacement, compilation, source immutability, tamper rejection and duplicate-anchor rejection. Full local Aii pytest/stage build: **BLOCKED / NOT_RUN** (no mounted checkout; GitHub DNS failed).
+- Exact Python 3.13/3.14 GitHub Actions: **PENDING** after PR creation; no green result claimed. Redmi: **REDMI_UNVERIFIED**. No probe, Termux command, update request, model/weight/permission/data change.
+- PR #2449 remains blocked/superseded because it edits canonical `operator.py` and violates the pinned stage input. Do not merge it.
+- Next: poll exact #2451 CI, repair real failures, obtain independent review, then Boss integration. Only after authenticated installation may a separate explicit user decision authorize a one-shot local probe. Production B3 stays OFF until latent/exact/none, zero/shuffle/OOD and held-out receiver-utility controls pass.
+
+See `v14/handoffs/CORE_NATIVE_PROBE_STAGED_OVERLAY_20261123_RUN2.md` for the exact handoff and evidence boundary.
+
+---
+
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
@@ -1772,3 +1801,21 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
 
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+---
+
+## Core & Harness — native receiver pair-matrix checkpoint (2026-11-24 17:56 UTC)
+
+**PR #2451** remains a draft candidate on `core/v14-native-probe-staged-overlay-20261123-run2`, based on `8d93236c753f0194224c19edc7411d8d7082b1d6`. Code/test checkpoint: `07a6180a0b9fe340970dd9151fa363b17667809b`. This is not release integration.
+
+- Added a fixed four-pair native diagnostic matrix: B1→B2, B1→C3, B2→B1, B2→C3.
+- One local-TTY approval binds the latest FINAL text SourceRef, session/generation, all three installed model revisions, SHA-256 hashes, selected paths and inode identities. A shared one-shot approval state prevents overlap with the single-pair probe.
+- The matrix checks known process residency and headroom for all three model files, runs serially under an exclusive Runtime lease, and is bounded to 240 seconds total / 60 seconds per pair. It records numeric receiver/control evidence only; it does not persist prompt text, change routing, train weights or activate B3.
+- Rebound the staged overlay → stage builder → RuntimeDeploy SHA chain and verified the file readbacks match. The exact pin values and next actions are in the PR handoff and V14 work board.
+- The preceding exact head `9e28234d19a677e9dd44dc4a1ecf54964791b2d7` had successful native Python 3.13/3.14, pinned Linux native build/selftest, Android ARM64 cross-compile, staged Runtime and integrated regression workflows. The new matrix code/tests at `07a6180` were queued at last readback; do not carry forward the old green status as proof of the new matrix.
+- Full local Aii pytest/native suite: NOT_RUN; no checkout is mounted and GitHub DNS fails. Redmi: REDMI_UNVERIFIED; the matrix has not been armed or executed. No device command, model download/swap, weight update, permission change or data mutation was performed.
+
+**Next:** verify exact-head CI for `07a6180`, repair any failure, and obtain independent Boss/QA review. After a reviewed integration and verified ordinary updater path, request a separate user decision before any physical Redmi matrix probe. Production B3 remains OFF until trained projection, source-disjoint held-out utility, SOURCE_EXACT/NO_MESSAGE baselines, zero/shuffle/OOD controls and retention are measured.
+
+**User action required: NONE.** No Termux command, model change, or device permission is requested.
