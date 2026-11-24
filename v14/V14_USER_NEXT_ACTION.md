@@ -1798,3 +1798,12 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - After that, only with the user's runtime/device re-enabled and explicit test consent, verify the installed path. Do not send an update request or manual Termux command now.
 
 User action: **keine Aktion nötig**. Device remains STOPPED_BY_USER; no state change requested.
+
+
+## Final exact-head poll — board checkpoint 5a2cd1f252f36f7220def2369be142fdcbb16916
+
+- The V14 work board now records PR #2463 under Research & Perception ticket V14-006 and the A5 UI-ingress evidence under shared ticket V14-009. The V14-006 status remains IN_PROGRESS_PARTIAL; no Canon acceptance was promoted.
+- On this exact board checkpoint: vision source-lineage workflow 45350475598 PASS on Python 3.13/3.14; MediaProjection RAW EYE ingress 45350475533 PASS on both; Perception privacy 45350475626 PASS; runtime deployment integrity 45350475751 PASS.
+- Staged/integrated workflow 45350475519 FAIL on both staged-runtime and integrated-regression. The exact failure remains unsupported lifecycle source: vision.py; staged suite reports 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests. Core same-turn workflow 45350475641: Python 3.13 consumer job FAIL (3 failed / 2 passed) because the same source-lifecycle builder refuses vision.py; Python 3.14 consumer job was still IN_PROGRESS at last poll.
+- The final board checkpoint does not change the tested code bytes: vision.py SHA-256 remains 23243f6a8e8d3ac79a40644aab186fcb4cff7a5e7d56f9b67bcae7cda2a1f8ae; code/test SHA remains 776dee972b92f0ac76afcdf4e9b0be7e408b1f5c. PR #2463 is OPEN / DRAFT / NOT_RELEASED.
+- This confirms the remaining block is shared source-composition integration, not a green end-to-end runtime. No merge, release, auto-update, model swap or device action was performed.
