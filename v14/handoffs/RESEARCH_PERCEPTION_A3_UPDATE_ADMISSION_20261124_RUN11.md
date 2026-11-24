@@ -75,3 +75,31 @@ These papers do not directly validate the A3 ridge projector. The current change
 - LOCAL_LINUX helper test re-read: CPython 3.13.5, `py_compile` + 6 admission controls PASS. Full repository suite remains NOT_RUN/BLOCKED by no mounted checkout and DNS failure.
 
 **Important limitation:** this gate checks that the current source-disjoint dataset exhibits measured above-chance generalization, then applies the existing old-source replay-retention gate. It does *not yet* report a direct old-projector-versus-candidate performance delta on the same held-out new-source cohort. Therefore it is an update-admission precondition, not proof that the candidate improves the current task. The next Perception ablation must add a same-holdout old-vs-candidate comparison (plus no-update and shuffled-target controls) before any utility claim or promotion.
+
+
+## Superseding A3 update-admission checkpoint — direct same-holdout baseline added
+
+The earlier limitation about not comparing against the old projector is superseded by the follow-up code at `aa57c9a246caa8d9fd693e149ebedf0d44ac3bf3`.
+
+**New behavior:**
+- `vision_validation.source_disjoint_crossval()` now accepts an optional previous-projector predictor and a changed/new-caption evaluation mask.
+- For retraining, folds are formed over only new or changed source groups; all other current rows remain available to train each fold. Each fold's candidate is evaluated on its held-out changed/new source rows, and the previous projector is evaluated on those exact same rows.
+- An existing projector can be replaced only when the candidate fold models show both above-chance utility and positive held-out top-1 gain over the previous projector, with all folds measured. The existing exact previous-source replay retention/scale gate then runs.
+- If there are no new or changed caption rows, retraining is skipped with `NO_NEW_OR_CHANGED_CAPTIONS`; the exact previous artifact is retained. A single changed source is insufficient for source-disjoint update admission.
+- This is still a ridge/linear projector experiment in LAB_SHADOW_ONLY. It is not gradient-based neural-weight learning, native JEPA coupling, or production acceptance. The CV candidate is trained on each fold's training partition; it is not a direct before/after measurement of the final full-data candidate.
+
+**Regression evidence:**
+- Added a direct source-disjoint test with 12 source groups / 8 changed groups / 4 folds, comparing the fold candidate and prior projector on the same held-out changed-source rows.
+- Added no-update, insufficient-source, malformed-baseline, no-held-out-gain, and no-gain-over-baseline controls. Tile retraining with unchanged captions now verifies no-op artifact preservation instead of treating a no-op as an applied update.
+- Exact code/test SHA: `aa57c9a246caa8d9fd693e149ebedf0d44ac3bf3`.
+- CI vision source-lineage workflow #45355527288: `py_compile` PASS and **36/36 tests PASS** on Python 3.13 and 36/36 on Python 3.14.
+- CI SHA-256 pins from the same workflow:
+  - `vision.py`: `7be279230d50b8e96199dbc7523813ff1ecab8abce9f77700feaea00bce9e5fc`
+  - `vision_source_lineage.py`: `bb63636c9ae84d345fe1f4e37254de3be87c26990cb320ca058859fd0b51b72f`
+  - `vision_validation.py`: `996d53e938942adefac53e461726ad34b1ce78e76e42e6acb6c4f68bde55d59c`
+  - `vision_ui_frame_ingress.py`: `8a5d47e0bf4fe51fb5301ed095e69b2d7a8154f185a3168a25cafa244a8f523b`
+- **LOCAL_LINUX / CPython 3.13.5:** exact `vision_validation.py` helper copied from the GitHub readback, `py_compile` PASS; synthetic old-vs-candidate, changed-source-mask, no-update, one-source and malformed-baseline controls PASS. A separate 5-case admission-helper control script PASS. This is local synthetic/helper evidence, not a full Aii suite or a native model run.
+- Frame ingress workflow #45355527149: PASS on Python 3.13 and 3.14. Privacy scan and runtime-deployment-integrity PASS.
+- Staged-runtime #45355527120 and integrated-regression were still IN_PROGRESS at the last poll; Core same-turn #45355527204 had Python 3.13 FAIL at the unchanged source-lifecycle composer and Python 3.14 still running. No combined integration pass is claimed.
+
+The current source-lifecycle composer still needs the exact four-file hashes above. The integration blocker remains Core-owned; Perception did not edit it.
