@@ -242,20 +242,20 @@
       "next_research": "After Core composer integration: near-duplicate source grouping for A3 source-disjoint validation. Full-read paper: Information 17(9), 897 (2026-09-15), DOI 10.3390/info17090897. Local synthetic dHash probe: threshold 2 TPR 0.704 / FPR 0.53; threshold 5 TPR 0.922 / FPR 0.92 on shared-template hard negatives. Do not auto-group from hashes; add hard-negative challenge and treat perceptual similarity as uncertainty/candidate only.",
       "latest_followup_pr": {
         "pr": 2484,
-        "head_sha": "dbf9221e1abc579ab298441020fdc28a24cfa737",
+        "head_sha": "a3c60fefd505b1e3e2cacc4f0f84ecfdc5643f86",
+        "tested_code_sha": "177f72364440519f6d38cecdb7dca7629ae2304b",
         "base_sha": "dd7e841a4047072dd9bc7dc33d7ad34bb94bf867",
-        "state": "OPEN_DRAFT_MERGEABLE_NO_EXACT_CI_RUN",
-        "ci": "No PR-triggered workflow run returned for exact head dbf9221e1abc579ab298441020fdc28a24cfa737; no CI PASS. Code commit 621f42db8953acf7a512d8a4164341bc9bbc7683 is unchanged by later documentation-only commits.",
-        "scope": "secure first-use A3 stats directory creation + fresh-root regression + status privacy negative control + exact PR trigger coverage",
+        "state": "OPEN_DRAFT_SOURCE_CI_PASS_STAGED_INTEGRATION_BLOCKED_NOT_RELEASED",
+        "ci": "source-lineage/A3 forget 51/51 PASS on Python 3.13 and 3.14; exact compile PASS; frame-ingress PASS on 3.13/3.14; runtime deployment-integrity offline PASS on 3.11/3.14; staged-runtime FAIL 19 failed/234 passed/10 skipped/2 errors/41 subtests; integrated-regression FAIL 1 at unsupported lifecycle source: vision.py.",
+        "scope": "A3 source-stat secure directory creation + legacy 0755 hardening + exact source-bound ridge-head deletion",
+        "code_head_sha": "177f72364440519f6d38cecdb7dca7629ae2304b",
+        "branch_head_sha": "a3c60fefd505b1e3e2cacc4f0f84ecfdc5643f86",
+        "source_hashes": {
+          "vision_py": "329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d",
+          "vision_projector_stats_py": "5db10a4fefa0e5d40d67b242ba18858972b499283e1e00f6d13d3e5d2760032f"
+        },
         "handoff": "v14/handoffs/RESEARCH_PERCEPTION_A3_SOURCE_STATS_DIRECTORY_BOOTSTRAP_20261124_RUN20.md",
-        "local_linux": "CPython 3.13.5 isolated dir-fd harness PASS for create/open/fsync/0700/0600/symlink rejection; status privacy negative control added but not executed; full Aii tests NOT_RUN",
-        "research": [
-          "R-141 QSS full paper; no code reuse because repository has no LICENSE and proprietary header",
-          "R-142 ridge-stat probing full preprint; keep exact stats local-only; status negative control added",
-          "R-143 IJCV memory-efficient CNN full article; research-only, STM32H7 not Redmi"
-        ],
-        "code_head_sha": "621f42db8953acf7a512d8a4164341bc9bbc7683",
-        "last_readback_at": "2026-11-24T22:45:32Z"
+        "last_readback_at": "2026-11-24T23:11:45Z"
       }
     },
     {
