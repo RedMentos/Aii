@@ -1,6 +1,8 @@
-"""Bounded source-bound speaker-similarity diagnostics from local frame embeddings.
+"""Bounded source-bound speaker-similarity diagnostics from local embeddings.
 
-Caller-supplied thresholds are unverified and cannot produce speaker decisions.
+Frame batches (20-200 ms) and one-vector whole-window batches (500-2000 ms)
+are supported. Caller-supplied thresholds are unverified and cannot produce
+speaker decisions.
 A separately validated, model-bound calibration artifact is required first.
 This is not speaker recognition or a full diarizer. Embeddings stay in RAM;
 persisted packets contain similarity evidence and provenance, never vectors.
