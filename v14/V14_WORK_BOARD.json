@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T18:42:31.597+01:00",
+  "updated_at": "2026-11-24T18:43:12.734+01:00",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 remains 8d93236c753f0194224c19edc7411d8d7082b1d6 at this read. M1 DATA snapshot a0088effa5e820b86e69751744d7f6dcda99a780 remains a separate experiment. V14-006 now records Perception #2469 interval-ordering follow-up at head 75cc4f6841c14ad2512ad592ee8ade3b8629f085; this PR is not merged or deployed.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -199,7 +199,7 @@
       "proof_environment": "LOCAL_LINUX minimal timestamp-order reproduction PASS; exact CI frame-ingress and vision-source-lineage PASS on Python 3.13/3.14; A5 lease/staged/integrated BLOCKED by Core source-lifecycle chain; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
       "next_step": "Core/Boss must finish PR #2465's source-lifecycle and nested memory/world builder pin chain without weakening hashes. #2465 head e8044b7 advances past the vision pin but staged-runtime still fails at integrated_feedback_bootstrap_candidate_20261111.py:34 (memory/world builder source changed) plus a nested SHA mismatch. After Core acceptance, rebase/integrate #2469 on that accepted head and rerun A5 lease, staged-runtime, integrated-regression and migration. Perception's next V14-006 implementation after integration is near-duplicate source grouping and source-level uncertainty for A3 projector train/holdout.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T18:42:31.597+01:00",
+      "last_checkpoint": "2026-11-24T18:43:12.734+01:00",
       "latest_candidate_pr": {
         "pr": 2463,
         "head_sha": "2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d",
@@ -217,7 +217,6 @@
       "latest_followup_pr": {
         "pr": 2469,
         "branch": "research-perception/v14-ui-session-temporal-20261124-run11",
-        "head_sha": "acba8ddc9fe729e6dcb595a55892310965d3d13d",
         "code_commit_sha": "b09f731224f71da0fdb19e81f511540329b6c2cf",
         "regression_commit_sha": "9844efaf66c13b1e5562397ae1bc62ed7926c862",
         "state": "OPEN_NOT_RELEASED_STACKED_ON_2463",
@@ -226,7 +225,10 @@
         "device": "REDMI_UNVERIFIED; NO_DEPLOYMENT_RECEIPT",
         "next_action": "Wait for Core #2465 source-lifecycle and nested memory/world builder pin chain; then rebase #2469 and rerun full matrix.",
         "tested_code_sha": "9844efaf66c13b1e5562397ae1bc62ed7926c862",
-        "docs_board_sync_sha": "acba8ddc9fe729e6dcb595a55892310965d3d13d"
+        "docs_board_sync_sha": "acba8ddc9fe729e6dcb595a55892310965d3d13d",
+        "branch_head_before_board_sync_sha": "ba734842248712d70738ce17ca3cf30e74a05b61",
+        "code_test_sha": "9844efaf66c13b1e5562397ae1bc62ed7926c862",
+        "docs_handoff_ledger_next_action_and_board_are_committed_in_same_pr": true
       }
     },
     {
