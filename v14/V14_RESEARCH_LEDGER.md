@@ -1354,3 +1354,62 @@ The full arXiv HTML for Mathur & Manocha, *FD-VAD: Semantic Endpoint Detection f
 - Biological plasticity: no new reviewed study in this pass establishes biological/synaptic plasticity on-device; R-114 uses algorithmic stability/plasticity.
 - Android/memory: Yggdrasil's small active read set costs a 681 MB stored bank and AVX-512-specific timing; mzCache/Adaptive Guard are not Redmi-proven; MNN-Pocket is a candidate but has no Snapdragon 732G measurements.
 - No paper/model was downloaded, integrated or activated. These are research hypotheses, not development/release success.
+
+
+## 2026-11-24 daily research digest — 22:00 Europe/Berlin
+
+**Zeitfenster:** seit dem letzten Digest neu eingereichte bzw. wesentlich revidierte Arbeiten vom 22.–23.11.2026. In den heutigen 24.11.-Neuzugängen fand ich keine neue JEPA-/Continual-Learning-/Android-Arbeit mit ähnlich direkter Relevanz; die folgenden fünf sind die nützlichsten frischen Befunde. Preprints bleiben vorläufig.
+
+### R-119 — sft-JEPA: What Test-Time Training Corrects in Latent World Models (22.11.2026)
+Quelle: https://arxiv.org/abs/2611.29453 ; Projektseite: https://sft-jepa.github.io/
+
+- **Befund:** Der Fehler eines action-conditioned World Models wird in einen episode-lokalen, über Aktionen geteilten Offset und einen aktionsabhängigen Rest zerlegt. Ein schneller Adapter korrigiert den Offset innerhalb einer Episode und wird danach zurückgesetzt; ein langsamer LoRA-Adapter lernt wiederkehrende Aktionsfehler über Episoden.
+- **Messung:** Vier Simulations-/Manipulationsbenchmarks (PushObj, PointMaze, RoboCasa, OGBench), drei Seeds. Die Autoren berichten bis zu +22 Prozentpunkte Planning Success gegenüber AdaJEPA; der Fast-Offset allein erklärt in einer Analyse 91% des Gewinns. Der action-dependent Rest sinkt nach 100 Episoden auf etwa 0,82 des Ausgangswerts. Update-Overhead wurde auf RTX 3090/A800 gemessen; die Zusatzkosten sind keine Android-Messung.
+- **Grenze/Lizenz:** Preprint; Projektseite führt den Code noch als TBD. Kein verifizierter Code- oder Weight-Lizenzpfad. Der Basis-Prädiktor bleibt in den Experimenten eingefroren; trainiert werden begrenzte schnelle/LoRA-Adapter. Das ist kein Beleg für vollständiges Master-Weight-Learning.
+- **V14-Experiment:** Erst wenn ein realer action-conditioned JEPA-Predictor mit Gradientpfad und Consumer existiert: fast-only / slow-only / beide / Fast-State fälschlich über Episodengrenzen tragen (Negativkontrolle) vergleichen; Reset, Replay, Retention und echte Parameter-Diffs messen. Nicht auf einen bloß symbolischen Enlightened-Space-Transport übertragen.
+
+### R-120 — MobileGrail: A Practical Framework for Safety-Aware Mobile GUI Agents (23.11.2026)
+Quelle: https://arxiv.org/abs/2611.29847
+
+- **Befund:** Ein wiederkehrender Task-State hält Autorisierung und Ausführungsfortschritt über Agentenschritte fest. Zwei getrennte Labels unterscheiden `unsafe` (Handlung darf nicht committen) von `block` (jetzt ist ein Eingriff nötig); das vermeidet, Risiko und Eingriffszeitpunkt zu vermischen.
+- **Messung:** 32 Apps, 110 Online-Aufgaben und Anchor/Twin-Tests mit ansonsten gleichen autorisierten und nicht autorisierten Zielen. In der Online-Auswertung sinken erfolgreiche Angriffe von 13 auf 3, während Task Completion von 48 auf 58 steigt. Auf Snapdragon 8 Elite: Qwen3.5-2B Q4_0 3,67 GiB RSS / 4,70 s Median; LFM2.5-VL-1.6B Q4_0 1,10 GiB / 5,64 s.
+- **Grenze/Lizenz:** Paper CC BY 4.0; das verlinkte anonyme Code-Archiv hat keinen verifizierten Software-Lizenznachweis, Gewichte sind laut Paper erst zur Veröffentlichung vorgesehen. Snapdragon 8 Elite ist nicht das Redmi-Zielgerät. 3,67 GiB RSS überschreitet bereits das historisch verfügbare RAM-Budget; 1,10 GiB ist nur ein fremdes Geräteergebnis, kein Fit-Nachweis.
+- **V14-Experiment:** Nur das Zustands-/Label-Design übernehmen: Autorisierung und Fortschritt als getrennte, persistente Felder; identische Anchor/Twin-Paare testen. OS-Berechtigung bleibt außerhalb des Modells. Kein MobileGrail-Weight-Download oder Modellswap.
+
+### R-121 — DUET: Dually Constrained Parameter Projection for Continual Learning (22.11.2026)
+Quelle: https://arxiv.org/abs/2611.29269
+
+- **Befund:** Post-hoc-Parameterprojektion berücksichtigt Jacobian-Nullräume sowohl alter als auch neuer Aufgaben; damit wird nicht nur Vergessen begrenzt, sondern auch die Anpassung an die neue Aufgabe explizit erhalten.
+- **Messung:** Fünf Seeds auf CIFAR-100, ImageNet-R und DomainNet; auf ImageNet-R erreicht DUET 75,48±0,39 ACC10 gegenüber 72,83±0,36 für JANUS und 75,22±0,44 Joint; DomainNet 73,32±0,12 gegenüber 72,12±0,11 für JANUS. Ein NVIDIA A100 und bis zu 2.048 gespeicherte Exemplare.
+- **Grenze/Lizenz:** Preprint; kein offizielles Code-/Gewichtsrepo oder separater OSS-Lizenznachweis gefunden. Die Autoren nennen die Grenzen der First-Order-Taylor-Näherung und akkumulierte Approximationsfehler selbst.
+- **V14-Experiment:** Allenfalls offline auf einem kleinen trainierbaren Adapter/Head: alte und neue Held-out-Losses, Gradient-Rang, Projektionsnorm, Parameter-Diff und Retention vor/nach messen. Keine direkte Übertragung auf B1/B2-Master oder Redmi.
+
+### R-122 — Composing Independently Distilled Memory and Retrieval Policies for Long-Term Agents (23.11.2026)
+Quelle: https://arxiv.org/abs/2611.30230
+
+- **Befund:** Unabhängig trainierte Memory-Writer- und Retrieval-Spezialisten können ohne nachträgliches gemeinsames Training gut zusammenspielen, aber nur bei kompatiblen Aktionsschnittstellen und passenden Memory-Verteilungen. Ein einziger guter Spezialist garantiert keine gute Komposition.
+- **Messung:** Zwei Qwen2.5-3B-Instruct-Spezialisten, fester GPT-6.1-sol-Reader, 147 LongMemEval-S-Fragen und 370 PersonaMem-v2-Fragen. LongMemEval 73,11% gegenüber 36,23% für die verglichene bestehende RL-Komposition; PersonaMem-v2 40,31% gegenüber 32,79%. Retriever-Training auf einer anderen Writer-Verteilung kostet 0,89 bzw. 2,82 Prozentpunkte.
+- **Grenze/Lizenz:** Paper CC BY 4.0 und behauptet Code-/Datensatzfreigabe, aber aus dem Paper war kein konkretes Repo mit Software-/Weight-Lizenz verifizierbar. 3B-Spezialisten und A100-Experimente sind keine Android-Kandidaten.
+- **V14-Experiment:** Writer, Storage, Retriever und Reader getrennt testen; danach Cross-Role-Kompatibilität und dieselbe Memory-Verteilung zwischen Training und Inferenz ablationieren. Keine neuen großen Modelle übernehmen.
+
+### R-123 — MemFail v2 (revidiert 23.11.2026; Findings of EMNLP 2026)
+Quelle: https://arxiv.org/abs/2605.26667 ; Paper-Repo: https://github.com/ishirgarg/MemFail
+
+- **Befund:** Memory-Fehler sollten nach Operationen getrennt werden: Zusammenfassung, Speicherung und Retrieval. Ein einziges End-to-End-QA-Ergebnis zeigt nicht, an welcher Stufe Informationen verloren gehen.
+- **Messung:** Fünf Memory-Datensätze und vier Aufgaben; die Revision v2 wurde am 23.11. eingereicht.
+- **Grenze/Lizenz:** Paper CC BY 4.0; im verlinkten Code-Repo ist kein LICENSE-Nachweis sichtbar. Der Hugging-Face-Dataset-Viewer meldet derzeit ein Schema-/CSV-Spaltenproblem. Deshalb weder Code noch Datensatz ungeprüft in V14 übernehmen.
+- **V14-Experiment:** Die vorhandenen Memory-Tests um getrennte Assertions für Writer-Summary, persistierten Store und Retriever-Recall ergänzen; gezielte Negativfälle für Überschreiben, Widerspruch, Auslassung und stale facts.
+
+### R-124 — MemT-1.0 v5 (revidiert 23.11.2026)
+Quelle: https://arxiv.org/abs/2610.26825 ; Code: https://github.com/MemTensor/MemT-1.0
+
+- **Befund:** Memory-native Architektur mit dynamischem Speicher und selektiver Aktivierung; berichtet 1,86× Inferenzgeschwindigkeit und 66× weniger persistente Speicherung gegenüber Full-KV bei 128K Kontext.
+- **Messung:** 36B Gesamtparameter, 3B aktiviert, 10M dynamische Memory-Parameter, 34B Trainingstokens; Evaluation mit SGLang auf zwei GPUs.
+- **Grenze/Lizenz:** Paper CC BY-NC-SA 4.0; Code PolyForm Noncommercial 1.0.0; Weight-Lizenzen sind separat. Nicht für kommerzielle Produktübernahme freigegeben und kein Android-Kandidat.
+- **V14-Experiment:** Nur die Idee dynamischer Memory-Allokation als Forschungsfrage festhalten; kein Code-/Weight-Reuse und keine Behauptung eines 6-GB-tauglichen Modells.
+
+### Tagesentscheidung
+
+- Kein neuer Modellkandidat wird heruntergeladen oder produktiv getauscht.
+- Wichtigste kurzfristige Übertragung ist kein Modellwechsel: A4/Android-Action-State sauber und getrennt halten; JEPA- und Memory-Tests müssen Fast-/Slow-Update, Episode-Reset, Writer/Store/Retriever und negative Kontrollen einzeln messen.
+- **Nicht belegt:** native Redmi-Ausführung, echte Audioaufnahme, echtes cross-model hidden-state/JEPA-Latent-Sharing oder persistente Master-Weight-Änderungen durch diese Arbeiten.
