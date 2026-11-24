@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T20:22:36.292Z",
+  "updated_at": "2026-11-24T20:26:03.098Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6. Boss candidate code-bearing checkpoint a5e536a96f6dc2a3a515d37b08393f7136e9efff on boss/v14-memory-forget-lifecycle-composition-20261123-run11-clean; documentation-only descendants follow (last PR metadata readback 5166643ac74fbca318511c0918dea06e98a11ff9). QA #2459 and #2460 fast-forward integrated. Candidate PR #2443 remains DRAFT / NOT_RELEASED; full combined exact-head CI incomplete.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "The Boss branch is a candidate only, NOT_RELEASED/NOT_INSTALLED. CI must pass on its exact final head before any release action. Do not restart the explicitly stopped phone runtime or issue a duplicate update request. Keep synthetic, CI, local Linux and real Redmi evidence separate.",
@@ -275,14 +275,14 @@
       "owner": "Core & Harness + Perception",
       "reviewer": "QA & Android",
       "priority": "P0",
-      "status": "IN_PROGRESS_PARTIAL",
+      "status": "PARTIAL_WIRED_SYNTHETIC",
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
-      "proof_environment": "CI + Android source review; no APK or Redmi OS execution",
-      "next_step": "Core/QA: #2450 now contains the typed ActionIntent/ActionOutcome journal and receipt-only EXECUTING/DENYING recovery, but exact head 523c04 has 11/12 checks green with the Android process-restart test failing. QA #2427 has a 5/5-green ActivityScenario process-death harness on a separate branch; port/rebase that harness into the exact combined #2450 stack and rerun. Continue API-first app launch, then separately permissioned UI observation/action and voice paths. No APK install or Redmi proof; providers stay OFF.",
+      "proof_environment": "SOURCE_WIRED + SYNTHETIC CLI TEST; PR #2479 real Runtime/SQLite/Operator integration test queued; NO_NATIVE_TERMUX_OR_REDM I_PROOF",
+      "next_step": "Poll exact PR #2479 CI. After it passes, obtain an explicitly user-run Termux :voice status/speak receipt on the installed Redmi only if the device is active and consented; do not send a remote device command. Then implement the separate trainable speech decoder/vocoder and raw acoustic-feature learning path, with source-bound replay/retention and full-duplex/barging-in. QA continues #2450 process-death harness port from #2427.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T19:24:35Z",
-      "proof": "#2450 exact head 523c04: 11/12 check-runs SUCCESS; only android-companion-process-restart fails. Recovery tests cover signed UNKNOWN after EXECUTING and signed denial after DENYING without redispatch, including SQLite failure/restart. QA #2427 head ae56dd: 5/5 CI SUCCESS on a separate harness stack; not combined proof. No Android APK, UI control, AudioRecord, trainable vocoder or Redmi action."
+      "last_checkpoint": "2026-11-24T20:26:03.098Z",
+      "proof": "Release branch 8d932 contains v13/speech_intent.py (source-bound FINAL C3 text hash; explicit user command only), v13/speech_output.py (TermuxTtsAdapter, serialized/locked CLI, timeout degradation, ActionIntent/ActionOutcome persistence, audibility_verified=false) and operator.py :voice dispatch. Existing test_speech_output.py verifies explicit playback, OFF default, TTY-only, no microphone, no automatic playback and no raw text in outcome using a fake CLI and stub Runtime/Store. New PR #2479 adds a real Runtime + SQLite + Operator integration test using a fake local termux-tts-speak executable; exact head bcc99e8 has 5/5 checks QUEUED at last poll. This is not native Android audio proof, not a trained speech decoder/vocoder, not acoustic learning and not full duplex. Redmi remains REDMI_UNVERIFIED."
     },
     {
       "id": "V14-010",
@@ -1486,7 +1486,16 @@
       "current_head": "58 exact-head check-runs registered: 56 QUEUED, 2 SKIPPED, 0 completed SUCCESS/FAIL at last poll. Full staged-runtime, integrated-regression, consumers, source-contracts, owner-read, metadata, migration, Android arm64 cross-compile and offline-bridge-security matrix pending."
     },
     "device": "REDMI_UNVERIFIED; last shared authenticated receipt reports release 8d932 installed, AI STOPPED_BY_USER, autostart OFF; no fresh relay and no device action",
-    "next_action": "Poll exact PR #2478 checks; inspect staged-runtime/integrated-regression and loader diagnostic test first. Repair only measured issues; then Boss review/integration with #2464/#2451 and QA port of #2427 into #2450."
+    "next_action": "Poll exact PR #2478 checks; inspect staged-runtime/integrated-regression and loader diagnostic test first. Repair only measured issues; then Boss review/integration with #2464/#2451 and QA port of #2427 into #2450.",
+    "voice": {
+      "pr": 2479,
+      "branch": "core/v14-speech-output-runtime-sqlite-20261124",
+      "head": "bcc99e8f9620c7162aae218324a611e2fdf7730c",
+      "status": "DRAFT_EXACT_HEAD_CI_QUEUED_NOT_RELEASED",
+      "implementation": "Existing explicit C3 FINAL text -> SpeechIntent -> Termux system-TTS fallback via :voice speak; ActionIntent/ActionOutcome persisted in Store; no auto-play, microphone or trainable vocoder.",
+      "test": "New real Runtime/SQLite/Operator integration test with fake termux-tts-speak executable; 5/5 exact-head checks queued; no native audio proof.",
+      "open": "Redmi audibility, trainable decoder/vocoder, raw acoustic learning, full duplex/barging-in and retention/restart remain OPEN."
+    }
   },
   "latest_core_checkpoint": {
     "timestamp": "2026-11-24T20:18:58.353Z",
