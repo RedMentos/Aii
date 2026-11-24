@@ -83,6 +83,14 @@ class BaselineTests(unittest.TestCase):
         self.assertEqual(len(model.epoch_losses), 2)
         self.assertTrue(all(np.isfinite(value) for value in model.epoch_losses))
 
+    def test_lad_ar_seed_reproduces_shuffled_training_order(self):
+        kwargs = dict(alpha=0.01, ar_lags=(1, 2, 3), epochs=2, learning_rate=0.01)
+        first = LADARBaseline(**kwargs, seed=44).fit(self.dataset, batch_size=64)
+        second = LADARBaseline(**kwargs, seed=44).fit(self.dataset, batch_size=64)
+        third = LADARBaseline(**kwargs, seed=45).fit(self.dataset, batch_size=64)
+        np.testing.assert_array_equal(first.weights, second.weights)
+        self.assertFalse(np.array_equal(first.weights, third.weights))
+
     def test_mae_evaluator_reports_horizon_and_channel_metrics(self):
         result = evaluate_mae(PersistenceBaseline(), self.dataset, "validation", batch_size=32)
         self.assertEqual(result["split"], "validation")
