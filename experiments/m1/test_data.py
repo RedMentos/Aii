@@ -41,7 +41,7 @@ def synthetic_rows(n: int, missing_at: set[int] | None = None):
 
 PREREG_PARAMS = {
     "code_commit": "a" * 40, "tau": 0.1, "r_eff_min": 3.0,
-    "bootstrap_block_len": 7, "min_effect": 0.01, "trial_budget": 20,
+    "bootstrap_block_len": 10080, "min_effect": 0.01, "trial_budget": 20,
 }
 
 class DataConfigTests(unittest.TestCase):
