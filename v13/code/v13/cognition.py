@@ -446,10 +446,22 @@ class Cognition:
         runner=None;started=time.monotonic();attempt_status='ERROR'
         try:
             runner=self.r.pool.get(role)
-            raw=''.join(runner.generate([{'role':'system','content':instructions},{'role':'user','content':dumps(query)}],self.r.cancel_event,deadline,self.r.cfg['observer_tokens'],schema));attempt_status='FINAL'
+            raw=''.join(runner.generate([{'role':'system','content':instructions},{'role':'user','content':dumps(query)}],self.r.cancel_event,deadline,self.r.cfg['observer_tokens'],schema))
+            runner_status=(runner.last_metrics or {}).get('status') if isinstance(getattr(runner,'last_metrics',None),dict) else None
+            if self.r.cancel_event.is_set():attempt_status='CANCELLED'
+            elif time.monotonic()>=deadline or runner_status=='DEADLINE':attempt_status='DEADLINE'
+            elif runner_status in ('CANCELLED','INTERRUPTED','ERROR'):attempt_status=runner_status
+            else:attempt_status='FINAL'
+        except Exception:
+            if self.r.cancel_event.is_set():attempt_status='CANCELLED'
+            elif time.monotonic()>=deadline:attempt_status='DEADLINE'
+            else:attempt_status='ERROR'
+            raise
         finally:
             metrics=dict(runner.last_metrics) if runner else {'status':'ERROR','duration_s':time.monotonic()-started}
-            self.s.log('body_offer_attempt',e['event_id'],{'role':role,'query_packet_id':query_packet['packet_id'],'status':metrics.get('status',attempt_status),'runner':metrics,'context_offer_ids':query_packet['context_offer_ids'],'context_chars':query_packet['context_chars'],'state_policy':query_packet['state_policy']})
+            # The runner's last_metrics may be stale (e.g. FINAL from its prior
+            # call). The attempt boundary is authoritative for deadline/cancel.
+            self.s.log('body_offer_attempt',e['event_id'],{'role':role,'query_packet_id':query_packet['packet_id'],'status':attempt_status,'runner':metrics,'context_offer_ids':query_packet['context_offer_ids'],'context_chars':query_packet['context_chars'],'state_policy':query_packet['state_policy']})
         obj=json.loads(raw)
         check(self.r.cancel_event,deadline)
         if set(obj)!=set(OFFER_SCHEMA['required']) or not isinstance(obj['needs_reentry'],bool) or not isinstance(obj['quotes'],list) or not all(isinstance(obj[k],str) for k in ['summary','uncertainty']):raise ValueError('Offer-Schema ungültig')
