@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-24  
 **Branch:** `core/v14-native-prefill-receipt-20261124-run1`  
-**Checkpoint SHA:** `92c29725a687c2fa7995f92f828790115ee7e520`  
+**Checkpoint SHA:** `525e8944d0855b1bddfb3d7173208475843e70fa`  
 **PR:** #2464 (draft; not release-integrated)
 
 ## Hypothesis and change
@@ -39,3 +39,18 @@ Prompt-cache reuse remains a separate optimization: llama.cpp documents `cache_p
 ## Next action
 
 Verify the exact-head CI on `92c29725`. If the synthetic lifecycle tests pass, obtain a consented Redmi receipt comparing one forced C3 deadline followed by a short second turn: record native process PID continuity, cold/warm load time, prefill time, slot idle result, and RSS/PSS. Do not claim the warm-retention effect on Android until that receipt exists.
+
+
+
+## Run 2 — RunnerPool next-turn integration evidence (2026-11-24)
+
+- Current PR #2464 head: `525e8944d0855b1bddfb3d7173208475843e70fa`; branch remains `core/v14-native-prefill-receipt-20261124-run1`, base `8d93236c753f0194224c19edc7411d8d7082b1d6`. Draft / NOT_RELEASED.
+- Added two exact project regressions to `v13/code/tests/test_runner_interruption_retention.py`:
+  1. `test_retained_c3_runner_is_reused_by_pool_on_the_next_turn`: after a deadline, the actual `RunnerPool.get("C3_LANGUAGE")` returns the same runner, and the next request reuses the same live PID without unload/reload.
+  2. `test_deadline_waits_until_every_slot_is_idle_before_retaining`: a multi-slot response with one busy slot is not retained; a subsequent all-idle response permits retention. Prompt text returned by `/slots` must not enter metrics.
+- **Exact-head CI boundary:** the dedicated warm-retention workflow passed on the immediately preceding code head `27aec17b57abde002de7625c588fc4d8412059bb`, run [45451187762](https://github.com/RedMentos/Aii/actions/runs/45451187762), both Python 3.13 and 3.14; both jobs compiled the runner/test and passed the test step. The additional two tests were committed afterward at `525e894`; no dedicated warm-retention run for that exact SHA was returned at the latest readback. Therefore the new tests are **CI_PENDING / NOT YET VERIFIED**.
+- **LOCAL_LINUX_ISOLATED:** a small local behavior reproduction passed: a deadline retained the same C3 PID and the next RunnerPool request reused it. This was a synthetic reproduction of the lifecycle, not the exact repository pytest suite. Full Aii checkout remains unavailable; exact project tests are not claimed locally.
+- **Research check:** the exact pinned llama.cpp revision `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4` documents `GET /slots` and `is_processing`; its README says the endpoint is enabled by default and can be disabled with `--no-slots`. The workflow separately verifies the upstream MIT license. Upstream issue [ggml-org/llama.cpp#24496](https://github.com/ggml-org/llama.cpp/issues/24496) reports a client-disconnect cancellation gap in an API-proxy configuration; it is a risk report, not proof that the pinned V14 build has that defect. The implementation therefore still unloads on busy, unavailable, malformed, or unverified slot state.
+- No Android/Redmi receipt exists for this branch. **REDMI_UNVERIFIED**. No Termux command, model download/swap, weight edit, permission change, updater request, or user-data action was performed.
+
+**Next executable action:** obtain exact-head CI for `525e894` (especially the two new tests), fix any failure, then ask Boss/QA for independent review of #2464. After the runtime change is integrated and the ordinary updater is verified, a separate consented Redmi test can compare same-process PID continuity, cold/warm load, prefill, TTFT and RSS/PSS. No user action is needed for the repository-only work.
