@@ -263,7 +263,8 @@ class CalendarBoundaryTests(unittest.TestCase):
 
     def test_candidate_window_universe_is_independent_of_input_length(self):
         from experiments.m1.data import build_dataset
-        rows = self.rows
+        rows = synthetic_rows(1000)
+        channels = ("Global_active_power", "Voltage")
         short = DataConfig(
             input_length=3, horizon=2, max_candidate_input_length=8,
             seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
@@ -272,8 +273,8 @@ class CalendarBoundaryTests(unittest.TestCase):
             input_length=8, horizon=2, max_candidate_input_length=8,
             seasonal_lags=(2, 4), train_fraction=0.70, validation_fraction=0.15,
         )
-        _, short_stats, _ = build_dataset(rows, self.channels, short)
-        _, long_stats, _ = build_dataset(rows, self.channels, long)
+        _, short_stats, _ = build_dataset(rows, channels, short)
+        _, long_stats, _ = build_dataset(rows, channels, long)
         self.assertEqual(
             short_stats["train"].candidate_windows,
             long_stats["train"].candidate_windows,
