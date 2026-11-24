@@ -9,17 +9,20 @@ import hashlib
 
 OPERATOR_PATH = "v13/operator.py"
 APPROVAL_PATH = "v13/native_probe_approval.py"
+MATRIX_PATH = "v13/native_probe_matrix.py"
 
 SOURCE_PINS = {
     OPERATOR_PATH: "8d59efa1bfb7dea7bbb2fd1af2cf7d2e25adebc4",
     APPROVAL_PATH: "c52c4d5bf21b34ab691eb6633504b67254bdf098",
+    MATRIX_PATH: "22b7abee5fc9794aa40db3bdb783b3c07415f698",
 }
 
 HELP_OLD = b":callosum [status|shadow|active|degrade|promote <Richtung>]"
 HELP_NEW = (
     b":callosum [status|shadow|active|degrade|promote <Richtung>|"
     b"arm-probe <sender> <receiver> --last-source --confirm|"
-    b"native-probe <sender> <receiver> --last-source --confirm|revoke-probe]"
+    b"native-probe <sender> <receiver> --last-source --confirm|revoke-probe|"
+  b"arm-probe-matrix --last-source --confirm|native-probe-matrix --last-source --confirm|revoke-probe-matrix]"
 )
 
 DISPATCH_OLD = (
@@ -76,6 +79,16 @@ def apply_staged_native_probe(
     )
     if source_module != staged_module:
         raise ValueError("native-probe approval module differs between source and staged tree")
+    source_matrix = _read_pinned(
+        code_dir, MATRIX_PATH, SOURCE_PINS[MATRIX_PATH], "native pair-matrix module",
+    )
+    staged_matrix = _read_pinned(
+        staging, MATRIX_PATH, SOURCE_PINS[MATRIX_PATH], "staged native pair-matrix module",
+    )
+    if source_matrix != staged_matrix:
+        raise ValueError("native pair-matrix module differs between source and staged tree")
+    if b"def operator_command(" not in source_matrix:
+        raise ValueError("native pair-matrix module has no operator consumer")
     if not isinstance(expected_staged_operator, bytes):
         raise ValueError("verified recovery builder did not provide staged operator bytes")
     staged_operator_path = staging / OPERATOR_PATH
@@ -95,7 +108,11 @@ def apply_staged_native_probe(
         compile(patched.decode("utf-8"), str(staged_operator_path), "exec")
     except (SyntaxError, UnicodeError) as exc:
         raise ValueError("staged native-probe operator overlay does not compile") from exc
-    if (b"from .native_probe_approval import operator_command as probe_operator_command" not in patched
-            or patched.index(b"probe_operator_command") > patched.index(DISPATCH_OLD)):
-        raise ValueError("native-probe dispatch is not ahead of the normal Callosum handler")
+    if (
+        b"from .native_probe_matrix import operator_command as matrix_operator_command" not in patched
+        or b"from .native_probe_approval import operator_command as probe_operator_command" not in patched
+        or patched.index(b"matrix_operator_command") > patched.index(b"probe_operator_command")
+        or patched.index(b"probe_operator_command") > patched.index(DISPATCH_OLD)
+    ):
+        raise ValueError("native probe/matrix dispatch is not ahead of the normal Callosum handler")
     return {OPERATOR_PATH: patched}
