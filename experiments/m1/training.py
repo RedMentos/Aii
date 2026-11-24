@@ -161,6 +161,66 @@ def train_direct_mae(
 
 
 @torch.no_grad()
+
+def train_frozen_probe(
+    model,
+    dataset: ArrayDataset,
+    *,
+    epochs: int = 5,
+    batch_size: int = 32,
+    learning_rate: float = 1e-3,
+    weight_decay: float = 1e-4,
+    seed: int = 17,
+    device: str = "cpu",
+    max_grad_norm: float = 1.0,
+) -> list[dict[str, float]]:
+    """Fit only the linear value head; the pretrained/random backbone stays frozen."""
+    if type(epochs) is not int or epochs < 1:
+        raise ValueError("epochs must be a positive integer")
+    if type(batch_size) is not int or batch_size < 1:
+        raise ValueError("batch_size must be a positive integer")
+    _validate_model_dataset(model.config, dataset)
+    frozen_parameters = [
+        parameter for name, parameter in model.named_parameters()
+        if name.startswith("backbone.") and parameter.requires_grad
+    ]
+    if frozen_parameters:
+        raise ValueError("frozen probe backbone unexpectedly has trainable parameters")
+    trainable = [parameter for parameter in model.parameters() if parameter.requires_grad]
+    if not trainable:
+        raise ValueError("frozen probe has no trainable readout parameters")
+    torch.manual_seed(seed)
+    model.to(device)
+    model.train()
+    optimizer = torch.optim.AdamW(
+        trainable, lr=learning_rate, weight_decay=weight_decay
+    )
+    history = []
+    for epoch in range(epochs):
+        total = 0.0
+        windows = 0
+        for batch in dataset.iter_batches(
+            "train", batch_size=batch_size, shuffle=True, seed=seed + epoch
+        ):
+            x, seasonal, calendar, target = _batch_tensors(batch, device)
+            optimizer.zero_grad(set_to_none=True)
+            prediction = model(x, seasonal, calendar)
+            loss = model.loss(prediction, target)
+            if not torch.isfinite(loss):
+                raise FloatingPointError("non-finite frozen-probe loss")
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(trainable, max_grad_norm)
+            optimizer.step()
+            count = len(batch.origin_indices)
+            total += float(loss.detach()) * count
+            windows += count
+        if not windows:
+            raise ValueError("no accepted train windows")
+        history.append({"epoch": float(epoch + 1), "mae": total / windows})
+    return history
+
+
+
 def evaluate_direct_mae(
     model: DirectMAEForecaster,
     dataset: ArrayDataset,
