@@ -1411,3 +1411,18 @@ Current #2443 remains OPEN / DRAFT / NOT_MERGED; API readback has zero check-run
 - **Release:** PR #2448 remains OPEN/DRAFT; NOT_RELEASED. No UPDATE_REQUEST sent.
 - **Next:** finish exact-head Python 3.13/3.14 CI, then verify `/proc/self/fd` and `os.open(dir_fd=...)` on authorized Termux/Android before treating the Teacher Ear model path as Android-capable. Continue the 1 s/2 s speaker-history invariance regression; do not loosen uncalibrated speaker decisions.
 - **User action:** none; no model or device permission is requested.
+
+
+
+## Research & Perception checkpoint — 2026-11-24 04:09 UTC
+
+- Current Perception branch: \`research-perception/v14-audio-duplex-bridge-20261123-run21\`; pre-checkpoint head \`437c72b4c10fd5837aef64a984f61d7da86f627d\`; release-development base \`8d93236c753f0194224c19edc7411d8d7082b1d6\`.
+- PR #2448 remains OPEN / DRAFT / NOT_RELEASED. Code-tested snapshot \`c7db1809370fae5ae5a49287e76cba0deedf80e7\`; later branch commits through 437c72 are documentation/board/handoff updates, not audio code changes.
+- Rechecked the two Boss audio-duplex race findings. The exact source already has per-target first-writer protection in \`duplex.record\`, and the audio bridge serializes active-turn recheck → durable handoff commit → cancellation with the same per-Runtime lock used by \`duplex.handoff\` and rollback. Regressions cover sequential distinct receipts, concurrent distinct receipts, first-writer preservation, and commit/reader/cancel ordering.
+- Exact GitHub Actions on current branch head 437c72: audio duplex run **45322153681** PASS, **179/179 on Python 3.13 and 179/179 on Python 3.14**. Review response posted on #2448 (review 6033522645).
+- Exact remaining failures: staged/integrated run **45322153465** fails at the Core-owned audio composer with \`ValueError: audio source blob changed: v13/audio_voice_cues.py\` (16 failed, 237 passed, 10 skipped, 2 errors, 47 subtests); integrated regression has the same pin failure; Core same-turn run **45322153579** fails on both Python versions for the same composition issue. Current expected/actual blobs are recorded in the Run 33 handoff. Coordination comment posted on #2462 (comment 7121776477). Perception did not edit Core-owned pins.
+- PR #2463 remains OPEN / DRAFT. Focused vision source-lineage 29/29 and RAW EYE frame-ingress 39/39 pass on Python 3.13/3.14; staged/integrated still fails because the Core-owned lifecycle composer rejects \`vision.py\`. No bypass.
+- LOCAL_LINUX full repository checkout/tests remain BLOCKED: container has no Aii checkout and \`git ls-remote https://github.com/RedMentos/Aii.git\` fails because github.com DNS cannot resolve. This run did not claim local full-suite success. TERMUX/REDMI remains REDMI_UNVERIFIED for these candidates.
+- Research R-126 (FD-VAD) and R-127 (MJEPA) are now in the ledger. FD-VAD is a preprint with a 0.5B LLM + WavLM stack and A100-only latency; MJEPA supports the importance of explicit cross-modal prediction but uses a 1B ViT-g-scale training setup. Neither was downloaded, imported or treated as a Redmi candidate.
+- Next: Core/Integrator rebinds the three audio SOURCE_BLOBS and adds the reviewed \`vision.py\` lifecycle mapping + source-forget regression; then run one combined staged/integrated/same-turn candidate. After it is green, use the authorized updater path and obtain a separate installation receipt; do not issue manual Termux instructions or change models/permissions.
+
