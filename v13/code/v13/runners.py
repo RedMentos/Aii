@@ -442,7 +442,7 @@ class LlamaRunner:
             if first_step.get('content'):
                 self.stage_times['prefill_to_first_token_s']=time.monotonic()-self.phase_started;self.phase_started=time.monotonic();self.phase='stream';yield first_step['content']
             if cap==1 or not ids or first_step.get('stop_type') in {'eos','word'}:
-                self.last_metrics={'generated_tokens':first_tokens,'prompt_tokens':n,'history_trimmed':truncated,'timings':first_step.get('timings',{}),'output_adapter_native_first_step':{'token_ids':ids,'bias':first_token_bias,'remaining_positions_unbiased':True},'ttft_s':time.monotonic()-started}
+                self.last_metrics={'generated_tokens':first_tokens,'prompt_tokens':n,'history_trimmed':truncated,'timings':first_step.get('timings',{}),'output_adapter_native_first_step':{'token_ids':ids,'bias':first_token_bias,'remaining_positions_unbiased':True,'timings':first_step.get('timings',{})},'ttft_s':time.monotonic()-started}
                 return
             payload['prompt']=native_prompt+ids;payload['n_predict']=cap-1
         conn=http.client.HTTPConnection("127.0.0.1",self.port,timeout=max(1,deadline-time.monotonic()));stop_watch=threading.Event()
