@@ -1,4 +1,4 @@
-"""Bounded-memory array-window tests for V14 M1."""
+"""Bounded-memory array-window tests for M1 clean-room."""
 from __future__ import annotations
 
 import hashlib
