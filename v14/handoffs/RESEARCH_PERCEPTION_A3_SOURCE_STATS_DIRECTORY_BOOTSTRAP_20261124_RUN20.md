@@ -42,3 +42,10 @@ No Android/Termux/Redmi, microphone, native model, model/weight update, user-dat
 ## Exact PR trigger coverage
 
 The existing vision/source-lineage workflow's push path filter already included the helper and helper tests, but its pull_request path filter omitted both. PR #2484 therefore extends that filter and the compile step so the exact fresh-root regression runs as a required PR-triggered check, not merely on branch push. The Python 3.13/3.14 workflow remains the same bounded test environment.
+
+
+## Research review added to the shared ledger
+
+- **R-141, QSS (NeurIPS 2026):** full paper read. Schema/content split gives exact deletion for content points in QSS-E and label-only deletion in QSS-L; retained-schema deletion still rebuilds. The paper reports 4–483x expected latency gains on low-class-count tasks, not a general mobile result. The linked GitHub repository has no LICENSE file and qss.py carries a Meta 'Confidential and proprietary' header; no code reuse.
+- **R-142, ridge-statistics probing (arXiv 2609.04475, 2026-09-03):** full preprint read. Repeated high-precision full-head broadcasts can expose deleted sufficient statistics under an active-client/quiet-interval threat model. V14's local A3 statistics therefore remain local-only. A Runtime negative-control test was added so status exposes counts/mode but not source-stat paths, hashes or matrices.
+- **R-143, memory-efficient CNNs (IJCV 2026-01-29, CC BY 4.0):** full article read. The 63 KB/42 KB peak-activation results are STM32H7 results, with a 3.34M-parameter ImageNet model; useful as a future streaming feature-extraction idea, not a Redmi or LFM replacement. No code repository was located.
