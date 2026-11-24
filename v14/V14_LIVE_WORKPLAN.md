@@ -1366,3 +1366,13 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - Product status: CODE_PRESENT / existing Runtime call site / synthetic Store tests ADDED_NOT_RUN. This is durable attention-policy/N10 feedback, **not** model-weight learning, trained JEPA, latent coupling or truth authority.
 - Redmi: public #1904 comment 7108089370 still reports installed base `8d93236`, auto-update enabled, Runtime `CI_WAIT`; separate diagnostics say `STOPPED_BY_USER`, autostart false. PR #2448 remains DRAFT / NOT_RELEASED / not installed. Preserve the stopped state; REDMI_UNVERIFIED.
 - Next: Core pin-chain repair; restore runnable Actions; exact Python 3.13/3.14, staged/integrated, migration, privacy and revocation tests; then independent QA/Boss review. No user action, model download, permission change, restart or manual Termux command.
+
+
+### V14-018 speaker-history test inventory correction — 2026-11-24
+
+The current #2448 branch already contains the requested 1s/2s timestamp-invariance test and the negative controls; these are not a future coding task. Exact test blob: `7962ad24f29b4a4638e20d5449b9d9f2d2e3028d`.
+
+- `test_one_and_two_second_reference_timestamps_are_batch_length_invariant` (lookback_frames 10 and 20) compares a common frame timestamp in one-second and two-second incoming batches.
+- `test_missing_threshold_emits_score_without_a_decision` checks that missing calibration does not become a speaker-change decision.
+- `test_non_voiced_embeddings_never_seed_or_replace_speaker_history` and `test_three_regime_gate_defers_nonvoiced_low_similarity` check non-voiced suppression and fail-closed decision gating.
+- Status: PRESENT / NOT_RUN on current PR head. Restore exact-head Actions, then execute on Python 3.13 and 3.14 plus staged/integrated A5/A4/C3. No new code is required unless one of those tests fails.
