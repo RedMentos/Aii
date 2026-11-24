@@ -217,6 +217,7 @@ class LADARBaseline(_LinearARBase):
         self.epoch_losses: list[float] = []
 
     def fit(self, dataset: ArrayDataset, *, batch_size: int = 256) -> "LADARBaseline":
+        self.epoch_losses = []
         self._fit_scaler(dataset, batch_size)
         weights = None
         first_moment = second_moment = None
