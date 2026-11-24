@@ -481,6 +481,15 @@ class FocalLoop:
         ids=[x['item_id'] for x in active if x['source_kind'] in BODY and x['origin_event_id']==e['event_id']]
         by={p['packet_id']:p for p in offers}
         selected=[by[i] for i in ids if i in by and offer_is_fresh(by[i],e['event_id'],e['brain_generation_id'],version)]
+        # Persist the exact C4-selected body offer IDs before Runtime assembles
+        # the C3 hypotheses layer. This is a delivery receipt, not proof that
+        # C3 attended to or semantically used the offers.
+        selected_ids=[p['packet_id'] for p in selected]
+        selected_roles={p['role'] for p in selected}
+        c4_ready=(len(selected_ids)==2 and selected_roles=={'B1_DETAIL','B2_GIST'})
+        self.s.log('c4_offer_context_ready',e['event_id'],{
+            'role':'C3_LANGUAGE','status':'PASS' if c4_ready else 'REJECTED',
+            'count':len(selected_ids),'selected_offer_ids':selected_ids})
         return {'selected':selected,'offers':offers,'coalition':active,'decision':decision,'trajectory':trajectory,'inquisition':inq_steps,'halt_decision':halt_decision,
                 'workspace':[x['item_id'] for x in active+rest if x['state_type']!='DROPPED'][:slots*BOOT['workspace_factor']]}
 
