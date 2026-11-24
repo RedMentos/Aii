@@ -1821,3 +1821,19 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - The A3 student here is a persistent ridge-regression projector, not a neural gradient update/full JEPA. It uses EmbeddingGemma if installed and a clearly labeled `hashed_bow` fallback otherwise; the LFM2.5-VL-450M teacher is optional and not loaded by CI. A5 consumes a signed provider frame grant under an existing UI lease; it does not open MediaProjection or request permissions.
 - Detailed evidence: `v14/handoffs/RESEARCH_PERCEPTION_VISION_REBASE_20261124_RUN33.md`. Next: Core/JEPA lifecycle mapping, Core/Integrator audio pin rebinding, then combined staged/integrated CI. Android/Redmi remains UNVERIFIED.
 
+
+
+
+# Research & Perception checkpoint — 2026-11-24 04:09 UTC
+
+**No user action is required. Do not run a manual Termux command, request an update, download a model, change weights, or change Android permissions.**
+
+- Current release-development base: \`8d93236c753f0194224c19edc7411d8d7082b1d6\`. The last authenticated private PIPELINE_STATUS receipt #832 (2026-11-23 17:37:47 UTC) reported auto-update enabled and that base installed. It does not prove installation of PR #2448 or #2463; no new UPDATE_REQUEST or device action was sent.
+- Perception branch before this checkpoint: \`research-perception/v14-audio-duplex-bridge-20261123-run21\`, head \`437c72b4c10fd5837aef64a984f61d7da86f627d\). PR #2448 remains OPEN / DRAFT / NOT_RELEASED.
+- The Boss-requested audio race controls are present in the current code-tested snapshot \`c7db1809370fae5ae5a49287e76cba0deedf80e7\`: per-target first-writer protection in \`duplex.record\`, and a shared audio handoff lock around durable record-before-cancel ordering. Exact bridge CI run 45322153681: 179/179 PASS on Python 3.13 and 179/179 PASS on Python 3.14. Review response: https://github.com/RedMentos/Aii/pull/2448#pullrequestreview-6033522645.
+- Staged/integrated is still blocked by Core-owned stale audio source pins. Exact run 45322153465 reports \`ValueError: audio source blob changed: v13/audio_voice_cues.py\`; Core same-turn run 45322153579 fails for the same reason. The current expected/actual blob mapping is in the Run 33 handoff and the follow-up comment on #2462: https://github.com/RedMentos/Aii/pull/2462#issuecomment-7121776477.
+- PR #2463 focused vision tests pass (29/29 source-lineage and 39/39 RAW EYE frame-ingress on Python 3.13/3.14), but staged/integrated still fails because the Core lifecycle composer rejects \`vision.py\`. This is not Android MediaProjection proof.
+- Full local Aii checkout/tests are BLOCKED because github.com DNS is unavailable in the local container. GitHub Actions are CI evidence, not LOCAL_LINUX or Redmi evidence.
+- Research ledger now contains R-126 FD-VAD (semantic endpointing, preprint, MIT code, WavLM/Qwen stack; no model download) and R-127 MJEPA (cross-modal JEPA prediction, MIT code + Apache-2.0 third-party files; 1B-scale research, no weights imported). Neither is a tested Redmi model candidate.
+- **Next internal action:** Core/Integrator repairs the three audio source pins and Core/JEPA adds the reviewed vision lifecycle mapping/source-forget regression; then rerun combined staged/integrated/same-turn CI. After that, QA/Boss may use the existing authorized updater and obtain a separate installation receipt. No manual command is needed from the user.
+
