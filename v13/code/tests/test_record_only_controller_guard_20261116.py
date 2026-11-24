@@ -1,4 +1,5 @@
 """Real staged Runtime checks for specific RECORD_ONLY controller paths."""
+import hashlib
 import os
 from pathlib import Path
 import subprocess
@@ -170,6 +171,13 @@ if __name__=='__main__':unittest.main()
 class StageControllerChecks(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        from scripts import record_only_controller_guard_20261116 as guard
+        for name, allowed in guard.PINS.items():
+            source = CODE / name
+            if source.is_file() and not source.is_symlink():
+                actual = hashlib.sha256(source.read_bytes()).hexdigest()
+                if actual not in allowed:
+                    print('V14_PIN_DIAGNOSTIC', name, actual, flush=True)
         cls.temp = tempfile.TemporaryDirectory(prefix='v13-record-only-stage-')
         cls.stage = Path(cls.temp.name) / 'stage'
         stage_integrated_candidate.stage(CODE, cls.stage)
