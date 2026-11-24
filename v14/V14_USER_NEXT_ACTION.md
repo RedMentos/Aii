@@ -1884,3 +1884,10 @@ R-109 reviews the official Android MediaProjection guide (updated 2026-11-19). A
 - Core/QA still must add vision_projector_stats.py to the materialized source closure and rebind exact vision.py/helper pins before staged/integrated consumers pass. #2477/#2484 remain NOT_RELEASED.
 - Redmi/Termux remains REDMI_UNVERIFIED. No device action, update request, model/weight/permission change, microphone capture or deployment occurred.
 - User action: **none**. No manual Termux command or model download/swap is required.
+
+### Research update — 24 Nov 2026
+
+- R-141: full NeurIPS 2026 QSS paper reviewed. Quantized residual accumulators are a possible future nonlinear correction, not a drop-in replacement for the current low-dimensional A3 ridge stats. The linked repository has no LICENSE file and its qss.py carries a proprietary Meta header; no code reuse.
+- R-142: full arXiv preprint on ridge-statistics probing reviewed. Repeated full-head broadcasts can expose exact deletion statistics under an active-client threat model. Keep A3 sufficient statistics local-only; a Runtime status negative-control test was added to exclude paths/hashes/matrices.
+- R-143: full IJCV 2026 memory-efficient CNN article reviewed (CC BY 4.0). Its 63 KB/42 KB peak-activation results are from STM32H7, with 3.34M parameters in the ImageNet model; it is a future feature-extraction idea, not Redmi evidence or an LFM replacement.
+- QSS OSS check: atavory/rqu has no LICENSE file; algs/qss.py has a Meta 'Confidential and proprietary' header; dependencies include FAISS, NumPy, SciPy, scikit-learn, LightGBM and Torch. No code/weights/data were imported.
