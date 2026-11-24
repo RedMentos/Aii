@@ -818,5 +818,32 @@ class Vision(unittest.TestCase):
         self.assertTrue(result['projector_files_deleted']['projector'])
 
 
+
+    def test_scaled_replay_update_never_claims_exact_source_unlearning(self):
+        t = FakeTeacher()
+        enc = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        records = []
+        for i, colour in enumerate([(220, 20, 20), (20, 20, 220), (20, 180, 20),
+                                    (220, 180, 20), (180, 20, 180), (20, 180, 180)]):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            vision.describe(self.rt, rec, 'g', t)
+            records.append(rec)
+
+        def scaled_gate(store, home, state, old, candidate, *args, **kwargs):
+            return candidate, {'version': 1, 'status': 'APPLIED', 'scale': 0.5,
+                               'authority': 'LAB_SHADOW_ONLY'}
+
+        with patch.object(vision, '_gate_projector_update', scaled_gate):
+            projector = vision.train(self.rt, enc)
+        self.assertEqual(projector['source_stats'], [])
+        self.assertEqual(projector['source_stats_mode'], 'UNAVAILABLE_SCALED_UPDATE')
+
+        result = vision.forget(self.store, records[-1])
+        self.assertIn('projector', result['invalidated_projectors'])
+        self.assertNotIn('projector', result['recomputed_projectors'])
+        self.assertIn('projector', result['rebuild_fallbacks'])
+        self.assertIsNone(vision.load(self.store)['projector'])
+
+
 if __name__ == '__main__':
     unittest.main()
