@@ -314,7 +314,7 @@ class FocalRuntime(unittest.TestCase):
             return {'learned':False,'action':baseline}
         self.r.learner.decide=Mock(side_effect=decide);self.r.learner.output_delta=Mock(return_value=None)
         s=self.r.store;queue={k:list(v) for k,v in script.items()}
-        def offer(role,e,version,deadline,peer=None,*,valid_until=None):
+        def offer(role,e,version,deadline,peer=None,*,valid_until=None,preanswer_budgeted=False,**kwargs):
             self.calls.append((role,bool(peer)))
             summary,quote,needs=queue[role].pop(0);src=s.read_source(e['source_ref']);refs=[]
             if quote:start=src.index(quote);refs=[e['source_ref']|{'char_start':e['source_ref']['char_start']+start,'char_end':e['source_ref']['char_start']+start+len(quote)}]
