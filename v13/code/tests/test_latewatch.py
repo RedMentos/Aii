@@ -184,4 +184,47 @@ class LatewatchDeferred(unittest.TestCase):
             self.assertEqual(store.value['counts']['AFTER_OUTPUT'],1)
 
 
+
+    def test_deferred_offer_is_not_delivered_after_source_revocation(self):
+        from v13 import selfmodel
+
+        class Store:
+            def __init__(self):
+                self.value=None;self.version=0;self.logs=[];self.logged=threading.Event()
+            def state(self,key,default=None):
+                return self.value,self.version
+            def set_state(self,key,value,expected=None):
+                if expected!=self.version:raise ValueError('state version changed')
+                self.value=value;self.version+=1
+            def read_source(self,ref):
+                raise KeyError('source revoked')
+            def log(self,*args):
+                self.logs.append(args)
+                if args and args[0]=='latewatch_deferred_complete':self.logged.set()
+
+        entered=threading.Event();release=threading.Event();calls=[]
+        class Controller:
+            def late_offer(self,event_id,offer,output):
+                calls.append((event_id,offer,output))
+        store=Store()
+        def offer(role,e,version,deadline,peer=None,**kwargs):
+            entered.set()
+            if not release.wait(2):raise TimeoutError('test did not release late body')
+            return dict(OFFER,role=role)
+        runtime=SimpleNamespace(store=store,cognition=SimpleNamespace(offer=offer))
+        event={'event_id':'evt-revoked','source_ref':{'source_id':'src-revoked'}}
+        meta={}
+        watcher=lw.Watcher(runtime,event,meta,'shadow',role='B1_DETAIL',status='RUNNING')
+        with mock.patch.object(lw,'JOIN_S',0.01), mock.patch.object(selfmodel,'controller',return_value=Controller()):
+            watcher.start(1,time.monotonic()+1,time.monotonic()+2)
+            self.assertTrue(entered.wait(1))
+            watcher.finish(None,[],'The answer is 100, because I added the numbers',time.monotonic()+0.05,1)
+            release.set()
+            self.assertTrue(store.logged.wait(1))
+            self.assertEqual(calls,[])
+            self.assertEqual(meta['late_watch']['status'],'DEFERRED_SOURCE_UNAVAILABLE')
+            self.assertEqual(store.value['counts']['STILL_RUNNING'],1)
+            self.assertEqual(store.value['counts']['DEFERRED_SOURCE_UNAVAILABLE'],1)
+
+
 if __name__=='__main__':unittest.main()

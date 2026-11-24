@@ -141,9 +141,24 @@ class Watcher:
         self.status=self.info['status']='AFTER_OUTPUT'
         self.info['offer_id']=offer['packet_id']
         try:
-            reason=disagreement(offer,output,self.r.store.read_source(self.e['source_ref']))
+            source=self.r.store.read_source(self.e['source_ref'])
         except Exception:
-            reason=None
+            self.status=self.info['status']='DEFERRED_SOURCE_UNAVAILABLE'
+            row={'event_id':self.e['event_id'],'status':'DEFERRED_SOURCE_UNAVAILABLE','mode':self.mode,
+                 'role':self.role,'at_char':len(output),'offer_id':offer['packet_id'],'deferred':True}
+            _record(self.r.store,row)
+            try:self.r.store.log('latewatch_deferred_complete',self.e['event_id'],row)
+            except Exception:pass
+            return
+        if type(source) is not str:
+            self.status=self.info['status']='DEFERRED_SOURCE_UNAVAILABLE'
+            row={'event_id':self.e['event_id'],'status':'DEFERRED_SOURCE_UNAVAILABLE','mode':self.mode,
+                 'role':self.role,'at_char':len(output),'offer_id':offer['packet_id'],'deferred':True}
+            _record(self.r.store,row)
+            try:self.r.store.log('latewatch_deferred_complete',self.e['event_id'],row)
+            except Exception:pass
+            return
+        reason=disagreement(offer,output,source)
         if reason:self.info['reason']=reason
         row={'event_id':self.e['event_id'],'status':'AFTER_OUTPUT','mode':self.mode,
              'role':self.role,'at_char':len(output),'offer_id':offer['packet_id'],'deferred':True,
