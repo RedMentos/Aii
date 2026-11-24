@@ -15,6 +15,8 @@ C4_RECEIPT_BUILDER = "scripts/integrated_c4_c3_receipt_candidate_20261122.py"
 C4_RECEIPT_SHA256 = "0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a22028dff3"
 NATIVE_RECEIVER_BUILDER = "scripts/integrated_native_latent_receiver_candidate_20261122.py"
 NATIVE_RECEIVER_BLOB_SHA1 = "b6e335d83633a6ef92fb26ab291532b821a0f941"
+RUNTIME_CLOSE_OVERLAY = "scripts/integrated_native_probe_runtime_close_overlay_20261124.py"
+RUNTIME_CLOSE_OVERLAY_BLOB_SHA1 = "109bcb8ac2be5666f118f5266a1e6ba8f0ef6bfc"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
@@ -68,10 +70,14 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
     composed = receipt_module.apply_sources(code_dir, composed)
     native_receiver = _load(code_dir, NATIVE_RECEIVER_BUILDER, NATIVE_RECEIVER_BLOB_SHA1)
     composed = native_receiver.apply_sources(code_dir, composed)
+    runtime_close_overlay = _load(code_dir, RUNTIME_CLOSE_OVERLAY, RUNTIME_CLOSE_OVERLAY_BLOB_SHA1)
+    composed = runtime_close_overlay.apply_sources(composed, code_dir=code_dir)
     if b"def native_receive(" not in composed.get("v13/cognition.py", b""):
         raise ValueError("native receiver Cognition path was not composed")
     if b"native-probe" not in composed.get("v13/callosum.py", b""):
         raise ValueError("native receiver operator path was not composed")
+    if b"guard_runtime_close(self)" not in composed.get("v13/runtime.py", b""):
+        raise ValueError("native-probe Runtime close barrier was not composed")
     if b"c4_offer_context_ready" not in composed.get("v13/cognition.py", b""):
         raise ValueError("Core C4 context-ready receipt was not composed")
     if b"minimum_role_slice_s" not in composed.get("v13/cognition.py", b""):
