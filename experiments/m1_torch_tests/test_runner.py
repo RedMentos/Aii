@@ -1,6 +1,7 @@
 """Integration tests for the M1 validation-only experiment runner."""
 from __future__ import annotations
 
+import hashlib
 import json
 import tempfile
 import unittest
@@ -11,7 +12,13 @@ import numpy as np
 
 from experiments.m1.array_data import ArrayDataset
 from experiments.m1.data import DataConfig, MinuteRow
-from experiments.m1.runner import PilotConfig, TrainingWindowView, run_validation_experiment
+from experiments.m1.download_uci import DATASET_DOI, DATASET_LICENSE, EXPECTED_MEMBER
+from experiments.m1.runner import (
+    PilotConfig,
+    TrainingWindowView,
+    _load_download_manifest,
+    run_validation_experiment,
+)
 
 
 def synthetic_dataset():
@@ -66,6 +73,29 @@ class TrainingWindowViewTests(unittest.TestCase):
 
 
 class PilotRunnerTests(unittest.TestCase):
+    def test_runner_binds_optional_download_sidecar_to_exact_source_bytes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / EXPECTED_MEMBER
+            payload = b"UCI data bytes"
+            source.write_bytes(payload)
+            raw_hash = hashlib.sha256(payload).hexdigest()
+            sidecar = source.with_name(source.name + ".provenance.json")
+            manifest = {
+                "schema": "m1.uci-download-provenance.v1",
+                "doi": DATASET_DOI,
+                "license": DATASET_LICENSE,
+                "member_name": "folder/" + EXPECTED_MEMBER,
+                "source_url": "https://archive.ics.uci.edu/static/public/235/data.zip",
+                "file_sha256": raw_hash,
+                "file_size_bytes": len(payload),
+            }
+            sidecar.write_text(json.dumps(manifest), encoding="utf-8")
+            self.assertEqual(_load_download_manifest(source, raw_hash), manifest)
+            manifest["file_sha256"] = "0" * 64
+            sidecar.write_text(json.dumps(manifest), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "SHA-256"):
+                _load_download_manifest(source, raw_hash)
+
     def test_all_model_families_run_on_same_validation_origins(self):
         dataset = synthetic_dataset()
         models = (
