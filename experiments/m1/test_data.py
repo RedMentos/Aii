@@ -14,6 +14,8 @@ import unittest
 from datetime import datetime, timedelta
 from pathlib import Path
 
+from experiments.m1.provenance import current_git_commit
+
 from experiments.m1.data import (
     DataConfig,
     MinuteRow,
@@ -40,7 +42,7 @@ def synthetic_rows(n: int, missing_at: set[int] | None = None):
 
 
 PREREG_PARAMS = {
-    "code_commit": "a" * 40, "tau": 0.1, "r_eff_min": 3.0,
+    "code_commit": current_git_commit(), "tau": 0.1, "r_eff_min": 3.0,
     "bootstrap_block_len": 10080, "min_effect": 0.01, "trial_budget": 20,
 }
 
@@ -180,14 +182,14 @@ class WindowTests(unittest.TestCase):
                     preregistration_path=prereg_path,
                     preregistration_sha256="0" * 64,
                     access_log_path=log_path,
-                    expected_code_commit="a" * 40,
+                    expected_code_commit=current_git_commit(),
                 )
             windows, stats = load_test_split(
                 self.rows, self.channels, self.cfg,
                 preregistration_path=prereg_path,
                 preregistration_sha256=digest,
                 access_log_path=log_path,
-                expected_code_commit="a" * 40,
+                expected_code_commit=current_git_commit(),
             )
             self.assertTrue(windows)
             self.assertEqual(stats.split, "test")
@@ -214,7 +216,7 @@ class WindowTests(unittest.TestCase):
                     preregistration_path=prereg_path,
                     preregistration_sha256=hashlib.sha256(raw).hexdigest(),
                     access_log_path=log_directory,
-                    expected_code_commit="a" * 40,
+                    expected_code_commit=current_git_commit(),
                 )
 
     def test_test_loader_rejects_config_drift_even_with_valid_file_hash(self):
@@ -239,7 +241,7 @@ class WindowTests(unittest.TestCase):
                     preregistration_path=path,
                     preregistration_sha256=digest,
                     access_log_path=root / "log.jsonl",
-                    expected_code_commit="a" * 40,
+                    expected_code_commit=current_git_commit(),
                 )
 
     def test_manifest_hash_is_stable(self):
@@ -324,7 +326,7 @@ class CalendarBoundaryTests(unittest.TestCase):
         incomplete = dict(complete)
         del incomplete["trial_budget"]
         with self.assertRaisesRegex(PermissionError, "incomplete"):
-            verify_preregistration(incomplete, expected, expected_code_commit="a" * 40)
+            verify_preregistration(incomplete, expected, expected_code_commit=current_git_commit())
 
 
 class UCIParserTests(unittest.TestCase):
