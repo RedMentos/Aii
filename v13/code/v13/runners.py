@@ -383,13 +383,10 @@ class LlamaRunner:
             if self.role == 'C3_LANGUAGE' and type(self._prompt_admission) is dict:
                 witnessed=self._prompt_admission.get('offer_template_witness')
                 if type(witnessed) is dict:
-                    self.last_metrics['native_offer_prompt_receipt']={
-                        **witnessed,
-                        'native_completion_http_200':self._native_completion_http_200,
-                        'native_template_submitted':bool(
-                            self._native_completion_http_200
-                            and witnessed.get('status')=='RENDERED_WITH_QUOTES'),
-                        'native_attention_or_semantic_use_proven':False}
+                    from .native_offer_prompt_receipt import native_completion_receipt
+                    self.last_metrics['native_offer_prompt_receipt']=native_completion_receipt(
+                        witnessed,http_200=self._native_completion_http_200,
+                        status=status,metrics=self.last_metrics)
             # A synchronous check may beat the watchdog. Do not stop its watcher
             # and leave the old native request running after declaring idle.
             if audit_locked:
@@ -413,6 +410,7 @@ class LlamaRunner:
             conn.request('POST','/completion',wire_json(payload|{'n_predict':1,'stream':False,'return_tokens':True}).encode(),{'Authorization':'Bearer '+self.key,'Content-Type':'application/json'})
             response=conn.getresponse();raw=response.read();check(cancel,deadline)
             if response.status!=200:raise Unavailable('Native output step HTTP '+str(response.status))
+            self._native_completion_http_200=True
             result=json.loads(raw)
             if result.get('error'):raise Unavailable('Native output step failed')
             return result
@@ -488,7 +486,7 @@ class LlamaRunner:
         finally:
             stop_watch.set();conn.close();watcher.join(timeout=2);end=time.monotonic();mem=process_memory(self.proc.pid) if self.proc and self.proc.poll() is None else {}
             rss_values=[v for v in (peak,mem.get('rss_bytes')) if v is not None]
-            self.last_metrics={"role":self.role,"duration_s":end-started,"ttft_s":None if first is None else first-started,"generated_tokens":tokens,"prompt_tokens":n,"history_trimmed":truncated,"timings":timings,"sampled_peak_rss_bytes":max(rss_values) if rss_values else None,"memory":mem,"actual_model":self.model.name,"CAN_LATENT_TAP":False,"CAN_LATENT_INJECT":False,"CAN_TRAIN_BODY":False}
+            self.last_metrics={"role":self.role,"duration_s":end-started,"ttft_s":None if first is None else first-started,"generated_tokens":tokens,"prompt_tokens":n,"history_trimmed":truncated,"timings":timings,"native_stream_completed":native_stop,"sampled_peak_rss_bytes":max(rss_values) if rss_values else None,"memory":mem,"actual_model":self.model.name,"CAN_LATENT_TAP":False,"CAN_LATENT_INJECT":False,"CAN_TRAIN_BODY":False}
             if first_step:self.last_metrics['output_adapter_native_first_step']={'token_ids':first_step.get('tokens',[]),'bias':first_token_bias,'remaining_positions_unbiased':True,'timings':first_step.get('timings',{})}
             if lp_pairs:
                 from .focal import token_confidence
