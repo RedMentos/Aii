@@ -107,6 +107,8 @@ OFFER={'packet_id':'pkt_x','offer':{'summary':'note','needs_reentry':False,'quot
 class Turn(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.r=Runtime(Path(self.tmp.name));self.r.sleep.cycle.set_policy('enabled','off')
+        # The recovery budget is specifically a background-observer policy.
+        self.r.cfg['observer_mode']='background'
         # Fix the resource fixture explicitly: this test proves scheduling when both bodies are admitted,
         # not whichever resource mode the shared CI host happens to report.
         self.r.resources=lambda: {'wall_time':time.time(),'mem_available_bytes':8*1024**3,'mem_total_bytes':8*1024**3,
