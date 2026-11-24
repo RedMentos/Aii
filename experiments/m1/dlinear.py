@@ -51,7 +51,6 @@ class MatchedDLinearForecaster(nn.Module):
         self,
         config: JEPAConfig,
         *,
-        *,
         input_length: int,
         kernel_size: int = 25,
         individual: bool = True,
@@ -73,11 +72,11 @@ class MatchedDLinearForecaster(nn.Module):
                 nn.Linear(input_length, config.horizon) for _ in range(channels)
             )
             self.trend_linear = nn.ModuleList(
-                nn.Linear(config.input_length, config.horizon) for _ in range(channels)
+                nn.Linear(input_length, config.horizon) for _ in range(channels)
             )
         else:
-            self.seasonal_linear = nn.Linear(config.input_length, config.horizon)
-            self.trend_linear = nn.Linear(config.input_length, config.horizon)
+            self.seasonal_linear = nn.Linear(input_length, config.horizon)
+            self.trend_linear = nn.Linear(input_length, config.horizon)
 
         known_width = config.seasonal_lags * channels + config.calendar_features
         self.future_known_projection = nn.Linear(known_width, channels)
