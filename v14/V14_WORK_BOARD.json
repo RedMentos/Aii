@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T03:44:00Z",
+  "updated_at": "2026-11-24T03:52:00Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -197,22 +197,25 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "LOCAL_LINUX isolated Python 3.13.5 hash fixture PASS; GitHub CI: audio duplex 179/179 on Python 3.13+3.14, RAW EAR optional NumPy 128/128 on 3.13+3.14, prosody 3.11+3.13, consent-revocation, deploy-integrity and comparison workflows PASS; staged/integrated BLOCKED by three stale Core-owned source pins; TERMUX/REDMI_UNVERIFIED",
-      "next_step": "Core/Integrator: rebind the three audio SOURCE_BLOBS in integrated_audio_context_candidate_20261121.py and rerun staged/integrated. Core/JEPA: add the reviewed vision.py source-lifecycle mapping and forget regression required by #2442. Then cleanly rebase the 12 A3/RAW EYE visual code/workflow files onto current release HEAD and rerun focused/staged/integrated CI. After integration is green, verify descriptor and permissioned MediaProjection/audio ingress only on authorized Android; no model download or device capture before consent.",
+      "next_step": "Core/JEPA: add a reviewed vision.py source-lifecycle mapping and source-forget regression. Core/Integrator: rebind the three audio SOURCE_BLOBS in integrated_audio_context_candidate_20261121.py. Then run one combined staged/integrated candidate covering both audio and vision source paths. After integration is green, verify the real Android provider/permission path on authorized hardware; keep TinyViT opt-in and do not download/swap weights without separate approval.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T03:44:00Z",
+      "last_checkpoint": "2026-11-24T03:52:00Z",
       "latest_candidate_pr": {
-        "pr": 2448,
-        "head_sha": "c7db1809370fae5ae5a49287e76cba0deedf80e7",
+        "pr": 2463,
+        "head_sha": "b73ec8a7c7d3d87f0f5d19e41046b62d11496381",
         "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
-        "state": "OPEN_DRAFT_NOT_RELEASED_CODE_TESTED_AT_C7DB",
-        "scope": "Teacher Ear descriptor-pinned native model loading; source-bound audio stream; no Android microphone provider"
+        "state": "OPEN_DRAFT_FOCUSED_CI_PASS_STAGED_FAIL"
       },
-      "proof": "PR #2448 exact head c7db1809370fae5ae5a49287e76cba0deedf80e7 remains OPEN/DRAFT/NOT_RELEASED. New benchmark fix b85b60a binds each synthetic speaker batch to deterministic one-second PCM16 SHA-256. On the exact c7db head, audio-duplex bridge passed 179 tests on Python 3.13 and 3.14; RAW EAR optional NumPy passed 128 tests on both; prosody-to-attention passed Python 3.11/3.13; consent-revocation, deploy-integrity and WebRTC/libfvad comparison passed. Staged/integrated fails before execution because three hashes in the Core-owned integrated_audio_context_candidate_20261121.py are stale. No Redmi/native model proof. Visual cross-check: #2442 focused CI passed vision-source-lineage 29/29 and MediaProjection RAW EYE frame-ingress 39/39, but staged/integrated failed because the Core-owned source-lifecycle composer rejects vision.py (19 failed, 234 passed, 10 skipped, 2 errors). Branch is 25 ahead/10 behind current release head; no overlapping changed files in the intervening base commits. Core blocker posted to #2462; no composer bypass or Redmi proof.",
+      "proof": "PR #2448 exact head c7db1809370fae5ae5a49287e76cba0deedf80e7 remains OPEN/DRAFT/NOT_RELEASED. New benchmark fix b85b60a binds each synthetic speaker batch to deterministic one-second PCM16 SHA-256. On the exact c7db head, audio-duplex bridge passed 179 tests on Python 3.13 and 3.14; RAW EAR optional NumPy passed 128 tests on both; prosody-to-attention passed Python 3.11/3.13; consent-revocation, deploy-integrity and WebRTC/libfvad comparison passed. Staged/integrated fails before execution because three hashes in the Core-owned integrated_audio_context_candidate_20261121.py are stale. No Redmi/native model proof. Visual cross-check: #2442 focused CI passed vision-source-lineage 29/29 and MediaProjection RAW EYE frame-ingress 39/39, but staged/integrated failed because the Core-owned source-lifecycle composer rejects vision.py (19 failed, 234 passed, 10 skipped, 2 errors). Branch is 25 ahead/10 behind current release head; no overlapping changed files in the intervening base commits. Core blocker posted to #2462; no composer bypass or Redmi proof. Current-base visual candidate #2463 (one commit on 8d93236) passes focused vision source-lineage 29/29 and MediaProjection RAW EYE frame ingress 39/39 on Python 3.13 and 3.14. Staged runtime fails 19/234 passed/10 skipped/2 errors; integrated regression fails 1 test because Core source_lifecycle_lock_integration_candidate.py rejects vision.py. #2442 was closed as superseded after #2463 focused CI passed. A3 uses a persistent ridge projector; text encoder is EmbeddingGemma if installed, otherwise hashed_bow; teacher LFM2.5-VL-450M is optional. A5 consumer requires a signed provider frame grant and does not open MediaProjection itself. No Android/Redmi proof.",
       "handoff_path": "v14/handoffs/RESEARCH_PERCEPTION_RUN33_20261124.md",
       "related_prs": [
         2448,
+        2463
+      ],
+      "superseded_prs": [
         2442
-      ]
+      ],
+      "visual_handoff_path": "v14/handoffs/RESEARCH_PERCEPTION_VISION_REBASE_20261124_RUN33.md"
     },
     {
       "id": "V14-007",
