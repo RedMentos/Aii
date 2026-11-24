@@ -88,7 +88,9 @@ def native_completion_receipt(witness, *, http_200, status, metrics):
     result = dict(witness) if type(witness) is dict else _result("RECEIPT_UNAVAILABLE")
     metrics = metrics if type(metrics) is dict else {}
     accepted = http_200 is True
-    prefill = native_prefill_evidence(metrics.get("prompt_tokens"), metrics.get("timings"))
+    first_step = metrics.get("output_adapter_native_first_step")
+    timings = first_step.get("timings") if type(first_step) is dict else metrics.get("timings")
+    prefill = native_prefill_evidence(metrics.get("prompt_tokens"), timings)
     completed = status == "FINAL" and accepted
     result.update(
         native_completion_http_200=accepted,
