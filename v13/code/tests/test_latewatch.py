@@ -136,4 +136,52 @@ class LatewatchBudget(unittest.TestCase):
         self.assertTrue(watcher.done.is_set())
 
 
+
+class LatewatchDeferred(unittest.TestCase):
+    def test_offer_finishing_after_c3_return_is_delivered_once_as_after_output(self):
+        from v13 import selfmodel
+
+        class Store:
+            def __init__(self):
+                self.value=None;self.version=0;self.logs=[]
+            def state(self,key,default=None):
+                return self.value,self.version
+            def set_state(self,key,value,expected=None):
+                if expected!=self.version:raise ValueError('state version changed')
+                self.value=value;self.version+=1
+            def read_source(self,ref):
+                return 'What is 46 plus 62?'
+            def log(self,*args):
+                self.logs.append(args)
+
+        entered=threading.Event();release=threading.Event();delivered=threading.Event();calls=[]
+        class Controller:
+            def late_offer(self,event_id,offer,output):
+                calls.append((event_id,offer,output));delivered.set()
+        store=Store()
+        def offer(role,e,version,deadline,peer=None,**kwargs):
+            entered.set()
+            if not release.wait(2):raise TimeoutError('test did not release late body')
+            return dict(OFFER,role=role)
+        runtime=SimpleNamespace(store=store,cognition=SimpleNamespace(offer=offer))
+        event={'event_id':'evt-deferred','source_ref':{'source_id':'src-1'}}
+        meta={}
+        watcher=lw.Watcher(runtime,event,meta,'shadow',role='B1_DETAIL',status='RUNNING')
+        with mock.patch.object(lw,'JOIN_S',0.01), mock.patch.object(selfmodel,'controller',return_value=Controller()):
+            watcher.start(1,time.monotonic()+1,time.monotonic()+2)
+            self.assertTrue(entered.wait(1))
+            output='The answer is 100, because I added the numbers'
+            watcher.finish(None,[],output,time.monotonic()+0.05,1)
+            self.assertEqual(meta['late_watch']['status'],'STILL_RUNNING')
+            self.assertTrue(lw.postcommit_consumed(meta,'B1_DETAIL'))
+            release.set()
+            self.assertTrue(delivered.wait(1))
+            self.assertEqual(len(calls),1)
+            self.assertEqual(calls[0],('evt-deferred',dict(OFFER,role='B1_DETAIL'),output))
+            self.assertEqual(meta['late_watch']['status'],'AFTER_OUTPUT')
+            self.assertEqual(meta['late_watch']['offer_id'],'pkt_late')
+            self.assertEqual(store.value['counts']['STILL_RUNNING'],1)
+            self.assertEqual(store.value['counts']['AFTER_OUTPUT'],1)
+
+
 if __name__=='__main__':unittest.main()
