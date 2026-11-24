@@ -17,19 +17,19 @@ The first experiment fixes H=60 and reports prefix MAE at 15/30/60 plus the prim
 
 ## 2. JEPA path (T=1)
 
-1. Patch X along time; project each multichannel patch to d-dimensional tokens.
+1. Fit per-channel mean/std on train rows only; apply that scaler to X and S. Patch normalized X along time; project each multichannel patch to d-dimensional tokens.
 2. Online context encoder maps X patches to context latents Z_context.
 3. Patch known future covariates S and C_future into future query tokens.
 4. Predictor cross-attends future queries to Z_context and predicts future latent tokens.
-5. EMA target encoder (same architecture/weights initialized from online encoder) maps Y patches to target latents Z_target. It is stop-gradient and never receives predictor outputs.
+5. EMA target encoder (same architecture/weights initialized from online encoder) maps train-standardized Y patches to target latents Z_target. It is stop-gradient and never receives predictor outputs.
 6. Objective is latent prediction error plus a separately logged anti-collapse term. Target-encoder EMA is updated only after the online optimizer step.
 
 The predictor may use all known future queries jointly because S and calendar values are known at the forecast origin. No future target values are available to it.
 
 ## 3. Matched controls
 
-- Direct-MAE: same context encoder and future-query predictor geometry; replace latent prediction head with a value-space head and train with L1/MAE on Y. No EMA target encoder.
-- Frozen JEPA probe: freeze the JEPA-trained online context encoder; train only the declared small readout on top of its representation plus S/calendar.
+- Direct-MAE: same context encoder and future-query predictor geometry; apply the train-only input scaler to X/S, replace latent prediction head with a value-space head and train with raw-unit L1/MAE on Y. No EMA target encoder.
+- Frozen JEPA probe: freeze the JEPA-trained online context encoder; train only a shared linear readout on its final context token plus standardized S, calendar and fixed horizon-position features.
 - Random-encoder probe: same probe and same frozen encoder architecture, but use an untrained seeded encoder.
 - Raw-Window-Probe: linear L1 readout over the flattened X/S/calendar bundle.
 - Raw-Window-MLP: one-hidden-layer nonlinear raw-input control.
@@ -52,7 +52,7 @@ Do not infer collapse-free behavior from a finite loss alone. A collapse gate ne
 ## 5. Split, optimization and evaluation
 
 - Fixed calendar split and 10,140-row gap are defined in data.py.
-- Fit weights only on train. Select hyperparameters/checkpoints on validation.
+- Fit channel scaling and model weights only on train. Select hyperparameters/checkpoints on validation. The scaler is serialized with the checkpoint and may not be fitted on validation or test.
 - Compare all models on identical accepted forecast origins.
 - Bootstrap paired per-origin primary MAE by non-overlapping temporal blocks; use the same sampled blocks for every model and seed. Aggregate block sums/counts so short edge blocks do not receive the same weight as full blocks.
 - Report seed variance separately from temporal uncertainty.
