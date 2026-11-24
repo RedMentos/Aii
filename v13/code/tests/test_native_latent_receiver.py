@@ -49,7 +49,15 @@ if status == "DIMENSION_MISMATCH":
         "position_ids": positions,
         "position_mode": "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL",
         "row_shuffle_control_applicable": False,
-        "row_shuffle_control_cosine": None
+        "row_shuffle_control_cosine": None,
+        "receiver_vocab_size": 32000,
+        "receiver_next_token_id": None, "zero_control_next_token_id": None,
+        "shuffle_control_next_token_id": None, "row_shuffle_control_next_token_id": None,
+        "repeat_next_token_id": None, "receiver_next_token_margin": None,
+        "logit_effect_rms": None, "logit_cosine": None,
+        "next_token_effect_detected": False, "next_token_changed_vs_zero": False,
+        "next_token_changed_vs_shuffle": False, "next_token_changed_vs_row_shuffle": False,
+        "repeat_next_token_stable": False
     }}
 else:
     receipt = {{
@@ -62,6 +70,16 @@ else:
         "row_shuffle_control_applicable": rows >= 2,
         "row_shuffle_control_cosine": 0.05 if rows >= 2 else None,
         "repeat_cosine": 1.0,
+        "receiver_vocab_size": 32000,
+        "receiver_next_token_id": 42, "zero_control_next_token_id": 0,
+        "shuffle_control_next_token_id": 17,
+        "row_shuffle_control_next_token_id": 12 if rows >= 2 else None,
+        "repeat_next_token_id": 42, "receiver_next_token_margin": 1.25,
+        "logit_effect_rms": 0.5, "logit_cosine": 0.2,
+        "next_token_effect_detected": True, "next_token_changed_vs_zero": True,
+        "next_token_changed_vs_shuffle": True,
+        "next_token_changed_vs_row_shuffle": rows >= 2,
+        "repeat_next_token_stable": True,
         "position_ids": positions,
         "position_mode": "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL",
         "finite_output": True
@@ -124,6 +142,15 @@ def test_probe_reports_native_decode_and_input_effect(tmp_path):
     assert receipt["position_mode"] == POSITION_MODE
     assert receipt["row_shuffle_control_applicable"] is True
     assert receipt["row_shuffle_control_cosine"] == 0.05
+    assert receipt["receiver_vocab_size"] == 32000
+    assert receipt["receiver_next_token_id"] == 42
+    assert receipt["zero_control_next_token_id"] == 0
+    assert receipt["shuffle_control_next_token_id"] == 17
+    assert receipt["row_shuffle_control_next_token_id"] == 12
+    assert receipt["receiver_next_token_margin"] == 1.25
+    assert receipt["logit_effect_rms"] == 0.5
+    assert receipt["next_token_effect_detected"] is True
+    assert receipt["repeat_next_token_stable"] is True
     assert receipt["input_sha256"] == hashlib.sha256(
         struct.pack("<4f", 0.25, -0.5, 1.0, 0.75)
     ).hexdigest()
@@ -139,6 +166,19 @@ def test_dimension_mismatch_is_explicit_and_never_consumed(tmp_path):
     assert receipt["decode_status"] == -100
     assert receipt["input_dim"] == 2
     assert receipt["receiver_input_dim"] == 3
+    assert receipt["receiver_vocab_size"] == 32000
+    assert receipt["receiver_next_token_id"] is None
+    assert receipt["logit_effect_rms"] is None
+    assert receipt["next_token_effect_detected"] is False
+
+
+def test_receiver_token_id_outside_vocabulary_is_rejected(tmp_path):
+    home, model, binary, digest = fixture(tmp_path)
+    script = binary.read_text(encoding="utf-8").replace('"receiver_next_token_id": 42', '"receiver_next_token_id": 32000')
+    binary.write_text(script, encoding="utf-8")
+    binary.chmod(0o755)
+    with pytest.raises(NativeReceiverError, match="outside receiver vocabulary"):
+        run_probe(home, model, binary, digest)
 
 
 def test_zero_input_effect_does_not_claim_input_effect(tmp_path):
@@ -227,6 +267,8 @@ def test_row_shuffle_control_is_marked_not_applicable_for_single_token(tmp_path)
     receipt = run_probe(home, model, binary, digest, vectors=[[1.0, 2.0]])
     assert receipt["row_shuffle_control_applicable"] is False
     assert receipt["row_shuffle_control_cosine"] is None
+    assert receipt["row_shuffle_control_next_token_id"] is None
+    assert receipt["next_token_changed_vs_row_shuffle"] is False
 
 
 def test_sender_checkpoint_hash_is_required(tmp_path):

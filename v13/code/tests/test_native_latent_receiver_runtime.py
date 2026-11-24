@@ -40,6 +40,20 @@ def receipt(model_sha, sender_sha):
         "row_shuffle_control_cosine": 0.05,
         "row_shuffle_control_applicable": True,
         "repeat_cosine": 1.0,
+        "receiver_vocab_size": 32000,
+        "receiver_next_token_id": 42,
+        "zero_control_next_token_id": 0,
+        "shuffle_control_next_token_id": 17,
+        "row_shuffle_control_next_token_id": 12,
+        "repeat_next_token_id": 42,
+        "receiver_next_token_margin": 1.25,
+        "logit_effect_rms": 0.5,
+        "logit_cosine": 0.2,
+        "next_token_effect_detected": True,
+        "next_token_changed_vs_zero": True,
+        "next_token_changed_vs_shuffle": True,
+        "next_token_changed_vs_row_shuffle": True,
+        "repeat_next_token_stable": True,
         "native_input_consumed": True,
         "input_effect_detected": True,
         "status": "NATIVE_INPUT_EFFECT",
@@ -123,6 +137,10 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
     assert packet["provenance"] == [event["source_ref"]]
     assert packet["native_input_consumed"] is True
     assert packet["input_effect_detected"] is True
+    assert packet["receiver_next_token_id"] == 42
+    assert packet["logit_effect_rms"] == 0.5
+    assert packet["next_token_effect_detected"] is True
+    assert packet["next_token_changed_vs_zero"] is True
     assert packet["production_route"] is False
     assert packet["semantic_use_proven"] is False
     assert packet["training_authority"] == packet["native_receiver_authority"] == 0

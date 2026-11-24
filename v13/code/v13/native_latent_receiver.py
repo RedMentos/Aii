@@ -15,7 +15,7 @@ import subprocess
 import time
 from pathlib import Path
 
-SCHEMA = "v14.native-latent-receiver/2"
+SCHEMA = "v14.native-latent-receiver/3"
 POSITION_MODE = "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL"
 MAX_POSITION = 131072
 PINNED_LLAMA_REVISION = "b29c606e28a01b1bc8c1351026a0fa6e616bf6c4"
@@ -25,6 +25,7 @@ MAX_ROWS = 64
 MAX_DIM = 8192
 MAX_ELEMENTS = 262144
 EFFECT_EPSILON = 1.0e-7
+LOGIT_EFFECT_EPSILON = 1.0e-6
 
 
 class NativeReceiverUnavailable(RuntimeError):
@@ -82,6 +83,20 @@ def register_packet_contract():
         "position_ids": list, "position_mode": str,
         "decode_status": int, "output_norm": (int, float),
         "input_effect_rms": (int, float),
+        "receiver_vocab_size": int,
+        "receiver_next_token_id": (int, type(None)),
+        "zero_control_next_token_id": (int, type(None)),
+        "shuffle_control_next_token_id": (int, type(None)),
+        "row_shuffle_control_next_token_id": (int, type(None)),
+        "repeat_next_token_id": (int, type(None)),
+        "receiver_next_token_margin": (int, float, type(None)),
+        "logit_effect_rms": (int, float, type(None)),
+        "logit_cosine": (int, float, type(None)),
+        "next_token_effect_detected": bool,
+        "next_token_changed_vs_zero": bool,
+        "next_token_changed_vs_shuffle": bool,
+        "next_token_changed_vs_row_shuffle": bool,
+        "repeat_next_token_stable": bool,
         "zero_control_cosine": (int, float, type(None)),
         "shuffle_control_cosine": (int, float, type(None)),
         "row_shuffle_control_cosine": (int, float, type(None)),
@@ -96,6 +111,58 @@ def register_packet_contract():
     if existing is not None and existing != schema:
         raise RuntimeError("LatentReceiverPacket contract registration conflict")
     contracts.FIELDS["LatentReceiverPacket"] = schema
+
+
+def _validate_token_metrics(value, rows, decoded):
+    vocab_size = value.get("receiver_vocab_size")
+    if type(vocab_size) is not int or not 2 <= vocab_size <= 1_000_000:
+        raise NativeReceiverError("LatentReceiverPacket receiver vocabulary size")
+    id_fields = (
+        "receiver_next_token_id", "zero_control_next_token_id",
+        "shuffle_control_next_token_id", "row_shuffle_control_next_token_id",
+        "repeat_next_token_id",
+    )
+    metric_fields = ("receiver_next_token_margin", "logit_effect_rms", "logit_cosine")
+    bool_fields = (
+        "next_token_effect_detected", "next_token_changed_vs_zero",
+        "next_token_changed_vs_shuffle", "next_token_changed_vs_row_shuffle",
+        "repeat_next_token_stable",
+    )
+    if not decoded:
+        if any(value.get(name) is not None for name in id_fields + metric_fields):
+            raise NativeReceiverError("dimension mismatch cannot report receiver token metrics")
+        if any(value.get(name) is not False for name in bool_fields):
+            raise NativeReceiverError("dimension mismatch cannot report receiver token effects")
+        return
+    for name in id_fields:
+        token_id = value.get(name)
+        if type(token_id) is not int or not 0 <= token_id < vocab_size:
+            raise NativeReceiverError("LatentReceiverPacket token ID outside receiver vocabulary: " + name)
+    if rows >= 2:
+        if value.get("row_shuffle_control_next_token_id") is None:
+            raise NativeReceiverError("LatentReceiverPacket row-shuffle token control missing")
+    elif value.get("row_shuffle_control_next_token_id") is not None or value.get("next_token_changed_vs_row_shuffle") is not False:
+        raise NativeReceiverError("LatentReceiverPacket row-shuffle token control must be not applicable")
+    for name in ("receiver_next_token_margin", "logit_effect_rms"):
+        metric = value.get(name)
+        if not _finite_number(metric) or float(metric) < 0:
+            raise NativeReceiverError("LatentReceiverPacket token metric " + name)
+    similarity = value.get("logit_cosine")
+    if similarity is not None and (not _finite_number(similarity) or not -1.00001 <= float(similarity) <= 1.00001):
+        raise NativeReceiverError("LatentReceiverPacket token metric logit_cosine")
+    if value.get("next_token_effect_detected") is not (float(value["logit_effect_rms"]) > LOGIT_EFFECT_EPSILON):
+        raise NativeReceiverError("LatentReceiverPacket next-token effect threshold")
+    expected = {
+        "next_token_changed_vs_zero": value["receiver_next_token_id"] != value["zero_control_next_token_id"],
+        "next_token_changed_vs_shuffle": value["receiver_next_token_id"] != value["shuffle_control_next_token_id"],
+        "next_token_changed_vs_row_shuffle": (
+            rows >= 2 and value["receiver_next_token_id"] != value["row_shuffle_control_next_token_id"]
+        ),
+        "repeat_next_token_stable": value["receiver_next_token_id"] == value["repeat_next_token_id"],
+    }
+    for name, result in expected.items():
+        if value.get(name) is not result:
+            raise NativeReceiverError("LatentReceiverPacket token control mismatch: " + name)
 
 
 def validate_packet(value):
@@ -131,9 +198,11 @@ def validate_packet(value):
     if value["production_route"] is not False or value["semantic_use_proven"] is not False or value["training_authority"] != 0 or value["native_receiver_authority"] != 0:
         raise NativeReceiverError("LatentReceiverPacket probe cannot grant production or learning authority")
     if value["status"] == "DIMENSION_MISMATCH":
+        _validate_token_metrics(value, value["input_rows"], decoded=False)
         if value["receiver_input_dim"] == value["input_dim"] or value["decode_status"] != -100 or value["native_input_consumed"] or value["input_effect_detected"] or value["row_shuffle_control_applicable"] or value["row_shuffle_control_cosine"] is not None:
             raise NativeReceiverError("LatentReceiverPacket dimension mismatch receipt")
     elif value["status"] in {"NATIVE_INPUT_EFFECT", "NATIVE_DECODE_NO_EFFECT"}:
+        _validate_token_metrics(value, value["input_rows"], decoded=True)
         if value["receiver_input_dim"] != value["input_dim"] or value["decode_status"] != 0 or not value["native_input_consumed"]:
             raise NativeReceiverError("LatentReceiverPacket native decode receipt")
         if value["input_effect_detected"] != (value["status"] == "NATIVE_INPUT_EFFECT"):
@@ -297,9 +366,12 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
 
     receiver_input_dim = raw.get("receiver_input_dim")
     output_dim = raw.get("output_dim")
+    receiver_vocab_size = raw.get("receiver_vocab_size")
     decode_status = raw.get("decode_status")
     if type(receiver_input_dim) is not int or type(output_dim) is not int or output_dim < 1:
         raise NativeReceiverError("native receiver dimensions missing")
+    if type(receiver_vocab_size) is not int or not 2 <= receiver_vocab_size <= 1_000_000:
+        raise NativeReceiverError("native receiver vocabulary size missing or invalid")
     if raw.get("status") == "DIMENSION_MISMATCH":
         if (receiver_input_dim == input_dim or decode_status != -100
                 or raw.get("row_shuffle_control_applicable") is not False
@@ -312,6 +384,23 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
         effect_rms = 0.0
         zero_cosine = shuffle_cosine = row_shuffle_cosine = repeat_cosine = None
         row_shuffle_applicable = False
+        token_metrics = {
+            "receiver_vocab_size": receiver_vocab_size,
+            "receiver_next_token_id": None,
+            "zero_control_next_token_id": None,
+            "shuffle_control_next_token_id": None,
+            "row_shuffle_control_next_token_id": None,
+            "repeat_next_token_id": None,
+            "receiver_next_token_margin": None,
+            "logit_effect_rms": None,
+            "logit_cosine": None,
+            "next_token_effect_detected": False,
+            "next_token_changed_vs_zero": False,
+            "next_token_changed_vs_shuffle": False,
+            "next_token_changed_vs_row_shuffle": False,
+            "repeat_next_token_stable": False,
+        }
+        _validate_token_metrics(raw, rows, decoded=False)
     elif raw.get("status") == "DECODED":
         if receiver_input_dim != input_dim or decode_status != 0 or raw.get("finite_output") is not True:
             raise NativeReceiverError("native receiver decode receipt failed validation")
@@ -338,6 +427,15 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
         consumed = True  # llama_decode returned 0 after receiving llama_batch.embd
         effect = float(effect_rms) > EFFECT_EPSILON
         status = "NATIVE_INPUT_EFFECT" if effect else "NATIVE_DECODE_NO_EFFECT"
+        token_metrics = {name: raw.get(name) for name in (
+            "receiver_vocab_size", "receiver_next_token_id", "zero_control_next_token_id",
+            "shuffle_control_next_token_id", "row_shuffle_control_next_token_id",
+            "repeat_next_token_id", "receiver_next_token_margin", "logit_effect_rms",
+            "logit_cosine", "next_token_effect_detected", "next_token_changed_vs_zero",
+            "next_token_changed_vs_shuffle", "next_token_changed_vs_row_shuffle",
+            "repeat_next_token_stable",
+        )}
+        _validate_token_metrics(token_metrics, rows, decoded=True)
     else:
         raise NativeReceiverError("unknown native receiver status")
 
@@ -372,5 +470,6 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
         "repeat_cosine": None if repeat_cosine is None else float(repeat_cosine),
         "native_input_consumed": consumed,
         "input_effect_detected": effect,
+        **token_metrics,
         "status": status,
     }
