@@ -66,8 +66,7 @@ def train_jepa(
     if torch.cuda.is_available() and str(device).startswith("cuda"):
         torch.cuda.manual_seed_all(seed)
     model.to(device)
-    if not bool(model.scaler.fitted):
-        model.scaler.fit(dataset)
+    model.scaler.fit(dataset)
     model.train()
     optimizer = torch.optim.AdamW(
         [parameter for parameter in model.parameters() if parameter.requires_grad],
@@ -192,8 +191,7 @@ def train_frozen_probe(
     ]
     if frozen_parameters:
         raise ValueError("frozen probe backbone unexpectedly has trainable parameters")
-    if not bool(model.backbone.scaler.fitted):
-        model.backbone.scaler.fit(dataset)
+    model.backbone.scaler.fit(dataset)
     trainable = [parameter for parameter in model.parameters() if parameter.requires_grad]
     if not trainable:
         raise ValueError("frozen probe has no trainable readout parameters")
@@ -344,6 +342,11 @@ class TorchBatchPredictor:
         self.name = name
         self.device = device
         self.model.to(device)
+        scaler = getattr(model, "scaler", None)
+        if scaler is None and hasattr(model, "backbone"):
+            scaler = getattr(model.backbone, "scaler", None)
+        if scaler is not None and not bool(scaler.fitted):
+            raise ValueError("model scaler must be fitted on train before prediction")
         self.model.eval()
 
     @torch.no_grad()
