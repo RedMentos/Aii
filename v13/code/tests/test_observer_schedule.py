@@ -273,7 +273,8 @@ class Turn(unittest.TestCase):
         self.assertEqual(self.r.last_answer()["status"],"FINAL",
                          msg=f"calls={self.calls!r}; notices={notices!r}; late_watch={meta.get('late_watch')!r}; error={meta.get('error')!r}; detail={meta.get('detail')!r}; failure_stage={meta.get('failure_stage')!r}")
         self.assertEqual(meta["late_watch"].get("offered"),"B2_GIST")
-        self.assertEqual(meta["late_watch"].get("status"),"NO_OFFER")
+        self.assertEqual(meta["late_watch"].get("status"),"NO_OFFER",
+                         msg=f"calls={self.calls!r}; notices={notices!r}; late_watch={meta.get('late_watch')!r}")
         self.assertFalse(meta["late_watch"].get("offer_id"))
         self.assertTrue(any(role=="B2_GIST" and not pre and thread!="latewatch" and not valid and status=="FINAL"
                             for role,pre,thread,valid,status in self.calls),
