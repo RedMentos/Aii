@@ -1,6 +1,8 @@
-"""Bounded source-bound speaker-similarity diagnostics from local frame embeddings.
+"""Bounded source-bound speaker-similarity diagnostics from local embeddings.
 
-Caller-supplied thresholds are unverified and cannot produce speaker decisions.
+Frame batches (20-200 ms) and one-vector whole-window batches (500-2000 ms)
+are supported. Caller-supplied thresholds are unverified and cannot produce
+speaker decisions.
 A separately validated, model-bound calibration artifact is required first.
 This is not speaker recognition or a full diarizer. Embeddings stay in RAM;
 persisted packets contain similarity evidence and provenance, never vectors.
@@ -15,7 +17,7 @@ import math
 import re
 import threading
 
-SCHEMA = "v14.raw-ear-speaker-embeddings/3"
+SCHEMA = "v14.raw-ear-speaker-embeddings/4"
 METHOD = "COSINE_LOOKBACK_DIAGNOSTIC_V1"
 _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 _ACTIVITY = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}
@@ -46,7 +48,8 @@ def _unit_vector(vector, dimension):
 def _validate_batch(value, source_id, generation_id, consent_receipt_ref, start_ms, end_ms, current_chunk_sha256):
     required = {
         "schema", "source_id", "generation_id", "consent_receipt_ref", "current_chunk_sha256",
-        "model_id", "model_revision", "model_sha256", "embedding_dim",
+        "model_id", "model_revision", "model_sha256", "model_license_id", "model_language",
+        "encoder_id", "encoder_revision", "embedding_unit", "embedding_dim",
         "frame_step_ms", "lookback_frames",
         "confidence_threshold", "calibration_id", "frames",
     }
@@ -64,10 +67,16 @@ def _validate_batch(value, source_id, generation_id, consent_receipt_ref, start_
             or not _SHA256.fullmatch(supplied_chunk_sha256)
             or supplied_chunk_sha256 != current_chunk_sha256):
         raise SpeakerEvidenceError("speaker embedding current PCM chunk hash mismatch")
-    for key in ("model_id", "model_revision"):
+    for key in (
+        "model_id", "model_revision", "model_license_id", "model_language",
+        "encoder_id", "encoder_revision",
+    ):
         item = value.get(key)
         if type(item) is not str or not item.strip() or len(item) > 128:
-            raise SpeakerEvidenceError("speaker model identity is invalid")
+            raise SpeakerEvidenceError("speaker model/encoder provenance is invalid")
+    embedding_unit = value.get("embedding_unit")
+    if embedding_unit not in {"FRAME", "WINDOW"}:
+        raise SpeakerEvidenceError("speaker embedding unit is invalid")
     digest = value.get("model_sha256")
     if type(digest) is not str or not _SHA256.fullmatch(digest.lower()):
         raise SpeakerEvidenceError("speaker model hash is invalid")
@@ -76,8 +85,12 @@ def _validate_batch(value, source_id, generation_id, consent_receipt_ref, start_
     lookback = value.get("lookback_frames")
     if type(dimension) is not int or not 2 <= dimension <= 512:
         raise SpeakerEvidenceError("speaker embedding dimension outside 2..512")
-    if type(step_ms) is not int or not 20 <= step_ms <= 200:
-        raise SpeakerEvidenceError("speaker frame step outside 20..200 ms")
+    if type(step_ms) is not int or not 20 <= step_ms <= 2000:
+        raise SpeakerEvidenceError("speaker embedding step outside 20..2000 ms")
+    if embedding_unit == "FRAME" and step_ms > 200:
+        raise SpeakerEvidenceError("frame embeddings require a 20..200 ms step")
+    if embedding_unit == "WINDOW" and step_ms < 500:
+        raise SpeakerEvidenceError("window embeddings require a 500..2000 ms step")
     if type(lookback) is not int or not 1 <= lookback <= 64:
         raise SpeakerEvidenceError("speaker lookback outside 1..64 frames")
     threshold = value.get("confidence_threshold")
@@ -91,7 +104,9 @@ def _validate_batch(value, source_id, generation_id, consent_receipt_ref, start_
         raise SpeakerEvidenceError("speaker threshold/calibration binding is invalid")
     frames = value.get("frames")
     if type(frames) is not list or not 1 <= len(frames) <= 32:
-        raise SpeakerEvidenceError("speaker batch must contain 1..32 frames")
+        raise SpeakerEvidenceError("speaker batch must contain 1..32 embeddings")
+    if embedding_unit == "WINDOW" and len(frames) != 1:
+        raise SpeakerEvidenceError("window embedding batches must contain exactly one vector")
     result = []
     previous = None
     tolerance = max(5, int(step_ms * 0.25))
@@ -113,6 +128,11 @@ def _validate_batch(value, source_id, generation_id, consent_receipt_ref, start_
         "model_id": value["model_id"],
         "model_revision": value["model_revision"],
         "model_sha256": digest.lower(),
+        "model_license_id": value["model_license_id"],
+        "model_language": value["model_language"],
+        "encoder_id": value["encoder_id"],
+        "encoder_revision": value["encoder_revision"],
+        "embedding_unit": embedding_unit,
         "embedding_dim": dimension,
         "frame_step_ms": step_ms,
         "lookback_frames": lookback,
@@ -166,8 +186,9 @@ class SpeakerChangeEvidenceRegistry:
             current_chunk_sha256,
         )
         metadata = {k: batch[k] for k in (
-            "model_id", "model_revision", "model_sha256", "embedding_dim",
-            "frame_step_ms", "lookback_frames", "lookback_ms",
+            "model_id", "model_revision", "model_sha256", "model_license_id",
+            "model_language", "encoder_id", "encoder_revision", "embedding_unit",
+            "embedding_dim", "frame_step_ms", "lookback_frames", "lookback_ms",
             "confidence_threshold", "calibration_id",
         )}
         key = (source_id, generation_id, consent_receipt_ref)
@@ -212,7 +233,12 @@ class SpeakerChangeEvidenceRegistry:
             # against the immutable history snapshot that existed before it.
             history = tuple(state.frames)
             last_seen_end_ms = state.last_end_ms
-            tolerance = max(40, int(batch["frame_step_ms"] * 1.5))
+            tolerance = max(
+                40,
+                int(batch["frame_step_ms"] * (
+                    0.25 if batch["embedding_unit"] == "WINDOW" else 1.5
+                )),
+            )
             threshold_status = (
                 "CALLER_ASSERTED_UNVERIFIED"
                 if batch["confidence_threshold"] is not None else "NOT_CONFIGURED"
@@ -323,6 +349,11 @@ class SpeakerChangeEvidenceRegistry:
                 "model_id": batch["model_id"],
                 "model_revision": batch["model_revision"],
                 "model_sha256": batch["model_sha256"],
+                "model_license_id": batch["model_license_id"],
+                "model_language": batch["model_language"],
+                "encoder_id": batch["encoder_id"],
+                "encoder_revision": batch["encoder_revision"],
+                "embedding_unit": batch["embedding_unit"],
                 "embedding_dim": batch["embedding_dim"],
                 "frame_step_ms": batch["frame_step_ms"],
                 "lookback_frames": batch["lookback_frames"],
