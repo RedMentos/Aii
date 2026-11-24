@@ -255,8 +255,9 @@ class WindowTests(unittest.TestCase):
 class CalendarBoundaryTests(unittest.TestCase):
     def test_uci_calendar_boundaries_are_date_based_and_l_independent(self):
         from experiments.m1.data import uci_calendar_config
-        start = datetime(2006, 12, 16)
-        n_rows = int((datetime(2010, 11, 27) - start).total_seconds() // 60)
+        start = datetime(2006, 12, 16, 17, 24)
+        end = datetime(2010, 11, 26, 21, 2)
+        n_rows = int((end - start).total_seconds() // 60) + 1
         first = start
         cfg_a = uci_calendar_config(input_length=60)
         cfg_b = uci_calendar_config(input_length=600)
@@ -269,6 +270,25 @@ class CalendarBoundaryTests(unittest.TestCase):
         self.assertEqual(a["train"], (0, validation_start - gap))
         self.assertEqual(a["validation"], (validation_start, test_start - gap))
         self.assertEqual(a["test"], (test_start, n_rows))
+        self.assertEqual(first + timedelta(minutes=a["train"][1] - 1), datetime(2008, 11, 23, 22, 59))
+        self.assertEqual(first + timedelta(minutes=a["validation"][0]), datetime(2008, 12, 1, 0, 0))
+        self.assertEqual(first + timedelta(minutes=a["validation"][1] - 1), datetime(2009, 11, 23, 22, 59))
+        self.assertEqual(first + timedelta(minutes=a["test"][0]), datetime(2009, 12, 1, 0, 0))
+
+
+    def test_preregistration_rejects_missing_fields_and_commit_drift(self):
+        from experiments.m1.data import verify_preregistration
+        expected = {"data_config_sha256": "1" * 64}
+        complete = {
+            **PREREG_PARAMS,
+            "data_config_sha256": "1" * 64,
+        }
+        with self.assertRaisesRegex(PermissionError, "does not match executing commit"):
+            verify_preregistration(complete, expected, expected_code_commit="b" * 40)
+        incomplete = dict(complete)
+        del incomplete["trial_budget"]
+        with self.assertRaisesRegex(PermissionError, "incomplete"):
+            verify_preregistration(incomplete, expected, expected_code_commit="a" * 40)
 
 
 class UCIParserTests(unittest.TestCase):
