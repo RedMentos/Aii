@@ -25,7 +25,7 @@ class PairedBlockBootstrapTests(unittest.TestCase):
     def test_paired_blocks_produce_expected_delta_and_ci(self):
         result = paired_block_bootstrap(
             self._series(), reference_model="reference",
-            block_days=7, n_resamples=300, seed=4,
+            block_len_minutes=7 * 1440, n_resamples=300, seed=4,
         )
         candidate = result["models"]["candidate"]
         self.assertAlmostEqual(candidate["delta_vs_reference"], -0.5)
