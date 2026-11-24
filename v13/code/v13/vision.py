@@ -404,6 +404,9 @@ def _gate_projector_update(store,home,state,old_record,candidate,encoder_name,en
         return None,{'version':1,'status':'MALFORMED_ACTIVE_PROJECTOR','scale':0.0,'authority':'LAB_SHADOW_ONLY'}
     if old_record.get('encoder')!=encoder_name:
         return None,{'version':1,'status':'ENCODER_MISMATCH','scale':0.0,'authority':'LAB_SHADOW_ONLY'}
+    if type(validation) is dict and validation.get('status')=='INSUFFICIENT_UPDATE_ROWS':
+        return None,{'version':1,'status':'NO_NEW_OR_CHANGED_CAPTIONS','scale':0.0,'replay_n':0,
+                     'validation':{'status':'INSUFFICIENT_UPDATE_ROWS'},'authority':'LAB_SHADOW_ONLY'}
     validation_gate=_source_disjoint_update_validation(validation,require_baseline=True)
     if validation_gate['status']!='PASS':
         return None,{'version':1,'status':validation_gate['status'],'scale':0.0,'replay_n':0,
