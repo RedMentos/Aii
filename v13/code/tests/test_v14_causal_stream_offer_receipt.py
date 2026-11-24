@@ -198,6 +198,12 @@ def test_same_causal_stream_receipt_requires_exact_native_prefill_binding(tmp_pa
     assert receipt["native_template_submitted"] is True
     assert receipt["native_stream_completed"] is True
     assert receipt["native_completion_http_200"] is False
+    assert receipt["native_prompt_sha256"] == digest(_render(_messages()))
+    assert receipt["native_token_ids_sha256"] == digest(dumps([11, 12, 13]))
+    assert receipt["native_prompt_tokens"] == 3
+    assert receipt["native_tokenizer"] == "LLAMA_SERVER_TOKENIZE"
+    assert receipt["native_prefill_observed"] is True
+    assert receipt["native_generation_completed"] is True
     assert receipt["native_attention_or_semantic_use_proven"] is False
     assert SECRET not in json.dumps(runner.last_metrics)
 
@@ -212,7 +218,55 @@ def test_same_causal_stream_receipt_requires_exact_native_prefill_binding(tmp_pa
     assert latest["offer_flow"]["native_prompt_prefill_verified"] is True
     assert latest["offer_flow"]["native_stream_completed"] is True
     assert latest["offer_flow"]["native_completion_http_200"] is False
+    assert latest["offer_flow"]["native_prompt_sha256"] is None
+    assert latest["offer_flow"]["native_prompt_tokens"] is None
     assert latest["offer_flow"]["semantic_use_proven"] is False
+
+
+def test_brain_status_exposes_native_prompt_fingerprints_without_prompt_text():
+    # A constructed runner-receipt fixture tests status serialization only;
+    # it is not evidence that a native model or Android device ran.
+    metrics = {
+        "role": "C3_LANGUAGE",
+        "actual_model": "c3-test",
+        "prompt_tokens": 3,
+        "generated_tokens": 1,
+        "ttft_s": 0.2,
+        "duration_s": 1.0,
+        "native_offer_prompt_receipt": {
+            "status": "RENDERED_WITH_QUOTES",
+            "native_completion_http_200": False,
+            "native_template_submitted": True,
+            "native_prompt_prefill_verified": True,
+            "native_prefill_observed": True,
+            "native_stream_completed": True,
+            "native_generation_completed": True,
+            "native_prompt_sha256": "a" * 64,
+            "native_token_ids_sha256": "b" * 64,
+            "native_prompt_tokens": 3,
+            "native_tokenizer": "LLAMA_SERVER_TOKENIZE",
+            "offers": [
+                {"role": "B1_DETAIL", "packet_id": "b1", "rendered_quote_count": 1},
+                {"role": "B2_GIST", "packet_id": "b2", "rendered_quote_count": 1},
+            ],
+        },
+    }
+    runtime = SimpleNamespace(
+        cfg={"learning_mode": "RECORD_ONLY"},
+        current=None,
+        store=EvidenceStore({"runner": metrics}),
+    )
+    latest = brain_status(runtime)["latest_turn"]
+    assert latest["offer_flow"]["status"] == (
+        "NATIVE_PREFILL_VERIFIED_AND_GENERATION_COMPLETED_MATCHED_C4"
+    )
+    assert latest["native_prompt_sha256"] == "a" * 64
+    assert latest["native_token_ids_sha256"] == "b" * 64
+    assert latest["native_prompt_tokens"] == 3
+    assert latest["offer_flow"]["native_tokenizer"] == "LLAMA_SERVER_TOKENIZE"
+    assert latest["offer_flow"]["native_generation_completed"] is True
+    assert latest["offer_flow"]["semantic_use_proven"] is False
+    assert SECRET not in json.dumps(latest)
 
 
 def test_same_causal_stream_rejects_prompt_token_mismatch(tmp_path):
