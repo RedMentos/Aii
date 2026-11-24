@@ -1816,3 +1816,31 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
 
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+## Research & Perception run 19 — verified handoff (2026-11-24)
+
+### Code and exact evidence
+- Repo: RedMentos/Aii. Perception PR #2472 remains DRAFT / NOT_RELEASED. Code/test head before this documentation append: f7ee15ec19d46e8e17aeb695ad0a2ee6fede83a6; base: 8d93236c753f0194224c19edc7411d8d7082b1d6.
+- Fixed two Perception-owned CI failures: the audio-generation-scope fixture now passes event["event_id"] rather than the Store.event() envelope dict; the RAW EAR vs WebRTC/libfvad workflow now pins the exact current audio_voice_cues.py blob 5d47c48467025199d77ba82974bb2ecea8c65b3d.
+- Exact-head GitHub Actions at f7ee15ec: 9 SUCCESS, 2 FAILURE, 1 IN_PROGRESS, 1 SKIPPED. Perception-focused A4 source-bound outcomes, RAW EAR consent revocation, prosody→attention, RAW EAR/libfvad comparator, optional NumPy, FASTDIAR, privacy scan and runtime-deployment-integrity checks are SUCCESS. Core same-turn B1/B2/C4/C3 was still IN_PROGRESS at last poll.
+- The two failures converge on the controller-guard pin: recovery builder expects SHA-256 86ad7838d15eb9a038fec629c340936edde78d65d921507e10cec29fed74b9d9, while the Perception branch guard hashes to 9c901c4e5e3d3fd17c113a8e9458bcb32a30646593483202f1f472763435fa96. Staged/integrated result: 18 failed, 235 passed, 10 skipped, 2 errors, 44 subtests; migration PARTIAL is downstream of the same guard failure.
+- Branch comparison: Perception guard contains original + new attention.py pins; Core #2478 contains the original attention pin plus ActionLearn variants. Core was given exact hashes and asked to combine both sets, then rebind recovery/stage/deployer pins bottom-up. Perception did not edit Core-owned runtime/recovery files.
+- Core #2478 still has no import/call to audio_consent_generation_scope() in its current runtime branch. A cross-lane handoff asks Core to wrap the full C3 iterator and keep output commit/append/latewatch inside the lease. The adapter is not yet a connected production Runtime path.
+
+### Environment and device
+- LOCAL_LINUX: Python 3.13.5, pytest/numpy/torch installed; no repository .git checkout present. git ls-remote failed, so the full repository suite could not be run locally.
+- LOCAL_LINUX isolated contract reproduction: the envelope-as-event_id shape reproduced “missing event/generation/source identity”; event["event_id"] passed; five negative controls (empty identity, bad source hash, missing consent receipt, >1 s interval, NaN feature) were rejected. The surrounding contracts were stubbed; this is not a full Runtime integration test.
+- CI is not local Linux and is not Android proof.
+- Latest available authenticated private snapshot: RedMentos/Aiiii V13OBS #115 at 2026-11-24 09:28Z: installed SHA 8d93236c753f0194224c19edc7411d8d7082b1d6, auto_update=true, runtime/dashboard UP_TO_DATE, AI STOPPED_BY_USER, autostart=false, model process STOPPED. Later #1904 note reports no newer owner-read receipt. No UPDATE_REQUEST, CHAT_SEND, shell action, restart or model change was sent. Current live state is REDMI_UNVERIFIED.
+- RELEASE-SHA: NOT_RELEASED. A GitHub push is not deployment.
+
+### Canon boundary and next actions
+- A0–A5: caller-supplied PCM16 RAW EAR and synthetic acoustic/attention paths remain; this PR does not create AudioRecord, microphone permission, MediaProjection, AccessibilityService or real Android capture.
+- A4 source-bound attention outcomes are focused-CI-green on this exact head, but full staged consumer is blocked by the shared controller-guard pin chain.
+- B3 remains symbolic/diagnostic; no trained cross-organ projector/receiver utility or native hidden-state exchange is proven. World/Self/Memory/JEPA weight promotion, numeric master-weight change, retention/restart proof, Android voice and UI-control remain unaccepted.
+- Research ledger R-110–R-118 records Yggdrasil, Fork-JEPA, JEPA-Tuner, Skill-JEPA, three-interface continual-learning diagnosis, CoLiR, MNN-Pocket-0.3B, mzCache and Adaptive Guard with dates/evidence/license caveats.
+- Next owned action: after Core supplies a stable combined guard and green recovery/stage/deployer chain, recompose #2472 on that exact head; then verify the full C3 iterator lease in the real Runtime consumer. Do not patch Core-owned source pins in parallel.
+- Next whole-system research action: test Fork-JEPA-style action-effect forks only in a reversible sandbox; use JEPA-Tuner's receiver-native objective for B3 utility; add three-interface retention readouts to actual weight-learning tests.
+- Model candidate: MNN-Pocket-0.3B INT4/MNN is a possible isolated C3 comparison (Apache-2.0; 173 MB; published speed only on iPad Pro M5 / Snapdragon 8 Gen 5). No Snapdragon 732G TTFT/RSS/quality evidence; no download or swap made. No approval requested until a valid device comparison can be run.
+- Nutzeraktion: keine Aktion nötig. Kein Termux-Befehl, kein Modell-Download/Swap, keine Gerätefreigabe und kein Update-Request erforderlich.
