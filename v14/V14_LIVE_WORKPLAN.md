@@ -1,3 +1,14 @@
+## Core runtime checkpoint — failed late-watch peer retry — 2026-11-24T03:18:51.264Z
+
+- PR #2462 / `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1` preserves fair sequential B1/B2 pre-answer slices, the C3 reserve and the separate C4/Focal reserve, and fixes the post-commit starvation case where a failed late-watch attempt was treated as a completed body observation.
+- `latewatch.postcommit_consumed(meta, role)` now distinguishes a delivered `offer_id`, a still-running native generation, and a failed `NO_OFFER`. Failed attempts are eligible for post-commit retry; delivered or still-running attempts are not duplicated.
+- Local Linux CPython 3.13.5 isolated helper compile + six-case retry matrix PASS. Full repository tests NOT_RUN locally because no checkout is available and GitHub DNS resolution fails.
+- Exact prior-head staged CI on `1c6df` failed at immutable nested Runtime pins (33 failed, 240 passed, 10 skipped, 2 errors); two migration tests returned PARTIAL because staging failed. The missing-peer fixture also failed and is now deterministic on `ad89ad5c64fac8b1cefd97b3b50b0c2c3886ed16`; rerun pending. Other exact workflows passed: JEPA transactional update, JEPA receipt integrity, and native tap provenance (3.11/3.13); deployment 3.11 passed / 3.14 pending; Core same-turn 3.13/3.14 in progress.
+- No source pin was weakened. Boss/Integrator owns bottom-up pin recomposition; QA owns exact staged/integrated/migration reruns. Redmi remains STOPPED_BY_USER / REDMI_UNVERIFIED; no device action. Candidate remains NOT_RELEASED.
+- Next Core step: verify the deterministic missing-peer regression at the new head, then continue source-bound B1/B2→C4→C3 consumer integration. Research idea: use authenticated device-specific p95 prefill/TTFT only; do not substitute synthetic or unknown profiles.
+
+---
+
 ## M1 DATA audit-first and direct-array checkpoint — 2026-11-23 12:44 UTC
 
 - `ArrayDataset.from_uci()` validates/counts the source on pass one, fills a float32 matrix and computes the exact parsed-data fingerprint on pass two, and rejects file changes between passes. It does not allocate Python `MinuteRow` objects for the real cohort.

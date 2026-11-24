@@ -1,3 +1,29 @@
+# Core & Harness — failed late-watch peer retry checkpoint (2026-11-24T03:18:51.264Z)
+
+**Candidate:** [PR #2462](https://github.com/RedMentos/Aii/pull/2462), branch `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1`, current code/test head `ad89ad5c64fac8b1cefd97b3b50b0c2c3886ed16`, based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`. It is the clean replacement for draft PR #2458, which is now closed as superseded.
+
+**New connected runtime defect:** the post-commit observer loop previously skipped any role named by `late_watch.offered`, even if the late-watch thread failed and produced no OfferPacket. The new `latewatch.postcommit_consumed(meta, role)` skips only a delivered offer (valid `offer_id`) or a still-running native generation; a failed `NO_OFFER` now remains eligible for the normal post-commit retry. A still-running thread is not duplicated concurrently.
+
+**Tests / evidence:**
+- LOCAL_LINUX / CPython 3.13.5: isolated helper compile + six-case failed/delivered/still-running/other-role/empty/None metadata matrix PASS.
+- Full Aii local pytest/compile/integration NOT_RUN: `git ls-remote` failed with DNS resolution error; no checkout is available.
+- Prior exact-head CI at `1c6df9d9ab70e17d1e28c41564e243eaf7b43cc4`: staged-runtime FAIL (33 failed, 240 passed, 10 skipped, 2 errors). The dominant failures are immutable nested runtime pins in `integrated_online_world_candidate_20261110.py`, `postcommit_observer_candidate_20261116.py`, `record_only_online_guard_candidate_20261116.py` and `integrated_observer_fair_budget_candidate_20261116.py`. Two migration tests return PARTIAL because staging fails. The missing-peer regression also failed because the fixture did not explicitly control learned wake/residency; current head `ad89ad5c64fac8b1cefd97b3b50b0c2c3886ed16` makes those conditions deterministic and exact-head rerun is pending.
+- On `1c6df`: JEPA transactional update PASS, JEPA receipt integrity PASS, role-specific native-tap provenance PASS on Python 3.11/3.13, deployment-integrity Python 3.11 PASS / 3.14 pending, Core same-turn consumer 3.13/3.14 in progress, combined JEPA queued. No full CI pass claimed.
+- Redmi: STOPPED_BY_USER / REDMI_UNVERIFIED. No private relay query, chat, shell, update, APK, permission, model, weight or data action.
+
+**User effect / Canon path:** preserves both distinct B1/B2 opportunities, C4/Focal selection and C3 answer time; when a late B2 check fails, it no longer silently suppresses the post-commit peer attempt. The code does not prove that either native body can finish inside its budget, nor that C3 output is correct. Relevant Canon path: B1_DETAIL + B2_GIST → C4/Focal → C3, plus F2 late-watch and post-commit observer recovery.
+
+**Current blockers:** exact staged/integrated consumer is blocked by immutable source-pin chain; no pins were weakened. The deterministic missing-peer test at `ad89ad5c64fac8b1cefd97b3b50b0c2c3886ed16` has not yet been rerun by Actions. The PR is OPEN / NOT_RELEASED; no release SHA and no Redmi proof.
+
+**Next actions:**
+1. Boss/Integrator recomposes the nested Runtime/JEPA/staged-consumer builders bottom-up against exact current bytes.
+2. QA reruns Python 3.13/3.14 staged, integrated and two-checkout migration tests.
+3. Core verifies the new failed-late-watch retry regression on the exact head and continues source-bound B1/B2→C4→C3 integration.
+4. Research candidate: derive per-role p95 prefill/TTFT and C3 reserve only from matching authenticated DEVICE_RECEIPT samples; replace BOOT time fractions only after sufficient samples. No model alternative or swap is recommended now.
+
+**User action:** none. No manual Termux command or update request.
+---
+
 # Core & Harness — B1/B2 → C4 → C3 recovery-window checkpoint (2026-11-23T23:44:56.033Z)
 
 **Candidate:** [PR #2458](https://github.com/RedMentos/Aii/pull/2458), DRAFT / NOT_RELEASED. Branch `core/v14-fair-b1-b2-preanswer-budget-20261123-run1`, code/test checkpoint `e27c035bd6ba4679919a36dff0dda04bc77cb09e`; branch tip at last readback `eec84757077d4fc23df5e6079692254cd7080d5f` (documentation-only commits followed), based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`.
