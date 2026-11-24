@@ -216,6 +216,33 @@ class Store(unittest.TestCase):
                          (self.e['event_id'],))['n']
         self.assertEqual(after,before)
 
+    def test_action_selection_rejects_offer_query_context_mismatch_before_commit(self):
+        event_ref=self.e['source_ref']
+        query_context=self.s.source('Query context source','CONTEXT_OS')
+        offer_context=self.s.source('Different offer context source','CONTEXT_OS')
+        query=packet('QueryPacket','C1_EXEC',self.e['event_id'],self.e['brain_generation_id'],
+                     [event_ref,query_context],target_role='B1_DETAIL',goal='Check context binding',
+                     source_refs=[event_ref],based_on_state_version=3,
+                     context_source_refs=[query_context],enlightened_source_refs=[])
+        self.s.add_packet('QueryPacket',query)
+        offer=packet('OfferPacket','B1_DETAIL',self.e['event_id'],self.e['brain_generation_id'],
+                     [event_ref,offer_context],role='B1_DETAIL',based_on_state_version=3,
+                     deadline_monotonic_ns=int((time.monotonic()+30)*1e9),evidence_refs=[event_ref],
+                     offer={'summary':'Detail','quotes':[],'uncertainty':'low','needs_reentry':False},
+                     confidence=.5,rejected_quotes=0,model_revision='test',query_packet_id=query['packet_id'])
+        offer.update(context_source_refs=[offer_context],enlightened_source_refs=[])
+        self.s.add_packet('OfferPacket',offer)
+        coalition=[{'item_id':offer['packet_id'],'source_kind':'B1_DETAIL','source_refs':[event_ref],
+                    'origin_event_id':self.e['event_id'],'priority':.8}]
+        before=self.s.one("SELECT COUNT(*) AS n FROM packets WHERE kind='ActionSelection' AND event_id=?",
+                          (self.e['event_id'],))['n']
+        with self.assertRaisesRegex(ValueError,'query binding'):
+            focal.ActionGate(self.s).select(self.e,route='detail',direct=False,resource_state='NORMAL',
+                                            coalition=coalition,view={'uncertainty':0.,'conflict':0.})
+        after=self.s.one("SELECT COUNT(*) AS n FROM packets WHERE kind='ActionSelection' AND event_id=?",
+                         (self.e['event_id'],))['n']
+        self.assertEqual(after,before)
+
     def test_action_selection_enforces_the_jepa_64_source_ref_limit(self):
         event_ref=self.e['source_ref']
         refs=[self.s.source('memory source %d'%i,'MEMORY') for i in range(63)]
