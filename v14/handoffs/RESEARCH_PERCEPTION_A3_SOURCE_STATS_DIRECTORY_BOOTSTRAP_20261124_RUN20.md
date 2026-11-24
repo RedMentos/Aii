@@ -86,3 +86,12 @@ The existing vision/source-lineage workflow's push path filter already included 
 - **User action:** none. No manual Termux command or model download/swap.
 - **Next internal step:** Core/Integrator updates the strict source-lifecycle composer to include the helper and pin exact current bytes, then reruns staged/integrated/consumer/migration. Perception should not edit Core-owned composer files.
 
+
+
+## Run 23 — private device and updater status (2026-11-25)
+
+- The latest private metadata snapshot (2026-11-24 09:28:11Z) reports the existing base release `8d93236c753f0194224c19edc7411d8d7082b1d6` as runtime/dashboard UP_TO_DATE, auto-update enabled, and no updater error.
+- This does **not** deploy #2484. The AI service is running, but the model process is STOPPED / STOPPED_BY_USER, autostart is false, and native-residency telemetry is unavailable.
+- Latest recorded turn: C3 7 tokens, 358-token admitted prompt, TTFT 2.046 s, total 6.295 s. B1/B2 each had 2 failed native attempts (TIME_BUDGET, 53.2 s / 54.2 s) and zero valid offers. No semantic-use or native latent-exchange proof.
+- New owner-read HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests have no device_status receipt yet: NO_LIVE_RECEIPT. No raw text/logs, LOG_PAGE, CHAT_SEND, UPDATE_REQUEST, shell, or device action.
+- #2484 remains DRAFT and staged/integrated CI is blocked by the Core source composer. The base updater is healthy/up-to-date, but the PR-specific device path remains REDMI_UNVERIFIED. No user action.
