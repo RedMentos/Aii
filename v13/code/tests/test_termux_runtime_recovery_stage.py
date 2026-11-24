@@ -163,7 +163,7 @@ try:
         (event_id,),
     )]
     assert len(intents) == 1
-    assert intents[0]['role'] == 'C5_REPORT_BROKER'
+    assert intents[0]['producer_component'] == 'C5_REPORT_BROKER'
     assert intents[0]['action_type'] == 'TEXT_REPORT'
     assert intents[0]['permission'] == 'local_text_only'
     outcomes = [json.loads(x['payload']) for x in r.store.rows(
@@ -171,21 +171,21 @@ try:
         (event_id,),
     )]
     assert len(outcomes) == 1
-    assert outcomes[0]['role'] == 'C6_TEXT' and outcomes[0]['status'] == 'FINAL'
+    assert outcomes[0]['producer_component'] == 'C6_TEXT' and outcomes[0]['status'] == 'FINAL'
     assert outcomes[0]['actual']['role'] == 'SOURCE_COPY'
     copies = [json.loads(x['payload']) for x in r.store.rows(
         "SELECT payload FROM packets WHERE event_id=? AND kind='CorollaryCopy'",
         (event_id,),
     )]
     assert len(copies) == 1
-    assert copies[0]['role'] == 'F3_SELF' and copies[0]['expected']['type'] == 'TEXT_REPORT'
+    assert copies[0]['producer_component'] == 'F3_SELF' and copies[0]['expected']['type'] == 'TEXT_REPORT'
     predictions = [json.loads(x['payload']) for x in r.store.rows(
         "SELECT payload FROM packets WHERE event_id=? AND kind='PredictionOutcome'",
         (event_id,),
     )]
     assert len(predictions) == 1
     observation = predictions[0]['observation']
-    assert predictions[0]['role'] == 'F4_WORLD'
+    assert predictions[0]['producer_component'] == 'F4_WORLD'
     assert observation['self_caused'] is True
     assert observation['external_world_observation'] is False
     assert observation['semantic_success'] is None
