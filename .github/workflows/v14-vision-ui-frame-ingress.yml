@@ -1,0 +1,57 @@
+name: V14 MediaProjection RAW EYE frame ingress
+
+on:
+  push:
+    branches:
+      - "research-perception/**"
+    paths:
+      - "v13/code/v13/vision_ui_frame_ingress.py"
+      - "v13/code/tests/test_vision_ui_frame_ingress.py"
+      - "v13/code/tests/test_vision_ui_frame_provider_entrypoint.py"
+      - "v13/code/v13/a5_ui_admission_bridge.py"
+      - "v13/code/v13/vision.py"
+      - "v13/code/v13/vision_temporal_evidence.py"
+      - "v13/code/v13/vision_temporal_adaptation.py"
+      - "v13/code/v13/attention.py"
+      - "v13/code/v13/contracts.py"
+      - "v13/code/v13/percept_admission.py"
+      - "v13/code/v13/a5_context_envelope.py"
+      - "v14/V14_RESEARCH_LEDGER.md"
+      - "v14/handoffs/RESEARCH_PERCEPTION_MEDIA_PROJECTION_RAW_EYE_20261122.md"
+  pull_request:
+    paths:
+      - "v13/code/v13/vision_ui_frame_ingress.py"
+      - "v13/code/tests/test_vision_ui_frame_ingress.py"
+      - "v13/code/tests/test_vision_ui_frame_provider_entrypoint.py"
+      - "v13/code/v13/a5_ui_admission_bridge.py"
+      - "v13/code/v13/vision.py"
+      - "v13/code/v13/vision_temporal_evidence.py"
+      - "v13/code/v13/vision_temporal_adaptation.py"
+      - "v13/code/v13/attention.py"
+      - "v13/code/v13/contracts.py"
+      - "v13/code/v13/percept_admission.py"
+      - "v13/code/v13/a5_context_envelope.py"
+      - "v14/V14_RESEARCH_LEDGER.md"
+      - "v14/handoffs/RESEARCH_PERCEPTION_MEDIA_PROJECTION_RAW_EYE_20261122.md"
+
+jobs:
+  frame-ingress:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install pinned perception test dependencies
+        run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.3.5 Pillow==12.3.0
+      - name: Compile exact RAW EYE UI adapter and consumer tests
+        run: python -m py_compile v13/code/v13/vision_ui_frame_ingress.py v13/code/v13/vision_temporal_evidence.py v13/code/v13/vision_temporal_adaptation.py v13/code/tests/test_vision_ui_frame_ingress.py v13/code/tests/test_vision_ui_frame_provider_entrypoint.py
+      - name: Run MediaProjection lease, A5, A4 and context-consumer regressions
+        working-directory: v13/code
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python -m pytest -q -s tests/test_vision_ui_frame_ingress.py tests/test_vision_ui_frame_provider_entrypoint.py

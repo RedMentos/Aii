@@ -2,8 +2,10 @@
 import io
 import tempfile
 import threading
+import time
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 from v13 import vision
 from v13.common import Unavailable
 from v13.config import initialize
@@ -18,6 +20,15 @@ except ImportError:
 def png(colour, box=(10, 10, 40, 40), size=(64, 48)):
     im = Image.new('RGB', size, 'white'); ImageDraw.Draw(im).rectangle(box, fill=colour); b = io.BytesIO(); im.save(b, 'PNG'); return b.getvalue()
 
+def png_pair(marker):
+    """Two independent coloured regions in one source; the marker makes each source ID unique."""
+    im = Image.new('RGB', (64, 48), 'white')
+    draw = ImageDraw.Draw(im)
+    draw.rectangle((0, 0, 15, 11), fill=(220, 20, 20))
+    draw.rectangle((16, 0, 31, 11), fill=(20, 20, 220))
+    draw.rectangle((48, 36, 50 + marker, 38), fill=(20, 180, 20))
+    b = io.BytesIO(); im.save(b, 'PNG'); return b.getvalue()
+
 class FakeTeacher:
     def __init__(self): self.calls = []
     def describe(self, im, prompt=vision.PROMPT, cancel=None):
@@ -26,6 +37,16 @@ class FakeTeacher:
         r, g, b = a.min(0)
         name = 'red' if r > 150 and g < 100 else 'blue' if b > 150 and r < 100 else 'green'
         return {'text': 'a %s box on white' % name, 'authority': vision.AUTHORITY, 'teacher': 'fake', 'revision': None, 'prompt': prompt, 'seconds': 0.}
+
+class OppositeTeacher(FakeTeacher):
+    """Deliberately conflicting reference labels for the A3 retention negative control."""
+    def describe(self, im, prompt=vision.PROMPT, cancel=None):
+        result = super().describe(im, prompt, cancel)
+        text = result['text']
+        if 'red' in text: result['text'] = 'a blue box on white'
+        elif 'blue' in text: result['text'] = 'a red box on white'
+        elif 'green' in text: result['text'] = 'a yellow box on white'
+        return result
 
 @unittest.skipIf(numpy is None, 'numpy/PIL missing')
 class Vision(unittest.TestCase):
@@ -55,11 +76,35 @@ class Vision(unittest.TestCase):
     def test_projector_learns_alignment_and_reconstruction_is_measured(self):
         rng = numpy.random.default_rng(0); X = rng.normal(size=(40, 12)); M = rng.normal(size=(12, 16)); Y = X@M; Y /= numpy.linalg.norm(Y, axis=1, keepdims=True)
         cv = vision.crossval(X, Y, thumbs=X[:, :4]@rng.normal(size=(4, 9)))
+        self.assertEqual(cv['split'], 'ROW_WISE_DIAGNOSTIC_ONLY'); self.assertEqual(cv['authority'], 'DIAGNOSTIC_ONLY')
         self.assertGreater(cv['held_out_top1'], .8); self.assertLess(cv['reconstruction']['ratio'], .5); self.assertEqual(cv['reconstruction']['authority'], 'MEASUREMENT_ONLY')
         noise = vision.crossval(X, rng.normal(size=(40, 16))); self.assertLess(noise['held_out_top1'], .5)
         p = vision.Projector().fit(X, Y); path = self.home/'p.npz'; sha = p.save(path)
         self.assertTrue(numpy.allclose(vision.Projector.load(path, sha)(X), p(X)))
         with self.assertRaises(ValueError): vision.Projector.load(path, '0'*64)
+
+    def test_source_disjoint_validation_blocks_same_image_leakage(self):
+        rng = numpy.random.default_rng(17); X = []; Y = []; groups = []; labels = []; thumbs = []
+        for source in range(16):
+            label = 'caption-%02d' % source; target = numpy.eye(16)[source]
+            for region in range(4):
+                x = numpy.eye(16)[source] + rng.normal(0, .001, 16)
+                X.append(x); Y.append(target); groups.append('source-%02d' % source); labels.append(label); thumbs.append(x[:8])
+        X = numpy.asarray(X); Y = numpy.asarray(Y); thumbs = numpy.asarray(thumbs)
+        idx = numpy.arange(len(X)); correct = count = 0
+        for fold in range(4):
+            te = idx[fold::4]; tr = numpy.setdiff1d(idx, te)
+            projector = vision.Projector(1.).fit(X[tr], Y[tr]); scores = projector(X[te]) @ Y[te].T
+            for local, row in enumerate(scores):
+                correct += labels[te[int(row.argmax())]] == labels[te[local]]; count += 1
+        rowwise_accuracy = correct / count
+        cv = vision.source_disjoint_crossval(X, Y, groups, labels, thumbs=thumbs, folds=4, ridge=1.)
+        self.assertGreater(rowwise_accuracy, .90)
+        self.assertEqual(cv['split'], 'SOURCE_DISJOINT'); self.assertEqual(cv['status'], 'MEASURED')
+        self.assertAlmostEqual(cv['held_out_top1'], cv['chance'], places=6)
+        self.assertEqual(cv['utility_status'], 'AT_OR_BELOW_CHANCE')
+        self.assertEqual(cv['source_groups'], 16)
+        self.assertEqual(cv['reconstruction']['authority'], 'MEASUREMENT_ONLY')
 
     def test_hashed_encoder_is_deterministic_and_normalised(self):
         a = vision.hashed_embed('A red box'); self.assertTrue(numpy.allclose(a, vision.hashed_embed('a red box')))
@@ -80,10 +125,17 @@ class Vision(unittest.TestCase):
             rec = vision.ingest(self.store, png(c, box=(5+i, 5, 30+i, 30))); vision.describe(self.rt, rec, 'g', t)
         with self.assertRaises(ValueError): vision.look(self.rt, rec, enc)
         pj = vision.train(self.rt, enc); self.assertEqual(pj['n'], 9); self.assertEqual(pj['authority'], 'LAB_SHADOW_ONLY')
+        self.assertEqual(pj['metrics']['split'], 'SOURCE_DISJOINT'); self.assertEqual(pj['metrics']['status'], 'MEASURED'); self.assertEqual(pj['metrics']['source_groups'], 9)
         self.assertTrue((self.home/pj['path']).is_file())
         guess = vision.look(self.rt, vision.ingest(self.store, png((20, 20, 220), box=(8, 8, 33, 33))), enc)
         self.assertEqual(guess['authority'], 'STUDENT_ESTIMATE'); self.assertIn('blue', guess['nearest'][0]['caption'])
-        sha = rec['ref']['sha256']; vision.forget(self.store, rec)
+        sha = rec['ref']['sha256']; projector_path = self.home/pj['path']
+        forgotten = vision.forget(self.store, rec)
+        self.assertIn('projector', forgotten['invalidated_projectors'])
+        self.assertTrue(forgotten['projector_files_deleted']['projector'])
+        self.assertFalse(projector_path.exists())
+        self.assertIsNone(vision.load(self.store)['projector'])
+        self.assertTrue(forgotten['blob_deleted'])
         self.assertFalse((self.home/'data/blobs'/sha).exists())
         with self.assertRaises(ValueError): vision.read_image(self.store, rec['ref'])
         self.assertNotIn(rec['ref']['source_id'], vision.load(self.store)['images'])
@@ -95,11 +147,273 @@ class Vision(unittest.TestCase):
             rec = vision.ingest(self.store, png(c, box=(box[0]+i % 2, box[1], box[2], box[3])))
             for reg in ('g', 'hl', 'hr'): vision.describe(self.rt, rec, reg, t)
         pj = vision.train(self.rt, enc); self.assertEqual(pj['n'], 18); self.assertTrue(any(k.endswith(':hl') for k in pj['captions']))
+        self.assertEqual(pj['metrics']['split'], 'SOURCE_DISJOINT'); self.assertEqual(pj['metrics']['source_groups'], 6)  # three colours × two separately ingested image sources
         new = vision.ingest(self.store, png((20, 20, 220), box=(40, 10, 62, 38)))
         best = vision.locate(self.rt, new, 'a blue box', enc)['regions'][0]
         self.assertEqual(best['source_ref']['modality'], 'image'); self.assertGreaterEqual(best['source_ref']['box'][0], 32)  # right half
         with self.assertRaises(ValueError): vision.locate(self.rt, new, ' ', enc)
-        vision.forget(self.store, rec); self.assertFalse(any(k.startswith(rec['ref']['source_id']) for k in vision.load(self.store)['projector']['captions']))
+        old_projector_path = self.home/pj['path']
+        forgotten = vision.forget(self.store, rec)
+        self.assertIn('projector', forgotten['invalidated_projectors'])
+        self.assertFalse(old_projector_path.exists())
+        self.assertIsNone(vision.load(self.store)['projector'])
+        rebuilt = vision.train(self.rt, enc)
+        self.assertNotIn(rec['ref']['source_id'], {item['source_id'] for item in rebuilt['training_sources']})
+
+
+    def test_retraining_scales_projector_delta_against_previous_replay(self):
+        teacher = FakeTeacher()
+        encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20)] * 3
+        for i, colour in enumerate(colours):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            vision.describe(self.rt, rec, 'g', teacher)
+        first = vision.train(self.rt, encoder)
+        self.assertEqual(first['update_gate']['status'], 'INITIAL')
+        first_model = vision.Projector.load(self.home/first['path'], first['sha256'])
+        first_weights = first_model.W.copy()
+
+        # New reference targets intentionally conflict with the previously learned labels.
+        state = vision.load(self.store)
+        for rec in list(state['images'].values()):
+            vision.describe(self.rt, rec, 'g', OppositeTeacher())
+        # Add independent source groups so the old projector is tested only on
+        # images it could not have seen before this update.
+        for i in range(4):
+            rec = vision.ingest(self.store, png_pair(i + 1))
+            vision.describe(self.rt, rec, 'r00', OppositeTeacher())
+            vision.describe(self.rt, rec, 'r01', OppositeTeacher())
+        second = vision.train(self.rt, encoder)
+        gate = second['update_gate']
+        self.assertIn(gate['status'], ('APPLIED', 'REJECTED_RETENTION_REGRESSION'), gate)
+        self.assertGreaterEqual(gate['replay_n'], 6)
+        self.assertGreaterEqual(gate['replay_sources'], 6)
+        self.assertGreaterEqual(
+            gate['after']['mean_cosine'],
+            gate['before']['mean_cosine'] - vision.A3_REPLAY_COSINE_TOLERANCE,
+        )
+        if gate['status'] == 'APPLIED':
+            self.assertLess(gate['scale'], 1.0)
+            updated = vision.Projector.load(self.home/second['path'], second['sha256'])
+            self.assertFalse(numpy.allclose(first_weights, updated.W))
+        else:
+            self.assertEqual(second['sha256'], first['sha256'])
+            retained = vision.Projector.load(self.home/second['path'], second['sha256'])
+            self.assertTrue(numpy.allclose(first_weights, retained.W))
+        self.assertEqual(vision.status(self.rt)['projector']['update_gate']['status'], gate['status'])
+
+    def test_retraining_with_only_changed_seen_sources_is_a_noop(self):
+        teacher = FakeTeacher()
+        encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20)] * 3
+        for i, colour in enumerate(colours):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            vision.describe(self.rt, rec, 'g', teacher)
+        first = vision.train(self.rt, encoder)
+        first_model = vision.Projector.load(self.home/first['path'], first['sha256'])
+        first_weights = first_model.W.copy()
+
+        state = vision.load(self.store)
+        for rec in list(state['images'].values()):
+            vision.describe(self.rt, rec, 'g', OppositeTeacher())
+        second = vision.train(self.rt, encoder)
+        self.assertEqual(second['update_gate']['status'], 'NO_NEW_SOURCE_GROUPS')
+        self.assertEqual(second['sha256'], first['sha256'])
+        retained = vision.Projector.load(self.home/second['path'], second['sha256'])
+        self.assertTrue(numpy.allclose(first_weights, retained.W))
+
+    def test_source_disjoint_update_validation_requires_complete_positive_evidence(self):
+        good = {'status': 'MEASURED', 'split': 'SOURCE_DISJOINT', 'authority': 'MEASUREMENT_ONLY',
+                'evaluation_scope': 'NEW_SOURCE_GROUPS', 'source_groups': 4,
+                'folds_used': 4, 'folds_requested': 4, 'held_out_top1': 0.75, 'chance': 0.25,
+                'held_out_gain_over_chance': 0.5, 'utility_status': 'ABOVE_CHANCE',
+                'baseline_status': 'MEASURED', 'baseline_held_out_top1': 0.25,
+                'held_out_gain_over_baseline': 0.5, 'baseline_utility_status': 'AT_OR_BELOW_CHANCE'}
+        self.assertEqual(vision._source_disjoint_update_validation(good, require_baseline=True)['status'], 'PASS')
+        partial = dict(good, status='PARTIAL', folds_used=3)
+        self.assertEqual(vision._source_disjoint_update_validation(partial, require_baseline=True)['status'],
+                         'SOURCE_DISJOINT_VALIDATION_UNAVAILABLE')
+        nonfinite = dict(good, held_out_gain_over_chance=float('nan'))
+        self.assertEqual(vision._source_disjoint_update_validation(nonfinite, require_baseline=True)['status'],
+                         'SOURCE_DISJOINT_VALIDATION_UNAVAILABLE')
+        no_gain = dict(good, held_out_top1=0.25, chance=0.25,
+                       held_out_gain_over_chance=0.0, utility_status='AT_OR_BELOW_CHANCE')
+        self.assertEqual(vision._source_disjoint_update_validation(no_gain, require_baseline=True)['status'],
+                         'NO_HELDOUT_UTILITY_GAIN')
+        no_baseline = dict(good, baseline_status='INVALID')
+        self.assertEqual(vision._source_disjoint_update_validation(no_baseline, require_baseline=True)['status'],
+                         'SOURCE_DISJOINT_BASELINE_UNAVAILABLE')
+        no_candidate_gain = dict(good, held_out_gain_over_baseline=-0.1)
+        self.assertEqual(vision._source_disjoint_update_validation(no_candidate_gain, require_baseline=True)['status'],
+                         'NO_CANDIDATE_GAIN_OVER_BASELINE')
+
+    def test_retraining_without_source_disjoint_utility_keeps_previous_artifact(self):
+        teacher = FakeTeacher()
+        encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        for i, colour in enumerate([(220, 20, 20), (20, 20, 220), (20, 180, 20)] * 3):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            vision.describe(self.rt, rec, 'g', teacher)
+        first = vision.train(self.rt, encoder)
+        old_path = self.home / first['path']
+        first_weights = vision.Projector.load(old_path, first['sha256']).W.copy()
+        self.assertTrue(old_path.is_file())
+        rec = vision.ingest(self.store, png((20, 20, 220), box=(18, 8, 44, 34)))
+        vision.describe(self.rt, rec, 'g', teacher)
+        no_gain = {'status': 'MEASURED', 'split': 'SOURCE_DISJOINT', 'authority': 'MEASUREMENT_ONLY',
+                   'evaluation_scope': 'NEW_SOURCE_GROUPS', 'n': 10, 'source_groups': 4,
+                   'folds_used': 4, 'folds_requested': 4, 'held_out_top1': 0.1, 'chance': 0.1,
+                   'held_out_gain_over_chance': 0.0, 'utility_status': 'AT_OR_BELOW_CHANCE',
+                   'baseline_status': 'MEASURED', 'baseline_held_out_top1': 0.2,
+                   'held_out_gain_over_baseline': -0.1, 'baseline_utility_status': 'ABOVE_CHANCE'}
+        with patch('v13.vision.source_disjoint_crossval', return_value=no_gain):
+            second = vision.train(self.rt, encoder)
+        self.assertEqual(second['update_gate']['status'], 'NO_HELDOUT_UTILITY_GAIN')
+        self.assertEqual(second['update_gate']['validation']['held_out_gain_over_chance'], 0.0)
+        self.assertEqual(second['sha256'], first['sha256'])
+        candidate_below_baseline = dict(no_gain, held_out_top1=0.7, chance=0.2,
+            held_out_gain_over_chance=0.5, utility_status='ABOVE_CHANCE',
+            baseline_held_out_top1=0.8, held_out_gain_over_baseline=-0.1)
+        rec = vision.ingest(self.store, png((20, 180, 20), box=(14, 10, 40, 36)))
+        vision.describe(self.rt, rec, 'g', teacher)
+        with patch('v13.vision.source_disjoint_crossval', return_value=candidate_below_baseline):
+            third = vision.train(self.rt, encoder)
+        self.assertEqual(third['update_gate']['status'], 'NO_CANDIDATE_GAIN_OVER_BASELINE')
+        self.assertEqual(third['sha256'], first['sha256'])
+        self.assertTrue(old_path.is_file())
+        retained = vision.Projector.load(old_path, first['sha256'])
+        self.assertTrue(numpy.array_equal(retained.W, first_weights))
+        self.assertTrue(numpy.array_equal(
+            vision.Projector.load(old_path, third['sha256']).W, first_weights
+        ))
+
+    def test_source_disjoint_crossval_compares_previous_projector_only_on_unseen_sources(self):
+        teacher = FakeTeacher()
+        encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20)] * 3
+        for i, colour in enumerate(colours):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            vision.describe(self.rt, rec, 'g', teacher)
+        first = vision.train(self.rt, encoder)
+        old_record = vision.load(self.store)['projector']
+        for i, colour in enumerate(colours):
+            rec = vision.ingest(self.store, png(colour, box=(12+i, 9, 38+i, 34)))
+            vision.describe(self.rt, rec, 'g', teacher)
+        state = vision.load(self.store)
+        X, captions, _, ids = vision.dataset(self.store, state=state)
+        Y = encoder[1](captions)
+        groups = [key.split(':', 1)[0] for key in ids]
+        new_source_mask, baseline = vision._projector_validation_inputs(
+            self.home, old_record, 'hashed_bow', ids, captions, tile=False
+        )
+        self.assertIsNotNone(baseline)
+        self.assertEqual(sum(new_source_mask), 9)
+        cv = vision.source_disjoint_crossval(
+            X, Y, groups, captions, baseline_predictor=baseline, evaluation_mask=new_source_mask
+        )
+        self.assertEqual(cv['status'], 'MEASURED')
+        self.assertEqual(cv['baseline_status'], 'MEASURED')
+        self.assertEqual(cv['evaluation_scope'], 'NEW_SOURCE_GROUPS')
+        self.assertEqual(cv['source_groups'], 9)
+        self.assertEqual(cv['folds_used'], cv['folds_requested'])
+        self.assertTrue(numpy.isfinite(cv['held_out_gain_over_baseline']))
+        self.assertTrue(numpy.isfinite(cv['baseline_held_out_top1']))
+
+    def test_changed_caption_on_seen_source_is_not_a_new_source_holdout(self):
+        teacher = FakeTeacher()
+        encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20), (220, 20, 20)]
+        old_records = []
+        for i, colour in enumerate(colours):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            vision.describe(self.rt, rec, 'g', teacher)
+            old_records.append(rec)
+        first = vision.train(self.rt, encoder)
+        old_record = vision.load(self.store)['projector']
+
+        # The old projector has already seen this exact source ID; changing its
+        # caption must not turn it into an "unseen source" baseline test row.
+        vision.describe(self.rt, old_records[0], 'g', OppositeTeacher())
+        new_records = []
+        for i, colour in enumerate([(220, 20, 20), (20, 20, 220)]):
+            rec = vision.ingest(self.store, png(colour, box=(14+i, 12, 42+i, 40)))
+            vision.describe(self.rt, rec, 'g', teacher)
+            new_records.append(rec)
+
+        state = vision.load(self.store)
+        X, captions, _, ids = vision.dataset(self.store, state=state)
+        Y = encoder[1](captions)
+        groups = [key.split(':', 1)[0] for key in ids]
+        new_source_mask, baseline = vision._projector_validation_inputs(
+            self.home, old_record, 'hashed_bow', ids, captions, tile=False
+        )
+        self.assertIsNotNone(baseline)
+        self.assertTrue(any(
+            old_record['captions'].get(key) != caption
+            for key, caption in zip(ids, captions)
+            if key.split(':', 1)[0] == old_records[0]['ref']['source_id']
+        ))
+        old_ids = {rec['ref']['source_id'] for rec in old_records}
+        new_ids = {rec['ref']['source_id'] for rec in new_records}
+        self.assertFalse(any(
+            new_source_mask[index] for index, source_id in enumerate(groups) if source_id in old_ids
+        ))
+        self.assertTrue(all(
+            new_source_mask[index] for index, source_id in enumerate(groups) if source_id in new_ids
+        ))
+        cv = vision.source_disjoint_crossval(
+            X, Y, groups, captions, baseline_predictor=baseline, evaluation_mask=new_source_mask
+        )
+        self.assertEqual(cv['status'], 'MEASURED')
+        self.assertEqual(cv['evaluation_scope'], 'NEW_SOURCE_GROUPS')
+        self.assertEqual(cv['source_groups'], 2)
+        self.assertEqual(cv['baseline_status'], 'MEASURED')
+
+    def test_legacy_projector_without_exact_source_lineage_cannot_supply_a_baseline(self):
+        old_record = {
+            'encoder': 'hashed_bow',
+            'captions': {'old-source:g': 'an old caption'},
+            'path': 'data/vision/projector-legacy.npz',
+            'sha256': 'a' * 64,
+        }
+        keys = ['old-source:g', 'new-source:g']
+        labels = ['updated old caption', 'new caption']
+        mask, baseline = vision._projector_validation_inputs(
+            self.home, old_record, 'hashed_bow', keys, labels, tile=False
+        )
+        self.assertEqual(mask, [False, False])
+        self.assertIsNone(baseline)
+
+        mismatched = dict(old_record, training_sources=[
+            {'source_id': 'different-source', 'sha256': 'b' * 64}
+        ])
+        mask, baseline = vision._projector_validation_inputs(
+            self.home, mismatched, 'hashed_bow', keys, labels, tile=False
+        )
+        self.assertEqual(mask, [False, False])
+        self.assertIsNone(baseline)
+
+    def test_retraining_with_changed_encoder_fails_closed_and_keeps_old_artifact(self):
+        teacher = FakeTeacher()
+        encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        for i, colour in enumerate([(220, 20, 20), (20, 20, 220), (20, 180, 20)] * 3):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            vision.describe(self.rt, rec, 'g', teacher)
+        first = vision.train(self.rt, encoder)
+        path = self.home/first['path']
+        changed = ('other-encoder', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        second = vision.train(self.rt, changed)
+        self.assertEqual(second['update_gate']['status'], 'ENCODER_MISMATCH')
+        self.assertEqual(second['sha256'], first['sha256'])
+        self.assertTrue(path.is_file())
+
+    def test_single_source_training_does_not_claim_heldout_utility(self):
+        teacher = FakeTeacher(); encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        rec = vision.ingest(self.store, png((220, 20, 20)))
+        for region in ('g', 'hl', 'hr', 'qtl'):
+            vision.describe(self.rt, rec, region, teacher)
+        projector = vision.train(self.rt, encoder)
+        self.assertEqual(projector['metrics']['status'], 'INSUFFICIENT_SOURCE_GROUPS')
+        self.assertIsNone(projector['metrics']['held_out_top1'])
 
     def test_operator_command(self):
         p = self.home/'x.png'; p.write_bytes(png((220, 20, 20)))
@@ -128,6 +442,14 @@ class Vision(unittest.TestCase):
             for reg in ('g', 'qtl', 'qtr', 'qbl', 'qbr'): vision.describe(self.rt, rec, reg, t)
         with self.assertRaises(ValueError): vision.find(self.rt, rec, 'a red box', enc)
         tp = vision.train_tiles(self.rt, enc); self.assertGreater(tp['salient_tiles'], 0); self.assertEqual(tp['authority'], 'LAB_SHADOW_ONLY')
+        self.assertEqual(len(tp['captions']), tp['n'])
+        replay_X, replay_labels, replay_keys = vision._replay_dataset(self.store, vision.load(self.store), tp, vision.DEFAULTS, tile=True)
+        self.assertEqual(len(replay_X), tp['n']); self.assertEqual(len(replay_labels), tp['n']); self.assertEqual(len(replay_keys), tp['n'])
+        tp_again = vision.train_tiles(self.rt, enc)
+        self.assertEqual(tp_again['update_gate']['status'], 'NO_NEW_SOURCE_GROUPS')
+        self.assertEqual(tp_again['sha256'], tp['sha256'])
+        self.assertEqual(tp_again['metrics']['split'], 'SOURCE_DISJOINT'); self.assertEqual(tp_again['metrics']['status'], 'MEASURED')
+        self.assertEqual(vision.status(self.rt)['tile_projector']['metrics']['split'], 'SOURCE_DISJOINT')
         self.assertEqual(vision.operator_command(self.rt, ['teacher', 'off']), {'teacher': 'removed'})
         with self.assertRaises(Unavailable): vision.describe(self.rt, rec, 'g', t)
         new = vision.ingest(self.store, two(B, 'qtl', R, 'qbr'))
@@ -137,6 +459,278 @@ class Vision(unittest.TestCase):
         self.assertLess(blue['tiles'][0]['source_ref']['box'][2], 33); self.assertLess(blue['tiles'][0]['source_ref']['box'][3], 25)          # top-left
         self.assertTrue(vision.status(self.rt)['teacher']['removed']); vision.operator_command(self.rt, ['teacher', 'on'])
         self.assertFalse(vision.status(self.rt)['teacher']['removed'])
+
+
+    def test_tile_projector_is_invalidated_when_its_training_source_is_forgotten(self):
+        t = FakeTeacher(); enc = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20)]
+        records = []
+        for i, colour in enumerate(colours * 2):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            for region in ('g', 'qtl', 'qtr'):
+                vision.describe(self.rt, rec, region, t)
+            records.append(rec)
+        tile = vision.train_tiles(self.rt, enc)
+        self.assertIn(records[-1]['ref']['source_id'], {item['source_id'] for item in tile['training_sources']})
+        artifact = self.home/tile['path']
+        result = vision.forget(self.store, records[-1])
+        self.assertIn('tile_projector', result['invalidated_projectors'])
+        self.assertTrue(result['projector_files_deleted']['tile_projector'])
+        self.assertFalse(artifact.exists())
+        self.assertIsNone(vision.load(self.store)['tile_projector'])
+
+    def test_projector_with_proven_disjoint_training_sources_survives_forget(self):
+        t = FakeTeacher(); enc = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        records = []
+        for i, colour in enumerate([(220, 20, 20), (20, 20, 220), (20, 180, 20), (220, 20, 20)]):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            vision.describe(self.rt, rec, 'g', t)
+            records.append(rec)
+        projector = vision.train(self.rt, enc)
+        unrelated = vision.ingest(self.store, png((20, 180, 20), box=(20, 8, 45, 35)))
+        path = self.home/projector['path']
+        result = vision.forget(self.store, unrelated)
+        self.assertNotIn('projector', result['invalidated_projectors'])
+        self.assertTrue(path.is_file())
+        self.assertIsNotNone(vision.load(self.store)['projector'])
+
+    def test_legacy_projector_without_source_lineage_is_invalidated(self):
+        rec = vision.ingest(self.store, png((220, 20, 20)))
+        path = self.home/'data/vision/projector-legacy.npz'
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b'legacy')
+        state = vision.load(self.store)
+        state['projector'] = {'path':'data/vision/projector-legacy.npz','sha256':'0'*64,'n':4,'captions':{}}
+        vision.save(self.store, state)
+        result = vision.forget(self.store, rec)
+        self.assertIn('projector', result['invalidated_projectors'])
+        self.assertTrue(result['projector_files_deleted']['projector'])
+        self.assertFalse(path.exists())
+
+
+
+    def test_forget_invalidates_both_a3_projectors_and_survives_store_restart(self):
+        t = FakeTeacher(); enc = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        records = []
+        for i, colour in enumerate([(220, 20, 20), (20, 20, 220), (20, 180, 20)] * 2):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            for region in ('g', 'qtl', 'qtr'):
+                vision.describe(self.rt, rec, region, t)
+            records.append(rec)
+        projector = vision.train(self.rt, enc)
+        tile_projector = vision.train_tiles(self.rt, enc)
+        projector_path = self.home/projector['path']
+        tile_path = self.home/tile_projector['path']
+        result = vision.forget(self.store, records[-1])
+        self.assertEqual(set(result['invalidated_projectors']), {'projector', 'tile_projector'})
+        self.assertTrue(all(result['projector_files_deleted'].values()))
+        self.assertFalse(projector_path.exists())
+        self.assertFalse(tile_path.exists())
+        self.store.close()
+        self.store = Store(self.home)
+        self.rt.store = self.store
+        state = vision.load(self.store)
+        self.assertIsNone(state['projector'])
+        self.assertIsNone(state['tile_projector'])
+        self.assertNotIn(records[-1]['ref']['source_id'], state['images'])
+
+    def test_stale_forget_ref_does_not_invalidate_current_projector(self):
+        t = FakeTeacher(); enc = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        records = []
+        for i, colour in enumerate([(220, 20, 20), (20, 20, 220), (20, 180, 20), (220, 20, 20)]):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            vision.describe(self.rt, rec, 'g', t)
+            records.append(rec)
+        projector = vision.train(self.rt, enc)
+        stale = {'ref': dict(records[-1]['ref'], sha256='0' * 64)}
+        with self.assertRaises(ValueError):
+            vision.forget(self.store, stale)
+        self.assertEqual(vision.load(self.store)['projector']['sha256'], projector['sha256'])
+        self.assertTrue((self.home/projector['path']).is_file())
+
+
+    def test_stale_vision_snapshot_cannot_overwrite_a_completed_forget(self):
+        rec = vision.ingest(self.store, png((220, 20, 20)))
+        stale = vision.load(self.store)
+        vision.forget(self.store, rec)
+        stale['teacher_removed'] = True
+        with self.assertRaisesRegex(ValueError, 'Stale state write'):
+            vision.save(self.store, stale)
+        current = vision.load(self.store)
+        self.assertNotIn(rec['ref']['source_id'], current['images'])
+        self.assertFalse(current.get('teacher_removed', False))
+
+    def _assert_training_commit_rejected_after_forget(self, trainer, state_key, artifact_prefix):
+        teacher = FakeTeacher()
+        encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        records = []
+        colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20)] * 2
+        for i, colour in enumerate(colours):
+            rec = vision.ingest(self.store, png(colour, box=(5 + i, 5, 30 + i, 30)))
+            for region in ('g', 'qtl', 'qtr'):
+                vision.describe(self.rt, rec, region, teacher)
+            records.append(rec)
+
+        entered = threading.Event()
+        release = threading.Event()
+        outcome = {}
+        original_save = vision.save
+
+        def delayed_save(store, state):
+            entered.set()
+            if not release.wait(30):
+                raise TimeoutError('test did not release delayed vision save')
+            return original_save(store, state)
+
+        def train_worker():
+            try:
+                outcome['result'] = trainer(self.rt, encoder)
+            except BaseException as exc:
+                outcome['error'] = exc
+
+        with patch.object(vision, 'save', delayed_save):
+            worker = threading.Thread(target=train_worker)
+            worker.start()
+            self.assertTrue(entered.wait(30), 'training never reached its state commit')
+            vision.forget(self.store, records[-1])
+            release.set()
+            worker.join(30)
+
+        self.assertFalse(worker.is_alive(), 'training worker did not finish')
+        self.assertIsInstance(outcome.get('error'), ValueError)
+        self.assertIn('Stale state write', str(outcome['error']))
+        self.assertIsNone(vision.load(self.store).get(state_key))
+        self.assertEqual(
+            list((self.home / 'data/vision').glob(artifact_prefix + '*.npz')), []
+        )
+
+    def test_global_projector_training_cannot_republish_forgotten_source(self):
+        self._assert_training_commit_rejected_after_forget(
+            vision.train, 'projector', 'projector-'
+        )
+
+    def test_tile_projector_training_cannot_republish_forgotten_source(self):
+        self._assert_training_commit_rejected_after_forget(
+            vision.train_tiles, 'tile_projector', 'tiles-'
+        )
+
+    def _assert_training_commit_rejected_after_caption_change(self, trainer, state_key, artifact_prefix, regions):
+        teacher = FakeTeacher()
+        encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        records = []
+        colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20)] * 2
+        for i, colour in enumerate(colours):
+            rec = vision.ingest(self.store, png(colour, box=(5 + i, 5, 30 + i, 30)))
+            for region in regions:
+                vision.describe(self.rt, rec, region, teacher)
+            records.append(rec)
+
+        original_cv = vision.source_disjoint_crossval
+        changed = {'done': False}
+
+        def update_caption_during_validation(*args, **kwargs):
+            if not changed['done']:
+                vision.describe(self.rt, records[0], regions[0], OppositeTeacher())
+                changed['done'] = True
+            return original_cv(*args, **kwargs)
+
+        with patch.object(vision, 'source_disjoint_crossval', update_caption_during_validation):
+            with self.assertRaisesRegex(ValueError, 'Stale state write'):
+                trainer(self.rt, encoder)
+
+        self.assertTrue(changed['done'])
+        current = vision.load(self.store)
+        updated_caption = next(
+            item for item in current['images'][records[0]['ref']['source_id']]['captions']
+            if item['source_ref']['region_id'] == regions[0]
+        )
+        self.assertIn('blue', updated_caption['text'])
+        self.assertIsNone(current.get(state_key))
+        self.assertEqual(list((self.home / 'data/vision').glob(artifact_prefix + '*.npz')), [])
+
+    def test_global_projector_training_cannot_publish_stale_caption_snapshot(self):
+        self._assert_training_commit_rejected_after_caption_change(
+            vision.train, 'projector', 'projector-', ('g',)
+        )
+
+    def test_tile_projector_training_cannot_publish_stale_caption_snapshot(self):
+        self._assert_training_commit_rejected_after_caption_change(
+            vision.train_tiles, 'tile_projector', 'tiles-', ('g', 'qtl', 'qtr')
+        )
+
+    def test_reingest_serializes_with_last_source_blob_cleanup(self):
+        data = png((220, 20, 20))
+        original = vision.ingest(self.store, data)
+        sha = original['ref']['sha256']
+        unlink_entered = threading.Event()
+        release_unlink = threading.Event()
+        ingest_started = threading.Event()
+        ingest_done = threading.Event()
+        forget_result = {}
+        ingest_result = {}
+        original_unlink = vision.unlink_source_blob
+
+        def delayed_unlink(home, key):
+            unlink_entered.set()
+            if not release_unlink.wait(15):
+                raise TimeoutError('test did not release source blob cleanup')
+            return original_unlink(home, key)
+
+        def forget_worker():
+            try:
+                forget_result['result'] = vision.forget(self.store, original)
+            except BaseException as exc:
+                forget_result['error'] = exc
+
+        def ingest_worker():
+            ingest_started.set()
+            try:
+                ingest_result['record'] = vision.ingest(self.store, data)
+            except BaseException as exc:
+                ingest_result['error'] = exc
+            finally:
+                ingest_done.set()
+
+        with patch.object(vision, 'unlink_source_blob', delayed_unlink):
+            forget_thread = threading.Thread(target=forget_worker)
+            forget_thread.start()
+            self.assertTrue(unlink_entered.wait(10), 'forget did not reach blob cleanup')
+            ingest_thread = threading.Thread(target=ingest_worker)
+            ingest_thread.start()
+            self.assertTrue(ingest_started.wait(2))
+            time.sleep(0.05)
+            self.assertFalse(ingest_done.is_set(), 'ingest crossed the active cleanup lock')
+            release_unlink.set()
+            forget_thread.join(15)
+            ingest_thread.join(15)
+
+        self.assertFalse(forget_thread.is_alive())
+        self.assertFalse(ingest_thread.is_alive())
+        self.assertNotIn('error', forget_result, str(forget_result.get('error')))
+        self.assertNotIn('error', ingest_result, str(ingest_result.get('error')))
+        self.assertTrue(forget_result['result']['blob_deleted'])
+        recreated = ingest_result['record']
+        self.assertNotEqual(recreated['ref']['source_id'], original['ref']['source_id'])
+        row = self.store.one('SELECT hash,kind,deleted FROM sources WHERE id=?',
+                             (recreated['ref']['source_id'],))
+        self.assertEqual(row['kind'], 'IMAGE')
+        self.assertEqual(row['hash'], sha)
+        self.assertEqual(row['deleted'], 0)
+        blob = self.home / 'data/blobs' / sha
+        self.assertTrue(blob.is_file())
+        self.assertEqual(vision.digest(blob.read_bytes()), sha)
+
+
+    def test_forget_fails_closed_on_malformed_projector_state(self):
+        rec = vision.ingest(self.store, png((220, 20, 20)))
+        state = dict(vision.load(self.store))
+        state['projector'] = 'malformed-legacy-value'
+        self.store.set_state(vision.KEY, state)
+        result = vision.forget(self.store, rec)
+        self.assertIn('projector', result['invalidated_projectors'])
+        self.assertIn('projector_artifact', result['cleanup_failed'])
+        self.assertIsNone(vision.load(self.store)['projector'])
+        self.assertNotIn(rec['ref']['source_id'], vision.load(self.store)['images'])
 
 if __name__ == '__main__':
     unittest.main()

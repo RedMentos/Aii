@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T12:44:40Z",
+  "updated_at": "2026-11-24T13:50:07+01:00",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -196,19 +196,24 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Perception: preserve the #2327 RAW EAR FIR anti-alias feature path and its staged A5/A4/C3 regression; do not equate caller-supplied PCM with Android microphone capture. Next, reconcile the signed one-shot consumer with QA's companion provider and measure Android lifecycle/route/silence/revocation only after explicit device permission.",
+      "proof_environment": "LOCAL_LINUX isolated helper harness; CI synthetic Store/vision consumer; staged runtime BLOCKED by Boss source-lifecycle composer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
+      "next_step": "Boss/Integrator PR #2443 must rebind the exact current vision.py SHA-256 350573e65eb445b8b83f5517e3bfe07ece04e036055c55fc3e23c79d5b0cc728 and compose the complete imported dependency closure (vision_source_lineage.py, vision_validation.py, vision_temporal_evidence.py, vision_temporal_adaptation.py, vision_ui_frame_ingress.py); then rerun staged-runtime, integrated-regression, both consumers and migration. Keep source-forget and strict hash checks; do not bypass the composer. Perception next researches near-duplicate source grouping and source-level uncertainty after integration.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-24T13:50:07+01:00",
       "latest_candidate_pr": {
-        "pr": 2312,
-        "head_sha": "5221314d3c01ab6d874ecc0a8b8ff72c34e504a2",
-        "base": "qa/v14-companion-os-permission-contract-20261122",
-        "state": "OPEN_DRAFT_PARTIAL_CI_PENDING",
-        "scope": "signed one-shot RAW EAR consumer; Android-guaranteed 44.1 kHz mono PCM16; 88,200-byte / 117,600-character one-second cap; exact source/generation/signature/consent/replay checks; no microphone provider or learning/action authority",
-        "ci": "RUN_44992975596_PENDING; RUN_44992975599_QUEUED"
+        "pr": 2463,
+        "head_sha": "2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d",
+        "tested_code_sha": "2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "state": "OPEN_DRAFT_FOCUSED_CI_PASS_STAGED_AND_CONSUMER_COMPOSER_BLOCKED",
+        "ci": "EXACT_HEAD_2FC: VISION_SOURCE_LINEAGE_39_OF_39_PY313_AND_314; FRAME_INGRESS_39_OF_39_PY313_AND_314; OFFLINE_3.11_AND_3.14_PASS; PRIVACY_PASS; OFFLINE_BRIDGE_SECURITY_PASS; SAME_REPO_GUARD_PASS; STAGED_19_FAILED_234_PASSED_10_SKIPPED_2_ERRORS_41_SUBTESTS; INTEGRATED_1_FAILURE; CONSUMER_PY313_3_FAILED_2_PASSED; CONSUMER_PY314_3_FAILED_2_PASSED; ROOT_UNSUPPORTED_LIFECYCLE_SOURCE_VISION_PY",
+        "code_commit_sha": "12f4e70113cc117087960c5b137e1afbc62dd14b",
+        "regression_commit_sha": "3767112e63e9d4e66fdc2ebcddd3555bcd9affdb",
+        "workflow_commit_sha": "2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d",
+        "docs_checkpoint_parent_sha": "1b9acc408d104ca9503e5234b5f9730085bd3890",
+        "branch_head_at_readback": "1b9acc408d104ca9503e5234b5f9730085bd3890"
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture."
+      "proof": "A3 global and tile projector update gates now evaluate the previous projector only on source IDs absent from its exact training_sources lineage. Changed captions for previously trained source IDs remain candidate-training data but are excluded from the baseline holdout. Missing/malformed/mismatched prior lineage or no new source groups fails closed to NO_NEW_SOURCE_GROUPS and retains the old artifact. Exact CI on head 2fc06a7: vision/source-lineage 39/39 on Python 3.13 and 3.14; frame ingress 39/39 on both; py_compile passed; offline, privacy, offline-bridge-security and same-repo guard passed. Staged/integrated/consumer still fail at source_lifecycle_lock_integration_candidate.py:172 with unsupported lifecycle source: vision.py. Synthetic Store fixtures only; not neural JEPA/latent coupling, not Redmi proof. Latest private V13OBS #115 snapshot: installed base 8d93236, auto-update enabled/UP_TO_DATE/no error, but STOPPED_BY_USER, model process STOPPED, native residency unavailable; no update request or device action."
     },
     {
       "id": "V14-007",
@@ -250,10 +255,10 @@
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
       "proof_environment": "CI + Android source review; no APK or Redmi OS execution",
-      "next_step": "Core/QA: integrate the checked pairing persistence leaf after independent review; before APK/device tests, add idempotent receipt-only recovery for claimed EXECUTING/DENYING rows after signing/SQLite failure (EXECUTING must reconcile conservatively to a signed unknown outcome, never redispatch; DENYING can reconcile to signed denial), and failure-injection/restart tests. Keep companion default-OFF and all other providers OFF.",
+      "next_step": "Core/QA: integrate the checked pairing persistence leaf after independent review; before APK/device tests, add idempotent receipt-only recovery for claimed EXECUTING/DENYING rows after signing/SQLite failure (EXECUTING must reconcile conservatively to a signed unknown outcome, never redispatch; DENYING can reconcile to signed denial), and failure-injection/restart tests. Keep companion default-OFF and all other providers OFF. After receipt-only recovery and exact provider rebase, Core/Perception should evaluate one explicit MediaProjection session with one VirtualDisplay and a bounded two-frame ImageReader queue; retain stable session/consent lineage, unique frame nonce/sequence/timestamp/digest, drop-oldest backpressure, no raw disk persistence and onStop/cancel/process-death cleanup. This is R-109 platform guidance only; keep provider default-OFF and do not capture without explicit user consent.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T11:38:04.785Z",
-      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance."
+      "last_checkpoint": "2026-11-24T08:27:00+01:00",
+      "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance. Perception PR #2463 adds a consent/source-bound RAW EYE UI-frame consumer and local A3 tile-projector path; exact frame-ingress CI passes 39 tests on Python 3.13 and 39 on 3.14. This is synthetic consumer CI only; Android MediaProjection provider/capture, APK, Redmi lifecycle and actual UI observation/action remain NOT_VERIFIED. The full staged chain still fails at the Perception vision.py source-lifecycle pin."
     },
     {
       "id": "V14-010",
@@ -1175,10 +1180,17 @@
       "status": "FULL_ARXIV_HTML_REVIEWED / CC_BY_NC_4.0 / NO_REUSE",
       "primary": "Kim et al., arXiv:2609.34677; sony/far cab815ac2375f6bf38b846ff5a76216de9edbf02",
       "next": "Future-blind cue-utility head from delayed committed T8 outcomes is a candidate only; no Sony/FAR code, weights or CUDA dependencies imported."
+    },
+    {
+      "id": "R-117",
+      "topic": "Precise temporal coding in event-based vision and transfer limits for sampled RAW EYE",
+      "status": "PEER_REVIEWED_PAPER_REVIEWED / CUSTOM_NONCOMMERCIAL_CODE_LICENSE / NO_CODE_OR_DATA_IMPORT / FRAME_BASED_ABLATION_PROPOSED",
+      "primary": "Assa et al., Nature Communications 17, 9951 (2026-08-20), DOI 10.1038/s41467-026-76878-6",
+      "next": "Compare time-collapsed tile features against ordered timestamped frame deltas and A5 temporal surfaces on source/session-disjoint UI sequences; shuffled/reversed timestamp and flicker/scroll negatives. Do not transfer the event camera's 0.25 ms threshold to MediaProjection frames."
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-23T11:07:22.216Z",
+    "timestamp": "2026-11-24T09:18:00Z",
     "release_sha": "b20e9b1f3dd53af472055adb43da628785494ec4",
     "code_candidate_sha": "b20e9b1f3dd53af472055adb43da628785494ec4",
     "merged_pr": 2429,
@@ -1197,7 +1209,7 @@
     "pr2405": "8795687_STACKED_QA_BRANCH; EXPERIMENTAL",
     "docs_pr2378": "9EF30ED; 117_AHEAD_34_BEHIND; NEXT_ACTION_DELETES_1582_LINES; NOT_MERGED",
     "store_forget": "PR2429_MERGED; PRODUCTION_CONTEXT_PRODUCER_ONLY_EVENT_SOURCE",
-    "research": "R084_AND_R090_TO_R107_APPENDED; R096_ENGRAM_SYNTHETIC_NO_RETENTION_WIN; R107_FAR_CC_BY_NC_NO_REUSE",
+    "research": "R084_AND_R090_TO_R107_APPENDED; R096_ENGRAM_SYNTHETIC_NO_RETENTION_WIN; R107_FAR_CC_BY_NC_NO_REUSE; R-117 event-based temporal vision: peer-reviewed paper reviewed, code custom non-commercial/no reuse, frame-based ablation proposed only.",
     "active_blockers": [
       "P0_NATIVE_B1_B2_OFFERS_AND_C4_C3_CORRECTNESS",
       "P0_C3_TTFT_AND_CORRECTNESS",
@@ -1206,9 +1218,10 @@
       "P0_TRAINED_B3_LATENT",
       "P0_ANDROID_VOICE_AND_UI_CONTROL",
       "P0_20_TURN_REDMI_ACCEPTANCE",
-      "P0_CANON_SEMANTIC_TRACEABILITY"
+      "P0_CANON_SEMANTIC_TRACEABILITY",
+      "P0_VISION_LIFECYCLE_COMPOSER_RECOMPOSITION"
     ],
-    "user_action_required": "NONE; wait for later PIPELINE_STATUS; no manual command or duplicate request",
+    "user_action_required": "NONE; preserve STOPPED_BY_USER; no manual command or duplicate update request",
     "previous_overlay": {
       "timestamp": "2026-11-23T08:58:09.610Z",
       "release_sha": "4dc7595f383e7ba932ee8e9fcf52c5541210ed5e",
@@ -1294,6 +1307,23 @@
         "learning_status": "LEARNING_STATUS_552_UNAVAILABLE",
         "boss_pr2343": "CURRENT_HEAD_023E56D_29_AHEAD_0_BEHIND; substantive exact CI queued. Recovery12 and some Store/Runtime pins corrected; stage/deployer, recovery21, archive stream preimage, record-only Runtime pin and fair-observer ask anchor still mismatch. Previous 70c6a5 migration failed; not current-head result."
       }
+    },
+    "perception_run34": {
+      "candidate_pr": 2463,
+      "code_sha": "14d6b6338db5e4d965a27bac9a3d7301576496d6",
+      "branch_head_before_board_commit": "3aaab75bb91ca2b732189e48c3475999471fcb8e",
+      "behavior": "FIRST_FRAME_TEMPORAL_EVIDENCE_STATUS_WARMUP",
+      "focused_ci": "FRAME_INGRESS_39_OF_39_PY313_AND_PY314; VISION_SOURCE_LINEAGE_29_OF_29_PY313_AND_PY314",
+      "integration": "STAGED_FAIL_19_FAILED_234_PASSED_10_SKIPPED_2_ERRORS_41_SUBTESTS; INTEGRATED_FAIL_1; CONSUMER_FAIL_3_OF_5_BOTH; ROOT_UNSUPPORTED_LIFECYCLE_SOURCE_VISION_PY",
+      "device": "V13OBS_115_2026-11-24T07:39:27Z_INSTALLED_8D93236_AUTO_UPDATE_ENABLED_AI_STOPPED_BY_USER_ZERO_VALID_B1_B2_OFFERS_TIME_BUDGET_53.2_54.2_NATIVE_RESIDENCY_UNAVAILABLE",
+      "release": "NOT_RELEASED_NOT_INSTALLED_REDMI_UNVERIFIED",
+      "research": "R-117_ADDED_BRANCH_LOCAL; EVENT_CAMERA_RESULTS_NOT_TRANSFERRED_TO_SAMPLED_ANDROID_FRAMES; UPSTREAM_CODE_CUSTOM_NONCOMMERCIAL_NO_IMPORT",
+      "local_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_AND_DNS_FAILURE",
+      "user_action_required": "NONE",
+      "latest_exact_head": "01889a6a76e4283eda9f21421b2a3be72ee45c7d",
+      "exact_head_ci": "8_SUCCESS_4_FAILURE_1_POLICY_SKIPPED_0_PENDING",
+      "pending": "NONE",
+      "blockers": "STAGED_INTEGRATED_CONSUMER_ALL_FAIL_UNSUPPORTED_LIFECYCLE_SOURCE_VISION_PY; TWO_CHECKOUT_MIGRATION_PARTIAL"
     }
   },
   "qa_latest_checkpoint": {

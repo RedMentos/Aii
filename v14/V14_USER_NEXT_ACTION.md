@@ -1772,3 +1772,83 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
 
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+## Perception run 11 — 2026-11-24 08:27 Europe/Berlin
+
+**Verified release/device boundary**
+- Release-development branch read-back: gpt6/v13-private-remote-bridge-20261111 at 8d93236c753f0194224c19edc7411d8d7082b1d6.
+- Private V13OBS issue #115 read-back updated 2026-11-24 07:39:27 UTC: installed Runtime and Dashboard are UP_TO_DATE at 8d93236c753f0194224c19edc7411d8d7082b1d6; auto-update is enabled; last updater error is NONE.
+- The same receipt says AI runtime STOPPED_BY_USER, autostart=false, model process STOPPED, and no managed native model processes. Native residency accounting is unavailable. Do not restart the runtime, send a test prompt, request an update, or change model/device state while it remains user-stopped.
+- Latest stored turn is not a new test: 6.295 s total, 2.046 s TTFT, 358 admitted C3 prompt tokens, 7 generated tokens. B1_DETAIL/B2_GIST remain TIME_BUDGET at 53.2/54.2 s; five-turn metadata reports 0 valid offers and no source-bound offer delivery in the final C3 report. Semantic use and native latent exchange remain unproven. The updater being UP_TO_DATE does not imply a useful brain loop.
+
+**Perception implementation / exact evidence**
+- PR #2463 branch research-perception/v14-vision-current-20261124-run33; code/test head 776dee972b92f0ac76afcdf4e9b0be7e408b1f5c; docs/handoff head before this append 166d4d01bdf638e7da602090f30fe8870647c975.
+- A3 global and tile training now read captions/source refs from one Store-bound versioned snapshot and publish against that same CAS version. A concurrent teacher-caption update causes Stale state write, removes the candidate artifact, and preserves the newer caption.
+- Exact vision.py SHA-256: 23243f6a8e8d3ac79a40644aab186fcb4cff7a5e7d56f9b67bcae7cda2a1f8ae (Git blob edd901ed9e7d750773ccaa63f24c04257f83cc12).
+- GitHub CI: vision tests 33 passed on Python 3.13 and 3.14; RAW EYE frame-ingress tests 39 passed on both; Perception privacy scan PASS.
+- Staged Runtime still FAILS: 19 failed, 234 passed, 10 skipped, 2 errors, 41 subtests. Root: source_lifecycle_lock_integration_candidate.py:172 rejects the current vision.py pin. Updating only the pin is insufficient because the old VISION_OLD / VISION_FORGET_OLD / VISION_STATE_OLD anchors target obsolete code. Core/Boss/QA must recompose the lifecycle builder and include the current Perception lineage/validation/UI-ingress modules.
+- Full local Aii checkout is unavailable in this run; full local suite NOT_RUN/BLOCKED. Redmi-native A3, MediaProjection, native embeddings, RSS/PSS and TTFT tests NOT_RUN. PR #2463 remains DRAFT / NOT_RELEASED; no deployment occurred.
+
+**Research note**
+- R-108 in V14_RESEARCH_LEDGER reviews CAMR (arXiv:2610.36734, 2026-10-27) in full. Its compatibility-aware Add/Merge/Ignore plus bounded replay and independent retention probes are a useful future learning-governor hypothesis, but its evidence is Qwen3-8B/14B and no official code/license was identified. No reuse, download or model change.
+
+**Next executable action**
+- Core/Boss/QA: recompose the source-lifecycle/staged builder against the exact Perception vision.py above, then rerun staged, integrated, migration, source-forget/restart and RAW EYE consumer tests on one combined SHA. Keep source pins fail-closed.
+- After that, only with the user's runtime/device re-enabled and explicit test consent, verify the installed path. Do not send an update request or manual Termux command now.
+
+User action: **keine Aktion nötig**. Device remains STOPPED_BY_USER; no state change requested.
+
+
+## Final exact-head poll — board checkpoint 5a2cd1f252f36f7220def2369be142fdcbb16916
+
+- The V14 work board now records PR #2463 under Research & Perception ticket V14-006 and the A5 UI-ingress evidence under shared ticket V14-009. The V14-006 status remains IN_PROGRESS_PARTIAL; no Canon acceptance was promoted.
+- On this exact board checkpoint: vision source-lineage workflow 45350475598 PASS on Python 3.13/3.14; MediaProjection RAW EYE ingress 45350475533 PASS on both; Perception privacy 45350475626 PASS; runtime deployment integrity 45350475751 PASS.
+- Staged/integrated workflow 45350475519 FAIL on both staged-runtime and integrated-regression. The exact failure remains unsupported lifecycle source: vision.py; staged suite reports 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests. Core same-turn workflow 45350475641: Python 3.13 FAIL (3 failed / 2 passed) and Python 3.14 FAIL (3 failed / 2 passed), both because the same source-lifecycle builder refuses vision.py.
+- The final board checkpoint does not change the tested code bytes: vision.py SHA-256 remains 23243f6a8e8d3ac79a40644aab186fcb4cff7a5e7d56f9b67bcae7cda2a1f8ae; code/test SHA remains 776dee972b92f0ac76afcdf4e9b0be7e408b1f5c. PR #2463 is OPEN / DRAFT / NOT_RELEASED.
+- This confirms the remaining block is shared source-composition integration, not a green end-to-end runtime. No merge, release, auto-update, model swap or device action was performed.
+
+
+## A5 multi-frame platform research follow-up — 2026-11-24
+
+R-109 reviews the official Android MediaProjection guide (updated 2026-11-19). Android describes capture as a stream rendered to a VirtualDisplay Surface; an ImageReader can consume frames in real time. A session is one createVirtualDisplay() call and requires user consent; the token is used once, and onStop/process death must release the Surface and VirtualDisplay. Therefore the current Core provider's one-frame limit is not imposed by Android: a future provider can use one user-started session with a bounded two-frame ImageReader queue, one stable session/consent lineage, unique per-frame nonce/sequence/timestamp/digest, drop-oldest backpressure, no raw disk persistence and immediate stop/revoke cleanup. This remains a design recommendation only; provider #2408 is still one-shot and Redmi is unverified.
+
+
+## Research & Perception — run 34, 2026-11-24
+
+**Code candidate:** PR [#2463](https://github.com/RedMentos/Aii/pull/2463), release base `8d93236c753f0194224c19edc7411d8d7082b1d6`. Code fix `14d6b6338db5e4d965a27bac9a3d7301576496d6`; latest branch-local documentation/readback head at this checkpoint `0105a922ab9b95d6c8d6d87726f58ce0013805ce`. PR remains OPEN / DRAFT / NOT_RELEASED.
+
+**Verified change:** first-frame `TemporalVisualEvidence.update()` now emits explicit `status=WARMUP`, which the A5 frame-ingress consumer reads to distinguish baseline from measured evidence. The missing field previously caused `KeyError: 'status'`. No provider, model, weight, permission or learning authority changed.
+
+**Exact code-commit CI:** frame ingress 39/39 on Python 3.13 and 39/39 on Python 3.14; vision source-lineage 29/29 on both. Offline 3.11/3.14, privacy, offline-bridge-security and same-repository guard PASS. Staged runtime FAIL (19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests), integrated regression FAIL (1 failure), and same-turn consumer FAIL (3 failed / 2 passed on each Python version). Root cause is the Boss-owned `source_lifecycle_lock_integration_candidate.py:172` rejecting the current Perception `vision.py` as an unsupported lifecycle source. Migration still reports PARTIAL. Final exact docs/readback head 01889a6a76e4283eda9f21421b2a3be72ee45c7d has 8 SUCCESS / 4 FAILURE / 1 policy SKIPPED / 0 pending. The four failures are staged-runtime (19 failed / 234 passed / 10 skipped / 2 errors), integrated-regression (1), and consumer Python 3.13/3.14 (3 failed / 2 passed each), all caused by the Boss-owned source lifecycle composer rejecting vision.py. The focused frame-ingress and source-lineage matrices remain green. PR remains DRAFT / NOT_RELEASED.
+
+**Research:** R-117 records Assa et al., *Temporal coding enables hyperacuity in event-based vision*, Nature Communications (2026-08-20). The event-camera timing results motivate a future frame-order versus time-collapsed RAW EYE ablation, but do not transfer the 0.25 ms threshold to sampled Android frames. Upstream code has a custom non-commercial-only license and no patent grant; no code/data/model/dependency was imported. Boss must reconcile this branch-local R-117 entry with R-108–R-116 during ledger composition.
+
+**Current authenticated device boundary:** V13OBS #115 (2026-11-24 07:39:27 UTC) reports installed Runtime/Dashboard `8d93236c753f0194224c19edc7411d8d7082b1d6`, auto-update enabled and no updater error. AI remains `STOPPED_BY_USER`, autostart false, model process stopped and native residency unavailable. Five-turn body-delivery metadata remains zero valid B1/B2 offers and TIME_BUDGET 53.2/54.2 s. This is not a new functional test. Candidate #2463 is NOT_INSTALLED; REDMI_UNVERIFIED. No CHAT_SEND, UPDATE_REQUEST, LOG_PAGE, shell, restart, model/weight/permission change or data mutation was performed.
+
+**Next internal action:** Boss/Integrator #2443 must recompose the current Perception `vision.py` and source-forget lifecycle (the old VISION_* anchors are stale), rebind downstream pins bottom-up, and rerun staged/integrated/consumer/migration/privacy. User action: NONE; preserve STOPPED_BY_USER and do not issue a manual Termux command.
+
+
+## Research & Perception — run 38, 2026-11-24
+
+**Current candidate:** PR [#2463](https://github.com/RedMentos/Aii/pull/2463), branch head `2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d`, release base `8d93236c753f0194224c19edc7411d8d7082b1d6`. PR remains OPEN / DRAFT / NOT_RELEASED.
+
+**A3 change:** the previous projector is now compared only on genuinely unseen source IDs. The old projector's exact `training_sources` lineage must be well-formed and agree with the source IDs represented by its saved caption keys. New evaluation rows are limited to current source IDs absent from that prior lineage. A changed caption on a source the old projector already saw remains candidate-training data but is not an independent baseline holdout. Missing/malformed/mismatched lineage or no new source groups fails closed to `NO_NEW_SOURCE_GROUPS`; the old artifact is retained. The shared helper is used by both global and tile projector training.
+
+**Exact-head CI:** `py_compile` PASS; vision/source-lineage 39/39 on Python 3.13 and 39/39 on Python 3.14; RAW EYE frame ingress 39/39 on both. Offline 3.11/3.14, privacy, offline-bridge-security and same-repo guard PASS. Staged runtime FAIL: 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests. Integrated regression FAIL: 1. Consumer Python 3.13 FAIL: 3 failed / 2 passed; Python 3.14 was still IN_PROGRESS at last poll. The repeated root exception is Boss-owned `source_lifecycle_lock_integration_candidate.py:172`: `unsupported lifecycle source: vision.py`. This candidate is not integrated or released.
+
+**Local test:** Python 3.13.5 isolated helper harness, `python -m py_compile` PASS and `pytest -q /tmp/test_a3_source_holdout.py` PASS (3 tests). This is not the full Aii checkout or full Aii suite. Full local checkout is unavailable in this environment; GitHub DNS/clone access failed. CI ran the exact committed repository source.
+
+**Current source SHA-256 (identical on CI Python 3.13/3.14):**
+- `vision.py`: `350573e65eb445b8b83f5517e3bfe07ece04e036055c55fc3e23c79d5b0cc728`
+- `vision_source_lineage.py`: `bb63636c9ae84d345fe1f4e37254de3be87c26990cb320ca058859fd0b51b72f`
+- `vision_validation.py`: `5040c5672dc8cf263fccce132787ae138a29494ab4a67709d7d3689a849f57b6`
+- `vision_temporal_evidence.py`: `f2345aae29b81d7d07925801b7c5ce4c490c872c9e926b6b12837a5f468c5c88`
+- `vision_temporal_adaptation.py`: `a28dc8b9b3860622a2068b96763eb0885d88951a93aaad3e45ed47e593e8b5bb`
+- `vision_ui_frame_ingress.py`: `3ff590921e225e5ecfbdbc6f126e1b036915a03ec8db80b8aa5ca64869d4e905`
+
+**Device/deployment:** latest private V13OBS #115 snapshot updated 2026-11-24 09:28:11 UTC reports base `8d93236`, auto-update enabled and pipeline UP_TO_DATE/no updater error. AI is STOPPED_BY_USER, model process STOPPED, native residency UNAVAILABLE; B1/B2 still TIME_BUDGET. No new owner receipt, UPDATE_REQUEST, CHAT_SEND, restart, shell, model/weight/permission change or data mutation. Candidate #2463 is NOT_INSTALLED; REDMI_UNVERIFIED.
+
+**Research:** R-133 reviews Geras & Sutton, “Multiple-source cross-validation,” ICML 2013/PMLR 28:1292–1300. The full paper supports source-level holdouts as a better estimate of out-of-source generalization than row-wise splits under source shift; its Amazon review-domain experiments are not an image or Android study. No code, dataset, weights or dependency were imported. Next research: near-duplicate image/source grouping and source-level uncertainty; do not treat distinct IDs as automatically independent.
+
+**Next internal action:** Boss/Integrator must recompose the exact current Perception source closure and strict pins, then rerun staged/integrated/consumer/migration. User action: NONE; preserve STOPPED_BY_USER and do not issue a manual Termux command.

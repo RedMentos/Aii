@@ -2281,3 +2281,14 @@ Append-only evidence; no historical Canon or master rewrite.
 | Whole Canon | V14 master blob 9748ad5b… unchanged; 1,255-heading inventory retained. | No master or historical appendix edits. | Semantic clause→code→consumer→test→environment→negative-control→rollback mapping incomplete. | INVENTORY_PRESERVED / COVERAGE_INCOMPLETE |
 
 Current release b20e9b1f3dd53af472055adb43da628785494ec4; last phone snapshot 8bf44cb / CI_WAIT; user action none.
+
+
+## Research & Perception run 38 evidence overlay — 2026-11-24
+
+| Canon family | Current implementation / consumer | Exact evidence | Missing acceptance | Classification |
+|---|---|---|---|---|
+| A3 global/tile projector validation | `vision.train` and `vision.train_tiles` share a verified prior-source-lineage mask; only unseen source IDs are baseline holdouts; seen-source caption changes remain training data. | PR #2463 head `2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d`; vision/source-lineage 39/39 on Python 3.13/3.14; source SHA-256 readback recorded in R-133; local isolated helper 3/3. | Boss source-lifecycle composition, staged/integrated/consumer/migration pass, real teacher/model comparison, native Redmi latency/RSS, and full weight/JEPA acceptance. | WIRED_SYNTHETIC / CI_PASS / STAGED_COMPOSER_BLOCKED / REDMI_UNVERIFIED |
+| A5 RAW EYE UI-frame ingress and A4 temporal evidence | Consent-bound one-shot UI frame ingress feeds temporal visual evidence and A4. | PR #2463 exact-head frame-ingress 39/39 on Python 3.13/3.14; exact temporal-module hashes in R-133. | Android MediaProjection provider/session and actual Redmi capture remain unverified; no persistent visual learning claim. | WIRED_SYNTHETIC / CI_PASS / DEVICE_UNVERIFIED |
+| Whole Canon / integration | No historical V13 Canon or V14 master edits. | Current release base `8d93236`; candidate PR #2463 remains DRAFT. | Boss/Integrator must recompose the strict source-lifecycle dependency closure; staged runtime 19 failures / 2 errors, integrated regression 1 failure, consumer 3.13 3 failures / 2 passes; 3.14 consumer was pending at last poll. | INVENTORY_PRESERVED / SEMANTIC_COVERAGE_INCOMPLETE |
+
+Latest private V13OBS #115 snapshot: installed base `8d93236`, auto-update enabled/UP_TO_DATE/no error; AI STOPPED_BY_USER, model process STOPPED, native residency UNAVAILABLE. Candidate #2463 NOT_INSTALLED. No device update request or user action.
