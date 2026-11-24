@@ -1350,4 +1350,4 @@ The reported results cover controlled LoopNav, SoundSpaces and AI2-THOR settings
 
 **Limits and license:** the paper's source-generation assumptions do not establish that distinct image IDs are statistically independent; near-duplicate/related images may still cross the boundary. A future experiment must cluster by perceptual similarity or acquisition session and report source-level uncertainty. No paper code, dataset, model weights or dependency was imported; no software or weight license changed.
 
-**Status:** WIRED_SYNTHETIC / CI_PASS / STAGED_COMPOSER_BLOCKED / REDMI_UNVERIFIED. Staged runtime and integrated consumer remain blocked by Boss-owned `source_lifecycle_lock_integration_candidate.py:172` rejecting the current `vision.py` hash. No release or device deployment.
+**Status:** WIRED_SYNTHETIC / CI_PASS / STAGED_COMPOSER_BLOCKED / REDMI_UNVERIFIED. Staged runtime, integrated regression and both consumers remain blocked by Boss-owned `source_lifecycle_lock_integration_candidate.py:172` rejecting the current `vision.py` hash. No release or device deployment.

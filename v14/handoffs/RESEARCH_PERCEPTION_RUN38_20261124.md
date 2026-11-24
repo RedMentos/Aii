@@ -10,7 +10,8 @@
 - Release base readback: `gpt6/v13-private-remote-bridge-20261111` = `8d93236c753f0194224c19edc7411d8d7082b1d6`.
 - Candidate branch: `research-perception/v14-vision-current-20261124-run33`.
 - Candidate PR: [#2463](https://github.com/RedMentos/Aii/pull/2463), OPEN / DRAFT / NOT_RELEASED.
-- Exact branch HEAD: `2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d`.
+- Exact code/test head: `2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d`.
+- Documentation/readback parent head: `1b9acc408d104ca9503e5234b5f9730085bd3890`.
 
 ## Product defect and change
 
@@ -46,7 +47,7 @@ The matching Git blob SHA-1s are: `vision.py` 2a8fce618230544ee389ac77f62e6a201e
 - LOCAL_LINUX, Python 3.13.5: `python -m py_compile /tmp/test_a3_source_holdout.py` PASS; `python -m pytest -q /tmp/test_a3_source_holdout.py` PASS, 3/3. This is an isolated helper harness, not the full Aii checkout.
 - CI exact head `2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d`: `py_compile` PASS; vision/source-lineage 39/39 on Python 3.13.18 and 39/39 on Python 3.14.10.
 - CI exact head: RAW EYE frame-ingress 39/39 on Python 3.13 and 3.14; offline 3.11/3.14 PASS; privacy PASS; offline-bridge-security PASS; same-repo guard PASS.
-- CI exact head: staged-runtime FAIL (19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests); integrated-regression FAIL (1); consumer Python 3.13 FAIL (3 failed / 2 passed). Consumer Python 3.14 was IN_PROGRESS at last poll. Root exception across observed integration failures: Boss-owned `source_lifecycle_lock_integration_candidate.py:172` raises `ValueError: unsupported lifecycle source: vision.py`.
+- CI exact head: staged-runtime FAIL (19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests); integrated-regression FAIL (1); consumer Python 3.13 FAIL (3 failed / 2 passed). Consumer Python 3.14 also FAILS (3 failed / 2 passed); both consumer versions fail at the same source-lifecycle composer gate. Root exception across observed integration failures: Boss-owned `source_lifecycle_lock_integration_candidate.py:172` raises `ValueError: unsupported lifecycle source: vision.py`.
 - Full local Aii suite: NOT_RUN; no repository checkout and GitHub DNS/clone access unavailable in this local container. No claim of local full-suite success.
 
 ## Research note R-133
@@ -62,3 +63,8 @@ Latest private V13OBS #115 snapshot (updated 2026-11-24 09:28:11 UTC): installed
 Boss/Integrator #2443 must update the strict `vision.py` pin to SHA-256 `350573e65eb445b8b83f5517e3bfe07ece04e036055c55fc3e23c79d5b0cc728` and compose the complete imported dependency closure, including the exact source hashes above. Then rerun staged-runtime, integrated-regression, both consumers and migration without relaxing source/forget guards. Perception next investigates near-duplicate/session grouping and source-level uncertainty after the composer passes.
 
 **User action: NONE.** Keep STOPPED_BY_USER; no manual Termux command, update request or model swap.
+
+
+## Final exact-head readback — 2026-11-24T13:50:07+01:00
+
+The docs/readback parent was `1b9acc408d104ca9503e5234b5f9730085bd3890`; the code/test head remains `2fc06a7b41f0c9933b66ff04b93bc2e08d96b86d`. The final consumer Python 3.14 job completed FAIL with the same `unsupported lifecycle source: vision.py` exception; its summary is 3 failed / 2 passed, matching Python 3.13. Staged-runtime remains 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests; integrated-regression remains 1 failure. Focused A3 39/39 on both Python versions and frame ingress 39/39 on both remain PASS. No source-lifecycle guard was changed by Perception.
