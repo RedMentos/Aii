@@ -1,0 +1,40 @@
+name: V14 Core B1/B2 native attempt and C4/C3 evidence
+
+on:
+  pull_request:
+    paths:
+      - "v13/code/v13/brain_panel.py"
+      - "v13/code/tests/test_brain_panel_offer_evidence.py"
+      - ".github/workflows/v14-core-body-offer-native-evidence.yml"
+  push:
+    branches:
+      - "core/v14-body-offer-native-evidence-20261124-run1"
+    paths:
+      - "v13/code/v13/brain_panel.py"
+      - "v13/code/tests/test_brain_panel_offer_evidence.py"
+      - ".github/workflows/v14-core-body-offer-native-evidence.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Compile exact brain status and regression
+        env:
+          PYTHONPATH: v13/code
+        run: python -m py_compile v13/code/v13/brain_panel.py v13/code/tests/test_brain_panel_offer_evidence.py
+      - name: Verify per-organ input, delivery, C4 selection and C3 prefill joins
+        env:
+          PYTHONPATH: v13/code
+        run: python -m pytest -q v13/code/tests/test_brain_panel_offer_evidence.py
