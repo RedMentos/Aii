@@ -120,8 +120,8 @@ def test_active_image_prevents_shared_source_from_being_archived(runtime, monkey
 
 
 def test_vision_forget_invalidates_only_projectors_using_that_image(runtime):
-    image_a = 'P3\\n16 16\\n255\\n' + '255 0 0\\n' * (16 * 16)
-    image_b = 'P3\\n16 16\\n255\\n' + '0 0 255\\n' * (16 * 16)
+    image_a = 'P3\n16 16\n255\n' + '255 0 0\n' * (16 * 16)
+    image_b = 'P3\n16 16\n255\n' + '0 0 255\n' * (16 * 16)
     rec_a = vision.ingest(runtime.store, image_a.encode())
     rec_b = vision.ingest(runtime.store, image_b.encode())
     sid_a, sha_a = rec_a['ref']['source_id'], rec_a['ref']['sha256']
@@ -163,7 +163,7 @@ def test_vision_forget_invalidates_only_projectors_using_that_image(runtime):
 
 
 def test_vision_forget_reaps_only_matching_pending_blob_names(runtime):
-    text = 'P3\\n16 16\\n255\\n' + '0 0 0\\n' * (16 * 16)
+    text = 'P3\n16 16\n255\n' + '0 0 0\n' * (16 * 16)
     rec = vision.ingest(runtime.store, text.encode())
     key = rec['ref']['sha256']
     blob_dir = runtime.home / 'data/blobs'
