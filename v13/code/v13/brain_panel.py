@@ -86,6 +86,7 @@ def _latest_native_evidence(r):
 
     metadata = _mapping(row.get("metadata"))
     runner = _mapping(metadata.get("runner"))
+    model_revision = metadata.get("model_revision") if type(metadata.get("model_revision")) is str else None
     receipt = _mapping(runner.get("native_offer_prompt_receipt"))
     c4_metrics = {}
     c4_recorded = False
@@ -161,6 +162,7 @@ def _latest_native_evidence(r):
         "turn_status": row.get("status"),
         "runner_role": runner.get("role"),
         "actual_model": runner.get("actual_model") if type(runner.get("actual_model")) is str else None,
+        "model_revision": model_revision,
         "prompt_tokens": _count(runner.get("prompt_tokens")),
         "generated_tokens": _count(runner.get("generated_tokens")),
         "ttft_s": _seconds(runner.get("ttft_s")),
@@ -173,6 +175,7 @@ def _latest_native_evidence(r):
         "offer_flow": {
             "status": flow_status,
             "native_receipt_status": receipt.get("status"),
+            "model_revision": model_revision,
             "native_completion_http_200": receipt.get("native_completion_http_200") is True,
             "native_prompt_prefill_verified": native_prefill_verified,
             "native_prefill_observed": native_prefill_observed,
