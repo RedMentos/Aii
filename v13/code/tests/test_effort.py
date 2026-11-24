@@ -168,8 +168,8 @@ class EffortRuntime(unittest.TestCase):
         self.r.learner.decide=Mock(side_effect=lambda component,e,baseline,*a,**k:{'learned':False,'action':baseline})
         self.r.learner.output_delta=Mock(return_value=None)
         foreground=[]
-        def offer(role,e,version,deadline,peer=None,*,valid_until=None):
-            if valid_until is not None:foreground.append(role)
+        def offer(role,e,version,deadline,peer=None,*,valid_until=None,preanswer_budgeted=None,**kwargs):
+            if preanswer_budgeted is True:foreground.append(role)
             raise RuntimeError('test seam: no body model')
         self.r.cognition.offer=offer
         runner=SimpleNamespace(role='C3_LANGUAGE',last_metrics={'test_seam':True},generate=lambda *a,**k:iter(['ok']))
