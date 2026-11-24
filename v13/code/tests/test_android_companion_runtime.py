@@ -759,3 +759,62 @@ def test_committed_receipt_recovery_rejects_signed_status_forgery_without_remote
     assert len(transport.submitted) == 1
     restarted.broker.close()
     runtime.store.close()
+
+
+
+def test_committed_receipt_recovery_rejects_tampered_signature_without_remote_retry(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "6" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+    pending = json.loads(controller.launch("com.example.app", True))
+    action_id = pending["action_id"]
+    transport.receipt = _signed_receipt_for_request(
+        transport, action_id, "b" * 32, status="DISPATCHED_UNVERIFIED"
+    )
+    outcome_calls = []
+    original_outcome = transport.outcome
+
+    def counted_outcome(selected_action_id):
+        outcome_calls.append(selected_action_id)
+        return original_outcome(selected_action_id)
+
+    transport.outcome = counted_outcome
+    original_record = controller.broker.record_companion_receipt
+
+    def crash_after_store_commit(selected_action_id, digest, *, verified):
+        if verified:
+            raise OSError("simulated process death after Store commit")
+        return original_record(selected_action_id, digest, verified=verified)
+
+    monkeypatch.setattr(controller.broker, "record_companion_receipt", crash_after_store_commit)
+    with pytest.raises(OSError, match="after Store commit"):
+        controller.poll(action_id)
+    assert controller.broker.action_state(action_id) == "RECEIPT_CONSUMED"
+    controller.broker.close()
+
+    with runtime.store.mutex:
+        row = runtime.store.db.execute(
+            "SELECT id,payload FROM packets WHERE kind='ActionOutcome' AND json_extract(payload,'$.action_id')=?",
+            (action_id,),
+        ).fetchone()
+        assert row is not None
+        payload = json.loads(row["payload"])
+        signature = payload["actual"]["signed_receipt"]["signature"]
+        payload["actual"]["signed_receipt"]["signature"] = "0" * len(signature)
+        runtime.store.db.execute(
+            "UPDATE packets SET payload=? WHERE id=?",
+            (json.dumps(payload, sort_keys=True), row["id"]),
+        )
+
+    restarted = AndroidCompanionController(runtime, transport=transport, clock=lambda: 5000.0)
+    with pytest.raises(android_control.ControlDenied, match="signature revalidation failed"):
+        restarted.poll(action_id)
+    assert restarted.broker.action_state(action_id) == "RECEIPT_CONSUMED"
+    assert len(outcome_calls) == 1
+    assert len(transport.submitted) == 1
+    restarted.broker.close()
+    runtime.store.close()
