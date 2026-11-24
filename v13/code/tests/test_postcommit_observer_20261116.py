@@ -128,19 +128,22 @@ class RuntimePostcommit(unittest.TestCase):
         self.assertEqual((answer['status'], answer['text']), ('FINAL', 'One combined response.'))
         return event, json.loads(answer['metadata'])
 
-    def test_timed_out_first_foreground_body_gives_other_first_postcommit(self):
+    def test_timed_out_first_body_still_gives_other_a_fair_preanswer_slice(self):
         self.runtime.cfg.update(deadline_seconds=10, observer_seconds=4.4)
         self.behavior = lambda role, status: ('expire' if status != 'FINAL' else 'fail') if role == 'B1_DETAIL' else 'ok'
         event, meta = self.turn()
-        self.assertEqual(self.calls, [('B1_DETAIL', 'DRAFT'), ('C3_LANGUAGE', 'DRAFT'),
-                                      ('B2_GIST', 'FINAL'), ('B1_DETAIL', 'FINAL')])
+        # The fair sequential scheduler gives B2 its own bounded pre-answer
+        # slice after B1 expires. A successful B2 offer must not be retried as
+        # a post-commit offer; the committed C3 answer remains untouched.
+        self.assertEqual(self.calls, [('B1_DETAIL', 'DRAFT'), ('B2_GIST', 'DRAFT'),
+                                      ('C3_LANGUAGE', 'DRAFT')])
         self.assertEqual(meta['selected_offer_ids'], [])
         offers = [json.loads(r['payload']) for r in self.runtime.store.rows(
             "SELECT payload FROM packets WHERE event_id=? AND kind='OfferPacket'", (event,))]
         self.assertEqual([p['role'] for p in offers], ['B2_GIST'])
-        row = self.runtime.store.one(
+        postcommit = self.runtime.store.rows(
             "SELECT metrics FROM telemetry WHERE event_id=? AND kind='postcommit_offer'", (event,))
-        self.assertFalse(json.loads(row['metrics'])['affects_committed_output'])
+        self.assertEqual(postcommit, [])
 
     def test_one_foreground_offer_only_retries_the_missing_body(self):
         count = 0
