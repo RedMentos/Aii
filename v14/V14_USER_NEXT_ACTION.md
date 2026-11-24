@@ -1,3 +1,15 @@
+# Latest Core & Harness checkpoint — 2026-11-24T20:20:29.992Z
+
+- PR #2462 current head is `d5aa910c0dd8253fe74d2baf0694ba1bdcca6d07` (release base `8d93236c753f0194224c19edc7411d8d7082b1d6`), DRAFT / NOT_RELEASED.
+- Core repaired the C4 focal overlay anchor for the bounded arithmetic/C5 `direct_action` output, updated the fair-slice postcommit regression (B1 expiry → B2 bounded pre-answer slice → C3; no duplicate postcommit B2 offer), added exact rejected-SHA diagnostics to the controller guard, and pinned the measured composed Runtime SHA `c60d04eba1d7a7b3ca16ddc0e2595dd5f49e1be15f8dde25ab2f6e3a92fe7b65`.
+- Current controller-guard file SHA-256: `f667722d693d3535183a9ee773cd761938d9fd33e56dc381b77e309bf794f93d`. Recovery-12 builder blob `e949631f88892dc8815e5e06eaa6d4b21e153093`; Recovery-21 wrapper SHA-256 `ff4e487ac967a7ac30351692642723f5692f28a5ef744a5f121a4aa6503388b5`; integrated-stage SHA-256 `f4db8fa4e99dd3205808d4ebd9f3a5087593fed0a3cb76145b709c0cce21efcc`; RuntimeDeploy pins that exact stage.
+- Exact current PR staged/integrated CI is **PENDING / NOT_VERIFIED**. The prior `c39d42a` loader failure used a stale guard hash and is superseded by the subsequent diagnostic/pin rebind. Push-only consumer and offline checks were queued on the same tree; they are not staged/integrated acceptance.
+- LOCAL_LINUX full Aii suite: **BLOCKED / NOT_RUN** (no checkout mounted; GitHub DNS failed). Redmi: **REDMI_UNVERIFIED**; last shared receipt says AI `STOPPED_BY_USER`, autostart OFF. No device action.
+- Next: obtain a fresh exact PR matrix, inspect staged-runtime/integrated-regression, and repair only measured hashes. Then coordinate Boss integration with #2464/#2451; QA owns the #2427 process-death harness port into #2450.
+- **User action:** NONE.
+
+---
+
 # Latest Core & Harness checkpoint — 2026-11-24T13:24:14Z
 
 - PR #2462, branch `core/v14-fair-b1-b2-preanswer-budget-clean-20261124-run1`, exact code head `85fda5fbc0997da5d495a023967d0ce7eadc44ff`, based on release-development `8d93236c753f0194224c19edc7411d8d7082b1d6`; OPEN / NOT_RELEASED.
