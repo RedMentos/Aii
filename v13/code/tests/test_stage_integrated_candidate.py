@@ -30,6 +30,7 @@ class StageTest(unittest.TestCase):
         source_code = Path(__file__).resolve().parents[1]
         shutil.copy2(source_code / 'v13/operator.py', self.code / 'v13/operator.py')
         shutil.copy2(source_code / 'v13/native_probe_approval.py', self.code / 'v13/native_probe_approval.py')
+        shutil.copy2(source_code / 'v13/native_probe_matrix.py', self.code / 'v13/native_probe_matrix.py')
         shutil.copy2(source_code / module.NATIVE_PROBE_OVERLAY, self.code / module.NATIVE_PROBE_OVERLAY)
         overlay = (
             "SOURCE_PINS = {}\n"
@@ -113,7 +114,7 @@ class StageTest(unittest.TestCase):
         result = module.stage(self.code, dest)
         self.assertEqual(set(result['files_sha256']), {
             'v13/runtime.py', 'v13/operator.py', 'v13/native_probe_approval.py',
-            'specs/test.json', module.BUILDER, module.ARITHMETIC_OVERLAY,
+            'v13/native_probe_matrix.py', 'specs/test.json', module.BUILDER, module.ARITHMETIC_OVERLAY,
             module.NATIVE_PROBE_OVERLAY})
         self.assertFalse((dest / 'v13/brain.sqlite3').exists())
 
