@@ -80,7 +80,7 @@ class PilotRunnerTests(unittest.TestCase):
             "raw_window_mlp",
             "matched_dlinear",
             "matched_nlinear",
-            "jepa",
+            "jepa_pretrain",
             "frozen_context_probe",
             "random_context_probe",
             "direct_mae",
@@ -122,7 +122,7 @@ class PilotRunnerTests(unittest.TestCase):
                 dataset, config, output_path=output
             )
             self.assertEqual(len(digest), 64)
-            self.assertEqual(len(result["runs"]), len(models))
+            self.assertEqual(len(result["runs"]), len(models) - 1)
             self.assertFalse(result["experiment"]["test_split_accessed"])
             self.assertFalse(result["experiment"]["hyperparameters_locked"])
             self.assertEqual(result["paired_block_bootstrap"]["reference_model"], "persistence")
@@ -132,7 +132,7 @@ class PilotRunnerTests(unittest.TestCase):
             )
             self.assertEqual(
                 {row["model"] for row in result["runs"]},
-                {name for name in models},
+                {name for name in models if name != "jepa_pretrain"},
             )
             manifest = result["training_manifest"]
             self.assertEqual(len(manifest), len(models))
