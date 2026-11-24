@@ -17,7 +17,7 @@ BUILDER_SHA = 'de8366d7afb924081eff272f379321d5df539dbbda0448e5f2b9c4d430a7400d'
 ARITHMETIC_OVERLAY = 'scripts/integrated_arithmetic_guard_candidate_20261121.py'
 ARITHMETIC_OVERLAY_GIT_BLOB = '88c179a71387c5caba7bbd645f868a7cccf39d30'
 NATIVE_PROBE_OVERLAY = 'scripts/integrated_native_probe_approval_overlay_20261123.py'
-NATIVE_PROBE_OVERLAY_GIT_BLOB = 'bc2c39a61d55996278c6fe3adbeff357ba69d455'
+NATIVE_PROBE_OVERLAY_GIT_BLOB = '727d230ea63bde0a584e013dcf15b18e54e3fa4a'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 
