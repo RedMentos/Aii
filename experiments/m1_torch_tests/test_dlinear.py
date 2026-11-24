@@ -9,7 +9,11 @@ import torch
 
 from experiments.m1.array_data import ArrayDataset
 from experiments.m1.data import DataConfig, MinuteRow
-from experiments.m1.dlinear import MatchedDLinearForecaster, MovingAverageDecomposition
+from experiments.m1.dlinear import (
+    MatchedDLinearForecaster,
+    MatchedNLinearForecaster,
+    MovingAverageDecomposition,
+)
 from experiments.m1.jepa import JEPAConfig
 from experiments.m1.training import build_seeded_model, train_direct_mae
 
@@ -94,6 +98,67 @@ class DLinearTests(unittest.TestCase):
         self.assertEqual(prediction.shape, batch.target.shape)
         with self.assertRaisesRegex(ValueError, "calendar shape"):
             model(x, seasonal, calendar[:, :, :2])
+
+
+    def test_nlinear_zero_residual_weights_reduce_to_last_value(self):
+        model = MatchedNLinearForecaster(
+            self.config, input_length=self.dataset.config.input_length
+        )
+        model.scaler.fit(self.dataset)
+        batch = next(self.dataset.iter_batches("validation", batch_size=8))
+        x = torch.as_tensor(batch.inputs.x, dtype=torch.float32)
+        seasonal = torch.as_tensor(batch.inputs.seasonal, dtype=torch.float32)
+        calendar = torch.as_tensor(batch.inputs.calendar, dtype=torch.float32)
+        with torch.no_grad():
+            layers = list(model.linear) if isinstance(model.linear, nn.ModuleList) else [model.linear]
+            for layer in layers:
+                layer.weight.zero_()
+                layer.bias.zero_()
+            model.future_known_projection.weight.zero_()
+            model.future_known_projection.bias.zero_()
+            prediction = model(x, seasonal, calendar)
+        expected = x[:, -1:, :].expand(-1, self.config.horizon, -1)
+        torch.testing.assert_close(prediction, expected, rtol=0, atol=0)
+
+    def test_nlinear_uses_x_seasonal_and_calendar(self):
+        model = MatchedNLinearForecaster(
+            self.config, input_length=self.dataset.config.input_length
+        )
+        model.scaler.fit(self.dataset)
+        batch = next(self.dataset.iter_batches("validation", batch_size=8))
+        x = torch.as_tensor(batch.inputs.x, dtype=torch.float32)
+        seasonal = torch.as_tensor(batch.inputs.seasonal, dtype=torch.float32)
+        calendar = torch.as_tensor(batch.inputs.calendar, dtype=torch.float32)
+        with torch.no_grad():
+            layers = list(model.linear) if isinstance(model.linear, nn.ModuleList) else [model.linear]
+            for layer in layers:
+                layer.weight.fill_(0.02)
+                layer.bias.zero_()
+            model.future_known_projection.weight.fill_(0.02)
+            model.future_known_projection.bias.zero_()
+            base = model(x, seasonal, calendar)
+            changed_x = model(x + 0.25, seasonal, calendar)
+            changed_seasonal = model(x, seasonal + 0.25, calendar)
+            changed_calendar = model(x, seasonal, calendar + 0.25)
+        self.assertEqual(base.shape, batch.target.shape)
+        self.assertFalse(torch.allclose(base, changed_x))
+        self.assertFalse(torch.allclose(base, changed_seasonal))
+        self.assertFalse(torch.allclose(base, changed_calendar))
+
+    def test_nlinear_training_updates_parameters(self):
+        model = MatchedNLinearForecaster(
+            self.config, input_length=self.dataset.config.input_length
+        )
+        before = [parameter.detach().clone() for parameter in model.parameters()]
+        history = train_direct_mae(
+            model, self.dataset, epochs=1, batch_size=32, seed=53
+        )
+        self.assertEqual(len(history), 1)
+        self.assertTrue(np.isfinite(history[0]["mae"]))
+        self.assertTrue(any(
+            not torch.equal(old, new.detach())
+            for old, new in zip(before, model.parameters())
+        ))
 
     def test_training_changes_parameters_and_predicts_finite_values(self):
         model = build_seeded_model(

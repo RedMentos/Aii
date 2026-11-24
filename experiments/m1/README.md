@@ -21,7 +21,7 @@ This workspace is independent of V13/V14 development. It copies selected M1 data
 - bootstrap.py: paired temporal-block bootstrap with block-sum/count weighting, including partial blocks. The block-length field is expressed in minute rows; 10,080 minutes (7 days) is only the current default.
 - metrics.py: prefix-horizon and primary MAE, per-origin errors, paired multi-model/seed evaluation and atomic result persistence.
 - jepa.py: EMA JEPA, Direct-MAE, frozen-context linear probe, random-context probe factory, train-only channel standardization and collapse telemetry.
-- dlinear.py: matched-information DLinear control with replicate-edge moving-average decomposition, an explicit future-known S/calendar branch, and a look-back length bound at model construction.
+- dlinear.py: matched-information DLinear and NLinear controls; DLinear uses replicate-edge trend/residual decomposition, while NLinear centers X on its last value. Both include a future-known S/calendar branch and bind look-back length at construction.
 - gru.py: supervised Raw-GRU using the same X/S/calendar information.
 - training.py: seeded model construction, training loops, validation telemetry, exact Git HEAD resolution and atomic checkpoints.
 
@@ -42,7 +42,7 @@ Core tests/data path: numpy. Model training: PyTorch CPU or CUDA.
 
 ## Verification status
 - **Current core CI:** 70 tests PASS on Python 3.12, 3.13 and 3.14 at commit `3a118e1ba27f59a10ce52483fbc822d9148781cf` (GitHub Actions run `45331033269`). Includes calendar splits, preregistration gates, NumPy/list parity with missing rows/NaNs, baselines, bootstrap and data integrity.
-- **Current torch CI:** 21 tests PASS on Python 3.12, 3.13 and 3.14 at commit `653536e22ea8d5097ed0d94c4e787436eb4bf23d` (run `45330944235`). Includes JEPA, Direct-MAE, Raw-GRU, DLinear, checkpoint and synthetic end-to-end evaluation.
+- **Current torch CI:** 24 tests PASS on Python 3.12, 3.13 and 3.14 at commit `653536e22ea8d5097ed0d94c4e787436eb4bf23d` (run `45330944235`). Includes JEPA, Direct-MAE, Raw-GRU, DLinear, NLinear, checkpoint and synthetic end-to-end evaluation.
 - **LOCAL_PYTHON isolated checks:** DLinear forward/sensitivity/shape-negative/parameter-update checks PASS on Python 3.13.5 + PyTorch 2.10.0+cpu; missing-row list/array origin parity PASS (680/680 synthetic origins). The full repository suite was not run locally because no checkout is mounted in this execution environment.
 - No real UCI evaluation has been run in this workspace.
 - No test-year windows have been opened.
@@ -58,6 +58,6 @@ Core tests/data path: numpy. Model training: PyTorch CPU or CUDA.
 
 ## DLinear source and adaptation
 
-The decomposition/linear-forecasting idea follows the DLinear method from Zeng et al., *Are Transformers Effective for Time Series Forecasting?* (AAAI 2023). The official [LTSF-Linear repository](https://github.com/cure-lab/LTSF-Linear) is Apache-2.0 at reviewed revision `0c113668a3b88c4c4ee586b8c5ec3e539c4de5a6`. No upstream source file was copied into this workspace; `dlinear.py` is an independent M1 implementation adapted to the shared future-known X/S/calendar contract. The official model's X-only input is not used unchanged because that would give it less information than the JEPA/Direct-MAE controls.
+The DLinear and NLinear ideas follow Zeng et al., *Are Transformers Effective for Time Series Forecasting?* (AAAI 2023). The official [LTSF-Linear repository](https://github.com/cure-lab/LTSF-Linear) is Apache-2.0 at reviewed revision `0c113668a3b88c4c4ee586b8c5ec3e539c4de5a6`. No upstream source file was copied into this workspace; `dlinear.py` is an independent M1 implementation adapted to the shared future-known X/S/calendar contract. The official model's X-only input is not used unchanged because that would give it less information than the JEPA/Direct-MAE controls.
 
 The original paper's benchmark results are not evidence for this UCI cohort. DLinear must be evaluated here under the same fixed splits, accepted origins, scaler, seeds and paired temporal-block bootstrap as every other model.
