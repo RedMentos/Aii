@@ -19,6 +19,8 @@ import numpy as np
 
 MAX_WINDOW_BATCH_BYTES = 256 * 1024 * 1024
 
+from .provenance import current_git_commit
+
 from .data import (
     DataConfig,
     MinuteRow,
@@ -434,7 +436,10 @@ class ArrayDataset:
             "split_boundaries_sha256": self.split_sha256,
             "dataset_sha256": self.dataset_sha256,
         }
-        verify_preregistration(prereg, expected, expected_code_commit=expected_code_commit)
+        actual_code_commit = current_git_commit()
+        if expected_code_commit != actual_code_commit:
+            raise PermissionError("expected_code_commit does not match executing commit")
+        verify_preregistration(prereg, expected, expected_code_commit=actual_code_commit)
         event = {
             "event": "TEST_SPLIT_OPENED",
             "timestamp_utc": datetime.now(timezone.utc).isoformat(),
