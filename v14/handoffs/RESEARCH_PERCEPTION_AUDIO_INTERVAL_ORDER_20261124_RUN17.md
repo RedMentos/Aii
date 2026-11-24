@@ -111,4 +111,4 @@ The previous #2472 exact-head controller guard and staged/integrated jobs failed
 ## User impact and next action
 
 No user-visible Runtime behavior changes until Core integrates this API. No release SHA; PR #2472 is not released. The existing updater was not invoked and no device mutation occurred. Next step is Core wiring plus exact-head staged/integrated tests. **User action: none required.**
-**Run start:** 2026-11-24 21:37:30 Europe/Berlin. **Completed/readback:** 2026-11-24 21:45:50 Europe/Berlin.
+**Run start:** 2026-11-24 21:37:30 Europe/Berlin. **Completed/readback:** 2026-11-24 21:48:05 Europe/Berlin.
