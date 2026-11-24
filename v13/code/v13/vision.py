@@ -597,23 +597,28 @@ def describe(runtime,rec,region='g',teacher=None,cfg=DEFAULTS):
     cur['captions']=[c for c in cur['captions'] if c['source_ref'].get('region_id')!=region]+[cap];save(runtime.store,st)
     runtime.store.log('vision',None,{'action':'describe','authority':AUTHORITY,'seconds':cap['seconds']});return cap
 
-def dataset(store,cfg=DEFAULTS):
-    """(features, captions, thumbnails, keys) of every described region (whole image and crops). Each region is its
-    own training pair (crop features -> caption of that crop), so place enters through region provenance."""
+def dataset(store,cfg=DEFAULTS,*,state=None):
+    """Build rows from one versioned Store snapshot; callers training a projector must reuse that snapshot at commit."""
     np=_np();X=[];caps=[];T=[];ids=[]
-    for sid,rec in load(store)['images'].items():
+    state=load(store) if state is None else state
+    if type(state) is not _VersionedVisionState or state._store is not store:
+        raise ValueError('vision dataset requires a versioned snapshot from this Store')
+    for sid,rec in state['images'].items():
         for cap in rec['captions']:
             im=read_image(store,cap['source_ref'],cfg);X.append(features(im,cfg));caps.append(cap['text']);T.append(thumbnail(im,cfg['thumb']))
             ids.append(sid+':'+cap['source_ref'].get('region_id','g'))
     return np.asarray(X),caps,np.asarray(T),ids
 
 def train(runtime,encoder=None,cfg=DEFAULTS):
-    X,caps,T,ids=dataset(runtime.store,cfg)
+    # Capture captions, source refs and the Store version before reading training rows.
+    # A concurrent describe/forget must make publication fail its versioned CAS.
+    st=load(runtime.store)
+    X,caps,T,ids=dataset(runtime.store,cfg,state=st)
     if len(X)<cfg['min_train']:raise ValueError('Zu wenig beschriebene Bilder (%d < %d); erst :image describe'%(len(X),cfg['min_train']))
     name,enc=encoder or text_encoder(runtime,cfg);Y=enc(caps)
     groups=[key.split(':',1)[0] for key in ids]
     cv=source_disjoint_crossval(X,Y,groups,caps,thumbs=T,ridge=cfg['ridge'])
-    st=load(runtime.store);training_sources=source_lineage(st['images'],ids);old=st.get('projector')
+    training_sources=source_lineage(st['images'],ids);old=st.get('projector')
     candidate=Projector(cfg['ridge']).fit(X,Y)
     p,gate=_gate_projector_update(runtime.store,runtime.home,st,old,candidate,name,enc,cfg,tile=False)
     if p is None:
@@ -665,10 +670,13 @@ def locate(runtime,rec,text,encoder=None,cfg=DEFAULTS,k=3):
     Z=p(np.stack([features(read_image(runtime.store,ref,cfg),cfg) for ref in refs]));s=Z@enc([text])[0]
     return {'authority':STUDENT,'query':text[:200],'regions':[{'source_ref':refs[i],'cosine':round(float(s[i]),4)} for i in np.argsort(-s)[:k]]}
 
-def tile_dataset(store,cfg=DEFAULTS):
-    """(tile features, texts, keys) from every image with at least one caption (WP-T16 weak tile labels)."""
+def tile_dataset(store,cfg=DEFAULTS,*,state=None):
+    """Build tile rows from one versioned Store snapshot."""
     np=_np();X=[];texts=[];keys=[]
-    for sid,rec in load(store)['images'].items():
+    state=load(store) if state is None else state
+    if type(state) is not _VersionedVisionState or state._store is not store:
+        raise ValueError('vision tile dataset requires a versioned snapshot from this Store')
+    for sid,rec in state['images'].items():
         caps={c['source_ref'].get('region_id','g'):c['text'] for c in rec['captions']}
         if not caps:continue
         im=read_image(store,rec['ref'],cfg)
@@ -676,12 +684,13 @@ def tile_dataset(store,cfg=DEFAULTS):
     return np.asarray(X),texts,keys
 
 def train_tiles(runtime,encoder=None,cfg=DEFAULTS):
-    X,texts,keys=tile_dataset(runtime.store,cfg)
+    st=load(runtime.store)
+    X,texts,keys=tile_dataset(runtime.store,cfg,state=st)
     if len(set(texts)-{BACKGROUND})<2 or len(X)<cfg['min_train']:raise ValueError('Zu wenig beschriebene Bildbereiche für Kacheln; erst :image describe (g, Hälften, Quadranten)')
     name,enc=encoder or text_encoder(runtime,cfg);uniq=sorted(set(texts));E=dict(zip(uniq,enc(uniq)));Y=_np().stack([E[t] for t in texts])
     groups=[key.split(':',1)[0] for key in keys]
     cv=source_disjoint_crossval(X,Y,groups,texts,ridge=cfg['ridge'])
-    st=load(runtime.store);training_sources=source_lineage(st['images'],keys);old=st.get('tile_projector')
+    training_sources=source_lineage(st['images'],keys);old=st.get('tile_projector')
     candidate=Projector(cfg['ridge']).fit(X,Y)
     p,gate=_gate_projector_update(runtime.store,runtime.home,st,old,candidate,name,enc,cfg,tile=True)
     if p is None:
