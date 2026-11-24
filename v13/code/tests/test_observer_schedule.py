@@ -225,18 +225,35 @@ class Turn(unittest.TestCase):
             if kind=="wake":return {"learned":False,"action":"both"}
             return original_decide(kind,*args,**kwargs)
         self.r.learner.decide=deterministic_decide
+        original_offer=self.r.cognition.offer
+        self.c3_messages=[]
+        def pool_get(role):
+            if role=="C3_LANGUAGE":
+                def generate(messages,cancel,deadline,*args,**kwargs):
+                    self.c3_messages.extend(messages)
+                    yield "Done."
+            else:
+                def generate(messages,cancel,deadline,*args,**kwargs):
+                    yield json.dumps({"summary":role+" found a source-bound comparison request.",
+                                      "quotes":["Compare plan A and plan B"],
+                                      "uncertainty":"","needs_reentry":False})
+            return SimpleNamespace(role=role,last_metrics={"status":"FINAL","prompt_tokens":64,
+                "generated_tokens":1,"ttft_s":0.01,"duration_s":0.02,"actual_model":role},
+                generate=generate,pids=lambda:[],memory=None)
+        self.r.pool.get=Mock(side_effect=pool_get)
         def offer(role,e,version,deadline,peer=None,valid_until=None,**kw):
-            status=self.r.store.one(
+            row=self.r.store.one(
                 "SELECT status FROM messages WHERE event_id=? AND role='assistant'",
                 (e["event_id"],)
-            )["status"]
+            )
+            status=row["status"] if row else "MISSING"
             preanswer=kw.get("preanswer_budgeted") is True
             thread=threading.current_thread().name
             valid_until_present=valid_until is not None
             self.calls.append((role,preanswer,thread,valid_until_present,status))
             if role=="B2_GIST" and valid_until_present:
                 raise Limits("pre-answer/late-watch B2 attempt expired")
-            return dict(OFFER,role=role,packet_id="pkt_"+role+"_"+str(len(self.calls)))
+            return original_offer(role,e,version,deadline,peer,**kw)
         self.r.cognition.offer=offer
         self.r.cognition.communicate=Mock(return_value=None)
         Operator(self.r).run(":observers A_THEN_B_SEQUENTIAL")
@@ -248,8 +265,16 @@ class Turn(unittest.TestCase):
         meta=json.loads(self.r.last_answer()["metadata"])
         self.assertTrue(any(role=="B1_DETAIL" and pre for role,pre,_,_,_ in self.calls))
         self.assertTrue(any(role=="B2_GIST" and pre for role,pre,_,_,_ in self.calls))
+        self.assertEqual(self.r.last_answer()["status"],"FINAL",
+                         msg=f"calls={self.calls!r}; notices={self.r.notices!r}; late_watch={meta.get('late_watch')!r}")
+        self.assertEqual(meta["late_watch"].get("offered"),"B2_GIST")
+        self.assertEqual(meta["late_watch"].get("status"),"NO_OFFER")
+        self.assertFalse(meta["late_watch"].get("offer_id"))
         self.assertTrue(any(role=="B2_GIST" and not pre and thread!="latewatch" and not valid and status=="FINAL"
                             for role,pre,thread,valid,status in self.calls),
-                        msg=f"calls={self.calls!r}; late_watch={meta.get('late_watch')!r}; status={self.r.last_answer()['status']!r}; route={meta.get('route')!r}; observer_mode={self.r.cfg.get('observer_mode')!r}; guard={self.r.guard.mode!r}")
+                        msg=f"calls={self.calls!r}; late_watch={meta.get('late_watch')!r}; notices={self.r.notices!r}")
+        c3_input="\\n".join(message.get("content","") for message in self.c3_messages)
+        self.assertIn("B1_DETAIL",c3_input)
+        self.assertIn("Compare plan A and plan B",c3_input)
 
 if __name__=='__main__':unittest.main()
