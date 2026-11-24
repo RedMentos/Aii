@@ -958,3 +958,69 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         if vad_evidence is not None:
             result["vad_evidence"] = vad_evidence
         return result
+
+
+@contextmanager
+def audio_consent_generation_scope(
+    runtime, pcm, *, runner, messages_factory, cancel, deadline,
+    sample_rate, start_ms, event_id, generation_id, source_id, consent_receipt,
+    consent_check, consent_guard, token_budget=512, finality="FINAL",
+    voice_backend="python", speaker_embeddings=None, teacher_result=None,
+    teacher_opt_in=False, teacher_transcript_consent=False,
+    temporal_state=None, vad_stream=None, runner_kwargs=None,
+):
+    """Hold one revocation lease across RAW EAR, A4, body/context composition and C3.
+
+    Core should put the complete B1/B2/C4 composition in messages_factory and
+    consume the returned runner iterator before leaving this context. The
+    provider lease remains held until iterator exhaustion, explicit close, or
+    an exception. The callback receives the structured A4/A5 result so the
+    Runtime can preserve source refs and add the bounded C3 admission.
+    """
+    if not callable(messages_factory):
+        raise TypeError("audio generation requires a Runtime messages factory")
+    generate = getattr(runner, "generate", None)
+    if not callable(generate):
+        raise TypeError("audio generation requires a runner with generate()")
+    if runner_kwargs is None:
+        runner_kwargs = {}
+    if type(runner_kwargs) is not dict:
+        raise TypeError("audio runner kwargs must be a dictionary")
+
+    with audio_consent_lease(
+        runtime, source_id, generation_id, consent_receipt,
+        consent_check, consent_guard, temporal_state, vad_stream,
+    ) as lease:
+        audio_result = consume_pcm16_voice_window(
+            runtime, pcm,
+            sample_rate=sample_rate,
+            start_ms=start_ms,
+            event_id=event_id,
+            generation_id=generation_id,
+            source_id=source_id,
+            consent_receipt=consent_receipt,
+            consent_check=consent_check,
+            consent_guard=consent_guard,
+            token_budget=token_budget,
+            finality=finality,
+            temporal_state=temporal_state,
+            vad_stream=vad_stream,
+            consent_lease=lease,
+            voice_backend=voice_backend,
+            speaker_embeddings=speaker_embeddings,
+            teacher_result=teacher_result,
+            teacher_opt_in=teacher_opt_in,
+            teacher_transcript_consent=teacher_transcript_consent,
+        )
+        messages = messages_factory(audio_result)
+        if type(messages) is not list:
+            raise ValueError("audio messages factory must return a message list")
+        iterator = generate(messages, cancel, deadline, **runner_kwargs)
+        if not hasattr(iterator, "__iter__"):
+            raise TypeError("audio runner generate() must return an iterator")
+        try:
+            yield audio_result, iterator
+        finally:
+            close = getattr(iterator, "close", None)
+            if callable(close):
+                close()
