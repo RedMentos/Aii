@@ -139,7 +139,7 @@ class ArrayDataset:
             ).encode("utf-8")
         ).hexdigest()
         self.dataset_sha256 = parsed_data_sha256
-        self.values = values
+        self._values = values
         self._missing_prefix = np.concatenate(
             (np.zeros(1, dtype=np.int64), np.isnan(values).sum(axis=1, dtype=np.int64).cumsum())
         )
@@ -254,7 +254,7 @@ class ArrayDataset:
         sources = origins[:, None, None] + steps[None, :, None] - lags[None, None, :]
         invalid_source = (sources < 0) | (sources > origins[:, None, None])
         safe_sources = np.clip(sources, 0, self.n_rows - 1)
-        seasonal_missing = np.isnan(self.values[safe_sources]).any(axis=(1, 2, 3))
+        seasonal_missing = np.isnan(self._values[safe_sources]).any(axis=(1, 2, 3))
         valid = (x_missing == 0) & (target_missing == 0) & (~invalid_source.any(axis=(1, 2))) & (~seasonal_missing)
         return valid, sources
 
@@ -278,9 +278,9 @@ class ArrayDataset:
         cfg = self.config
         x_offsets = np.arange(-cfg.input_length + 1, 1, dtype=np.int64)
         target_offsets = np.arange(1, cfg.horizon + 1, dtype=np.int64)
-        x = self.values[origins[:, None] + x_offsets[None, :]]
-        target = self.values[origins[:, None] + target_offsets[None, :]]
-        seasonal = self.values[sources]
+        x = self._values[origins[:, None] + x_offsets[None, :]]
+        target = self._values[origins[:, None] + target_offsets[None, :]]
+        seasonal = self._values[sources]
         forecast_ids = self._minute_ids[origins[:, None] + target_offsets[None, :]]
         calendar = (
             self._calendar(forecast_ids)
@@ -390,6 +390,13 @@ class ArrayDataset:
             accepted_by_month=dict(sorted(accepted_by_month.items())),
             rejected_by_month=dict(sorted(rejected_by_month.items())),
         )
+
+    def train_values(self) -> np.ndarray:
+        """Return a read-only copy of train rows only; validation/test are not exposed here."""
+        start, end = self.bounds["train"]
+        result = self._values[start:end].copy()
+        result.setflags(write=False)
+        return result
 
     def _format_minute(self, index: int) -> str:
         minute_id = int(self._minute_ids[index])
