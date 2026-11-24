@@ -37,6 +37,9 @@ def main() -> int:
         root = Path(temporary)
         staged_v13 = root / "v13"
         shutil.copytree(source_dir, staged_v13)
+        specs_dir = code_dir / "specs"
+        if specs_dir.is_dir():
+            shutil.copytree(specs_dir, root / "specs")
         for relative, data in replacements.items():
             target = staged_v13 / relative
             target.parent.mkdir(parents=True, exist_ok=True)
