@@ -253,8 +253,34 @@ def arm(runtime, sender_role, receiver_role, *, now=None):
 
 
 
+def guard_runtime_close(runtime):
+    """Cancel and wait for an active native-probe lease before Runtime teardown.
+
+    This helper is called from Runtime.close itself in the final staged Runtime,
+    so a shutdown callback that captured a bound method before the probe began
+    cannot bypass the lifecycle barrier.
+    """
+    lock = getattr(runtime, "lock", None)
+    if lock is None:
+        raise ValueError("native probe cannot guard Runtime close without its lock")
+    with lock:
+        active = bool(getattr(runtime, "_native_probe_active", False))
+        done = getattr(runtime, "_native_probe_done", None)
+        owner = getattr(runtime, "_native_probe_owner_thread", None)
+        if active:
+            if owner is threading.current_thread():
+                raise RuntimeError(
+                    "Cannot close Runtime from inside active native probe; Store remains open"
+                )
+            runtime.cancel_event.set()
+    if active and (done is None or not done.wait(PROBE_CLOSE_WAIT_SECONDS)):
+        raise RuntimeError(
+            "Native probe did not exit after cancellation; Store remains open"
+        )
+
+
 def _install_runtime_close_guard(runtime):
-    """Make Runtime.close wait for the whole probe lease, not only its child process."""
+    """Fallback guard for source-tree Runtime objects not yet staged with the close overlay."""
     lock = getattr(runtime, "lock", None)
     if lock is None:
         raise ValueError("native probe cannot install Runtime close guard")
@@ -266,20 +292,7 @@ def _install_runtime_close_guard(runtime):
 
         def guarded_close():
             with close_lock:
-                with lock:
-                    active = bool(getattr(runtime, "_native_probe_active", False))
-                    done = getattr(runtime, "_native_probe_done", None)
-                    owner = getattr(runtime, "_native_probe_owner_thread", None)
-                    if active:
-                        if owner is threading.current_thread():
-                            raise RuntimeError(
-                                "Cannot close Runtime from inside active native probe; Store remains open"
-                            )
-                        runtime.cancel_event.set()
-                if active and (done is None or not done.wait(PROBE_CLOSE_WAIT_SECONDS)):
-                    raise RuntimeError(
-                        "Native probe did not exit after cancellation; Store remains open"
-                    )
+                guard_runtime_close(runtime)
                 return original_close()
 
         runtime.close = guarded_close
