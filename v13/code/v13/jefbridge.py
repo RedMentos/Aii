@@ -112,7 +112,7 @@ class JEFBridge:
         p=self.s.add_packet('JEFBroadcastCache',packet('JEFBroadcastCache','C1_EXEC',e['event_id'],e['brain_generation_id'],broadcast['source_refs'][:8],
             state_version=broadcast['state_version'],cache=jbc,broadcast_packet_id=broadcast['packet_id'],size_bytes=len(dumps(jbc))))
         return p
-    def publish_android_action_outcome(self, packet_id):
+    def publish_android_action_outcome(self, packet_id, expected_session=None):
         """Publish a verified Android receipt as a control-only shared-space signal.
 
         A companion receipt is not an independent device observation, reward,
@@ -136,6 +136,8 @@ class JEFBridge:
             "SELECT session_id,packet FROM events WHERE id=?", (event_id,))
         if event_row is None:
             raise ValueError("ANDROID_ACTION_OUTCOME_EVENT_MISSING")
+        if expected_session is not None and event_row["session_id"] != expected_session:
+            raise ValueError("ANDROID_ACTION_OUTCOME_SESSION_MISMATCH")
         try:
             event_packet = json.loads(event_row["packet"])
         except (TypeError, ValueError) as exc:
