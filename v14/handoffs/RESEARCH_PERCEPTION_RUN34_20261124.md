@@ -100,3 +100,15 @@ The current tests cover non-voiced embeddings never seeding/replacing speaker hi
 
 Comment 7121856464 on #2433 records the supersession and recommends that Boss close the old PR after review. The old branch was not modified. Core's stale audio SOURCE_BLOBS still block staged/integrated composition; no Android microphone or Redmi proof exists.
 
+
+
+## Final exact-head readback — 2026-11-24 04:20 UTC
+
+After the Run 34 board/workplan/next-action updates, current branch head was verified as 086a2bc1d5f13dadfaa18faa8f866da8ea91c13d.
+
+Exact-head CI:
+- PASS: audio duplex 45325275479 (Python 3.13/3.14); RAW EAR optional NumPy/speaker path 45325275490 (Python 3.13/3.14); prosody-to-attention 45325275396 (Python 3.11/3.13); consent revocation 45325275190; privacy scan 45325275257; runtime deployment integrity 45325275898.
+- FAIL: staged/integrated 45325276067, still ValueError: audio source blob changed: v13/audio_voice_cues.py; 16 failed, 237 passed, 10 skipped, 2 errors, 47 subtests. Core same-turn 45325275254: Python 3.13 fails at the same pin; Python 3.14 was still running at readback.
+- Follow-ups posted: #2462 comment 7121937670; #2448 comment 7121938175.
+- Exact-head CI does not change deployment status: OPEN/DRAFT/NOT_RELEASED, REDMI_UNVERIFIED for candidate PRs. No device action was sent.
+
