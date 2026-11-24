@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-23T12:44:40Z",
+  "updated_at": "2026-11-24T09:05:55Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -197,18 +197,18 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Perception: PR #2463 now binds A3 global/tile dataset construction, source lineage and final CAS publication to one Store-bound versioned snapshot; concurrent teacher-caption updates reject stale candidate artifacts. Focused CI: 33 vision tests PASS on Python 3.13/3.14; RAW EYE frame-ingress 39 PASS on both; privacy PASS. Staged Runtime still fails because source_lifecycle_lock_integration_candidate.py rejects current vision.py SHA-256 23243f6a8e8d3ac79a40644aab186fcb4cff7a5e7d56f9b67bcae7cda2a1f8ae. Core/Boss/QA must recompose the source-lifecycle builder (remove obsolete VISION_* anchors and include current lineage/validation/UI-ingress modules), then rerun staged/integrated/migration. Keep Android capture and model/weight changes OFF until separately authorized.",
+      "next_step": "Perception code commit 14d6b6338db5e4d965a27bac9a3d7301576496d6 adds explicit first-frame status=WARMUP; existing A5 ingress regression now passes. Exact focused CI: frame ingress 39/39 and vision source-lineage 29/29 on Python 3.13 and 3.14. Staged/integrated/consumer still FAIL because Boss-owned source_lifecycle_lock_integration_candidate.py:172 rejects current vision.py; staged summary 19 failed / 234 passed / 10 skipped / 2 errors / 41 subtests, consumer 3 failed / 2 passed on both Python versions, migration PARTIAL. Current Perception vision.py Git blob 3cb25adff1fa917ca87ca00190a70c8c3b838140; Boss/Integrator PR #2443 must recompose the implementation and source-forget path, not only swap the hash, then rebind downstream pins and rerun exact matrix. R-117 is appended branch-locally; reconcile R-108–R-116 on integration. Keep Android capture and model/weight changes OFF; no Redmi test. User action NONE.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T08:27:00+01:00",
+      "last_checkpoint": "2026-11-24T10:05:55+01:00",
       "latest_candidate_pr": {
         "pr": 2463,
-        "head_sha": "f947b3edd8a812bd5212033de02b2e4db69d0cf1",
-        "tested_code_sha": "776dee972b92f0ac76afcdf4e9b0be7e408b1f5c",
+        "head_sha": "3aaab75bb91ca2b732189e48c3475999471fcb8e",
+        "tested_code_sha": "14d6b6338db5e4d965a27bac9a3d7301576496d6",
         "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
         "state": "OPEN_DRAFT_PARTIAL_CI_FAIL",
-        "ci": "VISION_33_PASS_PY313_33_PASS_PY314; FRAME_39_PASS_BOTH; PRIVACY_PASS; STAGED_FAIL_SOURCE_LIFECYCLE_PIN"
+        "ci": "FRAME_INGRESS_39_PASS_PY313_AND_314; VISION_SOURCE_LINEAGE_29_PASS_PY313_AND_314; OFFLINE_PRIVACY_SECURITY_PASS; STAGED_19_FAIL_234_PASS_10_SKIP_2_ERROR; INTEGRATED_1_FAIL; CONSUMER_3_FAIL_2_PASS_BOTH; ROOT_UNSUPPORTED_LIFECYCLE_SOURCE_VISION_PY"
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. A3 snapshot-consistency regression added in #2463: both global and tile training use one versioned Store snapshot; interleaved caption-update tests prove stale candidate publication fails and preserves the newer caption. Exact CI code head 776dee9: vision 33/33 on Python 3.13 and 3.14, frame ingress 39/39 on both, privacy PASS. Current staged integration fails at the source-lifecycle composer pin; no local full Aii checkout and no Redmi proof. R-108 CAMR full-text research note added; Qwen3-8B/14B evidence only, no official code/license found. R-109 reviews the official Android MediaProjection guide (updated 2026-11-19): one consented VirtualDisplay session can stream frames to an ImageReader; the current one-frame provider limit is implementation-specific. A bounded same-session queue is a future Core/Perception integration hypothesis, not implemented or Redmi-tested. Final board-checkpoint Core same-turn workflow 45350475641 fails on both Python 3.13 and 3.14 (3 failed / 2 passed each) at the same unsupported lifecycle source: vision.py composer gate. This is a shared integration failure; no Perception local/full-runtime or Redmi acceptance claim."
+      "proof": "First-frame A5 UI ingress returns explicit WARMUP instead of raising KeyError; later frames can produce MEASURED temporal evidence. CI synthetic consumer only. A3 global/tile source-bound ridge projector and Store snapshot/CAS lineage remain in PR #2463. No Android MediaProjection provider, no real handset frame, no native model, no Redmi latency/RSS, no persistent body-weight update or trained latent coupling."
     },
     {
       "id": "V14-007",
@@ -1175,10 +1175,17 @@
       "status": "FULL_ARXIV_HTML_REVIEWED / CC_BY_NC_4.0 / NO_REUSE",
       "primary": "Kim et al., arXiv:2609.34677; sony/far cab815ac2375f6bf38b846ff5a76216de9edbf02",
       "next": "Future-blind cue-utility head from delayed committed T8 outcomes is a candidate only; no Sony/FAR code, weights or CUDA dependencies imported."
+    },
+    {
+      "id": "R-117",
+      "topic": "Precise temporal coding in event-based vision and transfer limits for sampled RAW EYE",
+      "status": "PEER_REVIEWED_PAPER_REVIEWED / CUSTOM_NONCOMMERCIAL_CODE_LICENSE / NO_CODE_OR_DATA_IMPORT / FRAME_BASED_ABLATION_PROPOSED",
+      "primary": "Assa et al., Nature Communications 17, 9951 (2026-08-20), DOI 10.1038/s41467-026-76878-6",
+      "next": "Compare time-collapsed tile features against ordered timestamped frame deltas and A5 temporal surfaces on source/session-disjoint UI sequences; shuffled/reversed timestamp and flicker/scroll negatives. Do not transfer the event camera's 0.25 ms threshold to MediaProjection frames."
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-23T11:07:22.216Z",
+    "timestamp": "2026-11-24T09:05:55Z",
     "release_sha": "b20e9b1f3dd53af472055adb43da628785494ec4",
     "code_candidate_sha": "b20e9b1f3dd53af472055adb43da628785494ec4",
     "merged_pr": 2429,
@@ -1197,7 +1204,7 @@
     "pr2405": "8795687_STACKED_QA_BRANCH; EXPERIMENTAL",
     "docs_pr2378": "9EF30ED; 117_AHEAD_34_BEHIND; NEXT_ACTION_DELETES_1582_LINES; NOT_MERGED",
     "store_forget": "PR2429_MERGED; PRODUCTION_CONTEXT_PRODUCER_ONLY_EVENT_SOURCE",
-    "research": "R084_AND_R090_TO_R107_APPENDED; R096_ENGRAM_SYNTHETIC_NO_RETENTION_WIN; R107_FAR_CC_BY_NC_NO_REUSE",
+    "research": "R084_AND_R090_TO_R107_APPENDED; R096_ENGRAM_SYNTHETIC_NO_RETENTION_WIN; R107_FAR_CC_BY_NC_NO_REUSE; R-117 event-based temporal vision: peer-reviewed paper reviewed, code custom non-commercial/no reuse, frame-based ablation proposed only.",
     "active_blockers": [
       "P0_NATIVE_B1_B2_OFFERS_AND_C4_C3_CORRECTNESS",
       "P0_C3_TTFT_AND_CORRECTNESS",
@@ -1206,9 +1213,10 @@
       "P0_TRAINED_B3_LATENT",
       "P0_ANDROID_VOICE_AND_UI_CONTROL",
       "P0_20_TURN_REDMI_ACCEPTANCE",
-      "P0_CANON_SEMANTIC_TRACEABILITY"
+      "P0_CANON_SEMANTIC_TRACEABILITY",
+      "P0_VISION_LIFECYCLE_COMPOSER_RECOMPOSITION"
     ],
-    "user_action_required": "NONE; wait for later PIPELINE_STATUS; no manual command or duplicate request",
+    "user_action_required": "NONE; preserve STOPPED_BY_USER; no manual command or duplicate update request",
     "previous_overlay": {
       "timestamp": "2026-11-23T08:58:09.610Z",
       "release_sha": "4dc7595f383e7ba932ee8e9fcf52c5541210ed5e",
@@ -1294,6 +1302,19 @@
         "learning_status": "LEARNING_STATUS_552_UNAVAILABLE",
         "boss_pr2343": "CURRENT_HEAD_023E56D_29_AHEAD_0_BEHIND; substantive exact CI queued. Recovery12 and some Store/Runtime pins corrected; stage/deployer, recovery21, archive stream preimage, record-only Runtime pin and fair-observer ask anchor still mismatch. Previous 70c6a5 migration failed; not current-head result."
       }
+    },
+    "perception_run34": {
+      "candidate_pr": 2463,
+      "code_sha": "14d6b6338db5e4d965a27bac9a3d7301576496d6",
+      "branch_head_before_board_commit": "3aaab75bb91ca2b732189e48c3475999471fcb8e",
+      "behavior": "FIRST_FRAME_TEMPORAL_EVIDENCE_STATUS_WARMUP",
+      "focused_ci": "FRAME_INGRESS_39_OF_39_PY313_AND_PY314; VISION_SOURCE_LINEAGE_29_OF_29_PY313_AND_PY314",
+      "integration": "STAGED_FAIL_19_FAILED_234_PASSED_10_SKIPPED_2_ERRORS_41_SUBTESTS; INTEGRATED_FAIL_1; CONSUMER_FAIL_3_OF_5_BOTH; ROOT_UNSUPPORTED_LIFECYCLE_SOURCE_VISION_PY",
+      "device": "V13OBS_115_2026-11-24T07:39:27Z_INSTALLED_8D93236_AUTO_UPDATE_ENABLED_AI_STOPPED_BY_USER_ZERO_VALID_B1_B2_OFFERS_TIME_BUDGET_53.2_54.2_NATIVE_RESIDENCY_UNAVAILABLE",
+      "release": "NOT_RELEASED_NOT_INSTALLED_REDMI_UNVERIFIED",
+      "research": "R-117_ADDED_BRANCH_LOCAL; EVENT_CAMERA_RESULTS_NOT_TRANSFERRED_TO_SAMPLED_ANDROID_FRAMES; UPSTREAM_CODE_CUSTOM_NONCOMMERCIAL_NO_IMPORT",
+      "local_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_AND_DNS_FAILURE",
+      "user_action_required": "NONE"
     }
   },
   "qa_latest_checkpoint": {
