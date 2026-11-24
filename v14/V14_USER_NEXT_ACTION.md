@@ -1844,3 +1844,11 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - Next whole-system research action: test Fork-JEPA-style action-effect forks only in a reversible sandbox; use JEPA-Tuner's receiver-native objective for B3 utility; add three-interface retention readouts to actual weight-learning tests.
 - Model candidate: MNN-Pocket-0.3B INT4/MNN is a possible isolated C3 comparison (Apache-2.0; 173 MB; published speed only on iPad Pro M5 / Snapdragon 8 Gen 5). No Snapdragon 732G TTFT/RSS/quality evidence; no download or swap made. No approval requested until a valid device comparison can be run.
 - Nutzeraktion: keine Aktion nötig. Kein Termux-Befehl, kein Modell-Download/Swap, keine Gerätefreigabe und kein Update-Request erforderlich.
+
+
+### Late CI / cross-lane poll — 2026-11-24
+- Perception PR #2472 latest docs head remains db326f32b2cd2c0149920c3b26aa1646202fe1ff. Its fresh docs-triggered CI batch now shows the controller record-only guard failed, staged/integrated and Core same-turn still in progress; the A4/RAW EAR focused jobs remain successful. Do not claim a full PR pass.
+- Core PR #2478 advanced to 7e055b4b56267ea99ebd9bc6efacce3649d853a9. Its guard blob 3068f3647d89a9f67c2ea5ff782c316c7f1fe7bb still contains only the original attention.py pin 0d3c0d00492d809c818874cf83ddd723867e77cfc5c50236dac18eddc8422739; Perception's current attention pin 58e68ce... is still absent. The new Core recovery builder expects guard SHA-256 4abc789470ede189afc7efb73c64b669c66a76374642e285bb680e296255c289.
+- Core exact-head CI has failures in controller guard, phone offer receipt evidence, Lab Age/WebView truth, private owner-read bootstrap, staged/integrated, coordinated source contracts, two-checkout updater migration and native latent receiver; Core same-turn and Core audio/arithmetic Runtime remain in progress. No green exact-head result is available.
+- Core runtime still directly iterates runner.generate(messages,...) at runtime.py line 651 and does not call audio_consent_generation_scope(). This remains a required integration step after Core's exact source/pin chain is stable.
+- The exact guard comparison and requested combined-pin repair were posted to PR #2478. Perception did not modify Core-owned files. Do not rebase #2472 until #2478 has a stable green exact head and the Perception attention pin is present.
