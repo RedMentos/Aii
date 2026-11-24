@@ -103,6 +103,7 @@ jobs:
             v13/code/v13/native_prompt_admission.py \
             v13/code/tests/test_native_prompt_admission.py \
             v13/code/tests/test_v14_causal_stream_offer_receipt.py \
+            v13/code/tests/test_v14_same_turn_c4_c3_consumption.py \
             v13/code/tests/test_same_turn_body_delivery_qa.py \
             v13/code/scripts/integrated_c4_c3_receipt_candidate_20261122.py \
             v13/code/scripts/run_c4_c3_current_candidate_test_20261122.py \
@@ -130,6 +131,12 @@ jobs:
             v13/code/tests/test_termux_runtime_recovery_stage.py \
             v13/code/tests/test_observer_fair_budget_stage_20261116.py \
             v13/code/tests/test_v14_store_source_blob_serialization.py
+      - name: Exercise direct Runtime same-turn B1/B2 to C4 to C3 (synthetic models)
+        if: always()
+        env:
+          PYTHONPATH: v13/code
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python -m pytest -q v13/code/tests/test_v14_same_turn_c4_c3_consumption.py
       - name: Exercise source-preserving C3 prompt admission
         env:
           PYTHONPATH: v13/code
