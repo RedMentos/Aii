@@ -5,6 +5,8 @@ from __future__ import annotations
 import unittest
 import xml.etree.ElementTree as ET
 
+import test_process_restart as harness
+
 from process_restart_ui import button_center, transient_overlay_action
 
 
@@ -192,6 +194,7 @@ class ProcessRestartFinalSnapshotRecoveryTests(unittest.TestCase):
         with (
             patch.object(harness, "hierarchy_xml", return_value=overlay_xml),
             patch.object(harness, "adb", return_value="") as adb_call,
+            patch.object(harness, "process_id", return_value=""),
             patch.object(harness.time, "monotonic", side_effect=clock),
         ):
             with self.assertRaisesRegex(AssertionError, "UI did not show expected state"):
@@ -229,10 +232,6 @@ class ProcessRestartLogcatTests(unittest.TestCase):
             )
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 
 class ProcessRestartLaunchTests(unittest.TestCase):
     def test_launch_dismisses_keyguard_and_waits_without_menu_key(self) -> None:
@@ -266,3 +265,204 @@ class ProcessRestartLaunchTests(unittest.TestCase):
             call("shell", "uiautomator", "dump", "--compressed",
                  "/data/local/tmp/v14-window.xml", timeout=20),
         )
+
+
+class ProcessRestartDurabilityTests(unittest.TestCase):
+    def test_stop_marker_requires_persisted_off(self) -> None:
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        with TemporaryDirectory() as directory:
+            marker = Path(directory) / "stop-proof"
+            with (
+                patch.object(harness, "STOP_PROOF_MARKER", marker),
+                patch.object(harness, "persisted_enabled", return_value="true"),
+            ):
+                with self.assertRaisesRegex(AssertionError, "did not persist OFF"):
+                    harness.record_stop_persisted_off()
+            self.assertFalse(marker.exists())
+
+            with (
+                patch.object(harness, "STOP_PROOF_MARKER", marker),
+                patch.object(harness, "persisted_enabled", return_value="false"),
+            ):
+                harness.record_stop_persisted_off()
+            self.assertEqual(marker.read_text(encoding="utf-8").strip(),
+                             "STOP_ACTION_PERSISTED_OFF")
+
+    def test_durable_restart_requires_verified_visible_stop_marker(self) -> None:
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        with TemporaryDirectory() as directory:
+            marker = Path(directory) / "stop-proof"
+            with (
+                patch.object(harness, "STOP_PROOF_MARKER", marker),
+                patch.object(harness, "persisted_enabled", return_value="false"),
+            ):
+                with self.assertRaisesRegex(AssertionError, "no verified visible Stop action marker"):
+                    harness.verify_durable_off_after_process_death()
+
+    def test_durable_restart_force_stops_relaunches_and_checks_off(self) -> None:
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from unittest.mock import call, patch
+        import test_process_restart as harness
+
+        with TemporaryDirectory() as directory:
+            marker = Path(directory) / "stop-proof"
+            marker.write_text("STOP_ACTION_PERSISTED_OFF\n", encoding="utf-8")
+            with (
+                patch.object(harness, "STOP_PROOF_MARKER", marker),
+                patch.object(harness, "persisted_enabled", side_effect=["false", "false"]),
+                patch.object(harness, "process_id", return_value="1234"),
+                patch.object(harness, "adb") as adb_call,
+                patch.object(harness, "wait_for_process", side_effect=["", "5678"]) as wait_call,
+                patch.object(harness, "launch_companion") as launch_call,
+            ):
+                harness.verify_durable_off_after_process_death()
+
+            adb_call.assert_called_once_with("shell", "am", "force-stop", harness.PACKAGE)
+            self.assertEqual(wait_call.call_args_list,
+                             [call(absent=True), call(absent=False)])
+            launch_call.assert_called_once_with()
+            self.assertFalse(marker.exists())
+
+    def test_ui_failure_runs_durable_probe_but_remains_a_failure(self) -> None:
+        import subprocess
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        failures = (
+            AssertionError("System UI blocked"),
+            subprocess.TimeoutExpired(["adb", "shell", "uiautomator", "dump"], 20),
+            subprocess.CalledProcessError(1, ["adb", "shell", "uiautomator", "dump"]),
+            FileNotFoundError("adb"),
+            RuntimeError("adb transport failed"),
+        )
+        for failure in failures:
+            with self.subTest(failure=type(failure).__name__):
+                with (
+                    patch.object(harness, "wait_for_text", side_effect=failure),
+                    patch.object(harness, "verify_durable_off_after_process_death") as durable,
+                ):
+                    with self.assertRaises(type(failure)):
+                        harness.wait_for_stopped_ui_or_prove_durable()
+                durable.assert_called_once_with()
+
+
+class ProcessRestartPostRestartDurabilityTests(unittest.TestCase):
+    def test_post_restart_ui_failures_report_partial_only_after_marker_and_off(self) -> None:
+        import contextlib
+        import io
+        import subprocess
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        failures = (
+            AssertionError("System UI blocked"),
+            subprocess.TimeoutExpired(["adb", "shell", "uiautomator", "dump"], 20),
+            subprocess.CalledProcessError(1, ["adb", "shell", "uiautomator", "dump"]),
+            FileNotFoundError("adb"),
+            RuntimeError("adb transport failed"),
+        )
+        for failure in failures:
+            with self.subTest(failure=type(failure).__name__), TemporaryDirectory() as directory:
+                marker = Path(directory) / "stop-proof"
+                marker.write_text("STOP_ACTION_PERSISTED_OFF\n", encoding="utf-8")
+                output = io.StringIO()
+                with (
+                    patch.object(harness, "STOP_PROOF_MARKER", marker),
+                    patch.object(harness, "persisted_enabled", return_value="false"),
+                    patch.object(harness, "wait_for_text", side_effect=failure),
+                    contextlib.redirect_stdout(output),
+                ):
+                    with self.assertRaises(type(failure)):
+                        harness.wait_for_restarted_stopped_ui_or_report_durable()
+                self.assertIn("PARTIAL_PASS: force-stop/PID disappearance", output.getvalue())
+
+    def test_post_restart_ui_failure_never_claims_partial_without_marker_or_off(self) -> None:
+        import contextlib
+        import io
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        cases = ((False, "false"), (True, "true"))
+        for marker_exists, enabled in cases:
+            with self.subTest(marker_exists=marker_exists, enabled=enabled), TemporaryDirectory() as directory:
+                marker = Path(directory) / "stop-proof"
+                if marker_exists:
+                    marker.write_text("STOP_ACTION_PERSISTED_OFF\n", encoding="utf-8")
+                output = io.StringIO()
+                with (
+                    patch.object(harness, "STOP_PROOF_MARKER", marker),
+                    patch.object(harness, "persisted_enabled", return_value=enabled),
+                    patch.object(harness, "wait_for_text", side_effect=AssertionError("UI blocked")),
+                    contextlib.redirect_stdout(output),
+                ):
+                    with self.assertRaisesRegex(AssertionError, "UI blocked"):
+                        harness.wait_for_restarted_stopped_ui_or_report_durable()
+                self.assertIn("DURABLE_STOP_PROOF_FAILED", output.getvalue())
+                self.assertNotIn("PARTIAL_PASS", output.getvalue())
+
+
+class ProcessRestartPidofTests(unittest.TestCase):
+    def test_pidof_exit_one_without_output_means_absent(self):
+        from unittest.mock import patch
+        completed = harness.subprocess.CompletedProcess(
+            args=["adb", "shell", "pidof", harness.PACKAGE],
+            returncode=1, stdout="", stderr="",
+        )
+        with patch.object(harness.subprocess, "run", return_value=completed):
+            self.assertEqual(harness.process_id(), "")
+
+    def test_pidof_numeric_output_means_present(self):
+        from unittest.mock import patch
+        completed = harness.subprocess.CompletedProcess(
+            args=["adb", "shell", "pidof", harness.PACKAGE],
+            returncode=0, stdout="1234 5678\n", stderr="",
+        )
+        with patch.object(harness.subprocess, "run", return_value=completed):
+            self.assertEqual(harness.process_id(), "1234 5678")
+
+    def test_pidof_exit_one_with_transport_error_fails_closed(self):
+        from unittest.mock import patch
+        completed = harness.subprocess.CompletedProcess(
+            args=["adb", "shell", "pidof", harness.PACKAGE],
+            returncode=1, stdout="", stderr="error: device offline",
+        )
+        with patch.object(harness.subprocess, "run", return_value=completed):
+            with self.assertRaisesRegex(RuntimeError, "ambiguous result"):
+                harness.process_id()
+
+    def test_pidof_exit_one_with_unexpected_stdout_fails_closed(self):
+        from unittest.mock import patch
+        completed = harness.subprocess.CompletedProcess(
+            args=["adb", "shell", "pidof", harness.PACKAGE],
+            returncode=1, stdout="not-a-pid", stderr="",
+        )
+        with patch.object(harness.subprocess, "run", return_value=completed):
+            with self.assertRaisesRegex(RuntimeError, "ambiguous result"):
+                harness.process_id()
+
+    def test_pidof_exit_zero_without_pid_fails_closed(self):
+        from unittest.mock import patch
+        completed = harness.subprocess.CompletedProcess(
+            args=["adb", "shell", "pidof", harness.PACKAGE],
+            returncode=0, stdout="", stderr="",
+        )
+        with patch.object(harness.subprocess, "run", return_value=completed):
+            with self.assertRaisesRegex(RuntimeError, "ambiguous result"):
+                harness.process_id()
+
+
+if __name__ == "__main__":
+    unittest.main()
