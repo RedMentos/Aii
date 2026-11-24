@@ -21,6 +21,7 @@ This workspace is independent of V13/V14 development. It copies selected M1 data
 - bootstrap.py: paired temporal-block bootstrap with block-sum/count weighting, including partial blocks. The block-length field is expressed in minute rows; 10,080 minutes (7 days) is only the current default.
 - metrics.py: prefix-horizon and primary MAE, per-origin errors, paired multi-model/seed evaluation and atomic result persistence.
 - jepa.py: EMA JEPA, Direct-MAE, frozen-context linear probe, random-context probe factory, train-only channel standardization and collapse telemetry.
+- dlinear.py: matched-information DLinear control with replicate-edge moving-average decomposition and an explicit future-known S/calendar branch.
 - gru.py: supervised Raw-GRU using the same X/S/calendar information.
 - training.py: seeded model construction, training loops, validation telemetry, exact Git HEAD resolution and atomic checkpoints.
 
@@ -31,7 +32,7 @@ This workspace is independent of V13/V14 development. It copies selected M1 data
 - Direct-MAE and Raw-GRU see the same X/S/calendar information and predict raw-unit Y.
 - Frozen and random-context probes use the same linear readout and train-only scaler.
 - Primary metric is per-origin MAE across all configured channels over forecast steps 15..60; prefix MAE at 15/30/60 is also reported.
-- The full design and open choices are in JEPA_DESIGN.md.
+- The full design and open choices are in JEPA_DESIGN.md. DLinear is a published baseline control, not a claim that the JEPA model is better; compare all models on identical accepted origins.
 
 ## Dependencies
 Core tests/data path: numpy. Model training: PyTorch CPU or CUDA.
@@ -52,3 +53,10 @@ Core tests/data path: numpy. Model training: PyTorch CPU or CUDA.
 3. Lock patch size/stride, model dimensions, EMA schedule, anti-collapse weights, optimizer, epochs, seeds and promotion thresholds.
 4. Run train/validation only on the real UCI data; benchmark ingestion and batch throughput.
 5. Hash-lock the preregistration and executing commit before any test access.
+
+
+## DLinear source and adaptation
+
+The decomposition/linear-forecasting idea follows the DLinear method from Zeng et al., *Are Transformers Effective for Time Series Forecasting?* (AAAI 2023). The official [LTSF-Linear repository](https://github.com/cure-lab/LTSF-Linear) is Apache-2.0 at reviewed revision `0c113668a3b88c4c4ee586b8c5ec3e539c4de5a6`. No upstream source file was copied into this workspace; `dlinear.py` is an independent M1 implementation adapted to the shared future-known X/S/calendar contract. The official model's X-only input is not used unchanged because that would give it less information than the JEPA/Direct-MAE controls.
+
+The original paper's benchmark results are not evidence for this UCI cohort. DLinear must be evaluated here under the same fixed splits, accepted origins, scaler, seeds and paired temporal-block bootstrap as every other model.

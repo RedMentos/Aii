@@ -11,6 +11,7 @@ import numpy as np
 from experiments.m1.array_data import ArrayDataset
 from experiments.m1.baselines import PersistenceBaseline
 from experiments.m1.data import DataConfig, MinuteRow
+from experiments.m1.dlinear import MatchedDLinearForecaster
 from experiments.m1.gru import RawGRUForecaster
 from experiments.m1.jepa import (
     DirectMAEForecaster,
@@ -82,6 +83,12 @@ class EndToEndTests(unittest.TestCase):
         )
         self.assertTrue(np.isfinite(direct_history[0]["mae"]))
 
+        dlinear = build_seeded_model(MatchedDLinearForecaster, config, seed, kernel_size=5)
+        dlinear_history = train_direct_mae(
+            dlinear, dataset, epochs=1, batch_size=32, seed=seed
+        )
+        self.assertTrue(np.isfinite(dlinear_history[0]["mae"]))
+
         raw_gru = build_seeded_model(RawGRUForecaster, config, seed, hidden_size=12)
         gru_history = train_raw_gru(raw_gru, dataset, epochs=1, batch_size=32, seed=seed)
         self.assertTrue(np.isfinite(gru_history[0]["mae"]))
@@ -92,6 +99,7 @@ class EndToEndTests(unittest.TestCase):
             (TorchBatchPredictor(frozen, name="frozen_jepa_probe"), seed),
             (TorchBatchPredictor(random_probe, name="random_context_probe"), seed),
             (TorchBatchPredictor(raw_gru, name="raw_gru"), seed),
+            (TorchBatchPredictor(dlinear, name="matched_dlinear"), seed),
         ]
         result = evaluate_suite(
             runs, dataset, reference_model="persistence",
@@ -99,8 +107,9 @@ class EndToEndTests(unittest.TestCase):
             primary_start=2, primary_end=4, report_horizons=(1, 2, 4),
             block_len_minutes=1440, n_resamples=50, batch_size=64,
         )
-        self.assertEqual(len(result["runs"]), 5)
+        self.assertEqual(len(result["runs"]), 6)
         self.assertIn("delta_ci", result["paired_block_bootstrap"]["models"]["direct_mae"])
+        self.assertIn("delta_ci", result["paired_block_bootstrap"]["models"]["matched_dlinear"])
         with tempfile.TemporaryDirectory() as directory:
             digest = write_result_atomic(result, Path(directory) / "m1-validation.json")
             self.assertEqual(len(digest), 64)

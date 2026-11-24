@@ -33,6 +33,7 @@ The predictor may use all known future queries jointly because S and calendar va
 - Random-encoder probe: same probe and same frozen encoder architecture, but use an untrained seeded encoder.
 - Raw-Window-Probe: linear L1 readout over the flattened X/S/calendar bundle.
 - Raw-Window-MLP: one-hidden-layer nonlinear raw-input control.
+- Matched DLinear: replicate-edge moving-average decomposition of X into trend/residual, independent per-channel time-linear heads, plus a per-horizon projection of known future S/calendar. This M1 adaptation retains the common information contract; it is not an exact reproduction of the original X-only DLinear benchmark.
 - Raw-GRU: supervised recurrent model with the same X/S/calendar information.
 - Conventional baselines: Persistence, Seasonal Persistence, Train Mean/Median, Ridge-AR and LAD-AR. Ridge-AR remains explicitly a secondary conventional baseline if its sparse lag adapter is retained.
 
@@ -80,3 +81,10 @@ No test-year results may be used to choose any of these values.
   - https://github.com/Sennadir/TS_JEPA
 
 The M1 design above is adapted to this dataset's X/S/calendar information contract rather than reproducing either external project.
+
+
+## 8. DLinear control and source boundary
+
+The DLinear control is based on the decomposition-linear method in Zeng et al., *Are Transformers Effective for Time Series Forecasting?* (AAAI 2023; arXiv:2205.13504). The official implementation is `cure-lab/LTSF-Linear`, Apache-2.0, reviewed at commit `0c113668a3b88c4c4ee586b8c5ec3e539c4de5a6`. No upstream code was copied; the M1 module independently implements replicate-edge moving-average decomposition and time-axis linear heads.
+
+The original DLinear implementation consumes historical X only. M1 adds a separate linear projection over known future seasonal covariates and calendar features so DLinear, Direct-MAE, Raw-GRU and JEPA receive the same permitted information. This changes the model from an exact reproduction into a matched-information adaptation. Results from the original nine-dataset benchmark do not establish performance on this UCI cohort.
