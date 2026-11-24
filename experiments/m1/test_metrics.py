@@ -64,7 +64,7 @@ class MetricTests(unittest.TestCase):
         result = evaluate_suite(
             runs, self.dataset, reference_model="one", code_commit="a" * 40,
             primary_start=2, primary_end=4, report_horizons=(1, 2, 4),
-            block_days=1, n_resamples=50, batch_size=32,
+            block_len_minutes=1440, n_resamples=50, batch_size=32,
         )
         self.assertEqual(len(result["runs"]), 4)
         self.assertEqual(result["paired_block_bootstrap"]["seed_ids"], [11, 22])
