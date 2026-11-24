@@ -1352,3 +1352,17 @@ Private PIPELINE_STATUS #734 confirms only aed1d2 installed, auto-update enabled
 - Redmi: public blocker #1904 comment 7108089370 confirms base `8d93236` installed and auto-update enabled; Runtime `CI_WAIT`; separate diagnostics say `STOPPED_BY_USER`, autostart false, model process stopped. Preserve the stopped state. PR #2448 is not installed; REDMI_UNVERIFIED.
 - Next: restore exact-head Actions, obtain independent QA/Boss review, then coordinate Core/QA's separate visible AudioRecord provider and revocation lifecycle. No model download/swap, restart, permission change or manual Termux action.
 - User action: NONE.
+
+
+## Research & Perception — source-bound A4 outcome → N10 feedback — 2026-11-24 run 30
+
+- Selectively ported the Perception-owned A4/N10 slice from stale PR #2433 onto current #2448; did not merge or copy the old speaker/Teacher/audio files. The current release base is a descendant of #2433's base and has no intervening changes to the three ported existing files.
+- `attention.py` now verifies granted AttentionRequest/Response lineage, exact source hash and persisted span before scoring A4 re-look coverage; it writes a durable exactly-once receipt. Runtime already calls `Attention.source_outcome(eid,text,output)` after C3 output.
+- `neuromod.py` now exposes `signal_in_transaction()`; A4 policy state, receipt and N10 ModulatorPacket share one Store transaction. Failed N10 insertion rolls back all three. Negative `reward_error` remains signed into next-event attention/caution.
+- Ported `test_attention_outcome_receipt_v14.py`, updated `test_attention.py` to canonical `path_id`, and added `.github/workflows/v14-attention-source-bound-outcomes.yml` for Python 3.13/3.14 compile + receipt/Attention/Neuromod tests.
+- Exact source blobs: `attention.py` ecaf39b1b8ea0edad7f4a39774230b3cbed1d5eb (SHA-256 58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e); `neuromod.py` fbb02147cbcfff10896736a20838fbce08d7409b (SHA-256 e01f541874f401bf2996603d79e0cf24463aa16ed5c3902534f37678c1c72ce0). Handoff: `v14/handoffs/RESEARCH_PERCEPTION_A4_N10_SOURCE_BOUND_OUTCOME_20261124_RUN30.md`.
+- LOCAL_LINUX: full checkout unavailable; no local compile/pytest. CI: current exact-head push/PR runs ended `startup_failure` with zero jobs; no tests executed and no PASS is claimed.
+- Integration blocker for Core: `record_only_controller_guard_20261116.py` still pins the old attention.py SHA-256 `0d3c0d00492d809c818874cf83ddd723867e77cfc5c50236dac18eddc8422739`. Core must rebind to the exact current SHA and recompute guard/recovery/stage/deployer pins bottom-up; no guard bypass or edit was made by Perception.
+- Product status: CODE_PRESENT / existing Runtime call site / synthetic Store tests ADDED_NOT_RUN. This is durable attention-policy/N10 feedback, **not** model-weight learning, trained JEPA, latent coupling or truth authority.
+- Redmi: public #1904 comment 7108089370 still reports installed base `8d93236`, auto-update enabled, Runtime `CI_WAIT`; separate diagnostics say `STOPPED_BY_USER`, autostart false. PR #2448 remains DRAFT / NOT_RELEASED / not installed. Preserve the stopped state; REDMI_UNVERIFIED.
+- Next: Core pin-chain repair; restore runnable Actions; exact Python 3.13/3.14, staged/integrated, migration, privacy and revocation tests; then independent QA/Boss review. No user action, model download, permission change, restart or manual Termux command.
