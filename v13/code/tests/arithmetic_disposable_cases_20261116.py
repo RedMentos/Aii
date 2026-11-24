@@ -132,3 +132,68 @@ def test_unknown_authority_and_nondirect_arithmetic_action_rejected(runtime):
         with pytest.raises(ValueError, match='deterministic C5'):
             ActionGate(runtime.store).select(event, route='simple', direct=direct,
                                              resource_state='NORMAL', direct_action=action)
+
+def test_explanatory_arithmetic_keeps_both_bodies_and_c4_c3_path(runtime):
+    from v13.arithmetic_reflex import exact_arithmetic
+
+    question = "Compare 2+2 with 3+1 and explain why they are equivalent."
+    assert exact_arithmetic(question) is None
+
+    r = runtime
+    seen = []
+
+    class FakeRunner:
+        def __init__(self, role):
+            self.role = role
+            self.last_metrics = {}
+
+        def generate(self, messages, cancel_event, deadline, *args, **kwargs):
+            seen.append(self.role)
+            schema = kwargs.get("schema")
+            if schema is None and args and isinstance(args[-1], dict):
+                schema = args[-1]
+            if self.role in {"B1_DETAIL", "B2_GIST"} and isinstance(schema, dict):
+                payload = {
+                    "summary": "Both expressions evaluate to four under addition.",
+                    "quotes": ["2+2", "3+1"],
+                    "uncertainty": "The requested comparison is explicit in the source.",
+                    "needs_reentry": False,
+                }
+                self.last_metrics = {
+                    "status": "FINAL", "duration_s": 0.001,
+                    "input_tokens": 12, "output_tokens": 24,
+                    "generated_tokens": 24,
+                }
+                yield json.dumps(payload)
+                return
+            self.last_metrics = {
+                "status": "FINAL", "duration_s": 0.001,
+                "input_tokens": 18, "output_tokens": 18,
+                "generated_tokens": 18,
+            }
+            yield "Both expressions equal 4 because addition combines the same total."
+
+    def fake_get(role, *args, **kwargs):
+        return FakeRunner(role)
+
+    r.pool.get = fake_get
+    r.pool.get_output = fake_get
+    r.learner.propose = Mock(return_value=None)
+    r.learner.control_calibrate = Mock(return_value=None)
+    r.learner.student_percept = Mock(return_value=None)
+    r.learner.retrieve = Mock(return_value=[])
+    r.cognition.percept = Mock(return_value=None)
+    r.memory.recall = Mock(return_value=[])
+    r.needle.control = Mock(return_value={"function_calls": []})
+
+    row, meta = turn(r, question)
+    assert row["text"].startswith("Both expressions equal 4")
+    assert meta.get("arithmetic_reflex") is None
+    assert meta["model_generated"] is True
+    assert meta["direct_source_copy"] is False
+    assert meta["route"]["scaffold"] == "both"
+    assert {"B1_DETAIL", "B2_GIST"} <= set(seen)
+    offers = packets(r, row["event_id"], "OfferPacket")
+    assert {"B1_DETAIL", "B2_GIST"} <= {offer["role"] for offer in offers}
+    assert meta["focal"]["cycles"] >= 1
+
