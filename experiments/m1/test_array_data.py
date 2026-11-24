@@ -160,6 +160,23 @@ class ArrayWindowTests(unittest.TestCase):
         self.assertEqual(actual.accepted_by_month, expected.accepted_by_month)
         self.assertEqual(actual.rejected_by_month, expected.rejected_by_month)
 
+    def test_array_windows_match_reference_values_elementwise(self):
+        bounds = build_chronological_boundaries(len(self.rows), self.config)
+        reference, _ = make_split(
+            self.rows, self.channels, self.config, "train", bounds["train"]
+        )
+        batches = list(self.dataset.iter_batches("train", batch_size=37))
+        origins = np.concatenate([batch.origin_indices for batch in batches])
+        x = np.concatenate([batch.inputs.x for batch in batches], axis=0)
+        seasonal = np.concatenate([batch.inputs.seasonal for batch in batches], axis=0)
+        calendar = np.concatenate([batch.inputs.calendar for batch in batches], axis=0)
+        target = np.concatenate([batch.target for batch in batches], axis=0)
+        self.assertEqual(origins.tolist(), [window.origin_index for window in reference])
+        np.testing.assert_array_equal(x, np.asarray([window.x for window in reference], dtype=np.float32))
+        np.testing.assert_array_equal(seasonal, np.asarray([window.seasonal for window in reference], dtype=np.float32))
+        np.testing.assert_array_equal(calendar, np.asarray([window.calendar for window in reference], dtype=np.float32))
+        np.testing.assert_array_equal(target, np.asarray([window.target for window in reference], dtype=np.float32))
+
     def test_missing_seasonal_source_is_rejected_without_materializing_windows(self):
         config = DataConfig(
             input_length=5, horizon=2, max_candidate_input_length=5,
