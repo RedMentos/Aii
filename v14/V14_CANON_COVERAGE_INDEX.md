@@ -2292,3 +2292,15 @@ Current release b20e9b1f3dd53af472055adb43da628785494ec4; last phone snapshot 8b
 | Whole Canon / integration | No historical V13 Canon or V14 master edits. | Current release base `8d93236`; candidate PR #2463 remains DRAFT. | Boss/Integrator must recompose the strict source-lifecycle dependency closure; staged runtime 19 failures / 2 errors, integrated regression 1 failure, consumer 3.13 3 failures / 2 passes; 3.14 consumer was pending at last poll. | INVENTORY_PRESERVED / SEMANTIC_COVERAGE_INCOMPLETE |
 
 Latest private V13OBS #115 snapshot: installed base `8d93236`, auto-update enabled/UP_TO_DATE/no error; AI STOPPED_BY_USER, model process STOPPED, native residency UNAVAILABLE. Candidate #2463 NOT_INSTALLED. No device update request or user action.
+
+
+## Research & Perception run 39 evidence overlay — 2026-11-24
+
+| Canon family | Current implementation / consumer | Exact evidence | Missing acceptance | Classification |
+|---|---|---|---|---|
+| A5 temporal frame ordering / A4 change attribution | `TemporalVisualEvidence` now validates both start and end monotonicity; equal starts are allowed for overlapping windows; rejected intervals retain the last accepted baseline. | PR #2469 code `b09f731224f71da0fdb19e81f511540329b6c2cf`; regression `9844efaf66c13b1e5562397ae1bc62ed7926c862`; frame-ingress 52/52 on Python 3.13/3.14; local minimal ordering reproduction 4 assertions PASS. | Core #2465 source-lifecycle + downstream memory/world builder pin chain; Android MediaProjection provider and actual Redmi frames; real model-based dense visual features and persistent learning. | WIRED_SYNTHETIC / CI_PASS / SOURCE_COMPOSER_BLOCKED / REDMI_UNVERIFIED |
+| A3 image-feature/model alternatives | SigLIP 2 B/16 (86M) reviewed as a possible static A3 comparator; not adopted. | R-135 full-text-relevant-section and OSS/license audit; official README says other materials CC BY 4.0 while HF checkpoint metadata says Apache-2.0; official clarification issue remains open. | Weight-license clarification, ARM64/Termux inference path, explicit experimental download approval, source-disjoint heldout utility and Redmi RSS/latency. | RESEARCHED / LICENSE_CONFLICT_OPEN / NO_DOWNLOAD |
+| Whole A0–A5 / system integration | Perception #2469 remains stacked on #2463; Core #2465 is the source-lifecycle owner. | Exact CI and failure counts are in run-39 Workplan and PR #2469. | Complete Core source composer and memory/world pin chain, rebase/integration, A5 provider/Android capture and end-to-end downstream consumer. | IN_PROGRESS_PARTIAL / NOT_RELEASED |
+
+No historical Canon rows are changed by this overlay. No Redmi, native model, trained cross-organ latent or persistent weight-update proof is claimed.
+
