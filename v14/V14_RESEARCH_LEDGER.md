@@ -1391,3 +1391,22 @@ audio_voice_cues.consume_pcm16_voice_window now invokes the adapter only with a 
 **V14 implication (hypothesis, not a result):** retain RAW EAR acoustic/prosodic evidence as the primary real-time timing path. Keep optional Teacher Ear transcript source-bound, separately opted-in and outside the current duplex interrupt decision. Do not let cached ASR text independently trigger barge-in. If a trainable A4 endpoint head is later evaluated, compare acoustic-only, prosody-only, acoustic+prosody and text-fused variants at matched capacity and latency, with explicit false-interruption costs, German/English, hesitation, backchannels, overlap, noise and non-silent turn transitions. Use session/source-separated consented holdouts and multiple seeds; report both early-interrupt and late-response tails, not only aggregate F1. No model, code, dataset or dependency was imported or downloaded.
 
 **Status:** ABSTRACT_ONLY / SECONDARY_AI_AUDIT_ONLY / PREPRINT / REUSE_NOT_APPROVED / NO_REPRODUCTION / NO_ANDROID_PROOF.
+
+
+## Research & OSS update — 2026-11-24
+
+### R-122 — sherpa-onnx small streaming English Teacher Ear candidate
+
+- **Sources checked:** official sherpa-onnx small-model catalogue and Zipformer model documentation (retrieved 2026-11-24); upstream repository/license; official Python wheel platform page; the linked Hugging Face model card.
+  - https://k2-fsa.github.io/sherpa/onnx/pretrained_models/small-online-models.html
+  - https://k2-fsa.github.io/sherpa/onnx/pretrained_models/online-transducer/zipformer-transducer-models.html
+  - https://github.com/k2-fsa/sherpa-onnx
+  - https://github.com/k2-fsa/sherpa-onnx/blob/master/LICENSE
+  - https://k2-fsa.github.io/sherpa/onnx/python/install.html
+  - https://huggingface.co/desh2608/icefall-asr-librispeech-pruned-transducer-stateless7-streaming-small
+- **Evidence:** OSS/model-card verification, not a peer-reviewed paper and not a V14 reproduction. sherpa-onnx is Apache-2.0; its upstream project was updated 2026-11-23 and advertises Android/embedded support. The official Python wheel page lists Linux aarch64, but does not list Android/Bionic Termux.
+- **Candidate facts:** the official docs list `csukuangfj/sherpa-onnx-streaming-zipformer-en-20M-2023-02-17` as a small English streaming model. Its documented int8 files are approximately 41 MB encoder + 527 KB decoder + 253 KB joiner, plus tokens. The linked model card declares Apache-2.0 and reports LibriSpeech test-clean/test-other WER 3.94/9.79 with greedy search (3.88/9.53 with modified beam search).
+- **What is not shown:** these corpus WER figures are not conversational/noisy/overlap accuracy; the example RTF is not a Redmi measurement; Linux aarch64 wheels do not establish Android/Bionic compatibility; the model is English-only and dates to 2023. No Termux build, runtime RSS, TTFT, thermals, microphone path or privacy lifecycle was tested.
+- **V14 use:** optional, separate Teacher Ear ASR hypothesis only. RAW EAR acoustic/prosodic/non-speech signals remain primary. Keep model loading OFF unless a later explicit experimental download approval is given; productive swap would require a separate approval and rollback plan. No package/model/weight was downloaded or changed.
+- **Minimal falsifiable test:** on an authorized Android build, compare the pinned int8 model against no-teacher RAW EAR on consented synthetic/volunteer speech with exact ABI, cold/warm TTFT, RTF, peak RSS/PSS, CPU threads, battery/thermal behavior, WER by noise/overlap class, and explicit opt-in/revocation/zeroization. Reject if it starves B1/B2/C3 or adds unacceptable latency/RAM.
+- **Decision:** CANDIDATE_PROPOSED / NOT_ADOPTED / NOT_DOWNLOADED. Follow-up owner: Research & Perception + QA & Android.
