@@ -1,3 +1,19 @@
+# Research & Perception — latest verified checkpoint (2026-11-24 17:40 UTC)
+
+**No user action is required. No Termux command, model download/swap, permission change, or update request is needed for this checkpoint.**
+
+- Release-development HEAD read: `gpt6/v13-private-remote-bridge-20261111` = `8d93236c753f0194224c19edc7411d8d7082b1d6`. Perception stack remains #2463 → #2469; this is not a release commit.
+- A5 temporal registry fix on [PR #2469](https://github.com/RedMentos/Aii/pull/2469): `TemporalVisualEvidence` now rejects a frame whose `start_ms` moves backwards even when `end_ms` advances. Equal starts remain allowed for overlapping windows; rejected frames do not replace the last valid baseline. Code commit `b09f731224f71da0fdb19e81f511540329b6c2cf`; regression-test commit / branch head `9844efaf66c13b1e5562397ae1bc62ed7926c862`.
+- Exact-head CI: frame-ingress PASS (52 tests on Python 3.13 and 52 on 3.14); vision-source-lineage PASS (39 on each); offline-bridge-security PASS. A5 lease fails on both versions because this stacked branch does not yet include Core #2465's source-lifecycle composer (`unsupported lifecycle source: vision.py`). Staged-runtime fails 19 / passes 234 / skips 10 / 2 errors; integrated-regression has one setup failure from the same source-lifecycle dependency. These are not attributed to the timestamp guard. Core #2465 has moved past that vision pin on its own head but now has a separate memory/world-builder nested-pin failure; do not bypass either hash gate.
+- LOCAL_LINUX: CPython 3.13.5 minimal interval-order reproduction PASS (4 assertions). Full Aii checkout/test suite BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS resolution fails. CI is not a local full-suite result.
+- Device/deployment: no handset test was performed; REDMI_UNVERIFIED. Read-only private relay status requests were issued, but no authenticated receipt had returned at this checkpoint. Updater/install state is therefore NOT_REVERIFIED in this run. No update request was sent, and no code from #2469 is deployed or released.
+- Research: R-135 records SigLIP 2 (86M ViT-B) as a possible static A3 comparator. Official README says checkpoints/other materials are CC BY 4.0 while the Hugging Face model card says Apache-2.0; official issue #192 remained open. Keep it unadopted until clarified. No model or weights were downloaded.
+- Durable details: [Research & Perception handoff](handoffs/RESEARCH_PERCEPTION_A5_INTERVAL_ORDER_20261124_RUN14.md).
+
+**Next:** Core/Boss must finish the #2465 source-lifecycle and nested memory/world-builder pin chain without weakening hashes. After acceptance, rebase/integrate #2469 and rerun A5 lease, staged-runtime, integrated-regression and migration. Perception's next V14-006 task after source-composer integration is near-duplicate source grouping and source-level uncertainty for A3 projector training/holdout. No user decision is needed now.
+
+---
+
 # M1 DATA — latest implementation checkpoint (2026-11-23 12:44 UTC)
 
 The real-data path is now `ArrayDataset.from_uci(path, config)`: two-pass validation and direct float32 matrix ingestion, with parsed-data and split hashes matching the reference parser. It rejects malformed/truncated rows, off-minute timestamps and non-finite values.
