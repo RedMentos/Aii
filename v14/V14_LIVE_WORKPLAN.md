@@ -1,3 +1,15 @@
+## Research & Perception — run 17: RAW EAR interval ordering and semantic endpoint research (2026-11-24)
+
+- Current-base PR #2472 is at exact head `8df6a16fd5dced71a2643eae141f9f204fc66855`, based on release-development HEAD `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- Added a source-local ordering baseline for RAW EAR intervals: start_ms cannot move backwards within a source/generation even if end_ms advances; equal-start cumulative windows and ordinary overlap remain valid. Rejected windows do not mutate the accepted ordering baseline. The comparator workflow now pins the exact updated source blob `f5fcab22e5d5463bcc3e1ab1a5ce4a586deb4b3e`.
+- Exact source/test/workflow commits: `c5a68bafed30365eec7719c56f190b76f9061ea9`, `87dc1cc8a2a27fb74188a3c1ef66559e87830ac3`, `8df6a16fd5dced71a2643eae141f9f204fc66855`.
+- LOCAL_LINUX isolated reproduction: 5 assertions PASS. Full local Aii suite BLOCKED / NOT_RUN because no checkout is mounted and GitHub DNS previously failed.
+- Exact #2472 head CI was QUEUED/PENDING at readback (run IDs 45461037584, 45461037614, 45461037620, 45461038016, 45461037991). Earlier #2471 focused temporal workflow passed on Python 3.13/3.14, but is not inherited proof for the new #2472 head.
+- R-108 reviews FD-VAD as a separate semantic endpoint candidate: arXiv abstract/project site/code/model card only; full paper not read. MIT code/model card; WavLM MIT; Qwen2.5 Apache-2.0; Smart Turn BSD-2. The 0.5B + WavLM ~1.5 GB package and A100/CUDA evidence do not establish Android suitability. No import/download.
+- PR #2472 remains DRAFT / NOT_RELEASED. No microphone capture, Android model inference, Redmi test or device update. Latest available private receipt predates this work and only establishes historical auto-update enabled at 8d93236; current deployment is unverified.
+- Next: inspect exact #2472 CI; Core owns any staged composer/recovery/stager/deployer pin chain failures. After independent review and green exact-head checks, close #2433/#2471 as superseded. AudioRecord remains OFF pending QA signature/lifecycle/revocation/zeroization.
+
+---
 ## M1 DATA audit-first and direct-array checkpoint — 2026-11-23 12:44 UTC
 
 - `ArrayDataset.from_uci()` validates/counts the source on pass one, fills a float32 matrix and computes the exact parsed-data fingerprint on pass two, and rejects file changes between passes. It does not allocate Python `MinuteRow` objects for the real cohort.
