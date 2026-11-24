@@ -1811,3 +1811,13 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - Full MobileCLIP2 paper read (arXiv:2508.20691, TMLR 2025 Featured). MobileCLIP2-S0 reports 11.4M image + 63.4M text parameters and 1.5 ms / 3.3 ms image/text encoder latency on iPhone 12 Pro Max; this is not Redmi evidence. Its official model-weight license is restricted to non-commercial scientific research and excludes product development, so do not use those weights in the V14 product path.
 - More permissive small-backbone candidate: Kornia TinyViT-5M; its model card lists MIT and Kornia's export matrix reports TinyViT-5M ONNX support. It is an image-classification backbone, not image-text alignment; it could feed a separate trainable A3 projector/JEPA student, not replace the A3 learning contract. Dataset provenance still needs review.
 - No model was downloaded or loaded. No Android/Redmi latency or RSS was measured. Candidate experiment remains opt-in and requires separate approval for experimental download and productive swap.
+
+
+### A3/RAW EYE current-base rebase — PR #2463 (2026-11-24)
+
+- New current-base draft: [PR #2463](https://github.com/RedMentos/Aii/pull/2463), branch `research-perception/v14-vision-current-20261124-run33`, code commit `b73ec8a7c7d3d87f0f5d19e41046b62d11496381`, parent/current release-development base `8d93236c753f0194224c19edc7411d8d7082b1d6`. The old-base PR #2442 was closed as superseded after focused tests passed on #2463.
+- Exact focused CI: vision source-lineage 29/29 on Python 3.13 and 3.14; MediaProjection RAW EYE frame ingress 39/39 on Python 3.13 and 3.14.
+- **Staged/integrated still FAILS:** staged runtime 19 failed, 234 passed, 10 skipped, 2 errors; integrated regression 1 failed. Root cause is Core-owned `source_lifecycle_lock_integration_candidate.py` rejecting `vision.py` with `ValueError: unsupported lifecycle source: vision.py`. Core/JEPA must add the reviewed lifecycle source mapping and source-forget regression. No Perception-side bypass was made.
+- The A3 student here is a persistent ridge-regression projector, not a neural gradient update/full JEPA. It uses EmbeddingGemma if installed and a clearly labeled `hashed_bow` fallback otherwise; the LFM2.5-VL-450M teacher is optional and not loaded by CI. A5 consumes a signed provider frame grant under an existing UI lease; it does not open MediaProjection or request permissions.
+- Detailed evidence: `v14/handoffs/RESEARCH_PERCEPTION_VISION_REBASE_20261124_RUN33.md`. Next: Core/JEPA lifecycle mapping, Core/Integrator audio pin rebinding, then combined staged/integrated CI. Android/Redmi remains UNVERIFIED.
+
