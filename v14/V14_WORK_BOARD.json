@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T00:14:42Z",
+  "updated_at": "2026-11-24T00:15:12Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -440,10 +440,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "LOCAL_LINUX full Aii checkout BLOCKED (no checkout; GitHub DNS failure); exact-head CI STARTUP_FAILURE / zero jobs; no Android microphone or Redmi feature proof",
-      "next_step": "QA/Boss: review #2448's RAW EAR/Teacher Ear/duplex plus source-bound A4/N10 path after exact-head CI is runnable. Core must update the attention.py controller-guard and dependent recovery/stage/deployer pins to the exact new bytes. Perception: complete the 1s/2s speaker-history invariance regression and run the integrated A5→A4→C3 path. Then coordinate AudioRecord provider/revocation with Core/QA. Keep capture/model load OFF and preserve STOPPED_BY_USER.",
+      "proof_environment": "Test code now includes 1s/2s timestamp invariance (10/20-frame lookback), missing-threshold and unvoiced/non-voiced negative controls; NOT_RUN on current head because exact-head CI has startup_failure/zero jobs. LOCAL_LINUX full checkout BLOCKED; no Redmi proof.",
+      "next_step": "Restore exact-head CI and run test_one_and_two_second_reference_timestamps_are_batch_length_invariant plus missing-threshold, non-voiced, 3-regime, RAW EAR/A4/C3 and duplex/Teacher Ear regressions on Python 3.13/3.14. Then independent QA/Boss review and Core attention.py guard/pin-chain repair. Keep AudioRecord/model OFF and preserve STOPPED_BY_USER.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T00:12:48Z",
+      "last_checkpoint": "2026-11-24T00:15:12Z",
       "latest_candidate_pr": {
         "pr": 2448,
         "head_sha": "dd409b8e19960e62826a281cd4a85de5459cb44c",
@@ -456,7 +456,7 @@
         "local_test": "BLOCKED_NO_CHECKOUT_DNS",
         "tested_code_sha": null
       },
-      "proof": "PR #2448 remains DRAFT / NOT_RELEASED. Code commit d0c0f4ca fixes the declared Teacher Ear stream type gate; 2dd5c499 forwards revised cumulative hypotheses to C3 only when transcript admission is explicitly opted in. Regression commit dd409b8 expands the streaming consumer test to three contiguous windows (delta + correction), exact source hashes, C3 admission and stream cleanup. This regression uses a fake recognizer and has NOT_RUN. Exact-head push/PR Actions runs 45294606645, 45294614943, 45294672434, 45294666726 ended startup_failure with zero jobs. No local py_compile/pytest. The latest sanitized device receipt is #1904 comment 7108089370: base 8d93236 installed, auto-update enabled, Runtime CI_WAIT; diagnostics show STOPPED_BY_USER/autostart false. Candidate not installed; REDMI_UNVERIFIED. R-122 records sherpa-onnx English 20M as optional, not downloaded, candidate.",
+      "proof": "PR #2448 remains DRAFT / NOT_RELEASED. Code commit d0c0f4ca fixes the declared Teacher Ear stream type gate; 2dd5c499 forwards revised cumulative hypotheses to C3 only when transcript admission is explicitly opted in. Regression commit dd409b8 expands the streaming consumer test to three contiguous windows (delta + correction), exact source hashes, C3 admission and stream cleanup. This regression uses a fake recognizer and has NOT_RUN. Exact-head push/PR Actions runs 45294606645, 45294614943, 45294672434, 45294666726 ended startup_failure with zero jobs. No local py_compile/pytest. The latest sanitized device receipt is #1904 comment 7108089370: base 8d93236 installed, auto-update enabled, Runtime CI_WAIT; diagnostics show STOPPED_BY_USER/autostart false. Candidate not installed; REDMI_UNVERIFIED. R-122 records sherpa-onnx English 20M as optional, not downloaded, candidate. Existing speaker-history regression code also contains the 1s/2s batch-length-invariance test (10/20-frame lookback), threshold-absent control, and non-voiced/three-regime negative controls; test blob 7962ad24f29b4a4638e20d5449b9d9f2d2e3028d. These are present, not executed on this head.",
       "run28_checkpoint": {
         "branch": "research-perception/v14-audio-duplex-bridge-20261123-run21",
         "pr": 2448,
@@ -560,7 +560,15 @@
         "research": "R-122 optional sherpa-onnx English Zipformer 20M; Apache-2.0 model card/library; Linux aarch64 wheel is not Android/Bionic proof; no download",
         "user_action_required": false,
         "handoff_path": "v14/handoffs/RESEARCH_PERCEPTION_TEACHER_STREAM_C3_REVISION_20261124_RUN29.md"
-      }
+      },
+      "speaker_invariance_test_blob_sha": "7962ad24f29b4a4638e20d5449b9d9f2d2e3028d",
+      "speaker_invariance_test_names": [
+        "test_one_and_two_second_reference_timestamps_are_batch_length_invariant",
+        "test_missing_threshold_emits_score_without_a_decision",
+        "test_non_voiced_embeddings_never_seed_or_replace_speaker_history",
+        "test_three_regime_gate_defers_nonvoiced_low_similarity"
+      ],
+      "speaker_invariance_test_status": "PRESENT_NOT_RUN"
     },
     {
       "id": "V14-019",
