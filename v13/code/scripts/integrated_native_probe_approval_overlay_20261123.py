@@ -36,13 +36,13 @@ DISPATCH_NEW = (
 )
 
 RUNTIME_CLOSE_OLD = (
-    b"        self.worker.join(6)\\n"
+    b"        self.worker.join(6)\n"
     b"        if self.worker.is_alive():"
 )
 RUNTIME_CLOSE_NEW = (
-    b"        self.worker.join(6)\\n"
-    b"        from .native_probe_approval import wait_for_runtime_probe_shutdown\\n"
-    b"        wait_for_runtime_probe_shutdown(self, timeout=getattr(self, '_native_probe_close_timeout_s', 5.0))\\n"
+    b"        self.worker.join(6)\n"
+    b"        from .native_probe_approval import wait_for_runtime_probe_shutdown\n"
+    b"        wait_for_runtime_probe_shutdown(self, timeout=getattr(self, '_native_probe_close_timeout_s', 5.0))\n"
     b"        if self.worker.is_alive():"
 )
 
