@@ -129,7 +129,7 @@ def test_manifest_rejects_symlink_and_size_overflow(tmp_path):
     target.write_bytes(b"x")
     (tmp_path / "encoder.onnx").unlink()
     (tmp_path / "encoder.onnx").symlink_to(target)
-    with pytest.raises(TeacherEarError, match="symlinks"):
+    with pytest.raises(TeacherEarError, match="symlink"):
         manifest.verified_files()
     other = tmp_path / "other"
     other.mkdir()
