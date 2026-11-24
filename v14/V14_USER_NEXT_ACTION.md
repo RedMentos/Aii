@@ -1801,3 +1801,21 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 **Research intake:** R-081 (Prompt Compression in the Wild, arXiv:2604.02985) is ABSTRACT_VERIFIED only; its main V14 lesson is to measure compressor overhead separately from saved prefill and end-to-end quality. R-082 (TAKE, Findings EMNLP 2026, DOI 10.18653/2026.findings-emnlp.260) is ABSTRACT_VERIFIED only; its 128K-context result is not comparable to V13's 2K context, and code license/runtime compatibility remain unverified. Neither is adopted.
 
 **User action required: NONE.** Existing authenticated update request #737 is queued. No additional device action, manual command, model/weight swap or permission change is needed.
+
+
+---
+
+## Core & Harness — native receiver pair-matrix checkpoint (2026-11-24 17:56 UTC)
+
+**PR #2451** remains a draft candidate on `core/v14-native-probe-staged-overlay-20261123-run2`, based on `8d93236c753f0194224c19edc7411d8d7082b1d6`. Code/test checkpoint: `07a6180a0b9fe340970dd9151fa363b17667809b`. This is not release integration.
+
+- Added a fixed four-pair native diagnostic matrix: B1→B2, B1→C3, B2→B1, B2→C3.
+- One local-TTY approval binds the latest FINAL text SourceRef, session/generation, all three installed model revisions, SHA-256 hashes, selected paths and inode identities. A shared one-shot approval state prevents overlap with the single-pair probe.
+- The matrix checks known process residency and headroom for all three model files, runs serially under an exclusive Runtime lease, and is bounded to 240 seconds total / 60 seconds per pair. It records numeric receiver/control evidence only; it does not persist prompt text, change routing, train weights or activate B3.
+- Rebound the staged overlay → stage builder → RuntimeDeploy SHA chain and verified the file readbacks match. The exact pin values and next actions are in the PR handoff and V14 work board.
+- The preceding exact head `9e28234d19a677e9dd44dc4a1ecf54964791b2d7` had successful native Python 3.13/3.14, pinned Linux native build/selftest, Android ARM64 cross-compile, staged Runtime and integrated regression workflows. The new matrix code/tests at `07a6180` were queued at last readback; do not carry forward the old green status as proof of the new matrix.
+- Full local Aii pytest/native suite: NOT_RUN; no checkout is mounted and GitHub DNS fails. Redmi: REDMI_UNVERIFIED; the matrix has not been armed or executed. No device command, model download/swap, weight update, permission change or data mutation was performed.
+
+**Next:** verify exact-head CI for `07a6180`, repair any failure, and obtain independent Boss/QA review. After a reviewed integration and verified ordinary updater path, request a separate user decision before any physical Redmi matrix probe. Production B3 remains OFF until trained projection, source-disjoint held-out utility, SOURCE_EXACT/NO_MESSAGE baselines, zero/shuffle/OOD controls and retention are measured.
+
+**User action required: NONE.** No Termux command, model change, or device permission is requested.
