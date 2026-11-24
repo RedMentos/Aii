@@ -266,6 +266,19 @@ class NativeTurnBudgetTests(unittest.TestCase):
         self.assertEqual(d["preanswer_seconds_available"],8.0)
         self.assertEqual(d["minimum_role_slice_s"],2.0)
 
+    def test_exact_recovery_deadline_accepts_only_float_roundoff(self):
+        # Large monotonic origins can make (start + 50) - start slightly > 50.
+        # The configured 50 s boundary must remain stable under float rounding.
+        start = 33554401.35371078
+        deadline = start + 50.0
+        self.assertGreater(deadline - start, 50.0)
+        recovered = budget.plan(start, deadline, start, recent=[turn(), turn()])
+        self.assertTrue(recovered["recovery"])
+        self.assertAlmostEqual(recovered["c3_reserved_seconds"], 10.0)
+
+        genuinely_over = budget.plan(start, start + 50.01, start, recent=[turn(), turn()])
+        self.assertFalse(genuinely_over["recovery"])
+
     def test_short_turn_does_not_enter_recovery_without_two_body_slices(self):
         d=budget.plan(100,110,100,recent=[turn(),turn()])
         self.assertFalse(d["recovery"])
