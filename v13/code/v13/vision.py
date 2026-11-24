@@ -634,8 +634,11 @@ def _validate_state_sources(conn, state, allow_malformed_projectors=False):
                 if training_key.split(':', 1)[0] not in images:
                     raise ValueError('vision projector caption references a non-live source')
         lineage = projector.get('training_sources')
+        stats = projector.get('source_stats')
+        stats_mode = projector.get('source_stats_mode')
         if lineage in (None, []):
-            if projector.get('source_stats_mode') == SOURCE_STATS_MODE:
+            if (stats_mode == SOURCE_STATS_MODE
+                    or (stats is not None and stats != [])):
                 raise ValueError('A3 source statistics require complete projector lineage')
             continue  # legacy/unknown lineage is retained only until explicit forget invalidates it
         if type(lineage) is not list:
@@ -655,8 +658,6 @@ def _validate_state_sources(conn, state, allow_malformed_projectors=False):
             seen.add(source_id)
             lineage_map[source_id] = source_sha
 
-        stats = projector.get('source_stats')
-        stats_mode = projector.get('source_stats_mode')
         if stats is not None:
             if type(stats) is not list or len(stats) > MAX_SOURCE_STATS:
                 raise ValueError('invalid or unbounded A3 source statistics')
