@@ -70,8 +70,18 @@ def _open_or_create_dir(parent_fd, name, flags):
             pass
         fd = os.open(name, flags | os.O_NOFOLLOW, dir_fd=parent_fd)
     try:
-        if not stat.S_ISDIR(os.fstat(fd).st_mode):
+        info = os.fstat(fd)
+        if not stat.S_ISDIR(info.st_mode):
             raise OSError("A3 statistics path is not a directory")
+        if info.st_uid != os.geteuid():
+            raise OSError("A3 statistics directory is not owned by current user")
+        # Existing data/vision directories may predate source statistics and
+        # have been created with permissive defaults (for example 0755).
+        # Tighten the already-open inode, never a path that could be swapped.
+        if stat.S_IMODE(info.st_mode) != 0o700:
+            os.fchmod(fd, 0o700)
+            if stat.S_IMODE(os.fstat(fd).st_mode) != 0o700:
+                raise OSError("A3 statistics directory permissions are not private")
         return fd
     except Exception:
         os.close(fd)
