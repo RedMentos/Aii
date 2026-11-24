@@ -227,6 +227,10 @@ class Turn(unittest.TestCase):
             if kind=="wake":return {"learned":False,"action":"both"}
             return original_decide(kind,*args,**kwargs)
         self.r.learner.decide=deterministic_decide
+        # Restore the real Cognition.offer implementation for this Runtime path;
+        # the class-level fixture from setUp only records two-field tuples.
+        del self.r.cognition.offer
+        original_offer=self.r.cognition.offer
         self.c3_messages=[]
         def pool_get(role):
             if role=="C3_LANGUAGE":
@@ -254,7 +258,7 @@ class Turn(unittest.TestCase):
             self.calls.append((role,preanswer,thread,valid_until_present,status))
             if role=="B2_GIST" and valid_until_present:
                 raise Limits("pre-answer/late-watch B2 attempt expired")
-            return dict(OFFER,role=role,packet_id="pkt_"+role+"_postcommit")
+            return original_offer(role,e,version,deadline,peer,valid_until=valid_until,**kw)
         self.r.cognition.offer=offer
         self.r.cognition.communicate=Mock(return_value=None)
         Operator(self.r).run(":observers A_THEN_B_SEQUENTIAL")
@@ -267,7 +271,7 @@ class Turn(unittest.TestCase):
         self.assertTrue(any(role=="B1_DETAIL" and pre for role,pre,_,_,_ in self.calls))
         self.assertTrue(any(role=="B2_GIST" and pre for role,pre,_,_,_ in self.calls))
         self.assertEqual(self.r.last_answer()["status"],"FINAL",
-                         msg=f"calls={self.calls!r}; notices={notices!r}; late_watch={meta.get('late_watch')!r}")
+                         msg=f"calls={self.calls!r}; notices={notices!r}; late_watch={meta.get('late_watch')!r}; error={meta.get('error')!r}; detail={meta.get('detail')!r}; failure_stage={meta.get('failure_stage')!r}")
         self.assertEqual(meta["late_watch"].get("offered"),"B2_GIST")
         self.assertEqual(meta["late_watch"].get("status"),"NO_OFFER")
         self.assertFalse(meta["late_watch"].get("offer_id"))
