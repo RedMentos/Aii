@@ -1,3 +1,16 @@
+## Core C4-to-C3 receipt checkpoint - 2026-11-24T05:14:43Z
+
+- PR #2462 code/test SHA 58f1587c7e8cbd5cb63c8c46afbd1c645c3e6c0f adds the exact C4-selected OfferPacket ID receipt before C3 context assembly. Both B1/B2 summaries are verified in the same synthetic C3 system prompt.
+- CI Python 3.13 direct Runtime consumer step: PASS, including C4/C3 ID match and tamper negative control. The overall workflow remains FAIL at final staged composition because the shared source-pinned builder chain rejects the current Runtime SHA.
+- Python 3.14 focused dependency installation was still in progress at the last poll. Staged-runtime failed 32/243/10-skipped/2-errors at immutable Runtime pins; integrated-regression was still running; owner-read unit checks passed but Python 3.14 staged bootstrap failed at the same pin.
+- LOCAL_LINUX isolated telemetry/ID-match contract checks PASS; full Aii checkout NOT_RUN/BLOCKED because no checkout is mounted and GitHub DNS fails.
+- Runtime file remains blob 80eddec84f7a5ef06c1c72007ca08c44b694ace0, SHA-256 7940a5d86a1bf53f3cd5203e8715d927c4d4aa11d881097f45a1724c2dcec186. Four Boss/QA-owned consumers still pin the prior Runtime SHA; no pin was changed or relaxed.
+- Coordination comments: Boss #2443 comment 7122728300; QA #2455 comment 7122728809. Core PR #2462 remains OPEN / NOT_RELEASED.
+- Redmi: last stored observation STOPPED_BY_USER/autostart OFF; no fresh device read, update, restart, model/weight/permission change or data mutation. REDMI_UNVERIFIED.
+- Next: Boss/Integrator recompose the four Runtime consumers plus downstream stage/deployer chain; QA reruns exact Python 3.13/3.14 staged, integrated, same-turn, owner-read and migration checks. No user action required.
+
+---
+
 ## Core fair B1/B2 recovery follow-up — 2026-11-24T04:38:22Z
 
 - PR #2462 code head `d0a30b18cc629d7498373e01985f89df00fa7461` (latest docs/handoff branch HEAD `ca269493a380232ef88ffa095ab5b82eaec7fce3`) adds two runtime corrections: late-watch offers explicitly bypass the pre-answer recovery budget, and one late-watch event/status is recorded once even when `check()` closes it before `finish()`.
