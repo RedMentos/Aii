@@ -15,6 +15,9 @@ This affects the actual TemporalVoiceEvidenceRegistry used by audio_voice_cues.c
 
 ## Exact branch and commits
 
+- Draft PR: https://github.com/RedMentos/Aii/pull/2471.
+- Dedicated exact-source workflow: .github/workflows/v14-audio-temporal-evidence.yml; run 2 is queued for Python 3.13/3.14.
+
 - Base: gpt6/v13-private-remote-bridge-20261111 at 8d93236c753f0194224c19edc7411d8d7082b1d6.
 - Branch: research-perception/v14-audio-temporal-interval-order-20261124-run15.
 - Code commit: e3d93311c4f15320dbccd920163263a64a7aeefd.
@@ -25,7 +28,7 @@ This affects the actual TemporalVoiceEvidenceRegistry used by audio_voice_cues.c
 
 - LOCAL_LINUX / CPython 3.13.5 isolated reproduction: PASS. Verified partial-overlap suffix accounting, equal-start cumulative windows, rejection of a backward start despite a later end, unchanged baseline after rejection, recovery with a valid interval, and the existing end-order negative control.
 - Full local Aii pytest: BLOCKED / NOT_RUN. No repository checkout is mounted; git ls-remote failed because github.com DNS did not resolve. The isolated reproduction is not the repository test suite.
-- Exact-branch CI: pending until PR workflows run. The committed regression is part of test_audio_temporal_evidence.py.
+- Exact-branch CI: queued, not passed. Dedicated temporal workflow run 2 has Python 3.13/3.14 jobs queued; staged/integrated/privacy/consent/deployment workflows are also queued. The committed regression is part of test_audio_temporal_evidence.py.
 - TERMUX/REDMI: REDMI_UNVERIFIED. No connected authorized handset test was performed.
 
 ## Phone and deployment boundary
