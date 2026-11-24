@@ -14,6 +14,12 @@ This workspace is independent of V13/V14 development. It copies selected M1 data
 - ArrayDataset exposes train rows through train_values(); the full matrix is private internal state. The in-process gate is a methodological API guard, not a security sandbox against code deliberately accessing private attributes. Keep raw data under the ignored `experiments/datasets/` path or outside the repository.
 - Test windows require exact data/config/split hashes, complete preregistration fields, and a durable audit event before iteration. The loader resolves the actual Git HEAD itself and refuses a dirty worktree; callers cannot supply a substitute commit hash.
 
+## Dataset provenance
+
+The intended real cohort is UCI's *Individual Household Electric Power Consumption* dataset, DOI [10.24432/C58K54](https://doi.org/10.24432/C58K54), by Georges Hebrail and Alice Berard. UCI lists 2,075,259 minute-level measurements from one household in Sceaux, France, spanning December 2006 through November 2010, with nearly 1.25% missing measurement rows. The raw file is `household_power_consumption.txt`; UCI lists the dataset under **CC BY 4.0**. Keep the downloaded file local under the ignored `experiments/datasets/` path; never commit it. This is a single-household case study, not evidence of population-level generalization.
+
+No real UCI file was available in this execution environment: the Library search did not surface it, and the runtime could not materialize the UCI archive. Therefore all current model results remain synthetic/software checks; real train/validation utility is still unmeasured and the test year remains locked.
+
 ## Modules
 - data.py / array_data.py: reference and bounded-memory NumPy data paths, fixed calendar split, gated test access.
 - baselines.py: persistence, seasonal persistence, train mean/median, Ridge-AR and LAD-AR.
