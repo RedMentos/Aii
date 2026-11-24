@@ -211,12 +211,12 @@ def build_sources(code_dir, *, include_postcommit=True):
         if path.is_symlink() or not path.is_file():
             raise ValueError('Postcommit observer builder missing or unsafe')
         raw_candidate = path.read_bytes()
-        if hashlib.sha256(raw_candidate).hexdigest() != '87ce337d83b787529d52753ac4ece98af379646881a56922084bbbee04e5777c':
+        if hashlib.sha256(raw_candidate).hexdigest() != '865e7b46bc22e6cf4177f7c05b3c11ce6d094df0325798e2671fc7fc1a4ec2d9':
             raise ValueError('Postcommit observer builder source changed')
         namespace = {'__name__': 'v13_checked_postcommit', '__file__': str(path)}
         exec(compile(raw_candidate, str(path), 'exec'), namespace)
         runtime = result['v13/runtime.py']
-        if hashlib.sha256(runtime).hexdigest() != 'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2':
+        if hashlib.sha256(runtime).hexdigest() != '7447240c5ebb98e9bb5c33f7ffe6c9f4a154766de346c5c4af1ee135855f13c7':
             raise ValueError('Integrated observer Runtime source changed: ' + hashlib.sha256(runtime).hexdigest())
         runtime = namespace['apply_source'](runtime)
         # LateWatch runs during C3 streaming and must obey the same resolved
@@ -230,7 +230,7 @@ def build_sources(code_dir, *, include_postcommit=True):
         if late_path.is_symlink() or not late_path.is_file():
             raise ValueError('LateWatch source missing or unsafe')
         late = late_path.read_bytes()
-        if hashlib.sha256(late).hexdigest() != 'fc2e86be3f2f3e629a9e54c3f1c31266f495060e60a42e636f7a924f5ffadfc0':
+        if hashlib.sha256(late).hexdigest() != '11b27558bb125557dcf7687e26c5e460b6c19a8a3e6f7cac4cee398be32a5916':
             raise ValueError('LateWatch source changed')
         old_sig = b"def start(r,e,version,offers,deadline,meta,runner,eligible=True):\n"
         new_sig = b"def start(r,e,version,offers,deadline,meta,runner,eligible=True,allowed_roles=None):\n"
@@ -254,11 +254,11 @@ def build_sources(code_dir, *, include_postcommit=True):
         if late.count(old_sig) != 1 or late.count(old_roles) != 1:
             raise ValueError('LateWatch role anchor changed')
         late = late.replace(old_sig, new_sig, 1).replace(old_roles, new_roles, 1)
-        if hashlib.sha256(late).hexdigest() != '841aeaa9d7d0b0950b6c3ad799d2b8f8dd44fcee93159bd2a48c66f341460b12':
+        if hashlib.sha256(late).hexdigest() != 'f8e52c56385df2224afd3da3764a9f76f379cd0245d0450e4f85fa5877c3eda1':
             raise ValueError('LateWatch output changed')
         result['v13/latewatch.py'] = late
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
-                             '254f1f0c0fe03e3ba22d2cdb1982460dbf31f7dbcd049122ff47356cd1acdcc1')
+                             'd9cdc101e34c7df535bc7cf08dde1e61215dbc952ad5f7254f4ce89ccf29f6a8')
         result = control_guard.apply_sources(code_dir, result)
         # The guard rewrites the semantic module and its local-error consumer as
         # one reviewed generation. Snapshot that exact pair before Store overlays.
@@ -281,7 +281,7 @@ def build_sources(code_dir, *, include_postcommit=True):
     focal_overlay_blob = hashlib.sha1(
         b'blob ' + str(len(focal_overlay_raw)).encode('ascii') + b'\0' + focal_overlay_raw
     ).hexdigest()
-    if focal_overlay_blob != '9987525960ba0955dd2fd57d421e32f4b76b892c':
+    if focal_overlay_blob != 'd0fa3ac60e672574824d601f192f2fa35a14e036':
         raise ValueError('C4 source-span overlay source changed')
     focal_overlay_ns = {
         '__name__': 'v14_checked_focal_scale_overlay',
