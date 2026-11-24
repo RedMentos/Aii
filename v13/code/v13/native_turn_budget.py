@@ -17,6 +17,7 @@ import math
 SCHEMA = "v13.native-turn-budget/1"
 MAX_RECENT = 6
 RECOVERY_MAX_DEADLINE_S = 50
+RECOVERY_DEADLINE_EPSILON_S = 1e-6
 DEFAULT_PREANSWER_FRACTION = .45
 C3_RESERVE_DEFAULT_S = 10.0
 C3_RESERVE_MIN_S = 6.0
@@ -165,7 +166,7 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
     )
     recover = (
         not direct and background_enabled is True
-        and total <= RECOVERY_MAX_DEADLINE_S and total >= minimum_recovery_window
+        and total <= RECOVERY_MAX_DEADLINE_S + RECOVERY_DEADLINE_EPSILON_S and total >= minimum_recovery_window
         and failures >= 2 and recent_good < 2
     )
     reserve_capped = False
