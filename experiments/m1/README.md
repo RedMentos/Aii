@@ -11,8 +11,8 @@ This workspace is independent of V13/V14 development. It copies selected M1 data
 - Candidate origins begin at max_candidate_input_length - 1, not the current L, so candidate denominators remain identical across input-length variants.
 - The list and NumPy paths have an elementwise parity test for origins, X, S, calendar features and Y.
 - Fraction-based splits remain available only for explicit synthetic/parser fixtures.
-- ArrayDataset exposes train rows through train_values(); the full matrix is private internal state. The in-process gate is a methodological API guard, not a security sandbox against code deliberately accessing private attributes.
-- Test windows require exact data/config/split hashes, complete preregistration fields, exact executing commit SHA, and a durable audit event before iteration.
+- ArrayDataset exposes train rows through train_values(); the full matrix is private internal state. The in-process gate is a methodological API guard, not a security sandbox against code deliberately accessing private attributes. Keep raw data under the ignored `experiments/datasets/` path or outside the repository.
+- Test windows require exact data/config/split hashes, complete preregistration fields, and a durable audit event before iteration. The loader resolves the actual Git HEAD itself and refuses a dirty worktree; callers cannot supply a substitute commit hash.
 
 ## Modules
 - data.py / array_data.py: reference and bounded-memory NumPy data paths, fixed calendar split, gated test access.
