@@ -325,6 +325,47 @@ class AndroidControlBroker:
             self._audit(action_id, "companion_receipt_verified" if verified else
                         "companion_receipt_rejected", digest)
 
+    def receipt_proposal(self, action_id):
+        """Read a durable receipt binding without restoring dispatch authority.
+
+        A verified receipt is no longer present in the consumed map. Reconstruct
+        only the immutable digest/source binding from SQLite so later reads can
+        revalidate the stored signature after restart; never add it to a
+        dispatchable map or repeat the Android action.
+        """
+        with self.lock:
+            row = self.db.execute(
+                "SELECT capability,args_json,expires_at,digest,event_id,source_ref_json,state "
+                "FROM control_actions WHERE action_id=?",
+                (action_id,),
+            ).fetchone()
+            if row is None or row[6] not in ("RECEIPT_CONSUMED", "RECEIPT_VERIFIED"):
+                raise ControlDenied("action has no receipt-only recovery record")
+            try:
+                capability, args_json, expires_at, digest, event_id, source_json, _state = row
+                if (not isinstance(digest, str) or len(digest) != 64
+                        or any(ch not in "0123456789abcdef" for ch in digest)):
+                    raise ValueError("invalid digest")
+                if args_json is None:
+                    if capability != "type_text":
+                        raise ValueError("missing non-sensitive arguments")
+                    args = {}
+                else:
+                    args = json.loads(args_json)
+                source_ref = json.loads(source_json) if source_json is not None else None
+                if type(args) is not dict or (
+                    source_ref is not None and type(source_ref) is not dict
+                ):
+                    raise ValueError("invalid stored proposal shape")
+                if (event_id is None) != (source_ref is None):
+                    raise ValueError("incomplete source binding")
+                return Proposal(
+                    action_id, capability, args, float(expires_at), digest,
+                    event_id, source_ref,
+                )
+            except (TypeError, ValueError, json.JSONDecodeError) as exc:
+                raise ControlDenied("receipt-only recovery record is malformed") from exc
+
     def cancel(self, action_id):
         with self.lock:
             p = (self.pending.pop(action_id, None) or self.approved.pop(action_id, None)
