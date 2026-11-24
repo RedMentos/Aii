@@ -97,6 +97,10 @@ class PilotConfig:
         "seasonal_persistence_lag_1",
         "train_mean",
         "train_median",
+        "ridge_ar_l2",
+        "lad_ar_l1_l2penalty",
+        "raw_window_probe",
+        "raw_window_mlp",
         "matched_dlinear",
         "matched_nlinear",
         "jepa_pretrain",
@@ -105,7 +109,7 @@ class PilotConfig:
         "direct_mae",
         "raw_gru",
     )
-    seeds: tuple[int, ...] = (17, 23, 29)
+    seeds: tuple[int, ...] = (17,)
     reference_model: str = "persistence"
 
     batch_size: int = 128
