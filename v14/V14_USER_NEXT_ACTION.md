@@ -1884,9 +1884,18 @@ The exact integration owner is **Boss/Integrator PR #2443**, because it carries 
 
 ### Research & Perception — run 36 — 2026-11-24
 
-- PR #2448 remains OPEN/DRAFT/NOT_RELEASED on `research-perception/v14-audio-duplex-bridge-20261123-run21`; exact code/test checkpoint `677f73eaf7bf594ecbbf64ab2e99cca4398e0bc1`, base `8d93236c753f0194224c19edc7411d8d7082b1d6`.
+- PR #2448 remains OPEN/DRAFT/NOT_RELEASED on `research-perception/v14-audio-duplex-bridge-20261123-run21`; exact code/test checkpoint `1c472abd672ab8e2838db48f80b5a252b6336aae`, base `8d93236c753f0194224c19edc7411d8d7082b1d6`.
 - RAW EAR now separates sustained speech, new voiced-onset interrupt candidate and one-shot EOT candidate after 400 ms of newly observed contiguous silence. Noise, impulses, uncertain windows, overlapping-window duplication, source/generation/consent changes and long gaps are handled as negative/reset conditions. A4 carries the temporal candidate object; C3 receives a compact `turn=sXeYiZ floor_transfer=UNVERIFIED` suffix. This is candidate-only; no EOT auto-cancel or verified floor transfer.
 - Added temporal negative controls and a synthetic A5→A4→C3 consumer test. LOCAL_LINUX isolated temporal-state reproduction PASS. Exact-head CI was queued at checkpoint on Python 3.13/3.14; no CI PASS is claimed until the run completes. Full local Aii checkout remains blocked by GitHub DNS.
 - Boss/Integrator PR #2443 owns the source-lifecycle composer. New audio source blobs are `audio_temporal_evidence.py=888122f6c7e229f94ae1792616e3a353f89136b9` and `audio_voice_cues.py=efa83d1705ef8262bb83dcc6f9d087d085647eda`; publish exact SHA-256 after CI and rebind the strict composer pins there. Current #2463 vision integration remains separately blocked by the same composer ownership.
 - Redmi/Termux: REDMI_UNVERIFIED for this candidate. Last known phone receipt #832 predates this branch; no update request, microphone permission, model download/swap or manual command was made.
 - **User action: none required.** No manual Termux command, device update, model change or permission change.
+
+
+### Perception checkpoint correction — exact code/test SHA 1c472 — 2026-11-24
+
+- The temporal candidate triad is now persisted in every RAW EAR PerceptPacket at `segments[0].acoustic.temporal_voice`, not only in the duplex path. Duplex requires equality between packet, A4 result and the one-use receipt before dispatch.
+- The initial CI failures were test-only: the new integration fixture assumed `event["session_id"]`, which the Store event does not expose, and the VAD comparator expected old Git blob pins. The fixture now retains the actual session on its test runtime; comparator pins now match the new source blobs. No product behavior was relaxed to fix the failures.
+- Exact code/test SHA: `1c472abd672ab8e2838db48f80b5a252b6336aae`. Current PR branch/documentation head: `fa31fbf7e61815eb7a786292ff73fa75fbc3f859`. Python 3.13/3.14 RAW EAR, duplex, consent and VAD comparison runs are queued/in progress; final results not yet known.
+- LOCAL_LINUX isolated state reproduction and negative controls: PASS. Full local checkout: BLOCKED by GitHub DNS. Redmi: REDMI_UNVERIFIED. No deployment/update/model/permission change.
+- Boss/Integrator PR #2443 still owns the strict source-lifecycle composer and must rebind the final audio/vision source pins after CI. **User action: none required.**
