@@ -24,7 +24,7 @@ import json
 import math
 import re
 import time
-from .common import dumps, digest
+from .common import dumps
 from .contracts import packet
 from .neuromod import step
 
@@ -79,8 +79,7 @@ def caution(**x):
 def from_modulators(ch):
     """Map WP-N10 modulator channels onto salience/caution inputs (shared vocabulary, separate effects)."""
     s={'novelty':max(0.,ch.get('novelty',0.)),'prediction_error':max(0.,ch.get('surprise',0.),ch.get('world_prediction_error',0.))}
-    c={'world_surprise':max(0.,ch.get('world_prediction_error',0.)),
-       'source_risk':max(0.,ch.get('calibration_error',0.),-ch.get('reward_error',0.))}
+    c={'world_surprise':max(0.,ch.get('world_prediction_error',0.)),'source_risk':max(0.,ch.get('calibration_error',0.))}
     if ch.get('rule_violation',0.)>0:s['goal_violation']=ch['rule_violation']
     return {k:v for k,v in s.items() if v},{k:v for k,v in c.items() if v}
 def offer_features(offer):
@@ -218,73 +217,30 @@ class Attention:
                    'too_expensive':sum(x['status']=='TOO_EXPENSIVE' for x in responses),'budget':cap,'left':left,'mode':st['mode']})
         return responses
     def outcome(self,response_packet_id,usefulness,source_class='internal_crosscheck'):
-        """§4B.4: credit one granted outcome once, durably, with the request's exact provenance."""
+        """§4B.4: was the granted resource useful? usefulness in [-1,1]. Updates the shadow prior + N10 modulator."""
         u=clamp(usefulness,-1.,1.)
         row=self.s.one("SELECT payload FROM packets WHERE id=? AND kind='AttentionResponse'",(response_packet_id,))
         if not row:raise ValueError('Unbekannte Attention-Antwort')
         resp=json.loads(row['payload'])
-        if resp.get('status')!='GRANTED':raise ValueError('Nur gewährte Anfragen haben ein Ergebnis')
-        reqrow=self.s.one("SELECT payload FROM packets WHERE id=? AND kind='AttentionRequest'",(resp.get('request_packet_id'),))
-        if not reqrow:raise ValueError('Attention-Anfrage fehlt')
-        req=json.loads(reqrow['payload'])
-        if (resp.get('event_id')!=req.get('event_id')
-                or resp.get('request_packet_id')!=req.get('packet_id')
-                or resp.get('brain_generation_id')!=req.get('brain_generation_id')):
-            raise ValueError('Attention-Antwort/Anfrage-Lineage stimmt nicht')
-        raw_refs=[]
-        for group in (resp.get('provenance') or [],req.get('provenance') or []):
-            if not isinstance(group,list):raise ValueError('Attention-Provenance muss eine Liste sein')
-            raw_refs.extend(group)
-        if req.get('source_ref') is not None:raw_refs.append(req['source_ref'])
-        refs=[];seen=set()
-        for ref in raw_refs:
-            if not isinstance(ref,dict):raise ValueError('Ungültige Attention-SourceRef')
-            marker=dumps(ref)
-            if marker not in seen:seen.add(marker);refs.append(dict(ref))
-        provenance_sha256=digest(dumps(refs).encode('utf-8'))
-        key=req['reason']+'|'+req['target'];sc=step(self.n,PATH)
-        receipt_key='ATTENTION_OUTCOME_RECEIPT:'+response_packet_id
-        modulator=None
-        with self.s.tx() as c:
-            if c.execute('SELECT 1 FROM states WHERE key=?',(receipt_key,)).fetchone():
-                raise ValueError('Ergebnis schon verbucht')
-            state_row=c.execute('SELECT version,payload FROM states WHERE key=?',(KEY,)).fetchone()
-            st=json.loads(state_row['payload']) if state_row else empty()
-            if st.get('revision')!=REVISION:raise ValueError('Attention state revision mismatch')
+        if resp['status']!='GRANTED':raise ValueError('Nur gewährte Anfragen haben ein Ergebnis')
+        req=json.loads(self.s.one("SELECT payload FROM packets WHERE id=? AND kind='AttentionRequest'",(resp['request_packet_id'],))['payload'])
+        key=req['reason']+'|'+req['target'];sc=step(self.n,PATH)  # WP-U6 §12.7
+        def f(st):
             q=st['policy'].setdefault(key,{'n':0,'mean':0.,'outcomes':[]})
-            if response_packet_id in q.get('outcomes',[]):raise ValueError('Ergebnis schon verbucht')
-            predicted_usefulness=clamp(q.get('mean',0.),-1.,1.)
-            prediction_error=clamp(u-predicted_usefulness,-1.,1.)
-            q['n']+=1
-            q['mean']+=sc*max(POLICY_RATE,1/q['n'])*(u-q['mean'])
-            q['outcomes']=(q.get('outcomes',[])+[response_packet_id])[-32:]
-            c.execute('INSERT OR REPLACE INTO states VALUES (?,?,?)',
-                      (KEY,(state_row['version'] if state_row else 0)+1,dumps(st)))
-            if self.n is not None:
-                channels={'reward_error':prediction_error,'surprise':abs(prediction_error)}
-                if u>0:channels['task_success']=u
-                elif u<0:channels['action_error']=-u
-                modulator=self.n.signal_in_transaction(c,resp['event_id'],path=PATH,
-                    source_class=source_class,refs=refs,**channels)
-            receipt={'response_packet_id':response_packet_id,'policy_key':key,'event_id':resp['event_id'],
-                     'source_ref_count':len(refs),'provenance_sha256':provenance_sha256,'source_class':source_class,
-                     'predicted_usefulness':predicted_usefulness,'prediction_error':prediction_error,
-                     'modulator_packet_id':modulator['packet_id'] if modulator else None,'created_wall_time':time.time()}
-            c.execute('INSERT INTO states VALUES (?,?,?)',(receipt_key,1,dumps(receipt)))
-            q=dict(q,outcomes=len(q['outcomes']))
-        self.s.log('attention_outcome',resp['event_id'],
-                   {'key':key,'usefulness':u,'predicted_usefulness':predicted_usefulness,
-                    'prediction_error':prediction_error,'surprise':abs(prediction_error),
-                    'n':q['n'],'mean':round(q['mean'],6),'source_bound':bool(refs),
-                    'source_ref_count':len(refs),'provenance_sha256':provenance_sha256,
-                    'modulator_packet_id':modulator['packet_id'] if modulator else None})
-        return {'key':key,'n':q['n'],'mean':round(q['mean'],6),
-                'predicted_usefulness':predicted_usefulness,'prediction_error':prediction_error,
-                'modulator_packet_id':modulator['packet_id'] if modulator else None}
+            if response_packet_id in q['outcomes']:raise ValueError('Ergebnis schon verbucht')
+            q['n']+=1;q['mean']+=sc*max(POLICY_RATE,1/q['n'])*(u-q['mean']);q['outcomes']=(q['outcomes']+[response_packet_id])[-32:]
+            return dict(q,outcomes=len(q['outcomes']))
+        q=self._mutate(f)
+        if self.n is not None:
+            ch={'task_success':u} if u>0 else {'action_error':-u} if u<0 else {}
+            self.n.signal(resp['event_id'],path=PATH,source_class=source_class,refs=[],**ch)
+        self.s.log('attention_outcome',resp['event_id'],{'key':key,'usefulness':u,'n':q['n'],'mean':round(q['mean'],6)})
+        return {'key':key,'n':q['n'],'mean':round(q['mean'],6)}
     def recent_modulators(self,event_id,session=None,limit=RECENT_EVENTS):
-        """N10 channels of recent prior events, decayed by RELAX. Keep reward_error signed so negative residuals raise caution."""
+        """N10 channels of the last `limit` prior events (same session), max per channel, decayed RELAX per event back.
+        Feeds modulate(); only positive magnitudes count (salience/caution are unsigned)."""
         rows=self.s.rows("SELECT p.event_id,p.payload FROM packets p JOIN events e ON e.id=p.event_id WHERE p.kind='ModulatorPacket' AND e.rowid<(SELECT rowid FROM events WHERE id=?) AND (? IS NULL OR e.session_id=?) ORDER BY p.rowid DESC LIMIT 64",(event_id,session,session))
-        order=[];ch={};reward_error=None
+        order=[];ch={}
         for r in rows:
             if r['event_id'] not in order:
                 if len(order)>=limit:break
@@ -293,39 +249,22 @@ class Attention:
             try:from .neuromod import channels_from;c=channels_from(json.loads(r['payload']))
             except Exception:continue
             for k,v in c.items():
-                if k=='reward_error':
-                    candidate=w*v
-                    if reward_error is None or abs(candidate)>abs(reward_error):reward_error=candidate
-                elif v>0:ch[k]=max(ch.get(k,0.),w*v)
-        if reward_error is not None:ch['reward_error']=reward_error
+                if v>0:ch[k]=max(ch.get(k,0.),w*v)
         return {k:round(v,6) for k,v in ch.items()}
     def source_outcome(self,event_id,source_text,output):
-        """§4B.4 source-bound A4 re-look outcome; only the stored, hash-matching span may label."""
-        if not isinstance(source_text,str):return []
+        """§4B.4 outcome for A4 high-res re-looks: did the exact cues of the granted span reach the answer?
+        usefulness = .75*coverage - .25 in [-.25,.5]; spans without exact cues get no label. Internal cross-check only."""
         done=[]
         for r in self.s.rows("SELECT id,payload FROM packets WHERE kind='AttentionResponse' AND event_id=?",(event_id,)):
             resp=json.loads(r['payload'])
-            if resp.get('status')!='GRANTED' or resp.get('delivery')!=SOURCE_DELIVERY:continue
-            reqrow=self.s.one("SELECT payload FROM packets WHERE id=? AND kind='AttentionRequest'",(resp.get('request_packet_id'),))
-            if not reqrow:continue
-            req=json.loads(reqrow['payload'])
-            if req.get('event_id')!=event_id or resp.get('event_id')!=event_id:continue
-            ref=req.get('source_ref')
-            if not isinstance(ref,dict) or ref.get('modality')!='text':continue
-            if ref not in (resp.get('provenance') or []):continue
-            if digest(source_text.encode('utf-8'))!=ref.get('sha256'):
-                self.s.log('attention_source_outcome_rejected',event_id,{'reason':'source_hash_mismatch'})
-                continue
-            try:span_text=self.s.read_source(ref)
-            except (ValueError,FileNotFoundError,OSError,KeyError,TypeError):
-                self.s.log('attention_source_outcome_rejected',event_id,{'reason':'source_unavailable'})
-                continue
-            cov=coverage(span_text,output)
+            if resp['status']!='GRANTED' or resp.get('delivery')!=SOURCE_DELIVERY:continue
+            req=self.s.one("SELECT payload FROM packets WHERE id=? AND kind='AttentionRequest'",(resp['request_packet_id'],))
+            ref=(json.loads(req['payload']).get('source_ref') or {}) if req else {}
+            cov=coverage(str(source_text)[int(ref.get('char_start',0)):int(ref.get('char_end',0))],output)
             if cov is None:continue
             try:q=self.outcome(r['id'],round(.75*cov-.25,6))
             except ValueError:continue
-            done.append({'response':r['id'],'coverage':round(cov,4),'key':q['key'],
-                         'source_sha256':ref['sha256'],'source_ref_count':len(resp.get('provenance') or [])})
+            done.append({'response':r['id'],'coverage':round(cov,4),'key':q['key']})
         return done
     def set_mode(self,mode,authority):
         """Learned attention leaves SHADOW only on an explicit human decision (rule 8, Age 0 conservative)."""
