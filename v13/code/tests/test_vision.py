@@ -189,7 +189,7 @@ class Vision(unittest.TestCase):
 
     def test_source_disjoint_update_validation_requires_complete_positive_evidence(self):
         good = {'status': 'MEASURED', 'split': 'SOURCE_DISJOINT', 'authority': 'MEASUREMENT_ONLY',
-                'evaluation_scope': 'CHANGED_OR_NEW_CAPTIONS', 'source_groups': 4,
+                'evaluation_scope': 'NEW_SOURCE_GROUPS', 'source_groups': 4,
                 'folds_used': 4, 'folds_requested': 4, 'held_out_top1': 0.75, 'chance': 0.25,
                 'held_out_gain_over_chance': 0.5, 'utility_status': 'ABOVE_CHANCE',
                 'baseline_status': 'MEASURED', 'baseline_held_out_top1': 0.25,
@@ -225,7 +225,7 @@ class Vision(unittest.TestCase):
         rec = vision.ingest(self.store, png((20, 20, 220), box=(18, 8, 44, 34)))
         vision.describe(self.rt, rec, 'g', teacher)
         no_gain = {'status': 'MEASURED', 'split': 'SOURCE_DISJOINT', 'authority': 'MEASUREMENT_ONLY',
-                   'evaluation_scope': 'CHANGED_OR_NEW_CAPTIONS', 'n': 10, 'source_groups': 4,
+                   'evaluation_scope': 'NEW_SOURCE_GROUPS', 'n': 10, 'source_groups': 4,
                    'folds_used': 4, 'folds_requested': 4, 'held_out_top1': 0.1, 'chance': 0.1,
                    'held_out_gain_over_chance': 0.0, 'utility_status': 'AT_OR_BELOW_CHANCE',
                    'baseline_status': 'MEASURED', 'baseline_held_out_top1': 0.2,
@@ -251,7 +251,7 @@ class Vision(unittest.TestCase):
             vision.Projector.load(old_path, third['sha256']).W, first_weights
         ))
 
-    def test_source_disjoint_crossval_compares_previous_projector_on_changed_sources(self):
+    def test_source_disjoint_crossval_compares_previous_projector_only_on_unseen_sources(self):
         teacher = FakeTeacher()
         encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
         colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20)] * 3
@@ -260,7 +260,6 @@ class Vision(unittest.TestCase):
             vision.describe(self.rt, rec, 'g', teacher)
         first = vision.train(self.rt, encoder)
         old_record = vision.load(self.store)['projector']
-        old = vision.Projector.load(self.home / first['path'], first['sha256'])
         for i, colour in enumerate(colours):
             rec = vision.ingest(self.store, png(colour, box=(12+i, 9, 38+i, 34)))
             vision.describe(self.rt, rec, 'g', teacher)
@@ -268,17 +267,95 @@ class Vision(unittest.TestCase):
         X, captions, _, ids = vision.dataset(self.store, state=state)
         Y = encoder[1](captions)
         groups = [key.split(':', 1)[0] for key in ids]
-        changed = [old_record['captions'].get(key) != caption for key, caption in zip(ids, captions)]
+        new_source_mask, baseline = vision._projector_validation_inputs(
+            self.home, old_record, 'hashed_bow', ids, captions, tile=False
+        )
+        self.assertIsNotNone(baseline)
+        self.assertEqual(sum(new_source_mask), 9)
         cv = vision.source_disjoint_crossval(
-            X, Y, groups, captions, baseline_predictor=old, evaluation_mask=changed
+            X, Y, groups, captions, baseline_predictor=baseline, evaluation_mask=new_source_mask
         )
         self.assertEqual(cv['status'], 'MEASURED')
         self.assertEqual(cv['baseline_status'], 'MEASURED')
-        self.assertEqual(cv['evaluation_scope'], 'CHANGED_OR_NEW_CAPTIONS')
+        self.assertEqual(cv['evaluation_scope'], 'NEW_SOURCE_GROUPS')
         self.assertEqual(cv['source_groups'], 9)
         self.assertEqual(cv['folds_used'], cv['folds_requested'])
         self.assertTrue(numpy.isfinite(cv['held_out_gain_over_baseline']))
         self.assertTrue(numpy.isfinite(cv['baseline_held_out_top1']))
+
+    def test_changed_caption_on_seen_source_is_not_a_new_source_holdout(self):
+        teacher = FakeTeacher()
+        encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20)]
+        old_records = []
+        for i, colour in enumerate(colours):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            vision.describe(self.rt, rec, 'g', teacher)
+            old_records.append(rec)
+        first = vision.train(self.rt, encoder)
+        old_record = vision.load(self.store)['projector']
+
+        # The old projector has already seen this exact source ID; changing its
+        # caption must not turn it into an "unseen source" baseline test row.
+        vision.describe(self.rt, old_records[0], 'g', OppositeTeacher())
+        new_records = []
+        for i, colour in enumerate([(220, 20, 20), (20, 20, 220)]):
+            rec = vision.ingest(self.store, png(colour, box=(14+i, 12, 42+i, 40)))
+            vision.describe(self.rt, rec, 'g', teacher)
+            new_records.append(rec)
+
+        state = vision.load(self.store)
+        X, captions, _, ids = vision.dataset(self.store, state=state)
+        Y = encoder[1](captions)
+        groups = [key.split(':', 1)[0] for key in ids]
+        new_source_mask, baseline = vision._projector_validation_inputs(
+            self.home, old_record, 'hashed_bow', ids, captions, tile=False
+        )
+        self.assertIsNotNone(baseline)
+        self.assertTrue(any(
+            old_record['captions'].get(key) != caption
+            for key, caption in zip(ids, captions)
+            if key.split(':', 1)[0] == old_records[0]['ref']['source_id']
+        ))
+        old_ids = {rec['ref']['source_id'] for rec in old_records}
+        new_ids = {rec['ref']['source_id'] for rec in new_records}
+        self.assertFalse(any(
+            new_source_mask[index] for index, source_id in enumerate(groups) if source_id in old_ids
+        ))
+        self.assertTrue(all(
+            new_source_mask[index] for index, source_id in enumerate(groups) if source_id in new_ids
+        ))
+        cv = vision.source_disjoint_crossval(
+            X, Y, groups, captions, baseline_predictor=baseline, evaluation_mask=new_source_mask
+        )
+        self.assertEqual(cv['status'], 'MEASURED')
+        self.assertEqual(cv['evaluation_scope'], 'NEW_SOURCE_GROUPS')
+        self.assertEqual(cv['source_groups'], 2)
+        self.assertEqual(cv['baseline_status'], 'MEASURED')
+
+    def test_legacy_projector_without_exact_source_lineage_cannot_supply_a_baseline(self):
+        old_record = {
+            'encoder': 'hashed_bow',
+            'captions': {'old-source:g': 'an old caption'},
+            'path': 'data/vision/projector-legacy.npz',
+            'sha256': 'a' * 64,
+        }
+        keys = ['old-source:g', 'new-source:g']
+        labels = ['updated old caption', 'new caption']
+        mask, baseline = vision._projector_validation_inputs(
+            self.home, old_record, 'hashed_bow', keys, labels, tile=False
+        )
+        self.assertEqual(mask, [False, False])
+        self.assertIsNone(baseline)
+
+        mismatched = dict(old_record, training_sources=[
+            {'source_id': 'different-source', 'sha256': 'b' * 64}
+        ])
+        mask, baseline = vision._projector_validation_inputs(
+            self.home, mismatched, 'hashed_bow', keys, labels, tile=False
+        )
+        self.assertEqual(mask, [False, False])
+        self.assertIsNone(baseline)
 
     def test_retraining_with_changed_encoder_fails_closed_and_keeps_old_artifact(self):
         teacher = FakeTeacher()
@@ -334,7 +411,7 @@ class Vision(unittest.TestCase):
         replay_X, replay_labels, replay_keys = vision._replay_dataset(self.store, vision.load(self.store), tp, vision.DEFAULTS, tile=True)
         self.assertEqual(len(replay_X), tp['n']); self.assertEqual(len(replay_labels), tp['n']); self.assertEqual(len(replay_keys), tp['n'])
         tp_again = vision.train_tiles(self.rt, enc)
-        self.assertEqual(tp_again['update_gate']['status'], 'NO_NEW_OR_CHANGED_CAPTIONS')
+        self.assertEqual(tp_again['update_gate']['status'], 'NO_NEW_SOURCE_GROUPS')
         self.assertEqual(tp_again['sha256'], tp['sha256'])
         self.assertEqual(tp_again['metrics']['split'], 'SOURCE_DISJOINT'); self.assertEqual(tp_again['metrics']['status'], 'MEASURED')
         self.assertEqual(vision.status(self.rt)['tile_projector']['metrics']['split'], 'SOURCE_DISJOINT')

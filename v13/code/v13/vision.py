@@ -362,7 +362,7 @@ def _source_disjoint_update_validation(validation, *, require_baseline=False):
         baseline_status=validation.get('baseline_status')
         baseline_top1=validation.get('baseline_held_out_top1')
         baseline_gain=validation.get('held_out_gain_over_baseline')
-        if (validation.get('evaluation_scope')!='CHANGED_OR_NEW_CAPTIONS' or baseline_status!='MEASURED'
+        if (validation.get('evaluation_scope')!='NEW_SOURCE_GROUPS' or baseline_status!='MEASURED'
                 or type(baseline_top1) not in (int,float) or not math.isfinite(float(baseline_top1))
                 or type(baseline_gain) not in (int,float) or not math.isfinite(float(baseline_gain))):
             summary['status']='SOURCE_DISJOINT_BASELINE_UNAVAILABLE'
@@ -377,21 +377,59 @@ def _source_disjoint_update_validation(validation, *, require_baseline=False):
 
 
 def _projector_validation_inputs(home,old_record,encoder_name,keys,labels,tile=False):
-    """Return changed/new caption rows and the exact previous projector as a CV baseline."""
+    """Return genuinely unseen source groups and the exact previous projector as CV baseline.
+
+    Changed captions on a source already used to fit the old projector are training
+    updates, not independent holdouts. Evaluating the old projector on those same
+    source IDs would leak its prior exposure into the baseline comparison.
+    """
     if old_record is None:
         return None,None
     previous=old_record.get('captions') if type(old_record) is dict else None
-    if type(previous) is not dict:
+    lineage=old_record.get('training_sources') if type(old_record) is dict else None
+    if (type(previous) is not dict or type(lineage) is not list or not lineage
+            or type(keys) not in (list,tuple) or type(labels) not in (list,tuple)
+            or len(keys)!=len(labels)):
         return [False]*len(keys),None
-    evaluation_mask=[previous.get(key)!=label for key,label in zip(keys,labels)]
+
+    previous_source_ids=set()
+    for item in lineage:
+        if type(item) is not dict or set(item)!={'source_id','sha256'}:
+            return [False]*len(keys),None
+        source_id,sha256=item.get('source_id'),item.get('sha256')
+        if (type(source_id) is not str or not source_id
+                or type(sha256) is not str or not re.fullmatch(r'[0-9a-f]{64}',sha256)
+                or source_id in previous_source_ids):
+            return [False]*len(keys),None
+        previous_source_ids.add(source_id)
+
+    caption_source_ids=set()
+    for key in previous:
+        if type(key) is not str or ':' not in key:
+            return [False]*len(keys),None
+        source_id,region=key.split(':',1)
+        if not source_id or not region:
+            return [False]*len(keys),None
+        caption_source_ids.add(source_id)
+    if caption_source_ids!=previous_source_ids:
+        return [False]*len(keys),None
+
+    new_source_mask=[]
+    for key in keys:
+        if type(key) is not str or ':' not in key:
+            return [False]*len(keys),None
+        source_id,region=key.split(':',1)
+        if not source_id or not region:
+            return [False]*len(keys),None
+        new_source_mask.append(source_id not in previous_source_ids)
+
     baseline=None
     if old_record.get('encoder')==encoder_name:
         try:
             baseline=Projector.load(_projector_artifact_path(home,old_record,tile=tile),old_record['sha256'])
         except (OSError,ValueError,KeyError,TypeError):
             baseline=None
-    return evaluation_mask,baseline
-
+    return new_source_mask,baseline
 
 def _gate_projector_update(store,home,state,old_record,candidate,encoder_name,encoder,cfg,*,tile=False,validation=None):
     """Measure a proposed A3 update on the previous exact replay set and scale/reject it."""
@@ -405,7 +443,7 @@ def _gate_projector_update(store,home,state,old_record,candidate,encoder_name,en
     if old_record.get('encoder')!=encoder_name:
         return None,{'version':1,'status':'ENCODER_MISMATCH','scale':0.0,'authority':'LAB_SHADOW_ONLY'}
     if type(validation) is dict and validation.get('status')=='INSUFFICIENT_UPDATE_ROWS':
-        return None,{'version':1,'status':'NO_NEW_OR_CHANGED_CAPTIONS','scale':0.0,'replay_n':0,
+        return None,{'version':1,'status':'NO_NEW_SOURCE_GROUPS','scale':0.0,'replay_n':0,
                      'validation':{'status':'INSUFFICIENT_UPDATE_ROWS'},'authority':'LAB_SHADOW_ONLY'}
     validation_gate=_source_disjoint_update_validation(validation,require_baseline=True)
     if validation_gate['status']!='PASS':

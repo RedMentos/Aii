@@ -18,7 +18,7 @@ def _balanced_source_folds(groups, folds):
 
 def source_disjoint_crossval(projector_cls, X, Y, groups, labels, *, thumbs=None, folds=4, ridge=1.0,
                              baseline_predictor=None, evaluation_mask=None):
-    """Measure source-disjoint generalization, optionally against the old projector on changed sources."""
+    """Measure source-disjoint generalization; compare the old projector only on unseen source groups."""
     import numpy as np
 
     X = np.asarray(X, dtype=np.float64)
@@ -51,7 +51,7 @@ def source_disjoint_crossval(projector_cls, X, Y, groups, labels, *, thumbs=None
         if any(type(flag) is not bool for flag in evaluation_mask):
             raise ValueError("A3 evaluation mask must contain booleans")
         eval_mask = list(evaluation_mask)
-        evaluation_scope = "CHANGED_OR_NEW_CAPTIONS"
+        evaluation_scope = "NEW_SOURCE_GROUPS"
     eval_indices = [i for i, selected in enumerate(eval_mask) if selected]
     unique_groups = sorted(set(clean_groups))
     eval_groups = sorted({clean_groups[i] for i in eval_indices})
