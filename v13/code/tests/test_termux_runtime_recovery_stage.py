@@ -156,28 +156,41 @@ try:
     assert broker_row and json.loads(broker_row['payload'])['committed'] is True
     # The visible TEXT_REPORT is itself a C5 output action. Keep its
     # source-bound intent, self-prediction and final outcome; the fastpath
-    # must suppress external tool transactions and experience learning, not
-    # erase the ordinary output audit trail.
+    # suppresses external tool transactions and trainable experience capture,
+    # not the ordinary output/world audit trail.
     intents = [json.loads(x['payload']) for x in r.store.rows(
         "SELECT payload FROM packets WHERE event_id=? AND kind='ActionIntent'",
         (event_id,),
     )]
     assert len(intents) == 1
+    assert intents[0]['role'] == 'C5_REPORT_BROKER'
     assert intents[0]['action_type'] == 'TEXT_REPORT'
     assert intents[0]['permission'] == 'local_text_only'
-    assert not any(str(x.get('action_type', '')).startswith('TOOL_CALL:')
-                   for x in intents)
     outcomes = [json.loads(x['payload']) for x in r.store.rows(
         "SELECT payload FROM packets WHERE event_id=? AND kind='ActionOutcome'",
         (event_id,),
     )]
-    assert len(outcomes) == 1 and outcomes[0]['status'] == 'FINAL'
+    assert len(outcomes) == 1
+    assert outcomes[0]['role'] == 'C6_TEXT' and outcomes[0]['status'] == 'FINAL'
+    assert outcomes[0]['actual']['role'] == 'SOURCE_COPY'
     copies = [json.loads(x['payload']) for x in r.store.rows(
         "SELECT payload FROM packets WHERE event_id=? AND kind='CorollaryCopy'",
         (event_id,),
     )]
-    assert len(copies) == 1 and copies[0]['expected']['type'] == 'TEXT_REPORT'
-    for kind in ('PredictionOutcome', 'ExperienceRecord', 'WorldTransition'):
+    assert len(copies) == 1
+    assert copies[0]['role'] == 'F3_SELF' and copies[0]['expected']['type'] == 'TEXT_REPORT'
+    predictions = [json.loads(x['payload']) for x in r.store.rows(
+        "SELECT payload FROM packets WHERE event_id=? AND kind='PredictionOutcome'",
+        (event_id,),
+    )]
+    assert len(predictions) == 1
+    observation = predictions[0]['observation']
+    assert predictions[0]['role'] == 'F4_WORLD'
+    assert observation['self_caused'] is True
+    assert observation['external_world_observation'] is False
+    assert observation['semantic_success'] is None
+    assert observation['causal_claim'] is False
+    for kind in ('ExperienceRecord', 'WorldTransition', 'ModulatorPacket', 'LearningTrace'):
         assert r.store.one(
             'SELECT id FROM packets WHERE event_id=? AND kind=?', (event_id, kind)
         ) is None, kind
