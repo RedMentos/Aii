@@ -1,3 +1,43 @@
+# CURRENT USER ACTION / RELEASE STATUS — Core & Harness run 22 (2026-11-24 19:24 UTC)
+
+**No user action is required. No manual Termux command, restart, CHAT_SEND, UPDATE_REQUEST, LOG_PAGE, shell access, model/weight swap or permission change is requested.** Preserve the Redmi AI runtime in `STOPPED_BY_USER`.
+
+## Installed phone / updater boundary
+
+- Release-development line: `gpt6/v13-private-remote-bridge-20261111 @ 8d93236c753f0194224c19edc7411d8d7082b1d6`. This exact SHA is the last accepted and privately confirmed installed release. Auto-update is enabled; Runtime/Dashboard were UP_TO_DATE with last_error NONE.
+- Latest authenticated private metadata remains #840 PIPELINE_STATUS, #841 DIAGNOSTICS and #842 HEALTH: service/dashboard RUNNING, AI `STOPPED_BY_USER`, autostart=false, model_process=STOPPED, native residency UNAVAILABLE. B1_DETAIL/B2_GIST remain TIME_BUDGET at 53.2/54.2 s; the stored turn was 6.295 s total, 2.046 s TTFT, 358 prompt tokens and 7 generated tokens, with correctness UNKNOWN. No valid source-bound B1/B2 offers were delivered. The opted-in excerpt reports an internal-hypothesis output leak; raw console/error logs remain not opted in and were not requested or copied.
+- A fresh read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS refresh returned **NO_LIVE_RECEIPT**. Do not infer a newer device state from CI or GitHub pushes.
+- The updater's presence does not make an unmerged candidate deployable. No UPDATE_REQUEST was sent; the current candidate PRs are not released. Keep the runtime stopped.
+
+## Core runtime checkpoint
+
+- **PR #2464**, branch `core/v14-native-prefill-receipt-20261124-run1`, exact head `97ffc6db08f9cdeb630bff33341436ded6030f21`, base `8d93236c753f0194224c19edc7411d8d7082b1d6`: **31/32 check-runs SUCCESS, 1 SKIPPED, 0 failures**. It adds:
+  - C3 exact same-context token-ID prefill evidence and a source-bound C4 offer-ID/quote receipt against the actual rendered C3 template. This proves prompt inclusion, not semantic attention.
+  - deadline-only runner warm retention, but only if every local llama-server slot is idle and the lifecycle stamp is unchanged; cancellation, native errors, malformed/unavailable slots or lifecycle changes unload. The raw `/slots` response is not persisted because it may contain prompt text.
+  - an exact standalone greeting fastpath. It preserves the ordinary TEXT_REPORT action/outcome and bounded self/world outcome records, while suppressing external tool actions and trainable ExperienceRecord creation.
+  - exact-head staged/consumer, same-turn, audio/arithmetic, native receiver, runner-retention, greeting, privacy and deployment checks.
+  - **Status: DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.** No installed model, weight, permission or data changed.
+- The greeting recovery test was corrected to distinguish normal output-action receipts from external Android tool calls. It now requires one local TEXT_REPORT intent/outcome and a bounded non-reward world-prediction modulation, while rejecting tool-call intents, ExperienceRecord, WorldTransition and LearningTrace.
+- **PR #2462**, fair B1/B2 pre-answer slices, exact head `2f2c69c3b70bbca9a06708c65d43e62208d29507`: **12/29 SUCCESS, 16 FAILURE, 1 SKIPPED**. Consumer, source-contract, runtime, staged audio/arithmetic and integrated checks still fail. Keep DRAFT; recompose the source-pin/deployer chain against the exact 8d932 release base. Do not blindly cherry-pick.
+- **PR #2451**, native receiver probe, exact head `89a7e90441c69841f4580c8f5db7ce2d6a5fdfea`: **21/22 SUCCESS, 1 SKIPPED, 0 failures**. This validates the guarded local one-shot probe's staged/CI path only. No native model probe was run; production B3 remains OFF.
+- **PR #2450**, Android ActionIntent/Outcome journal, exact head `523c04eb1e96d0e01e1cdda0c9832632360de044`: **11/12 SUCCESS**; only `android-companion-process-restart` fails. The candidate contains receipt-only recovery tests for EXECUTING→signed UNKNOWN and DENYING→signed denial, including SQLite failure/restart without redispatch. QA **PR #2427** has 5/5 CI checks green on a separate ActivityScenario process-death harness branch; that is not combined proof. Port/rebase the harness into the exact #2450 stack and rerun.
+- Full LOCAL_LINUX repository tests were **NOT RUN**: no Aii checkout is mounted and `git ls-remote` failed DNS resolution. GitHub CI is not local or Redmi evidence.
+
+## Research note
+
+R-115 records the official `ggml-org/llama.cpp` server documentation at commit `dfdfca22bce36f66b4cfa3e6c96f0c4d92dac0fe`: prompt/cache timing counters support token-accounting checks; `/slots` reports processing state but may include prompt text. Keep the idle check local/in-memory and persist only the redacted decision. Neither token accounting nor same-context prefill proves semantic attention or trained latent coupling. No upstream code or model weights were copied.
+
+## Next internal work
+
+1. Finish the fair B1/B2 source-pin recompose on #2462 using a reviewed comparison with #2464; preserve both eligible bodies, source-bound OfferPackets and C3 reserve.
+2. Obtain independent Boss review of #2464 and #2451; keep both unmerged until the combined consumer and release matrix is exact-head green.
+3. Port the QA #2427 process-death harness into #2450 and rerun with the receipt-only recovery implementation present.
+4. Keep B3 and all Android action/capture providers OFF until their separate approvals and real native acceptance evidence exist.
+
+**User action required: NONE.** The normal updater is already enabled, but no candidate is released and the phone runtime is intentionally stopped. No manual command is needed.
+
+---
+
 # CURRENT USER ACTION / RELEASE STATUS — Boss integration run 14 (2026-11-23)
 
 **No device action is required or authorized.** Preserve the Redmi AI runtime in `STOPPED_BY_USER`; do not send `CHAT_SEND`, restart, `UPDATE_REQUEST`, `LOG_PAGE`, shell commands, or model/weight/permission/data mutations.
