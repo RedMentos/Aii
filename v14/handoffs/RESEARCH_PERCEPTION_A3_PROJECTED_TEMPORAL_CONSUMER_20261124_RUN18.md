@@ -23,3 +23,9 @@ This is a diagnostic over the existing trained ridge projector, not a JEPA tempo
 1. Run exact Python 3.13/3.14 RAW EYE ingress and A3 counterfactual workflows; fix failures without relaxing source/consent pins.
 2. Keep the diagnostic SHADOW-only. A future temporal encoder/JEPA adapter requires source-disjoint paired-frame utility, no-change/shuffle/zero controls and an independently reviewed consumer.
 3. Core/QA must reconcile the separate exact staged builder pin failure on Perception PR #2472; the A4 focused workflow itself passed, but its controller/staged/integrated checks failed because the recovery builder still pins the previous record-only controller-guard bytes.
+
+
+## Follow-up hardening
+
+- API defaults now infer NO_PROJECTOR only when A3 embeddings are absent, so callers supplying valid embeddings need not override a default status.
+- The live ingress skips only the A3 temporal readout (without failing RAW EYE/A5) when any projected tile vector is zero; the negative test rejects zero vectors at the registry boundary.

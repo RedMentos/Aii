@@ -28,7 +28,7 @@ FEATURE_METHOD = "RAW_EYE_TILE_FEATURES_V1"
 FEATURE_VALUES_PER_TILE = 37
 MAX_A3_TEMPORAL_DIM = 1024
 A3_PROJECTED_CHANGE_METHOD = "A3_TILE_COSINE_DELTA_V1"
-A3_UNAVAILABLE_REASONS = {"NO_PROJECTOR", "PROJECTOR_UNAVAILABLE", "INFERENCE_FAILED", "DIMENSION_LIMIT"}
+A3_UNAVAILABLE_REASONS = {"NO_PROJECTOR", "PROJECTOR_UNAVAILABLE", "INFERENCE_FAILED", "DIMENSION_LIMIT", "ZERO_EMBEDDING"}
 MULTICHANNEL_TILE_THRESHOLD = 0.04
 DEFAULT_SURFACE_TAU_MS = 30
 DEFAULT_SURFACE_WINDOW_MS = 50
@@ -242,7 +242,7 @@ class TemporalVisualEvidence:
                a3_tile_embeddings: dict | None = None,
                a3_projector_sha256: str | None = None,
                frame_source_ref: dict | None = None,
-               a3_unavailable_reason: str | None = "NO_PROJECTOR") -> dict:
+               a3_unavailable_reason: str | None = None) -> dict:
         if type(start_ms) is not int or type(end_ms) is not int or start_ms < 0 or end_ms <= start_ms:
             raise TemporalVisualEvidenceError("temporal visual interval must be positive monotonic milliseconds")
         current = _validate_luminance(tile_luminance)
@@ -459,7 +459,7 @@ class TemporalVisualEvidenceRegistry:
                        a3_tile_embeddings: dict | None = None,
                        a3_projector_sha256: str | None = None,
                        frame_source_ref: dict | None = None,
-                       a3_unavailable_reason: str | None = "NO_PROJECTOR"):
+                       a3_unavailable_reason: str | None = None):
         session = _identity(capture_session_id, "capture_session_id")
         generation = _identity(generation_id, "generation_id")
         receipt = _identity(consent_receipt_ref, "consent_receipt_ref")
@@ -513,7 +513,7 @@ class TemporalVisualEvidenceRegistry:
                a3_tile_embeddings: dict | None = None,
                a3_projector_sha256: str | None = None,
                frame_source_ref: dict | None = None,
-               a3_unavailable_reason: str | None = "NO_PROJECTOR") -> dict:
+               a3_unavailable_reason: str | None = None) -> dict:
         ticket = self.prepare_update(
             capture_session_id=capture_session_id, generation_id=generation_id,
             consent_receipt_ref=consent_receipt_ref, start_ms=start_ms, end_ms=end_ms,

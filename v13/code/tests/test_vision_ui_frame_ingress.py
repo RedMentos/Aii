@@ -1242,6 +1242,13 @@ def test_a3_projected_change_rejects_malformed_embeddings_and_source_refs():
             **common, a3_tile_embeddings=nonfinite, a3_projector_sha256="f" * 64,
             frame_source_ref=ref,
         )
+    zero = dict(good)
+    zero[TILE_IDS[0]] = [0.0, 0.0]
+    with pytest.raises(TemporalVisualEvidenceError):
+        state.update(
+            **common, a3_tile_embeddings=zero, a3_projector_sha256="f" * 64,
+            frame_source_ref=ref,
+        )
     too_wide = dict(good)
     too_wide[TILE_IDS[0]] = [1.0] * 1025
     with pytest.raises(TemporalVisualEvidenceError):

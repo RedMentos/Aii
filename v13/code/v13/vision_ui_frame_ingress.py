@@ -663,11 +663,15 @@ def consume_projected_frame(
                         for region_id, margin in zip(tile_region_ids, margins)
                     }
                     if projected.shape[1] <= MAX_A3_TEMPORAL_DIM:
-                        student_projected_by_tile = {
-                            region_id: tuple(float(value) for value in row)
-                            for region_id, row in zip(tile_region_ids, projected)
-                        }
-                        a3_unavailable_reason = None
+                        embedding_norms = np.linalg.norm(projected, axis=1)
+                        if np.isfinite(embedding_norms).all() and np.all(embedding_norms > 1e-8):
+                            student_projected_by_tile = {
+                                region_id: tuple(float(value) for value in row)
+                                for region_id, row in zip(tile_region_ids, projected)
+                            }
+                            a3_unavailable_reason = None
+                        else:
+                            a3_unavailable_reason = "ZERO_EMBEDDING"
                     else:
                         a3_unavailable_reason = "DIMENSION_LIMIT"
                     student_status = "USED"
