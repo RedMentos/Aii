@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T00:08:16Z",
+  "updated_at": "2026-11-24T00:12:48Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -196,19 +196,73 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Perception: preserve the #2327 RAW EAR FIR anti-alias feature path and its staged A5/A4/C3 regression; do not equate caller-supplied PCM with Android microphone capture. Next, reconcile the signed one-shot consumer with QA's companion provider and measure Android lifecycle/route/silence/revocation only after explicit device permission. Perception follow-up: obtain successful exact-head CI for PR #2448, then independent QA/Boss review of the first-writer/commit-before-cancel races and retryable handoff; microphone provider remains OFF until Core/QA provider consent and revocation wiring is composed.",
+      "proof_environment": "CODE_PRESENT + existing Runtime source_outcome call site; synthetic Store/SQLite regression tests ADDED_NOT_RUN; LOCAL_LINUX checkout BLOCKED; exact-head CI startup_failure/zero jobs; REDMI_UNVERIFIED",
+      "next_step": "Core: update record_only_controller_guard_20261116.py from old attention.py SHA-256 0d3c0d00492d809c818874cf83ddd723867e77cfc5c50236dac18eddc8422739 to current 58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e and recompute guard/recovery/stage/deployer pins bottom-up. Restore exact-head Actions. QA/Boss: review the source-bound A4 receipt + atomic N10 signed-error path and the Teacher Ear/duplex changes together. Perception: continue 1s/2s speaker-history invariance and real consumer tests. Keep microphone/model load OFF; preserve STOPPED_BY_USER.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-23T23:52:27.945Z",
+      "last_checkpoint": "2026-11-24T00:12:48Z",
       "latest_candidate_pr": {
-        "pr": 2312,
-        "head_sha": "5221314d3c01ab6d874ecc0a8b8ff72c34e504a2",
-        "base": "qa/v14-companion-os-permission-contract-20261122",
-        "state": "OPEN_DRAFT_PARTIAL_CI_PENDING",
-        "scope": "signed one-shot RAW EAR consumer; Android-guaranteed 44.1 kHz mono PCM16; 88,200-byte / 117,600-character one-second cap; exact source/generation/signature/consent/replay checks; no microphone provider or learning/action authority",
-        "ci": "RUN_44992975596_PENDING; RUN_44992975599_QUEUED"
+        "pr": 2448,
+        "code_head_sha": "c708f7970d1757889435516e27370003ae83a6d6",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "attention_blob_sha": "ecaf39b1b8ea0edad7f4a39774230b3cbed1d5eb",
+        "attention_sha256": "58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e",
+        "neuromod_blob_sha": "fbb02147cbcfff10896736a20838fbce08d7409b",
+        "neuromod_sha256": "e01f541874f401bf2996603d79e0cf24463aa16ed5c3902534f37678c1c72ce0",
+        "outcome_test_blob_sha": "200085b88497af331beb49eaf061944ad30542de",
+        "workflow_blob_sha": "05718e823aa2d5d78aa93a0fe57e8ff2f4dc2c57",
+        "ci": "STARTUP_FAILURE_NO_JOBS",
+        "local_test": "BLOCKED_NO_CHECKOUT_DNS",
+        "release": "NOT_RELEASED"
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture.\n\n2026-11-24 Perception checkpoint on PR #2448 (branch research-perception/v14-audio-duplex-bridge-20261123-run21, head 61a8b9d40a82f9aa647d9ea8a8653b499de5eb36; release base 8d93236c753f0194224c19edc7411d8d7082b1d6): duplex.handoff now prepares prior-event/message/packet and partial-output SourceRef before CAS-consuming the pending row; read/parse/source failures leave it retryable. Regression tests cover missing event, missing user message, malformed packet, source-write failure plus successful retry and one-use success. Workflow now includes duplex.py in path filters and explicit compile. LOCAL_LINUX isolated fake-Store state-machine reproduction: old code lost pending in 3/3 injected failures; new ordering preserved 3/3; simulated one-time CAS conflict retried and source was published once. This is not full repository pytest. Exact-head Actions run 45291585143 (code/test/workflow checkpoint) and later handoff run 45291932247 both ended startup_failure with no jobs; GitHub refused retry (403). No new CI PASS. Full local Aii checkout/pytest BLOCKED: no mounted checkout and github.com DNS unavailable. Latest #1904 receipt comment 7108089370: installed base 8d93236, auto-update enabled, AI runtime STOPPED_BY_USER/autostart false, native residency unavailable. Candidate is NOT_DEPLOYED / REDMI_UNVERIFIED; no restart, UPDATE_REQUEST, CHAT_SEND, microphone permission or model/weight change."
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture.\n\n2026-11-24 Perception checkpoint on PR #2448 (branch research-perception/v14-audio-duplex-bridge-20261123-run21, head 61a8b9d40a82f9aa647d9ea8a8653b499de5eb36; release base 8d93236c753f0194224c19edc7411d8d7082b1d6): duplex.handoff now prepares prior-event/message/packet and partial-output SourceRef before CAS-consuming the pending row; read/parse/source failures leave it retryable. Regression tests cover missing event, missing user message, malformed packet, source-write failure plus successful retry and one-use success. Workflow now includes duplex.py in path filters and explicit compile. LOCAL_LINUX isolated fake-Store state-machine reproduction: old code lost pending in 3/3 injected failures; new ordering preserved 3/3; simulated one-time CAS conflict retried and source was published once. This is not full repository pytest. Exact-head Actions run 45291585143 (code/test/workflow checkpoint) and later handoff run 45291932247 both ended startup_failure with no jobs; GitHub refused retry (403). No new CI PASS. Full local Aii checkout/pytest BLOCKED: no mounted checkout and github.com DNS unavailable. Latest #1904 receipt comment 7108089370: installed base 8d93236, auto-update enabled, AI runtime STOPPED_BY_USER/autostart false, native residency unavailable. Candidate is NOT_DEPLOYED / REDMI_UNVERIFIED; no restart, UPDATE_REQUEST, CHAT_SEND, microphone permission or model/weight change.",
+      "run30_checkpoint": {
+        "branch": "research-perception/v14-audio-duplex-bridge-20261123-run21",
+        "pr": 2448,
+        "code_head": "c708f7970d1757889435516e27370003ae83a6d6",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "ported_from_pr": 2433,
+        "reason": "PR #2433 was 42 ahead/82 behind; current base had no intervening changes to attention.py, neuromod.py or test_attention.py, so only the A4/N10-owned files were ported.",
+        "runtime_consumer": "runtime.py calls attctl.controller(self).source_outcome(eid,text,output) after C3 output.",
+        "changes": [
+          "A4 source-outcome validates granted request/response lineage, source hash and stored source span, then writes an exactly-once receipt",
+          "N10 ModulatorPacket and A4 policy/receipt commit in one Store transaction",
+          "Negative reward_error stays signed into next-event attention/caution",
+          "Added restart, concurrent duplicate, transaction rollback, tampered source, omission/negative error and positive-control tests",
+          "Dedicated Python 3.13/3.14 workflow added"
+        ],
+        "tests": [
+          {
+            "name": "LOCAL_LINUX full checkout/compile/pytest",
+            "environment": "LOCAL_LINUX",
+            "result": "BLOCKED",
+            "reason": "No checkout; GitHub DNS unavailable"
+          },
+          {
+            "name": "A4/N10 focused workflow",
+            "environment": "CI",
+            "result": "BLOCKED",
+            "reason": "Exact-head Actions startup_failure with zero jobs"
+          },
+          {
+            "name": "source-bound A4→N10 Store regression",
+            "environment": "SYNTHETIC_TEST_CODE",
+            "result": "ADDED_NOT_RUN",
+            "reason": "Tests added but no runner/local checkout"
+          }
+        ],
+        "core_pin_blocker": {
+          "file": "v13/code/scripts/record_only_controller_guard_20261116.py",
+          "old_attention_sha256": "0d3c0d00492d809c818874cf83ddd723867e77cfc5c50236dac18eddc8422739",
+          "new_attention_sha256": "58e68ce790c8754a4b5362e3e26f3ffbbdfe3455db99534ea518d1f58c5c280e",
+          "owner": "Core & Integration",
+          "action": "Update exact allowlist then recompute guard/recovery/stage/deployer hashes bottom-up; do not weaken checks"
+        },
+        "device": "Base 8d93236 installed per #1904 comment 7108089370; auto-update enabled; Runtime CI_WAIT; separate diagnostics STOPPED_BY_USER/autostart false",
+        "release": "NOT_RELEASED",
+        "next_action": "Core pin-chain repair; restore Actions; exact Python 3.13/3.14, staged/integrated/migration/privacy/revocation; independent QA/Boss review",
+        "user_action_required": false,
+        "handoff_path": "v14/handoffs/RESEARCH_PERCEPTION_A4_N10_SOURCE_BOUND_OUTCOME_20261124_RUN30.md"
+      }
     },
     {
       "id": "V14-007",
@@ -387,9 +441,9 @@
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
       "proof_environment": "LOCAL_LINUX full Aii checkout BLOCKED (no checkout; GitHub DNS failure); exact-head CI STARTUP_FAILURE / zero jobs; no Android microphone or Redmi feature proof",
-      "next_step": "QA/Boss: independently review #2448's TeacherEar/TeacherEarStream consumer gate, explicit transcript admission and revision semantics together with same-target-turn idempotency and commit-before-cancel recovery. First restore a runnable exact-head Actions job and run Python 3.13/3.14 audio/Teacher Ear + staged/integrated regressions. Then coordinate Core/QA's separate visible AudioRecord provider and revocation lifecycle. Keep capture/model load OFF; preserve STOPPED_BY_USER.",
+      "next_step": "QA/Boss: review #2448's RAW EAR/Teacher Ear/duplex plus source-bound A4/N10 path after exact-head CI is runnable. Core must update the attention.py controller-guard and dependent recovery/stage/deployer pins to the exact new bytes. Perception: complete the 1s/2s speaker-history invariance regression and run the integrated A5→A4→C3 path. Then coordinate AudioRecord provider/revocation with Core/QA. Keep capture/model load OFF and preserve STOPPED_BY_USER.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T00:08:16Z",
+      "last_checkpoint": "2026-11-24T00:12:48Z",
       "latest_candidate_pr": {
         "pr": 2448,
         "head_sha": "dd409b8e19960e62826a281cd4a85de5459cb44c",
