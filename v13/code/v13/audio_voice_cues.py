@@ -22,6 +22,7 @@ from . import attention as attctl
 from .audio_temporal_evidence import TemporalVoiceEvidence, TemporalVoiceEvidenceRegistry
 from .audio_teacher_ear import SherpaOnlineTeacher, SherpaOnlineTeacherStream
 from .audio_speaker_evidence import SpeakerChangeEvidenceRegistry, SpeakerEvidenceError
+from .audio_speaker_model import SherpaSpeakerEmbeddingEncoder, SpeakerModelError
 from .audio_silero_vad import SileroVADStream, validate_vad_evidence
 from .a5_audio_admission_bridge import audio_to_admission
 from .audio_ear import observe_pcm16
@@ -691,6 +692,8 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                consent_lease: AudioConsentLease | None = None,
                                voice_backend: str = "python",
                                 speaker_embeddings: dict | None = None,
+                                speaker_encoder: SherpaSpeakerEmbeddingEncoder | None = None,
+                                speaker_model_opt_in: bool = False,
                                 teacher_ear: SherpaOnlineTeacher | SherpaOnlineTeacherStream | None = None,
                                 teacher_asr_opt_in: bool = False,
                                 transcript_persist_opt_in: bool = False):
@@ -701,6 +704,20 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         raise ValueError("vad_stream must be a SileroVADStream instance")
     if type(teacher_asr_opt_in) is not bool or type(transcript_persist_opt_in) is not bool:
         raise ValueError("Teacher Ear opt-in flags must be booleans")
+    if type(speaker_model_opt_in) is not bool:
+        raise ValueError("speaker_model_opt_in must be a boolean")
+    if speaker_encoder is not None and not isinstance(
+        speaker_encoder, SherpaSpeakerEmbeddingEncoder
+    ):
+        raise TypeError("speaker_encoder must be a SherpaSpeakerEmbeddingEncoder")
+    if speaker_encoder is not None and not speaker_model_opt_in:
+        raise PermissionError("speaker model inference requires explicit opt-in")
+    if speaker_model_opt_in and speaker_encoder is None:
+        raise ValueError("speaker_model_opt_in requires a configured local speaker encoder")
+    if speaker_model_opt_in and consent_lease is None:
+        raise PermissionError("speaker model inference requires an explicit caller-held AudioConsentLease")
+    if speaker_encoder is not None and speaker_embeddings is not None:
+        raise ValueError("provide either speaker_encoder or caller-supplied speaker_embeddings, not both")
     if (type(consent_receipt) is not str or not consent_receipt.strip()
             or len(consent_receipt) > 256):
         raise PermissionError("a bounded local audio consent receipt is required")
@@ -756,6 +773,27 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         )
         audio_segment = audio_packet["segments"][0]
         audio_segment["acoustic"]["voice_cues"] = cues
+        if speaker_encoder is not None:
+            try:
+                speaker_embeddings = speaker_encoder.encode_window(
+                    pcm,
+                    sample_rate=sample_rate,
+                    runtime=runtime,
+                    source_id=source_id,
+                    generation_id=generation_id,
+                    consent_receipt_ref=consent_receipt,
+                    consent_lease=consent_lease,
+                    start_ms=audio_segment["start_ms"],
+                    end_ms=audio_segment["end_ms"],
+                    expected_pcm_sha256=raw["source_ref"]["sha256"],
+                    temporal_state=temporal_state,
+                    vad_stream=vad_stream,
+                )
+            except SpeakerModelError as exc:
+                runtime.store.log(
+                    "speaker_model_unavailable", event_id, {"error": type(exc).__name__}
+                )
+                speaker_embeddings = None
         speaker_evidence = None
         if speaker_embeddings is not None:
             try:
