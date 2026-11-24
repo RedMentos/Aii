@@ -552,6 +552,17 @@ class Vision(unittest.TestCase):
         status = vision.status(self.rt)
         self.assertEqual(status['projector']['source_stats_count'], 5)
         self.assertEqual(status['tile_projector']['source_stats_count'], 5)
+        # Exact sufficient statistics are local deletion state, not a status or
+        # remote-telemetry payload. Expose only the bounded count/mode summary.
+        status_text = repr(status)
+        for key in ('projector', 'tile_projector'):
+            self.assertNotIn('source_stats', status[key])
+            self.assertNotIn('path', status[key])
+            self.assertNotIn('sha256', status[key])
+        for record in (state['projector'], state['tile_projector']):
+            for artifact in record['source_stats']:
+                self.assertNotIn(artifact['path'], status_text)
+                self.assertNotIn(artifact['sha256'], status_text)
 
     def test_stale_forget_ref_does_not_invalidate_current_projector(self):
         t = FakeTeacher(); enc = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
