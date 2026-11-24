@@ -199,6 +199,24 @@ class ArrayWindowTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "window batch would require"):
             next(dataset.iter_batches("train", batch_size=8192))
 
+    def test_shuffled_batches_are_reproducible_and_cover_same_origins(self):
+        first = np.concatenate([
+            batch.origin_indices for batch in self.dataset.iter_batches(
+                "train", batch_size=31, shuffle=True, seed=99
+            )
+        ])
+        second = np.concatenate([
+            batch.origin_indices for batch in self.dataset.iter_batches(
+                "train", batch_size=31, shuffle=True, seed=99
+            )
+        ])
+        ordered = np.concatenate([
+            batch.origin_indices for batch in self.dataset.iter_batches("train", batch_size=31)
+        ])
+        np.testing.assert_array_equal(first, second)
+        self.assertEqual(sorted(first.tolist()), sorted(ordered.tolist()))
+        self.assertFalse(np.array_equal(first, ordered))
+
     def test_batch_size_is_hard_bounded(self):
         with self.assertRaises(ValueError):
             list(self.dataset.iter_batches("train", batch_size=8193))
