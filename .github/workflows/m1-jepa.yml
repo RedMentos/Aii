@@ -12,6 +12,10 @@ on:
       - "experiments/m1/training.py"
       - "experiments/m1_torch_tests/**"
       - ".github/workflows/m1-jepa.yml"
+concurrency:
+  group: m1-jepa-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   torch-tests:
     strategy:
