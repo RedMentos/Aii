@@ -1,6 +1,11 @@
 import hashlib
+import os
 import struct
+import sys
 import threading
+from pathlib import Path
+from types import SimpleNamespace
+
 import pytest
 
 from v13.audio_teacher_ear import TeacherEarManifest, TeacherEarError, SherpaOnlineTeacher
@@ -131,6 +136,109 @@ def test_manifest_rejects_symlink_and_size_overflow(tmp_path):
     too_small = make_manifest(other, max_total_bytes=2)
     with pytest.raises(TeacherEarError, match="size ceiling"):
         too_small.verified_files()
+
+
+def test_verified_model_descriptor_survives_path_replacement(tmp_path):
+    manifest = make_manifest(tmp_path)
+    files = manifest.verified_files()
+    try:
+        original = tmp_path / "encoder.onnx"
+        saved = tmp_path / "encoder.original"
+        original.rename(saved)
+        original.write_bytes(b"attacker-replacement")
+        assert original.read_bytes() == b"attacker-replacement"
+        assert files["encoder"].read_bytes() == b"encoder-fixture"
+    finally:
+        files.close()
+
+
+def test_manifest_parent_directory_fd_survives_symlink_swap(tmp_path, monkeypatch):
+    root = tmp_path / "models"
+    root.mkdir()
+    nested = root / "nested"
+    nested.mkdir()
+    names = {
+        "encoder": "nested/encoder.onnx",
+        "decoder": "decoder.onnx",
+        "joiner": "joiner.onnx",
+        "tokens": "tokens.txt",
+    }
+    hashes = {}
+    for key, relative in names.items():
+        path = root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        payload = (key + "-fixture").encode()
+        path.write_bytes(payload)
+        hashes[key] = hashlib.sha256(payload).hexdigest()
+    manifest = TeacherEarManifest(
+        model_id="fixture/sherpa-small",
+        model_revision="rev-1",
+        language="en",
+        license_id="Apache-2.0",
+        model_root=str(root),
+        encoder=names["encoder"],
+        decoder=names["decoder"],
+        joiner=names["joiner"],
+        tokens=names["tokens"],
+        file_sha256=hashes,
+    )
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (outside / "encoder.onnx").write_bytes(b"attacker-outside")
+    real_open = os.open
+    swapped = False
+
+    def race_open(path, flags, mode=0o777, *, dir_fd=None):
+        nonlocal swapped
+        descriptor = real_open(path, flags, mode, dir_fd=dir_fd)
+        if path == "nested" and dir_fd is not None and not swapped:
+            nested.rename(root / "nested.original")
+            nested.symlink_to(outside, target_is_directory=True)
+            swapped = True
+        return descriptor
+
+    monkeypatch.setattr(os, "open", race_open)
+    files = manifest.verified_files()
+    try:
+        assert swapped is True
+        assert (nested / "encoder.onnx").read_bytes() == b"attacker-outside"
+        assert files["encoder"].read_bytes() == b"encoder-fixture"
+    finally:
+        files.close()
+
+
+def test_native_loader_receives_pinned_descriptor_paths(tmp_path, monkeypatch):
+    manifest = make_manifest(tmp_path)
+    captured = {}
+    original = tmp_path / "encoder.onnx"
+
+    class Loader:
+        @staticmethod
+        def from_transducer(**kwargs):
+            original.rename(tmp_path / "encoder.original")
+            original.write_bytes(b"attacker-replacement")
+            for name in ("encoder", "decoder", "joiner", "tokens"):
+                captured[name] = Path(kwargs[name]).read_bytes()
+            return Recognizer()
+
+    monkeypatch.setitem(sys.modules, "numpy", SimpleNamespace())
+    monkeypatch.setitem(
+        sys.modules, "sherpa_onnx", SimpleNamespace(OnlineRecognizer=Loader),
+    )
+    teacher = SherpaOnlineTeacher(manifest)
+    try:
+        teacher._load()
+        assert captured == {
+            "encoder": b"encoder-fixture",
+            "decoder": b"decoder-fixture",
+            "joiner": b"joiner-fixture",
+            "tokens": b"tokens-fixture",
+        }
+        pinned_path = teacher._verified["encoder"]
+    finally:
+        teacher.close()
+    with pytest.raises(FileNotFoundError):
+        pinned_path.read_bytes()
 
 
 def test_teacher_requires_opt_in_and_current_lease(tmp_path):
