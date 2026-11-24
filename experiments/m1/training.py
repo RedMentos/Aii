@@ -210,13 +210,9 @@ def train_frozen_probe(
     if type(batch_size) is not int or batch_size < 1:
         raise ValueError("batch_size must be a positive integer")
     _validate_model_dataset(model.config, dataset)
-    frozen_parameters = [
-        parameter for name, parameter in model.named_parameters()
-        if name.startswith("backbone.") and parameter.requires_grad
-    ]
-    if frozen_parameters:
-        raise ValueError("frozen probe backbone unexpectedly has trainable parameters")
-    model.backbone.scaler.fit(dataset)
+    if any(parameter.requires_grad for parameter in model.encoder.parameters()):
+        raise ValueError("frozen probe encoder unexpectedly has trainable parameters")
+    model.scaler.fit(dataset)
     trainable = [parameter for parameter in model.parameters() if parameter.requires_grad]
     if not trainable:
         raise ValueError("frozen probe has no trainable readout parameters")
@@ -265,8 +261,6 @@ def evaluate_direct_mae(
     model.to(device)
     if hasattr(model, "scaler") and not bool(model.scaler.fitted):
         raise ValueError("model scaler must be fitted on train before evaluation")
-    if hasattr(model, "backbone") and hasattr(model.backbone, "scaler") and not bool(model.backbone.scaler.fitted):
-        raise ValueError("backbone scaler must be fitted on train before evaluation")
     model.eval()
     absolute_sum = 0.0
     elements = 0
@@ -368,8 +362,6 @@ class TorchBatchPredictor:
         self.device = device
         self.model.to(device)
         scaler = getattr(model, "scaler", None)
-        if scaler is None and hasattr(model, "backbone"):
-            scaler = getattr(model.backbone, "scaler", None)
         if scaler is not None and not bool(scaler.fitted):
             raise ValueError("model scaler must be fitted on train before prediction")
         self.model.eval()
