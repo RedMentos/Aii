@@ -416,7 +416,8 @@ class AndroidCompanionController:
         verifier.start()
         try:
             outcome, packet = accept_and_persist_companion_receipt(
-                self.runtime.store, self.broker, verifier, action_id, receipt
+                self.runtime.store, self.broker, verifier, action_id, receipt,
+                clock=self.clock,
             )
         finally:
             verifier.close()
