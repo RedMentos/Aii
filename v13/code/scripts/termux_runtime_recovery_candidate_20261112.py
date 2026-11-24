@@ -8,7 +8,7 @@ import importlib.util
 from pathlib import Path
 
 BUILDERS = {
-    'scripts/integrated_world_training_resume_candidate_20261111.py': 'b05a5f4c6533f82f8c5092d9392e6a824f5c86d6857b06df04125fac2eaeed4d',
+    'scripts/integrated_world_training_resume_candidate_20261111.py': 'd203a691f356049eb197b5cf14212e2afc5e36846512077bc47eff010b441269',
     'scripts/termux_probe_recovery_candidate_20261112.py': '27aec15dc1f003fd2c90d3d5a08d5a4a9af223ab57c188720ea9cd18aebc1b2b',
     'scripts/termux_chat_recovery_candidate_20261112.py': 'befbaca164fd5453d4c93017eca1b556f2d771b1b7cf54879c6764e4716587c7',
     'scripts/termux_idle_recovery_candidate_20261112.py': '2cc656b102b9950fdb9cb81970708692573189995218bff8a18f95ff01fa97d7',
@@ -23,6 +23,36 @@ def load(code_dir, relative, expected):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def _observer_budget_is_composed(code_dir, sources):
+    """Recognize current fair-budget consumers without reapplying the older overlay."""
+    def source(name):
+        raw = sources.get(name)
+        if isinstance(raw, bytes):
+            return raw
+        path = code_dir / name
+        if path.is_symlink() or not path.is_file():
+            return b''
+        return path.read_bytes()
+
+    runtime = source('v13/runtime.py')
+    schedule = source('v13/observer_schedule.py')
+    budget = source('v13/native_turn_budget.py')
+    cognition = source('v13/cognition.py')
+    return all((
+        b'def ask(role,focus=None,use_peer=True,role_end=None,preanswer=False):' in runtime,
+        b"budgeted=not sched['parallel']" in runtime,
+        b'role_end=role_end,preanswer=True' in runtime,
+        b'def run(p,ask,end,on_error,clock=time.monotonic,cancelled=(),budgeted=False):' in schedule,
+        b'role_end=min(end,now+max(0.,end-now)/(len(roles)-index))' in schedule,
+        b'observer_deadline=None' in budget,
+        b'MIN_ROLE_SLICE_S = 2.0' in budget,
+        b'preanswer_budgeted=None' in cognition,
+        b'observer_deadline=deadline' in cognition,
+        b'native_body_budgeted_for_c3' in cognition,
+        b'register_store_telemetry()' in budget,
+    ))
 
 
 def build_sources(code_dir, *, include_postcommit=True):
@@ -128,7 +158,15 @@ def build_sources(code_dir, *, include_postcommit=True):
         raise ValueError('base-composer downstream source pins are inconsistent')
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
                      '83b950852eef2d3b92da370a66a0275bfca7b6ff6078166eda91709e069728f8')
-    result = observers.apply_sources(code_dir, result)
+    # Preserve the exact source pins even when this Runtime already carries the
+    # fair-budget implementation; the legacy overlay must not be applied twice.
+    for name, expected in observers.PINS.items():
+        source_path = code_dir / name
+        if (source_path.is_symlink() or not source_path.is_file()
+                or hashlib.sha256(source_path.read_bytes()).hexdigest() != expected):
+            raise ValueError('observer fairness source changed: ' + name)
+    if not _observer_budget_is_composed(code_dir, result):
+        result = observers.apply_sources(code_dir, result)
     # Apply only the reviewed ContextOS input and the exact checked builder.
     # The dependent recall module pins ContextOS, so rebind that one pin.
     path = code_dir / 'scripts/context_offer_budget_candidate_20261116.py'
