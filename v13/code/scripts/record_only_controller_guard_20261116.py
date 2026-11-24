@@ -202,7 +202,7 @@ def apply_sources(code_dir, sources):
         '603e874d8fbb37f41aee1fae5fcb6c07007310388dc2c653f1b84ec5d264a7d6':
             '86f79e8f3c26928f0a16399070f1b8d729760697a3b9e02ea9f6315ab6fcf87a',
         'eff43a5f6590130b478d5c288debaa548b01ac1133d4b46ba500ec63beee546e':
-            '417b1995c22d639689b7f3da092e6788b2b8c76ca3767410712b15d32ee20a62',
+            '86f79e8f3c26928f0a16399070f1b8d729760697a3b9e02ea9f6315ab6fcf87a',
     }.get(source_action_pin)
     if action_pin is None:
         raise ValueError('unrecognized ActionLearn source variant')
