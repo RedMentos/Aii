@@ -6,7 +6,7 @@
 **Working branch:** `research-perception/v14-audio-duplex-bridge-20261123-run21`  
 **Base:** `gpt6/v13-private-remote-bridge-20261111` at `8d93236c753f0194224c19edc7411d8d7082b1d6`  
 **PR:** [#2448](https://github.com/RedMentos/Aii/pull/2448), OPEN / DRAFT / NOT_RELEASED  
-**Exact current branch HEAD:** `c7db1809370fae5ae5a49287e76cba0deedf80e7`
+**Exact code-tested snapshot:** `c7db1809370fae5ae5a49287e76cba0deedf80e7` (subsequent branch commits update only documentation, board, and handoff records)
 
 ## 1. Implemented change
 
