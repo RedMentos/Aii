@@ -16,7 +16,7 @@ This workspace is independent of V13/V14 development. It copies selected M1 data
 - data.py / array_data.py: reference and bounded-memory NumPy data paths, fixed calendar split, gated test access.
 - baselines.py: persistence, seasonal persistence, train mean/median, Ridge-AR and LAD-AR.
 - raw_probes.py: linear raw-window and nonlinear raw-window MLP controls.
-- bootstrap.py: paired temporal-block bootstrap with block-sum/count weighting, including partial blocks.
+- bootstrap.py: paired temporal-block bootstrap with block-sum/count weighting, including partial blocks. The block-length field is expressed in minute rows; 10,080 minutes (7 days) is only the current default.
 - metrics.py: prefix-horizon and primary MAE, per-origin errors, paired multi-model/seed evaluation and atomic result persistence.
 - jepa.py: EMA JEPA, Direct-MAE, frozen-context linear probe, random-context probe factory, train-only channel standardization and collapse telemetry.
 - gru.py: supervised Raw-GRU using the same X/S/calendar information.
