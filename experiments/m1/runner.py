@@ -510,14 +510,8 @@ def run_validation_experiment(
     raw_file_size_bytes: int | None = None,
 ) -> tuple[dict, str]:
     """Train selected models on train only and compare them on full validation only."""
-    if dataset.config.input_length != config.input_length:
-        raise ValueError("pilot input_length does not match loaded dataset")
-    if dataset.config.horizon != config.horizon:
-        raise ValueError("pilot horizon does not match loaded dataset")
-    if tuple(dataset.config.seasonal_lags) != tuple(config.seasonal_lags):
-        raise ValueError("pilot seasonal_lags do not match loaded dataset")
-    if dataset.config.include_calendar != config.include_calendar:
-        raise ValueError("pilot include_calendar does not match loaded dataset")
+    if dataset.config != config.data_config():
+        raise ValueError("pilot data config does not match loaded dataset config")
     if config.device.startswith("cuda") and not torch.cuda.is_available():
         raise RuntimeError("CUDA was requested but is not available")
     if "jepa" in config.models and config.batch_size < 2:
@@ -632,13 +626,20 @@ def run_uci_validation(
         raise FileNotFoundError(source)
     if config.validation_start is None or config.test_start is None:
         raise ValueError("real UCI runs require fixed validation_start and test_start dates")
+    before = source.stat()
     dataset = ArrayDataset.from_uci(source, config.data_config())
+    raw_hash = _sha256_file(source)
+    after = source.stat()
+    if (before.st_size, before.st_mtime_ns, before.st_ino) != (
+        after.st_size, after.st_mtime_ns, after.st_ino
+    ):
+        raise ValueError("UCI file changed while the runner computed provenance")
     return run_validation_experiment(
         dataset,
         config,
         output_path=output_path,
-        raw_file_sha256=_sha256_file(source),
-        raw_file_size_bytes=source.stat().st_size,
+        raw_file_sha256=raw_hash,
+        raw_file_size_bytes=after.st_size,
     )
 
 
