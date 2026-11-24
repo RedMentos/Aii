@@ -1,0 +1,78 @@
+name: M1 real UCI validation-only experiment
+
+on:
+  push:
+    branches:
+      - gpt6/m1-real-uci-validation-20261124
+    paths:
+      - ".github/workflows/m1-real-uci-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: m1-real-uci-validation-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  validation-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install CPU experiment dependencies
+        run: |
+          python -m pip install --upgrade pip numpy
+          python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Download and verify official UCI archive
+        run: python -m experiments.m1.download_uci --output-dir experiments/datasets
+
+      - name: Run M1a validation-only baseline and JEPA pilot
+        run: |
+          python -m experiments.m1.runner \
+            --data experiments/datasets/household_power_consumption.txt \
+            --output experiments/results/m1-validation-pilot.json
+
+      - name: Run M1b T=1/2/4 recurrence validation-only ablation
+        run: |
+          python -m experiments.m1.recurrence \
+            --data experiments/datasets/household_power_consumption.txt \
+            --output experiments/results/m1b-recurrence.json \
+            --steps 1,2,4
+
+      - name: Record validation artifact scope
+        if: always()
+        run: |
+          {
+            echo "## M1 UCI validation-only run"
+            echo "- Commit: `$(git rev-parse HEAD)`"
+            echo "- The official UCI raw data file is not uploaded."
+            echo "- Only aggregate validation metrics, provenance sidecar and model checkpoints may be uploaded."
+            echo "- The test split is not used for fitting, checkpoint selection or evaluation."
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ -f experiments/datasets/household_power_consumption.txt.provenance.json ]; then
+            sha256sum experiments/datasets/household_power_consumption.txt.provenance.json
+          fi
+
+      - name: Upload aggregate evidence and checkpoints (never raw data)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m1-uci-validation-evidence-${{ github.run_id }}
+          if-no-files-found: warn
+          retention-days: 30
+          path: |
+            experiments/datasets/household_power_consumption.txt.provenance.json
+            experiments/results/m1-validation-pilot.json
+            experiments/results/m1-validation-pilot.checkpoints/**
+            experiments/results/m1b-recurrence.json
+            experiments/results/m1b-recurrence.checkpoints/**
