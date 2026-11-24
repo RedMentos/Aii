@@ -149,8 +149,15 @@ class ArrayDataset:
         self._test_preregistration_sha256: str | None = None
 
     @classmethod
-    def from_uci(cls, path: str | Path, config: DataConfig) -> "ArrayDataset":
-        """Two-pass UCI CSV ingestion directly into a dense matrix, without MinuteRow objects."""
+    def from_uci(
+        cls, path: str | Path, config: DataConfig, *, allow_fractional_split: bool = False
+    ) -> "ArrayDataset":
+        """Two-pass UCI ingestion; production use requires explicit calendar boundaries."""
+        if config.validation_start is None and not allow_fractional_split:
+            raise ValueError(
+                "UCI ingestion requires fixed calendar split dates; "
+                "set validation_start/test_start or explicitly allow_fractional_split for fixtures"
+            )
         source = Path(path)
         before = source.stat()
         channels: tuple[str, ...] | None = None
