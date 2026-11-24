@@ -42,7 +42,7 @@ def apply_sources(code_dir, sources):
         # current control anchors are present; every replacement below still
         # requires one unique exact anchor and the generated modules are compiled.
         required = (
-            b"mark('policy_check');fixed_policy=match(self.store,text)\\n",
+            b"mark('policy_check');fixed_policy=match(self.store,text)\n",
             b'from .arithmetic_fastpath import match as arithmetic_match',
             b"mark('perception_and_state')",
             b"mark('routing');exact=re.fullmatch",
