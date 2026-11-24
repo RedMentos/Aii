@@ -1289,3 +1289,68 @@ The full arXiv HTML for Mathur & Manocha, *FD-VAD: Semantic Endpoint Detection f
 - V14 research implication: the future duplex controller should represent playback state, response intent, backchannel and interruption separately from acoustic activity and semantic completeness. Current A4 prosody/speaker evidence does not implement these learned intent labels. Keep the distinction as an open contract/research item; do not infer user intent from RMS/VAD or adopt the 1.7B model.
 
 **Status:** FULL_ARXIV_HTML_REVIEWED / ARXIV_PREPRINT / UPSTREAM_BASE_CODE_AND_BASE_MODEL_APACHE2_VERIFIED / HITHINK_CHECKPOINT_LICENSE_NOT_FOUND / H100_TRAINING / NO_ANDROID_PROOF / NO_IMPORT_OR_DOWNLOAD.
+
+
+## R-110 — Yggdrasil: Tree-Routed Recurrent Experts for State Tracking and Fast CPU Inference
+- Primary: arXiv:2611.29954v1, 2026-11-23; full HTML architecture, CPU protocol, results and limitations reviewed; preprint.
+- Evidence: enwik8 configuration stores 195.4M parameters / 681.3 MB but reads 329.5k active parameters per token; reports 6.7 μs/token and 1.540 bits/byte on one Intel Xeon Gold 6426Y core. The hg38 configuration reports 5.8 μs/base and 1.567 bits/base. These are state/compression tasks, not generative LLM results.
+- Limits: timing uses AVX-512 VNNI on Sapphire Rapids; no ARM64/Android benchmark. The repository's portable/SIMDe path is not the measured fast path. No separate checkpoint/weight license identified.
+- OSS: CosmoNaught/yggdrasil commit ce1252970b9f0f51259514944a6ba857b716cbc3; code MIT; paper CC BY 4.0.
+- V14: candidate for a compact recurrent state/attention/goal tracker, not B1/B2/C3 replacement. An ARM port must separately measure stored bank bytes, active bytes/read, cache misses and latency.
+
+## R-111 — Fork-JEPA: measured action-effect supervision from same-state forks
+- Primary: arXiv:2611.28350v1, 2026-11-20; full HTML method, experiments, ablations and limitations plus project site reviewed; preprint. Project site says code/checkpoints are coming soon; no code license/reusable implementation yet.
+- Evidence: execute two actions from one restored simulator state and train on the measured difference between their futures. On the regime task, cross-zone success at horizon 10 rises from 35% (LeWM) to 68%; 1,024 fork pairs outperform adding 1.2M behavior steps in that setup. Across TwoRoom/PushT/Cube, gains are not uniform; PushT is within seed spread.
+- Limits: locally linear action-response assumption; only sampled action directions; simulator restoration and one-step pairs; approximate hardware resets and multi-block forks remain untested. arXiv distribution license is non-exclusive, not a code license.
+- V14: use same-state action forks only in a reversible sandbox/test app. Never execute alternate actions against arbitrary real Android apps or side-effectful user data. Require held-out action-effect readout and downstream planning utility, not latent loss alone.
+
+## R-112 — JEPA-Tuner: prediction in the receiving policy's native guidance interface
+- Primary: arXiv:2611.29096v1, 2026-11-21; full HTML method, simulation tables, real-robot results and limitations reviewed; preprint. Project site has demos; no official code/weight repository or separate license found.
+- Method: adapter and predictor operate at the VLA's own native guidance prefix; future guidance is predicted from current guidance, state and intervening actions, then supervised by the downstream action objective. This is stronger than cosine-aligning unrelated embeddings.
+- Evidence: LIBERO asynchronous success at delays 10/15: SmolVLA 76.8/72.1%, pi0.5 85.4/58.2%. Eight SO-101/ALOHA real-robot task/lead conditions used 20 trials each; highest outright in five, tied in two; boundary step change vs naive async reduced 48.1–73.4% on SO-101 and 20.4–57.6% on ALOHA.
+- Limits: two robot platforms, small-scale fine-tuning, 450M and 4.14B backbones; not Android or independent multi-model latent coupling. arXiv distribution license only.
+- V14: B3 must expose the recipient's real conditioning interface and optimize receiver task utility. No receiver + no held-out utility gain = no accepted latent coupling.
+
+## R-113 — Skill-JEPA: planner-aligned latent action chunks
+- Primary: arXiv:2611.26825v1, 2026-11-19; full HTML method/results reviewed; preprint.
+- Evidence: state-conditioned VAE encodes short action chunks as skills; JEPA predicts their effects and planner samples from the same Gaussian prior. Across three JEPA models/four planners, mean success at 80-step goals rises 42%→62%; AntMaze two-cell success 0.4%→38%.
+- Limits: simulated robot tasks and continuous actions, no Android/discrete OS-action test. tcouso/Skill-JEPA pyproject metadata declares MIT, but no LICENSE file was found; confirm before vendoring. GPU/research dependency stack.
+- V14: possible later macro-action representation over already-approved Android intents; decoder must be restricted to an explicit allowlist and per-action consent/audit.
+
+## R-114 — Revisiting Continual Learning in Language Models: A Three-Interface Diagnosis
+- Primary: arXiv:2611.30151v1, 2026-11-23; arXiv comments list NeurIPS 2026 main; full HTML methods/results/compute/limitations reviewed.
+- Key distinction: trained head = deployed performance; linear probe on frozen features = recoverability; classifier-free backbone diagnostic = representation separability/drift. The paper shows interface-dependent BWT/FWT and a negative algorithmic stability/plasticity relation.
+- JLT recovers 96–99% of the joint-training gap for replay/distillation methods, but task-adaptive JLT uses the evaluated task's training split and is explicitly an oracle-style diagnostic, not deployable performance. A post-hoc replay-buffer variant is separately measured.
+- Compute: eight RTX A5000 24 GB GPUs, usually three seeds. Code kkt94/RevisitingCL commit 056194b7a57bfab48f0cf704c49445ba7b011351, MIT; paper CC BY 4.0.
+- V14: every real adapter/weight-learning run should report deployed organ quality, frozen-feature probe recoverability, backbone representation diagnostics, old-task retention and restart. Probe recovery is not deployed capability. This is algorithmic, not biological synaptic plasticity.
+
+## R-115 — CoLiR: contrastive-likelihood replay for continual VLM RL
+- Primary: arXiv:2611.25989v1, 2026-11-19; full HTML method, experimental setup, results and ablations reviewed; preprint, paper CC BY 4.0; no official code repo found.
+- Method: rank historical prompts by likelihood increase on final-policy correct responses and likelihood decrease on initial-policy incorrect responses. Reuses logged responses; only two cross-policy likelihood evaluations, no new response generation; at most 80 prompts/task.
+- Evidence: Qwen3-VL 2B/4B/8B on five MRCL tasks; best MFN/MTA at all three scales and up to +9.99 points MFN over CPO at 8B. Authors also corrected answer leakage, malformed data, duplicates and scoring.
+- Limits: large VLM/RL setup, not mobile online learning; requires correct/incorrect labels and token log-likelihoods.
+- V14: candidate only if C3 exposes trustworthy token log-probabilities and outcome labels. Do not add phone-side generation calls to imitate it.
+
+## R-116 — MNN-Pocket-0.3B: compact on-device model candidate
+- Primary: MNN Team, arXiv:2611.12311v1, 2026-11-09; technical-report abstract and official instruction-model card reviewed; preprint, not independent validation.
+- Official card: ~300M parameters, 28 layers, 2 KV heads, bilingual Chinese/English, 32K deployment context; INT4 W4A16 QAT MNN package 173 MB. Author-reported decode at 512-token context: 466 tok/s iPad Pro M5 Metal; 138 tok/s Snapdragon 8 Gen 5 OpenCL (251 CPU). Its 11-benchmark average is 50.00 vs LFM2.5-350M 31.28, but MATH500 is 35.4 vs Qwen3-0.6B 45.2.
+- License: official model card declares Apache-2.0; MNN engine Apache-2.0. No Redmi Note 10 Pro/Snapdragon 732G TTFT/RSS/quality evidence.
+- V14: possible isolated C3 experiment only. Compare same prompts, TTFT, prefill/decode, PSS/RSS, peak memory, arithmetic, instruction following, English quality, 20-turn stability and rollback. No download/swap; separate explicit approval required for experiment and production swap.
+
+## R-117 — mzCache: Android KV-cache memory management
+- Primary: arXiv:2609.01338 and HongseungYu/mzcache artifact repository. Full paper PDF/HTML could not be retrieved; abstract and repository/evaluation guide only, so no full-paper-read claim.
+- Artifact reports MobiCom 2026 and MIT code license; Android memory-pressure callbacks, chunked KV offload/restore and cache eviction. Reported 2.1–5.5x TTFT improvement over partial offload is on rooted OnePlus 12 / Galaxy S25+ class devices (Snapdragon 8 Gen 3/Elite, Adreno 750/830, 12 GB).
+- Limit: rooted high-end hardware/OpenCL-SVM path; not Redmi Note 10 Pro (Snapdragon 732G/Adreno 618) or a drop-in Termux library. No code imported.
+- V14: study memory-pressure/chunked-restore design only; any port needs ARM64/Adreno-618 compatibility and real Redmi TTFT/PSS/thermal tests.
+
+## R-118 — Adaptive Guard: Android dynamic quantization + ART GC co-design
+- Primary: IEEE GAISS 2026 conference abstract, DOI 10.1109/GAISS66401.2026.11779656; conference 2026-10-28–30, added to IEEE Xplore 2026-11-16. Abstract only; full paper, source code and license not found.
+- Abstract claims 73% fewer OOM crashes vs static FP16, 78% fewer GC-related latency spikes, 81.7% KV-cache hit on 4 GB devices and sub-500 ms median token latency on Llama-3 1B/Gemma 2B/Phi-2, using ActivityManager trim callbacks, FP16/INT8/INT4 switching and GC-pause interlock.
+- V14: Android-runtime hypothesis only. Require full methodology, workload/device matrix, quality deltas and source before adoption; do not infer Redmi performance.
+
+### 2026-11-24 synthesis
+- JEPA: Fork-JEPA contributes measured same-state action comparisons; JEPA-Tuner shows prediction should be in the recipient's native conditioning space and tied to downstream utility; Skill-JEPA aligns planner sampling with learned action chunks. Complementary, not interchangeable.
+- Continual learning: three-interface diagnosis separates head mismatch from representation drift; CoLiR ranks replay from existing likelihoods. Neither proves persistent on-device gradient learning.
+- Biological plasticity: no new reviewed study in this pass establishes biological/synaptic plasticity on-device; R-114 uses algorithmic stability/plasticity.
+- Android/memory: Yggdrasil's small active read set costs a 681 MB stored bank and AVX-512-specific timing; mzCache/Adaptive Guard are not Redmi-proven; MNN-Pocket is a candidate but has no Snapdragon 732G measurements.
+- No paper/model was downloaded, integrated or activated. These are research hypotheses, not development/release success.
