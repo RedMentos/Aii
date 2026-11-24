@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-24T03:52:00Z",
+  "updated_at": "2026-11-24T04:09:12Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111. M1 DATA code snapshot a0088effa5e820b86e69751744d7f6dcda99a780. Direct-to-array UCI ingestion, bounded batches and audit-first test gating are present. Exact M1 CI remains queued; no local full suite, real UCI cohort, or Redmi proof.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -177,7 +177,7 @@
       "proof_environment": "LOCAL_LINUX isolated + CI candidate; no Android microphone",
       "next_step": "Perception/QA: #2312 signed one-shot 44.1-kHz PCM consumer remains stacked on the QA companion branch; no AudioRecord provider, microphone capture or Redmi test. Keep capture OFF until the companion verifier/provider is reconciled and exact consent/revocation/zeroization tests pass. libfvad remains a BSD-3-Clause research comparator only.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-24T04:09:12Z",
       "latest_candidate_pr": {
         "pr": 2142,
         "head_sha": "67c1300093dd99ffcf818f370fff29b58fd7fc3b",
@@ -185,7 +185,7 @@
         "ci": "PASS_44861145442_23_TESTS",
         "scope": "read-only sequential C3 candidate lab; native inference NOT_RUN"
       },
-      "proof": "Perception RAW EAR FIR anti-alias producer and comparator were integrated with Core pins in #2327→9097d634; candidate CI 27 SUCCESS / 1 expected SKIPPED. Isolated Linux parity/decimator timing is host-only. Android audio capture and calibrated speaker model remain open. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture."
+      "proof": "Perception RAW EAR FIR anti-alias producer and comparator were integrated with Core pins in #2327→9097d634; candidate CI 27 SUCCESS / 1 expected SKIPPED. Isolated Linux parity/decimator timing is host-only. Android audio capture and calibrated speaker model remain open. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. FD-VAD (arXiv:2609.35791, 2026-09-16) reviewed in full; official MIT code uses WavLM + Qwen2.5-0.5B and a ~120 MB adapter/LoRA checkpoint. Its 45.8 ms/window result is A100-only; no ARM/Redmi evidence, no download, not selected as a current model candidate. MJEPA (arXiv:2606.25225) reviewed in full; official code MIT, three third-party files Apache-2.0, no weights in the inspected repo. Research-only; no model swap."
     },
     {
       "id": "V14-006",
@@ -196,26 +196,38 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "LOCAL_LINUX isolated Python 3.13.5 hash fixture PASS; GitHub CI: audio duplex 179/179 on Python 3.13+3.14, RAW EAR optional NumPy 128/128 on 3.13+3.14, prosody 3.11+3.13, consent-revocation, deploy-integrity and comparison workflows PASS; staged/integrated BLOCKED by three stale Core-owned source pins; TERMUX/REDMI_UNVERIFIED",
-      "next_step": "Core/JEPA: add a reviewed vision.py source-lifecycle mapping and source-forget regression. Core/Integrator: rebind the three audio SOURCE_BLOBS in integrated_audio_context_candidate_20261121.py. Then run one combined staged/integrated candidate covering both audio and vision source paths. After integration is green, verify the real Android provider/permission path on authorized hardware; keep TinyViT opt-in and do not download/swap weights without separate approval.",
+      "proof_environment": "GitHub Actions exact current branch head 437c72: audio duplex 179/179 PASS on Python 3.13 and 3.14; RAW EAR optional NumPy, prosody-to-attention, consent-revocation, deploy-integrity and WebRTC/libfvad comparison PASS. Staged/integrated FAIL at Core-owned stale audio SOURCE_BLOBS (16 failed, 237 passed, 10 skipped, 2 errors, 47 subtests); integrated-regression and Core same-turn fail at same pin. LOCAL_LINUX full checkout BLOCKED by github.com DNS; TERMUX/REDMI_UNVERIFIED.",
+      "next_step": "Core/Integrator: rebind the three reviewed audio SOURCE_BLOBS in integrated_audio_context_candidate_20261121.py. Core/JEPA: add the reviewed vision.py source-lifecycle mapping and source-forget regression. Then rerun one combined staged/integrated/same-turn candidate. After green, Boss/QA may use the existing authorized updater and obtain a separate PIPELINE_STATUS receipt; do not send a manual Termux command. Perception next evaluates a SHADOW-only semantic endpoint head (R-126) and a small pooled audio/vision predictive-loss ablation (R-127), without model download or production authority.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-24T03:52:00Z",
+      "last_checkpoint": "2026-11-24T04:09:12Z",
       "latest_candidate_pr": {
         "pr": 2463,
         "head_sha": "b73ec8a7c7d3d87f0f5d19e41046b62d11496381",
         "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
         "state": "OPEN_DRAFT_FOCUSED_CI_PASS_STAGED_FAIL"
       },
-      "proof": "PR #2448 exact head c7db1809370fae5ae5a49287e76cba0deedf80e7 remains OPEN/DRAFT/NOT_RELEASED. New benchmark fix b85b60a binds each synthetic speaker batch to deterministic one-second PCM16 SHA-256. On the exact c7db head, audio-duplex bridge passed 179 tests on Python 3.13 and 3.14; RAW EAR optional NumPy passed 128 tests on both; prosody-to-attention passed Python 3.11/3.13; consent-revocation, deploy-integrity and WebRTC/libfvad comparison passed. Staged/integrated fails before execution because three hashes in the Core-owned integrated_audio_context_candidate_20261121.py are stale. No Redmi/native model proof. Visual cross-check: #2442 focused CI passed vision-source-lineage 29/29 and MediaProjection RAW EYE frame-ingress 39/39, but staged/integrated failed because the Core-owned source-lifecycle composer rejects vision.py (19 failed, 234 passed, 10 skipped, 2 errors). Branch is 25 ahead/10 behind current release head; no overlapping changed files in the intervening base commits. Core blocker posted to #2462; no composer bypass or Redmi proof. Current-base visual candidate #2463 (one commit on 8d93236) passes focused vision source-lineage 29/29 and MediaProjection RAW EYE frame ingress 39/39 on Python 3.13 and 3.14. Staged runtime fails 19/234 passed/10 skipped/2 errors; integrated regression fails 1 test because Core source_lifecycle_lock_integration_candidate.py rejects vision.py. #2442 was closed as superseded after #2463 focused CI passed. A3 uses a persistent ridge projector; text encoder is EmbeddingGemma if installed, otherwise hashed_bow; teacher LFM2.5-VL-450M is optional. A5 consumer requires a signed provider frame grant and does not open MediaProjection itself. No Android/Redmi proof.",
-      "handoff_path": "v14/handoffs/RESEARCH_PERCEPTION_RUN33_20261124.md",
+      "proof": "PR #2448 exact head c7db1809370fae5ae5a49287e76cba0deedf80e7 remains OPEN/DRAFT/NOT_RELEASED. New benchmark fix b85b60a binds each synthetic speaker batch to deterministic one-second PCM16 SHA-256. On the exact c7db head, audio-duplex bridge passed 179 tests on Python 3.13 and 3.14; RAW EAR optional NumPy passed 128 tests on both; prosody-to-attention passed Python 3.11/3.13; consent-revocation, deploy-integrity and WebRTC/libfvad comparison passed. Staged/integrated fails before execution because three hashes in the Core-owned integrated_audio_context_candidate_20261121.py are stale. No Redmi/native model proof. Visual cross-check: #2442 focused CI passed vision-source-lineage 29/29 and MediaProjection RAW EYE frame-ingress 39/39, but staged/integrated failed because the Core-owned source-lifecycle composer rejects vision.py (19 failed, 234 passed, 10 skipped, 2 errors). Branch is 25 ahead/10 behind current release head; no overlapping changed files in the intervening base commits. Core blocker posted to #2462; no composer bypass or Redmi proof. Current-base visual candidate #2463 (one commit on 8d93236) passes focused vision source-lineage 29/29 and MediaProjection RAW EYE frame ingress 39/39 on Python 3.13 and 3.14. Staged runtime fails 19/234 passed/10 skipped/2 errors; integrated regression fails 1 test because Core source_lifecycle_lock_integration_candidate.py rejects vision.py. #2442 was closed as superseded after #2463 focused CI passed. A3 uses a persistent ridge projector; text encoder is EmbeddingGemma if installed, otherwise hashed_bow; teacher LFM2.5-VL-450M is optional. A5 consumer requires a signed provider frame grant and does not open MediaProjection itself. No Android/Redmi proof. Run 34 rechecked Boss's two audio-duplex race findings on unchanged code blob 93ead41 (audio_duplex_bridge.py), duplex blob 7d38293 and test blob 15e9896. `duplex.record` is first-writer-wins per from_event; on_audio_input shares audio_handoff_lock with handoff/rollback and commits before cancel. Exact regression names: test_audio_interrupt_target_turn_claim_is_first_writer_wins; test_distinct_audio_receipts_cannot_replace_the_first_active_turn_handoff; test_concurrent_distinct_audio_receipts_claim_one_active_turn_once; test_audio_handoff_commit_is_visible_before_cancel_and_reader_cannot_win_race. Review posted to #2448 (6033522645); Core pin follow-up posted to #2462 (7121776477). Research R-126 FD-VAD and R-127 MJEPA recorded. No Android/Redmi proof.",
+      "handoff_path": "v14/handoffs/RESEARCH_PERCEPTION_RUN34_20261124.md",
       "related_prs": [
         2448,
+        2462,
         2463
       ],
       "superseded_prs": [
         2442
       ],
-      "visual_handoff_path": "v14/handoffs/RESEARCH_PERCEPTION_VISION_REBASE_20261124_RUN33.md"
+      "visual_handoff_path": "v14/handoffs/RESEARCH_PERCEPTION_VISION_REBASE_20261124_RUN33.md",
+      "latest_audio_pr": {
+        "pr": 2448,
+        "branch": "research-perception/v14-audio-duplex-bridge-20261123-run21",
+        "branch_head_before_docs": "437c72b4c10fd5837aef64a984f61d7da86f627d",
+        "code_tested_sha": "c7db1809370fae5ae5a49287e76cba0deedf80e7",
+        "base_sha": "8d93236c753f0194224c19edc7411d8d7082b1d6",
+        "state": "OPEN_DRAFT_NOT_RELEASED",
+        "audio_bridge_ci_run": 45322153681,
+        "tests_python_313": "179/179 PASS",
+        "tests_python_314": "179/179 PASS"
+      }
     },
     {
       "id": "V14-007",
