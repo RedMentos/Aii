@@ -1348,3 +1348,12 @@ Next: Boss/Integrator rebind the current exact source hashes and include the ful
 - **CI evidence:** exact head observed with four workflows IN_PROGRESS (run IDs 45506945163, 45506945574, 45506945185, 45506945923). No PASS/merge/release claim until they complete.
 - **Stack:** #2484 → #2477 → Core #2465 → Perception base; Core/QA still must include `vision_projector_stats.py` in the materialized source closure and rebind exact source pins before staged/integrated/consumer/migration acceptance.
 - **Research:** R-144 full preprint on replay-compatible representational drift; R-145 full FlyGCL preprint + MIT OSS audit. Neither justifies frozen teachers or direct Android port. Redmi remains REDMI_UNVERIFIED.
+
+
+### Research & Perception — run 22 final CI readback (2026-11-25)
+
+- PR #2484 head `177f72364440519f6d38cecdb7dca7629ae2304b`: source-lineage/A3 forget **51/51 PASS** on Python 3.13 and 3.14; compile passed. RAW EYE frame-ingress passed on both versions; offline runtime deployment-integrity passed on Python 3.11 and 3.14.
+- LOCAL_LINUX CPython 3.13.5 isolated dir-fd harness PASS 4/4; full local repository pytest NOT_RUN (no checkout).
+- Staged runtime FAIL (19 failed, 234 passed, 10 skipped, 2 errors, 41 subtests); integrated regression FAIL (1 test). Both root at Core-owned `source_lifecycle_lock_integration_candidate.py:179`, strict `vision.py` pin mismatch. Exact CI hashes: `vision.py` 329bdacc068bf7059c87ef74425fbbfc9538ad85d494264c3f73cc89bb0c793d; helper `vision_projector_stats.py` 5db10a4fefa0e5d40d67b242ba18858972b499283e1e00f6d13d3e5d2760032f. Core #2465 has been given these values and must include the helper in the staged source closure; no hash bypass.
+- #2484 remains DRAFT/NOT_RELEASED. REDMI_UNVERIFIED; no current-head installation receipt or device action.
+- Research R-144/R-145 are fully reviewed and recorded in the ledger; no code/weights imported from FlyGCL or cl-drift.
