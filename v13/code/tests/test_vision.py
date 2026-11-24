@@ -189,20 +189,28 @@ class Vision(unittest.TestCase):
 
     def test_source_disjoint_update_validation_requires_complete_positive_evidence(self):
         good = {'status': 'MEASURED', 'split': 'SOURCE_DISJOINT', 'authority': 'MEASUREMENT_ONLY',
-                'source_groups': 4, 'folds_used': 4, 'folds_requested': 4,
-                'held_out_top1': 0.75, 'chance': 0.25, 'held_out_gain_over_chance': 0.5,
-                'utility_status': 'ABOVE_CHANCE'}
-        self.assertEqual(vision._source_disjoint_update_validation(good)['status'], 'PASS')
+                'evaluation_scope': 'CHANGED_OR_NEW_CAPTIONS', 'source_groups': 4,
+                'folds_used': 4, 'folds_requested': 4, 'held_out_top1': 0.75, 'chance': 0.25,
+                'held_out_gain_over_chance': 0.5, 'utility_status': 'ABOVE_CHANCE',
+                'baseline_status': 'MEASURED', 'baseline_held_out_top1': 0.25,
+                'held_out_gain_over_baseline': 0.5, 'baseline_utility_status': 'AT_OR_BELOW_CHANCE'}
+        self.assertEqual(vision._source_disjoint_update_validation(good, require_baseline=True)['status'], 'PASS')
         partial = dict(good, status='PARTIAL', folds_used=3)
-        self.assertEqual(vision._source_disjoint_update_validation(partial)['status'],
+        self.assertEqual(vision._source_disjoint_update_validation(partial, require_baseline=True)['status'],
                          'SOURCE_DISJOINT_VALIDATION_UNAVAILABLE')
         nonfinite = dict(good, held_out_gain_over_chance=float('nan'))
-        self.assertEqual(vision._source_disjoint_update_validation(nonfinite)['status'],
+        self.assertEqual(vision._source_disjoint_update_validation(nonfinite, require_baseline=True)['status'],
                          'SOURCE_DISJOINT_VALIDATION_UNAVAILABLE')
         no_gain = dict(good, held_out_top1=0.25, chance=0.25,
                        held_out_gain_over_chance=0.0, utility_status='AT_OR_BELOW_CHANCE')
-        self.assertEqual(vision._source_disjoint_update_validation(no_gain)['status'],
+        self.assertEqual(vision._source_disjoint_update_validation(no_gain, require_baseline=True)['status'],
                          'NO_HELDOUT_UTILITY_GAIN')
+        no_baseline = dict(good, baseline_status='INVALID')
+        self.assertEqual(vision._source_disjoint_update_validation(no_baseline, require_baseline=True)['status'],
+                         'SOURCE_DISJOINT_BASELINE_UNAVAILABLE')
+        no_candidate_gain = dict(good, held_out_gain_over_baseline=-0.1)
+        self.assertEqual(vision._source_disjoint_update_validation(no_candidate_gain, require_baseline=True)['status'],
+                         'NO_CANDIDATE_GAIN_OVER_BASELINE')
 
     def test_retraining_without_source_disjoint_utility_keeps_previous_artifact(self):
         teacher = FakeTeacher()
@@ -217,20 +225,60 @@ class Vision(unittest.TestCase):
         rec = vision.ingest(self.store, png((20, 20, 220), box=(18, 8, 44, 34)))
         vision.describe(self.rt, rec, 'g', teacher)
         no_gain = {'status': 'MEASURED', 'split': 'SOURCE_DISJOINT', 'authority': 'MEASUREMENT_ONLY',
-                   'n': 10, 'source_groups': 10, 'folds_used': 4, 'folds_requested': 4,
-                   'held_out_top1': 0.1, 'chance': 0.1, 'held_out_gain_over_chance': 0.0,
-                   'utility_status': 'AT_OR_BELOW_CHANCE'}
+                   'evaluation_scope': 'CHANGED_OR_NEW_CAPTIONS', 'n': 10, 'source_groups': 4,
+                   'folds_used': 4, 'folds_requested': 4, 'held_out_top1': 0.1, 'chance': 0.1,
+                   'held_out_gain_over_chance': 0.0, 'utility_status': 'AT_OR_BELOW_CHANCE',
+                   'baseline_status': 'MEASURED', 'baseline_held_out_top1': 0.2,
+                   'held_out_gain_over_baseline': -0.1, 'baseline_utility_status': 'ABOVE_CHANCE'}
         with patch('v13.vision.source_disjoint_crossval', return_value=no_gain):
             second = vision.train(self.rt, encoder)
         self.assertEqual(second['update_gate']['status'], 'NO_HELDOUT_UTILITY_GAIN')
         self.assertEqual(second['update_gate']['validation']['held_out_gain_over_chance'], 0.0)
         self.assertEqual(second['sha256'], first['sha256'])
+        candidate_below_baseline = dict(no_gain, held_out_top1=0.7, chance=0.2,
+            held_out_gain_over_chance=0.5, utility_status='ABOVE_CHANCE',
+            baseline_held_out_top1=0.8, held_out_gain_over_baseline=-0.1)
+        rec = vision.ingest(self.store, png((20, 180, 20), box=(14, 10, 40, 36)))
+        vision.describe(self.rt, rec, 'g', teacher)
+        with patch('v13.vision.source_disjoint_crossval', return_value=candidate_below_baseline):
+            third = vision.train(self.rt, encoder)
+        self.assertEqual(third['update_gate']['status'], 'NO_CANDIDATE_GAIN_OVER_BASELINE')
+        self.assertEqual(third['sha256'], first['sha256'])
         self.assertTrue(old_path.is_file())
         retained = vision.Projector.load(old_path, first['sha256'])
         self.assertTrue(numpy.array_equal(retained.W, first_weights))
         self.assertTrue(numpy.array_equal(
-            vision.Projector.load(old_path, second['sha256']).W, first_weights
+            vision.Projector.load(old_path, third['sha256']).W, first_weights
         ))
+
+    def test_source_disjoint_crossval_compares_previous_projector_on_changed_sources(self):
+        teacher = FakeTeacher()
+        encoder = ('hashed_bow', lambda texts: numpy.stack([vision.hashed_embed(x) for x in texts]))
+        colours = [(220, 20, 20), (20, 20, 220), (20, 180, 20)] * 3
+        for i, colour in enumerate(colours):
+            rec = vision.ingest(self.store, png(colour, box=(5+i, 5, 30+i, 30)))
+            vision.describe(self.rt, rec, 'g', teacher)
+        first = vision.train(self.rt, encoder)
+        old_record = vision.load(self.store)['projector']
+        old = vision.Projector.load(self.home / first['path'], first['sha256'])
+        for i, colour in enumerate(colours):
+            rec = vision.ingest(self.store, png(colour, box=(12+i, 9, 38+i, 34)))
+            vision.describe(self.rt, rec, 'g', teacher)
+        state = vision.load(self.store)
+        X, captions, _, ids = vision.dataset(self.store, state=state)
+        Y = encoder(captions)
+        groups = [key.split(':', 1)[0] for key in ids]
+        changed = [old_record['captions'].get(key) != caption for key, caption in zip(ids, captions)]
+        cv = vision.source_disjoint_crossval(
+            X, Y, groups, captions, baseline_predictor=old, evaluation_mask=changed
+        )
+        self.assertEqual(cv['status'], 'MEASURED')
+        self.assertEqual(cv['baseline_status'], 'MEASURED')
+        self.assertEqual(cv['evaluation_scope'], 'CHANGED_OR_NEW_CAPTIONS')
+        self.assertEqual(cv['source_groups'], 9)
+        self.assertEqual(cv['folds_used'], cv['folds_requested'])
+        self.assertTrue(numpy.isfinite(cv['held_out_gain_over_baseline']))
+        self.assertTrue(numpy.isfinite(cv['baseline_held_out_top1']))
 
     def test_retraining_with_changed_encoder_fails_closed_and_keeps_old_artifact(self):
         teacher = FakeTeacher()
