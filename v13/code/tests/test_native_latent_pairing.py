@@ -4,10 +4,11 @@ from pathlib import Path
 
 import pytest
 
-from v13.common import atomic_write, dumps, file_hash
+from v13.common import atomic_write, dumps, file_hash, uid
 from v13.contracts import packet
 from v13.models import model_key
 from v13.native_latent_pairing import (
+    PAIR_ALLOWED,
     NativeTapPairError,
     pair_taps,
     validate_pair_packet,
@@ -20,6 +21,7 @@ TAP_ID = "lfm2.result_norm.final.v1"
 TOKENIZER_REVISION = "lfm2-tokenizer-r1"
 MODEL_REVISIONS = {
     "B1_DETAIL": "lfm2-b1-r1",
+    "B2_GIST": "lfm2-b2-r1",
     "C3_LANGUAGE": "lfm2-c3-r1",
 }
 
@@ -34,6 +36,7 @@ def setup_runtime(tmp_path):
     hashes = {}
     for role, filename in (
         ("B1_DETAIL", "b1-detail.gguf"),
+        ("B2_GIST", "b2-gist.gguf"),
         ("C3_LANGUAGE", "c3-language.gguf"),
     ):
         path = model_dir / filename
@@ -52,11 +55,12 @@ def setup_runtime(tmp_path):
     return runtime, event, hashes
 
 
-def add_tap(runtime, event, role, dimension, vectors, token_ids=None, source_ref=None):
+def add_tap(runtime, event, role, dimension, vectors, token_ids=None, source_ref=None,
+            tap_id=TAP_ID, tokenizer_revision=TOKENIZER_REVISION):
     token_ids = list(TOKEN_IDS if token_ids is None else token_ids)
     source_ref = event["source_ref"] if source_ref is None else source_ref
     payload = {"token_ids": token_ids, "vectors": vectors}
-    path = runtime.home / "data" / "blobs" / (role.lower() + "-tap.json")
+    path = runtime.home / "data" / "blobs" / (uid("tap") + ".json")
     atomic_write(path, dumps(payload))
     tap_packet = packet(
         "LatentTapPacket",
@@ -66,9 +70,9 @@ def add_tap(runtime, event, role, dimension, vectors, token_ids=None, source_ref
         [source_ref],
         role=role,
         source_ref=source_ref,
-        tap_id=TAP_ID,
-        model_revision=MODEL_REVISIONS.get(role, "fixture-r1"),
-        tokenizer_revision=TOKENIZER_REVISION,
+        tap_id=tap_id,
+        model_revision=MODEL_REVISIONS[role],
+        tokenizer_revision=tokenizer_revision,
         token_ids=token_ids,
         feature_path=str(path.relative_to(runtime.home)),
         feature_sha256=file_hash(path),
@@ -105,6 +109,7 @@ def test_exact_b1_c3_pair_is_persisted_without_training_authority(tmp_path):
         assert checked["receiver_shape"] == [2, 1024]
         assert checked["token_count"] == 2
         assert checked["alignment"] == "TOKEN_IDS_EXACT"
+        assert checked["tokenizer_revision"] == TOKENIZER_REVISION
         assert checked["status"] == "PAIRED_READ_ONLY"
         assert checked["training_authority"] == 0
         assert checked["native_receiver_authority"] == 0
@@ -152,6 +157,98 @@ def test_pair_rejects_tokenizer_or_source_misalignment(tmp_path):
         runtime.close()
 
 
+
+@pytest.mark.parametrize(("sender_role", "receiver_role"), sorted(PAIR_ALLOWED))
+def test_supported_b1_b2_c3_pair_matrix_is_source_bound_and_read_only(
+    tmp_path, sender_role, receiver_role
+):
+    runtime, event, hashes = setup_runtime(tmp_path)
+    try:
+        dimensions = {"B1_DETAIL": 4, "B2_GIST": 5, "C3_LANGUAGE": 3}
+        sender_dim = dimensions[sender_role]
+        receiver_dim = dimensions[receiver_role]
+        sender = add_tap(
+            runtime, event, sender_role, sender_dim,
+            [[0.125] * sender_dim, [-0.25] * sender_dim],
+            tap_id=sender_role + ".tap.v1",
+        )
+        receiver = add_tap(
+            runtime, event, receiver_role, receiver_dim,
+            [[0.5] * receiver_dim, [-0.75] * receiver_dim],
+            tap_id=receiver_role + ".tap.v2",
+        )
+        pair = pair_taps(
+            runtime.cognition, sender, receiver,
+            hashes[sender_role], hashes[receiver_role],
+        )
+        checked = validate_pair_packet(pair)
+        assert (checked["sender_role"], checked["receiver_role"]) == (
+            sender_role, receiver_role
+        )
+        assert checked["sender_tap_id"] != checked["receiver_tap_id"]
+        assert checked["tokenizer_revision"] == TOKENIZER_REVISION
+        assert checked["token_count"] == 2
+        assert checked["alignment"] == "TOKEN_IDS_EXACT"
+        assert checked["status"] == "PAIRED_READ_ONLY"
+        assert checked["training_authority"] == 0
+        assert checked["native_receiver_authority"] == 0
+        assert checked["production_route"] is False
+        assert checked["source_ref"] == event["source_ref"]
+        assert checked["provenance"] == [event["source_ref"]]
+        stored = runtime.store.one(
+            "SELECT payload FROM packets WHERE id=? AND kind='LatentTapPairPacket'",
+            (pair["packet_id"],),
+        )
+        assert json.loads(stored["payload"]) == pair
+    finally:
+        runtime.close()
+
+
+def test_pair_rejects_unknown_or_different_tokenizer_revision(tmp_path):
+    runtime, event, hashes = setup_runtime(tmp_path)
+    try:
+        sender = add_tap(
+            runtime, event, "B1_DETAIL", 4, [[0.1] * 4, [0.2] * 4],
+            tokenizer_revision=None,
+        )
+        receiver = add_tap(
+            runtime, event, "C3_LANGUAGE", 3, [[0.3] * 3, [0.4] * 3],
+            tokenizer_revision=None,
+        )
+        with pytest.raises(NativeTapPairError, match="tokenizer revisions are missing"):
+            pair_taps(runtime.cognition, sender, receiver,
+                      hashes["B1_DETAIL"], hashes["C3_LANGUAGE"])
+
+        sender = add_tap(
+            runtime, event, "B1_DETAIL", 4, [[0.1] * 4, [0.2] * 4],
+        )
+        receiver = add_tap(
+            runtime, event, "C3_LANGUAGE", 3, [[0.3] * 3, [0.4] * 3],
+            tokenizer_revision="different-tokenizer-r1",
+        )
+        with pytest.raises(NativeTapPairError, match="tokenizer revisions are missing"):
+            pair_taps(runtime.cognition, sender, receiver,
+                      hashes["B1_DETAIL"], hashes["C3_LANGUAGE"])
+    finally:
+        runtime.close()
+
+
+def test_pair_rejects_unsupported_c3_sender_direction(tmp_path):
+    runtime, event, hashes = setup_runtime(tmp_path)
+    try:
+        sender = add_tap(
+            runtime, event, "C3_LANGUAGE", 3, [[0.1] * 3, [0.2] * 3],
+        )
+        receiver = add_tap(
+            runtime, event, "B1_DETAIL", 4, [[0.3] * 4, [0.4] * 4],
+        )
+        with pytest.raises(NativeTapPairError, match="unsupported native tap pair roles"):
+            pair_taps(runtime.cognition, sender, receiver,
+                      hashes["C3_LANGUAGE"], hashes["B1_DETAIL"])
+    finally:
+        runtime.close()
+
+
 def test_pair_rejects_tampered_features_and_invalid_model_hash(tmp_path):
     runtime, event, hashes = setup_runtime(tmp_path)
     try:
@@ -192,5 +289,7 @@ def test_pair_packet_rejects_authority_promotion_and_binding_drift(tmp_path):
             validate_pair_packet(dict(pair, training_authority=1))
         with pytest.raises(NativeTapPairError, match="binding hash mismatch"):
             validate_pair_packet(dict(pair, sender_model_sha256="f" * 64))
+        with pytest.raises(NativeTapPairError, match="binding hash mismatch"):
+            validate_pair_packet(dict(pair, tokenizer_revision="different-tokenizer-r1"))
     finally:
         runtime.close()
