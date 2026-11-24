@@ -260,7 +260,7 @@ def lease_for(runtime, obs, callbacks=None, lock=None, revoke_callback=None):
         with lock:
             yield True
 
-    def subscribe(source_id, receipt, session, request_cancel, on_revoked):
+    def subscribe(source_id, receipt, session, request_cancel, on_revoked, **_kwargs):
         if callbacks is not None:
             callbacks[source_id] = (request_cancel, on_revoked)
         def unsubscribe():
@@ -746,6 +746,85 @@ def test_provider_verifier_binds_the_stable_session_consent_receipt(monkeypatch)
     from v13.a5_ui_admission_bridge import validate_ui_observation
     with pytest.raises(PermissionError, match="session-level"):
         validate_ui_observation(dict(obs, session_consent_receipt_ref="not a receipt"))
+
+
+def test_session_receipt_is_bound_to_provider_checks_guard_and_revocation(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation(session_receipt_ref="session-consent-0001")
+    expected = obs["session_consent_receipt_ref"]
+    seen = {}
+
+    def check(*args):
+        seen["check"] = args
+        return len(args) == 8 and args[-1] == expected
+
+    @contextmanager
+    def guard(*args):
+        seen["guard"] = args
+        yield len(args) == 8 and args[-1] == expected
+
+    def subscribe(source_id, receipt, session, request_cancel, on_revoked,
+                  *, session_consent_receipt_ref):
+        seen["subscribe"] = (source_id, receipt, session, session_consent_receipt_ref)
+        return lambda: None
+
+    with ui_observation_lease(
+        runtime, obs, runtime.turn_event["brain_generation_id"],
+        check, guard, subscribe,
+    ) as lease:
+        assert lease.session_receipt_ref == expected
+
+    assert seen["check"][-1] == expected
+    assert seen["guard"][-1] == expected
+    assert seen["subscribe"] == (
+        obs["source_id"], obs["consent_receipt_ref"],
+        obs["capture_session_id"], expected,
+    )
+
+
+def test_session_receipt_fails_closed_when_provider_cannot_subscribe_to_it(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation(session_receipt_ref="session-consent-0001")
+
+    def check(*_args):
+        return True
+
+    @contextmanager
+    def guard(*_args):
+        yield True
+
+    def legacy_subscribe(source_id, receipt, session, request_cancel, on_revoked):
+        return lambda: None
+
+    with pytest.raises(PermissionError, match="two-phase UI revocation subscription is unavailable"):
+        with ui_observation_lease(
+            runtime, obs, runtime.turn_event["brain_generation_id"],
+            check, guard, legacy_subscribe,
+        ):
+            pytest.fail("a provider that ignores the session receipt must not acquire a lease")
+
+
+def test_legacy_one_shot_provider_callback_arity_is_unchanged(monkeypatch):
+    runtime = make_runtime(monkeypatch)
+    obs = observation()
+
+    def check(source_id, receipt, session, purpose, method, scope, api_level):
+        assert source_id == obs["source_id"]
+        assert receipt == obs["consent_receipt_ref"]
+        return True
+
+    @contextmanager
+    def guard(source_id, receipt, session, purpose, method, scope, api_level):
+        yield True
+
+    def subscribe(source_id, receipt, session, request_cancel, on_revoked):
+        return lambda: None
+
+    with ui_observation_lease(
+        runtime, obs, runtime.turn_event["brain_generation_id"],
+        check, guard, subscribe,
+    ) as lease:
+        assert lease.session_receipt_ref == obs["consent_receipt_ref"]
 
 
 def test_fifo_tile_projector_is_rejected_without_blocking(monkeypatch, tmp_path):
