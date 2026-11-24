@@ -70,7 +70,7 @@ def build_sources(code_dir, *, include_postcommit=True):
     result.update(chat.apply_sources(composed))
     result = idle.apply_sources(code_dir, result)
     arithmetic = load(code_dir, 'scripts/integrated_arithmetic_candidate_20261116.py',
-                      '3492df762637de664887d723aec8730052e0d964999d53b5e950aa0ded85b35a')
+                      '8eb4e3797c83cf8c165dd80a6a97c7d3a3a84965c6706a90669c7829bf7c8f58')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
                               '6d0707cddac9480415767e6c9ecf99c7f3d16e666e79296fed5d866c8ac6928b')
@@ -211,7 +211,7 @@ def build_sources(code_dir, *, include_postcommit=True):
         if path.is_symlink() or not path.is_file():
             raise ValueError('Postcommit observer builder missing or unsafe')
         raw_candidate = path.read_bytes()
-        if hashlib.sha256(raw_candidate).hexdigest() != 'e916355b7376b9fe66b15d63a710881f320728a309c73ab81fed22dca6e79be4':
+        if hashlib.sha256(raw_candidate).hexdigest() != '87ce337d83b787529d52753ac4ece98af379646881a56922084bbbee04e5777c':
             raise ValueError('Postcommit observer builder source changed')
         namespace = {'__name__': 'v13_checked_postcommit', '__file__': str(path)}
         exec(compile(raw_candidate, str(path), 'exec'), namespace)
