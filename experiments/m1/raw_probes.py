@@ -58,6 +58,7 @@ class _RawWindowModel:
         self.biases: list[np.ndarray] = []
         self.epoch_mae: list[float] = []
         self.n_train_windows = 0
+        self.n_scaler_windows = 0
         self._input_width: int | None = None
         self._output_shape: tuple[int, int] | None = None
 
@@ -68,7 +69,8 @@ class _RawWindowModel:
     def _fit_scaler(self, dataset: ArrayDataset) -> None:
         total = total_sq = None
         count = 0
-        for batch in dataset.iter_batches("train", batch_size=self.batch_size):
+        full_batch_iterator = getattr(dataset, "iter_full_batches", dataset.iter_batches)
+        for batch in full_batch_iterator("train", batch_size=self.batch_size):
             x = batch.inputs.flatten().astype(np.float64, copy=False)
             if not np.isfinite(x).all():
                 raise ValueError("non-finite raw input reached probe")
@@ -84,7 +86,7 @@ class _RawWindowModel:
         variance = np.maximum(total_sq / count - np.square(mean), 1e-8)
         self.feature_mean = mean.astype(np.float32)
         self.feature_scale = np.sqrt(variance).astype(np.float32)
-        self.n_train_windows = count
+        self.n_scaler_windows = count
         self._input_width = int(total.size)
 
     def _initialize(self, input_width: int, output_width: int) -> None:
@@ -144,10 +146,13 @@ class _RawWindowModel:
             second=[np.zeros_like(p) for p in self.weights + self.biases],
         )
 
+        self.n_train_windows = 0
         for _epoch in range(self.epochs):
             abs_sum = 0.0
             element_count = 0
+            fit_windows = 0
             for batch in dataset.iter_batches("train", batch_size=self.batch_size, shuffle=True, seed=self.seed + _epoch):
+                fit_windows += len(batch.origin_indices)
                 raw = batch.inputs.flatten().astype(np.float32, copy=False)
                 x = (raw - self.feature_mean) / self.feature_scale
                 prediction, activations, preactivations = self._forward(x)
@@ -168,6 +173,7 @@ class _RawWindowModel:
                 self._step(gradients_w, gradients_b, state)
             if element_count == 0:
                 raise ValueError("no train windows available during raw-window fit")
+            self.n_train_windows = fit_windows
             self.epoch_mae.append(abs_sum / element_count)
         return self
 

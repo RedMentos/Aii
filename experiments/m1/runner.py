@@ -271,6 +271,24 @@ class TrainingWindowView:
     def __getattr__(self, name):
         return getattr(self._dataset, name)
 
+    def iter_full_batches(
+        self,
+        split: str,
+        *,
+        batch_size: int = 256,
+        shuffle: bool = False,
+        seed: int = 17,
+    ) -> Iterator[WindowBatch]:
+        """Expose the complete underlying split for train-only preprocessing.
+
+        Model fitting must use iter_batches(), which applies the exploratory
+        cap to train windows. Scalers may use this method to estimate their
+        train-only statistics from every accepted training window.
+        """
+        return self._dataset.iter_batches(
+            split, batch_size=batch_size, shuffle=shuffle, seed=seed
+        )
+
     def iter_batches(
         self,
         split: str,
@@ -386,6 +404,7 @@ def _fit_one(
             train_view, batch_size=config.batch_size
         )
         extra["n_train_windows"] = predictor.n_train_windows
+        extra["n_scaler_windows"] = predictor.n_scaler_windows
         extra["selected_ar_lags"] = list(predictor.selected_ar_lags)
     elif name == "lad_ar_l1_l2penalty":
         predictor = LADARBaseline(
@@ -398,6 +417,7 @@ def _fit_one(
         history = [{"epoch": float(i + 1), "objective": float(value)}
                    for i, value in enumerate(predictor.epoch_losses)]
         extra["n_train_windows"] = predictor.n_train_windows
+        extra["n_scaler_windows"] = predictor.n_scaler_windows
         extra["selected_ar_lags"] = list(predictor.selected_ar_lags)
     elif name == "raw_window_probe":
         predictor = RawWindowProbe(
@@ -410,6 +430,7 @@ def _fit_one(
         history = [{"epoch": float(i + 1), "mae": float(value)}
                    for i, value in enumerate(predictor.epoch_mae)]
         extra["n_train_windows"] = predictor.n_train_windows
+        extra["n_scaler_windows"] = predictor.n_scaler_windows
     elif name == "raw_window_mlp":
         predictor = RawWindowMLP(
             hidden_width=config.raw_mlp_hidden_size,
@@ -422,6 +443,7 @@ def _fit_one(
         history = [{"epoch": float(i + 1), "mae": float(value)}
                    for i, value in enumerate(predictor.epoch_mae)]
         extra["n_train_windows"] = predictor.n_train_windows
+        extra["n_scaler_windows"] = predictor.n_scaler_windows
     elif name == "matched_dlinear":
         model = build_seeded_model(
             MatchedDLinearForecaster,
