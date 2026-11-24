@@ -1,11 +1,11 @@
 # Research & Perception — latest verified checkpoint (2026-11-24 18:00 UTC)
 
-A real RAW EAR temporal-ordering bug is fixed on branch research-perception/v14-audio-temporal-interval-order-20261124-run15 (base 8d93236c753f0194224c19edc7411d8d7082b1d6): TemporalVoiceEvidence now rejects an interval whose start moves backwards even if its end advances. Equal-start cumulative windows and partial overlaps remain supported; a rejected interval cannot replace the previous ordering baseline.
+PR #2471 (DRAFT): https://github.com/RedMentos/Aii/pull/2471. A real RAW EAR temporal-ordering bug is fixed on branch research-perception/v14-audio-temporal-interval-order-20261124-run15 (base 8d93236c753f0194224c19edc7411d8d7082b1d6): TemporalVoiceEvidence now rejects an interval whose start moves backwards even if its end advances. Equal-start cumulative windows and partial overlaps remain supported; a rejected interval cannot replace the previous ordering baseline.
 
 - Code SHA: e3d93311c4f15320dbccd920163263a64a7aeefd
 - Regression-test SHA: 7981ef0a559e7064ac1a5f92b44a30da8e12efa6
 - LOCAL_LINUX CPython 3.13.5 isolated reproduction: PASS (overlap, equal-start, backward-start negative, retained baseline, recovery, end-order negative).
-- Full local Aii pytest: BLOCKED / NOT_RUN (no checkout; GitHub DNS failure). Exact branch CI: pending. No Redmi test; REDMI_UNVERIFIED. No release SHA.
+- Full local Aii pytest: BLOCKED / NOT_RUN (no checkout; GitHub DNS failure). Dedicated workflow .github/workflows/v14-audio-temporal-evidence.yml is queued as run 2 for Python 3.13/3.14; staged-runtime, integrated-regression, privacy, consent-revocation and deployment checks are also queued. No CI PASS yet. No Redmi test; REDMI_UNVERIFIED. No release SHA.
 
 Latest available consented private V13OBS #115 receipt: 2026-11-24 09:28:11 UTC. It reports auto-update enabled and Runtime/Dashboard UP_TO_DATE at 8d93236; AI STOPPED_BY_USER and model process STOPPED. B1/B2 still show TIME_BUDGET failures (53.2/54.2 s) and zero valid offers. The receipt predates this branch, so this change is not installed. No UPDATE_REQUEST, CHAT_SEND, restart, shell, model/weight/permission change or user-data mutation was made.
 
